@@ -27,9 +27,12 @@ import {
   RefreshCw,
   Music2,
   Disc,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import { cn } from "@/lib/utils";
@@ -102,6 +105,8 @@ interface MusicStats {
 }
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const FETCH_OPTS: RequestInit = { credentials: "include" };
 const jsonOpts = (method: string, body: unknown): RequestInit => ({
   method,
@@ -116,39 +121,44 @@ export default function MusicCenterClient() {
   const { profile } = useDiscordOAuth();
   const { success, error: showError } = useToast();
 
-  // Même résolution de serveur que le reste du dashboard : l'ID de l'URL
-  // s'il correspond à un de mes serveurs, sinon le premier serveur connu —
-  // jamais un ID de test codé en dur (l'ancien fallback pointait vers un
-  // serveur précis et, combiné à l'absence de cookies sur les requêtes
-  // ci-dessous, faisait que cette page n'a jamais vraiment fonctionné en
-  // production : chaque appel à l'API du bot recevait 401 en silence).
-  // Sans ID valide dans l'URL, on préfère un serveur OÙ LE BOT EST PRÉSENT : le premier
-  // serveur de la liste n'a souvent pas le bot, et la page restait alors vide.
-  const [botGuildIds, setBotGuildIds] = useState<string[] | null>(null);
-  useEffect(() => {
-    if (!BOT_API_URL || !profile?.guilds?.length) return;
-    let cancelled = false;
-    const ids = profile.guilds.map((g) => g.id).join(",");
-    fetch(`${BOT_API_URL}/api/guild-presence?ids=${encodeURIComponent(ids)}`, FETCH_OPTS)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((res) => {
-        if (!cancelled && Array.isArray(res?.present)) setBotGuildIds(res.present.map(String));
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
   }, [profile?.guilds]);
 
-  const activeGuild = useMemo(() => {
-    const guilds = profile?.guilds;
-    if (!guilds?.length) return null;
-    const fromUrl = rawGuildId ? guilds.find((g) => g.id === rawGuildId) : undefined;
-    if (fromUrl) return fromUrl;
-    const withBot = botGuildIds ? guilds.find((g) => botGuildIds.includes(g.id)) : undefined;
-    return withBot || guilds[0];
-  }, [rawGuildId, profile?.guilds, botGuildIds]);
-  const guildId = activeGuild?.id || null;
+  const botGuildIds = useBotGuildIds(allGuilds);
+
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+
+  useEffect(() => {
+    if (manageableGuilds.length === 0) return;
+    if (rawGuildId && appliedQueryGuild.current !== rawGuildId) {
+      const match = manageableGuilds.find((g) => g.id === rawGuildId);
+      if (match) {
+        appliedQueryGuild.current = rawGuildId;
+        userSelectedRef.current = true;
+        setSelectedGuild(match);
+        return;
+      }
+    }
+    if (!userSelectedRef.current && botGuildIds !== null) {
+      const picked = pickBotGuild(manageableGuilds, botGuildIds);
+      if (picked) setSelectedGuild(picked);
+    } else if (!selectedGuild) {
+      setSelectedGuild(manageableGuilds[0]);
+    }
+  }, [manageableGuilds, rawGuildId, selectedGuild, botGuildIds]);
+
+  const guildId = selectedGuild?.id || null;
+  const activeGuild = selectedGuild;
   const isReady = Boolean(guildId && BOT_API_URL);
 
   const [activeTab, setActiveTab] = useState<"queue" | "import" | "playlists" | "favorites" | "history" | "settings" | "stats">("queue");
@@ -196,6 +206,12 @@ export default function MusicCenterClient() {
       setLoading(false);
       return;
     }
+    if (botGuildIds && guildId && !botGuildIds.includes(guildId)) {
+      setMusicState(null);
+      setStateError(null);
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/state`, FETCH_OPTS);
       if (!res.ok) {
@@ -220,12 +236,12 @@ export default function MusicCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [guildId, isReady, isScrubbing]);
+  }, [guildId, isReady, botGuildIds, isScrubbing]);
 
   // Vraies listes pour le rôle DJ et le salon 24h/24
   const fetchRolesAndChannels = useCallback(
     async (notify = false) => {
-      if (!guildId || !BOT_API_URL) return;
+      if (!guildId || !BOT_API_URL || (botGuildIds && !botGuildIds.includes(guildId))) return;
       setRefreshingMeta(true);
       try {
         await Promise.all([
@@ -258,7 +274,7 @@ export default function MusicCenterClient() {
         setRefreshingMeta(false);
       }
     },
-    [guildId, success, showError]
+    [guildId, botGuildIds, success, showError]
   );
 
   // Polling state every 3 seconds for live sync
@@ -284,9 +300,9 @@ export default function MusicCenterClient() {
     return () => clearInterval(ticker);
   }, [musicState?.status, musicState?.duration, isScrubbing]);
 
-  // Load ancillary tab data
+  // Tab change meta fetcher
   useEffect(() => {
-    if (!isReady) return;
+    if (!isReady || (botGuildIds && guildId && !botGuildIds.includes(guildId))) return;
 
     if (activeTab === "playlists") {
       fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/playlists`, FETCH_OPTS)
@@ -323,7 +339,7 @@ export default function MusicCenterClient() {
         .then((d) => setStats(d.stats || null))
         .catch(() => setTabError("Impossible de lire les statistiques musicales de ce serveur."));
     }
-  }, [guildId, isReady, activeTab]);
+  }, [guildId, isReady, botGuildIds, activeTab]);
 
   // Recherche : automatique pendant la frappe (350 ms), les requêtes périmées sont annulées, et
   // chaque cas (erreur, aucun résultat) est signalé — avant, une réponse refusée ou vide ne
@@ -331,7 +347,7 @@ export default function MusicCenterClient() {
   const runSearch = useCallback(
     async (q: string) => {
       const query = q.trim();
-      if (!query || !isReady) {
+      if (!query || !isReady || (botGuildIds && guildId && !botGuildIds.includes(guildId))) {
         setSearchResults([]);
         setSearchError(null);
         setSearchDone(false);
@@ -750,6 +766,16 @@ export default function MusicCenterClient() {
           </div>
 
           <div className="flex items-center gap-2">
+            {manageableGuilds.length > 0 && (
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild?.id || ""}
+                onChange={(g) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
+            )}
             <button
               onClick={fetchState}
               disabled={!isReady}
@@ -771,6 +797,32 @@ export default function MusicCenterClient() {
       {/* SCROLLABLE MAIN CONTENT */}
       <main className="flex-1 min-h-0 overflow-y-auto os-scroll [overscroll-behavior:contain] pb-44 md:pb-44 px-4 sm:px-6 py-6 scrollbar-thin scrollbar-thumb-white/10">
         <div className="max-w-7xl mx-auto space-y-6">
+
+          {/* BANNIÈRE BOT NON INSTALLÉ */}
+          {selectedGuild && botGuildIds && !botGuildIds.includes(selectedGuild.id) && (
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <Bot className="h-5 w-5 text-amber-400 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-amber-200">
+                    Bot non présent sur ce serveur
+                  </p>
+                  <p className="text-xs text-amber-300/80">
+                    Pour écouter de la musique et contrôler la file d'attente sur <span className="font-semibold">{selectedGuild.name}</span>, invitez le bot.
+                  </p>
+                </div>
+              </div>
+              <a
+                href={BOT_INVITE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-semibold shrink-0 transition-colors"
+              >
+                <Bot className="h-3.5 w-3.5" />
+                Inviter le bot
+              </a>
+            </div>
+          )}
 
           {/* NOW PLAYING HERO BANNER */}
           <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-gradient-to-b from-white/[0.04] to-black/60 p-6 backdrop-blur-2xl shadow-2xl">

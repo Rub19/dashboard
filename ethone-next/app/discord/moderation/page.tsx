@@ -29,6 +29,7 @@ import {
   RotateCcw,
   BarChart3,
   FileCheck,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
@@ -123,6 +124,8 @@ interface OverviewStats {
 }
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 
 const ACTION_CONFIG: Record<
   CaseAction,
@@ -212,6 +215,7 @@ export default function ModerationCenterPage() {
   // Serveur actif sélectionné
   // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
   const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
   const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
@@ -221,12 +225,16 @@ export default function ModerationCenterPage() {
       const match = manageableGuilds.find((g) => g.id === queryGuildId);
       if (match) {
         appliedQueryGuild.current = queryGuildId;
+        userSelectedRef.current = true;
         setSelectedGuild(match);
         return;
       }
     }
-    if (!selectedGuild && botGuildIds !== null) {
-      setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+    if (!userSelectedRef.current && botGuildIds !== null) {
+      const picked = pickBotGuild(manageableGuilds, botGuildIds);
+      if (picked) setSelectedGuild(picked);
+    } else if (!selectedGuild) {
+      setSelectedGuild(manageableGuilds[0]);
     }
   }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
@@ -303,6 +311,12 @@ export default function ModerationCenterPage() {
   // Charger les données de la guilde
   const fetchOverview = useCallback(async () => {
     if (!selectedGuild) return;
+    if (botGuildIds && !botGuildIds.includes(selectedGuild.id)) {
+      setCases([]);
+      setTotalCasesCount(0);
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     if (BOT_API_URL) {
       try {
@@ -334,7 +348,7 @@ export default function ModerationCenterPage() {
         // Offline fallback
       }
     }
-  }, [selectedGuild, filterAction, filterStatus, filterSource, searchQuery]);
+  }, [selectedGuild, botGuildIds, filterAction, filterStatus, filterSource, searchQuery]);
 
   useEffect(() => {
     fetchOverview();
@@ -490,7 +504,14 @@ export default function ModerationCenterPage() {
           {/* Actions Header (Sélecteur, Signalements, Actualiser, Nouvelle Sanction) */}
           <div className="flex items-center flex-wrap gap-2 w-full sm:w-auto justify-end">
             {manageableGuilds.length > 0 && (
-              <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild?.id || ""}
+                onChange={(g) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
             )}
 
             <Link
@@ -556,6 +577,32 @@ export default function ModerationCenterPage() {
       {/* CONTENEUR PRINCIPAL SCROLLABLE */}
       <main className="flex-1 min-h-0 overflow-y-auto pb-36 px-4 sm:px-6 py-6 scrollbar-thin scrollbar-thumb-white/10">
         <div className="max-w-7xl mx-auto space-y-6">
+
+          {/* BANNIÈRE BOT NON INSTALLÉ */}
+          {selectedGuild && botGuildIds && !botGuildIds.includes(selectedGuild.id) && (
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <Bot className="h-5 w-5 text-amber-400 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-amber-200">
+                    Bot non présent sur ce serveur
+                  </p>
+                  <p className="text-xs text-amber-300/80">
+                    Pour accéder aux dossiers de modération, logs et sanctions pour <span className="font-semibold">{selectedGuild.name}</span>, invitez le bot avec les permissions requises.
+                  </p>
+                </div>
+              </div>
+              <a
+                href={BOT_INVITE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-semibold shrink-0 transition-colors"
+              >
+                <Bot className="h-3.5 w-3.5" />
+                Inviter le bot
+              </a>
+            </div>
+          )}
 
           {/* 5 OVERVIEW KPI STATS CARDS */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">

@@ -31679,10 +31679,62 @@ const v12833_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12833_de);
+const v12834_fr: ChangelogEntry = {
+  version: "v1.28.14",
+  date: "2026-09-22",
+  title: "Détection Universelle du Bot (Modération & Musique) & Sélecteur de Serveur",
+  items: [
+    "Centre de Modération (/discord/moderation) : détection de présence du bot avec auto-sélection intelligente, suspension des requêtes vers l'API et bannière d'invitation dédiée.",
+    "AutoMod (/discord/moderation/automod) : intégration de la détection de présence du bot et affichage d'une bannière d'invitation avec lien OAuth2 direct.",
+    "Signalements Membres (/discord/moderation/reports) : bannière d'invitation bot et synchronisation immédiate du choix de serveur.",
+    "Profil Disciplinaire (/discord/moderation/users/[userId]) : gestion propre des serveurs sans bot et ajout de la bannière d'invitation.",
+    "Centre Musical (/discord/music) : ajout du composant GuildSelector dans l'en-tête, remplacement du fetch inline par useBotGuildIds et suspension du polling avec bannière d'invitation lorsque le bot est absent.",
+  ],
+};
+
+const v12834_en: ChangelogEntry = {
+  version: "v1.28.14",
+  date: "2026-09-22",
+  title: "Universal Bot Presence Detection (Moderation & Music) & Guild Selector",
+  items: [
+    "Moderation Center (/discord/moderation): bot presence detection with smart auto-selection, API fetch guarding, and dedicated bot invite banner.",
+    "AutoMod (/discord/moderation/automod): integrated bot presence detection and OAuth2 invite banner when bot is absent.",
+    "User Reports (/discord/moderation/reports): bot invite banner and reliable server selector synchronization.",
+    "Disciplinary Profile (/discord/moderation/users/[userId]): clean handling of servers without the bot and invite banner.",
+    "Music Center (/discord/music): added GuildSelector in header, replaced inline presence fetch with useBotGuildIds, guarded polling and added bot invite banner.",
+  ],
+};
+
+const v12834_es: ChangelogEntry = {
+  version: "v1.28.14",
+  date: "2026-09-22",
+  title: "Detección Universal del Bot (Moderación y Música) y Selector de Servidor",
+  items: [
+    "Centro de Moderación (/discord/moderation): detección de presencia del bot con selección inteligente, protección de peticiones API y banner de invitación.",
+    "AutoMod (/discord/moderation/automod): integración de detección del bot y banner de invitación con enlace directo OAuth2.",
+    "Reportes de Usuarios (/discord/moderation/reports): banner de invitación del bot y sincronización fiable del selector.",
+    "Perfil Disciplinario (/discord/moderation/users/[userId]): gestión limpia de servidores sin bot y banner de invitación.",
+    "Centro Musical (/discord/music): incorporación de GuildSelector en la cabecera, uso de useBotGuildIds y banner de invitación con suspensión de sondeo.",
+  ],
+};
+
+const v12834_de: ChangelogEntry = {
+  version: "v1.28.14",
+  date: "2026-09-22",
+  title: "Universelle Bot-Erkennung (Moderation & Musik) & Serverauswahl",
+  items: [
+    "Moderationszentrum (/discord/moderation): Bot-Präsenzerkennung mit intelligenter Auto-Auswahl, API-Abfrageschutz und dediziertem Einladungsbanner.",
+    "AutoMod (/discord/moderation/automod): Integration der Bot-Erkennung und Einladungsbanner mit direktem OAuth2-Link.",
+    "Benutzermeldungen (/discord/moderation/reports): Bot-Einladungsbanner und zuverlässige Synchronisation der Serverauswahl.",
+    "Disziplinarprofil (/discord/moderation/users/[userId]): saubere Handhabung von Servern ohne Bot und Einladungsbanner.",
+    "Musikzentrum (/discord/music): GuildSelector in Kopfzeile integriert, useBotGuildIds verwendet und Polling-Stopp mit Einladungsbanner bei fehlendem Bot.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

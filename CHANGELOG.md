@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.14 — 2026-09-22
+
+**Détection Universelle du Bot (Modération & Musique) & Sélecteur de Serveur**
+
+- **Centre de Modération (`/discord/moderation`)** : détection de présence du bot avec auto-sélection intelligente (`userSelectedRef`), suspension des requêtes vers l'API et bannière d'invitation dédiée avec lien OAuth direct.
+- **AutoMod (`/discord/moderation/automod`)** : intégration de la détection de présence du bot et affichage d'une bannière d'invitation avec lien direct lorsque le bot n'est pas présent sur le serveur sélectionné.
+- **Signalements Membres (`/discord/moderation/reports`)** : bannière d'invitation du bot et fiabilisation du changement de serveur sans régression.
+- **Profil Disciplinaire (`/discord/moderation/users/[userId]`)** : gestion propre des serveurs sans bot et ajout de la bannière d'invitation.
+- **Centre Musical (`/discord/music`)** : ajout du composant `GuildSelector` dans l'en-tête pour changer de serveur à la volée, remplacement du fetch inline par `useBotGuildIds`, suspension du polling et affichage d'une bannière d'invitation lorsque le bot est absent.
+
 ## v1.28.13 — 2026-09-22
 
 **Harmonisation des Sélecteurs Discord & Améliorations Tâches et Scratchpad**

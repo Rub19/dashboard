@@ -11,6 +11,7 @@ import {
   User,
   Plus,
   X,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
@@ -19,6 +20,8 @@ import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 
 interface ModerationReport {
   id: string;
@@ -70,6 +73,7 @@ export default function ReportsCenterClient() {
 
   // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
   const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
   const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
@@ -79,12 +83,16 @@ export default function ReportsCenterClient() {
       const match = manageableGuilds.find((g) => g.id === queryGuildId);
       if (match) {
         appliedQueryGuild.current = queryGuildId;
+        userSelectedRef.current = true;
         setSelectedGuild(match);
         return;
       }
     }
-    if (!selectedGuild && botGuildIds !== null) {
-      setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+    if (!userSelectedRef.current && botGuildIds !== null) {
+      const picked = pickBotGuild(manageableGuilds, botGuildIds);
+      if (picked) setSelectedGuild(picked);
+    } else if (!selectedGuild) {
+      setSelectedGuild(manageableGuilds[0]);
     }
   }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
@@ -107,6 +115,11 @@ export default function ReportsCenterClient() {
 
   const fetchReports = useCallback(async () => {
     if (!selectedGuild) return;
+    if (botGuildIds && !botGuildIds.includes(selectedGuild.id)) {
+      setReports([]);
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     try {
       if (BOT_API_URL) {
@@ -130,7 +143,7 @@ export default function ReportsCenterClient() {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedGuild, selectedStatus]);
+  }, [selectedGuild, botGuildIds, selectedStatus]);
 
   useEffect(() => {
     fetchReports();
@@ -278,13 +291,46 @@ export default function ReportsCenterClient() {
             </button>
 
             {manageableGuilds.length > 0 && (
-              <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild?.id || ""}
+                onChange={(g) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
             )}
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 pt-6 space-y-6">
+        {/* BANNIÈRE BOT NON INSTALLÉ */}
+        {selectedGuild && botGuildIds && !botGuildIds.includes(selectedGuild.id) && (
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Bot className="h-5 w-5 text-amber-400 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-amber-200">
+                  Bot non présent sur ce serveur
+                </p>
+                <p className="text-xs text-amber-300/80">
+                  Pour accéder à la file des signalements membres sur <span className="font-semibold">{selectedGuild.name}</span>, invitez le bot.
+                </p>
+              </div>
+            </div>
+            <a
+              href={BOT_INVITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-semibold shrink-0 transition-colors"
+            >
+              <Bot className="h-3.5 w-3.5" />
+              Inviter le bot
+            </a>
+          </div>
+        )}
+
         {/* BARRE DE FILTRES ET RECHERCHE */}
         <div className="p-4 rounded-2xl bg-slate-900/50 border border-[var(--panel-border)] backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 w-full sm:w-auto">

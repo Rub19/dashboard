@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.9 — 2026-09-22
+
+**Correction Sélecteur de Serveur Anti-Raid & Déblocage d'Urgence des Invitations**
+
+- **Calcul de permissions 64-bit via `BigInt`** : correction du bug de débordement 32-bit de JavaScript dans la vérification de permissions Discord. Tous les serveurs gérables, y compris « ф LORD SUPRA ф », s'affichent désormais fidèlement dans le sélecteur `GuildSelector` de l'Anti-Raid et de tous les centres de modération.
+- **Mise en cache immédiate des serveurs avec bot (`localStorage`)** : persistance des serveurs détectés avec présence du bot Discord, éliminant tout scintillement ou déclassement vers « Sans le bot ».
+- **Désactivation par défaut du blocage d'invitations (`blockAllInvites: false`)** dans la configuration par défaut de l'Anti-Raid et dans les schémas Zod du bot Discord (`AntiRaidConfigSchema`, `AutoModConfigSchema`).
+- **Bouton d'urgence 1-clic « Tout Enlever (OFF) »** : ajout d'un bouton d'action d'urgence dans la barre rapide Anti-Raid pour forcer instantanément le déblocage de toutes les invitations avec synchronisation API vers le bot Discord (`/api/guilds/:guildId/anti-raid/unblock-invites`) et notification toast.
+- **Bannière d'alerte dynamique** : affichage d'une alerte visuelle animée dans la carte Raid Mode lorsque les invitations sont bloquées, permettant leur réactivation immédiate.
+
 ## v1.28.8 — 2026-09-22
 
 **Refonte Moderne du Bot Control Center (`/discord/bot`)**

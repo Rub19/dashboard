@@ -7,7 +7,7 @@ import { useSharedSpaces, useSpaceMembers, type SpaceMember } from "@/lib/hooks/
 import { useSpaceTasks } from "@/lib/hooks/useSpaceTasks";
 import { useSpaceEvents } from "@/lib/hooks/useSpaceEvents";
 import { useSpaceNotes } from "@/lib/hooks/useSpaceNotes";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, canManageGuild } from "@/lib/hooks/useDiscordOAuth";
 import FlatCard from "@/components/FlatCard";
 import Input from "@/components/Input";
 import Textarea from "@/components/Textarea";
@@ -18,20 +18,6 @@ import InviteMemberDialog from "@/components/spaces/InviteMemberDialog";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
-
-function canManageGuild(guild: { owner: boolean; permissions?: string }): boolean {
-  if (guild.owner) return true;
-  if (!guild.permissions) return false;
-  try {
-    const perms = BigInt(guild.permissions);
-    const admin = BigInt(8);
-    const manageGuild = BigInt(32);
-    return (perms & admin) === admin || (perms & manageGuild) === manageGuild;
-  } catch {
-    const num = Number(guild.permissions);
-    return (num & 8) === 8 || (num & 32) === 32;
-  }
-}
 
 const STATUS_LABEL: Record<SpaceMember["status"], string> = {
   pending: "En attente",

@@ -120,7 +120,7 @@ export const RaidModeConfigSchema = z.object({
   autoQuarantineJoins: z.boolean().default(true),
   requireVerification: z.boolean().default(true),
   lockdownDesignatedChannels: z.boolean().default(true),
-  blockAllInvites: z.boolean().default(true),
+  blockAllInvites: z.boolean().default(false),
   blockUnverifiedBots: z.boolean().default(true),
   increaseDetectionSensitivity: z.boolean().default(true),
   designatedChannelIds: z.array(z.string()).default([]),

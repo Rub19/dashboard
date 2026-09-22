@@ -4,9 +4,31 @@ import { useEffect, useState } from "react";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const CACHE_TTL_MS = 60_000;
+const BOT_GUILD_IDS_STORAGE_KEY = "ethone:discord:bot_guild_ids";
 
 interface GuildLike {
   id: string;
+}
+
+function getStoredBotGuildIds(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(BOT_GUILD_IDS_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed.map(String);
+    }
+  } catch {}
+  return [];
+}
+
+function saveStoredBotGuildIds(ids: string[]): void {
+  if (typeof window === "undefined" || ids.length === 0) return;
+  try {
+    const existing = new Set(getStoredBotGuildIds());
+    for (const id of ids) existing.add(id);
+    localStorage.setItem(BOT_GUILD_IDS_STORAGE_KEY, JSON.stringify(Array.from(existing)));
+  } catch {}
 }
 
 // Un seul appel par lot d'identifiants, partagé entre toutes les pages et tous les composants
@@ -29,6 +51,7 @@ async function fetchPresent(key: string): Promise<string[]> {
       const json = await res.json();
       const ids: string[] = Array.isArray(json?.present) ? json.present.map(String) : [];
       cache.set(key, { at: Date.now(), ids });
+      saveStoredBotGuildIds(ids);
       return ids;
     } catch {
       return [];
@@ -49,18 +72,31 @@ export function useBotGuildIds(guilds: GuildLike[] | undefined | null): string[]
   const key = (guilds ?? []).map((g) => g.id).join(",");
   const [ids, setIds] = useState<string[] | null>(() => {
     const hit = key ? cache.get(key) : undefined;
-    return hit && Date.now() - hit.at < CACHE_TTL_MS ? hit.ids : null;
+    if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.ids;
+    const stored = getStoredBotGuildIds();
+    if (stored.length > 0 && guilds && guilds.length > 0) {
+      const guildIdSet = new Set(guilds.map((g) => g.id));
+      const matching = stored.filter((id) => guildIdSet.has(id));
+      if (matching.length > 0) return matching;
+    }
+    return null;
   });
 
   useEffect(() => {
     if (!key) return;
     if (!BOT_API_URL) {
-      setIds([]);
+      setIds((prev) => prev || []);
       return;
     }
     let cancelled = false;
     fetchPresent(key).then((present) => {
-      if (!cancelled) setIds(present);
+      if (!cancelled) {
+        saveStoredBotGuildIds(present);
+        const stored = getStoredBotGuildIds();
+        const guildIdSet = new Set(key.split(",").filter(Boolean));
+        const combined = Array.from(new Set([...present, ...stored.filter((id) => guildIdSet.has(id))]));
+        setIds(combined);
+      }
     });
     return () => {
       cancelled = true;

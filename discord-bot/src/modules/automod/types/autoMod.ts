@@ -98,7 +98,7 @@ export const LinkDetectorConfigSchema = z.object({
 
 export const InviteDetectorConfigSchema = z.object({
   enabled: z.boolean().default(true),
-  blockAllInvites: z.boolean().default(true),
+  blockAllInvites: z.boolean().default(false),
   allowedGuildIds: z.array(z.string()).default([]),
   allowedChannelIds: z.array(z.string()).default([]),
   allowedRoleIds: z.array(z.string()).default([]),

@@ -197,5 +197,27 @@ export function createAntiRaidRouter(discordClient: Client) {
     }
   });
 
+  // 10. FORCER LE DÉBLOCAGE DES INVITATIONS (OFF)
+  router.post('/unblock-invites', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    try {
+      const current = raidConfigService.getConfig(guildId);
+      const updated = raidConfigService.updateConfig(guildId, {
+        raidMode: {
+          ...current.raidMode,
+          blockAllInvites: false,
+        },
+      });
+      emitConfigUpdated('antiRaid', guildId, updated, 'DASHBOARD', req.user?.id);
+      res.json({
+        success: true,
+        message: 'Blocage des invitations désactivé avec succès',
+        config: updated,
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur lors du déblocage des invitations' });
+    }
+  });
+
   return router;
 }

@@ -31276,6 +31276,11 @@ const v12826_de: ChangelogEntry = {
   ],
 };
 
+CHANGELOG_BY_LANG.fr.unshift(v12826_fr);
+CHANGELOG_BY_LANG.en.unshift(v12826_en);
+CHANGELOG_BY_LANG.es.unshift(v12826_es);
+CHANGELOG_BY_LANG.de.unshift(v12826_de);
+
 const v12827_fr: ChangelogEntry = {
   version: "v1.28.7",
   date: "2026-09-22",
@@ -31390,11 +31395,62 @@ CHANGELOG_BY_LANG.en.unshift(v12828_en);
 CHANGELOG_BY_LANG.es.unshift(v12828_es);
 CHANGELOG_BY_LANG.de.unshift(v12828_de);
 
+const v12829_fr: ChangelogEntry = {
+  version: "v1.28.9",
+  date: "2026-09-22",
+  title: "Correction Sélecteur de Serveur Anti-Raid & Déblocage d'Urgence des Invitations",
+  items: [
+    "Résolution du calcul de permissions 64-bit via BigInt : tous les serveurs gérables (y compris « ф LORD SUPRA ф ») apparaissent désormais correctement dans le sélecteur de l'Anti-Raid et des centres de modération.",
+    "Persistance et mise en cache immédiate des serveurs où le bot est installé (localStorage) garantissant un affichage instantané sous « LE BOT EST PRÉSENT » sans scintillement ni faux statuts.",
+    "Désactivation du blocage d'invitations par défaut (blockAllInvites: false) dans les schémas Anti-Raid et AutoMod du bot Discord.",
+    "Bouton d'urgence 1-clic « Tout Enlever (OFF) » dans la barre d'action rapide Anti-Raid pour lever instantanément le blocage de toutes les invitations avec synchronisation API immédiate vers le bot.",
+    "Bannière d'alerte visuelle dynamique sur la carte Raid Mode lorsque les invitations sont bloquées, permettant leur réactivation immédiate.",
+  ],
+};
 
-CHANGELOG_BY_LANG.fr.unshift(v12826_fr);
-CHANGELOG_BY_LANG.en.unshift(v12826_en);
-CHANGELOG_BY_LANG.es.unshift(v12826_es);
-CHANGELOG_BY_LANG.de.unshift(v12826_de);
+const v12829_en: ChangelogEntry = {
+  version: "v1.28.9",
+  date: "2026-09-22",
+  title: "Anti-Raid Server Selector Fix & Emergency Invite Unblock Action",
+  items: [
+    "Fixed 64-bit Discord permissions bitwise calculation with BigInt: all manageable servers (including 'ф LORD SUPRA ф') now display correctly across Anti-Raid and moderation centers.",
+    "Instant local storage caching for bot-installed guilds preventing flicker or incorrect 'Without bot' badges in GuildSelector.",
+    "Disabled invite blocking by default (blockAllInvites: false) across Anti-Raid and AutoMod bot schemas.",
+    "One-click emergency action button 'Tout Enlever (OFF)' in the Anti-Raid dashboard to instantly force-unblock all invites and sync with the bot API.",
+    "Dynamic alert banner in the Raid Mode card when invites are blocked, providing immediate one-click restore.",
+  ],
+};
+
+const v12829_es: ChangelogEntry = {
+  version: "v1.28.9",
+  date: "2026-09-22",
+  title: "Corrección del Selector Anti-Raid y Desbloqueo de Emergencia de Invitaciones",
+  items: [
+    "Cálculo de permisos de 64 bits con BigInt: todos los servidores gestionables (incluido 'ф LORD SUPRA ф') ahora se muestran correctamente en el selector de Anti-Raid y centros de moderación.",
+    "Caché instantánea en almacenamiento local de los servidores con el bot instalado para evitar parpadeos en el selector de servidores.",
+    "Desactivación del bloqueo de invitaciones por defecto (blockAllInvites: false) en los esquemas del bot.",
+    "Botón de emergencia en un clic 'Tout Enlever (OFF)' en el panel Anti-Raid para desbloquear inmediatamente todas las invitaciones.",
+    "Banner de alerta dinámica en el modo Raid cuando las invitaciones están bloqueadas para su restauración inmediata.",
+  ],
+};
+
+const v12829_de: ChangelogEntry = {
+  version: "v1.28.9",
+  date: "2026-09-22",
+  title: "Anti-Raid Serverauswahl-Korrektur & Notfall-Entsperrung von Einladungen",
+  items: [
+    "Korrektur der 64-Bit-Berechtigungsauswertung via BigInt: Alle verwaltbaren Server (einschließlich 'ф LORD SUPRA ф') erscheinen nun korrekt in der Anti-Raid- und Moderationsauswahl.",
+    "Sofortiges lokales Caching der Server mit installiertem Bot im localStorage zur Vermeidung von Flackern im Server-Selector.",
+    "Deaktivierung der standardmäßigen Einladungssperre (blockAllInvites: false) in den Anti-Raid- und AutoMod-Schemas.",
+    "1-Klick-Notfall-Button 'Tout Enlever (OFF)' im Anti-Raid-Dashboard zur sofortigen Aufhebung aller Einladungssperren mit Bot-API-Synchronisierung.",
+    "Dynamisches Warnbanner in der Raid-Modus-Karte bei gesperrten Einladungen zur schnellen Wiederherstellung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12829_fr);
+CHANGELOG_BY_LANG.en.unshift(v12829_en);
+CHANGELOG_BY_LANG.es.unshift(v12829_es);
+CHANGELOG_BY_LANG.de.unshift(v12829_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

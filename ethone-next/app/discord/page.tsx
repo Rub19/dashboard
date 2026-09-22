@@ -417,7 +417,17 @@ export default function DiscordDashboardPage() {
   // show an "invite" affordance on the rest. `botPresenceKnown` stays false when
   // the bot API is unreachable / not authenticated, so we don't wrongly label
   // every server "à ajouter".
-  const [botGuildIds, setBotGuildIds] = useState<Set<string>>(new Set());
+  const [botGuildIds, setBotGuildIds] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set();
+    try {
+      const stored = localStorage.getItem("ethone:discord:bot_guild_ids");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return new Set(parsed.map(String));
+      }
+    } catch {}
+    return new Set();
+  });
   const [botPresenceKnown, setBotPresenceKnown] = useState(false);
   // 401 du bot : la session Discord du BOT (cookie) est absente, distincte de la session du site.
   const [botAuthRequired, setBotAuthRequired] = useState(false);
@@ -456,6 +466,9 @@ export default function DiscordDashboardPage() {
         if (cancelled) return;
         const present: string[] = Array.isArray(res?.present) ? res.present.map(String) : [];
         setBotGuildIds(new Set(present));
+        try {
+          localStorage.setItem("ethone:discord:bot_guild_ids", JSON.stringify(present));
+        } catch {}
         const meta: Record<string, { memberCount: number | null }> = {};
         for (const d of Array.isArray(res?.details) ? res.details : []) {
           meta[String(d.id)] = { memberCount: typeof d.memberCount === "number" ? d.memberCount : null };

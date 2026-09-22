@@ -18,19 +18,12 @@ import {
   Plus,
   ChevronRight,
 } from "lucide-react";
-import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useGuildOverview } from "@/lib/hooks/useGuildOverview";
 import { GuildSelector } from "@/components/GuildSelector";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
-
-function canManageGuild(guild: DiscordGuild): boolean {
-  if (guild.owner) return true;
-  if (!guild.permissions) return false;
-  const num = Number(guild.permissions);
-  return (num & 8) === 8 || (num & 32) === 32;
-}
 
 function formatUptime(ms: number): string {
   const s = Math.floor((ms || 0) / 1000);
@@ -95,12 +88,18 @@ function CardError() {
 export default function OverviewClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
-  const botGuildIds = useBotGuildIds(profile?.guilds);
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
+
+  const botGuildIds = useBotGuildIds(allGuilds);
 
   const manageableGuilds: DiscordGuild[] = useMemo(() => {
-    if (!profile?.guilds) return [];
-    return profile.guilds.filter(canManageGuild);
-  }, [profile?.guilds]);
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
 
   // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
   const appliedQueryGuild = useRef<string | null>(null);

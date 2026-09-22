@@ -25,7 +25,7 @@ import {
   Save,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
-import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
@@ -245,7 +245,7 @@ const DEFAULT_ANTI_RAID_SETTINGS: AntiRaidSettings = {
     autoQuarantineJoins: true,
     requireVerification: true,
     lockdownDesignatedChannels: true,
-    blockAllInvites: true,
+    blockAllInvites: false,
     blockUnverifiedBots: true,
     autoExitMinutesWithoutActivity: 5,
     minDurationMinutes: 10,
@@ -314,18 +314,19 @@ export default function AntiRaidDashboardPage() {
   const searchParams = useSearchParams();
   const { success, error: showError, toggle } = useToast();
   const { profile } = useDiscordOAuth();
-  const botGuildIds = useBotGuildIds(profile?.guilds);
-
-  // Serveurs gérables (Admin / Owner)
-  const manageableGuilds: DiscordGuild[] = useMemo(() => {
-    if (!profile?.guilds) return [];
-    return profile.guilds.filter((g) => {
-      if (g.owner) return true;
-      if (!g.permissions) return false;
-      const num = Number(g.permissions);
-      return (num & 8) === 8 || (num & 32) === 32;
-    });
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
   }, [profile?.guilds]);
+
+  const botGuildIds = useBotGuildIds(allGuilds);
+
+  // Serveurs gérables (Admin / Owner / Bot présent)
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
 
   // Serveur actif sélectionné
   // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
@@ -657,6 +658,99 @@ export default function AntiRaidDashboardPage() {
     }
   };
 
+  // Forcer le déblocage de toutes les invitations (OFF)
+  const handleForceUnblockInvites = async () => {
+    if (!selectedGuild) return;
+    setIsActionLoading(true);
+    try {
+      // 1. Mise à jour immédiate de l'état
+      setSettings((prev) => ({
+        ...prev,
+        raidMode: { ...prev.raidMode, blockAllInvites: false },
+      }));
+
+      // 2. Appel API vers le bot
+      if (BOT_API_URL) {
+        try {
+          const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/unblock-invites`, {
+            credentials: "include",
+            method: "POST",
+          });
+          if (!res.ok) {
+            await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/config`, {
+              credentials: "include",
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                raidMode: {
+                  ...settings.raidMode,
+                  blockAllInvites: false,
+                },
+              }),
+            });
+          }
+        } catch {}
+      }
+
+      // 3. Persistance localStorage
+      try {
+        const saved = localStorage.getItem(`ethone:anti-raid:${selectedGuild.id}`);
+        const parsed = saved ? JSON.parse(saved) : settings;
+        parsed.raidMode = { ...parsed.raidMode, blockAllInvites: false };
+        localStorage.setItem(`ethone:anti-raid:${selectedGuild.id}`, JSON.stringify(parsed));
+      } catch {}
+
+      success(
+        "Invitations débloquées",
+        "Le blocage des invitations a été désactivé (OFF). Les liens d'invitation sont de nouveau actifs."
+      );
+    } catch {
+      showError("Erreur lors du déblocage des invitations.");
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const handleToggleBlockInvites = async () => {
+    if (!selectedGuild) return;
+    const next = !settings.raidMode.blockAllInvites;
+    setSettings((prev) => ({
+      ...prev,
+      raidMode: { ...prev.raidMode, blockAllInvites: next },
+    }));
+
+    if (BOT_API_URL) {
+      try {
+        await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/config`, {
+          credentials: "include",
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            raidMode: {
+              ...settings.raidMode,
+              blockAllInvites: next,
+            },
+          }),
+        });
+      } catch {}
+    }
+
+    try {
+      const saved = localStorage.getItem(`ethone:anti-raid:${selectedGuild.id}`);
+      const parsed = saved ? JSON.parse(saved) : settings;
+      parsed.raidMode = { ...parsed.raidMode, blockAllInvites: next };
+      localStorage.setItem(`ethone:anti-raid:${selectedGuild.id}`, JSON.stringify(parsed));
+    } catch {}
+
+    toggle(
+      "Blocage des invitations",
+      next,
+      next
+        ? "Activé — Toutes les invitations vers le serveur sont temporairement bloquées."
+        : "Désactivé — Les invitations vers le serveur sont de nouveau actives."
+    );
+  };
+
   const threat = THREAT_COLORS[metrics.threatLevel] || THREAT_COLORS.SAFE;
 
   return (
@@ -892,29 +986,17 @@ export default function AntiRaidDashboardPage() {
               </button>
 
               <button
-                onClick={() => {
-                  const next = !settings.raidMode.blockAllInvites;
-                  setSettings((prev) => ({
-                    ...prev,
-                    raidMode: { ...prev.raidMode, blockAllInvites: next },
-                  }));
-                  toggle(
-                    "Blocage des invitations",
-                    next,
-                    next
-                      ? "Activé — Toutes les invitations vers le serveur sont temporairement bloquées."
-                      : "Désactivé — Les invitations vers le serveur sont de nouveau actives."
-                  );
-                }}
+                onClick={handleToggleBlockInvites}
+                disabled={isActionLoading}
                 className={cn(
                   "px-3 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 cursor-pointer",
                   settings.raidMode.blockAllInvites
-                    ? "bg-purple-500/10 border-purple-500/30 text-purple-300"
-                    : "bg-white/[0.04] border-[var(--panel-border)] text-white/70 hover:bg-white/[0.08]"
+                    ? "bg-purple-500/10 border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
+                    : "bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20"
                 )}
               >
                 <Radio className="w-3.5 h-3.5" />
-                {settings.raidMode.blockAllInvites ? "Invites Bloquées (ON)" : "Bloquer Invites (OFF)"}
+                {settings.raidMode.blockAllInvites ? "Invites Bloquées (ON)" : "Invites Actives (OFF)"}
               </button>
 
               <button
@@ -928,7 +1010,38 @@ export default function AntiRaidDashboardPage() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] text-white/75 pt-1 border-t border-[var(--panel-border)] font-mono">
+            {/* Bouton d'urgence / statut du blocage des invitations */}
+            {settings.raidMode.blockAllInvites ? (
+              <div className="mt-2.5 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-between gap-2.5 text-xs">
+                <div className="flex items-center gap-2 text-rose-200">
+                  <Radio className="w-4 h-4 text-rose-400 shrink-0 animate-pulse" />
+                  <span className="text-[11px] leading-tight">
+                    <strong>Invites bloquées :</strong> Nouveaux arrivants rejetés.
+                  </span>
+                </div>
+                <button
+                  onClick={handleForceUnblockInvites}
+                  disabled={isActionLoading}
+                  className="px-2.5 py-1.5 rounded-lg bg-rose-500/30 hover:bg-rose-500/40 border border-rose-500/50 text-rose-100 font-bold transition-all text-[11px] shrink-0 cursor-pointer flex items-center gap-1 shadow-sm"
+                  title="Force immédiatement le déblocage de toutes les invitations (OFF)"
+                >
+                  <Unlock className="w-3.5 h-3.5" />
+                  Tout Enlever (OFF)
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleForceUnblockInvites}
+                disabled={isActionLoading}
+                className="mt-2 w-full py-1.5 px-3 rounded-xl border border-white/10 bg-white/[0.03] text-white/70 hover:text-white hover:bg-white/[0.06] text-[11px] font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                title="Garantit que toutes les invitations sont actives et débloquées"
+              >
+                <Unlock className="w-3 h-3 text-emerald-400" />
+                Forcer Invitations en OFF (Débloqué)
+              </button>
+            )}
+
+            <div className="flex items-center justify-between text-[11px] text-white/75 pt-1 border-t border-[var(--panel-border)] font-mono mt-2">
               <span>Salons verrouillés : {metrics.lockedChannelsCount}</span>
               <span>Quarantaine : {metrics.quarantinedMembersCount}</span>
             </div>

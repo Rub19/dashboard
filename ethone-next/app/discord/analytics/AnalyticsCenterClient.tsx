@@ -22,7 +22,7 @@ import {
   WifiOff,
   User as UserIcon,
 } from "lucide-react";
-import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -152,17 +152,18 @@ const INSIGHT_ICON: Record<AutomaticInsight["type"], typeof TrendingUp> = {
 export default function AnalyticsCenterClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
-  const botGuildIds = useBotGuildIds(profile?.guilds);
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
+
+  const botGuildIds = useBotGuildIds(allGuilds);
 
   const manageableGuilds: DiscordGuild[] = useMemo(() => {
-    if (!profile?.guilds) return [];
-    return profile.guilds.filter((g) => {
-      if (g.owner) return true;
-      if (!g.permissions) return false;
-      const num = Number(g.permissions);
-      return (num & 8) === 8 || (num & 32) === 32;
-    });
-  }, [profile?.guilds]);
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
 
   const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);

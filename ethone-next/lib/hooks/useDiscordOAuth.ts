@@ -265,3 +265,38 @@ export function useDiscordOAuth() {
     refetch: fetchProfile,
   };
 }
+
+/**
+ * Vérifie si un utilisateur peut gérer un serveur Discord (Owner, Admin 0x8 ou ManageGuild 0x20).
+ * Gère correctement les permissions 64-bit via BigInt pour éviter le débordement 32-bit de JS.
+ */
+export function canManageGuild(guild: { owner?: boolean; permissions?: string | number | bigint }): boolean {
+  if (guild.owner) return true;
+  if (guild.permissions !== undefined && guild.permissions !== null && guild.permissions !== "") {
+    try {
+      const perms = BigInt(guild.permissions);
+      const admin = BigInt(8);
+      const manageGuild = BigInt(32);
+      return (perms & admin) === admin || (perms & manageGuild) === manageGuild;
+    } catch {
+      const num = Number(guild.permissions);
+      return (num & 8) === 8 || (num & 32) === 32;
+    }
+  }
+  return false;
+}
+
+/**
+ * Récupère la liste des serveurs stockés localement dans localStorage.
+ */
+export function getStoredDiscordGuilds(): DiscordGuild[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const stored = localStorage.getItem("ethone:discord:guilds");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return [];
+}

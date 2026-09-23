@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { ActivityEntry } from "@/lib/activity-journal";
@@ -8,6 +8,8 @@ import type { ActivityEntry } from "@/lib/activity-journal";
 export type ActivityHeatmapProps = {
   entries: ActivityEntry[];
   weeks?: number;
+  selectedDate?: Date | null;
+  onSelectDate?: (date: Date | null) => void;
 };
 
 type Cell = {
@@ -17,7 +19,7 @@ type Cell = {
 };
 
 const CELL = 12;
-const GAP = 5;
+const GAP = 6;
 const COL = CELL + GAP;
 
 export function startOfWeek(d: Date): Date {
@@ -35,8 +37,12 @@ export function addDays(d: Date, days: number): Date {
   return copy;
 }
 
-function isSameDay(d1: Date, d2: Date): boolean {
-  return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+export function isSameDay(d1: Date, d2: Date): boolean {
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
 }
 
 export function dateKey(iso = ""): string {
@@ -45,12 +51,23 @@ export function dateKey(iso = ""): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-export function heatLevelClass(count: number): string {
-  if (count === 0) return "bg-[var(--text-primary)]/[0.03] border border-[var(--text-primary)]/[0.05] rounded-sm";
-  if (count <= 2) return "bg-[var(--accent-primary)] border border-[var(--accent-primary)] rounded-sm";
-  if (count <= 5) return "bg-[var(--accent-primary)] border border-[var(--accent-primary)] rounded-sm";
-  if (count <= 9) return "bg-[var(--accent-primary)] rounded-sm shadow-[0_0_6px_var(--glow-color)]";
-  return "bg-[var(--accent-primary)] rounded-sm shadow-[0_0_10px_var(--glow-color)]";
+export function heatLevelClass(count: number, isSelected = false): string {
+  if (isSelected) {
+    return "bg-[var(--accent-primary)] ring-2 ring-white dark:ring-zinc-100 ring-offset-1 ring-offset-[var(--bg-main)] shadow-[0_0_8px_var(--glow-color)] rounded-sm";
+  }
+  if (count === 0) {
+    return "bg-[var(--text-primary)]/[0.04] border border-[var(--text-primary)]/[0.06] rounded-sm hover:border-[var(--text-primary)]/20";
+  }
+  if (count <= 2) {
+    return "bg-[var(--accent-primary)]/30 border border-[var(--accent-primary)]/40 rounded-sm hover:brightness-110";
+  }
+  if (count <= 5) {
+    return "bg-[var(--accent-primary)]/60 border border-[var(--accent-primary)]/70 rounded-sm hover:brightness-110";
+  }
+  if (count <= 9) {
+    return "bg-[var(--accent-primary)]/85 border border-[var(--accent-primary)]/90 rounded-sm shadow-[0_0_6px_var(--glow-color)] hover:brightness-110";
+  }
+  return "bg-[var(--accent-primary)] border border-[var(--accent-primary)] rounded-sm shadow-[0_0_10px_var(--glow-color)] hover:brightness-110";
 }
 
 function useLocale(): string {
@@ -58,17 +75,31 @@ function useLocale(): string {
   return i18n("daysShort")?.includes(",") ? "fr" : "en";
 }
 
-export default function ActivityHeatmap({ entries, weeks = 53 }: ActivityHeatmapProps) {
+export default function ActivityHeatmap({
+  entries,
+  weeks = 53,
+  selectedDate = null,
+  onSelectDate,
+}: ActivityHeatmapProps) {
   const i18n = useI18n();
   const locale = useLocale();
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const today = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
 
-  const endDate = addDays(startOfWeek(today), 6);
-  const startDate = addDays(endDate, -(weeks * 7) + 1);
+  // Automatically scroll to the most recent week (today) on mount or period change
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+    }
+  }, [weeks]);
+
+  const endDate = useMemo(() => addDays(startOfWeek(today), 6), [today]);
+  const startDate = useMemo(() => addDays(endDate, -(weeks * 7) + 1), [endDate, weeks]);
 
   const counts = useMemo(() => {
     const map = new Map<string, number>();
@@ -135,17 +166,15 @@ export default function ActivityHeatmap({ entries, weeks = 53 }: ActivityHeatmap
   }
 
   return (
-    <div className="relative w-full overflow-x-auto [&::-webkit-scrollbar]:hidden">
+    <div ref={scrollRef} className="relative w-full overflow-x-auto os-scroll pb-1">
       <div className="min-w-max">
-        {/* Month labels */}
-        <div className="mb-1.5 ml-7 flex h-4 gap-1.5" style={{ width: weeks * COL }}>
+        {/* Month labels positioned directly above their respective start weeks */}
+        <div className="relative mb-2 ml-8 h-4 text-[10px] font-medium uppercase text-[var(--text-muted)]" style={{ width: weeks * COL }}>
           {monthLabels.map((m, i) => (
             <span
               key={i}
-              className="text-[10px] font-medium uppercase text-[var(--text-muted)]"
-              style={{
-                marginLeft: i === 0 ? m.index * COL : undefined,
-              }}
+              className="absolute select-none whitespace-nowrap"
+              style={{ left: m.index * COL }}
             >
               {m.label}
             </span>
@@ -153,47 +182,82 @@ export default function ActivityHeatmap({ entries, weeks = 53 }: ActivityHeatmap
         </div>
 
         <div className="flex gap-1.5">
-          {/* Day labels */}
-          <div className="mr-2 flex w-5 flex-col items-end gap-1.5 py-0.5">
-            {dayLabels.map((label, i) => (
-              <span key={i} className="h-3 text-[9px] leading-3 text-[var(--text-muted)]">
-                {label}
-              </span>
-            ))}
+          {/* Day labels: exactly aligned with the 7 rows (Mon, Wed, Fri) */}
+          <div className="mr-1 grid grid-rows-7 gap-1.5 py-0.5 w-6 text-right">
+            <span className="h-3 text-[9px] leading-3 text-[var(--text-muted)] select-none">{dayLabels[0]}</span>
+            <span className="h-3" />
+            <span className="h-3 text-[9px] leading-3 text-[var(--text-muted)] select-none">{dayLabels[1]}</span>
+            <span className="h-3" />
+            <span className="h-3 text-[9px] leading-3 text-[var(--text-muted)] select-none">{dayLabels[2]}</span>
+            <span className="h-3" />
+            <span className="h-3" />
           </div>
 
           {/* Grid */}
           <div className="grid grid-flow-col gap-1.5">
             {grid.map((week, w) => (
               <div key={w} className="grid grid-rows-7 gap-1.5">
-                {week.map((cell, d) => (
-                  <motion.div
-                    key={d}
-                    whileHover={{ scale: 1.15 }}
-                    transition={{ duration: 0.15 }}
-                    onMouseEnter={(e) => showTooltip(cell, e)}
-                    onMouseMove={moveTooltip}
-                    onMouseLeave={hideTooltip}
-                    className={`h-3 w-3 cursor-pointer ${heatLevelClass(cell.count)} ${
-                      cell.isToday ? "ring-2 ring-[var(--accent-primary)] ring-offset-1 ring-offset-[var(--bg-main)]" : ""
-                    }`}
-                    aria-label={`${cell.count} ${i18n("journalContributions") || "contributions"} ${i18n("journalOnDate") || "le"} ${cell.date.toLocaleDateString()}`}
-                  />
-                ))}
+                {week.map((cell, d) => {
+                  const isSelected = selectedDate ? isSameDay(cell.date, selectedDate) : false;
+                  return (
+                    <motion.div
+                      key={d}
+                      whileHover={{ scale: 1.18 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ duration: 0.12 }}
+                      onMouseEnter={(e) => showTooltip(cell, e)}
+                      onMouseMove={moveTooltip}
+                      onMouseLeave={hideTooltip}
+                      onClick={() => {
+                        if (onSelectDate) {
+                          onSelectDate(isSelected ? null : cell.date);
+                        }
+                      }}
+                      className={`h-3 w-3 cursor-pointer transition-colors ${heatLevelClass(cell.count, isSelected)} ${
+                        cell.isToday && !isSelected
+                          ? "ring-1.5 ring-[var(--accent-primary)] ring-offset-1 ring-offset-[var(--bg-main)]"
+                          : ""
+                      }`}
+                      aria-label={`${cell.count} ${i18n("journalContributions") || "contributions"} ${i18n("journalOnDate") || "le"} ${cell.date.toLocaleDateString()}`}
+                    />
+                  );
+                })}
               </div>
             ))}
           </div>
         </div>
 
-        {/* Legend */}
-        <div className="mt-3 flex items-center justify-end gap-2 text-[10px] text-[var(--text-muted)]">
-          <span>{i18n("less") || "Moins"}</span>
-          <div className="flex gap-1">
-            {[0, 1, 3, 6, 10].map((c) => (
-              <div key={c} className={`h-3 w-3 ${heatLevelClass(c)}`} />
-            ))}
+        {/* Legend with interactive hint */}
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-[10px] text-[var(--text-muted)]">
+          <div className="text-[11px]">
+            {selectedDate ? (
+              <span className="inline-flex items-center gap-1.5 text-[var(--accent-primary)] font-medium">
+                <span>
+                  {i18n("filteredByDate") || "Filtré le"} : {selectedDate.toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "long" })}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onSelectDate?.(null)}
+                  className="ml-1 underline hover:text-[var(--text-primary)] cursor-pointer text-[10px]"
+                >
+                  ({i18n("reset") || "Réinitialiser"})
+                </button>
+              </span>
+            ) : (
+              <span className="opacity-75">
+                {i18n("clickToFilter") || "Cliquez sur un jour pour filtrer les entrées ci-dessous"}
+              </span>
+            )}
           </div>
-          <span>{i18n("more") || "Plus"}</span>
+          <div className="flex items-center gap-2">
+            <span>{i18n("less") || "Moins"}</span>
+            <div className="flex gap-1">
+              {[0, 1, 3, 6, 10].map((c) => (
+                <div key={c} className={`h-3 w-3 ${heatLevelClass(c)}`} />
+              ))}
+            </div>
+            <span>{i18n("more") || "Plus"}</span>
+          </div>
         </div>
       </div>
 
@@ -204,7 +268,7 @@ export default function ActivityHeatmap({ entries, weeks = 53 }: ActivityHeatmap
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.96 }}
             transition={{ duration: 0.12 }}
-            className="pointer-events-none fixed z-[var(--z-dock)] -translate-x-1/2 -translate-y-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/90 px-2.5 py-1.5 text-[11px] text-[var(--text-primary)] shadow-xl backdrop-blur-xl"
+            className="pointer-events-none fixed z-[var(--z-dock)] -translate-x-1/2 -translate-y-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 px-2.5 py-1.5 text-[11px] text-[var(--text-primary)] shadow-xl backdrop-blur-xl"
             style={{ left: tooltip.x, top: tooltip.y }}
           >
             <span className="font-semibold text-[var(--accent-primary)]">{tooltip.count}</span>{" "}

@@ -17,6 +17,7 @@ import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import { useToast } from "@/components/ToastProvider";
+import { formatFocusDuration } from "@/lib/focus-stats";
 import ActivityHeatmap, { dateKey, startOfWeek, addDays } from "./ActivityHeatmap";
 
 function capitalize(s: string): string {
@@ -294,6 +295,7 @@ export default function ActivityHub() {
   const [clearOpen, setClearOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState<"csv" | "json">("csv");
   const [selectedEvent, setSelectedEvent] = useState<ActivityEntry | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activeWorkspace, setActiveWorkspace] = useState<string>("all");
   const searchRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -346,6 +348,40 @@ export default function ActivityHub() {
     syncInterval: 30000,
   });
 
+  // Include focus session history from ethone-focus-history
+  const focusEntries = useMemo<ActivityEntry[]>(() => {
+    if (!mounted || typeof window === "undefined") return [];
+    try {
+      const raw = localStorage.getItem("ethone-focus-history");
+      if (!raw) return [];
+      const list = JSON.parse(raw);
+      if (!Array.isArray(list)) return [];
+      return list.map((f: { id: string; duration: number; preset?: string; goal?: string; completedAt: string }) => ({
+        id: `focus-${f.id}`,
+        source: "focus",
+        category: "work" as ActivityCategory,
+        icon: "focus",
+        title: f.goal ? `Focus : ${f.goal}` : `Session Focus (${formatFocusDuration(f.duration)})`,
+        description: `Session de concentration terminée (${formatFocusDuration(f.duration)}${f.preset ? `, mode ${f.preset}` : ""}).`,
+        timestamp: f.completedAt,
+        tone: "success",
+        eventType: "v8.space.focus",
+      }));
+    } catch {
+      return [];
+    }
+  }, [mounted]);
+
+  const allEntries = useMemo(() => {
+    const combined = [...entries, ...focusEntries];
+    const seen = new Set<string>();
+    return combined.filter((e) => {
+      if (!e?.id || seen.has(e.id)) return false;
+      seen.add(e.id);
+      return true;
+    });
+  }, [entries, focusEntries]);
+
   const periodDays = Number(period) || 365;
   const cutoff = useMemo(() => {
     const d = new Date();
@@ -355,7 +391,11 @@ export default function ActivityHub() {
   }, [periodDays]);
 
   const filteredEntries = useMemo(() => {
-    let list = entries.filter((e) => new Date(e.timestamp) >= cutoff);
+    let list = allEntries.filter((e) => new Date(e.timestamp) >= cutoff);
+    if (selectedDate) {
+      const targetKey = dateKey(selectedDate.toISOString());
+      list = list.filter((e) => dateKey(e.timestamp) === targetKey);
+    }
     if (activeChips.length > 0) {
       list = list.filter((e) => activeChips.some((id) => CATEGORY_CHIPS.find((c) => c.id === id)?.match(e)));
     }
@@ -370,30 +410,30 @@ export default function ActivityHub() {
       );
     }
     return list;
-  }, [entries, cutoff, activeChips, query]);
+  }, [allEntries, cutoff, selectedDate, activeChips, query]);
 
   const chipCounts = useMemo(() => {
     const counts = new Map<string, number>();
-    for (const e of entries) {
+    for (const e of allEntries) {
       if (new Date(e.timestamp) < cutoff) continue;
       for (const chip of CATEGORY_CHIPS) {
         if (chip.match(e)) counts.set(chip.id, (counts.get(chip.id) || 0) + 1);
       }
     }
     return counts;
-  }, [entries, cutoff]);
+  }, [allEntries, cutoff]);
 
   const todayDate = useMemo(() => today ?? new Date(0), [today]);
 
   const counts = useMemo(() => {
     const map = new Map<string, number>();
-    for (const e of entries) {
+    for (const e of allEntries) {
       const key = dateKey(e.timestamp);
       if (!key) continue;
       map.set(key, (map.get(key) || 0) + 1);
     }
     return map;
-  }, [entries]);
+  }, [allEntries]);
 
   const stats = useMemo(() => {
     const todayKey = dateKey(todayDate.toISOString());
@@ -711,16 +751,40 @@ export default function ActivityHub() {
         <div className="space-y-4 lg:col-span-2">
           {/* Heatmap */}
           <Card padding="md">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("activityHeatmap", "Activité")}</h2>
-          <span className="text-[10px] text-[var(--text-muted)]">{i18n("activityLastDays", "{{count}} derniers jours").replace("{{count}}", String(periodDays))}</span>
-        </div>
-        {mounted ? (
-          <ActivityHeatmap entries={entries} weeks={weeksForPeriod(periodDays)} />
-        ) : (
-          <div className="h-40 animate-pulse rounded-xl bg-[var(--text-primary)]/[0.04]" />
-        )}
-      </Card>
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("activityHeatmap", "Carte d'activité")}</h2>
+                <p className="text-[11px] text-[var(--text-muted)]">
+                  {i18n("activityHeatmapSubtitle") || "Visualisez vos contributions, sessions de travail et actions au cours du temps"}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                {selectedDate && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDate(null)}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 px-2.5 py-0.5 text-[11px] font-medium text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20 transition-colors cursor-pointer"
+                  >
+                    <span>{selectedDate.toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span>
+                    <span className="text-[10px] opacity-70">✕</span>
+                  </button>
+                )}
+                <span className="text-[10px] font-medium text-[var(--text-muted)]">
+                  {i18n("activityLastDays", "{{count}} derniers jours").replace("{{count}}", String(periodDays))}
+                </span>
+              </div>
+            </div>
+            {mounted ? (
+              <ActivityHeatmap
+                entries={allEntries}
+                weeks={weeksForPeriod(periodDays)}
+                selectedDate={selectedDate}
+                onSelectDate={setSelectedDate}
+              />
+            ) : (
+              <div className="h-40 animate-pulse rounded-xl bg-[var(--text-primary)]/[0.04]" />
+            )}
+          </Card>
 
       {/* Toolbar */}
       <div className="v8-panel p-4">
@@ -825,17 +889,31 @@ export default function ActivityHub() {
               <Icon name="inbox" pack="phosphor" className="h-6 w-6" />
             </div>
             <h3 className="text-sm font-semibold text-[var(--text-primary)]">
-              {i18n("activityEmptyTitle", "Aucune activité pour le moment")}
+              {selectedDate
+                ? `Aucune activité le ${selectedDate.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" })}`
+                : i18n("activityEmptyTitle", "Aucune activité pour le moment")}
             </h3>
             <p className="mt-1 max-w-sm text-xs text-[var(--text-muted)]">
-              {i18n("activityEmptyDescription", "Votre activité ETHONE apparaîtra ici lorsque vous commencerez à utiliser vos services.")}
+              {selectedDate
+                ? "Aucune contribution, session de travail ou action n'a été enregistrée pour ce jour."
+                : i18n("activityEmptyDescription", "Votre activité ETHONE apparaîtra ici lorsque vous commencerez à utiliser vos services.")}
             </p>
-            <a
-              href="/dashboard"
-              className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)]/10 px-3.5 py-2 text-xs font-medium text-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary)]/20"
-            >
-              {i18n("exploreEthone", "Explorer ETHONE")}
-            </a>
+            {selectedDate ? (
+              <button
+                type="button"
+                onClick={() => setSelectedDate(null)}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)]/10 px-3.5 py-2 text-xs font-medium text-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary)]/20 cursor-pointer"
+              >
+                Afficher toute l'activité
+              </button>
+            ) : (
+              <a
+                href="/dashboard"
+                className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)]/10 px-3.5 py-2 text-xs font-medium text-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary)]/20"
+              >
+                {i18n("exploreEthone", "Explorer ETHONE")}
+              </a>
+            )}
           </div>
         ) : (
           <div className="space-y-5">

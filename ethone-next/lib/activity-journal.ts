@@ -57,7 +57,7 @@ export type ActivitySnapshot = {
 };
 
 const STORAGE_KEY = "ethone-activity-journal-v1";
-const MAX_ENTRIES = 120;
+const MAX_ENTRIES = 2000;
 const SYNC_BATCH_LIMIT = 50;
 
 const DB_EVENT_TYPES = new Set([
@@ -131,7 +131,7 @@ function saveState(state: JournalState) {
 
 export function derivedEntries(snapshot: ActivitySnapshot, nowIso: string): ActivityEntry[] {
   const entries: ActivityEntry[] = [];
-  (snapshot.notes || []).slice(0, 8).forEach((note) => {
+  (snapshot.notes || []).forEach((note) => {
     entries.push({
       id: `derived-note-${note.id}`,
       source: "notes",
@@ -144,7 +144,7 @@ export function derivedEntries(snapshot: ActivitySnapshot, nowIso: string): Acti
       eventType: "derived:note",
     });
   });
-  (snapshot.tasks || []).slice(0, 10).forEach((task) => {
+  (snapshot.tasks || []).forEach((task) => {
     entries.push({
       id: `derived-task-${task.id}`,
       source: "tasks",
@@ -157,7 +157,7 @@ export function derivedEntries(snapshot: ActivitySnapshot, nowIso: string): Acti
       eventType: "derived:task",
     });
   });
-  (snapshot.events || []).slice(0, 8).forEach((event) => {
+  (snapshot.events || []).forEach((event) => {
     entries.push({
       id: `derived-event-${event.id}`,
       source: "calendar",
@@ -170,7 +170,7 @@ export function derivedEntries(snapshot: ActivitySnapshot, nowIso: string): Acti
       eventType: "derived:event",
     });
   });
-  (snapshot.files || []).slice(0, 8).forEach((file) => {
+  (snapshot.files || []).forEach((file) => {
     entries.push({
       id: `derived-file-${file.id}`,
       source: "files",

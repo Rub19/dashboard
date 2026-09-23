@@ -32525,10 +32525,58 @@ const v12853_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12853_fr, v12852_fr, v12851_fr, v12850_fr, v12849_fr, v12848_fr, v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12853_en, v12852_en, v12851_en, v12850_en, v12849_en, v12848_en, v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12853_es, v12852_es, v12851_es, v12850_es, v12849_es, v12848_es, v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12853_de, v12852_de, v12851_de, v12850_de, v12849_de, v12848_de, v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+const v12854_fr: ChangelogEntry = {
+  version: "v1.28.34",
+  date: "2026-09-23",
+  title: "Refonte & Fiabilisation de la Carte Heatmap d'Activité",
+  items: [
+    "Alignement pixel-perfect des mois et jours : positionnement absolu exact des mois au-dessus de leur première semaine et grille de 7 lignes pour les jours (lun., mer., ven.).",
+    "Défilement automatique : la carte défile désormais automatiquement vers la droite à l'ouverture pour afficher immédiatement la semaine en cours et l'activité récente.",
+    "Filtrage interactif par jour : clic sur n'importe quel jour pour filtrer le journal d'activité en temps réel avec indicateur de sélection et réinitialisation en 1 clic.",
+    "Intégration des sessions Focus & suppression des limites : agrégation de l'historique Focus et suppression des limitations artificielles pour refléter toute l'activité réelle.",
+  ],
+};
+
+const v12854_en: ChangelogEntry = {
+  version: "v1.28.34",
+  date: "2026-09-23",
+  title: "Overhaul & Reliability of the Activity Heatmap",
+  items: [
+    "Pixel-perfect month & day alignment: exact absolute positioning of month labels above their start weeks and 7-row grid for weekdays (Mon, Wed, Fri).",
+    "Auto-scroll to today: the heatmap now automatically scrolls to the right on load to immediately display current and recent weeks.",
+    "Interactive day filtering: click on any day to filter the activity timeline in real-time with selection ring and 1-click reset.",
+    "Focus sessions integration & removed limits: aggregate Focus history and lifted artificial snapshot slices to reflect all real user activity.",
+  ],
+};
+
+const v12854_es: ChangelogEntry = {
+  version: "v1.28.34",
+  date: "2026-09-23",
+  title: "Revisión y Fiabilidad del Mapa de Calor de Actividad",
+  items: [
+    "Alineación perfecta de meses y días: posicionamiento absoluto exacto de los meses y cuadrícula de 7 filas para los días de la semana.",
+    "Desplazamiento automático al día de hoy: la vista se desplaza automáticamente a la derecha al cargar para mostrar las semanas recientes.",
+    "Filtrado interactivo por día: clic en cualquier día para filtrar el historial de actividad en tiempo real con indicador y botón de reinicio.",
+    "Integración de sesiones Focus y eliminación de límites: inclusión del historial Focus y eliminación de restricciones para reflejar toda la actividad.",
+  ],
+};
+
+const v12854_de: ChangelogEntry = {
+  version: "v1.28.34",
+  date: "2026-09-23",
+  title: "Überarbeitung & Zuverlässigkeit der Aktivitäts-Heatmap",
+  items: [
+    "Pixelgenaue Monats- und Tagesausrichtung: Exakte Positionierung der Monatsbeschriftungen und 7-Zeilen-Raster für Wochentage.",
+    "Automatisches Scrollen zu heute: Die Heatmap scrollt beim Laden automatisch nach rechts, um aktuelle Wochen anzuzeigen.",
+    "Interaktive Tagesfilterung: Klick auf einen Tag filtert die Aktivitäts-Timeline in Echtzeit mit Auswahlanzeige.",
+    "Integration von Focus-Sessions & Aufhebung von Limits: Einbindung der Focus-Historie und Entfernung künstlicher Beschränkungen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12854_fr, v12853_fr, v12852_fr, v12851_fr, v12850_fr, v12849_fr, v12848_fr, v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12854_en, v12853_en, v12852_en, v12851_en, v12850_en, v12849_en, v12848_en, v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12854_es, v12853_es, v12852_es, v12851_es, v12850_es, v12849_es, v12848_es, v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12854_de, v12853_de, v12852_de, v12851_de, v12850_de, v12849_de, v12848_de, v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

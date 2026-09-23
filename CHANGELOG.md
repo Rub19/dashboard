@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.34 — 2026-09-23
+
+### Refonte & Fiabilisation de la Carte Heatmap d'Activité
+- **Alignement pixel-perfect des mois et jours (`ethone-next/components/ActivityHeatmap.tsx`)** : Correction du décalage critique des étiquettes de mois (qui étaient toutes entassées sur la gauche) en les positionnant de manière absolue au-dessus de leur semaine de début exacte. Correction de l'alignement vertical des jours en utilisant une grille de 7 lignes pour faire correspondre « lun. », « mer. » et « ven. » aux bonnes lignes de la semaine.
+- **Défilement automatique à l'ouverture** : La carte d'activité défile désormais automatiquement vers la droite au chargement afin de présenter immédiatement la semaine en cours et l'activité récente sans obliger l'utilisateur à faire défiler manuellement 53 semaines.
+- **Filtrage interactif par jour (`ethone-next/components/ActivityHub.tsx`)** : Possibilité de cliquer sur n'importe quel jour de la heatmap pour filtrer instantanément le journal d'activité chronologique, avec anneau de sélection visuel, badge de filtre et réinitialisation en 1 clic.
+- **Intégration de l'historique Focus & suppression des limites (`ethone-next/lib/activity-journal.ts`)** : Agrégation directe des sessions Focus terminées (`ethone-focus-history`), suppression des limites artificielles (`slice(0, 8)`) sur les notes, tâches, événements et fichiers, et augmentation du plafond d'entrées du journal à 2000 afin de couvrir toute l'année.
+
+---
+
 ## v1.28.33 — 2026-09-23
 
 ### Rendu Markdown dans l'Aperçu & Briefing (HeroBriefingCard)

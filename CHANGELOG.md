@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.35 — 2026-09-23
+
+**Nouveau jeu d'icônes ETHONE, plus propre et cohérent**
+
+- La barre latérale et le hub des modules Discord utilisent maintenant un seul jeu d'icônes (Phosphor, style duotone : trait net et aplat léger) au lieu d'un mélange d'icônes de styles différents. Chaque module Discord a désormais sa propre icône : plus de doublons (Journal d'audit / Formulaires, Insights / Stats serveur, AI / Bot Control partageaient la même).
+- Les icônes sont téléchargées une seule fois depuis l'API Iconify puis embarquées dans le site (36 Ko) : aucun appel externe au chargement, aucun changement de sécurité. Pour changer une icône : modifier scripts/icon-set.config.json puis lancer node scripts/build-icon-set.mjs. Composant : EthoneIcon.
+
 ## v1.28.34 — 2026-09-23
 
 ### Refonte & Fiabilisation de la Carte Heatmap d'Activité

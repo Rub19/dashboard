@@ -5,28 +5,8 @@ import ClientImage from "@/components/ClientImage";
 import { cloneElement, memo, useMemo, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Home,
-  NotebookPen,
   CheckCircle2,
-  Target,
-  CalendarDays,
-  Folder,
-  Mail,
-  Brain,
-  Timer,
-  CloudSun,
-  Activity,
-  Plug,
-  Blocks,
-  Gamepad2,
-  Swords,
-  BarChart3,
-  LineChart,
   Settings,
-  Flame,
-  Layers,
-  Sparkles,
-  Users,
   PanelLeftClose,
   Loader2,
   AlertCircle,
@@ -44,7 +24,7 @@ import { ADMIN_EMAIL } from "@/lib/admin";
 import { useSyncStore } from "@/lib/stores/sync";
 import { cn } from "@/lib/utils";
 import BrandMark from "@/components/BrandMark";
-import DiscordIcon from "@/components/DiscordIcon";
+import { ethoneIcon } from "@/components/EthoneIcon";
 import {
   AnimatedSidebar,
   AnimatedSidebarContent,
@@ -57,6 +37,32 @@ import {
   useAnimatedSidebar,
   useAnimatedSidebarPanel,
 } from "@/components/motion/animated-sidebar";
+
+const SIDEBAR_ICONS = {
+  home: ethoneIcon("home"),
+  notes: ethoneIcon("notes"),
+  tasks: ethoneIcon("tasks"),
+  habits: ethoneIcon("habits"),
+  calendar: ethoneIcon("calendar"),
+  files: ethoneIcon("files"),
+  mail: ethoneIcon("mail"),
+  brain: ethoneIcon("brain"),
+  focus: ethoneIcon("focus"),
+  weather: ethoneIcon("weather"),
+  activity: ethoneIcon("activity"),
+  analytics: ethoneIcon("analytics"),
+  interactions: ethoneIcon("interactions"),
+  connections: ethoneIcon("connections"),
+  discord: ethoneIcon("discord"),
+  plugins: ethoneIcon("plugins"),
+  games: ethoneIcon("games"),
+  matches: ethoneIcon("matches"),
+  spaces: ethoneIcon("spaces"),
+  flows: ethoneIcon("flows"),
+  team: ethoneIcon("team"),
+  admin: ethoneIcon("admin"),
+  settings: ethoneIcon("settings"),
+};
 
 type AppItem = {
   id: string;
@@ -78,29 +84,29 @@ const SHORTCUTS: Record<string, string> = {
 };
 
 const APPS: AppItem[] = [
-  { id: "home", href: "/", icon: Home },
-  { id: "notes", href: "/notes/", icon: NotebookPen },
-  { id: "tasks", href: "/tasks/", icon: CheckCircle2 },
-  { id: "habits", href: "/habits/", icon: Target },
-  { id: "calendar", href: "/calendar/", icon: CalendarDays },
-  { id: "files", href: "/files/", icon: Folder },
-  { id: "mail", href: "/mail/", icon: Mail },
-  { id: "brain", href: "/brain/", icon: Brain },
-  { id: "focus", href: "/focus/", icon: Timer },
-  { id: "weather", href: "/weather/", icon: CloudSun },
-  { id: "activity", href: "/activity/", icon: Activity },
-  { id: "analytics", href: "/analytics/", icon: LineChart },
-  { id: "interactions", href: "/interactions/", icon: Flame },
-  { id: "connections", href: "/connections/", icon: Plug },
-  { id: "discord", href: "/discord/", icon: DiscordIcon },
-  { id: "plugins", href: "/plugins/", icon: Blocks },
-  { id: "games", href: "/games/", icon: Gamepad2 },
-  { id: "matches", href: "/matches/", icon: Swords },
-  { id: "spaces", href: "/spaces/", icon: Layers },
-  { id: "flows", href: "/flows/", icon: Sparkles },
-  { id: "team", href: "/team/", icon: Users },
-  { id: "admin", href: "/admin/", icon: BarChart3 },
-  { id: "settings", href: "/settings/", icon: Settings },
+  { id: "home", href: "/", icon: SIDEBAR_ICONS.home },
+  { id: "notes", href: "/notes/", icon: SIDEBAR_ICONS.notes },
+  { id: "tasks", href: "/tasks/", icon: SIDEBAR_ICONS.tasks },
+  { id: "habits", href: "/habits/", icon: SIDEBAR_ICONS.habits },
+  { id: "calendar", href: "/calendar/", icon: SIDEBAR_ICONS.calendar },
+  { id: "files", href: "/files/", icon: SIDEBAR_ICONS.files },
+  { id: "mail", href: "/mail/", icon: SIDEBAR_ICONS.mail },
+  { id: "brain", href: "/brain/", icon: SIDEBAR_ICONS.brain },
+  { id: "focus", href: "/focus/", icon: SIDEBAR_ICONS.focus },
+  { id: "weather", href: "/weather/", icon: SIDEBAR_ICONS.weather },
+  { id: "activity", href: "/activity/", icon: SIDEBAR_ICONS.activity },
+  { id: "analytics", href: "/analytics/", icon: SIDEBAR_ICONS.analytics },
+  { id: "interactions", href: "/interactions/", icon: SIDEBAR_ICONS.interactions },
+  { id: "connections", href: "/connections/", icon: SIDEBAR_ICONS.connections },
+  { id: "discord", href: "/discord/", icon: SIDEBAR_ICONS.discord },
+  { id: "plugins", href: "/plugins/", icon: SIDEBAR_ICONS.plugins },
+  { id: "games", href: "/games/", icon: SIDEBAR_ICONS.games },
+  { id: "matches", href: "/matches/", icon: SIDEBAR_ICONS.matches },
+  { id: "spaces", href: "/spaces/", icon: SIDEBAR_ICONS.spaces },
+  { id: "flows", href: "/flows/", icon: SIDEBAR_ICONS.flows },
+  { id: "team", href: "/team/", icon: SIDEBAR_ICONS.team },
+  { id: "admin", href: "/admin/", icon: SIDEBAR_ICONS.admin },
+  { id: "settings", href: "/settings/", icon: SIDEBAR_ICONS.settings },
 ];
 
 import { motion } from "framer-motion";

@@ -32578,6 +32578,51 @@ CHANGELOG_BY_LANG.en.unshift(v12854_en, v12853_en, v12852_en, v12851_en, v12850_
 CHANGELOG_BY_LANG.es.unshift(v12854_es, v12853_es, v12852_es, v12851_es, v12850_es, v12849_es, v12848_es, v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
 CHANGELOG_BY_LANG.de.unshift(v12854_de, v12853_de, v12852_de, v12851_de, v12850_de, v12849_de, v12848_de, v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
+const v1_28_35_fr: ChangelogEntry = {
+  version: "v1.28.35",
+  date: "2026-09-23",
+  title: "Nouveau jeu d'icônes ETHONE, plus propre et cohérent",
+  items: [
+    "La barre latérale et le hub des modules Discord utilisent maintenant un seul jeu d'icônes (Phosphor, style duotone : trait net et aplat léger) au lieu d'un mélange d'icônes de styles différents. Chaque module Discord a désormais sa propre icône : plus de doublons (Journal d'audit / Formulaires, Insights / Stats serveur, AI / Bot Control partageaient la même).",
+    "Les icônes sont téléchargées une seule fois depuis l'API Iconify puis embarquées dans le site (36 Ko) : aucun appel externe au chargement, aucun changement de sécurité. Pour changer une icône : modifier scripts/icon-set.config.json puis lancer node scripts/build-icon-set.mjs. Composant : EthoneIcon.",
+  ],
+};
+
+const v1_28_35_en: ChangelogEntry = {
+  version: "v1.28.35",
+  date: "2026-09-23",
+  title: "New, cleaner and consistent ETHONE icon set",
+  items: [
+    "The sidebar and the Discord modules hub now use a single icon set (Phosphor, duotone style: crisp line with a light fill) instead of a mix of styles. Each Discord module now has its own icon: no more duplicates (Audit log / Forms, Insights / Server stats, AI / Bot Control shared the same one).",
+    "Icons are downloaded once from the Iconify API and then bundled into the site (36 KB): no external call at load time and no security change. To change an icon: edit scripts/icon-set.config.json then run node scripts/build-icon-set.mjs. Component: EthoneIcon.",
+  ],
+};
+
+const v1_28_35_es: ChangelogEntry = {
+  version: "v1.28.35",
+  date: "2026-09-23",
+  title: "Nuevo juego de iconos ETHONE, más limpio y coherente",
+  items: [
+    "La barra lateral y el hub de módulos de Discord usan ahora un único juego de iconos (Phosphor, estilo duotone: trazo nítido con un relleno suave) en lugar de una mezcla de estilos. Cada módulo de Discord tiene su propio icono: sin duplicados (Registro de auditoría / Formularios, Insights / Estadísticas del servidor, IA / Bot Control compartían el mismo).",
+    "Los iconos se descargan una sola vez de la API de Iconify y se incluyen en el sitio (36 KB): sin llamadas externas al cargar y sin cambios de seguridad. Para cambiar un icono: editar scripts/icon-set.config.json y ejecutar node scripts/build-icon-set.mjs. Componente: EthoneIcon.",
+  ],
+};
+
+const v1_28_35_de: ChangelogEntry = {
+  version: "v1.28.35",
+  date: "2026-09-23",
+  title: "Neues, saubereres und einheitliches ETHONE-Icon-Set",
+  items: [
+    "Die Seitenleiste und der Discord-Modul-Hub nutzen jetzt ein einziges Icon-Set (Phosphor, Duotone-Stil: klare Linie mit leichter Füllung) statt einer Mischung verschiedener Stile. Jedes Discord-Modul hat jetzt sein eigenes Icon: keine Duplikate mehr (Audit-Log / Formulare, Insights / Server-Statistiken, KI / Bot Control teilten sich dasselbe).",
+    "Die Icons werden einmal über die Iconify-API geladen und dann in die Seite eingebettet (36 KB): kein externer Aufruf beim Laden, keine Sicherheitsänderung. Icon ändern: scripts/icon-set.config.json bearbeiten und node scripts/build-icon-set.mjs ausführen. Komponente: EthoneIcon.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_35_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_35_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_35_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_35_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

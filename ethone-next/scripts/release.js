@@ -3,7 +3,8 @@
 const fs = require("fs");
 const [, , version, date, file] = process.argv;
 const rel = JSON.parse(fs.readFileSync(file, "utf8"));
-const id = "v" + version.replace(/\./g, "");
+// Identifiants avec « _ » : "v1_28_35" ne peut pas entrer en collision avec un ancien "v12835" (= 1.28.35 ou 1.2.835 ?).
+const id = "v" + version.replace(/\./g, "_");
 
 function rw(f, fn) {
   const raw = fs.readFileSync(f, "utf8");

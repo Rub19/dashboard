@@ -133,6 +133,26 @@ export async function verifyTotp(secret, code) {
   return matched;
 }
 
+/**
+ * Comme verifyTotp, mais renvoie le pas de temps accepté (ou null) et refuse tout pas <= lastStep :
+ * un même code TOTP ne peut donc servir qu'une seule fois (sinon il reste rejouable pendant ~90 s).
+ */
+export async function verifyTotpStep(secret, code, lastStep = -1) {
+  const now = Math.floor(Date.now() / 1000 / TOTP_PERIOD);
+  const keyBytes = base32Decode(secret);
+  const providedBytes = new TextEncoder().encode(String(code));
+  let matchedStep = null;
+  for (const delta of [-1, 0, 1]) {
+    const step = now + delta;
+    const expected = await hmacSha1(keyBytes, step);
+    // Pas d'arrêt anticipé : la comparaison reste en temps constant sur les trois fenêtres.
+    if (timingSafeEqual(new TextEncoder().encode(expected), providedBytes) && step > lastStep) {
+      if (matchedStep === null || step > matchedStep) matchedStep = step;
+    }
+  }
+  return matchedStep;
+}
+
 // Redeems one backup code against the set of hashes persisted for this user
 // (ethone_user_data.data.backup — see generateTotpSecret). Single-use: on a
 // match, the matched hash is removed from the returned list so the caller

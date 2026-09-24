@@ -142,6 +142,10 @@ function otpVerifyMock({ codeHash, usedAt = null, expiresAt = new Date(Date.now(
     const url = new URL(String(input));
     if (url.hostname !== "project-ref.supabase.co") return new Response("not found", { status: 404 });
     const method = init?.method || "GET";
+    // Le serveur retrouve toujours le compte à partir de l'e-mail (jamais d'un userId fourni par le client).
+    if (url.pathname === "/auth/v1/admin/users") {
+      return json({ users: [{ id: "4a8ad6a5-7f6e-4d41-9d07-28f6dca8719a", email: "qa@ethone.dev" }] });
+    }
     if (url.pathname === "/rest/v1/ethone_otp_codes" && method === "GET") {
       return json([{ id: "00000000-0000-4000-8000-000000000000", user_id: "4a8ad6a5-7f6e-4d41-9d07-28f6dca8719a", contact: "qa@ethone.dev", code_hash: codeHash, attempts: 0, expires_at: expiresAt, used_at: usedAt, created_at: new Date().toISOString() }]);
     }
@@ -212,6 +216,31 @@ test("otp verify resolves userId from email when the client didn't send one (e.g
   const body = await payload(response);
   assert.equal(body.data.verified, true);
   assert.equal(typeof body.data.token, "string");
+});
+
+test("otp verify IGNORES a client-supplied userId (no account takeover via someone else's id)", async () => {
+  const VICTIM_ID = "9b9b9b9b-9b9b-4b9b-8b9b-9b9b9b9b9b9b";
+  const ATTACKER_ID = "4a8ad6a5-7f6e-4d41-9d07-28f6dca8719a";
+  const otpQueries = [];
+  const base = otpVerifyMock({ codeHash: await hashOtp("123456") });
+  const fetchImpl = async (input, init) => {
+    const url = new URL(String(input));
+    if (url.pathname === "/rest/v1/ethone_otp_codes") otpQueries.push(url.search);
+    return base(input, init);
+  };
+  const env = testEnv({ __TEST_FETCH__: fetchImpl });
+  const response = await invoke("/api/auth/otp/verify", {
+    auth: false, env, headers: { "content-type": "application/json" }, method: "POST",
+    // L'attaquant contrôle l'e-mail (donc reçoit le code) mais prétend être la victime.
+    body: JSON.stringify({ userId: VICTIM_ID, email: "qa@ethone.dev", code: "123456", rememberMe: false }),
+  });
+  assert.equal(response.status, 200);
+  const lookups = otpQueries.filter((q) => q.includes("user_id="));
+  assert.ok(lookups.length > 0);
+  for (const q of lookups) {
+    assert.ok(q.includes(ATTACKER_ID), "le code doit être cherché pour le compte lié à l'e-mail");
+    assert.equal(q.includes(VICTIM_ID), false, "le userId envoyé par le client ne doit jamais être utilisé");
+  }
 });
 
 test("otp verify with no userId and an email with no account is a clean 404, not a 500", async () => {

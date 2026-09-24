@@ -73,7 +73,6 @@ export function createSyncRouter(): Router {
       success: true,
       data: {
         connectedClients: syncEngine.getConnectedClientsCount(),
-        ownerId: config.botOwnerId,
         timestamp: new Date().toISOString(),
       },
     });

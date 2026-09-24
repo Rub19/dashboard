@@ -32860,6 +32860,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_40_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_40_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_40_de);
 
+const v1_28_41_fr: ChangelogEntry = {
+  version: "v1.28.41",
+  date: "2026-09-24",
+  title: "Sécurité : 4 failles critiques corrigées (connexion, 2FA, API du bot)",
+  items: [
+    "Connexion par code e-mail : le serveur faisait confiance à l'identifiant de compte envoyé par le navigateur. Quelqu'un pouvait recevoir un code sur sa propre adresse en indiquant l'identifiant d'une autre personne, puis ouvrir la session de cette personne. L'identifiant est maintenant toujours retrouvé côté serveur à partir de l'e-mail.",
+    "API du bot : n'importe quel utilisateur connecté pouvait se faire passer pour le propriétaire du bot (redémarrage, changement d'avatar et de nom, diagnostics) en ajoutant un simple en-tête X-Bot-Owner. Ce contrôle est supprimé : seul l'identité de la session signée compte. La connexion de développement sans mot de passe ne fonctionne plus que si NODE_ENV=development, les origines localhost ne sont autorisées (avec cookies) que sur demande explicite, et la clé de signature des sessions n'a plus de valeur par défaut publique.",
+    "Double authentification : la désactiver exige maintenant un code de l'application (ou un code de secours) ; un code TOTP ne peut servir qu'une seule fois (plus de rejeu pendant 90 secondes) ; l'activation est limitée en nombre d'essais ; la désactivation est inscrite au journal de sécurité. Connexion Discord du bot : ajout d'un jeton « state » contre la connexion forcée (login CSRF).",
+    "L'API du bot envoie maintenant des en-têtes de sécurité (nosniff, anti-cadre, HSTS…), n'affiche plus « Express » et n'est plus mise en cache ; l'état de synchronisation ne révèle plus l'identifiant du propriétaire.",
+    "Correctifs : « Actualiser » de la vue d'ensemble d'un serveur (route inexistante côté bot, 404) et le portefeuille / « Réclamer mon quotidien » de l'économie (mauvaise adresse, 404) fonctionnent.",
+  ],
+};
+
+const v1_28_41_en: ChangelogEntry = {
+  version: "v1.28.41",
+  date: "2026-09-24",
+  title: "Security: 4 critical flaws fixed (login, 2FA, bot API)",
+  items: [
+    "Email-code login: the server trusted the account id sent by the browser. Someone could receive a code on their own address while naming another person's id, then open that person's session. The id is now always looked up server-side from the email.",
+    "Bot API: any signed-in user could impersonate the bot owner (restart, avatar and name change, diagnostics) by adding a simple X-Bot-Owner header. That check is removed: only the signed session identity counts. Password-less dev login only works with NODE_ENV=development, localhost origins are allowed (with cookies) only on explicit request, and the session signing key no longer has a public default.",
+    "Two-factor authentication: disabling it now requires a code from the app (or a backup code); a TOTP code can be used only once (no replay for 90 seconds); setup verification is attempt-limited; disabling is written to the security log. Bot Discord login: added a \"state\" token against forced login (login CSRF).",
+    "The bot API now sends security headers (nosniff, anti-framing, HSTS…), no longer advertises \"Express\" and is no longer cached; the sync status no longer reveals the owner id.",
+    "Fixes: the server overview \"Refresh\" (route missing on the bot, 404) and the economy wallet / \"Claim my daily\" (wrong address, 404) now work.",
+  ],
+};
+
+const v1_28_41_es: ChangelogEntry = {
+  version: "v1.28.41",
+  date: "2026-09-24",
+  title: "Seguridad: 4 fallos críticos corregidos (inicio de sesión, 2FA, API del bot)",
+  items: [
+    "Inicio de sesión con código por correo: el servidor confiaba en el id de cuenta enviado por el navegador. Alguien podía recibir un código en su propia dirección indicando el id de otra persona y abrir su sesión. El id se obtiene ahora siempre en el servidor a partir del correo.",
+    "API del bot: cualquier usuario conectado podía hacerse pasar por el propietario del bot (reinicio, cambio de avatar y nombre, diagnósticos) añadiendo una simple cabecera X-Bot-Owner. Esa comprobación se elimina: solo cuenta la identidad de la sesión firmada. El inicio de sesión de desarrollo sin contraseña solo funciona con NODE_ENV=development, los orígenes localhost solo se permiten (con cookies) bajo petición explícita y la clave de firma de sesiones ya no tiene un valor por defecto público.",
+    "Autenticación en dos pasos: desactivarla exige ahora un código de la aplicación (o de respaldo); un código TOTP solo sirve una vez (sin reutilización durante 90 segundos); la activación tiene límite de intentos; la desactivación queda en el registro de seguridad. Inicio de sesión de Discord del bot: añadido un token « state » contra el inicio forzado (login CSRF).",
+    "La API del bot envía ahora cabeceras de seguridad (nosniff, anti-marcos, HSTS…), ya no anuncia « Express » y no se guarda en caché; el estado de sincronización ya no revela el id del propietario.",
+    "Correcciones: « Actualizar » en la vista general del servidor (ruta inexistente en el bot, 404) y la cartera / « Reclamar mi diario » de la economía (dirección incorrecta, 404) funcionan.",
+  ],
+};
+
+const v1_28_41_de: ChangelogEntry = {
+  version: "v1.28.41",
+  date: "2026-09-24",
+  title: "Sicherheit: 4 kritische Lücken geschlossen (Anmeldung, 2FA, Bot-API)",
+  items: [
+    "Anmeldung per E-Mail-Code: Der Server vertraute der vom Browser gesendeten Konto-ID. Jemand konnte einen Code an die eigene Adresse erhalten, während er die ID einer anderen Person angab, und dann deren Sitzung öffnen. Die ID wird jetzt immer serverseitig aus der E-Mail ermittelt.",
+    "Bot-API: Jeder angemeldete Nutzer konnte sich mit einem einfachen X-Bot-Owner-Header als Bot-Besitzer ausgeben (Neustart, Avatar- und Namensänderung, Diagnosen). Diese Prüfung entfällt: Nur die Identität der signierten Sitzung zählt. Die passwortlose Entwickler-Anmeldung funktioniert nur mit NODE_ENV=development, localhost-Ursprünge sind (mit Cookies) nur auf ausdrücklichen Wunsch erlaubt, und der Sitzungsschlüssel hat keinen öffentlichen Standardwert mehr.",
+    "Zwei-Faktor-Authentifizierung: Zum Deaktivieren ist jetzt ein Code aus der App (oder ein Backup-Code) nötig; ein TOTP-Code gilt nur einmal (kein Wiederverwenden für 90 Sekunden); die Aktivierung ist versuchsbegrenzt; das Deaktivieren wird im Sicherheitsprotokoll vermerkt. Discord-Anmeldung des Bots: „state“-Token gegen erzwungene Anmeldung (Login-CSRF) ergänzt.",
+    "Die Bot-API sendet jetzt Sicherheits-Header (nosniff, Anti-Framing, HSTS…), nennt nicht mehr „Express“ und wird nicht mehr zwischengespeichert; der Sync-Status verrät die Besitzer-ID nicht mehr.",
+    "Korrekturen: „Aktualisieren“ in der Server-Übersicht (Route fehlte im Bot, 404) und Wallet / „Tägliche Belohnung abholen“ der Wirtschaft (falsche Adresse, 404) funktionieren.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_41_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_41_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_41_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_41_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

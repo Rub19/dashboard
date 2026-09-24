@@ -60,9 +60,23 @@ import { authMiddleware, requireBotOwner } from './middleware/auth.js';
 import { createGuildAuthMiddleware } from './middleware/guildAuth.js';
 import { requireSharedSpacesKey } from './middleware/internalAuth.js';
 import { rateLimit } from './middleware/antiAbuseMiddleware.js';
+import { BotTelemetryService } from '../modules/botControl/services/botTelemetryService.js';
 
 export function startWebServer(client: Client): http.Server {
   const app = express();
+
+  // Ne pas annoncer la technologie du serveur, et poser les en-têtes de sécurité de base sur toute réponse.
+  app.disable('x-powered-by');
+  app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    // Réponses d'API (sessions, données de serveurs) : jamais mises en cache par un navigateur ou un intermédiaire.
+    if (req.path.startsWith('/api')) res.setHeader('Cache-Control', 'no-store');
+    next();
+  });
 
   // Middleware de sécurité et parsing
   app.use(
@@ -71,8 +85,8 @@ export function startWebServer(client: Client): http.Server {
         config.dashboardUrl,
         'https://ethone.dev',
         'https://www.ethone.dev',
-        'http://localhost:5173',
-        'http://localhost:3000',
+        // Origines locales (avec cookies !) uniquement quand on le demande explicitement, jamais en production.
+        ...(process.env.ALLOW_LOCALHOST_CORS === 'true' ? ['http://localhost:5173', 'http://localhost:3000'] : []),
       ],
       credentials: true,
     })
@@ -85,6 +99,12 @@ export function startWebServer(client: Client): http.Server {
 
   // Enregistrement des routes API
   app.use('/api/auth', authRouter);
+
+  // Chiffres globaux du bot pour la vue d'ensemble d'un serveur (uniquement deux compteurs, pas de télémétrie).
+  app.get('/api/guilds/:guildId/bot/overview', authMiddleware, createGuildAuthMiddleware(client), (_req, res) => {
+    const snapshot = BotTelemetryService.getInstance().getTelemetrySnapshot(client);
+    res.json({ snapshot: { guildsCount: snapshot.guildsCount, cachedUsersCount: snapshot.cachedUsersCount } });
+  });
   app.use('/api/guilds', createGuildRouter(client));
   app.use('/api/guilds', createSettingsRouter(client));
   app.use('/api/guilds', createModuleRouter(client));

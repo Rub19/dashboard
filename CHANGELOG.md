@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.41 — 2026-09-24
+
+**Sécurité : 4 failles critiques corrigées (connexion, 2FA, API du bot)**
+
+- Connexion par code e-mail : le serveur faisait confiance à l'identifiant de compte envoyé par le navigateur. Quelqu'un pouvait recevoir un code sur sa propre adresse en indiquant l'identifiant d'une autre personne, puis ouvrir la session de cette personne. L'identifiant est maintenant toujours retrouvé côté serveur à partir de l'e-mail.
+- API du bot : n'importe quel utilisateur connecté pouvait se faire passer pour le propriétaire du bot (redémarrage, changement d'avatar et de nom, diagnostics) en ajoutant un simple en-tête X-Bot-Owner. Ce contrôle est supprimé : seul l'identité de la session signée compte. La connexion de développement sans mot de passe ne fonctionne plus que si NODE_ENV=development, les origines localhost ne sont autorisées (avec cookies) que sur demande explicite, et la clé de signature des sessions n'a plus de valeur par défaut publique.
+- Double authentification : la désactiver exige maintenant un code de l'application (ou un code de secours) ; un code TOTP ne peut servir qu'une seule fois (plus de rejeu pendant 90 secondes) ; l'activation est limitée en nombre d'essais ; la désactivation est inscrite au journal de sécurité. Connexion Discord du bot : ajout d'un jeton « state » contre la connexion forcée (login CSRF).
+- L'API du bot envoie maintenant des en-têtes de sécurité (nosniff, anti-cadre, HSTS…), n'affiche plus « Express » et n'est plus mise en cache ; l'état de synchronisation ne révèle plus l'identifiant du propriétaire.
+- Correctifs : « Actualiser » de la vue d'ensemble d'un serveur (route inexistante côté bot, 404) et le portefeuille / « Réclamer mon quotidien » de l'économie (mauvaise adresse, 404) fonctionnent.
+
 ## v1.28.40 — 2026-09-24
 
 **Sécurité de la base de données renforcée (2FA, journal, fonctions)**

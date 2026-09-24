@@ -153,7 +153,6 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
       const res = await fetch(`${BOT_API_URL}/api/bot/owner-shield/status`, {
         headers: {
           "Content-Type": "application/json",
-          "x-bot-owner": OWNER_DISCORD_ID,
         },
         credentials: "include",
       });
@@ -199,7 +198,6 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-bot-owner": OWNER_DISCORD_ID,
         },
         credentials: "include",
         body: JSON.stringify(partial),
@@ -226,7 +224,6 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-bot-owner": OWNER_DISCORD_ID,
         },
         credentials: "include",
       });
@@ -252,7 +249,6 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-bot-owner": OWNER_DISCORD_ID,
         },
         credentials: "include",
       });
@@ -277,7 +273,6 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-bot-owner": OWNER_DISCORD_ID,
         },
         credentials: "include",
       });
@@ -304,7 +299,6 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-bot-owner": OWNER_DISCORD_ID,
         },
         credentials: "include",
         body: JSON.stringify({ guildId, actions }),
@@ -336,7 +330,6 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-bot-owner": OWNER_DISCORD_ID,
         },
         credentials: "include",
         body: JSON.stringify({ guildId: "all" }),
@@ -365,7 +358,6 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-bot-owner": OWNER_DISCORD_ID,
         },
         credentials: "include",
       });

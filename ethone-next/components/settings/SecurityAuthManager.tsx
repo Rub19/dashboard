@@ -122,10 +122,19 @@ export default function SecurityAuthManager() {
   }
 
   async function handleDisable() {
-    if (!window.confirm(i18n("totpDisableConfirm", "Désactiver la double authentification ? Votre compte sera moins protégé."))) return;
+    const entered = window.prompt(
+      i18n("totpDisablePrompt", "Désactiver la double authentification ? Entrez un code à 6 chiffres de votre application (ou un code de secours de 8 caractères) pour confirmer.")
+    );
+    if (!entered) return;
+    const value = entered.replace(/\s+/g, "");
+    const proof = /^\d{6}$/.test(value) ? { code: value } : /^[0-9A-Za-z]{8}$/.test(value) ? { backupCode: value } : null;
+    if (!proof) {
+      showError(i18n("totpCodeWrong", "Code incorrect. Réessayez."));
+      return;
+    }
     setTotpStep("disabling");
     try {
-      await totpDisable();
+      await totpDisable(proof);
       success(i18n("totpDisabled", "Double authentification désactivée"));
       setTotpStep("idle");
     } catch (err) {

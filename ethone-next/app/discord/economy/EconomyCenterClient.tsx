@@ -254,7 +254,7 @@ export default function EconomyCenterClient() {
         fetch(`${base}/activity`, { credentials: "include" }),
       ];
       if (profile?.user?.id) {
-        fetches.push(fetch(`${base}/wallet/${profile.user.id}`, { credentials: "include" }));
+        fetches.push(fetch(`${base}/wallets/${profile.user.id}`, { credentials: "include" }));
       }
 
       const [overviewRes, leaderboardRes, shopRes, txRes, activityRes, walletRes] = await Promise.all(fetches);

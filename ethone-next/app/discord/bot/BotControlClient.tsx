@@ -189,7 +189,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       await fetch(`${BOT_API_URL}/api/bot/restart`, {
         credentials: "include",
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-bot-owner": "825124006209388616" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason: "Dashboard Remote Owner Restart", email: "rub19.mailpro@gmail.com" }),
       }).catch(() => null);
 
@@ -223,7 +223,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       await fetch(`${BOT_API_URL}/api/bot/update`, {
         credentials: "include",
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-bot-owner": "825124006209388616" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason: "Dashboard Remote Owner Update", email: "rub19.mailpro@gmail.com" }),
       }).catch(() => null);
 

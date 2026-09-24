@@ -152,7 +152,7 @@ describe("useSecurity", () => {
       expect.objectContaining({ method: "POST", body: JSON.stringify({ code: "123456" }) })
     );
 
-    await act(async () => result.current.totpDisable());
+    await act(async () => result.current.totpDisable({ code: "123456" }));
     expect(mockedFetchWorker).toHaveBeenCalledWith(
       "/api/auth/totp/disable",
       expect.objectContaining({ method: "POST" })

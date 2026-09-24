@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
+import { randomBytes } from 'node:crypto';
 
 // Chargement des variables du fichier .env
 dotenv.config();
@@ -9,7 +10,8 @@ const envSchema = z.object({
   CLIENT_ID: z.string().min(1, 'CLIENT_ID est manquant dans le fichier .env'),
   CLIENT_SECRET: z.string().optional().default(''),
   DASHBOARD_URL: z.string().optional().default('http://localhost:3001'),
-  JWT_SECRET: z.string().optional().default('ethone-bot-jwt-secret-key-32chars-min'),
+  // Pas de valeur par défaut connue : voir le tirage aléatoire plus bas si la variable est absente ou trop faible.
+  JWT_SECRET: z.string().optional().default(''),
   PORT: z.coerce.number().optional().default(3001),
   DEV_GUILD_ID: z.string().optional(),
   DEFAULT_PREFIX: z.string().min(1).default('!'),
@@ -56,12 +58,26 @@ if (!parsed.success) {
   process.exit(1);
 }
 
+/** Ancienne valeur par défaut, publiée dans le dépôt : ne doit jamais signer une session. */
+const LEAKED_DEFAULT_JWT_SECRET = 'ethone-bot-jwt-secret-key-32chars-min';
+
+/**
+ * Clé de signature des sessions. Absente, trop courte (< 32 caractères) ou égale à l'ancienne valeur publique :
+ * on tire une clé aléatoire pour ce processus (les sessions sont alors invalidées à chaque redémarrage) et on
+ * l'écrit dans les logs comme avertissement, plutôt que d'accepter une clé que n'importe qui pourrait connaître.
+ */
+function resolveJwtSecret(value: string): string {
+  if (value && value.length >= 32 && value !== LEAKED_DEFAULT_JWT_SECRET) return value;
+  console.warn('⚠️  JWT_SECRET absent ou faible : clé aléatoire temporaire utilisée (définis JWT_SECRET, 32+ caractères).');
+  return randomBytes(48).toString('hex');
+}
+
 export const config = {
   token: parsed.data.DISCORD_TOKEN,
   clientId: parsed.data.CLIENT_ID,
   clientSecret: parsed.data.CLIENT_SECRET,
   dashboardUrl: parsed.data.DASHBOARD_URL,
-  jwtSecret: parsed.data.JWT_SECRET,
+  jwtSecret: resolveJwtSecret(parsed.data.JWT_SECRET),
   port: parsed.data.PORT,
   devGuildId: parsed.data.DEV_GUILD_ID || null,
   defaultPrefix: parsed.data.DEFAULT_PREFIX,

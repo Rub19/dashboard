@@ -279,8 +279,9 @@ export function useSecurity() {
     return res?.data as { enabled: boolean } | undefined;
   }
 
-  async function totpDisable() {
-    await fetchWorker("/api/auth/totp/disable", { method: "POST" });
+  /** Désactiver le 2FA exige la preuve qu'on le possède : un code de l'application OU un code de secours. */
+  async function totpDisable(proof: { code?: string; backupCode?: string }) {
+    await fetchWorker("/api/auth/totp/disable", { method: "POST", body: JSON.stringify(proof) });
   }
 
   return {

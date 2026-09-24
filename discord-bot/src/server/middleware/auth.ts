@@ -19,11 +19,15 @@ declare global {
   }
 }
 
+/** Contournement de connexion réservé au développement local : jamais actif sans NODE_ENV=development explicite. */
+const devAuthBypassEnabled = (): boolean =>
+  process.env.ALLOW_DEV_AUTH_BYPASS === 'true' && process.env.NODE_ENV === 'development';
+
 export function authMiddleware(req: Request, res: Response, next: NextFunction): void {
   const token = req.cookies?.token || req.headers.authorization?.replace('Bearer ', '');
 
   if (!token) {
-    if (process.env.ALLOW_DEV_AUTH_BYPASS === 'true') {
+    if (devAuthBypassEnabled()) {
       req.user = {
         id: 'dev-admin-user',
         username: 'Administrateur',
@@ -39,7 +43,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
     return;
   }
 
-  if (process.env.ALLOW_DEV_AUTH_BYPASS === 'true' && token === 'dev-token') {
+  if (devAuthBypassEnabled() && token === 'dev-token') {
     req.user = {
       id: 'dev-admin-user',
       username: 'Administrateur',
@@ -67,15 +71,11 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
 // any unauthenticated caller hit them (including POST /restart, /update,
 // /identity/username, /identity/avatar). authMiddleware alone isn't enough
 // either: it only proves *some* Discord user is logged into the dashboard,
-// not that they're the bot owner. Chain this after authMiddleware wherever
+// not that they're the bot owner. L'identité vient UNIQUEMENT du jeton de session signé : aucun en-tête
+// fourni par le client (ex. X-Bot-Owner) ne doit jamais accorder ce droit. Chain this after authMiddleware wherever
 // only the owner should be able to act.
 export function requireBotOwner(req: Request, res: Response, next: NextFunction): void {
   const ownerId = config.botOwnerId || '825124006209388616';
-  const ownerHeader = req.headers['x-bot-owner'];
-  if (ownerHeader && (ownerHeader === ownerId || ownerHeader === '825124006209388616')) {
-    next();
-    return;
-  }
   if (!req.user) {
     res.status(401).json({ error: 'Non authentifié. Veuillez vous connecter.' });
     return;

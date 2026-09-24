@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { config } from '../../config.js';
 import { authMiddleware, DiscordUserPayload } from '../middleware/auth.js';
 import { logger } from '../../utils/logger.js';
@@ -38,8 +39,9 @@ function getRedirectUri(req: Request): string {
   return `${protocol}://${host}/api/auth/callback`;
 }
 
-const ALLOWED_RETURN_ORIGINS = new Set(['https://ethone.dev', 'https://www.ethone.dev', 'http://localhost:3000', 'http://localhost:5173']);
+const ALLOWED_RETURN_ORIGINS = new Set(['https://ethone.dev', 'https://www.ethone.dev', ...(process.env.ALLOW_LOCALHOST_CORS === 'true' ? ['http://localhost:3000', 'http://localhost:5173'] : [])]);
 const RETURN_COOKIE = 'auth_return';
+const STATE_COOKIE = 'auth_state';
 
 /** Cookies posés selon le protocole RÉEL de la requête (HTTPS derrière Caddy), pas selon DASHBOARD_URL. */
 function cookieOptionsFor(req: Request) {
@@ -71,10 +73,14 @@ authRouter.get('/login', (req: Request, res: Response) => {
   // Où ramener l'utilisateur après la connexion (le site, pas la racine du bot).
   const returnTo = safeReturnUrl(req.query.return_to);
   if (returnTo) res.cookie(RETURN_COOKIE, returnTo, { ...cookieOptionsFor(req), maxAge: 10 * 60 * 1000 });
+  // Anti « login CSRF » : un jeton aléatoire lié à ce navigateur, que Discord nous renvoie et qu'on revérifie au retour.
+  const state = randomBytes(24).toString('hex');
+  res.cookie(STATE_COOKIE, state, { ...cookieOptionsFor(req), maxAge: 10 * 60 * 1000 });
   const discordAuthUrl =
     `https://discord.com/oauth2/authorize?client_id=${config.clientId}` +
     `&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}` +
     `&scope=identify%20guilds` +
+    `&state=${state}` +
     `&prompt=consent`;
 
   res.redirect(discordAuthUrl);
@@ -95,7 +101,7 @@ const devUserPayload: DiscordUserPayload = {
  * (where it would let anyone mint a `dev-admin-user` cookie).
  */
 authRouter.all('/dev-login', (req: Request, res: Response) => {
-  if (process.env.ALLOW_DEV_AUTH_BYPASS !== 'true') {
+  if (process.env.ALLOW_DEV_AUTH_BYPASS !== 'true' || process.env.NODE_ENV !== 'development') {
     res.status(404).json({ error: 'Not found' });
     return;
   }
@@ -118,6 +124,18 @@ authRouter.get('/callback', async (req: Request, res: Response): Promise<void> =
   const code = req.query.code as string;
   if (!code) {
     res.redirect('/?error=no_code');
+    return;
+  }
+
+  const expectedState = String(req.cookies?.[STATE_COOKIE] || '');
+  const givenState = String(req.query.state || '');
+  res.clearCookie(STATE_COOKIE, { path: '/' });
+  const stateOk =
+    expectedState.length > 0 &&
+    expectedState.length === givenState.length &&
+    timingSafeEqual(Buffer.from(expectedState), Buffer.from(givenState));
+  if (!stateOk) {
+    res.redirect('/?error=invalid_state');
     return;
   }
 

@@ -31,7 +31,7 @@ import {
   deleteTotpRecord,
   insertSecurityEvent
 } from "../services/security-identity-client.js";
-import { generateTotpSecret, verifyTotp, verifyBackupCode } from "../services/totp-service.js";
+import { generateTotpSecret, verifyTotpStep, verifyBackupCode } from "../services/totp-service.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -171,7 +171,9 @@ export async function otpSendRoute({ request, env }) {
   const remoteip = request.headers.get("cf-connecting-ip") || undefined;
   await verifyTurnstileToken(env, turnstileToken, "login_otp", remoteip);
   await applyAuthRateLimit({ request, env, route: { id: "otp.send" } }, email);
-  const userId = body.userId && UUID_RE.test(body.userId) ? body.userId : null;
+  // L'identifiant du compte est TOUJOURS résolu côté serveur à partir de l'e-mail : un userId fourni par le navigateur
+  // permettait de recevoir un code sur sa propre adresse pour le compte d'un autre (prise de contrôle de compte).
+  const userId = null;
   const acceptLanguage = request.headers.get("accept-language") || "";
   const country = request.headers.get("cf-ipcountry") || request.cf?.country || "";
   const timezone = request.cf?.timezone || "Europe/Paris";
@@ -218,8 +220,8 @@ export async function otpVerifyRoute({ request, env }) {
   let sessionId;
   let device;
   try {
-    userId = body.userId && UUID_RE.test(body.userId) ? body.userId : null;
-    if (!userId) userId = await getUserIdByEmail(env, email);
+    // userId toujours dérivé de l'e-mail côté serveur (jamais du corps de la requête, cf. otpSendRoute).
+    userId = await getUserIdByEmail(env, email);
     if (!userId) throw httpError("PROVIDER_NOT_FOUND", 404);
     await applyAuthRateLimit({ request, env, route: { id: "otp.verify" } }, userId);
 
@@ -419,6 +421,7 @@ export async function totpSetupRoute({ request, env, auth }) {
  */
 export async function totpVerifySetupRoute({ request, env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  await applyAuthRateLimit({ request, env, route: { id: "totp.setup.verify" } }, auth.userId);
   const body = await readJsonBody(request, 1);
   const code = requireField(body, "code", /^\d{6}$/, 6);
 
@@ -426,10 +429,11 @@ export async function totpVerifySetupRoute({ request, env, auth }) {
   if (!record || !record.data?.secret) throw httpError("TOTP_NOT_SETUP", 400);
 
   const pendingSecret = record.data.secret;
-  const valid = await verifyTotp(pendingSecret, code);
-  if (!valid) throw httpError("TOTP_INVALID", 401);
+  const step = await verifyTotpStep(pendingSecret, code, -1);
+  if (step === null) throw httpError("TOTP_INVALID", 401);
 
-  await updateTotpRecord(env, auth.userId, record.id, { ...record.data, verified: true });
+  // lastStep : le code d'activation ne pourra pas être rejoué comme premier code de connexion.
+  await updateTotpRecord(env, auth.userId, record.id, { ...record.data, verified: true, lastStep: step });
 
   return { data: { enabled: true } };
 }
@@ -437,9 +441,42 @@ export async function totpVerifySetupRoute({ request, env, auth }) {
 /**
  * Désactive le 2FA TOTP.
  */
-export async function totpDisableRoute({ env, auth }) {
+export async function totpDisableRoute({ request, env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  await applyAuthRateLimit({ request, env, route: { id: "totp.disable" } }, auth.userId);
+
+  const record = await getTotpRecord(env, auth.userId);
+  if (!record) return { data: { disabled: true } };
+
+  // Retirer la double authentification exige de prouver qu'on la possède : un code de l'application (à usage unique)
+  // ou un code de secours. Une session volée ne suffit plus à la désactiver.
+  const body = await readJsonBody(request, 1);
+  const hasCode = typeof body.code === "string" && body.code.length > 0;
+  const hasBackupCode = typeof body.backupCode === "string" && body.backupCode.length > 0;
+  if (hasCode === hasBackupCode) throw httpError("INVALID_REQUEST", 400);
+
+  let valid = false;
+  if (record.data?.verified) {
+    if (hasCode) {
+      const code = requireField(body, "code", CODE_RE, 6);
+      const lastStep = Number.isFinite(record.data.lastStep) ? record.data.lastStep : -1;
+      valid = (await verifyTotpStep(record.data.secret, code, lastStep)) !== null;
+    } else {
+      const backupCode = requireField(body, "backupCode", /^[0-9A-Za-z]{8}$/, 8);
+      valid = (await verifyBackupCode(record.data.backup, backupCode)).valid;
+    }
+  } else {
+    // Activation jamais terminée : rien à protéger, on autorise l'annulation.
+    valid = true;
+  }
+  if (!valid) throw httpError("TOTP_INVALID", 401);
+
   await deleteTotpRecord(env, auth.userId);
+  await insertSecurityEvent(env, {
+    userId: auth.userId,
+    kind: "mfa_disabled",
+    metadata: { method: hasCode ? "totp" : "backup_code" }
+  });
   return { data: { disabled: true } };
 }
 
@@ -471,7 +508,10 @@ export async function totpChallengeRoute({ request, env, auth }) {
   let updatedData = record.data;
   if (hasCode) {
     const code = requireField(body, "code", CODE_RE, 6);
-    valid = await verifyTotp(record.data.secret, code);
+    const lastStep = Number.isFinite(record.data.lastStep) ? record.data.lastStep : -1;
+    const step = await verifyTotpStep(record.data.secret, code, lastStep);
+    valid = step !== null;
+    if (valid) updatedData = { ...record.data, lastStep: step };
   } else {
     const backupCode = requireField(body, "backupCode", /^[0-9A-Za-z]{8}$/, 8);
     const result = await verifyBackupCode(record.data.backup, backupCode);

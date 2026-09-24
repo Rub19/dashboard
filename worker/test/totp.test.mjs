@@ -186,7 +186,14 @@ test("TOTP setup -> verify -> disable round trip actually works end to end", asy
   assert.equal(setupAgain.status, 409);
   assert.equal((await payload(setupAgain)).error.code, "TOTP_ALREADY_ENABLED");
 
-  const disable = await invoke("/api/auth/totp/disable", { env, token, method: "POST" });
+  // Désactiver le 2FA exige un code : sans code -> 400, code déjà utilisé (rejeu) -> 401, mauvais code -> 401.
+  const disableNoCode = await invoke("/api/auth/totp/disable", { env, token, headers, method: "POST", body: JSON.stringify({}) });
+  assert.equal(disableNoCode.status, 400);
+  const disableReplay = await invoke("/api/auth/totp/disable", { env, token, headers, method: "POST", body: JSON.stringify({ code: validCode }) });
+  assert.equal(disableReplay.status, 401, "le code d'activation déjà consommé ne doit pas être rejouable");
+  assert.equal(rows.size, 1, "un refus ne doit rien supprimer");
+  const nextCode = await computeTotpCode(secret, Date.now(), 1);
+  const disable = await invoke("/api/auth/totp/disable", { env, token, headers, method: "POST", body: JSON.stringify({ code: nextCode }) });
   assert.equal(disable.status, 200);
   assert.equal((await payload(disable)).data.disabled, true);
   assert.equal(rows.size, 0);

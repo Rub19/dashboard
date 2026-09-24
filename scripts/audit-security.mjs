@@ -14,6 +14,7 @@ const APPROVED_SERVICE_ROLE_REFERENCES = new Set([
   "supabase/migrations/202608150003_ai_usage_logs.sql",
   "supabase/migrations/202609090002_session_revocation_hardening.sql",
   "supabase/migrations/202609100003_ethone_devices_mfa_pending.sql",
+  "supabase/migrations/202609240001_security_hardening.sql",
   "supabase/migrations/202609130001_ethone_shared_spaces.sql",
   "worker/src/services/shared-spaces-client.js",
   "discord-bot/src/modules/ai/services/aiSafetyService.ts",

@@ -478,7 +478,8 @@ test("TOTP setup/verify/disable never read or write another user's kind='totp' r
   assert.equal(verify.status, 200);
   assert.equal(snapshot(), bBefore, "B's row must be untouched by A's verify call");
 
-  const disable = await invoke("/api/auth/totp/disable", { env, token: tokenA, method: "POST" });
+  const disableCode = await computeTotpCode(secret, Date.now() + 30000);
+  const disable = await invoke("/api/auth/totp/disable", { env, token: tokenA, headers, method: "POST", body: JSON.stringify({ code: disableCode }) });
   assert.equal(disable.status, 200);
   assert.equal(snapshot(), bBefore, "B's row must be untouched by A's disable call");
   assert.ok(rows.has("totp-row-B"), "B's row must still exist after A disables A's own 2FA");

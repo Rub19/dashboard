@@ -139,7 +139,7 @@ export default function HealthGroup({
                   Performances & Consommation Mémoire
                 </h3>
                 <p className="text-xs text-zinc-400 mt-0.5">
-                  Métriques d'exécution du processus Node/Bun, Event Loop et allocations mémoire
+                  Métriques d'exécution du processus Node.js, Event Loop et allocations mémoire
                 </p>
               </div>
               <button
@@ -198,8 +198,8 @@ export default function HealthGroup({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-bold text-white block">Moteur Audio WebRTC / Opus</span>
-                  <span className="text-zinc-400 text-[11px]">Canaux vocaux et streaming haute fidélité</span>
+                  <span className="font-bold text-white block">Moteur audio (Lavalink)</span>
+                  <span className="text-zinc-400 text-[11px]">Lecture musicale dans les salons vocaux</span>
                 </div>
                 <span className="font-mono font-semibold px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                   {perfMetrics.activeAudioStreams} stream(s) actif(s)

@@ -10,6 +10,7 @@ import { logger } from '../utils/logger.js';
 import { authRouter } from './routes/authRoutes.js';
 import { createGuildRouter } from './routes/guildRoutes.js';
 import { getModuleStatus } from './moduleStatus.js';
+import { createPublicRouter } from './routes/publicRoutes.js';
 import { createModuleRouter } from './routes/moduleRoutes.js';
 import { createSettingsRouter } from './routes/settingsRoutes.js';
 import { createModerationRouter } from './routes/moderationRoutes.js';
@@ -86,6 +87,8 @@ export function startWebServer(client: Client): http.Server {
         config.dashboardUrl,
         'https://ethone.dev',
         'https://www.ethone.dev',
+        // Sous-domaine optionnel de la page vitrine du bot (Cloudflare Pages, même projet que ethone.dev).
+        'https://discord.ethone.dev',
         // Origines locales (avec cookies !) uniquement quand on le demande explicitement, jamais en production.
         ...(process.env.ALLOW_LOCALHOST_CORS === 'true' ? ['http://localhost:5173', 'http://localhost:3000'] : []),
       ],
@@ -110,6 +113,8 @@ export function startWebServer(client: Client): http.Server {
   app.get('/api/guilds/:guildId/module-status', authMiddleware, createGuildAuthMiddleware(client), (req, res) => {
     res.json({ modules: getModuleStatus(String(req.params.guildId)) });
   });
+  // Page vitrine du bot : compteurs globaux et liste des commandes (sans authentification, lecture seule).
+  app.use('/api/public', createPublicRouter(client));
   app.use('/api/guilds', createGuildRouter(client));
   app.use('/api/guilds', createSettingsRouter(client));
   app.use('/api/guilds', createModuleRouter(client));

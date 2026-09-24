@@ -33436,6 +33436,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_52_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_52_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_52_de);
 
+const v1_28_53_fr: ChangelogEntry = {
+  version: "v1.28.53",
+  date: "2026-09-24",
+  title: "Page publique du bot et corrections de la page Bot",
+  items: [
+    "Nouvelle page vitrine du bot sur ethone.dev/bot : fonctionnalités, dashboard, et liste des commandes lue en direct sur le bot (aucun chiffre inventé, blocs masqués si le bot ne répond pas)",
+    "Nouvelles routes publiques du bot GET /api/public/stats et /api/public/commands (lecture seule, sans donnée de serveur)",
+    "Centre de contrôle du bot : suppression de la mention fixe « Audit RLS Sécurisé », du « v2.4 » codé en dur dans le hub, des « 22 modules » et du « WebRTC / Bun » qui ne correspondaient pas à la réalité (moteur audio : Lavalink)",
+  ],
+};
+
+const v1_28_53_en: ChangelogEntry = {
+  version: "v1.28.53",
+  date: "2026-09-24",
+  title: "Public bot page and Bot page fixes",
+  items: [
+    "New public bot page at ethone.dev/bot: features, dashboard, and a command list read live from the bot (no invented numbers, blocks hidden if the bot is unreachable)",
+    "New public bot routes GET /api/public/stats and /api/public/commands (read-only, no server data)",
+    "Bot control centre: removed the fixed 'Audit RLS Secured' label, the hard-coded 'v2.4' in the hub, the '22 modules' and 'WebRTC / Bun' claims that did not match reality (audio engine: Lavalink)",
+  ],
+};
+
+const v1_28_53_es: ChangelogEntry = {
+  version: "v1.28.53",
+  date: "2026-09-24",
+  title: "Página pública del bot y correcciones de la página Bot",
+  items: [
+    "Nueva página pública del bot en ethone.dev/bot: funciones, dashboard y lista de comandos leída en directo del bot (sin cifras inventadas, bloques ocultos si el bot no responde)",
+    "Nuevas rutas públicas del bot GET /api/public/stats y /api/public/commands (solo lectura, sin datos de servidores)",
+    "Centro de control del bot: eliminados la etiqueta fija «Audit RLS Sécurisé», el «v2.4» fijo del hub, los «22 módulos» y «WebRTC / Bun» que no correspondían a la realidad (motor de audio: Lavalink)",
+  ],
+};
+
+const v1_28_53_de: ChangelogEntry = {
+  version: "v1.28.53",
+  date: "2026-09-24",
+  title: "Öffentliche Bot-Seite und Korrekturen der Bot-Seite",
+  items: [
+    "Neue öffentliche Bot-Seite unter ethone.dev/bot: Funktionen, Dashboard und eine live vom Bot gelesene Befehlsliste (keine erfundenen Zahlen, Blöcke werden ausgeblendet, wenn der Bot nicht antwortet)",
+    "Neue öffentliche Bot-Routen GET /api/public/stats und /api/public/commands (nur lesend, keine Serverdaten)",
+    "Bot-Kontrollzentrum: feste Angabe „Audit RLS Sécurisé“, fest codiertes „v2.4“ im Hub, „22 Module“ und „WebRTC / Bun“ entfernt, da sie nicht der Realität entsprachen (Audio-Engine: Lavalink)",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_53_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_53_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_53_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_53_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

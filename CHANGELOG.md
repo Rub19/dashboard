@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.53 — 2026-09-24
+
+**Page publique du bot et corrections de la page Bot**
+
+- Nouvelle page vitrine du bot sur ethone.dev/bot : fonctionnalités, dashboard, et liste des commandes lue en direct sur le bot (aucun chiffre inventé, blocs masqués si le bot ne répond pas)
+- Nouvelles routes publiques du bot GET /api/public/stats et /api/public/commands (lecture seule, sans donnée de serveur)
+- Centre de contrôle du bot : suppression de la mention fixe « Audit RLS Sécurisé », du « v2.4 » codé en dur dans le hub, des « 22 modules » et du « WebRTC / Bun » qui ne correspondaient pas à la réalité (moteur audio : Lavalink)
+
 ## v1.28.52 — 2026-09-24
 
 **Avatar animé, bannière ETHONE et badges corrigés**

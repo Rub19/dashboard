@@ -127,6 +127,12 @@ export default function RootLayout({
         />
         <script
           dangerouslySetInnerHTML={{
+            // Sous-domaine optionnel de la page vitrine du bot : sa racine affiche /bot.
+            __html: `(function(){if(location.hostname==='discord.ethone.dev'&&(location.pathname==='/'||location.pathname==='/index.html'))location.replace('/bot');})();`,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
             __html: `(function(){try{var s=localStorage.getItem('ethone_settings_v8')||localStorage.getItem('dashboard_settings');var theme='dyno-rose';var accent='#C1234F';if(s){var p=JSON.parse(s);if(p.theme)theme=p.theme;if(p.accentColor==='custom'&&p.customAccent)accent=p.customAccent;else if(p.accentColor&&p.accentColor!=='auto'&&p.accentColor!=='dyno'){var m={violet:'#8b5cf6',blue:'#3b82f6',cyan:'#06b6d4',pink:'#ec4899',red:'#ef4444',orange:'#f97316',green:'#10b981',mint:'#34d399',amber:'#f59e0b',sky:'#38bdf8',teal:'#14b8a6',rose:'#f43f5e'};if(m[p.accentColor])accent=m[p.accentColor];}}var ta={'dyno-rose':'#C1234F',obsidian:'#8b5cf6',midnight:'#ffffff',aurora:'#2dd4bf','purple-space':'#c084fc',arctic:'#0284c7',carbon:'#94a3b8','cyber-neon':'#f43f5e',minimal:'#e4e4e7',glass:'#38bdf8',forest:'#10b981',sunset:'#f97316',rose:'#f43f5e'};if(s){var q=JSON.parse(s);if((!q.accentColor||q.accentColor==='auto'||q.accentColor==='dyno')&&ta[theme])accent=ta[theme];}var isLight=theme==='arctic'||(theme==='auto'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches);var root=document.documentElement;var bgMap={'dyno-rose':'#0E1015',obsidian:'#08080a',midnight:'#000000',aurora:'#051014','purple-space':'#0a0614',arctic:'#f8fafc',carbon:'#0c0d10','cyber-neon':'#090611',minimal:'#121214',glass:'#06070a',forest:'#050f0a',sunset:'#100806',rose:'#12060a'};var bg=bgMap[theme]||'#0E1015';root.setAttribute('data-theme',theme);root.setAttribute('data-color-scheme',isLight?'light':'dark');root.style.colorScheme=isLight?'light':'dark';root.style.setProperty('--accent',accent);root.style.setProperty('--accent-primary',accent);root.style.setProperty('--glow-color','color-mix(in srgb, '+accent+' 25%, transparent)');root.style.setProperty('--background',bg);root.style.setProperty('--bg-main',bg);}catch(e){}})();`,
           }}
         />

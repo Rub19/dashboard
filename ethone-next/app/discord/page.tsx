@@ -418,7 +418,7 @@ const MODULES: BotModule[] = [
   {
     id: "bot",
     title: "Bot Control Center",
-    description: "Console centrale du bot : télémétrie temps réel, santé des 22 modules, commandes, bus d'événements, diagnostics et intelligence.",
+    description: "Console centrale du bot : télémétrie temps réel, santé des modules, commandes, bus d'événements, diagnostics et intelligence.",
     icon: MODULE_ICONS.bot,
     color: "text-zinc-400",
     badge: "Bot Core",
@@ -980,7 +980,7 @@ export default function DiscordDashboardPage() {
                   ETHONE Bot
                 </h1>
                 <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.2 text-[10px] font-bold text-emerald-400">
-                  En ligne • v2.4
+                  {botPresenceKnown ? "En ligne" : "Connexion…"}
                 </span>
               </div>
               <p className="text-xs text-zinc-400">
@@ -3242,7 +3242,7 @@ export default function DiscordDashboardPage() {
                           <p className="text-xs font-bold text-white">Bot Control Center &amp; Intelligence</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Surveillance intégrale du bot : monitoring V8 CPU/RAM, 22 modules, débit temps réel, diagnostic 17 points, erreurs dédoublonnées et tokens IA.
+                          Surveillance intégrale du bot : monitoring V8 CPU/RAM, modules, débit temps réel, diagnostic, erreurs dédoublonnées et tokens IA.
                         </p>
                       </div>
                       <Link

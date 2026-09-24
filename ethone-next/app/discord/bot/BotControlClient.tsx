@@ -308,7 +308,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     { id: "restApi", name: "Discord REST API", status: "operational" },
     { id: "database", name: "Configuration DB", status: "operational" },
     { id: "eventBus", name: "Realtime Sync Bus", status: "operational" },
-    { id: "voiceEngine", name: "Moteur Vocal WebRTC", status: "operational" },
+    { id: "voiceEngine", name: "Moteur audio (Lavalink)", status: "operational" },
     { id: "jobScheduler", name: "Gestionnaire de Tâches", status: "operational" },
   ]);
 
@@ -707,7 +707,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     { id: "gateway", name: "Gateway WebSocket Discord", detail: "En attente du diagnostic", status: "pending", latency: "—" },
     { id: "rest", name: "Discord REST API v10", detail: "En attente du diagnostic", status: "pending", latency: "—" },
     { id: "intents", name: "Intents Privilégiés", detail: "En attente du diagnostic", status: "pending", latency: "—" },
-    { id: "audio", name: "Moteur Vocal WebRTC / Opus", detail: "En attente du diagnostic", status: "pending", latency: "—" },
+    { id: "audio", name: "Moteur audio (Lavalink)", detail: "En attente du diagnostic", status: "pending", latency: "—" },
     { id: "storage", name: "Base de Données & Configurations", detail: "En attente du diagnostic", status: "pending", latency: "—" },
     { id: "ai", name: "Assistant IA & Knowledge Base", detail: "En attente du diagnostic", status: "pending", latency: "—" },
   ]);
@@ -1099,7 +1099,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               jobScheduler: "Gestionnaire de Tâches",
               aiProvider: "Fournisseur IA",
               storage: "Stockage",
-              voiceEngine: "Moteur Vocal WebRTC",
+              voiceEngine: "Moteur audio (Lavalink)",
             };
             setSubsystems(
               Object.entries(globalStatus.subsystems).map(([id, status]) => ({
@@ -1522,8 +1522,6 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                     </span>
                     <span className="text-zinc-600">•</span>
                     <span>Shard 0 ({botCore.pingMs}ms)</span>
-                    <span className="text-zinc-600">•</span>
-                    <span>Audit RLS Sécurisé</span>
                   </div>
                 </div>
               </div>

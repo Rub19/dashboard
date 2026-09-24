@@ -212,7 +212,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
         </PopoverTrigger>
 
         {/* Compact Premium Profile Popover */}
-        <PopoverContent className="w-[300px] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-[18px] border border-[var(--panel-border)]/80 bg-[var(--bg-surface-elevated)] p-0 shadow-2xl backdrop-blur-2xl z-[var(--z-dropdown)]">
+        <PopoverContent className="w-[300px] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-[18px] border border-[var(--panel-border)]/80 bg-[var(--bg-surface-elevated)] p-0 shadow-2xl z-[var(--z-dropdown)]">
           <div
             data-testid={`${dataTestId}-menu`}
             data-open={open ? "true" : "false"}

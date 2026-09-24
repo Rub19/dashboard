@@ -33755,6 +33755,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_59_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_59_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_59_de);
 
+const v1_28_60_fr: ChangelogEntry = {
+  version: "v1.28.60",
+  date: "2026-09-24",
+  title: "Menus de la barre du haut plus sobres",
+  items: [
+    "Profil, langue, notifications, support et Focus s'ouvrent maintenant en fondu rapide (120 ms) avec un très léger glissement, à la place de l'ancienne animation « goutte » où le bouton se déformait en panneau",
+    "Panneaux opaques : plus de flou ni d'effet sur le fond et la mise en page derrière le menu",
+    "Fermeture au clic à l'extérieur ou avec Échap ; animation coupée si le système demande de réduire les animations",
+  ],
+};
+
+const v1_28_60_en: ChangelogEntry = {
+  version: "v1.28.60",
+  date: "2026-09-24",
+  title: "Calmer top bar menus",
+  items: [
+    "Profile, language, notifications, support and Focus now open with a quick fade (120 ms) and a tiny slide, instead of the old 'blob' animation where the button morphed into a panel",
+    "Opaque panels: no more blur or effect on the background and layout behind the menu",
+    "Closes on outside click or Escape; animation is disabled when the system asks for reduced motion",
+  ],
+};
+
+const v1_28_60_es: ChangelogEntry = {
+  version: "v1.28.60",
+  date: "2026-09-24",
+  title: "Menús de la barra superior más sobrios",
+  items: [
+    "Perfil, idioma, notificaciones, soporte y Focus se abren ahora con un fundido rápido (120 ms) y un ligero deslizamiento, en lugar de la antigua animación «gota» en la que el botón se deformaba en panel",
+    "Paneles opacos: sin desenfoque ni efecto sobre el fondo y la disposición detrás del menú",
+    "Se cierra al hacer clic fuera o con Esc; la animación se desactiva si el sistema pide reducir animaciones",
+  ],
+};
+
+const v1_28_60_de: ChangelogEntry = {
+  version: "v1.28.60",
+  date: "2026-09-24",
+  title: "Ruhigere Menüs der oberen Leiste",
+  items: [
+    "Profil, Sprache, Benachrichtigungen, Support und Focus öffnen sich jetzt mit einem schnellen Einblenden (120 ms) und minimalem Gleiten, statt der alten „Tropfen“-Animation, bei der sich die Schaltfläche in ein Panel verformte",
+    "Undurchsichtige Panels: kein Weichzeichner oder Effekt mehr auf Hintergrund und Layout hinter dem Menü",
+    "Schließt per Klick nach außen oder Esc; Animation wird deaktiviert, wenn das System reduzierte Bewegung verlangt",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_60_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_60_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_60_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_60_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

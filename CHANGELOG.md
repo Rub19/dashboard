@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.60 — 2026-09-24
+
+**Menus de la barre du haut plus sobres**
+
+- Profil, langue, notifications, support et Focus s'ouvrent maintenant en fondu rapide (120 ms) avec un très léger glissement, à la place de l'ancienne animation « goutte » où le bouton se déformait en panneau
+- Panneaux opaques : plus de flou ni d'effet sur le fond et la mise en page derrière le menu
+- Fermeture au clic à l'extérieur ou avec Échap ; animation coupée si le système demande de réduire les animations
+
 ## v1.28.59 — 2026-09-24
 
 **Confirmations propres et page Sondages réellement branchée**

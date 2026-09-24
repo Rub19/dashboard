@@ -216,7 +216,7 @@ function FocusLivePill({ mobile }: { mobile?: boolean } = {}) {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-64 overflow-hidden rounded-[18px] border border-[var(--panel-border)]/80 bg-[var(--bg-surface-elevated)] p-3.5 shadow-2xl backdrop-blur-2xl z-[var(--z-dropdown)]">
+      <PopoverContent className="w-64 overflow-hidden rounded-[18px] border border-[var(--panel-border)]/80 bg-[var(--bg-surface-elevated)] p-3.5 shadow-2xl z-[var(--z-dropdown)]">
         <div className="flex flex-col gap-3 select-none">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">

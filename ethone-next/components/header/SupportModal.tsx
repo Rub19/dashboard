@@ -39,7 +39,7 @@ export default function SupportModal() {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-4 shadow-2xl backdrop-blur-2xl">
+      <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-4 shadow-2xl">
         <div className="flex flex-col gap-4 select-none">
           {/* Header */}
           <div className="flex items-center gap-3 border-b border-[var(--panel-border)]/50 pb-3">

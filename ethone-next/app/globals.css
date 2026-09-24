@@ -1,6 +1,26 @@
 @import "tailwindcss";
 @import "./liquid-glass.css";
 
+/* Menus déroulants de la barre du haut : fondu rapide avec 4 px de glissement, coupé si « réduire les animations ». */
+@keyframes ethone-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.ethone-popover-in {
+  animation: ethone-popover-in 120ms ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ethone-popover-in {
+    animation: none;
+  }
+}
+
 /*
  * Fonds unifiés : les gris « en dur » de Tailwind (zinc / neutral / slate / gray, nuances sombres 800-950, utilisés plus de
  * 800 fois dans les pages) sont des gris NEUTRES qui juraient avec le bleu nuit du thème et créaient des bandes de teintes

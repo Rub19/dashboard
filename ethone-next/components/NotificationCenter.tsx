@@ -358,7 +358,7 @@ export default function NotificationCenter() {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[400px] max-w-[calc(100vw-1.5rem)] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-4 shadow-2xl backdrop-blur-2xl">
+      <PopoverContent className="w-[400px] max-w-[calc(100vw-1.5rem)] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-4 shadow-2xl">
         {content}
       </PopoverContent>
     </Popover>

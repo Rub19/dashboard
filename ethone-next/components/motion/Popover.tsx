@@ -1,14 +1,5 @@
 "use client";
-// beui.dev/components/motion/popover
- 
 
-import {
-  animate,
-  type MotionValue,
-  useMotionValue,
-  useMotionValueEvent,
-  useReducedMotion,
-} from "framer-motion";
 import {
   cloneElement,
   createContext,
@@ -26,185 +17,31 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { usePopoverPortalPosition } from "@/components/motion/popover-position";
 import { useDismiss } from "@/lib/hooks/use-dismiss";
-import {
-  type HoverGesture,
-  useHoverGesture,
-} from "@/lib/hooks/use-hover-gesture";
-import { useTapGesture } from "@/lib/hooks/use-tap-gesture";
 import { cn } from "@/lib/utils";
+
+/**
+ * Menu déroulant ancré à son bouton (profil, langue, notifications, support, focus…).
+ *
+ * Volontairement sobre : le panneau apparaît en fondu avec un très léger glissement (120 ms, l'animation est coupée
+ * si le système demande « réduire les animations »), il est opaque, ne déforme pas le bouton, ne floute rien derrière
+ * lui et ne touche pas à la mise en page. Il se ferme au clic à l'extérieur ou avec Échap.
+ * L'ancienne version « goutte » (bouton qui se transforme en panneau par ressort et masque animé) a été retirée.
+ */
 
 type Side = "top" | "bottom";
 type Align = "start" | "center" | "end";
-type TriggerMode = "click" | "hover";
 
-const GOO_OPEN_SPRING = {
-  type: "spring" as const,
-  visualDuration: 0.3,
-  bounce: 0.15,
-};
-const GOO_CLOSE_SPRING = {
-  type: "spring" as const,
-  visualDuration: 0.21,
-  bounce: 0.15,
-};
-const HOVER_CLOSE_DELAY = 120;
-const CIRCLE_KAPPA = 0.5523;
-
-function makeHoverHandlers(
-  hover: HoverGesture,
-  enter: () => void,
-  leave: () => void,
-) {
-  return {
-    onPointerEnter: (event: React.PointerEvent) => {
-      if (hover.enter(event)) enter();
-    },
-    onPointerLeave: (event: React.PointerEvent) => {
-      if (hover.leave(event)) leave();
-    },
-  };
-}
-
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-
-interface Rect {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  r: number;
-}
-interface Geo {
-  layerW: number;
-  layerH: number;
-  left: number;
-  top: number;
-  trigger: Rect;
-  panel: Rect;
-}
-
-function buildGeo(
-  tW: number,
-  tH: number,
-  cW: number,
-  cH: number,
-  side: Side,
-  align: Align,
-  gap: number,
-  panelRadius: number,
-): Geo {
-  const py = side === "bottom" ? tH + gap : -(gap + cH);
-  const px = align === "start" ? 0 : align === "end" ? tW - cW : (tW - cW) / 2;
-
-  const left = Math.min(0, px);
-  const top = Math.min(0, py);
-  const layerW = Math.max(tW, px + cW) - left;
-  const layerH = Math.max(tH, py + cH) - top;
-
-  const triggerRadius = Math.min(tH / 2, panelRadius);
-
-  return {
-    layerW,
-    layerH,
-    left,
-    top,
-    trigger: { x: -left, y: -top, w: tW, h: tH, r: triggerRadius },
-    panel: { x: px - left, y: py - top, w: cW, h: cH, r: panelRadius },
-  };
-}
-
-function rectAtProgress(geo: Geo, progress: number): Rect {
-  const trigger = geo.trigger;
-  const panel = geo.panel;
-
-  return {
-    x: lerp(trigger.x, panel.x, progress),
-    y: lerp(trigger.y, panel.y, progress),
-    w: lerp(trigger.w, panel.w, progress),
-    h: lerp(trigger.h, panel.h, progress),
-    r: lerp(trigger.r, panel.r, progress),
-  };
-}
-
-function insetFor(rect: Rect, layerW: number, layerH: number) {
-  const top = rect.y;
-  const right = layerW - (rect.x + rect.w);
-  const bottom = layerH - (rect.y + rect.h);
-  const left = rect.x;
-  return `inset(${top}px ${right}px ${bottom}px ${left}px round ${rect.r}px)`;
-}
-
-function roundedRectShape(rect: Rect) {
-  const radius = Math.max(0, Math.min(rect.r, rect.w / 2, rect.h / 2));
-  const control = radius * CIRCLE_KAPPA;
-  const x1 = rect.x;
-  const y1 = rect.y;
-  const x2 = rect.x + rect.w;
-  const y2 = rect.y + rect.h;
-  const px = (value: number) => `${value.toFixed(3)}px`;
-
-  return (
-    `shape(from ${px(x1 + radius)} ${px(y1)}, ` +
-    `line to ${px(x2 - radius)} ${px(y1)}, ` +
-    `curve to ${px(x2)} ${px(y1 + radius)} with ${px(x2 - radius + control)} ${px(y1)} / ${px(x2)} ${px(y1 + radius - control)}, ` +
-    `line to ${px(x2)} ${px(y2 - radius)}, ` +
-    `curve to ${px(x2 - radius)} ${px(y2)} with ${px(x2)} ${px(y2 - radius + control)} / ${px(x2 - radius + control)} ${px(y2)}, ` +
-    `line to ${px(x1 + radius)} ${px(y2)}, ` +
-    `curve to ${px(x1)} ${px(y2 - radius)} with ${px(x1 + radius - control)} ${px(y2)} / ${px(x1)} ${px(y2 - radius + control)}, ` +
-    `line to ${px(x1)} ${px(y1 + radius)}, ` +
-    `curve to ${px(x1 + radius)} ${px(y1)} with ${px(x1)} ${px(y1 + radius - control)} / ${px(x1 + radius - control)} ${px(y1)}, ` +
-    "close)"
-  );
-}
-
-function clipForProgress(geo: Geo, progress: number, supportsShape: boolean) {
-  const rect = rectAtProgress(geo, progress);
-  return supportsShape
-    ? roundedRectShape(rect)
-    : insetFor(rect, geo.layerW, geo.layerH);
-}
-
-function roundedRectPath(rect: Rect) {
-  const radius = Math.max(0, Math.min(rect.r, rect.w / 2, rect.h / 2));
-  const n = (value: number) => value.toFixed(3);
-  const x1 = rect.x;
-  const y1 = rect.y;
-  const x2 = rect.x + rect.w;
-  const y2 = rect.y + rect.h;
-  const arc = `A${n(radius)} ${n(radius)} 0 0 1`;
-
-  return (
-    `M${n(x1 + radius)} ${n(y1)}` +
-    `H${n(x2 - radius)}${arc} ${n(x2)} ${n(y1 + radius)}` +
-    `V${n(y2 - radius)}${arc} ${n(x2 - radius)} ${n(y2)}` +
-    `H${n(x1 + radius)}${arc} ${n(x1)} ${n(y2 - radius)}` +
-    `V${n(y1 + radius)}${arc} ${n(x1 + radius)} ${n(y1)}Z`
-  );
-}
-
-function triggerCutout(geo: Geo) {
-  const layer = { x: 0, y: 0, w: geo.layerW, h: geo.layerH, r: 0 };
-  return `path(evenodd, "${roundedRectPath(layer)} ${roundedRectPath(geo.trigger)}")`;
-}
+const VIEWPORT_MARGIN = 8;
 
 interface PopoverContextValue {
   open: boolean;
   setOpen: (open: boolean) => void;
   toggle: () => void;
-  openHover: () => void;
-  scheduleClose: () => void;
-  triggerMode: TriggerMode;
   side: Side;
   align: Align;
   gap: number;
-  panelRadius: number;
-  gooStrength: number;
-  reduce: boolean;
-  gooId: string;
   contentId: string;
-  progress: MotionValue<number>;
   triggerRef: React.MutableRefObject<HTMLElement | null>;
   contentRef: React.MutableRefObject<HTMLDivElement | null>;
   setTriggerRef: (node: HTMLElement | null) => void;
@@ -212,9 +49,9 @@ interface PopoverContextValue {
 
 const PopoverContext = createContext<PopoverContextValue | null>(null);
 
-function usePopoverContext(component: string) {
+function usePopoverContext(part: string): PopoverContextValue {
   const ctx = useContext(PopoverContext);
-  if (!ctx) throw new Error(`${component} must be used within <Popover>`);
+  if (!ctx) throw new Error(`${part} doit être utilisé dans <Popover>.`);
   return ctx;
 }
 
@@ -223,10 +60,12 @@ export interface PopoverProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
-  trigger?: TriggerMode;
+  /** Conservé pour compatibilité : seul le clic est géré. */
+  trigger?: "click" | "hover";
   side?: Side;
   align?: Align;
   sideOffset?: number;
+  /** Conservés pour compatibilité (ancien effet « goutte »), sans effet. */
   panelRadius?: number;
   gooStrength?: number;
   className?: string;
@@ -237,158 +76,41 @@ export function Popover({
   open: controlledOpen,
   defaultOpen = false,
   onOpenChange,
-  trigger = "click",
   side = "bottom",
   align = "center",
-  sideOffset = 14,
-  panelRadius = 16,
-  gooStrength = 8,
-  className,
+  sideOffset = 8,
 }: PopoverProps) {
-  const reduce = useReducedMotion() ?? false;
-  const gooId = useId().replace(/:/g, "");
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen);
+  const open = controlledOpen ?? uncontrolledOpen;
   const contentId = useId();
-  const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const rootHover = useHoverGesture();
-  const progress = useMotionValue(defaultOpen ? 1 : 0);
-
-  const [internalOpen, setInternalOpen] = useState(defaultOpen);
-  const controlled = controlledOpen !== undefined;
-  const open = controlled ? controlledOpen : internalOpen;
 
   const setOpen = useCallback(
     (next: boolean) => {
-      if (!controlled) setInternalOpen(next);
+      if (controlledOpen === undefined) setUncontrolledOpen(next);
       onOpenChange?.(next);
     },
-    [controlled, onOpenChange],
+    [controlledOpen, onOpenChange],
   );
-
-  const cancelClose = useCallback(() => {
-    if (closeTimer.current) {
-      clearTimeout(closeTimer.current);
-      closeTimer.current = null;
-    }
+  const toggle = useCallback(() => setOpen(!open), [open, setOpen]);
+  const setTriggerRef = useCallback((node: HTMLElement | null) => {
+    triggerRef.current = node;
   }, []);
 
-  const openHover = useCallback(() => {
-    cancelClose();
-    setOpen(true);
-  }, [cancelClose, setOpen]);
-
-  const scheduleClose = useCallback(() => {
-    cancelClose();
-    closeTimer.current = setTimeout(() => setOpen(false), HOVER_CLOSE_DELAY);
-  }, [cancelClose, setOpen]);
-
-  const toggle = useCallback(() => setOpen(!open), [setOpen, open]);
-
-  useEffect(() => () => cancelClose(), [cancelClose]);
-
-  useEffect(() => {
-    const animation = animate(
-      progress,
-      open ? 1 : 0,
-      reduce
-        ? { duration: 0 }
-        : open
-          ? GOO_OPEN_SPRING
-          : GOO_CLOSE_SPRING,
-    );
-    return () => animation.stop();
-  }, [open, progress, reduce]);
-
-  const close = useCallback(() => {
-    setOpen(false);
-    const focused = document.activeElement;
-    const inPanel =
-      focused instanceof HTMLElement &&
-      contentRef.current?.contains(focused);
-    if (inPanel) triggerRef.current?.focus();
-  }, [setOpen]);
-
-  const ignoreContent = useCallback(
-    (target: Element) => Boolean(contentRef.current?.contains(target)),
-    [],
+  const value = useMemo<PopoverContextValue>(
+    () => ({ open, setOpen, toggle, side, align, gap: sideOffset, contentId, triggerRef, contentRef, setTriggerRef }),
+    [open, setOpen, toggle, side, align, sideOffset, contentId, setTriggerRef],
   );
 
-  useDismiss(open, close, rootRef, { ignore: ignoreContent });
-
-  const setTriggerRef = useCallback(
-    (node: HTMLElement | null) => {
-      triggerRef.current = node;
-    },
-    [],
-  );
-
-  const ctx = useMemo<PopoverContextValue>(
-    () => ({
-      open,
-      setOpen,
-      toggle,
-      openHover,
-      scheduleClose,
-      triggerMode: trigger,
-      side,
-      align,
-      gap: sideOffset,
-      panelRadius,
-      gooStrength,
-      reduce,
-      gooId,
-      contentId,
-      progress,
-      triggerRef,
-      contentRef,
-      setTriggerRef,
-    }),
-    [
-      open,
-      setOpen,
-      toggle,
-      openHover,
-      scheduleClose,
-      trigger,
-      side,
-      align,
-      sideOffset,
-      panelRadius,
-      gooStrength,
-      reduce,
-      gooId,
-      contentId,
-      progress,
-      setTriggerRef,
-    ],
-  );
-
-  const hoverHandlers =
-    trigger === "hover"
-      ? makeHoverHandlers(rootHover, openHover, scheduleClose)
-      : {};
-
-  return (
-    <PopoverContext.Provider value={ctx}>
-      <div
-        ref={rootRef}
-        className={cn("relative inline-flex isolate", className)}
-        {...hoverHandlers}
-      >
-        {children}
-      </div>
-    </PopoverContext.Provider>
-  );
+  return <PopoverContext.Provider value={value}>{children}</PopoverContext.Provider>;
 }
 
 function mergeRefs<T>(...refs: Array<Ref<T> | undefined>) {
   return (node: T | null) => {
     for (const ref of refs) {
       if (typeof ref === "function") ref(node);
-      else if (ref && typeof ref === "object")
-        (ref as React.MutableRefObject<T | null>).current = node;
+      else if (ref) (ref as React.MutableRefObject<T | null>).current = node;
     }
   };
 }
@@ -400,54 +122,18 @@ export interface PopoverTriggerProps {
 
 export function PopoverTrigger({ children }: PopoverTriggerProps) {
   const ctx = usePopoverContext("PopoverTrigger");
-  const tap = useTapGesture();
-
   if (!isValidElement(children)) return children;
 
   const child = children as ReactElement<Record<string, unknown>>;
   const childProps = child.props;
   const childRef = (childProps as { ref?: Ref<HTMLElement> }).ref;
 
-  const compose =
-    <E extends { defaultPrevented?: boolean }>(
-      name: string,
-      handler: (event: E) => void,
-    ) =>
-    (event: E) => {
-      (childProps[name] as ((e: unknown) => void) | undefined)?.(event);
-      if (!event.defaultPrevented) handler(event);
-    };
-
-  const observe =
-    <E,>(name: string, handler: (event: E) => void) =>
-    (event: E) => {
-      (childProps[name] as ((e: unknown) => void) | undefined)?.(event);
-      handler(event);
-    };
-
-  const handlers: Record<string, unknown> =
-    ctx.triggerMode === "hover"
-      ? {
-          onFocus: compose("onFocus", ctx.openHover),
-          onBlur: compose("onBlur", ctx.scheduleClose),
-          onPointerDown: observe<React.PointerEvent>(
-            "onPointerDown",
-            (event) => tap.start(event, ctx.open),
-          ),
-          onPointerCancel: observe("onPointerCancel", tap.drop),
-          onKeyDown: observe("onKeyDown", tap.drop),
-          onClick: compose("onClick", () => {
-            const gesture = tap.take();
-            if (!gesture || gesture.pointerType === "mouse") return;
-            ctx.setOpen(!gesture.state);
-          }),
-        }
-      : { onClick: compose("onClick", ctx.toggle) };
-
   return cloneElement(child, {
-    ...handlers,
+    onClick: (event: { defaultPrevented?: boolean }) => {
+      (childProps.onClick as ((e: unknown) => void) | undefined)?.(event);
+      if (!event.defaultPrevented) ctx.toggle();
+    },
     ref: mergeRefs(childRef, ctx.setTriggerRef),
-    className: cn("relative z-0", childProps.className as string | undefined),
     "aria-haspopup": "dialog",
     "aria-expanded": ctx.open,
     "aria-controls": ctx.open ? ctx.contentId : undefined,
@@ -455,198 +141,63 @@ export function PopoverTrigger({ children }: PopoverTriggerProps) {
   });
 }
 
-const ALIGN_ORIGIN: Record<Align, string> = {
-  start: "left",
-  center: "center",
-  end: "right",
-};
-
 export interface PopoverContentProps {
   children: ReactNode;
   className?: string;
 }
 
 export function PopoverContent({ children, className }: PopoverContentProps) {
-  const ctx = usePopoverContext("PopoverContent");
-  const [portalReady, setPortalReady] = useState(false);
-  const {
-    side,
-    align,
-    gap,
-    panelRadius,
-    gooStrength,
-    reduce,
-    gooId,
-    contentId,
-    progress,
-    triggerRef,
-    contentRef,
-    open,
-    triggerMode,
-    openHover,
-    scheduleClose,
-  } = ctx;
+  const { open, setOpen, side, align, gap, contentId, triggerRef, contentRef } = usePopoverContext("PopoverContent");
+  const [mounted, setMounted] = useState(false);
+  const [position, setPosition] = useState<{ left: number; top: number } | null>(null);
 
-  const useGoo = gooStrength > 0;
+  useEffect(() => setMounted(true), []);
 
-  const measureRef = contentRef;
-  const panelHover = useHoverGesture();
-  const blobRef = useRef<HTMLDivElement>(null);
-  const clipRef = useRef<HTMLDivElement>(null);
-  const geoRef = useRef<Geo | null>(null);
-  const supportsShapeRef = useRef(false);
-  const layout = usePopoverPortalPosition(triggerRef, measureRef, portalReady);
+  const close = useCallback(() => setOpen(false), [setOpen]);
+  useDismiss(open, close, contentRef, { ignore: (target) => Boolean(triggerRef.current?.contains(target)) });
 
-  useEffect(() => setPortalReady(true), []);
-
-  const geo = useMemo(
-    () =>
-      buildGeo(
-        layout?.trigger.width ?? 0,
-        layout?.trigger.height ?? 0,
-        layout?.content.width ?? 0,
-        layout?.content.height ?? 0,
-        side,
-        align,
-        gap,
-        panelRadius,
-      ),
-    [layout, side, align, gap, panelRadius],
-  );
-
-  const render = useCallback(
-    (g: Geo | null, p: number) => {
-      if (!g || g.layerW === 0) return;
-      const clip = clipForProgress(g, p, supportsShapeRef.current);
-      if (blobRef.current) blobRef.current.style.clipPath = clip;
-      if (clipRef.current) clipRef.current.style.clipPath = clip;
-    },
-    [],
-  );
+  const place = useCallback(() => {
+    const trigger = triggerRef.current?.getBoundingClientRect();
+    const panel = contentRef.current?.getBoundingClientRect();
+    if (!trigger || !panel) return;
+    let left = align === "end" ? trigger.right - panel.width : align === "start" ? trigger.left : trigger.left + (trigger.width - panel.width) / 2;
+    left = Math.max(VIEWPORT_MARGIN, Math.min(left, window.innerWidth - panel.width - VIEWPORT_MARGIN));
+    let top = side === "bottom" ? trigger.bottom + gap : trigger.top - gap - panel.height;
+    top = Math.max(VIEWPORT_MARGIN, Math.min(top, window.innerHeight - panel.height - VIEWPORT_MARGIN));
+    setPosition((prev) => (prev && Math.abs(prev.left - left) < 0.5 && Math.abs(prev.top - top) < 0.5 ? prev : { left, top }));
+  }, [align, side, gap, triggerRef, contentRef]);
 
   useLayoutEffect(() => {
-    supportsShapeRef.current =
-      typeof CSS !== "undefined" &&
-      typeof CSS.supports === "function" &&
-      CSS.supports("clip-path", "shape(from 0px 0px, line to 1px 1px, close)");
-    geoRef.current = geo;
-    render(geo, progress.get());
-  }, [geo, progress, render]);
+    if (!open) {
+      setPosition(null);
+      return;
+    }
+    place();
+    const observer = new ResizeObserver(place);
+    if (contentRef.current) observer.observe(contentRef.current);
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+    };
+  }, [open, place, contentRef, mounted]);
 
-  useMotionValueEvent(progress, "change", (p) =>
-    render(geoRef.current, p),
-  );
-
-  const hoverHandlers =
-    triggerMode === "hover"
-      ? makeHoverHandlers(panelHover, openHover, scheduleClose)
-      : {};
-
-  if (!portalReady) return null;
+  if (!mounted || !open) return null;
 
   return createPortal(
     <div
-      data-popover-portal=""
-      className="pointer-events-none fixed left-0 top-0 z-[9999] isolate size-0"
-      style={{
-        visibility: layout ? "visible" : "hidden",
-        transform: `translate3d(${layout?.trigger.left ?? 0}px, ${layout?.trigger.top ?? 0}px, 0)`,
-      }}
+      ref={contentRef}
+      id={contentId}
+      role="dialog"
+      data-popover-panel=""
+      className={cn("fixed z-[9999]", position && "ethone-popover-in", className)}
+      // Invisible jusqu'à la première mesure : pas de flash à la mauvaise position.
+      style={{ left: position?.left ?? 0, top: position?.top ?? 0, visibility: position ? "visible" : "hidden" }}
     >
-      {useGoo && (
-        <svg aria-hidden width="0" height="0" className="absolute">
-          <title>Popover visual effects</title>
-          <defs>
-            <filter id={gooId} x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur
-                in="SourceGraphic"
-                stdDeviation={gooStrength}
-                result="blur"
-              />
-              <feColorMatrix
-                in="blur"
-                mode="matrix"
-                values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10"
-                result="goo"
-              />
-              <feComposite in="SourceGraphic" in2="goo" operator="atop" />
-            </filter>
-          </defs>
-        </svg>
-      )}
-
-      {useGoo && (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute z-[-1]"
-          style={{
-            left: geo.left,
-            top: geo.top,
-            width: geo.layerW,
-            height: geo.layerH,
-            filter: reduce ? undefined : `url(#${gooId})`,
-            clipPath: triggerCutout(geo),
-          }}
-        >
-          <div
-            className="absolute bg-[var(--panel-bg)]"
-            style={{
-              left: geo.trigger.x,
-              top: geo.trigger.y,
-              width: geo.trigger.w,
-              height: geo.trigger.h,
-              borderRadius: geo.trigger.r,
-            }}
-          />
-          <div
-            ref={blobRef}
-            className="absolute inset-0 bg-[var(--panel-bg)]"
-            style={{
-              clipPath: clipForProgress(geo, progress.get(), false),
-            }}
-          />
-        </div>
-      )}
-
-      <div
-        className="pointer-events-none absolute z-10"
-        style={{
-          left: geo.left,
-          top: geo.top,
-          width: geo.layerW,
-          height: geo.layerH,
-        }}
-      >
-        <div
-          ref={clipRef}
-          className="absolute inset-0"
-          style={{
-            clipPath: clipForProgress(geo, progress.get(), false),
-            pointerEvents: open ? "auto" : "none",
-          }}
-          {...hoverHandlers}
-        >
-          <div
-            ref={measureRef}
-            id={contentId}
-            role="dialog"
-            style={{
-              position: "absolute",
-              left: geo.panel.x,
-              top: geo.panel.y,
-              transformOrigin: `${ALIGN_ORIGIN[align]} ${side === "bottom" ? "top" : "bottom"}`,
-            }}
-            className={cn(
-              "w-max max-w-[min(92vw,20rem)] p-4 text-[var(--text-primary)] outline-none",
-              className,
-            )}
-          >
-            {children}
-          </div>
-        </div>
-      </div>
+      {children}
     </div>,
     document.body,
-    gooId,
   );
 }

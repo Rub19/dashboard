@@ -79,6 +79,67 @@ async function hashBackupCode(code) {
   return btoa(String.fromCharCode(...new Uint8Array(digest)));
 }
 
+// --- Protection au repos --------------------------------------------------------------------------------------------
+// Le secret TOTP est du matériel de clé symétrique : le serveur doit pouvoir le relire, donc on le CHIFFRE (AES-GCM)
+// au lieu de le stocker en clair, et les codes de secours sont hachés avec un POIVRE (HMAC) que la base ne contient pas.
+// Une fuite de la base seule ne donne alors ni secrets TOTP exploitables ni codes de secours attaquables hors ligne.
+// Clé : TOTP_ENCRYPTION_KEY (recommandé) ou, à défaut, AI_CREDENTIAL_MASTER_KEY ; deux sous-clés distinctes sont dérivées
+// (chiffrement / poivre). Sans clé configurée, on retombe sur l'ancien format (clair + SHA-256) plutôt que de bloquer.
+const SEALED_PREFIX = "enc1:";
+const PEPPER_PREFIX = "h2:";
+
+function masterKeyMaterial(env) {
+  const key = env?.TOTP_ENCRYPTION_KEY || env?.AI_CREDENTIAL_MASTER_KEY;
+  return typeof key === "string" && key.length >= 32 ? new TextEncoder().encode(key) : null;
+}
+
+async function deriveSubKeyBytes(master, label) {
+  const hmacKey = await crypto.subtle.importKey("raw", master, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return new Uint8Array(await crypto.subtle.sign("HMAC", hmacKey, new TextEncoder().encode(`ethone:totp:${label}`)));
+}
+
+const b64 = (bytes) => btoa(String.fromCharCode(...new Uint8Array(bytes)));
+const unb64 = (text) => Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
+
+/** Vrai si la valeur stockée est déjà chiffrée. */
+export function isSealedSecret(stored) {
+  return typeof stored === "string" && stored.startsWith(SEALED_PREFIX);
+}
+
+/** Chiffre le secret TOTP pour le stockage (inchangé si aucune clé n'est configurée). */
+export async function sealTotpSecret(env, secret) {
+  const master = masterKeyMaterial(env);
+  if (!master) return secret;
+  const key = await crypto.subtle.importKey("raw", await deriveSubKeyBytes(master, "secret"), "AES-GCM", false, ["encrypt"]);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(String(secret)));
+  return `${SEALED_PREFIX}${b64(iv)}.${b64(ciphertext)}`;
+}
+
+/** Relit le secret TOTP stocké : accepte l'ancien format en clair comme le format chiffré. */
+export async function openTotpSecret(env, stored) {
+  if (!isSealedSecret(stored)) return stored;
+  const master = masterKeyMaterial(env);
+  if (!master) throw new Error("TOTP_KEY_MISSING");
+  const [ivPart, ctPart] = stored.slice(SEALED_PREFIX.length).split(".");
+  const key = await crypto.subtle.importKey("raw", await deriveSubKeyBytes(master, "secret"), "AES-GCM", false, ["decrypt"]);
+  const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(ivPart) }, key, unb64(ctPart));
+  return new TextDecoder().decode(plain);
+}
+
+async function pepperedBackupHash(env, code) {
+  const master = masterKeyMaterial(env);
+  if (!master) return null;
+  const key = await crypto.subtle.importKey("raw", await deriveSubKeyBytes(master, "backup"), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const mac = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(String(code).toUpperCase().trim()));
+  return `${PEPPER_PREFIX}${b64(mac)}`;
+}
+
+/** Empreinte à stocker pour un code de secours (HMAC avec poivre si une clé est configurée, sinon SHA-256). */
+async function storedBackupHash(env, code) {
+  return (await pepperedBackupHash(env, code)) ?? (await hashBackupCode(code));
+}
+
 async function hmacSha1(key, message) {
   const cryptoKey = await crypto.subtle.importKey(
     "raw",
@@ -100,13 +161,13 @@ async function hmacSha1(key, message) {
   return String(code % 10 ** TOTP_DIGITS).padStart(TOTP_DIGITS, "0");
 }
 
-export async function generateTotpSecret(userId, email) {
+export async function generateTotpSecret(userId, email, env) {
   const raw = crypto.getRandomValues(new Uint8Array(20));
   const secret = base32Encode(raw);
   const accountName = encodeURIComponent(email || userId);
   const otpauth = `otpauth://totp/${TOTP_ISSUER}:${accountName}?secret=${secret}&issuer=${TOTP_ISSUER}&algorithm=${TOTP_ALGORITHM}&digits=${TOTP_DIGITS}&period=${TOTP_PERIOD}`;
   const backupCodes = Array.from({ length: BACKUP_CODE_COUNT }, () => randomBackupChars(BACKUP_CODE_LENGTH));
-  const backupCodeHashes = await Promise.all(backupCodes.map((code) => hashBackupCode(code)));
+  const backupCodeHashes = await Promise.all(backupCodes.map((code) => storedBackupHash(env, code)));
   // `secret` is the real base32 key: TOTP is symmetric key material the
   // server must read back verbatim to derive/verify codes (unlike a
   // password), so it — not a digest of it — is what gets persisted by the
@@ -160,16 +221,20 @@ export async function verifyTotpStep(secret, code, lastStep = -1) {
 // No early exit across candidates (mirrors verifyTotp's window loop above)
 // so the number of stored codes doesn't leak via response timing; the
 // per-candidate comparison itself is timing-safe.
-export async function verifyBackupCode(hashes, code) {
+export async function verifyBackupCode(hashes, code, env) {
   const list = Array.isArray(hashes) ? hashes : [];
   if (!list.length) return { valid: false, remainingHashes: list };
 
-  const candidateHash = await hashBackupCode(code);
-  const candidateBytes = new TextEncoder().encode(candidateHash);
+  // Deux formes possibles selon l'âge de l'enregistrement : « h2:… » (HMAC + poivre) ou SHA-256 historique.
+  const candidates = [new TextEncoder().encode(await hashBackupCode(code))];
+  const peppered = await pepperedBackupHash(env, code);
+  if (peppered) candidates.push(new TextEncoder().encode(peppered));
   let matchIndex = -1;
   for (let i = 0; i < list.length; i++) {
     const storedBytes = new TextEncoder().encode(String(list[i] || ""));
-    if (matchIndex === -1 && timingSafeEqual(storedBytes, candidateBytes)) matchIndex = i;
+    for (const candidate of candidates) {
+      if (matchIndex === -1 && timingSafeEqual(storedBytes, candidate)) matchIndex = i;
+    }
   }
 
   if (matchIndex === -1) return { valid: false, remainingHashes: list };

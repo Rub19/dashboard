@@ -33289,6 +33289,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_49_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_49_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_49_de);
 
+const v1_28_50_fr: ChangelogEntry = {
+  version: "v1.28.50",
+  date: "2026-09-24",
+  title: "2FA : secret chiffré et codes de secours protégés",
+  items: [
+    "Le secret TOTP n'est plus stocké en clair : il est chiffré (AES-GCM) avec une clé propre au Worker ; les secrets existants sont chiffrés à leur prochaine utilisation",
+    "Les codes de secours sont hachés avec un poivre (HMAC) absent de la base : une fuite de la base seule ne permet plus de les attaquer hors ligne ; les anciens codes restent valides",
+    "Migration SQL prête (verrou RLS « mfa_gate » : un JWT obtenu par mot de passe ne lit plus les tables d'un compte 2FA tant que la session n'est pas validée) — à appliquer par le propriétaire du projet",
+  ],
+};
+
+const v1_28_50_en: ChangelogEntry = {
+  version: "v1.28.50",
+  date: "2026-09-24",
+  title: "2FA: encrypted secret and protected backup codes",
+  items: [
+    "The TOTP secret is no longer stored in clear text: it is encrypted (AES-GCM) with a Worker-only key; existing secrets are encrypted on their next successful use",
+    "Backup codes are hashed with a pepper (HMAC) that is not in the database: a database leak alone no longer allows offline attacks; old codes remain valid",
+    "SQL migration ready (RLS 'mfa_gate' lock: a password-issued JWT can no longer read a 2FA account's tables until the session is verified) — to be applied by the project owner",
+  ],
+};
+
+const v1_28_50_es: ChangelogEntry = {
+  version: "v1.28.50",
+  date: "2026-09-24",
+  title: "2FA: secreto cifrado y códigos de respaldo protegidos",
+  items: [
+    "El secreto TOTP ya no se guarda en claro: se cifra (AES-GCM) con una clave exclusiva del Worker; los secretos existentes se cifran en su próximo uso correcto",
+    "Los códigos de respaldo se guardan con un pepper (HMAC) que no está en la base de datos: una filtración de la base por sí sola ya no permite ataques sin conexión; los códigos antiguos siguen siendo válidos",
+    "Migración SQL lista (bloqueo RLS 'mfa_gate': un JWT obtenido con contraseña ya no lee las tablas de una cuenta 2FA hasta validar la sesión) — debe aplicarla el propietario del proyecto",
+  ],
+};
+
+const v1_28_50_de: ChangelogEntry = {
+  version: "v1.28.50",
+  date: "2026-09-24",
+  title: "2FA: verschlüsseltes Geheimnis und geschützte Backup-Codes",
+  items: [
+    "Das TOTP-Geheimnis wird nicht mehr im Klartext gespeichert: Es wird mit einem nur dem Worker bekannten Schlüssel verschlüsselt (AES-GCM); bestehende Geheimnisse werden bei der nächsten erfolgreichen Nutzung verschlüsselt",
+    "Backup-Codes werden mit einem Pepper (HMAC) gehasht, der nicht in der Datenbank liegt: ein Datenbank-Leak allein erlaubt keine Offline-Angriffe mehr; alte Codes bleiben gültig",
+    "SQL-Migration bereit (RLS-Sperre 'mfa_gate': ein per Passwort erhaltenes JWT liest die Tabellen eines 2FA-Kontos erst nach Sitzungsbestätigung) — vom Projektinhaber anzuwenden",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_50_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_50_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_50_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_50_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

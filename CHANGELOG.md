@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.50 — 2026-09-24
+
+**2FA : secret chiffré et codes de secours protégés**
+
+- Le secret TOTP n'est plus stocké en clair : il est chiffré (AES-GCM) avec une clé propre au Worker ; les secrets existants sont chiffrés à leur prochaine utilisation
+- Les codes de secours sont hachés avec un poivre (HMAC) absent de la base : une fuite de la base seule ne permet plus de les attaquer hors ligne ; les anciens codes restent valides
+- Migration SQL prête (verrou RLS « mfa_gate » : un JWT obtenu par mot de passe ne lit plus les tables d'un compte 2FA tant que la session n'est pas validée) — à appliquer par le propriétaire du projet
+
 ## v1.28.49 — 2026-09-24
 
 **Pastilles Actif / Off sur chaque module du hub**

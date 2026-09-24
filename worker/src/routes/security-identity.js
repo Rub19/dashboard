@@ -31,7 +31,7 @@ import {
   deleteTotpRecord,
   insertSecurityEvent
 } from "../services/security-identity-client.js";
-import { generateTotpSecret, verifyTotpStep, verifyBackupCode } from "../services/totp-service.js";
+import { generateTotpSecret, verifyTotpStep, verifyBackupCode, sealTotpSecret, openTotpSecret, isSealedSecret } from "../services/totp-service.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -394,7 +394,7 @@ export async function totpSetupRoute({ request, env, auth }) {
     throw httpError("TOTP_ALREADY_ENABLED", 409);
   }
 
-  const { secret, otpauth, backupCodes, backupCodeHashes } = await generateTotpSecret(auth.userId, email);
+  const { secret, otpauth, backupCodes, backupCodeHashes } = await generateTotpSecret(auth.userId, email, env);
   // The real base32 secret is stored (not a hash of it): TOTP verification
   // has to re-derive codes from this value on every check, which is only
   // possible if the server can read it back verbatim — unlike a password,
@@ -402,7 +402,7 @@ export async function totpSetupRoute({ request, env, auth }) {
   // verification permanently impossible. Backup codes are the opposite: the
   // user redeems them by presenting the value itself, so only their hashes
   // are persisted, same as ethone_otp_codes' code_hash pattern.
-  const data = { secret, verified: false, backup: backupCodeHashes };
+  const data = { secret: await sealTotpSecret(env, secret), verified: false, backup: backupCodeHashes };
 
   if (existing) {
     // Setup was re-run before a previous attempt was verified (e.g. the user
@@ -428,7 +428,7 @@ export async function totpVerifySetupRoute({ request, env, auth }) {
   const record = await getTotpRecord(env, auth.userId);
   if (!record || !record.data?.secret) throw httpError("TOTP_NOT_SETUP", 400);
 
-  const pendingSecret = record.data.secret;
+  const pendingSecret = await openTotpSecret(env, record.data.secret);
   const step = await verifyTotpStep(pendingSecret, code, -1);
   if (step === null) throw httpError("TOTP_INVALID", 401);
 
@@ -460,10 +460,10 @@ export async function totpDisableRoute({ request, env, auth }) {
     if (hasCode) {
       const code = requireField(body, "code", CODE_RE, 6);
       const lastStep = Number.isFinite(record.data.lastStep) ? record.data.lastStep : -1;
-      valid = (await verifyTotpStep(record.data.secret, code, lastStep)) !== null;
+      valid = (await verifyTotpStep(await openTotpSecret(env, record.data.secret), code, lastStep)) !== null;
     } else {
       const backupCode = requireField(body, "backupCode", /^[0-9A-Za-z]{8}$/, 8);
-      valid = (await verifyBackupCode(record.data.backup, backupCode)).valid;
+      valid = (await verifyBackupCode(record.data.backup, backupCode, env)).valid;
     }
   } else {
     // Activation jamais terminée : rien à protéger, on autorise l'annulation.
@@ -509,12 +509,20 @@ export async function totpChallengeRoute({ request, env, auth }) {
   if (hasCode) {
     const code = requireField(body, "code", CODE_RE, 6);
     const lastStep = Number.isFinite(record.data.lastStep) ? record.data.lastStep : -1;
-    const step = await verifyTotpStep(record.data.secret, code, lastStep);
+    const plainSecret = await openTotpSecret(env, record.data.secret);
+    const step = await verifyTotpStep(plainSecret, code, lastStep);
     valid = step !== null;
-    if (valid) updatedData = { ...record.data, lastStep: step };
+    if (valid) {
+      updatedData = { ...record.data, lastStep: step };
+      // Migration au fil de l'eau : un secret encore en clair est chiffré dès sa prochaine utilisation réussie.
+      if (!isSealedSecret(record.data.secret)) {
+        const sealed = await sealTotpSecret(env, plainSecret);
+        if (isSealedSecret(sealed)) updatedData.secret = sealed;
+      }
+    }
   } else {
     const backupCode = requireField(body, "backupCode", /^[0-9A-Za-z]{8}$/, 8);
-    const result = await verifyBackupCode(record.data.backup, backupCode);
+    const result = await verifyBackupCode(record.data.backup, backupCode, env);
     valid = result.valid;
     if (valid) updatedData = { ...record.data, backup: result.remainingHashes };
   }

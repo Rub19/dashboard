@@ -176,7 +176,7 @@ export default function BotLanding() {
 
         {/* Fonctionnalités */}
         <section id="fonctionnalites" className="mx-auto w-full max-w-6xl scroll-mt-6 px-5 py-20">
-          <div className="max-w-2xl">
+          <div className="max-w-3xl">
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Ce que le bot fait pour vous</h2>
             <p className="mt-3 text-zinc-400">Des modules indépendants : activez seulement ce dont votre serveur a besoin.</p>
           </div>

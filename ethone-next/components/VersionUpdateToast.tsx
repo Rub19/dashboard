@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpCircle, RefreshCw, X, Sparkles } from "@/components/icons/ph";
 import { useVersionChecker } from "@/lib/hooks/useVersionChecker";
@@ -24,6 +25,7 @@ const ChangelogModal = dynamic(() => import("@/components/ChangelogModal"));
 
 export default function VersionUpdateToast() {
   const i18n = useI18n();
+  const pathname = usePathname();
   const { settings } = useSettings();
   const { hasUpdate, newVersion, newData, dismiss } = useVersionChecker();
   const [isUpdating, setIsUpdating] = useState(false);
@@ -59,6 +61,9 @@ export default function VersionUpdateToast() {
   // title (that card's heading starts ~136px down on a 768px-tall viewport).
   // A single slim row fits the gap below the top bar on every page instead
   // of needing one.
+  // Page vitrine publique : pas de bandeau d'application par-dessus.
+  if (pathname === "/bot" || pathname?.startsWith("/bot/")) return null;
+
   return (
     <>
       <AnimatePresence>

@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.55 — 2026-09-24
+
+**Finitions de la page vitrine**
+
+- Le bandeau de mise à jour n'apparaît plus par-dessus la page publique du bot
+- Titre de la section Fonctionnalités sur une seule ligne
+
 ## v1.28.54 — 2026-09-24
 
 **Pages publiques accessibles aux comptes connectés**

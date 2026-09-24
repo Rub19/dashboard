@@ -33526,6 +33526,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_54_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_54_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_54_de);
 
+const v1_28_55_fr: ChangelogEntry = {
+  version: "v1.28.55",
+  date: "2026-09-24",
+  title: "Finitions de la page vitrine",
+  items: [
+    "Le bandeau de mise à jour n'apparaît plus par-dessus la page publique du bot",
+    "Titre de la section Fonctionnalités sur une seule ligne",
+  ],
+};
+
+const v1_28_55_en: ChangelogEntry = {
+  version: "v1.28.55",
+  date: "2026-09-24",
+  title: "Public page polish",
+  items: [
+    "The update banner no longer appears over the public bot page",
+    "Features section heading fits on one line",
+  ],
+};
+
+const v1_28_55_es: ChangelogEntry = {
+  version: "v1.28.55",
+  date: "2026-09-24",
+  title: "Retoques de la página pública",
+  items: [
+    "El aviso de actualización ya no aparece sobre la página pública del bot",
+    "El título de la sección Funciones cabe en una sola línea",
+  ],
+};
+
+const v1_28_55_de: ChangelogEntry = {
+  version: "v1.28.55",
+  date: "2026-09-24",
+  title: "Feinschliff der öffentlichen Seite",
+  items: [
+    "Der Update-Hinweis erscheint nicht mehr über der öffentlichen Bot-Seite",
+    "Die Überschrift des Funktionsbereichs passt in eine Zeile",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_55_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_55_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_55_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_55_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

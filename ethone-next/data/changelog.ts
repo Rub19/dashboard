@@ -33665,6 +33665,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_57_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_57_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_57_de);
 
+const v1_28_58_fr: ChangelogEntry = {
+  version: "v1.28.58",
+  date: "2026-09-24",
+  title: "Nouvelle bannière du bot",
+  items: [
+    "Bannière du bot refaite dans l'esprit du site et de l'avatar : fond sombre ETHONE, trame de points fine, arcs dégradés violet / bleu / vert, mot ETHONE plus grand et rangée des fonctions du bot ; le coin bas-gauche reste libre pour l'avatar",
+  ],
+};
+
+const v1_28_58_en: ChangelogEntry = {
+  version: "v1.28.58",
+  date: "2026-09-24",
+  title: "New bot banner",
+  items: [
+    "Bot banner redone in the spirit of the site and the avatar: dark ETHONE background, fine dot grid, violet / blue / green gradient arcs, larger ETHONE wordmark and a row of the bot's features; the bottom-left corner stays clear for the avatar",
+  ],
+};
+
+const v1_28_58_es: ChangelogEntry = {
+  version: "v1.28.58",
+  date: "2026-09-24",
+  title: "Nuevo banner del bot",
+  items: [
+    "Banner del bot rehecho con el espíritu del sitio y del avatar: fondo oscuro ETHONE, trama de puntos fina, arcos degradados violeta / azul / verde, palabra ETHONE más grande y fila de funciones del bot; la esquina inferior izquierda queda libre para el avatar",
+  ],
+};
+
+const v1_28_58_de: ChangelogEntry = {
+  version: "v1.28.58",
+  date: "2026-09-24",
+  title: "Neues Bot-Banner",
+  items: [
+    "Bot-Banner im Stil von Website und Avatar neu gestaltet: dunkler ETHONE-Hintergrund, feines Punktraster, Bögen mit Violett-Blau-Grün-Verlauf, größerer ETHONE-Schriftzug und eine Reihe der Bot-Funktionen; die untere linke Ecke bleibt für den Avatar frei",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_58_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_58_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_58_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_58_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

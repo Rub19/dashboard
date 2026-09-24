@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.58 — 2026-09-24
+
+**Nouvelle bannière du bot**
+
+- Bannière du bot refaite dans l'esprit du site et de l'avatar : fond sombre ETHONE, trame de points fine, arcs dégradés violet / bleu / vert, mot ETHONE plus grand et rangée des fonctions du bot ; le coin bas-gauche reste libre pour l'avatar
+
 ## v1.28.57 — 2026-09-24
 
 **Photo de profil du bot dans l'esprit ETHONE**

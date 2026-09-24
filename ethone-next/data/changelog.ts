@@ -33853,6 +33853,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_61_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_61_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_61_de);
 
+const v1_28_62_fr: ChangelogEntry = {
+  version: "v1.28.62",
+  date: "2026-09-24",
+  title: "Correctifs des menus de la barre du haut",
+  items: [
+    "Les menus passent maintenant au-dessus du bandeau de mise à jour (il masquait l'en-tête du menu profil)",
+    "La ligne « Se déconnecter » n'a plus de fond rose plein, seulement un texte rouge",
+  ],
+};
+
+const v1_28_62_en: ChangelogEntry = {
+  version: "v1.28.62",
+  date: "2026-09-24",
+  title: "Top bar menu fixes",
+  items: [
+    "Menus now appear above the update banner (it was hiding the profile menu header)",
+    "The 'Sign out' row no longer has a solid pink background, just red text",
+  ],
+};
+
+const v1_28_62_es: ChangelogEntry = {
+  version: "v1.28.62",
+  date: "2026-09-24",
+  title: "Correcciones de los menús de la barra superior",
+  items: [
+    "Los menús aparecen ahora por encima del aviso de actualización (tapaba la cabecera del menú de perfil)",
+    "La fila «Cerrar sesión» ya no tiene fondo rosa sólido, solo texto rojo",
+  ],
+};
+
+const v1_28_62_de: ChangelogEntry = {
+  version: "v1.28.62",
+  date: "2026-09-24",
+  title: "Korrekturen der Menüs der oberen Leiste",
+  items: [
+    "Menüs erscheinen jetzt über dem Update-Hinweis (er verdeckte den Kopf des Profilmenüs)",
+    "Die Zeile „Abmelden“ hat keinen vollflächig rosa Hintergrund mehr, nur roten Text",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_62_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_62_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_62_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_62_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

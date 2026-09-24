@@ -326,7 +326,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
 
             {/* Déconnexion */}
             {!confirmSignOut ? (
-              <button type="button" data-testid="profile-logout-button" data-tone="danger" onClick={() => setConfirmSignOut(true)} className="ethone-menu-item">
+              <button type="button" data-testid="profile-logout-button" data-menu-tone="danger" onClick={() => setConfirmSignOut(true)} className="ethone-menu-item">
                 <LogOut className="h-4 w-4" />
                 <span>{i18n("tbSignOut", "Se déconnecter")}</span>
               </button>

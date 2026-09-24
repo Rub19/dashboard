@@ -192,9 +192,9 @@ export function PopoverContent({ children, className }: PopoverContentProps) {
       id={contentId}
       role="dialog"
       data-popover-panel=""
-      className={cn("fixed z-[9999]", position && "ethone-popover-in", className)}
+      className={cn("fixed", position && "ethone-popover-in", className)}
       // Invisible jusqu'à la première mesure : pas de flash à la mauvaise position.
-      style={{ left: position?.left ?? 0, top: position?.top ?? 0, visibility: position ? "visible" : "hidden" }}
+      style={{ left: position?.left ?? 0, top: position?.top ?? 0, zIndex: 10000, visibility: position ? "visible" : "hidden" }}
     >
       {children}
     </div>,

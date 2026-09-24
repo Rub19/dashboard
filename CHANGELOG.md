@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.62 — 2026-09-24
+
+**Correctifs des menus de la barre du haut**
+
+- Les menus passent maintenant au-dessus du bandeau de mise à jour (il masquait l'en-tête du menu profil)
+- La ligne « Se déconnecter » n'a plus de fond rose plein, seulement un texte rouge
+
 ## v1.28.61 — 2026-09-24
 
 **Menus de la barre du haut : nouveau fond et contenu allégé**

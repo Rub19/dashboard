@@ -51,8 +51,8 @@ html[data-color-scheme="light"] {
   flex-shrink: 0;
   color: var(--text-muted);
 }
-.ethone-menu-item[data-tone="danger"],
-.ethone-menu-item[data-tone="danger"] > svg {
+.ethone-menu-item[data-menu-tone="danger"],
+.ethone-menu-item[data-menu-tone="danger"] > svg {
   color: var(--danger, #f43f5e);
 }
 .ethone-menu-sep {

@@ -325,7 +325,8 @@ async function runFullSyncQA() {
   // Test /api/sync/status
   const statusRes = await fetch(`${baseUrl}/api/sync/status`).then((r) => r.json() as any);
   assert(statusRes.success === true, 'GET /api/sync/status returns status ok');
-  assert(statusRes.data.ownerId === OWNER_ID, 'GET /api/sync/status confirms bot owner');
+  // L'identifiant du propriétaire du bot ne doit plus être exposé sur cette route publique (fuite d'information).
+  assert(!('ownerId' in statusRes.data), 'GET /api/sync/status does not expose the bot owner id');
 
   const ownerToken = jwt.sign(
     {

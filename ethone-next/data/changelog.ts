@@ -33571,6 +33571,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_55_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_55_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_55_de);
 
+const v1_28_56_fr: ChangelogEntry = {
+  version: "v1.28.56",
+  date: "2026-09-24",
+  title: "Nouvelle identité Discord du bot et CI du bot corrigée",
+  items: [
+    "Photo de profil du bot refaite : bouclier blanc sur fond violet-bleu avec un « E » en négatif, en version animée (fond qui tourne, reflet qui traverse) ; motif simple et lisible même en tout petit",
+    "Bannière refaite au bon format de profil Discord (5:2) : fond nuit sarcelle à courbes de niveau, mot ETHONE et fonctions du bot, le coin bas-gauche restant libre pour l'avatar",
+    "Le workflow « Discord Bot CI » qui échouait est corrigé : le test de synchronisation attendait encore l'identifiant du propriétaire du bot, retiré volontairement de /api/sync/status pour la sécurité",
+  ],
+};
+
+const v1_28_56_en: ChangelogEntry = {
+  version: "v1.28.56",
+  date: "2026-09-24",
+  title: "New Discord bot identity and bot CI fixed",
+  items: [
+    "Bot profile picture redesigned: white shield on a violet-blue background with a negative-space 'E', animated version (rotating background, sweeping glint); simple and legible even at tiny sizes",
+    "Banner redone in the Discord profile ratio (5:2): teal night background with contour lines, ETHONE wordmark and the bot's features, bottom-left corner kept clear for the avatar",
+    "The failing 'Discord Bot CI' workflow is fixed: the sync test still expected the bot owner id, deliberately removed from /api/sync/status for security",
+  ],
+};
+
+const v1_28_56_es: ChangelogEntry = {
+  version: "v1.28.56",
+  date: "2026-09-24",
+  title: "Nueva identidad de Discord del bot y CI del bot corregida",
+  items: [
+    "Foto de perfil del bot rediseñada: escudo blanco sobre fondo violeta-azul con una «E» en negativo, versión animada (fondo que gira, reflejo que cruza); motivo simple y legible incluso muy pequeño",
+    "Banner rehecho en el formato de perfil de Discord (5:2): fondo nocturno turquesa con curvas de nivel, palabra ETHONE y funciones del bot, con la esquina inferior izquierda libre para el avatar",
+    "Corregido el workflow «Discord Bot CI» que fallaba: la prueba de sincronización aún esperaba el id del propietario del bot, retirado a propósito de /api/sync/status por seguridad",
+  ],
+};
+
+const v1_28_56_de: ChangelogEntry = {
+  version: "v1.28.56",
+  date: "2026-09-24",
+  title: "Neue Discord-Identität des Bots und Bot-CI repariert",
+  items: [
+    "Profilbild des Bots neu gestaltet: weißes Schild auf violett-blauem Hintergrund mit ausgespartem „E“, animierte Version (drehender Hintergrund, wandernder Glanz); einfach und auch winzig gut lesbar",
+    "Banner im Discord-Profilformat (5:2) neu erstellt: nachtblau-türkiser Hintergrund mit Höhenlinien, ETHONE-Schriftzug und Bot-Funktionen, untere linke Ecke bleibt für den Avatar frei",
+    "Der fehlschlagende Workflow „Discord Bot CI“ ist repariert: Der Sync-Test erwartete noch die Besitzer-ID des Bots, die aus Sicherheitsgründen aus /api/sync/status entfernt wurde",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_56_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_56_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_56_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_56_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

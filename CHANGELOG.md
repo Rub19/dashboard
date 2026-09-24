@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.56 — 2026-09-24
+
+**Nouvelle identité Discord du bot et CI du bot corrigée**
+
+- Photo de profil du bot refaite : bouclier blanc sur fond violet-bleu avec un « E » en négatif, en version animée (fond qui tourne, reflet qui traverse) ; motif simple et lisible même en tout petit
+- Bannière refaite au bon format de profil Discord (5:2) : fond nuit sarcelle à courbes de niveau, mot ETHONE et fonctions du bot, le coin bas-gauche restant libre pour l'avatar
+- Le workflow « Discord Bot CI » qui échouait est corrigé : le test de synchronisation attendait encore l'identifiant du propriétaire du bot, retiré volontairement de /api/sync/status pour la sécurité
+
 ## v1.28.55 — 2026-09-24
 
 **Finitions de la page vitrine**

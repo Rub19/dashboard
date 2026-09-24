@@ -33620,6 +33620,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_56_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_56_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_56_de);
 
+const v1_28_57_fr: ChangelogEntry = {
+  version: "v1.28.57",
+  date: "2026-09-24",
+  title: "Photo de profil du bot dans l'esprit ETHONE",
+  items: [
+    "Nouvelle photo de profil du bot, sobre et fidèle à ETHONE : fond sombre uni, « E » blanc franc et liseré circulaire dégradé violet / bleu / vert, sans halo ni effet ; en version animée, seul le dégradé du liseré tourne lentement",
+    "La bannière (fond sarcelle à courbes de niveau, mot ETHONE) reste inchangée",
+  ],
+};
+
+const v1_28_57_en: ChangelogEntry = {
+  version: "v1.28.57",
+  date: "2026-09-24",
+  title: "Bot profile picture in the ETHONE spirit",
+  items: [
+    "New bot profile picture, sober and true to ETHONE: solid dark background, bold white 'E' and a violet / blue / green gradient ring, no glow or effects; in the animated version only the ring gradient slowly rotates",
+    "The banner (teal contour-line background, ETHONE wordmark) is unchanged",
+  ],
+};
+
+const v1_28_57_es: ChangelogEntry = {
+  version: "v1.28.57",
+  date: "2026-09-24",
+  title: "Foto de perfil del bot con el espíritu de ETHONE",
+  items: [
+    "Nueva foto de perfil del bot, sobria y fiel a ETHONE: fondo oscuro liso, «E» blanca y un aro con degradado violeta / azul / verde, sin halos ni efectos; en la versión animada solo gira lentamente el degradado del aro",
+    "El banner (fondo turquesa con curvas de nivel, palabra ETHONE) no cambia",
+  ],
+};
+
+const v1_28_57_de: ChangelogEntry = {
+  version: "v1.28.57",
+  date: "2026-09-24",
+  title: "Profilbild des Bots im ETHONE-Stil",
+  items: [
+    "Neues, schlichtes Profilbild des Bots im ETHONE-Stil: einfarbig dunkler Hintergrund, kräftiges weißes „E“ und ein Ring mit Violett-Blau-Grün-Verlauf, ohne Leuchteffekte; in der animierten Version dreht sich nur der Ringverlauf langsam",
+    "Das Banner (türkiser Hintergrund mit Höhenlinien, ETHONE-Schriftzug) bleibt unverändert",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_57_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_57_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_57_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_57_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

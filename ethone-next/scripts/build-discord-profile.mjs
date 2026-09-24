@@ -1,8 +1,8 @@
 /**
- * Génère l'identité Discord du bot. Deux créations distinctes (pas le logo du site) :
- *   - Avatar   : bouclier blanc sur fond violet-bleu uni ; l'intérieur dessine un « E » (clin d'œil à ETHONE) en
- *                négatif. Motif simple, centré, lisible jusqu'à 32 px, dans le cercle de sécurité de Discord.
- *                Version statique PNG et version animée GIF (fond qui tourne, reflet qui traverse le bouclier).
+ * Génère l'identité Discord du bot (avatar et bannière) :
+ *   - Avatar   : l'esprit ETHONE d'origine, sans effets : fond sombre uni, « E » blanc franc et fin liseré circulaire
+ *                dégradé violet / bleu ciel / vert. Version statique PNG et version animée GIF (seul le dégradé du
+ *                liseré tourne lentement). Tout reste dans le cercle de sécurité de Discord, lisible jusqu'à 32 px.
  *   - Bannière : 1500x600 (ratio 5:2 = celui du profil Discord), fond nuit vert-sarcelle à courbes de niveau, mot
  *                ETHONE tracé et rangée des fonctions du bot. Le coin bas-gauche reste libre : l'avatar le recouvre.
  * Lettres et formes sont tracées (pas de police), donc identiques partout.
@@ -20,33 +20,22 @@ const branding = resolve(root, "public/branding");
 await mkdir(branding, { recursive: true });
 
 // --- Avatar ------------------------------------------------------------------------------------------------------------
-// Bouclier (repère 100x100) et « E » en négatif à l'intérieur : une tige et trois barres.
-const SHIELD = "M50 9 L85 21 V47 C85 69 70 84 50 92 C30 84 15 69 15 47 V21 Z";
-const E_BARS = `<rect x="35" y="33" width="9" height="39" rx="4.5"/><rect x="35" y="33" width="31" height="9" rx="4.5"/><rect x="35" y="47.5" width="24" height="9" rx="4.5"/><rect x="35" y="63" width="31" height="9" rx="4.5"/>`;
+// Repère 100x100. « E » tracé comme celui du logo (tige + trois barres, extrémités arrondies).
+const E_PATH = "M37 27v46m0-46h29M37 50h21M37 73h29";
 
-/** `t` ∈ [0,1[ : la boucle est continue (angle du fond et position du reflet sont périodiques). */
-function avatarSvg(t = 0.12, animated = false) {
-  const angle = animated ? t * 360 : 35;
-  const glintX = animated ? -60 + t * 220 : -200;
-  const breathe = animated ? 1 + 0.018 * Math.sin(t * Math.PI * 2) : 1;
+/** `t` ∈ [0,1[ : l'angle du dégradé du liseré est périodique, donc la boucle est continue. */
+function avatarSvg(t = 0, animated = false) {
+  const angle = animated ? t * 360 : 40;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1" gradientTransform="rotate(${angle.toFixed(2)} 0.5 0.5)">
-      <stop offset="0" stop-color="#7c5cff"/><stop offset="0.55" stop-color="#5b46f0"/><stop offset="1" stop-color="#2f6bff"/>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1" gradientTransform="rotate(${angle.toFixed(2)} 0.5 0.5)">
+      <stop offset="0" stop-color="#8b5cf6"/><stop offset="0.5" stop-color="#38bdf8"/><stop offset="1" stop-color="#34d399"/>
     </linearGradient>
-    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dfe4ff"/></linearGradient>
-    <linearGradient id="glint" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
-    <clipPath id="shieldClip"><path d="${SHIELD}"/></clipPath>
-    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="2.2" stdDeviation="2.6" flood-color="#150c55" flood-opacity="0.45"/></filter>
-    <mask id="ebars"><rect width="100" height="100" fill="#fff"/><g fill="#000">${E_BARS}</g></mask>
+    <linearGradient id="face" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#171822"/><stop offset="1" stop-color="#0b0c12"/></linearGradient>
   </defs>
-  <rect width="100" height="100" fill="url(#bg)"/>
-  <circle cx="50" cy="50" r="46" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="0.6"/>
-  <circle cx="50" cy="50" r="38" fill="none" stroke="#fff" stroke-opacity="0.07" stroke-width="0.6"/>
-  <g transform="translate(50 50) scale(${breathe.toFixed(4)}) translate(-50 -50)">
-    <g filter="url(#shadow)"><path d="${SHIELD}" fill="url(#shield)" stroke="url(#shield)" stroke-width="3" stroke-linejoin="round" mask="url(#ebars)"/></g>
-    <g clip-path="url(#shieldClip)"><rect x="${glintX.toFixed(1)}" y="-10" width="26" height="120" fill="url(#glint)" opacity="0.55" transform="rotate(20 50 50)"/></g>
-  </g>
+  <rect width="100" height="100" fill="url(#face)"/>
+  <circle cx="50" cy="50" r="44" fill="none" stroke="url(#ring)" stroke-width="3.2"/>
+  <path d="${E_PATH}" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
 }
 
@@ -60,7 +49,7 @@ for (let i = 0; i < FRAMES; i++) {
 await sharp(frames, { join: { across: 1, animated: true } })
   .gif({ delay: new Array(FRAMES).fill(DELAY_MS), loop: 0, effort: 7, dither: 0.6, colours: 256 })
   .toFile(resolve(branding, "ethone-discord-avatar-animated.gif"));
-await sharp(Buffer.from(avatarSvg(0.12, false)), { density: 768 }).resize(1024, 1024).png({ compressionLevel: 9 }).toFile(resolve(branding, "ethone-discord-avatar-v2.png"));
+await sharp(Buffer.from(avatarSvg(0, false)), { density: 768 }).resize(1024, 1024).png({ compressionLevel: 9 }).toFile(resolve(branding, "ethone-discord-avatar-v2.png"));
 
 // --- Bannière ----------------------------------------------------------------------------------------------------------
 const W = 1500;

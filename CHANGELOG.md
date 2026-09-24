@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.57 — 2026-09-24
+
+**Photo de profil du bot dans l'esprit ETHONE**
+
+- Nouvelle photo de profil du bot, sobre et fidèle à ETHONE : fond sombre uni, « E » blanc franc et liseré circulaire dégradé violet / bleu / vert, sans halo ni effet ; en version animée, seul le dégradé du liseré tourne lentement
+- La bannière (fond sarcelle à courbes de niveau, mot ETHONE) reste inchangée
+
 ## v1.28.56 — 2026-09-24
 
 **Nouvelle identité Discord du bot et CI du bot corrigée**

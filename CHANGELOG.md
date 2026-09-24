@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.48 — 2026-09-24
+
+**Nouvelle photo de profil et bannière du bot**
+
+- Le bot Discord a une nouvelle photo de profil (prisme lumineux) et une bannière sans texte, générées par scripts/build-discord-profile.mjs
+- Anciennes images sauvegardées sur le serveur du bot
+
 ## v1.28.47 — 2026-09-24
 
 **Fonds uniformes sur toutes les pages**

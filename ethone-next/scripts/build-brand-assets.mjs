@@ -1,6 +1,7 @@
 /**
- * Génère l'emblème ETHONE (« prisme » : trois facettes violet / bleu ciel / vert, sans aucune lettre) et toutes
+ * Génère l'emblème ETHONE (monogramme « E » blanc sur tuile sombre à liseré violet / bleu ciel / vert) et toutes
  * ses variantes : SVG, favicons, icônes d'application (dont « maskable »), image de profil du bot Discord.
+ * La photo de profil du bot (public/branding/ethone-discord-avatar-v2.png) et la bannière viennent de build-discord-profile.mjs.
  *
  * Usage (depuis ethone-next/) : node scripts/build-brand-assets.mjs
  * Écrit dans public/icons/ et public/branding/. La même géométrie est reprise dans components/BrandMark.tsx.
@@ -16,39 +17,16 @@ const branding = resolve(root, "public/branding");
 await mkdir(icons, { recursive: true });
 await mkdir(branding, { recursive: true });
 
-// --- géométrie (viewBox 64) : hexagone de rayon R autour du centre, coupé en trois losanges (cube isométrique)
-const C = 32;
-const R = 19;
-const pt = (deg) => [C + R * Math.cos((deg * Math.PI) / 180), C + R * Math.sin((deg * Math.PI) / 180)];
-const top = pt(-90), ur = pt(-30), lr = pt(30), bottom = pt(90), ll = pt(150), ul = pt(210);
-const center = [C, C];
-const FACETS = {
-  top: [top, ur, center, ul],
-  left: [ul, center, bottom, ll],
-  right: [ur, lr, bottom, center],
-};
-/** Rétrécit un polygone vers son centre pour laisser un fin joint clair entre les facettes. */
-function inset(points, k) {
-  const cx = points.reduce((a, p) => a + p[0], 0) / points.length;
-  const cy = points.reduce((a, p) => a + p[1], 0) / points.length;
-  return points.map(([x, y]) => [cx + (x - cx) * k, cy + (y - cy) * k]);
-}
-const fmt = (points) => points.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(" ");
-const facet = (name, fill, k = 0.93) =>
-  `<polygon points="${fmt(inset(FACETS[name], k))}" fill="${fill}" stroke="${fill}" stroke-width="1.6" stroke-linejoin="round"/>`;
+// --- monogramme « E » (viewBox 64), tracé en trait épais aux extrémités arrondies
+const E_PATH = "M21 19v26m0-26h22M21 32h16M21 45h22";
 
 const DEFS = `<defs>
     <linearGradient id="ethone-surface" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#181822"/><stop offset="50%" stop-color="#101018"/><stop offset="100%" stop-color="#08080c"/></linearGradient>
     <linearGradient id="ethone-signal" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="50%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#34d399"/></linearGradient>
-    <linearGradient id="ethone-top" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#c4b5fd"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient>
-    <linearGradient id="ethone-left" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7dd3fc"/><stop offset="100%" stop-color="#0ea5e9"/></linearGradient>
-    <linearGradient id="ethone-right" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6ee7b7"/><stop offset="100%" stop-color="#10b981"/></linearGradient>
     <filter id="ethone-glow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#8b5cf6" flood-opacity="0.35"/></filter>
   </defs>`;
 
-const MARK = `${facet("top", "url(#ethone-top)")}
-  ${facet("left", "url(#ethone-left)")}
-  ${facet("right", "url(#ethone-right)")}`;
+const MARK = `<path d="${E_PATH}" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
 
 const fullSvg = (extra = "") => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="ETHONE" style="shape-rendering: geometricPrecision;">
   ${DEFS}
@@ -59,10 +37,8 @@ const fullSvg = (extra = "") => `<svg xmlns="http://www.w3.org/2000/svg" viewBox
 </svg>
 `;
 
-// Version « mask-icon » (Safari, monochrome) : les trois facettes en noir avec leurs joints.
-const maskSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><g fill="#000">${["top", "left", "right"]
-  .map((n) => `<polygon points="${fmt(inset(FACETS[n], 0.93))}"/>`)
-  .join("")}</g></svg>
+// Version « mask-icon » (Safari, monochrome) : le « E » en noir.
+const maskSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="${E_PATH}" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 `;
 
 // Version « maskable » : fond plein jusqu'aux bords, emblème réduit dans la zone de sécurité (80 %).
@@ -117,7 +93,4 @@ const entries = bufs.map((b, i) => {
 });
 await writeFile(resolve(icons, "favicon.ico"), Buffer.concat([header, ...entries, ...bufs]));
 
-// Extrait à copier dans components/BrandMark.tsx (mêmes points).
-console.log("BrandMark facets:");
-for (const n of ["top", "left", "right"]) console.log(`  ${n}: ${fmt(inset(FACETS[n], 0.93))}`);
 console.log("assets écrits dans public/icons et public/branding");

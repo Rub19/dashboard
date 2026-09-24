@@ -1,6 +1,6 @@
 /**
- * Génère l'image de profil et la bannière du bot Discord (sans aucun texte : uniquement l'emblème « prisme » et des
- * halos aurore violet / bleu ciel / vert).
+ * Génère l'image de profil et la bannière du bot Discord à partir de l'emblème ETHONE (tuile sombre, monogramme « E »
+ * blanc, liseré violet / bleu ciel / vert) posé sur des halos aurore. La bannière ne contient pas d'autre texte.
  *
  * Usage (depuis ethone-next/) : node scripts/build-discord-profile.mjs
  * Écrit dans public/branding/ : ethone-discord-avatar-v2.png (1024), ethone-discord-banner.png (1700x600).
@@ -14,33 +14,24 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const branding = resolve(root, "public/branding");
 await mkdir(branding, { recursive: true });
 
-// Emblème : hexagone (rayon 19 dans un repère 64) coupé en trois losanges, comme components/BrandMark.tsx.
-const C = 32;
-const R = 19;
-const pt = (deg) => [C + R * Math.cos((deg * Math.PI) / 180), C + R * Math.sin((deg * Math.PI) / 180)];
-const [top, ur, lr, bottom, ll, ul] = [-90, -30, 30, 90, 150, 210].map(pt);
-const center = [C, C];
-const FACETS = { top: [top, ur, center, ul], left: [ul, center, bottom, ll], right: [ur, lr, bottom, center] };
-function inset(points, k) {
-  const cx = points.reduce((a, p) => a + p[0], 0) / points.length;
-  const cy = points.reduce((a, p) => a + p[1], 0) / points.length;
-  return points.map(([x, y]) => [cx + (x - cx) * k, cy + (y - cy) * k]);
-}
-const fmt = (points) => points.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(" ");
-const facet = (name, fill) => `<polygon points="${fmt(inset(FACETS[name], 0.93))}" fill="${fill}" stroke="${fill}" stroke-width="1.4" stroke-linejoin="round"/>`;
+// Emblème : même tuile que public/icons/ethone-icon.svg (viewBox 64).
+const E_PATH = "M21 19v26m0-26h22M21 32h16M21 45h22";
 
 const GRADIENTS = `
-    <linearGradient id="top" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ddd6fe"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient>
-    <linearGradient id="left" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#bae6fd"/><stop offset="100%" stop-color="#0ea5e9"/></linearGradient>
-    <linearGradient id="right" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a7f3d0"/><stop offset="100%" stop-color="#10b981"/></linearGradient>
+    <linearGradient id="surface" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1a26"/><stop offset="55%" stop-color="#101018"/><stop offset="100%" stop-color="#08080c"/></linearGradient>
     <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="50%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#34d399"/></linearGradient>
     <filter id="blur-xl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="70"/></filter>
     <filter id="blur-md" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"/></filter>
     <filter id="soft-shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="3.2" flood-color="#0b0b14" flood-opacity="0.55"/></filter>`;
 
-const mark = `<g filter="url(#soft-shadow)">${facet("top", "url(#top)")}${facet("left", "url(#left)")}${facet("right", "url(#right)")}</g>`;
+const mark = `<g filter="url(#soft-shadow)">
+    <rect x="2" y="2" width="60" height="60" rx="18" fill="url(#ring)"/>
+    <rect x="3.5" y="3.5" width="57" height="57" rx="16.5" fill="url(#surface)"/>
+    <path d="M6 18C6 11.3726 11.3726 6 18 6H46C52.6274 6 58 11.3726 58 18V24C58 24 43 28 32 28C21 28 6 24 6 24V18Z" fill="white" fill-opacity="0.05"/>
+    <path d="${E_PATH}" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>`;
 
-// --- Avatar : fond nuit, halo aurore derrière un prisme grand, anneau fin (Discord arrondit l'image).
+// --- Avatar : fond nuit, halo aurore derrière la tuile « E », anneau fin (Discord arrondit l'image).
 const avatarSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
   <defs>${GRADIENTS}
     <radialGradient id="bg" cx="50%" cy="42%" r="75%"><stop offset="0%" stop-color="#1b1b2e"/><stop offset="60%" stop-color="#0d0d16"/><stop offset="100%" stop-color="#07070c"/></radialGradient>
@@ -53,10 +44,10 @@ const avatarSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 102
   </g>
   <circle cx="512" cy="512" r="470" fill="none" stroke="url(#ring)" stroke-width="5" opacity="0.7"/>
   <circle cx="512" cy="512" r="440" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.10"/>
-  <g transform="translate(512 512) scale(13.6) translate(-32 -32)">${mark}</g>
+  <g transform="translate(512 512) scale(10.6) translate(-32 -32)">${mark}</g>
 </svg>`;
 
-// --- Bannière 1700x600 : halos, trame de losanges très discrète, prisme à droite, arcs lumineux.
+// --- Bannière 1700x600 : halos, trame de points très discrète, tuile « E » à droite, arcs lumineux.
 const W = 1700;
 const H = 600;
 const dots = [];
@@ -81,9 +72,8 @@ const bannerSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H
   ${dots.join("")}
   <path d="M-40 470 C 420 330, 860 560, 1740 250" fill="none" stroke="url(#arc)" stroke-width="3" opacity="0.8"/>
   <path d="M-40 510 C 480 380, 900 600, 1740 300" fill="none" stroke="url(#arc)" stroke-width="1.5" opacity="0.45"/>
-  <g filter="url(#blur-md)" opacity="0.55"><g transform="translate(1290 300) scale(9.4) translate(-32 -32)">${mark}</g></g>
-  <g transform="translate(1290 300) scale(9.4) translate(-32 -32)">${mark}</g>
-  <g opacity="0.5" transform="translate(1290 300) scale(9.4) translate(-32 -32)"><polygon points="${fmt(inset([top, ur, lr, bottom, ll, ul], 1.16))}" fill="none" stroke="url(#ring)" stroke-width="0.35"/></g>
+  <g filter="url(#blur-md)" opacity="0.5"><g transform="translate(1290 300) scale(7.6) translate(-32 -32)">${mark}</g></g>
+  <g transform="translate(1290 300) scale(7.6) translate(-32 -32)">${mark}</g>
 </svg>`;
 
 await sharp(Buffer.from(avatarSvg), { density: 96 }).resize(1024, 1024).png({ compressionLevel: 9 }).toFile(resolve(branding, "ethone-discord-avatar-v2.png"));

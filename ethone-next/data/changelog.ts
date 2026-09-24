@@ -33338,6 +33338,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_50_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_50_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_50_de);
 
+const v1_28_51_fr: ChangelogEntry = {
+  version: "v1.28.51",
+  date: "2026-09-24",
+  title: "Retour au logo ETHONE « E »",
+  items: [
+    "Le logo ETHONE d'origine (monogramme E sur tuile sombre à liseré violet / bleu / vert) est restauré partout : barre latérale, écran de connexion, favicons, icônes d'application et pied des embeds du bot",
+    "Nouvelle photo de profil du bot Discord inspirée de ce logo (tuile E sur halos aurore) et nouvelle bannière assortie",
+    "Les versions « prisme » sont sauvegardées sur le serveur du bot",
+  ],
+};
+
+const v1_28_51_en: ChangelogEntry = {
+  version: "v1.28.51",
+  date: "2026-09-24",
+  title: "Back to the ETHONE \"E\" logo",
+  items: [
+    "The original ETHONE logo (E monogram on a dark tile with a violet / blue / green rim) is restored everywhere: sidebar, login screen, favicons, app icons and bot embed footers",
+    "New Discord bot profile picture inspired by this logo (E tile over aurora glows) and a matching banner",
+    "The 'prism' versions are backed up on the bot server",
+  ],
+};
+
+const v1_28_51_es: ChangelogEntry = {
+  version: "v1.28.51",
+  date: "2026-09-24",
+  title: "Vuelta al logo ETHONE «E»",
+  items: [
+    "El logo original de ETHONE (monograma E sobre una ficha oscura con borde violeta / azul / verde) se restaura en todas partes: barra lateral, inicio de sesión, favicons, iconos de la app y pie de los embeds del bot",
+    "Nueva foto de perfil del bot de Discord inspirada en este logo (ficha E sobre halos aurora) y un banner a juego",
+    "Las versiones «prisma» están respaldadas en el servidor del bot",
+  ],
+};
+
+const v1_28_51_de: ChangelogEntry = {
+  version: "v1.28.51",
+  date: "2026-09-24",
+  title: "Zurück zum ETHONE-„E“-Logo",
+  items: [
+    "Das ursprüngliche ETHONE-Logo (E-Monogramm auf dunkler Kachel mit violett-blau-grünem Rand) ist überall wiederhergestellt: Seitenleiste, Login, Favicons, App-Icons und Fußzeile der Bot-Embeds",
+    "Neues Profilbild des Discord-Bots, inspiriert von diesem Logo (E-Kachel auf Aurora-Schein), und ein passendes Banner",
+    "Die „Prisma“-Versionen sind auf dem Bot-Server gesichert",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_51_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_51_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_51_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_51_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -11,9 +11,6 @@ export default function BrandMark({ size = 40, className = "" }: BrandMarkProps)
   const surfaceId = useId();
   const signalId = useId();
   const glowId = useId();
-  const topId = useId();
-  const leftId = useId();
-  const rightId = useId();
 
   return (
     <svg
@@ -21,7 +18,7 @@ export default function BrandMark({ size = 40, className = "" }: BrandMarkProps)
       height={size}
       viewBox="0 0 64 64"
       role="img"
-      aria-label="ETHONE"
+      aria-label="ETHONE OS"
       className={className}
       style={{ shapeRendering: "geometricPrecision" }}
     >
@@ -35,18 +32,6 @@ export default function BrandMark({ size = 40, className = "" }: BrandMarkProps)
           <stop offset="0%" stopColor="#8b5cf6" />
           <stop offset="50%" stopColor="#38bdf8" />
           <stop offset="100%" stopColor="#34d399" />
-        </linearGradient>
-        <linearGradient id={topId} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#c4b5fd" />
-          <stop offset="100%" stopColor="#8b5cf6" />
-        </linearGradient>
-        <linearGradient id={leftId} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#7dd3fc" />
-          <stop offset="100%" stopColor="#0ea5e9" />
-        </linearGradient>
-        <linearGradient id={rightId} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#6ee7b7" />
-          <stop offset="100%" stopColor="#10b981" />
         </linearGradient>
         <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#8b5cf6" floodOpacity="0.35" />
@@ -62,10 +47,15 @@ export default function BrandMark({ size = 40, className = "" }: BrandMarkProps)
         fill="white"
         fillOpacity="0.04"
       />
-      {/* Emblème « prisme » : trois facettes, aucune lettre (généré par scripts/build-brand-assets.mjs) */}
-      <polygon points="32.00,13.66 47.30,22.50 32.00,31.34 16.70,22.50" fill={`url(#${topId})`} stroke={`url(#${topId})`} strokeWidth="1.6" strokeLinejoin="round" />
-      <polygon points="16.12,23.50 31.42,32.33 31.42,50.00 16.12,41.17" fill={`url(#${leftId})`} stroke={`url(#${leftId})`} strokeWidth="1.6" strokeLinejoin="round" />
-      <polygon points="47.88,23.50 47.88,41.17 32.58,50.00 32.58,32.33" fill={`url(#${rightId})`} stroke={`url(#${rightId})`} strokeWidth="1.6" strokeLinejoin="round" />
+      {/* ETHONE Monogram 'E' with geometric precision */}
+      <path
+        d="M21 19v26m0-26h22M21 32h16M21 45h22"
+        fill="none"
+        stroke="#ffffff"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

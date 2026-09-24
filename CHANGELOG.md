@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.51 — 2026-09-24
+
+**Retour au logo ETHONE « E »**
+
+- Le logo ETHONE d'origine (monogramme E sur tuile sombre à liseré violet / bleu / vert) est restauré partout : barre latérale, écran de connexion, favicons, icônes d'application et pied des embeds du bot
+- Nouvelle photo de profil du bot Discord inspirée de ce logo (tuile E sur halos aurore) et nouvelle bannière assortie
+- Les versions « prisme » sont sauvegardées sur le serveur du bot
+
 ## v1.28.50 — 2026-09-24
 
 **2FA : secret chiffré et codes de secours protégés**

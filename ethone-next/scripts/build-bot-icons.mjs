@@ -58,6 +58,6 @@ const svg = (icon, top, bottom) => `<svg xmlns="http://www.w3.org/2000/svg" view
 for (const [name, [icon, top, bottom]] of Object.entries(ICONS)) {
   await sharp(Buffer.from(svg(icon, top, bottom)), { density: 384 }).resize(128, 128).png({ compressionLevel: 9 }).toFile(resolve(out, `${name}.png`));
 }
-// logo de marque (pied de page des embeds) : le prisme, sans texte
+// logo de marque (pied de page des embeds) : le monogramme « E » d'ETHONE
 await sharp(resolve(root, "public/icons/ethone-icon-192.png")).resize(128, 128).png().toFile(resolve(out, "ethone.png"));
 console.log(`${Object.keys(ICONS).length + 1} icônes écrites dans public/bot-icons/`);

@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ShieldCheck,
   ShieldAlert,
@@ -69,6 +70,7 @@ import DiscordOnboardingModal from "@/components/discord/onboarding/DiscordOnboa
 import { Checkbox } from "@/components/ui/Checkbox";
 import GuildLiveStats from "@/components/discord/GuildLiveStats";
 import { ethoneIcon } from "@/components/EthoneIcon";
+import ModuleNavigator, { type NavigatorCategory, type NavigatorModule } from "@/components/discord/ModuleNavigator";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -125,6 +127,26 @@ const MODULE_TINTS: Record<string, string> = {
   afk: "text-blue-300", birthdays: "text-pink-300", tags: "text-cyan-300", serverstats: "text-emerald-300",
   highlights: "text-lime-300", bot: "text-indigo-400",
 };
+
+/** Page complète de chaque module (le bouton ↗ de la carte). */
+const MODULE_PAGES: Record<string, string> = {
+  overview: "/discord/overview", security: "/discord/security/anti-raid", commands: "/discord/commands", suggestions: "/discord/suggestions",
+  leveling: "/discord/leveling", giveaways: "/discord/giveaways", tickets: "/discord/tickets", welcome: "/discord/welcome",
+  moderation: "/discord/moderation", logs: "/discord/logs", music: "/discord/music", invites: "/discord/invites", voice: "/discord/voice",
+  backups: "/discord/backups", ai: "/discord/ai", forms: "/discord/forms", polls: "/discord/polls", roles: "/discord/roles",
+  analytics: "/discord/analytics", events: "/discord/events", server: "/discord/server", starboard: "/discord/starboard",
+  sticky: "/discord/sticky", reminders: "/discord/reminders", afk: "/discord/afk", birthdays: "/discord/birthdays", tags: "/discord/tags",
+  serverstats: "/discord/server-stats", highlights: "/discord/highlights", bot: "/discord/bot", economy: "/discord/economy", calendar: "/discord/calendar",
+};
+
+/** Regroupement façon Dyno / MEE6 : l'utilisateur cherche par intention (protéger, animer, gérer), pas par nom technique. */
+const MODULE_CATEGORIES: NavigatorCategory[] = [
+  { id: "protect", label: "Sécurité & modération", hint: "Protégez le serveur", modules: ["security", "moderation", "logs", "backups"] },
+  { id: "community", label: "Communauté", hint: "Accueillez et animez vos membres", modules: ["welcome", "roles", "leveling", "invites", "suggestions", "polls", "forms", "starboard", "highlights", "birthdays"] },
+  { id: "fun", label: "Animation & médias", hint: "Musique, jeux et événements", modules: ["music", "giveaways", "economy", "events", "calendar", "voice"] },
+  { id: "tools", label: "Outils du quotidien", hint: "Support et automatisations", modules: ["tickets", "commands", "tags", "reminders", "sticky", "afk", "serverstats"] },
+  { id: "manage", label: "Gestion & intelligence", hint: "Vue globale, IA et bot", modules: ["overview", "server", "analytics", "ai", "bot"] },
+];
 
 const MODULE_ICONS = {
   overview: ethoneIcon("mod-overview"),
@@ -402,6 +424,15 @@ const MODULES: BotModule[] = [
   },
 ];
 
+/** Modules ayant un panneau de configuration rapide dans cette page ; les autres ouvrent directement leur page. */
+const INLINE_MODULE_IDS = new Set<string>(MODULES.map((m) => m.id));
+const NAV_MODULES: NavigatorModule[] = [
+  ...MODULES.map((m) => ({ id: m.id, title: m.title, description: m.description, icon: m.icon, tint: MODULE_TINTS[m.id] ?? m.color, href: MODULE_PAGES[m.id] ?? `/discord/${m.id}` })),
+  { id: "economy", title: "Économie & Boutique", description: "Monnaie du serveur, récompense quotidienne, boutique de rôles et classement.", icon: ethoneIcon("mod-economy"), tint: "text-yellow-300", href: MODULE_PAGES.economy },
+  { id: "calendar", title: "Calendrier", description: "Vue mensuelle des événements, anniversaires et rappels du serveur.", icon: ethoneIcon("calendar"), tint: "text-orange-300", href: MODULE_PAGES.calendar },
+];
+
+
 // Vérification de permission : Propriétaire OU Administrateur (0x8) OU Gérer le serveur (0x20)
 function canManageGuild(guild: DiscordGuild): boolean {
   if (guild.owner) return true;
@@ -461,6 +492,19 @@ export default function DiscordDashboardPage() {
 
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
   const [activeModule, setActiveModule] = useState<ModuleType>("security");
+  const router = useRouter();
+  /** Carte cliquée : configuration rapide sur place si le module en a une, sinon ouverture de sa page. */
+  const handleSelectModule = useCallback(
+    (id: string) => {
+      if (INLINE_MODULE_IDS.has(id)) {
+        setActiveModule(id as ModuleType);
+        requestAnimationFrame(() => document.getElementById("module-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+      } else {
+        router.push(`${MODULE_PAGES[id] ?? `/discord/${id}`}?guildId=${selectedGuild?.id ?? ""}`);
+      }
+    },
+    [router, selectedGuild?.id]
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [onlyManageable, setOnlyManageable] = useState(true);
   // IDs of the servers the bot is actually in — used to sort those first and
@@ -1517,32 +1561,11 @@ export default function DiscordDashboardPage() {
                 )}
               </div>
 
-              {/* Modules Selector Strip */}
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                {MODULES.map((mod) => {
-                  const IconComponent = mod.icon;
-                  const isCurrent = activeModule === mod.id;
-
-                  return (
-                    <button
-                      key={mod.id}
-                      onClick={() => setActiveModule(mod.id)}
-                      className={cn(
-                        "flex items-center gap-2.5 rounded-[var(--inset-radius)] border p-3 text-left transition-all duration-150 cursor-pointer",
-                        isCurrent
-                          ? "border-emerald-500/40 bg-emerald-500/10 text-white shadow-sm"
-                          : "border-[var(--panel-border)] bg-white/[0.02] text-zinc-400 hover:border-[var(--input-border-hover)] hover:text-white"
-                      )}
-                    >
-                      <IconComponent className={cn("h-[18px] w-[18px] shrink-0", MODULE_TINTS[mod.id] ?? mod.color)} />
-                      <span className="truncate text-xs font-semibold">{mod.title}</span>
-                    </button>
-                  );
-                })}
-              </div>
+              {/* Navigation des modules : catégories, recherche, favoris */}
+              <ModuleNavigator modules={NAV_MODULES} categories={MODULE_CATEGORIES} activeId={activeModule} onSelect={handleSelectModule} />
 
               {/* Functional Module Settings Panel */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-5 sm:p-6 backdrop-blur-xl">
+              <div id="module-panel" className="scroll-mt-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-5 sm:p-6 backdrop-blur-xl">
                 <div className="mb-5 flex items-center justify-between border-b border-[var(--panel-border)] pb-4">
                   <div>
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">

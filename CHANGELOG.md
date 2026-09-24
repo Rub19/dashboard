@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.42 — 2026-09-24
+
+**Nouveau logo sans lettre, hub Discord organisé par catégories avec recherche et favoris**
+
+- Nouveau logo : le monogramme « E » est remplacé par un emblème personnalisé, un prisme à trois facettes (violet, bleu ciel, vert) sans aucune lettre. Il change partout : barre latérale, favicon, icône d'application (dont le format « maskable »), icône Safari et image de profil du bot Discord (public/branding). Tout est régénérable avec node scripts/build-brand-assets.mjs.
+- Hub Discord plus facile à parcourir, à la manière de Dyno et MEE6 : les 30 modules sont regroupés en 5 catégories (Sécurité & modération, Communauté, Animation & médias, Outils du quotidien, Gestion & intelligence), chacun avec sa description ; une recherche tolérante aux accents (« moderation » trouve « Modération »), des favoris épinglés en haut (étoile) et une flèche qui ouvre la page complète du module. Un clic ouvre la configuration rapide et fait défiler jusqu'à elle.
+- Les pages Économie & Boutique et Calendrier, qui n'étaient pas listées dans le hub, y figurent maintenant.
+
 ## v1.28.41 — 2026-09-24
 
 **Sécurité : 4 failles critiques corrigées (connexion, 2FA, API du bot)**

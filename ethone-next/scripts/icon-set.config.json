@@ -56,6 +56,7 @@
     "mod-tags": "hash",
     "mod-serverstats": "chart-bar",
     "mod-highlights": "eye",
+    "mod-economy": "coins",
     "mod-bot": "robot"
   }
 }

@@ -32917,6 +32917,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_41_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_41_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_41_de);
 
+const v1_28_42_fr: ChangelogEntry = {
+  version: "v1.28.42",
+  date: "2026-09-24",
+  title: "Nouveau logo sans lettre, hub Discord organisé par catégories avec recherche et favoris",
+  items: [
+    "Nouveau logo : le monogramme « E » est remplacé par un emblème personnalisé, un prisme à trois facettes (violet, bleu ciel, vert) sans aucune lettre. Il change partout : barre latérale, favicon, icône d'application (dont le format « maskable »), icône Safari et image de profil du bot Discord (public/branding). Tout est régénérable avec node scripts/build-brand-assets.mjs.",
+    "Hub Discord plus facile à parcourir, à la manière de Dyno et MEE6 : les 30 modules sont regroupés en 5 catégories (Sécurité & modération, Communauté, Animation & médias, Outils du quotidien, Gestion & intelligence), chacun avec sa description ; une recherche tolérante aux accents (« moderation » trouve « Modération »), des favoris épinglés en haut (étoile) et une flèche qui ouvre la page complète du module. Un clic ouvre la configuration rapide et fait défiler jusqu'à elle.",
+    "Les pages Économie & Boutique et Calendrier, qui n'étaient pas listées dans le hub, y figurent maintenant.",
+  ],
+};
+
+const v1_28_42_en: ChangelogEntry = {
+  version: "v1.28.42",
+  date: "2026-09-24",
+  title: "New letter-free logo, Discord hub organised by category with search and favourites",
+  items: [
+    "New logo: the \"E\" monogram is replaced by a custom emblem, a three-facet prism (violet, sky blue, green) with no letters. It changes everywhere: sidebar, favicon, app icon (including the \"maskable\" format), Safari icon and the Discord bot's profile picture (public/branding). Everything can be regenerated with node scripts/build-brand-assets.mjs.",
+    "Discord hub easier to browse, Dyno/MEE6 style: the 30 modules are grouped into 5 categories (Security & moderation, Community, Fun & media, Everyday tools, Management & intelligence), each with its description; accent-tolerant search (\"moderation\" finds \"Modération\"), favourites pinned on top (star) and an arrow that opens the module's full page. A click opens the quick configuration and scrolls to it.",
+    "The Economy & Shop and Calendar pages, which were not listed in the hub, are now included.",
+  ],
+};
+
+const v1_28_42_es: ChangelogEntry = {
+  version: "v1.28.42",
+  date: "2026-09-24",
+  title: "Nuevo logo sin letras, hub de Discord organizado por categorías con búsqueda y favoritos",
+  items: [
+    "Nuevo logo: el monograma « E » se sustituye por un emblema personalizado, un prisma de tres facetas (violeta, azul cielo, verde) sin ninguna letra. Cambia en todas partes: barra lateral, favicon, icono de aplicación (incluido el formato « maskable »), icono de Safari e imagen de perfil del bot de Discord (public/branding). Todo se regenera con node scripts/build-brand-assets.mjs.",
+    "Hub de Discord más fácil de recorrer, al estilo Dyno y MEE6: los 30 módulos se agrupan en 5 categorías (Seguridad y moderación, Comunidad, Animación y medios, Herramientas del día a día, Gestión e inteligencia), cada uno con su descripción; búsqueda tolerante a acentos (« moderation » encuentra « Modération »), favoritos fijados arriba (estrella) y una flecha que abre la página completa del módulo. Un clic abre la configuración rápida y se desplaza hasta ella.",
+    "Las páginas Economía y Tienda y Calendario, que no aparecían en el hub, ya figuran en él.",
+  ],
+};
+
+const v1_28_42_de: ChangelogEntry = {
+  version: "v1.28.42",
+  date: "2026-09-24",
+  title: "Neues Logo ohne Buchstaben, Discord-Hub nach Kategorien mit Suche und Favoriten",
+  items: [
+    "Neues Logo: Das „E“-Monogramm wird durch ein eigenes Emblem ersetzt, ein Prisma mit drei Facetten (Violett, Himmelblau, Grün) ganz ohne Buchstaben. Es ändert sich überall: Seitenleiste, Favicon, App-Icon (auch das „maskable“-Format), Safari-Icon und das Profilbild des Discord-Bots (public/branding). Alles lässt sich mit node scripts/build-brand-assets.mjs neu erzeugen.",
+    "Discord-Hub leichter zu durchsuchen, im Stil von Dyno und MEE6: Die 30 Module sind in 5 Kategorien gruppiert (Sicherheit & Moderation, Community, Unterhaltung & Medien, Alltagswerkzeuge, Verwaltung & Intelligenz), jeweils mit Beschreibung; akzenttolerante Suche („moderation“ findet „Modération“), oben angeheftete Favoriten (Stern) und ein Pfeil, der die vollständige Modulseite öffnet. Ein Klick öffnet die Schnellkonfiguration und scrollt dorthin.",
+    "Die Seiten Wirtschaft & Shop und Kalender, die im Hub fehlten, sind jetzt enthalten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_42_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_42_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_42_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_42_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

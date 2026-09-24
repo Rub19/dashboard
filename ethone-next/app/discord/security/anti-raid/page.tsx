@@ -1921,7 +1921,7 @@ export default function AntiRaidDashboardPage() {
 
       {/* 3. INVESTIGATION MODAL */}
       {selectedIncident && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
+        <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
           <div className="w-full max-w-2xl bg-[var(--bg-surface-elevated)] border border-[var(--panel-border)] rounded-2xl p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto os-scroll">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
               <div className="flex items-center gap-2.5">
@@ -2009,7 +2009,7 @@ export default function AntiRaidDashboardPage() {
 
       {/* 4. CONFIRMATION MODAL */}
       {confirmModal.open && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
+        <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
           <div className="w-full max-w-md bg-[var(--bg-surface-elevated)] border border-[var(--panel-border)] rounded-2xl p-6 shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-white">{confirmModal.title}</h3>
             <p className="text-xs text-white/75">{confirmModal.description}</p>

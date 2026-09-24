@@ -2,7 +2,8 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathSegment } from "@/lib/hooks/usePathSegment";
 import { ArrowLeft, Save, MessageSquare, Shield, Zap, Star, Plus, Trash2, Sliders, Send } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
@@ -53,9 +54,8 @@ const ACTION_LABEL: Record<ActionType, string> = {
 const BTN_CLS: Record<ButtonStyle, string> = { PRIMARY: "bg-[#5865F2]", SECONDARY: "bg-[#4E5058]", SUCCESS: "bg-[#248046]", DANGER: "bg-[#DA373C]" };
 
 export default function FormSettingsClient() {
-  const params = useParams();
   const searchParams = useSearchParams();
-  const formId = (params?.formId as string) || "";
+  const formId = usePathSegment("forms");
   const urlGuildId = searchParams.get("guildId");
   const { profile } = useDiscordOAuth();
   const { success, error: showError } = useToast();

@@ -2,7 +2,8 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathSegment } from "@/lib/hooks/usePathSegment";
 import {
   Users,
   Search,
@@ -50,10 +51,9 @@ interface Participant {
 }
 
 export default function EventParticipantsClient() {
-  const params = useParams();
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
-  const eventId = (params?.eventId as string) || "";
+  const eventId = usePathSegment("events");
   const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
 
   const [participants, setParticipants] = useState<Participant[]>([]);

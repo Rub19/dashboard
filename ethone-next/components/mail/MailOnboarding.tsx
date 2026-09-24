@@ -380,7 +380,7 @@ export default function MailOnboarding({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-[var(--bg-main)]/85 p-4 backdrop-blur-2xl">
+    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center overflow-y-auto bg-[var(--bg-main)]/85 p-4 backdrop-blur-2xl">
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}

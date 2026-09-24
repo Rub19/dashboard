@@ -737,7 +737,7 @@ export default function PollsCenterClient() {
 
       {/* Deploy to Discord Modal */}
       {deployModalPoll && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
           <div className="relative w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">

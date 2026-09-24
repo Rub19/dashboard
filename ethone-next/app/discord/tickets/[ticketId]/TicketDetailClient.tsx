@@ -1,8 +1,11 @@
 "use client";
 
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathSegment } from "@/lib/hooks/usePathSegment";
 import {
   Ticket,
   ArrowLeft,
@@ -25,11 +28,11 @@ import { formatApiError } from "@/lib/format-error";
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function TicketDetailClient() {
-  const params = useParams();
   const searchParams = useSearchParams();
 
-  const ticketId = (params?.ticketId as string) || "1";
-  const guildId = searchParams.get("guildId") || "1128633164290596884";
+  const ticketId = usePathSegment("tickets", "1");
+  const { profile } = useDiscordOAuth();
+  const guildId = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds) || "";
 
   const { success, error: showError, info } = useToast();
 
@@ -675,7 +678,7 @@ export default function TicketDetailClient() {
 
       {/* MODAL: FERMETURE */}
       {showCloseModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
             <h3 className="text-sm font-bold text-white">Clôturer le Ticket #{ticket.id}</h3>
             <p className="text-xs text-zinc-400">
@@ -714,7 +717,7 @@ export default function TicketDetailClient() {
 
       {/* MODAL: LIER CASE DE MODÉRATION */}
       {showLinkCaseModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
             <h3 className="text-sm font-bold text-white">Lier un Dossier de Modération</h3>
             <p className="text-xs text-zinc-400">

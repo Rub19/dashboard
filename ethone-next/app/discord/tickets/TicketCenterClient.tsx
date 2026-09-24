@@ -1686,7 +1686,7 @@ export function TicketCenterClient() {
 
       {/* MODAL: FERMETURE TICKET */}
       {showCloseModal && ticketToClose && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
             <h3 className="text-sm font-bold text-white">Clôturer le Ticket #{ticketToClose.id}</h3>
             <p className="text-xs text-zinc-400">
@@ -1725,7 +1725,7 @@ export function TicketCenterClient() {
 
       {/* MODAL: CATEGORIE */}
       {showCategoryModal && editingCategory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="w-full max-w-lg rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <h3 className="text-sm font-bold text-white">
@@ -1853,7 +1853,7 @@ export function TicketCenterClient() {
 
       {/* MODAL: PANEL */}
       {showPanelModal && editingPanel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="w-full max-w-lg rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <h3 className="text-sm font-bold text-white">
@@ -1982,7 +1982,7 @@ export function TicketCenterClient() {
 
       {/* MODAL: EQUIPE */}
       {showTeamModal && editingTeam && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="w-full max-w-lg rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <h3 className="text-sm font-bold text-white">

@@ -1407,7 +1407,7 @@ export function AuditCenterClient() {
 
       {/* MODAL INVESTIGATION (MODE ENQUÊTE APPROFONDIE) */}
       {investigatingEventId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
           <div className="relative w-full max-w-3xl rounded-3xl border border-[var(--panel-border)] bg-zinc-900 p-6 shadow-2xl space-y-5 my-8">
             <button
               type="button"
@@ -1594,7 +1594,7 @@ export function AuditCenterClient() {
 
       {/* MODAL EXPORT (CSV / JSON) */}
       {exportModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="relative w-full max-w-md rounded-3xl border border-[var(--panel-border)] bg-zinc-900 p-6 shadow-2xl space-y-4">
             <button
               type="button"

@@ -2557,7 +2557,7 @@ export default function AutoModCommandCenterPage() {
       {/* DRAWER / MODAL: PROFIL MODÉRATION DU MEMBRE              */}
       {/* ======================================================== */}
       {inspectedUserId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <div className="flex items-center gap-2.5">

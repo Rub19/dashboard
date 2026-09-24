@@ -1,5 +1,8 @@
 "use client";
 
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import { usePathSegment } from "@/lib/hooks/usePathSegment";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -71,10 +74,13 @@ interface TemporaryRoomDetail {
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
-export default function VoiceRoomDetailClient({ roomId }: { roomId: string }) {
+export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: string }) {
+  // L'identifiant vient de l'adresse réelle (la page statique est générée pour « demo »)
+  const roomId = usePathSegment("rooms", roomIdProp);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const guildId = searchParams.get("guildId") || "1128633164290596884";
+  const { profile } = useDiscordOAuth();
+  const guildId = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds) || "";
   const { success } = useToast();
 
   const [room, setRoom] = useState<TemporaryRoomDetail | null>(null);
@@ -611,7 +617,7 @@ export default function VoiceRoomDetailClient({ roomId }: { roomId: string }) {
 
       {/* Rename Modal */}
       {isRenameOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-white">Renommer le salon vocal</h3>
             <input
@@ -644,7 +650,7 @@ export default function VoiceRoomDetailClient({ roomId }: { roomId: string }) {
 
       {/* Limit Modal */}
       {isLimitOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-white">Modifier la limite de membres</h3>
             <input

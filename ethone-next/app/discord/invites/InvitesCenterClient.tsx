@@ -884,7 +884,7 @@ export default function InvitesCenterClient() {
 
       {/* Modal: Create Reward */}
       {showRewardModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="w-full max-w-md p-6 rounded-3xl bg-zinc-900 border border-zinc-800 shadow-2xl">
             <h3 className="text-lg font-bold text-white mb-1">Créer un Palier de Récompense</h3>
             <p className="text-xs text-zinc-400 mb-5">

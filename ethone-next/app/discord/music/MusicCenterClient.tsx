@@ -1704,7 +1704,7 @@ export default function MusicCenterClient() {
 
       {/* NEW PLAYLIST MODAL */}
       {isNewPlaylistOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <h3 className="text-sm font-bold text-white">Créer une nouvelle Playlist</h3>
@@ -1750,7 +1750,7 @@ export default function MusicCenterClient() {
 
       {/* CLEAR QUEUE CONFIRM MODAL */}
       {isClearConfirmOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
           <div className="w-full max-w-sm rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-5 shadow-2xl space-y-3">
             <h3 className="text-sm font-bold text-white">Vider la file d'attente ?</h3>
             <p className="text-xs text-zinc-400">

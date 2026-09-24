@@ -2054,7 +2054,7 @@ export function WelcomeCenterClient() {
 
       {/* MODAL: TEST WELCOME */}
       {showTestModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <span>🧪 Tester l&apos;Accueil en Conditions Réelles</span>

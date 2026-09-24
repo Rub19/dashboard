@@ -452,7 +452,7 @@ export default function ReportsCenterClient() {
 
       {/* MODALE CONSIGNER SIGNALEMENT */}
       {isNewReportOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <form onSubmit={handleCreateReport} className="w-full max-w-md rounded-2xl bg-slate-900 border border-[var(--panel-border)] shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -528,7 +528,7 @@ export default function ReportsCenterClient() {
 
       {/* MODALE CLASSER SANS SUITE */}
       {dismissingReport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-md rounded-2xl bg-slate-900 border border-[var(--panel-border)] shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-white">Classer le signalement {dismissingReport.id}</h3>

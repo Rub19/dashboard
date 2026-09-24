@@ -1233,7 +1233,7 @@ export default function GiveawaysCenterClient() {
 
         {/* Modal: Prolongation / Extend */}
         {extendTarget && (
-          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
             <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-[var(--panel-radius)] max-w-md w-full p-6 space-y-4 shadow-xl">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
@@ -1346,7 +1346,7 @@ export default function GiveawaysCenterClient() {
 
         {/* Modal: Participants & Modération */}
         {participantsTarget && (
-          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
             <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-[var(--panel-radius)] max-w-xl w-full p-6 space-y-4 shadow-xl max-h-[85vh] flex flex-col">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
@@ -1452,7 +1452,7 @@ export default function GiveawaysCenterClient() {
 
         {/* Modal: Reroll */}
         {rerollTarget && (
-          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
             <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-[var(--panel-radius)] max-w-md w-full p-6 space-y-4 shadow-xl">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">

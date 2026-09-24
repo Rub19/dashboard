@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathSegment } from "@/lib/hooks/usePathSegment";
 import {
   ArrowLeft,
   RotateCcw,
@@ -63,8 +64,7 @@ interface ModerationCaseDetail {
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function CaseDetailClient() {
-  const params = useParams<{ caseId: string }>();
-  const caseNumber = params?.caseId || "1";
+  const caseNumber = usePathSegment("cases", "1");
   const searchParams = useSearchParams();
   const guildId = searchParams.get("guildId");
   const { success, error: showError } = useToast();
@@ -526,7 +526,7 @@ export default function CaseDetailClient() {
 
       {/* MODAL RÉVOCATION */}
       {isRevertOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <h3 className="text-sm font-bold text-white">Révoquer la Case #{modCase.caseNumber}</h3>

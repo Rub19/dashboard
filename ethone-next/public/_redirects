@@ -7,6 +7,10 @@
 /discord/moderation/cases /discord/moderation/ 200
 /discord/moderation/cases/* /discord/moderation/cases/1/ 200
 /discord/moderation/users/* /discord/moderation/users/demo/ 200
+/discord/forms/:id/responses /discord/forms/demo/responses/ 200
+/discord/forms/:id/responses/ /discord/forms/demo/responses/ 200
+/discord/forms/:id/settings /discord/forms/demo/settings/ 200
+/discord/forms/:id/settings/ /discord/forms/demo/settings/ 200
 /discord/forms/* /discord/forms/demo/ 200
 /discord/polls/:pollId/settings /discord/polls/demo/settings/ 200
 /discord/polls/:pollId/results /discord/polls/demo/results/ 200
@@ -15,5 +19,14 @@
 /discord/polls/:pollId/results/ /discord/polls/demo/results/ 200
 /discord/polls/:pollId/vote/ /discord/polls/demo/vote/ 200
 /discord/polls/* /discord/polls/demo/ 200
+/discord/events/:id/analytics /discord/events/demo/analytics/ 200
+/discord/events/:id/analytics/ /discord/events/demo/analytics/ 200
+/discord/events/:id/participants /discord/events/demo/participants/ 200
+/discord/events/:id/participants/ /discord/events/demo/participants/ 200
+/discord/events/:id/settings /discord/events/demo/settings/ 200
+/discord/events/:id/settings/ /discord/events/demo/settings/ 200
 /discord/events/* /discord/events/demo/ 200
 /settings/* /settings/general/ 200
+/discord/backups/* /discord/backups/backup-1/ 200
+/discord/server/members/* /discord/server/members/1234567890/ 200
+/discord/server/channels/* /discord/server/channels/c-1/ 200

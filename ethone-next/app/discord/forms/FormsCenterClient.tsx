@@ -651,7 +651,7 @@ export default function FormsCenterClient() {
 
       {/* Templates Modal */}
       {isTemplateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-2xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <div className="flex items-center gap-2">

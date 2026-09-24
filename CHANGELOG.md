@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.68 — 2026-09-24
+
+**Pages de détail rechargeables, page Performance honnête, fenêtres au-dessus de l'en-tête**
+
+- Formulaires, événements, tickets, dossiers et profils de modération, salons vocaux, sauvegardes, invitations, membres et salons du serveur : au rechargement de la page (ou depuis un favori), l'identifiant réel de l'adresse est maintenant utilisé ; avant, ces pages interrogeaient le bot sur « demo »
+- Règles de réécriture ajoutées pour les sous-pages des formulaires et événements, les sauvegardes, et les fiches membre et salon du serveur
+- Tickets et salons vocaux ne retombent plus sur un serveur codé en dur quand l'adresse n'indique pas de serveur
+- La page Boost affichait des chiffres inventés (CPU aléatoire, « 2,4 Go libérés », mode Turbo, niveau de boost Discord) : elle devient « Performance de l'appareil » avec de vraies mesures du navigateur (images par seconde, mémoire JavaScript, cœurs, réseau) et une vraie action, vider le cache
+- Les fenêtres plein écran passent au-dessus de l'en-tête et de la barre du bas (elles étaient rognées sur téléphone)
+
 ## v1.28.67 — 2026-09-24
 
 **Fenêtre de confirmation : libellés adaptés**

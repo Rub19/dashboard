@@ -765,7 +765,7 @@ export default function VoiceCenterClient() {
 
       {/* Rename Modal */}
       {isRenameOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-white">Renommer le salon vocal</h3>
             <input

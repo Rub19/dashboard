@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathSegment } from "@/lib/hooks/usePathSegment";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
@@ -290,9 +291,14 @@ interface Props {
 
 export default function ServerManagementClient({
   initialTab = "overview",
-  openedMemberId,
-  openedChannelId,
+  openedMemberId: openedMemberIdProp,
+  openedChannelId: openedChannelIdProp,
 }: Props) {
+  // Identifiants lus dans l'adresse réelle : la page statique est générée pour « demo » (voir lib/hooks/usePathSegment.ts)
+  const memberFromPath = usePathSegment("members");
+  const channelFromPath = usePathSegment("channels");
+  const openedMemberId = openedMemberIdProp ? memberFromPath || undefined : undefined;
+  const openedChannelId = openedChannelIdProp ? channelFromPath || undefined : undefined;
   const searchParams = useSearchParams();
   const { profile: oauthProfile } = useDiscordOAuth();
   const guildId = useResolvedGuildId(searchParams.get("guildId"), oauthProfile?.guilds);
@@ -1574,7 +1580,7 @@ export default function ServerManagementClient({
 
             {/* Member Profile Drawer / Modal */}
             {selectedMember && (
-              <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+              <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
                 <div className="w-full max-w-2xl rounded-3xl border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl">
                   <div className="flex items-start justify-between pb-4 border-b border-[var(--panel-border)]">
                     <div className="flex items-center gap-4">
@@ -1696,7 +1702,7 @@ export default function ServerManagementClient({
 
             {/* Timeout Modal */}
             {isTimeoutModalOpen && selectedMember && (
-              <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
                 <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-5 space-y-4">
                   <h3 className="text-sm font-bold text-white">Exclure {selectedMember.displayName}</h3>
                   <div>
@@ -1744,7 +1750,7 @@ export default function ServerManagementClient({
 
             {/* Ban Modal */}
             {isBanModalOpen && selectedMember && (
-              <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
                 <div className="w-full max-w-md rounded-2xl border border-rose-500/30 bg-zinc-950 p-5 space-y-4">
                   <h3 className="text-sm font-bold text-rose-400">Bannir définitivement {selectedMember.displayName}</h3>
                   <p className="text-xs text-zinc-400">
@@ -1908,7 +1914,7 @@ export default function ServerManagementClient({
 
             {/* Create Channel Wizard Modal */}
             {isCreateChannelOpen && (
-              <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
                 <div className="w-full max-w-md rounded-3xl border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
                   <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
@@ -2113,7 +2119,7 @@ export default function ServerManagementClient({
 
             {/* Create Role Modal */}
             {isCreateRoleOpen && (
-              <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
                 <div className="w-full max-w-md rounded-3xl border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
                   <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
@@ -2535,7 +2541,7 @@ export default function ServerManagementClient({
 
             {/* Create Webhook Modal */}
             {isCreateWebhookOpen && (
-              <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
                 <div className="w-full max-w-md rounded-3xl border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
                     <Webhook className="h-4 w-4 text-indigo-400" />
@@ -2819,7 +2825,7 @@ export default function ServerManagementClient({
 
       {/* Safe Mode Confirmation Modal */}
       {isSafeModeModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="w-full max-w-md rounded-3xl border border-rose-500/40 bg-zinc-950 p-6 space-y-4 shadow-2xl">
             <div className="flex items-center gap-3 text-rose-400">
               <ShieldAlert className="h-6 w-6 shrink-0" />
@@ -2853,7 +2859,7 @@ export default function ServerManagementClient({
 
       {/* Security Breakdown Modal */}
       {isSecurityModalOpen && overview?.security && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="w-full max-w-lg rounded-3xl border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">

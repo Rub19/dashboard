@@ -935,7 +935,7 @@ export default function AiCenterClient() {
 
         {/* Modal source */}
         {showAddKnowledgeModal && (
-          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
             <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-lg w-full p-6 space-y-5 relative">
               <button onClick={() => setShowAddKnowledgeModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white cursor-pointer"><X className="w-5 h-5" /></button>
               <div className="flex items-center gap-3">

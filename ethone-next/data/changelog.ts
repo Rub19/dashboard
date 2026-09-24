@@ -34139,6 +34139,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_67_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_67_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_67_de);
 
+const v1_28_68_fr: ChangelogEntry = {
+  version: "v1.28.68",
+  date: "2026-09-24",
+  title: "Pages de détail rechargeables, page Performance honnête, fenêtres au-dessus de l'en-tête",
+  items: [
+    "Formulaires, événements, tickets, dossiers et profils de modération, salons vocaux, sauvegardes, invitations, membres et salons du serveur : au rechargement de la page (ou depuis un favori), l'identifiant réel de l'adresse est maintenant utilisé ; avant, ces pages interrogeaient le bot sur « demo »",
+    "Règles de réécriture ajoutées pour les sous-pages des formulaires et événements, les sauvegardes, et les fiches membre et salon du serveur",
+    "Tickets et salons vocaux ne retombent plus sur un serveur codé en dur quand l'adresse n'indique pas de serveur",
+    "La page Boost affichait des chiffres inventés (CPU aléatoire, « 2,4 Go libérés », mode Turbo, niveau de boost Discord) : elle devient « Performance de l'appareil » avec de vraies mesures du navigateur (images par seconde, mémoire JavaScript, cœurs, réseau) et une vraie action, vider le cache",
+    "Les fenêtres plein écran passent au-dessus de l'en-tête et de la barre du bas (elles étaient rognées sur téléphone)",
+  ],
+};
+
+const v1_28_68_en: ChangelogEntry = {
+  version: "v1.28.68",
+  date: "2026-09-24",
+  title: "Reloadable detail pages, honest Performance page, dialogs above the header",
+  items: [
+    "Forms, events, tickets, moderation cases and profiles, voice rooms, backups, invites, server members and channels: on page reload (or from a bookmark) the real id from the address is now used; before, these pages queried the bot for 'demo'",
+    "Rewrite rules added for form and event sub-pages, backups, and server member and channel pages",
+    "Tickets and voice rooms no longer fall back to a hard-coded server when the address gives none",
+    "The Boost page showed invented numbers (random CPU, '2.4 GB freed', Turbo mode, Discord boost level): it becomes 'Device performance' with real browser measurements (frames per second, JavaScript memory, cores, network) and one real action, clearing the cache",
+    "Full-screen dialogs now sit above the header and the bottom bar (they were clipped on phones)",
+  ],
+};
+
+const v1_28_68_es: ChangelogEntry = {
+  version: "v1.28.68",
+  date: "2026-09-24",
+  title: "Páginas de detalle recargables, página de Rendimiento honesta, ventanas sobre la cabecera",
+  items: [
+    "Formularios, eventos, tickets, casos y perfiles de moderación, salas de voz, copias, invitaciones, miembros y canales del servidor: al recargar la página (o desde un marcador) se usa ahora el id real de la dirección; antes estas páginas consultaban al bot por «demo»",
+    "Reglas de reescritura añadidas para las subpáginas de formularios y eventos, las copias y las fichas de miembro y canal del servidor",
+    "Tickets y salas de voz ya no recurren a un servidor fijo cuando la dirección no indica ninguno",
+    "La página Boost mostraba cifras inventadas (CPU aleatoria, «2,4 GB liberados», modo Turbo, nivel de boost de Discord): pasa a ser «Rendimiento del dispositivo» con mediciones reales del navegador (imágenes por segundo, memoria JavaScript, núcleos, red) y una acción real, vaciar la caché",
+    "Las ventanas a pantalla completa pasan por encima de la cabecera y de la barra inferior (se recortaban en el móvil)",
+  ],
+};
+
+const v1_28_68_de: ChangelogEntry = {
+  version: "v1.28.68",
+  date: "2026-09-24",
+  title: "Neu ladbare Detailseiten, ehrliche Leistungsseite, Fenster über der Kopfzeile",
+  items: [
+    "Formulare, Events, Tickets, Moderationsfälle und -profile, Sprachräume, Backups, Einladungen, Servermitglieder und -kanäle: Beim Neuladen der Seite (oder über ein Lesezeichen) wird jetzt die echte ID aus der Adresse verwendet; zuvor fragten diese Seiten den Bot nach „demo“",
+    "Umschreibungsregeln für Unterseiten von Formularen und Events, Backups sowie Mitglieds- und Kanalseiten des Servers ergänzt",
+    "Tickets und Sprachräume greifen nicht mehr auf einen fest codierten Server zurück, wenn die Adresse keinen nennt",
+    "Die Boost-Seite zeigte erfundene Zahlen (zufällige CPU, „2,4 GB freigegeben“, Turbo-Modus, Discord-Boost-Stufe): Sie wird zu „Geräteleistung“ mit echten Browsermessungen (Bilder pro Sekunde, JavaScript-Speicher, Kerne, Netzwerk) und einer echten Aktion, dem Leeren des Caches",
+    "Vollbild-Dialoge liegen jetzt über der Kopfzeile und der unteren Leiste (sie waren auf Smartphones abgeschnitten)",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_68_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_68_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_68_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_68_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

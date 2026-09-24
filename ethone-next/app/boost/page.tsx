@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import BoostClient from "./BoostClient";
 
 export const metadata: Metadata = {
-  title: "Performance & Gaming Boost Hub — ETHONE OS",
-  description: "Optimisation système, nettoyage RAM/CPU, mode Turbo et gestion des perks Discord Boost.",
+  title: "Performance de l'appareil — ETHONE",
+  description: "Mesures réelles de votre navigateur (fluidité, mémoire, réseau) et nettoyage du cache de l'application.",
 };
 
 export const dynamic = "force-static";

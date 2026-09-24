@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathSegment } from "@/lib/hooks/usePathSegment";
 import {
   Shield,
   ShieldAlert,
@@ -46,7 +47,6 @@ const STANDARD_REASONS = [
 ];
 
 export default function UserModerationProfileClient() {
-  const params = useParams();
   const searchParams = useSearchParams();
   const { success, error: showError } = useToast();
   const { profile } = useDiscordOAuth();
@@ -57,7 +57,7 @@ export default function UserModerationProfileClient() {
 
   const botGuildIds = useBotGuildIds(allGuilds);
 
-  const rawUserId = String(params?.userId || "");
+  const rawUserId = usePathSegment("users");
   const queryUserId = searchParams.get("userId");
   const targetUserId = rawUserId && rawUserId !== "demo" ? rawUserId : queryUserId || "123456789012345678";
 
@@ -1042,7 +1042,7 @@ export default function UserModerationProfileClient() {
 
       {/* MODALE D'ACTION RAPIDE (WARN / TIMEOUT / KICK / BAN / QUARANTINE) */}
       {activeActionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-lg rounded-2xl bg-slate-900 border border-[var(--panel-border)] shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -1227,7 +1227,7 @@ export default function UserModerationProfileClient() {
 
       {/* MODALE PARDON / RÉVOCATION */}
       {revertingCase && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-md rounded-2xl bg-slate-900 border border-[var(--panel-border)] shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-white flex items-center gap-2">

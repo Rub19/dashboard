@@ -2,7 +2,8 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePathSegment } from "@/lib/hooks/usePathSegment";
 import {
   Settings,
   ArrowLeft,
@@ -29,11 +30,10 @@ function combine(date: string, time: string): string {
 }
 
 export default function EventSettingsClient() {
-  const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
-  const eventId = (params?.eventId as string) || "evt-gaming-night";
+  const eventId = usePathSegment("events");
   const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
   const base = `${BOT_API_URL}/api/guilds/${guildParam}/events/${eventId}`;
   const isDemo = !BOT_API_URL || !guildParam;
@@ -317,7 +317,7 @@ export default function EventSettingsClient() {
 
         {/* Modal Confirm Cancel */}
         {showCancelModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
             <div className="w-full max-w-md p-6 rounded-2xl bg-[var(--bg-surface-elevated)] border border-[var(--panel-border)] shadow-2xl space-y-4">
               <h3 className="text-base font-bold text-white">Confirmer l'annulation ?</h3>
               <p className="text-xs text-slate-400">

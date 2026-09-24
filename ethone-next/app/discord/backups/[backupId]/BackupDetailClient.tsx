@@ -2,7 +2,8 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathSegment } from "@/lib/hooks/usePathSegment";
 import { ArrowLeft, ShieldCheck, Download, RotateCcw, GitCompare, Lock, Unlock, CheckCircle2, AlertTriangle, FileCode, FolderTree, Users, Shield, Sparkles, Copy, Check, Server, Hash, Volume2, Calendar, RefreshCw } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
@@ -50,9 +51,8 @@ function roleColor(c: number): string {
 }
 
 export default function BackupDetailClient() {
-  const params = useParams();
   const searchParams = useSearchParams();
-  const backupId = String(params?.backupId || "");
+  const backupId = usePathSegment("backups");
   const rawGuildId = searchParams.get("guildId");
   const { profile } = useDiscordOAuth();
   const { success, error: toastError } = useToast();

@@ -1361,7 +1361,7 @@ export default function ModerationCenterPage() {
       {/* MODAL: NOUVELLE SANCTION MANUELLE                        */}
       {/* ======================================================== */}
       {isNewSanctionOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-lg rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <div className="flex items-center gap-2">
@@ -1475,7 +1475,7 @@ export default function ModerationCenterPage() {
       {/* MODAL: RÉVOCATION / PARDON                                */}
       {/* ======================================================== */}
       {revertingCase && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <div className="flex items-center gap-2">
@@ -1532,7 +1532,7 @@ export default function ModerationCenterPage() {
       {/* DRAWER: PROFIL MODÉRATION DU MEMBRE                      */}
       {/* ======================================================== */}
       {inspectedUserId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <div className="flex items-center gap-2.5">

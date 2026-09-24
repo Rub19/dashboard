@@ -2,7 +2,8 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathSegment } from "@/lib/hooks/usePathSegment";
 import {
   Clock,
   Volume2,
@@ -124,10 +125,9 @@ function mapEvent(raw: Record<string, any>, id: string): EventDetailData {
 }
 
 export default function EventDetailClient() {
-  const params = useParams();
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
-  const eventId = (params?.eventId as string) || "evt-gaming-night";
+  const eventId = usePathSegment("events");
   const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
   const base = `${BOT_API_URL}/api/guilds/${guildParam}/events/${eventId}`;
 

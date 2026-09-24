@@ -2,7 +2,8 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathSegment } from "@/lib/hooks/usePathSegment";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -126,9 +127,8 @@ const DEFAULT_SECTIONS: BuilderSection[] = [
 ];
 
 export default function FormBuilderClient() {
-  const params = useParams();
   const searchParams = useSearchParams();
-  const formId = (params?.formId as string) || "demo";
+  const formId = usePathSegment("forms");
   const urlGuildId = searchParams.get("guildId");
   const { profile } = useDiscordOAuth();
   const { success, error: showError } = useToast();

@@ -2,7 +2,8 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathSegment } from "@/lib/hooks/usePathSegment";
 import {
   Search,
   Download,
@@ -73,10 +74,9 @@ interface ResponseItem {
 const DEMO_RESPONSES: ResponseItem[] = [];
 
 export default function FormResponsesClient() {
-  const params = useParams();
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
-  const formId = (params?.formId as string) || "demo";
+  const formId = usePathSegment("forms");
   const rawGuildId = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
   const { success, error: showError } = useToast();
 
@@ -453,7 +453,7 @@ export default function FormResponsesClient() {
 
       {/* DETAILED RESPONSE REVIEW MODAL / DRAWER */}
       {activeResponse && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-3xl max-h-[90vh] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 shadow-2xl flex flex-col overflow-hidden">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-4 shrink-0">

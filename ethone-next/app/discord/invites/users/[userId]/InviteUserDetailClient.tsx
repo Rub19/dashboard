@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathSegment } from "@/lib/hooks/usePathSegment";
 import {
   ChevronLeft,
   Shield,
@@ -16,9 +17,8 @@ import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function InviteUserDetailClient() {
-  const params = useParams();
   const searchParams = useSearchParams();
-  const userId = (params?.userId as string) || "";
+  const userId = usePathSegment("users");
   const { profile: oauthProfile } = useDiscordOAuth();
   const guildId = useResolvedGuildId(searchParams.get("guildId"), oauthProfile?.guilds);
 

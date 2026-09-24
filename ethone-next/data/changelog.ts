@@ -33056,6 +33056,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_44_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_44_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_44_de);
 
+const v1_28_45_fr: ChangelogEntry = {
+  version: "v1.28.45",
+  date: "2026-09-24",
+  title: "Sécurité : isolation entre serveurs renforcée, adresses privées refusées pour la musique",
+  items: [
+    "Isolation entre serveurs : un administrateur du serveur A pouvait, en changeant l'identifiant dans l'adresse, lister ou retirer les participants d'un événement ou d'un tirage au sort du serveur B, et lire l'enquête sur un événement du journal d'audit d'un autre serveur. Ces routes vérifient maintenant que la ressource appartient bien au serveur de l'administrateur (réponse 404 sinon).",
+    "Salons vocaux personnels : les préférences d'un membre (valables sur tous les serveurs) pouvaient être lues ou modifiées par n'importe quel administrateur ; seul le membre concerné y a désormais accès.",
+    "Musique : la lecture d'une adresse pointant vers la machine locale ou un réseau privé (localhost, 192.168.x.x, 10.x.x.x, 169.254.x.x…) est refusée, pour qu'un membre ne puisse pas faire sonder le réseau du serveur audio via /play.",
+  ],
+};
+
+const v1_28_45_en: ChangelogEntry = {
+  version: "v1.28.45",
+  date: "2026-09-24",
+  title: "Security: stronger isolation between servers, private addresses refused for music",
+  items: [
+    "Isolation between servers: an administrator of server A could, by changing the id in the address, list or remove the participants of an event or giveaway of server B, and read the investigation of an event in another server's audit log. These routes now check that the resource belongs to the administrator's server (404 otherwise).",
+    "Personal voice rooms: a member's preferences (valid on all servers) could be read or changed by any administrator; only the member concerned now has access.",
+    "Music: playing an address that points to the local machine or a private network (localhost, 192.168.x.x, 10.x.x.x, 169.254.x.x…) is refused, so a member cannot have the audio server's network probed via /play.",
+  ],
+};
+
+const v1_28_45_es: ChangelogEntry = {
+  version: "v1.28.45",
+  date: "2026-09-24",
+  title: "Seguridad: aislamiento entre servidores reforzado, direcciones privadas rechazadas en música",
+  items: [
+    "Aislamiento entre servidores: un administrador del servidor A podía, cambiando el id en la dirección, listar o quitar los participantes de un evento o sorteo del servidor B, y leer la investigación de un evento del registro de auditoría de otro servidor. Estas rutas comprueban ahora que el recurso pertenece al servidor del administrador (404 en caso contrario).",
+    "Salas de voz personales: las preferencias de un miembro (válidas en todos los servidores) podían ser leídas o modificadas por cualquier administrador; ahora solo tiene acceso el miembro afectado.",
+    "Música: se rechaza reproducir una dirección que apunta a la máquina local o a una red privada (localhost, 192.168.x.x, 10.x.x.x, 169.254.x.x…), para que un miembro no pueda sondear la red del servidor de audio con /play.",
+  ],
+};
+
+const v1_28_45_de: ChangelogEntry = {
+  version: "v1.28.45",
+  date: "2026-09-24",
+  title: "Sicherheit: stärkere Trennung zwischen Servern, private Adressen bei Musik abgelehnt",
+  items: [
+    "Trennung zwischen Servern: Ein Administrator von Server A konnte durch Ändern der ID in der Adresse die Teilnehmer eines Events oder Gewinnspiels von Server B auflisten oder entfernen und die Untersuchung eines Ereignisses im Audit-Log eines anderen Servers lesen. Diese Routen prüfen jetzt, ob die Ressource zum Server des Administrators gehört (sonst 404).",
+    "Persönliche Sprachräume: Die Einstellungen eines Mitglieds (auf allen Servern gültig) konnten von jedem Administrator gelesen oder geändert werden; jetzt hat nur das betroffene Mitglied Zugriff.",
+    "Musik: Das Abspielen einer Adresse, die auf den lokalen Rechner oder ein privates Netz zeigt (localhost, 192.168.x.x, 10.x.x.x, 169.254.x.x…), wird abgelehnt, damit niemand über /play das Netz des Audio-Servers abtasten kann.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_45_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_45_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_45_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_45_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

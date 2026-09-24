@@ -68,9 +68,10 @@ export function createLogRouter(discordClient: Client) {
 
   // 3. Mode Enquête & Causalité approfondie
   router.get('/events/:eventId/investigate', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
     const eventId = String(req.params.eventId);
     logQueue.flush();
-    const investigation = InvestigationService.investigateEvent(eventId);
+    const investigation = InvestigationService.investigateEvent(eventId, guildId);
     if (!investigation) {
       res.status(404).json({ error: 'Événement introuvable pour enquête' });
       return;

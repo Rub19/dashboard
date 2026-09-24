@@ -152,9 +152,15 @@ export function createGiveawayRouter(discordClient: Client) {
   });
 
   router.delete('/:id/participants/:userId', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
     const giveawayId = String(req.params.id);
     const userId = String(req.params.userId);
 
+    // Le tirage doit appartenir à CE serveur (sinon un admin pourrait retirer des participants ailleurs).
+    if (giveawayStorage.getById(giveawayId)?.guildId !== guildId) {
+      res.status(404).json({ success: false, error: 'Tirage introuvable sur ce serveur.' });
+      return;
+    }
     const ok = giveawayStorage.removeParticipant(giveawayId, userId);
     if (ok) {
       await giveawayService.updateMessage(discordClient, giveawayId);

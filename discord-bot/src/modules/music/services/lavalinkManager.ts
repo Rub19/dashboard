@@ -14,6 +14,22 @@ import type { Track, TrackRequester } from '../types/music.js';
  * Enabled with MUSIC_BACKEND=lavalink (+ LAVALINK_HOST/PORT/PASSWORD).
  * Server install: scripts/lavalink-setup.sh.
  */
+/** Vrai si l'adresse pointe vers la machine locale ou un réseau privé (littéral IP ou nom réservé). */
+export function isPrivateOrLocalUrl(raw: string): boolean {
+  let host: string;
+  try {
+    host = new URL(raw).hostname.toLowerCase().replace(/^\[|\]$/g, '');
+  } catch {
+    return true;
+  }
+  if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') || host.endsWith('.internal') || host === '0.0.0.0') return true;
+  if (/^(::1?|fe80:|fc|fd)/i.test(host)) return true;
+  const m = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (!m) return false;
+  const [a, b] = [Number(m[1]), Number(m[2])];
+  return a === 10 || a === 127 || a === 0 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127);
+}
+
 class LavalinkManager {
   private shoukaku: Shoukaku | null = null;
   private watchdog: ReturnType<typeof setInterval> | null = null;
@@ -174,6 +190,12 @@ class LavalinkManager {
   ): Promise<Track[]> {
     const q = query.trim();
     const isUrl = /^https?:\/\//i.test(q);
+    // Le serveur audio tourne sur le réseau privé : refuser les adresses locales/privées évite qu'un membre s'en serve
+    // pour sonder ce réseau (SSRF) via /play.
+    if (isUrl && isPrivateOrLocalUrl(q)) {
+      logger.warn('[Lavalink] Adresse locale/privée refusée dans une requête de lecture.');
+      return [];
+    }
     const limit = opts?.limit ?? 1;
 
     // Recherche texte : d'abord les métadonnées Spotify (titre / artiste / durée officiels, sans

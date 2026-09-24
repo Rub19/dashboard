@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.45 — 2026-09-24
+
+**Sécurité : isolation entre serveurs renforcée, adresses privées refusées pour la musique**
+
+- Isolation entre serveurs : un administrateur du serveur A pouvait, en changeant l'identifiant dans l'adresse, lister ou retirer les participants d'un événement ou d'un tirage au sort du serveur B, et lire l'enquête sur un événement du journal d'audit d'un autre serveur. Ces routes vérifient maintenant que la ressource appartient bien au serveur de l'administrateur (réponse 404 sinon).
+- Salons vocaux personnels : les préférences d'un membre (valables sur tous les serveurs) pouvaient être lues ou modifiées par n'importe quel administrateur ; seul le membre concerné y a désormais accès.
+- Musique : la lecture d'une adresse pointant vers la machine locale ou un réseau privé (localhost, 192.168.x.x, 10.x.x.x, 169.254.x.x…) est refusée, pour qu'un membre ne puisse pas faire sonder le réseau du serveur audio via /play.
+
 ## v1.28.44 — 2026-09-24
 
 **Synchronisation en direct Discord → dashboard : rôles et salons à jour sans recharger**

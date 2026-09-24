@@ -177,9 +177,15 @@ export function createEventRouter(client?: Client): Router {
   // GET /api/guilds/:guildId/events/:eventId/participants
   router.get('/:eventId/participants', (req: Request, res: Response) => {
     try {
+      const guildId = String(req.params.guildId);
       const eventId = String(req.params.eventId);
       const { rsvp } = req.query;
 
+      // L'événement doit appartenir à CE serveur : sinon un admin d'un serveur lirait les inscrits d'un autre.
+      if (!eventRepository.getEventById(guildId, eventId)) {
+        res.status(404).json({ success: false, error: 'Événement introuvable sur ce serveur.' });
+        return;
+      }
       let participants = eventRepository.getParticipants(eventId);
       if (rsvp && typeof rsvp === 'string') {
         participants = participants.filter((p) => p.rsvp === rsvp.toUpperCase());
@@ -246,9 +252,14 @@ export function createEventRouter(client?: Client): Router {
   // DELETE /api/guilds/:guildId/events/:eventId/participants/:userId
   router.delete('/:eventId/participants/:userId', (req: Request, res: Response) => {
     try {
+      const guildId = String(req.params.guildId);
       const eventId = String(req.params.eventId);
       const userId = String(req.params.userId);
 
+      if (!eventRepository.getEventById(guildId, eventId)) {
+        res.status(404).json({ success: false, error: 'Événement introuvable sur ce serveur.' });
+        return;
+      }
       const removed = eventRepository.removeParticipant(eventId, userId);
       res.json({ success: removed });
     } catch (err: any) {

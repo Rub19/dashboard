@@ -516,6 +516,11 @@ export function createVoiceRouter(client: Client): Router {
   router.get('/preferences/:userId', (req: Request, res: Response) => {
     try {
       const userId = req.params.userId as string;
+      // Préférences PERSONNELLES (valables sur tous les serveurs) : seul le membre concerné peut les lire ou les changer.
+      if (req.user?.id !== userId) {
+        res.status(403).json({ error: 'Tu ne peux consulter que tes propres préférences.' });
+        return;
+      }
       const prefs = voiceRepository.getUserPreferences(userId);
       res.json({ preferences: prefs || null });
     } catch (err: any) {
@@ -528,6 +533,10 @@ export function createVoiceRouter(client: Client): Router {
   router.put('/preferences/:userId', (req: Request, res: Response) => {
     try {
       const userId = req.params.userId as string;
+      if (req.user?.id !== userId) {
+        res.status(403).json({ error: 'Tu ne peux modifier que tes propres préférences.' });
+        return;
+      }
       const saved = voiceRepository.saveUserPreferences({
         userId,
         ...req.body,

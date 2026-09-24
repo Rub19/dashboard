@@ -2,9 +2,11 @@ import { AuditEvent, InvestigationResult } from '../types/auditEvent.js';
 import { auditRepository } from '../storage/auditRepository.js';
 
 export class InvestigationService {
-  public static investigateEvent(eventId: string): InvestigationResult | null {
+  public static investigateEvent(eventId: string, guildId?: string): InvestigationResult | null {
     const targetEvent = auditRepository.getEventById(eventId);
     if (!targetEvent) return null;
+    // Isolation entre serveurs : un événement d'un autre serveur est traité comme inexistant.
+    if (guildId && targetEvent.guildId !== guildId) return null;
 
     const eventTime = new Date(targetEvent.timestamp).getTime();
     const windowMs = 15 * 60 * 1000; // ±15 minutes

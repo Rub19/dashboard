@@ -140,7 +140,7 @@ export default function ModuleNavigator({ modules, categories, activeId, onSelec
                 status[m.id] ? "bg-emerald-500" : "bg-white/15"
               )}
             >
-              <span className={cn("absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform", status[m.id] ? "translate-x-[18px]" : "translate-x-0.5")} />
+              <span className={cn("absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform", status[m.id] ? "translate-x-4" : "translate-x-0")} />
             </button>
           )}
           <button

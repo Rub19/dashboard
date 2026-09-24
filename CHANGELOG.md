@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.64 — 2026-09-24
+
+**Correction des interrupteurs**
+
+- Le rond blanc des interrupteurs ON/OFF des modules (et de la sanction automatique) sortait de sa piste : il reste maintenant bien à l'intérieur
+
 ## v1.28.63 — 2026-09-24
 
 **Interrupteur On/Off pour chaque module, embeds d'accueil et sanctions automatiques réglables**

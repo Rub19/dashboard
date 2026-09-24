@@ -1303,7 +1303,7 @@ export default function ModerationCenterPage() {
                     onClick={() => escalation && saveEscalation({ enabled: !escalation.enabled })}
                     className={`relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors disabled:opacity-40 ${escalation?.enabled ? "bg-emerald-500" : "bg-white/15"}`}
                   >
-                    <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${escalation?.enabled ? "translate-x-[22px]" : "translate-x-0.5"}`} />
+                    <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${escalation?.enabled ? "translate-x-5" : "translate-x-0"}`} />
                   </button>
                 </div>
                 {!escalation && <p className="text-xs text-zinc-500">Réglage indisponible : bot injoignable ou serveur non sélectionné.</p>}

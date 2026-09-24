@@ -33959,6 +33959,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_63_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_63_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_63_de);
 
+const v1_28_64_fr: ChangelogEntry = {
+  version: "v1.28.64",
+  date: "2026-09-24",
+  title: "Correction des interrupteurs",
+  items: [
+    "Le rond blanc des interrupteurs ON/OFF des modules (et de la sanction automatique) sortait de sa piste : il reste maintenant bien à l'intérieur",
+  ],
+};
+
+const v1_28_64_en: ChangelogEntry = {
+  version: "v1.28.64",
+  date: "2026-09-24",
+  title: "Switch fix",
+  items: [
+    "The white knob of the module ON/OFF switches (and the automatic sanction switch) overflowed its track: it now stays inside",
+  ],
+};
+
+const v1_28_64_es: ChangelogEntry = {
+  version: "v1.28.64",
+  date: "2026-09-24",
+  title: "Corrección de los interruptores",
+  items: [
+    "El círculo blanco de los interruptores ON/OFF de los módulos (y de la sanción automática) se salía de su pista: ahora queda dentro",
+  ],
+};
+
+const v1_28_64_de: ChangelogEntry = {
+  version: "v1.28.64",
+  date: "2026-09-24",
+  title: "Korrektur der Schalter",
+  items: [
+    "Der weiße Knopf der EIN/AUS-Schalter der Module (und des Schalters für automatische Sanktionen) ragte aus seiner Bahn heraus: Er bleibt jetzt darin",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_64_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_64_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_64_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_64_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

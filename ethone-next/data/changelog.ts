@@ -34045,6 +34045,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_65_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_65_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_65_de);
 
+const v1_28_66_fr: ChangelogEntry = {
+  version: "v1.28.66",
+  date: "2026-09-24",
+  title: "Pages d'un sondage : données réelles à la place de chiffres de démonstration",
+  items: [
+    "Les pages Détail, Résultats et Vote d'un sondage affichaient un sondage fictif (« Soirée Jeux du Vendredi », 128 votes) quel que soit le sondage ouvert : elles lisent maintenant le vrai sondage et ses vrais résultats sur le bot, avec publication, pause, reprise, fin, export CSV / JSON et vote depuis le web",
+    "Sécurité : un vote envoyé depuis le dashboard est enregistré au nom du compte connecté ; l'identifiant d'utilisateur fourni dans la requête est ignoré (on pouvait auparavant voter au nom d'un autre)",
+    "Le taux de participation d'un sondage utilise le vrai nombre de membres du serveur (il partait d'un défaut de 150)",
+    "Les adresses de détail Réglages / Résultats / Vote sont couvertes par des règles de réécriture avec et sans barre finale",
+  ],
+};
+
+const v1_28_66_en: ChangelogEntry = {
+  version: "v1.28.66",
+  date: "2026-09-24",
+  title: "Poll pages: real data instead of demo figures",
+  items: [
+    "A poll's Detail, Results and Vote pages showed a fictional poll ('Friday Game Night', 128 votes) whatever poll was opened: they now read the real poll and real results from the bot, with publish, pause, resume, end, CSV / JSON export and voting from the web",
+    "Security: a vote sent from the dashboard is recorded under the signed-in account; the user id supplied in the request is ignored (you could previously vote as someone else)",
+    "A poll's participation rate uses the server's real member count (it started from a default of 150)",
+    "Settings / Results / Vote addresses are covered by rewrite rules with and without a trailing slash",
+  ],
+};
+
+const v1_28_66_es: ChangelogEntry = {
+  version: "v1.28.66",
+  date: "2026-09-24",
+  title: "Páginas de encuesta: datos reales en lugar de cifras de demostración",
+  items: [
+    "Las páginas Detalle, Resultados y Voto de una encuesta mostraban una encuesta ficticia («Noche de juegos del viernes», 128 votos) fuera cual fuera la encuesta abierta: ahora leen la encuesta y los resultados reales del bot, con publicar, pausar, reanudar, terminar, exportar CSV / JSON y votar desde la web",
+    "Seguridad: un voto enviado desde el dashboard se registra a nombre de la cuenta conectada; el identificador de usuario de la petición se ignora (antes se podía votar en nombre de otro)",
+    "La participación de una encuesta usa el número real de miembros del servidor (partía de un valor por defecto de 150)",
+    "Las direcciones Ajustes / Resultados / Voto están cubiertas por reglas de reescritura con y sin barra final",
+  ],
+};
+
+const v1_28_66_de: ChangelogEntry = {
+  version: "v1.28.66",
+  date: "2026-09-24",
+  title: "Umfrageseiten: echte Daten statt Demo-Zahlen",
+  items: [
+    "Die Seiten Detail, Ergebnisse und Abstimmung einer Umfrage zeigten unabhängig von der geöffneten Umfrage eine erfundene Umfrage („Freitags-Spieleabend“, 128 Stimmen): Sie lesen jetzt die echte Umfrage und die echten Ergebnisse vom Bot, mit Veröffentlichen, Pausieren, Fortsetzen, Beenden, CSV-/JSON-Export und Abstimmen im Web",
+    "Sicherheit: Eine im Dashboard abgegebene Stimme wird für das angemeldete Konto gespeichert; die in der Anfrage mitgeschickte Benutzer-ID wird ignoriert (früher konnte man im Namen anderer abstimmen)",
+    "Die Beteiligung einer Umfrage nutzt die echte Mitgliederzahl des Servers (sie ging von einem Standardwert von 150 aus)",
+    "Die Adressen Einstellungen / Ergebnisse / Abstimmung sind durch Umschreibungsregeln mit und ohne abschließenden Schrägstrich abgedeckt",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_66_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_66_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_66_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_66_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

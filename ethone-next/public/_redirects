@@ -11,6 +11,9 @@
 /discord/polls/:pollId/settings /discord/polls/demo/settings/ 200
 /discord/polls/:pollId/results /discord/polls/demo/results/ 200
 /discord/polls/:pollId/vote /discord/polls/demo/vote/ 200
+/discord/polls/:pollId/settings/ /discord/polls/demo/settings/ 200
+/discord/polls/:pollId/results/ /discord/polls/demo/results/ 200
+/discord/polls/:pollId/vote/ /discord/polls/demo/vote/ 200
 /discord/polls/* /discord/polls/demo/ 200
 /discord/events/* /discord/events/demo/ 200
 /settings/* /settings/general/ 200

@@ -1,265 +1,128 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
-import {
-  Vote,
-  CheckCircle2,
-  Lock,
-  ShieldCheck,
-  Send,
-  ChevronRight,
-} from "@/components/icons/ph";
+import { useState } from "react";
 import { useToast } from "@/components/ToastProvider";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
-import { cn } from "@/lib/utils";
-import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import { POLL_BOT_API_URL, usePollData } from "../usePollData";
 
+/** Vote depuis le web : le bot enregistre le vote au nom du compte Discord connecté (jamais un identifiant saisi). */
 export default function PollVoteClient() {
-  const params = useParams();
-  const pollId = (params?.pollId as string) || "community-game-night";
-  const { success: toastSuccess, error: toastError, info: toastInfo } = useToast();
-  const showToast = (msg: string, type?: string) => {
-    if (type === "error") toastError(msg);
-    else if (type === "info") toastInfo(msg);
-    else toastSuccess(msg);
-  };
-  const { profile } = useDiscordOAuth();
-  const searchParams = useSearchParams();
-  const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
+  const { poll, loading, error, reload, guildId, pollId } = usePollData();
+  const { success, error: toastError } = useToast();
+  const [choices, setChoices] = useState<Record<string, string[]>>({});
+  const [sending, setSending] = useState(false);
+  const [done, setDone] = useState(false);
+  const guildQuery = guildId ? `?guildId=${guildId}` : "";
 
-  const isStaffPoll = pollId === "staff-decision-01";
+  if (loading) return <div className="flex h-full items-center justify-center text-xs text-zinc-400">Chargement du sondage…</div>;
 
-  const poll = {
-    id: pollId,
-    title: isStaffPoll
-      ? "Décision Staff : Révision des Sanctions AutoMod"
-      : "Sondage Communautaire : Soirée Jeux du Vendredi",
-    description: isStaffPoll
-      ? "Vote confidentiel interne de l'équipe de modération pour valider le barème des sanctions."
-      : "Sélectionnez le jeu officiel auquel vous souhaitez participer ce vendredi soir !",
-    anonymity: isStaffPoll ? "ANONYMOUS" : "PUBLIC",
-    type: isStaffPoll ? "APPROVAL" : "SINGLE_CHOICE",
-    questions: [
-      {
-        id: "q1",
-        title: isStaffPoll
-          ? "Approuvez-vous la mise en place du barème AutoMod ?"
-          : "À quel jeu souhaitez-vous jouer ce vendredi ?",
-        minSelections: 1,
-        maxSelections: 1,
-        options: isStaffPoll
-          ? [
-              { id: "opt-approve", label: "Approuver (Pour)", emoji: "✅", desc: "Adopter la réforme immédiatement" },
-              { id: "opt-reject", label: "Rejeter (Contre)", emoji: "❌", desc: "Conserver l'ancien barème" },
-              { id: "opt-abstain", label: "Abstention", emoji: "⚪", desc: "Ne prend pas parti" },
-            ]
-          : [
-              { id: "opt-valo", label: "Valorant (Custom 5v5)", emoji: "🎯", desc: "Tournoi amical inter-membres" },
-              { id: "opt-mc", label: "Minecraft (Bedwars)", emoji: "⛏️", desc: "Serveur privé dédié" },
-              { id: "opt-lethal", label: "Lethal Company", emoji: "👽", desc: "Escouades vocales de 4" },
-              { id: "opt-rocket", label: "Rocket League", emoji: "⚽", desc: "Matches à élimination directe" },
-            ],
-      },
-    ],
-  };
+  if (error || !poll) {
+    return (
+      <div className="mx-auto max-w-xl px-6 py-16 text-center">
+        <p className="text-sm font-semibold text-white">Sondage indisponible</p>
+        <p className="mt-2 text-xs text-zinc-400">{error || "Ce sondage n'existe pas sur ce serveur."}</p>
+      </div>
+    );
+  }
 
-  const [selectedOptions, setSelectedOptions] = useState<Record<string, string[]>>({});
-  const [hasVoted, setHasVoted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const votable = poll.status === "ACTIVE";
 
-  const handleSelectOption = (qId: string, optId: string, maxChoices = 1) => {
-    setSelectedOptions((prev) => {
-      const current = prev[qId] || [];
-      if (maxChoices === 1) {
-        return { ...prev, [qId]: [optId] };
-      }
-      if (current.includes(optId)) {
-        return { ...prev, [qId]: current.filter((id) => id !== optId) };
-      }
-      if (current.length >= maxChoices) {
-        showToast(`Vous ne pouvez choisir que ${maxChoices} option(s).`, "error");
-        return prev;
-      }
-      return { ...prev, [qId]: [...current, optId] };
+  const toggle = (questionId: string, optionId: string, multiple: boolean) => {
+    setChoices((prev) => {
+      const current = prev[questionId] ?? [];
+      if (!multiple) return { ...prev, [questionId]: [optionId] };
+      return { ...prev, [questionId]: current.includes(optionId) ? current.filter((x) => x !== optionId) : [...current, optionId] };
     });
   };
 
-  const handleSubmitVote = () => {
-    // Validate that required questions have choices
-    for (const q of poll.questions) {
-      const chosen = selectedOptions[q.id] || [];
-      if (chosen.length < q.minSelections) {
-        showToast(`Veuillez sélectionner au moins ${q.minSelections} option(s).`, "error");
-        return;
-      }
+  const submit = async () => {
+    if (!guildId || !POLL_BOT_API_URL) return;
+    const missing = poll.questions.find((q) => (choices[q.id]?.length ?? 0) === 0);
+    if (missing) {
+      toastError("Vote incomplet", `Choisissez une réponse pour « ${missing.title} ».`);
+      return;
     }
-
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setHasVoted(true);
-      showToast("Votre vote a été enregistré avec succès !", "success");
-    }, 600);
+    setSending(true);
+    try {
+      // Le bot enregistre une question par requête
+      for (const question of poll.questions) {
+        const res = await fetch(`${POLL_BOT_API_URL}/api/guilds/${guildId}/polls/${encodeURIComponent(pollId)}/vote`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ selections: { [question.id]: choices[question.id] } }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || data?.success === false) throw new Error(data?.error || "Le bot a refusé ce vote.");
+      }
+      setDone(true);
+      success("Vote enregistré", "Merci pour votre participation.");
+      reload();
+    } catch (e) {
+      toastError("Vote refusé", e instanceof Error ? e.message : "Enregistrement impossible.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-indigo-500/30 flex flex-col justify-between">
-      {/* Background Glow */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-25">
-      </div>
+    <div className="h-full overflow-y-auto bg-[var(--bg-main)] text-white">
+      <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+        <h1 className="text-2xl font-bold tracking-tight">{poll.title}</h1>
+        {poll.description && <p className="mt-2 text-sm text-zinc-400">{poll.description}</p>}
 
-      <div className="relative z-10 mx-auto w-full max-w-2xl px-4 py-12 sm:px-6 pb-44 md:pb-44">
-        {/* Portal Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3.5 py-1 text-xs font-semibold text-indigo-400 mb-3">
-            <Vote className="h-3.5 w-3.5" />
-            Portail de Vote ETHONE
-          </div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-            {poll.title}
-          </h1>
-          <p className="mt-2 text-xs text-zinc-400 max-w-lg mx-auto leading-relaxed">
-            {poll.description}
-          </p>
-        </div>
+        {!votable && <p className="mt-5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">Ce sondage n&apos;accepte pas de votes pour le moment (statut : {poll.status}).</p>}
 
-        {/* Anonymity Banner */}
-        <div className="mb-6 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 p-3.5 backdrop-blur-xl">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
-              <Lock className="h-3.5 w-3.5" />
-            </div>
-            <div>
-              <span className="text-xs font-bold text-white block">
-                {poll.anonymity === "PUBLIC"
-                  ? "Scrutin Public"
-                  : "Bulletin Secret & Confidentiel"}
-              </span>
-              <span className="text-[11px] text-zinc-400">
-                {poll.anonymity === "PUBLIC"
-                  ? "Votre participation est certifiée et associée à votre profil Discord."
-                  : "Votre choix est entièrement dissocié de votre identité Discord."}
-              </span>
-            </div>
-          </div>
-          <ShieldCheck className="h-4 w-4 text-emerald-400" />
-        </div>
-
-        {/* Voted Confirmation State */}
-        {hasVoted ? (
-          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-8 text-center backdrop-blur-xl">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500 text-black shadow-sm mb-4">
-              <CheckCircle2 className="h-7 w-7" />
-            </div>
-            <h2 className="text-xl font-bold text-white mb-2">Vote Enregistré avec Succès !</h2>
-            <p className="text-xs text-zinc-300 max-w-md mx-auto mb-6">
-              Merci pour votre participation. Vos suffrages ont été pris en compte et consolidés dans
-              le décompte officiel du serveur.
-            </p>
-
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <Link
-                href={`/discord/polls/${poll.id}/results?guildId=${guildParam}`}
-                className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500 shadow-sm"
-              >
-                Voir les Résultats en direct
-                <ChevronRight className="h-3.5 w-3.5" />
-              </Link>
-              <button
-                onClick={() => setHasVoted(false)}
-                className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2 text-xs font-medium text-zinc-400 hover:text-white"
-              >
-                Modifier mon vote
-              </button>
-            </div>
-          </div>
-        ) : (
-          /* Voting Options Card */
-          <div className="space-y-6">
-            {poll.questions.map((q) => {
-              const currentSelections = selectedOptions[q.id] || [];
-
-              return (
-                <div
-                  key={q.id}
-                  className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl"
-                >
-                  <h3 className="text-sm font-bold text-white mb-4">❓ {q.title}</h3>
-
-                  <div className="space-y-3">
-                    {q.options.map((opt) => {
-                      const isSelected = currentSelections.includes(opt.id);
-
-                      return (
-                        <button
-                          key={opt.id}
-                          type="button"
-                          onClick={() => handleSelectOption(q.id, opt.id, q.maxSelections)}
-                          className={cn(
-                            "w-full flex items-center justify-between rounded-xl border p-4 text-left transition-all",
-                            isSelected
-                              ? "border-indigo-500 bg-indigo-500/10 text-white shadow-sm scale-[1.01]"
-                              : "border-zinc-800 bg-black/40 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-800/40"
-                          )}
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="text-2xl">{opt.emoji}</span>
-                            <div>
-                              <span className="text-sm font-bold text-white block">{opt.label}</span>
-                              {opt.desc && (
-                                <span className="text-[11px] text-zinc-400 block mt-0.5">{opt.desc}</span>
-                              )}
-                            </div>
-                          </div>
-
-                          <div
-                            className={cn(
-                              "flex h-5 w-5 items-center justify-center rounded-full border transition-all",
-                              isSelected
-                                ? "border-indigo-500 bg-indigo-600 text-white"
-                                : "border-zinc-700 bg-zinc-800/50"
-                            )}
-                          >
-                            {isSelected && <CheckCircle2 className="h-3 w-3" />}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
+        <div className="mt-6 space-y-5">
+          {poll.questions.map((question) => {
+            const multiple = poll.type === "MULTIPLE_CHOICE" || (question.maxSelections ?? 1) > 1;
+            return (
+              <fieldset key={question.id} disabled={!votable || done} className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
+                <legend className="px-1 text-sm font-semibold">{question.title}</legend>
+                <div className="mt-2 space-y-2">
+                  {question.options.map((option) => {
+                    const selected = (choices[question.id] ?? []).includes(option.id);
+                    return (
+                      <label
+                        key={option.id}
+                        className={`flex cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-2.5 text-sm transition-colors ${
+                          selected ? "border-indigo-400/60 bg-indigo-500/10" : "border-[var(--panel-border)] hover:bg-white/[0.04]"
+                        }`}
+                      >
+                        <input
+                          type={multiple ? "checkbox" : "radio"}
+                          name={question.id}
+                          checked={selected}
+                          onChange={() => toggle(question.id, option.id, multiple)}
+                          className="h-4 w-4 accent-indigo-500"
+                        />
+                        <span>
+                          {option.emoji ? `${option.emoji} ` : ""}
+                          {option.label}
+                        </span>
+                      </label>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </fieldset>
+            );
+          })}
+        </div>
 
-            {/* Submit Action */}
-            <div className="flex items-center justify-between pt-2">
-              <span className="text-xs text-zinc-500">
-                Vote modifiable avant la fin du scrutin.
-              </span>
-              <button
-                onClick={handleSubmitVote}
-                disabled={isSubmitting}
-                className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-xs font-semibold text-white shadow-sm hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50"
-              >
-                {isSubmitting ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                ) : (
-                  <>
-                    <Send className="h-3.5 w-3.5" />
-                    Valider mon vote
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        )}
+        <div className="mt-6 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={submit}
+            disabled={!votable || done || sending}
+            className="cursor-pointer rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {done ? "Vote enregistré" : sending ? "Envoi…" : "Voter"}
+          </button>
+          <Link href={`/discord/polls/${encodeURIComponent(pollId)}${guildQuery}`} className="text-xs text-zinc-400 hover:text-white">
+            Voir le sondage
+          </Link>
+        </div>
       </div>
-
-      {/* Footer Branding */}
-      <footer className="relative z-10 py-6 text-center text-xs text-zinc-600 border-t border-zinc-900">
-        Propulsé par <strong className="text-zinc-400">ETHONE Discord Bot</strong> • Système de Vote Sécurisé
-      </footer>
     </div>
   );
 }

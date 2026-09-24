@@ -3,7 +3,8 @@
 import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePollIdFromPath } from "../usePollData";
 import {
   ChevronRight,
   Save,
@@ -25,9 +26,8 @@ const BOT_API_URL =
   "";
 
 export default function PollSettingsClient() {
-  const params = useParams();
   const router = useRouter();
-  const pollId = (params?.pollId as string) || "community-game-night";
+  const pollId = usePollIdFromPath();
   const { success: toastSuccess, error: toastError, info: toastInfo } = useToast();
   const showToast = useCallback(
     (msg: string, type?: string) => {
@@ -106,7 +106,7 @@ export default function PollSettingsClient() {
   }, [fetchChannels]);
 
   useEffect(() => {
-    if (!guildParam || !BOT_API_URL) return;
+    if (!guildParam || !BOT_API_URL || !pollId) return;
     let cancelled = false;
     fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/${encodeURIComponent(pollId)}`, { credentials: "include" })
       .then(async (res) => {

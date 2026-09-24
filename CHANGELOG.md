@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.66 — 2026-09-24
+
+**Pages d'un sondage : données réelles à la place de chiffres de démonstration**
+
+- Les pages Détail, Résultats et Vote d'un sondage affichaient un sondage fictif (« Soirée Jeux du Vendredi », 128 votes) quel que soit le sondage ouvert : elles lisent maintenant le vrai sondage et ses vrais résultats sur le bot, avec publication, pause, reprise, fin, export CSV / JSON et vote depuis le web
+- Sécurité : un vote envoyé depuis le dashboard est enregistré au nom du compte connecté ; l'identifiant d'utilisateur fourni dans la requête est ignoré (on pouvait auparavant voter au nom d'un autre)
+- Le taux de participation d'un sondage utilise le vrai nombre de membres du serveur (il partait d'un défaut de 150)
+- Les adresses de détail Réglages / Résultats / Vote sont couvertes par des règles de réécriture avec et sans barre finale
+
 ## v1.28.65 — 2026-09-24
 
 **Pages de détail (sondages, tickets, formulaires…) accessibles en direct**

@@ -276,7 +276,8 @@ export function createPollRouter(client: Client): Router {
   router.get('/:pollId/results', (req: Request, res: Response) => {
     const guildId = requireStringParam(req.params.guildId, 'guildId');
     const pollId = requireStringParam(req.params.pollId, 'pollId');
-    const results = pollResultService.calculateResults(guildId, pollId);
+    const memberCount = client.guilds.cache.get(guildId)?.memberCount;
+    const results = pollResultService.calculateResults(guildId, pollId, memberCount && memberCount > 0 ? memberCount : undefined);
     if (!results) {
       return res.status(404).json({ success: false, error: 'Résultats non disponibles.' });
     }
@@ -317,10 +318,15 @@ export function createPollRouter(client: Client): Router {
   router.post('/:pollId/vote', (req: Request, res: Response) => {
     const guildId = requireStringParam(req.params.guildId, 'guildId');
     const pollId = requireStringParam(req.params.pollId, 'pollId');
-    const { userId, userTag, userAvatar, userRoles, selections, satisfactionScore, rankingOrder } = req.body;
+    const { userRoles, selections, satisfactionScore, rankingOrder } = req.body;
+    // Identité tirée de la session : un identifiant envoyé dans le corps est ignoré (sinon on pourrait voter au nom d'un autre).
+    const sessionUser = (req as any).user as { id?: string; username?: string; avatar?: string } | undefined;
+    const userId = sessionUser?.id;
+    const userTag = sessionUser?.username;
+    const userAvatar = sessionUser?.avatar;
 
     if (!userId) {
-      return res.status(400).json({ success: false, error: 'Utilisateur non identifié.' });
+      return res.status(401).json({ success: false, error: 'Utilisateur non identifié.' });
     }
 
     const voteResult = pollVotingService.castVote(

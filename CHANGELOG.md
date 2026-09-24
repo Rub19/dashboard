@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.49 — 2026-09-24
+
+**Pastilles Actif / Off sur chaque module du hub**
+
+- Le hub Discord affiche l'état réel (activé ou désactivé) de chaque module qui possède un interrupteur : Anti-Raid, Anti-Nuke, AutoMod, Journal, Bienvenue, Rôles auto, Niveaux, Suggestions, Starboard, Anniversaires, Économie, AFK, Stats du serveur, Tickets
+- Les pastilles se mettent à jour en direct quand un réglage change, depuis le dashboard ou depuis Discord
+- Nouvelle route du bot GET /api/guilds/:guildId/module-status ; un module sans interrupteur unique n'affiche aucune pastille au lieu d'un état inventé
+
 ## v1.28.48 — 2026-09-24
 
 **Nouvelle photo de profil et bannière du bot**

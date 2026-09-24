@@ -33240,6 +33240,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_48_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_48_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_48_de);
 
+const v1_28_49_fr: ChangelogEntry = {
+  version: "v1.28.49",
+  date: "2026-09-24",
+  title: "Pastilles Actif / Off sur chaque module du hub",
+  items: [
+    "Le hub Discord affiche l'état réel (activé ou désactivé) de chaque module qui possède un interrupteur : Anti-Raid, Anti-Nuke, AutoMod, Journal, Bienvenue, Rôles auto, Niveaux, Suggestions, Starboard, Anniversaires, Économie, AFK, Stats du serveur, Tickets",
+    "Les pastilles se mettent à jour en direct quand un réglage change, depuis le dashboard ou depuis Discord",
+    "Nouvelle route du bot GET /api/guilds/:guildId/module-status ; un module sans interrupteur unique n'affiche aucune pastille au lieu d'un état inventé",
+  ],
+};
+
+const v1_28_49_en: ChangelogEntry = {
+  version: "v1.28.49",
+  date: "2026-09-24",
+  title: "Active / Off badges on every hub module",
+  items: [
+    "The Discord hub now shows the real state (enabled or disabled) of each module that has a master switch: Anti-Raid, Anti-Nuke, AutoMod, Logs, Welcome, Auto-roles, Leveling, Suggestions, Starboard, Birthdays, Economy, AFK, Server stats, Tickets",
+    "Badges update live when a setting changes, from the dashboard or from Discord",
+    "New bot route GET /api/guilds/:guildId/module-status; a module without a single switch shows no badge instead of an invented state",
+  ],
+};
+
+const v1_28_49_es: ChangelogEntry = {
+  version: "v1.28.49",
+  date: "2026-09-24",
+  title: "Etiquetas Activo / Off en cada módulo del hub",
+  items: [
+    "El hub de Discord muestra el estado real (activado o desactivado) de cada módulo con interruptor general: Anti-Raid, Anti-Nuke, AutoMod, Registros, Bienvenida, Roles automáticos, Niveles, Sugerencias, Starboard, Cumpleaños, Economía, AFK, Estadísticas del servidor, Tickets",
+    "Las etiquetas se actualizan en directo cuando cambia un ajuste, desde el dashboard o desde Discord",
+    "Nueva ruta del bot GET /api/guilds/:guildId/module-status; un módulo sin interruptor único no muestra etiqueta en lugar de un estado inventado",
+  ],
+};
+
+const v1_28_49_de: ChangelogEntry = {
+  version: "v1.28.49",
+  date: "2026-09-24",
+  title: "Aktiv-/Off-Badges für jedes Hub-Modul",
+  items: [
+    "Der Discord-Hub zeigt den echten Zustand (aktiviert oder deaktiviert) jedes Moduls mit Hauptschalter: Anti-Raid, Anti-Nuke, AutoMod, Protokoll, Willkommen, Auto-Rollen, Leveling, Vorschläge, Starboard, Geburtstage, Wirtschaft, AFK, Server-Statistiken, Tickets",
+    "Die Badges aktualisieren sich live, wenn sich eine Einstellung ändert, im Dashboard oder in Discord",
+    "Neue Bot-Route GET /api/guilds/:guildId/module-status; ein Modul ohne einzelnen Schalter zeigt kein Badge statt eines erfundenen Zustands",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_49_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_49_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_49_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_49_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

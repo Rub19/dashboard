@@ -9,6 +9,7 @@ import { config } from '../config.js';
 import { logger } from '../utils/logger.js';
 import { authRouter } from './routes/authRoutes.js';
 import { createGuildRouter } from './routes/guildRoutes.js';
+import { getModuleStatus } from './moduleStatus.js';
 import { createModuleRouter } from './routes/moduleRoutes.js';
 import { createSettingsRouter } from './routes/settingsRoutes.js';
 import { createModerationRouter } from './routes/moderationRoutes.js';
@@ -104,6 +105,10 @@ export function startWebServer(client: Client): http.Server {
   app.get('/api/guilds/:guildId/bot/overview', authMiddleware, createGuildAuthMiddleware(client), (_req, res) => {
     const snapshot = BotTelemetryService.getInstance().getTelemetrySnapshot(client);
     res.json({ snapshot: { guildsCount: snapshot.guildsCount, cachedUsersCount: snapshot.cachedUsersCount } });
+  });
+  // Interrupteur général de chaque module (pastilles « actif / désactivé » du hub).
+  app.get('/api/guilds/:guildId/module-status', authMiddleware, createGuildAuthMiddleware(client), (req, res) => {
+    res.json({ modules: getModuleStatus(String(req.params.guildId)) });
   });
   app.use('/api/guilds', createGuildRouter(client));
   app.use('/api/guilds', createSettingsRouter(client));

@@ -28,6 +28,8 @@ interface ModuleNavigatorProps {
   categories: NavigatorCategory[];
   activeId: string;
   onSelect: (id: string) => void;
+  /** Interrupteur général réel de chaque module (id → activé). Un module absent n'affiche pas de pastille. */
+  status?: Record<string, boolean>;
 }
 
 const FAV_KEY = "ethone.discord.favoriteModules";
@@ -40,7 +42,7 @@ const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCa
  * en haut et accès direct à la page complète de chaque module. Un clic sur une carte ouvre sa configuration
  * rapide ; la flèche ouvre la page complète.
  */
-export default function ModuleNavigator({ modules, categories, activeId, onSelect }: ModuleNavigatorProps) {
+export default function ModuleNavigator({ modules, categories, activeId, onSelect, status = {} }: ModuleNavigatorProps) {
   const [query, setQuery] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
 
@@ -104,7 +106,20 @@ export default function ModuleNavigator({ modules, categories, activeId, onSelec
           <Icon className="h-5 w-5" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className={cn("block truncate text-xs font-semibold", current ? "text-white" : "text-zinc-200")}>{m.title}</span>
+          <span className="flex items-center gap-1.5">
+            <span className={cn("block truncate text-xs font-semibold", current ? "text-white" : "text-zinc-200")}>{m.title}</span>
+            {typeof status[m.id] === "boolean" && (
+              <span
+                title={status[m.id] ? "Module activé" : "Module désactivé"}
+                className={cn(
+                  "shrink-0 rounded-full border px-1.5 py-px text-[9px] font-bold uppercase tracking-wide",
+                  status[m.id] ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" : "border-white/10 bg-white/[0.04] text-zinc-500"
+                )}
+              >
+                {status[m.id] ? "Actif" : "Off"}
+              </span>
+            )}
+          </span>
           <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-zinc-500">{m.description}</span>
         </span>
         <span className="flex shrink-0 flex-col items-center gap-1">

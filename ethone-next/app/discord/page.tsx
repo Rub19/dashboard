@@ -70,6 +70,7 @@ import DiscordOnboardingModal from "@/components/discord/onboarding/DiscordOnboa
 import { Checkbox } from "@/components/ui/Checkbox";
 import GuildLiveStats from "@/components/discord/GuildLiveStats";
 import { ethoneIcon } from "@/components/EthoneIcon";
+import { useModuleStatus } from "@/lib/hooks/useModuleStatus";
 import ModuleNavigator, { type NavigatorCategory, type NavigatorModule } from "@/components/discord/ModuleNavigator";
 
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -874,6 +875,7 @@ export default function DiscordDashboardPage() {
   };
 
   const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+  const moduleStatus = useModuleStatus(selectedGuild?.id, !botPresenceKnown || Boolean(selectedGuild && botGuildIds.has(selectedGuild.id)));
 
   // --- Live Music Center State ---
   const [liveMusicState, setLiveMusicState] = useState<any>({
@@ -1562,7 +1564,7 @@ export default function DiscordDashboardPage() {
               </div>
 
               {/* Navigation des modules : catégories, recherche, favoris */}
-              <ModuleNavigator modules={NAV_MODULES} categories={MODULE_CATEGORIES} activeId={activeModule} onSelect={handleSelectModule} />
+              <ModuleNavigator modules={NAV_MODULES} categories={MODULE_CATEGORIES} activeId={activeModule} onSelect={handleSelectModule} status={moduleStatus} />
 
               {/* Functional Module Settings Panel */}
               <div id="module-panel" className="scroll-mt-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-5 sm:p-6 backdrop-blur-xl">

@@ -138,7 +138,7 @@ export default function SpacesPage() {
   }
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden px-4 pt-4 sm:px-6 lg:px-8">
       <div className="shrink-0 mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold">{i18n("spacesTitle")}</h1>
         <span className="rounded-xl bg-[var(--panel-bg)] px-3 py-1 text-sm text-[var(--muted)]">

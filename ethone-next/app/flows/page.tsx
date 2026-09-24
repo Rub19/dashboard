@@ -198,7 +198,7 @@ export default function FlowsPage() {
   ];
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden px-4 pt-4 sm:px-6 lg:px-8">
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3 mb-6">
         {statCards.map((stat, i) => (

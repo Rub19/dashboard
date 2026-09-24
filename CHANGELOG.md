@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.38 — 2026-09-24
+
+**Pages Espaces et Flows décalées du bord, textes manquants corrigés**
+
+- Les pages Espaces et Flows étaient collées à la barre latérale (aucune marge horizontale) ; elles ont maintenant des marges comme les autres pages. Mesuré sur les 22 pages principales : les autres étaient déjà correctes.
+- Traductions manquantes : plusieurs textes s'affichaient sous leur nom technique (« recentSessions », « activityHeatmapSubtitle », « clickToFilter » sur la page Activité ; messages de connexion Apple ; « privacyShield » ; « maintenance », « section », « setting » dans les paramètres…). 14 clés ajoutées en français, anglais, espagnol, allemand et japonais.
+
 ## v1.28.37 — 2026-09-24
 
 **Icônes de la barre latérale en couleur (option), page Équipe corrigée**

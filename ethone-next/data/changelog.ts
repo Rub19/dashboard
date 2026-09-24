@@ -32721,6 +32721,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_37_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_37_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_37_de);
 
+const v1_28_38_fr: ChangelogEntry = {
+  version: "v1.28.38",
+  date: "2026-09-24",
+  title: "Pages Espaces et Flows décalées du bord, textes manquants corrigés",
+  items: [
+    "Les pages Espaces et Flows étaient collées à la barre latérale (aucune marge horizontale) ; elles ont maintenant des marges comme les autres pages. Mesuré sur les 22 pages principales : les autres étaient déjà correctes.",
+    "Traductions manquantes : plusieurs textes s'affichaient sous leur nom technique (« recentSessions », « activityHeatmapSubtitle », « clickToFilter » sur la page Activité ; messages de connexion Apple ; « privacyShield » ; « maintenance », « section », « setting » dans les paramètres…). 14 clés ajoutées en français, anglais, espagnol, allemand et japonais.",
+  ],
+};
+
+const v1_28_38_en: ChangelogEntry = {
+  version: "v1.28.38",
+  date: "2026-09-24",
+  title: "Spaces and Flows pages moved off the edge, missing texts fixed",
+  items: [
+    "The Spaces and Flows pages were glued to the sidebar (no horizontal margin); they now have margins like the other pages. Measured on the 22 main pages: the others were already fine.",
+    "Missing translations: several texts showed under their technical name (\"recentSessions\", \"activityHeatmapSubtitle\", \"clickToFilter\" on the Activity page; Apple sign-in messages; \"privacyShield\"; \"maintenance\", \"section\", \"setting\" in settings…). 14 keys added in French, English, Spanish, German and Japanese.",
+  ],
+};
+
+const v1_28_38_es: ChangelogEntry = {
+  version: "v1.28.38",
+  date: "2026-09-24",
+  title: "Páginas Espacios y Flows separadas del borde, textos que faltaban corregidos",
+  items: [
+    "Las páginas Espacios y Flows estaban pegadas a la barra lateral (sin margen horizontal); ahora tienen márgenes como las demás. Medido en las 22 páginas principales: las otras ya estaban bien.",
+    "Traducciones que faltaban: varios textos se mostraban con su nombre técnico (« recentSessions », « activityHeatmapSubtitle », « clickToFilter » en Actividad; mensajes de inicio de sesión con Apple; « privacyShield »; « maintenance », « section », « setting » en ajustes…). 14 claves añadidas en francés, inglés, español, alemán y japonés.",
+  ],
+};
+
+const v1_28_38_de: ChangelogEntry = {
+  version: "v1.28.38",
+  date: "2026-09-24",
+  title: "Seiten Spaces und Flows vom Rand abgerückt, fehlende Texte korrigiert",
+  items: [
+    "Die Seiten Spaces und Flows klebten an der Seitenleiste (kein horizontaler Abstand); sie haben jetzt Abstände wie die anderen Seiten. Auf den 22 Hauptseiten gemessen: die übrigen waren bereits in Ordnung.",
+    "Fehlende Übersetzungen: mehrere Texte erschienen unter ihrem technischen Namen („recentSessions“, „activityHeatmapSubtitle“, „clickToFilter“ auf der Aktivitätsseite; Apple-Anmeldemeldungen; „privacyShield“; „maintenance“, „section“, „setting“ in den Einstellungen…). 14 Schlüssel auf Französisch, Englisch, Spanisch, Deutsch und Japanisch ergänzt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_38_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_38_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_38_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_38_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

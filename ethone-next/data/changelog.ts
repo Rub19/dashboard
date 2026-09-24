@@ -34000,6 +34000,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_64_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_64_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_64_de);
 
+const v1_28_65_fr: ChangelogEntry = {
+  version: "v1.28.65",
+  date: "2026-09-24",
+  title: "Pages de détail (sondages, tickets, formulaires…) accessibles en direct",
+  items: [
+    "Les règles de réécriture du site désignaient des fichiers « index.html » que l'hébergeur refuse de servir : ouvrir directement l'adresse d'un sondage, d'un ticket, d'un formulaire ou d'un dossier de modération réels donnait une erreur 404. Elles pointent maintenant vers les dossiers",
+    "Les pages Réglages, Résultats et Vote d'un sondage ont chacune leur propre règle (elles retombaient sur la page de détail)",
+  ],
+};
+
+const v1_28_65_en: ChangelogEntry = {
+  version: "v1.28.65",
+  date: "2026-09-24",
+  title: "Detail pages (polls, tickets, forms…) reachable directly",
+  items: [
+    "The site's rewrite rules pointed at 'index.html' files that the host refuses to serve: opening the address of a real poll, ticket, form or moderation case directly gave a 404. They now point at folders",
+    "A poll's Settings, Results and Vote pages each have their own rule (they used to fall back to the detail page)",
+  ],
+};
+
+const v1_28_65_es: ChangelogEntry = {
+  version: "v1.28.65",
+  date: "2026-09-24",
+  title: "Páginas de detalle (encuestas, tickets, formularios…) accesibles directamente",
+  items: [
+    "Las reglas de reescritura del sitio apuntaban a archivos «index.html» que el alojamiento no sirve: abrir directamente la dirección de una encuesta, ticket, formulario o caso de moderación reales daba un 404. Ahora apuntan a carpetas",
+    "Las páginas Ajustes, Resultados y Voto de una encuesta tienen cada una su propia regla (antes caían en la página de detalle)",
+  ],
+};
+
+const v1_28_65_de: ChangelogEntry = {
+  version: "v1.28.65",
+  date: "2026-09-24",
+  title: "Detailseiten (Umfragen, Tickets, Formulare…) direkt erreichbar",
+  items: [
+    "Die Umschreibungsregeln der Website verwiesen auf „index.html“-Dateien, die der Host nicht ausliefert: Das direkte Öffnen der Adresse einer echten Umfrage, eines Tickets, Formulars oder Moderationsfalls ergab einen 404. Sie verweisen jetzt auf Ordner",
+    "Die Seiten Einstellungen, Ergebnisse und Abstimmung einer Umfrage haben jeweils eine eigene Regel (sie fielen zuvor auf die Detailseite zurück)",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_65_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_65_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_65_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_65_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

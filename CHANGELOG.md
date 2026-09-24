@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.65 — 2026-09-24
+
+**Pages de détail (sondages, tickets, formulaires…) accessibles en direct**
+
+- Les règles de réécriture du site désignaient des fichiers « index.html » que l'hébergeur refuse de servir : ouvrir directement l'adresse d'un sondage, d'un ticket, d'un formulaire ou d'un dossier de modération réels donnait une erreur 404. Elles pointent maintenant vers les dossiers
+- Les pages Réglages, Résultats et Vote d'un sondage ont chacune leur propre règle (elles retombaient sur la page de détail)
+
 ## v1.28.64 — 2026-09-24
 
 **Correction des interrupteurs**

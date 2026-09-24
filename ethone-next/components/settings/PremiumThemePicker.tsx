@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Loader2, CloudOff, Cloud } from "lucide-react";
+import { Check, Loader2, CloudOff, Cloud } from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
 import { useSyncStore } from "@/lib/stores/sync";
 import { type ThemeMode } from "@/lib/settings";

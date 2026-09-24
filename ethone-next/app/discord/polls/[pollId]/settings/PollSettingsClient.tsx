@@ -10,7 +10,7 @@ import {
   AlertTriangle,
   RotateCcw,
   RefreshCw,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";

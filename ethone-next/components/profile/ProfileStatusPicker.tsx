@@ -6,7 +6,7 @@ import {
   Smile,
   X,
   RefreshCw,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import Modal from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 import type { PresenceStatus, CustomStatus } from "@/lib/personalization/personalization-store";

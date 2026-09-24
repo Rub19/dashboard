@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Rocket, ArrowRight, LayoutDashboard, CheckCircle2, ShieldCheck, Sparkles, Sliders } from "lucide-react";
+import { Rocket, ArrowRight, LayoutDashboard, CheckCircle2, ShieldCheck, Sparkles, Sliders } from "@/components/icons/ph";
 
 interface Screen7Props {
   onStartSetup: () => void;

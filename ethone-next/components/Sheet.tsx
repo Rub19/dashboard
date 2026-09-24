@@ -2,7 +2,7 @@
 
 import { useEffect, useId } from "react";
 import { motion, AnimatePresence, useReducedMotion, type PanInfo } from "framer-motion";
-import { X } from "lucide-react";
+import { X } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { hapticLightImpact } from "@/lib/haptics";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";

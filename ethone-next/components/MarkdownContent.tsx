@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import React, { useMemo } from "react";
-import { Check, Square, Copy } from "lucide-react";
+import { Check, Square, Copy } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 
 interface MarkdownContentProps {

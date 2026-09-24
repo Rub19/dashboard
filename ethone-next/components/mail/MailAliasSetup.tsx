@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Shuffle } from "lucide-react";
+import { Mail, Shuffle } from "@/components/icons/ph";
 import Button from "@/components/ui/Button";
 import Input from "@/components/Input";
 import FormField from "@/components/FormField";

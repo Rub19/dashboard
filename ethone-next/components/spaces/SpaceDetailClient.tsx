@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Users, UserPlus, Crown, Ban, Trash2, Plus, Check, Clock, CalendarDays, StickyNote, MessageCircle, Link2, Unlink } from "lucide-react";
+import { ArrowLeft, Users, UserPlus, Crown, Ban, Trash2, Plus, Check, Clock, CalendarDays, StickyNote, MessageCircle, Link2, Unlink } from "@/components/icons/ph";
 import { useSharedSpaces, useSpaceMembers, type SpaceMember } from "@/lib/hooks/useSharedSpaces";
 import { useSpaceTasks } from "@/lib/hooks/useSpaceTasks";
 import { useSpaceEvents } from "@/lib/hooks/useSpaceEvents";

@@ -19,7 +19,7 @@ import {
   Mail,
   ExternalLink,
   ArrowLeft,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useNotifications, type Notification, type SnoozeDuration } from "@/lib/hooks/useNotifications";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";

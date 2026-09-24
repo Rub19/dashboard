@@ -2,7 +2,7 @@
 
 import React, { Component, type ReactNode } from "react";
 import Link from "next/link";
-import { AlertTriangle, ArrowLeft, RotateCcw } from "lucide-react";
+import { AlertTriangle, ArrowLeft, RotateCcw } from "@/components/icons/ph";
 
 interface Props {
   children: ReactNode;

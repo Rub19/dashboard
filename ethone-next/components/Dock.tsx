@@ -3,7 +3,7 @@
 import { memo, useMemo, useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutGrid, Search, Clock, AppWindow, Bell, Sliders, ChevronUp, Mail, EyeOff } from "lucide-react";
+import { LayoutGrid, Search, Clock, AppWindow, Bell, Sliders, ChevronUp, Mail, EyeOff } from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
 import { useWindowManager } from "@/components/WindowManagerProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";

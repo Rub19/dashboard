@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.36 — 2026-09-24
+
+**Toutes les icônes du dashboard passent au même style**
+
+- Les ~350 icônes utilisées dans les 233 fichiers du site (boutons, en-têtes, états vides, barres d'outils, alertes…) suivent maintenant le même jeu que la barre latérale : Phosphor en duotone (trait net + aplat léger), au lieu de l'ancien jeu Lucide. Le tout est cohérent d'une page à l'autre et prend la couleur du thème.
+- Les icônes « pleines » (étoile et cœur des favoris, lecture/pause, coche validée, signet) gardent leur état vide/plein grâce à des variantes dédiées. Les tailles existantes (16/20/24 px) sont conservées.
+- Technique : le module components/icons/ph.tsx est généré (node scripts/build-ph-icons.mjs) et exporte les icônes sous les mêmes noms qu'avant ; chaque icône est un composant séparé, donc seules celles utilisées sont chargées, et il fonctionne aussi côté serveur. Correspondance dans scripts/lucide-to-ph.json.
+
 ## v1.28.35 — 2026-09-23
 
 **Nouveau jeu d'icônes ETHONE, plus propre et cohérent**

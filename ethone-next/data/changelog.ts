@@ -32623,6 +32623,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_35_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_35_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_35_de);
 
+const v1_28_36_fr: ChangelogEntry = {
+  version: "v1.28.36",
+  date: "2026-09-24",
+  title: "Toutes les icônes du dashboard passent au même style",
+  items: [
+    "Les ~350 icônes utilisées dans les 233 fichiers du site (boutons, en-têtes, états vides, barres d'outils, alertes…) suivent maintenant le même jeu que la barre latérale : Phosphor en duotone (trait net + aplat léger), au lieu de l'ancien jeu Lucide. Le tout est cohérent d'une page à l'autre et prend la couleur du thème.",
+    "Les icônes « pleines » (étoile et cœur des favoris, lecture/pause, coche validée, signet) gardent leur état vide/plein grâce à des variantes dédiées. Les tailles existantes (16/20/24 px) sont conservées.",
+    "Technique : le module components/icons/ph.tsx est généré (node scripts/build-ph-icons.mjs) et exporte les icônes sous les mêmes noms qu'avant ; chaque icône est un composant séparé, donc seules celles utilisées sont chargées, et il fonctionne aussi côté serveur. Correspondance dans scripts/lucide-to-ph.json.",
+  ],
+};
+
+const v1_28_36_en: ChangelogEntry = {
+  version: "v1.28.36",
+  date: "2026-09-24",
+  title: "All dashboard icons move to the same style",
+  items: [
+    "The ~350 icons used across the site's 233 files (buttons, headers, empty states, toolbars, alerts…) now follow the same set as the sidebar: Phosphor duotone (crisp line + light fill) instead of the old Lucide set. It is consistent from page to page and follows the theme colour.",
+    "\"Filled\" icons (favourite star and heart, play/pause, validated check, bookmark) keep their empty/filled state through dedicated variants. Existing sizes (16/20/24 px) are preserved.",
+    "Technical: the components/icons/ph.tsx module is generated (node scripts/build-ph-icons.mjs) and exports icons under the same names as before; each icon is a separate component, so only the ones used are loaded, and it also works server-side. Mapping in scripts/lucide-to-ph.json.",
+  ],
+};
+
+const v1_28_36_es: ChangelogEntry = {
+  version: "v1.28.36",
+  date: "2026-09-24",
+  title: "Todos los iconos del panel pasan al mismo estilo",
+  items: [
+    "Los ~350 iconos usados en los 233 archivos del sitio (botones, cabeceras, estados vacíos, barras de herramientas, alertas…) siguen ahora el mismo juego que la barra lateral: Phosphor duotone (trazo nítido + relleno suave), en lugar del antiguo juego Lucide. Es coherente entre páginas y toma el color del tema.",
+    "Los iconos « rellenos » (estrella y corazón de favoritos, reproducir/pausa, check validado, marcador) conservan su estado vacío/lleno con variantes dedicadas. Se mantienen los tamaños existentes (16/20/24 px).",
+    "Técnico: el módulo components/icons/ph.tsx se genera (node scripts/build-ph-icons.mjs) y exporta los iconos con los mismos nombres de antes; cada icono es un componente independiente, así que solo se cargan los usados, y funciona también en servidor. Correspondencia en scripts/lucide-to-ph.json.",
+  ],
+};
+
+const v1_28_36_de: ChangelogEntry = {
+  version: "v1.28.36",
+  date: "2026-09-24",
+  title: "Alle Dashboard-Icons wechseln zum gleichen Stil",
+  items: [
+    "Die ~350 Icons in den 233 Dateien der Seite (Schaltflächen, Kopfzeilen, leere Zustände, Werkzeugleisten, Hinweise…) folgen jetzt demselben Set wie die Seitenleiste: Phosphor Duotone (klare Linie + leichte Füllung) statt des alten Lucide-Sets. Es ist von Seite zu Seite einheitlich und übernimmt die Theme-Farbe.",
+    "„Gefüllte“ Icons (Favoriten-Stern und -Herz, Wiedergabe/Pause, bestätigter Haken, Lesezeichen) behalten ihren leeren/gefüllten Zustand über eigene Varianten. Bestehende Größen (16/20/24 px) bleiben erhalten.",
+    "Technik: Das Modul components/icons/ph.tsx wird generiert (node scripts/build-ph-icons.mjs) und exportiert die Icons unter denselben Namen wie zuvor; jedes Icon ist eine eigene Komponente, es werden also nur benutzte geladen, und es funktioniert auch serverseitig. Zuordnung in scripts/lucide-to-ph.json.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_36_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_36_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_36_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_36_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

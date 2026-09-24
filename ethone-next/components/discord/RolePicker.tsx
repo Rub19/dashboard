@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
-import { Shield, Edit3, ListFilter, X, Check, Loader2 } from "lucide-react";
+import { Shield, Edit3, ListFilter, X, Check, Loader2 } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 
 export interface RoleOption {

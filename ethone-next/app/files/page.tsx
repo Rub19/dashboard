@@ -38,7 +38,7 @@ import {
   CheckSquare,
   Square,
   ArrowUpDown,
-} from "lucide-react";
+} from "@/components/icons/ph";
 
 function folderPath(files: CloudFile[], folderId: string | null) {
   const path: CloudFile[] = [];

@@ -7,7 +7,7 @@ import Input from "@/components/Input";
 import FileUploader from "@/components/FileUploader";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { cn } from "@/lib/utils";
-import { UploadCloud, Link as LinkIcon, FolderPlus, Cloud, Check } from "lucide-react";
+import { UploadCloud, Link as LinkIcon, FolderPlus, Cloud, Check } from "@/components/icons/ph";
 
 export type TabId = "upload" | "link" | "drive" | "folder";
 

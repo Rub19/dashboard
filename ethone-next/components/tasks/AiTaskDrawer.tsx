@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, Zap, Check, X, Loader2, ListPlus } from "lucide-react";
+import { Sparkles, Brain, Zap, Check, X, Loader2, ListPlus } from "@/components/icons/ph";
 import { PRESET_TASK_PACKS, generateAITasks, type GeneratedTask, type TaskSuggestionPack } from "@/lib/tasks/ai-task-engine";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";

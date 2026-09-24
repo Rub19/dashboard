@@ -18,7 +18,7 @@ import {
   Circle,
   Radio,
   PanelBottom,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useLiveWidgetStore } from "@/lib/hooks/useLiveWidgetStore";
 import { useAuth } from "@/components/AuthProvider";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Zap, UserPlus, Sparkles, UserCheck, ShieldCheck, Award, ArrowRight } from "lucide-react";
+import { Zap, UserPlus, Sparkles, UserCheck, ShieldCheck, Award, ArrowRight } from "@/components/icons/ph";
 
 export default function Screen4Automation() {
   const steps = [

@@ -11,7 +11,7 @@ import {
   Check,
   Save,
   Loader2,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useProfile } from "@/lib/hooks/useProfile";

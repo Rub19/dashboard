@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Calendar, ChevronDown, Plus, Receipt, Scan } from "lucide-react";
+import { Calendar, ChevronDown, Plus, Receipt, Scan } from "@/components/icons/ph";
 import type { CalendarItem } from "@/components/CalendarBills";
 import VendorLogo from "@/components/logos/VendorLogo";
 

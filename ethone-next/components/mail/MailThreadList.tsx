@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckSquare, Square, Archive, Trash2, MailOpen, Star, X, Inbox, Paperclip, SquarePen } from "lucide-react";
+import { CheckSquare, Square, Archive, Trash2, MailOpen, Star, X, Inbox, Paperclip, SquarePen } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Input from "@/components/Input";
 import type { MailMessage } from "@/lib/hooks/useMail";

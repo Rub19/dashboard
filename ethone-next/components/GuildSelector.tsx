@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, ChevronDown, Search } from "lucide-react";
+import { Check, ChevronDown, Search } from "@/components/icons/ph";
 import { useBotGuildIds } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 

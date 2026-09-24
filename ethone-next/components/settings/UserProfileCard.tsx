@@ -3,7 +3,7 @@
 import { useCallback, useState, useEffect, useMemo } from "react";
 import ClientImage from "@/components/ClientImage";
 import Link from "next/link";
-import { User, Key, Camera, Eye, EyeOff, Sparkles } from "lucide-react";
+import { User, Key, Camera, Eye, EyeOff, Sparkles } from "@/components/icons/ph";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/lib/hooks/useI18n";

@@ -20,7 +20,7 @@ import {
   Trash2,
   RefreshCw,
   Bot,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";

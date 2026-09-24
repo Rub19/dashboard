@@ -14,7 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Tag,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import MailProfileButton from "./MailProfileButton";
 import type { MailAlias, MailLabel } from "@/lib/hooks/useMail";

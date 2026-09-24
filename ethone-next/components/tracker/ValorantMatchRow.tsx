@@ -6,7 +6,7 @@ import {
   MoreVertical,
   ChevronUp,
   Swords,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import {
   type ValorantMatch,
   getAgentIcon,

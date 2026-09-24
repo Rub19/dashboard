@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import FlatCard from "@/components/FlatCard";
 import Button from "@/components/ui/Button";
-import { Save } from "lucide-react";
+import { Save } from "@/components/icons/ph";
 
 export function ProfileIdentityForm() {
   const i18n = useI18n();

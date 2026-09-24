@@ -15,7 +15,7 @@ import {
   ChevronRight,
   Radio,
   Maximize2,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useWindowManager } from "./WindowManagerProvider";

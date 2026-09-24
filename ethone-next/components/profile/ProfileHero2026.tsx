@@ -11,7 +11,7 @@ import {
   Gamepad2,
   Code2,
   Compass,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { useIdentity, PROFILE_FRAMES } from "@/lib/identity";
 import { useToast } from "@/components/ToastProvider";

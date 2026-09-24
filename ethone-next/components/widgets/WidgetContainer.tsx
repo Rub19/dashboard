@@ -11,7 +11,7 @@ import {
   Trash2,
   RefreshCw,
   AlertTriangle,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/lib/icons";
 import { getWidgetManifest, type WidgetSize } from "@/lib/widget-registry";

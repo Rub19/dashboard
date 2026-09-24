@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { X, Sparkles } from "lucide-react";
+import { X, Sparkles } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import ChangelogList from "@/components/ChangelogList";
 import type { ChangelogEntry } from "@/data/changelog";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Maximize2, Minimize2 } from "lucide-react";
+import { Maximize2, Minimize2 } from "@/components/icons/ph";
 
 export default function GameFrame({ src, title }: { src: string; title: string }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);

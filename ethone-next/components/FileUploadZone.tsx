@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UploadCloud, Upload, File } from "lucide-react";
+import { UploadCloud, Upload, File } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { formatBytes } from "@/lib/files";
 import { cn } from "@/lib/utils";

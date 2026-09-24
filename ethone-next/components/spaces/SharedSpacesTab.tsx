@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
-import { Users, Plus, Crown, Trash2 } from "lucide-react";
+import { Users, Plus, Crown, Trash2 } from "@/components/icons/ph";
 import { useSharedSpaces } from "@/lib/hooks/useSharedSpaces";
 import FlatCard from "@/components/FlatCard";
 import Input from "@/components/Input";

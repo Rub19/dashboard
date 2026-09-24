@@ -17,7 +17,7 @@ import {
   Heart,
   RefreshCw,
   X,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import {
   MARKETPLACE_ITEMS,

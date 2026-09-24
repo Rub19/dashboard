@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Download, FileText, Filter } from "lucide-react";
+import { Download, FileText, Filter } from "@/components/icons/ph";
 import { listBills, type Bill } from "@/lib/bills-manager";
 import { useI18n } from "@/lib/hooks/useI18n";
 

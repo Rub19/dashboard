@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import SafeImage from "@/components/SafeImage";
 import { motion, useReducedMotion } from "framer-motion";
-import { SkipBack, SkipForward, Play, Pause, Volume2, VolumeX, Music, Server } from "lucide-react";
+import { SkipBack, SkipForward, Play, Pause, Volume2, VolumeX, Music, Server } from "@/components/icons/ph";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";

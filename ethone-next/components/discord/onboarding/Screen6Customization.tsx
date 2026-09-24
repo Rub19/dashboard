@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Palette, Check } from "lucide-react";
+import { Palette, Check } from "@/components/icons/ph";
 
 export default function Screen6Customization() {
   const [accentColor, setAccentColor] = useState<string>("indigo");

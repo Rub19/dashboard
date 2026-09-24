@@ -15,7 +15,7 @@ import {
   Pause,
   SkipForward,
   Square,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import { useModKey } from "@/lib/hooks/useModKey";

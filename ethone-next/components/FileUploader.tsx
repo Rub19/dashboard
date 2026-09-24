@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { X } from "lucide-react";
+import { X } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { getToken, WORKER_URL } from "@/lib/api";
 import type { UploadTask, UploadStatus } from "@/lib/upload";

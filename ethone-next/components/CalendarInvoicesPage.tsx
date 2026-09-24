@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Calendar, X } from "lucide-react";
+import { Calendar, X } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import CalendarGrid from "@/components/CalendarGrid";
 import { EventsCard, InvoicesCard } from "@/components/EventsAndBillsCards";

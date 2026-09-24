@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
-import { ArrowLeft, ShieldCheck, Download, RotateCcw, GitCompare, Lock, Unlock, CheckCircle2, AlertTriangle, FileCode, FolderTree, Users, Shield, Sparkles, Copy, Check, Server, Hash, Volume2, Calendar, RefreshCw } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Download, RotateCcw, GitCompare, Lock, Unlock, CheckCircle2, AlertTriangle, FileCode, FolderTree, Users, Shield, Sparkles, Copy, Check, Server, Hash, Volume2, Calendar, RefreshCw } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";

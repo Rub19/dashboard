@@ -19,7 +19,7 @@ import {
   Radio,
   FileText,
   Save,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import { formatApiError } from "@/lib/format-error";

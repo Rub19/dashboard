@@ -16,7 +16,7 @@ import {
   Sparkles,
   Check,
   Shield,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 

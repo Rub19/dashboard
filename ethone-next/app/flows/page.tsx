@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useMemo, useState } from "react";
-import { Zap, Workflow, CheckCircle2, Plus } from "lucide-react";
+import { Zap, Workflow, CheckCircle2, Plus } from "@/components/icons/ph";
 import FlowCard from "@/components/FlowCard";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useUserData } from "@/lib/hooks/useUserData";

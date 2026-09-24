@@ -16,7 +16,7 @@ import {
   Trash2,
   SlidersHorizontal,
   File,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useAuth } from "@/components/AuthProvider";

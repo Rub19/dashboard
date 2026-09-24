@@ -238,7 +238,7 @@ import {
   TrendingUp,
   BarChart3,
   type LucideIcon,
-} from "lucide-react";
+} from "@/components/icons/ph";
 
 const LUCIDE_ICON_MAP: Record<string, LucideIcon> = {
   home: Home,
@@ -569,7 +569,7 @@ const LUCIDE_ICON_MAP: Record<string, LucideIcon> = {
   "microphone-slash": MicOff,
 };
 
-export type { LucideIcon } from "lucide-react";
+export type { LucideIcon } from "@/components/icons/ph";
 
 export function getLucideIcon(name: string): LucideIcon | undefined {
   return LUCIDE_ICON_MAP[name];

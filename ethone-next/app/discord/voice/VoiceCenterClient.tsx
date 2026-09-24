@@ -28,7 +28,7 @@ import {
   UserX,
   ArrowLeft,
   Bot,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import { cn } from "@/lib/utils";

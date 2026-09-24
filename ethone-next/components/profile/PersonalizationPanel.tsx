@@ -16,7 +16,7 @@ import {
   GraduationCap,
   Palette,
   DollarSign,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import type {
   UserInterest,

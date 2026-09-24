@@ -10,7 +10,7 @@ import {
   HelpCircle,
   X,
   ShieldCheck,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import type { BrainContext } from "@/lib/brain-context";
 import { getBrainContextExplanation } from "@/lib/brain-context";
 import { cn } from "@/lib/utils";

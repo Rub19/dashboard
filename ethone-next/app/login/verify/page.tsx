@@ -7,7 +7,7 @@ import { useAuth } from "@/components/AuthProvider";
 import BrandMark from "@/components/BrandMark";
 import OtpCodeInput from "@/components/auth/OtpCodeInput";
 import AuthInputField from "@/components/auth/AuthInputField";
-import { ShieldCheck, KeyRound, AlertCircle, Loader2, LogOut } from "lucide-react";
+import { ShieldCheck, KeyRound, AlertCircle, Loader2, LogOut } from "@/components/icons/ph";
 import { triggerHaptic } from "@/lib/haptics";
 
 type Mode = "code" | "backup";

@@ -16,7 +16,7 @@ import {
   AlertTriangle,
   Rocket,
   LayoutDashboard,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useToast } from "@/components/ToastProvider";

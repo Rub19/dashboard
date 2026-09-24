@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, Cpu, Server, Layers, Search, ArrowRight } from "lucide-react";
+import { Sparkles, Cpu, Server, Layers, Search, ArrowRight } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import Card from "@/components/ui/Card";
 import type { BotTab } from "@/app/discord/bot/BotControlClient";

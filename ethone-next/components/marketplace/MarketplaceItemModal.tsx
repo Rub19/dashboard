@@ -14,7 +14,7 @@ import {
   Loader2,
   Layout,
   RefreshCw,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import Modal from "@/components/ui/Modal";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";

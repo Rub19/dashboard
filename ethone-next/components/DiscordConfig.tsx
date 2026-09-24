@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Plug, RefreshCw, Save, Unlink } from "lucide-react";
+import { Loader2, Plug, RefreshCw, Save, Unlink } from "@/components/icons/ph";
 import { useIntegrationStore } from "@/lib/hooks/useIntegrationStore";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import { RotateCcw, Save, X } from "lucide-react";
+import { RotateCcw, Save, X } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Input from "@/components/Input";
 import { useSettings } from "@/components/SettingsProvider";

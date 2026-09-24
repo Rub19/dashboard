@@ -19,7 +19,7 @@ import {
   ChevronRight,
   Bot,
   ExternalLink,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useGuildOverview } from "@/lib/hooks/useGuildOverview";

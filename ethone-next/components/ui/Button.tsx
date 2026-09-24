@@ -1,7 +1,7 @@
 "use client";
 
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import { triggerHaptic, type HapticProfile } from "@/lib/haptics";
 

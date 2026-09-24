@@ -17,7 +17,7 @@ import {
   Flame,
   UserX,
   FileCode,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";

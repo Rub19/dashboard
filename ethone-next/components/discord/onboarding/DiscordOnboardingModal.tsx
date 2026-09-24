@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useId, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { X, ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, AlertCircle } from "@/components/icons/ph";
 import Screen0Hero from "./Screen0Hero";
 import Screen1Architecture from "./Screen1Architecture";
 import Screen2Features from "./Screen2Features";

@@ -13,7 +13,7 @@ import {
   Upload,
   Layers,
   Trash2,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import {

@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
-import { Check, Copy, ExternalLink, X, Compass, ShieldCheck } from "lucide-react";
+import { Check, Copy, ExternalLink, X, Compass, ShieldCheck } from "@/components/icons/ph";
 import { motion, AnimatePresence } from "framer-motion";
 import { getConnectionGuide, type ConnectionGuide } from "@/config/connectionsGuide";
 import { getIntegrationConfig, type IntegrationConfig } from "@/lib/integrations.config";

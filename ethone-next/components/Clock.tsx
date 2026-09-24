@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useEffect, useState } from "react";
-import { Clock as ClockIcon } from "lucide-react";
+import { Clock as ClockIcon } from "@/components/icons/ph";
 
 function formatTime(date: Date): string {
   const h = date.getHours().toString().padStart(2, "0");

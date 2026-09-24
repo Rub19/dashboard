@@ -12,7 +12,7 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import {
   useNotifications,
   type Notification,

@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
+import { TrendingUp } from "@/components/icons/ph";
 import type { ValorantDayGroup } from "@/lib/valorant-tracker";
 import { cn } from "@/lib/utils";
 

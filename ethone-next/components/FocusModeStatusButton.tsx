@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Timer } from "lucide-react";
+import { Timer } from "@/components/icons/ph";
 import { useFocus } from "@/components/FocusProvider";
 
 // Isolated on purpose: useFocus() re-renders its subscriber once per second

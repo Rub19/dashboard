@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Globe, Check } from "lucide-react";
+import { Globe, Check } from "@/components/icons/ph";
 import { useLanguage } from "@/components/LanguageProvider";
 import { SUPPORTED_LOCALES, type Locale } from "@/lib/translations/bento";
 

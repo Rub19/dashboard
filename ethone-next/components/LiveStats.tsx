@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useMemo } from "react";
-import { Activity } from "lucide-react";
+import { Activity } from "@/components/icons/ph";
 import LiveFreshness from "@/components/LiveFreshness";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { LiveRecord } from "@/lib/hooks/useLiveData";

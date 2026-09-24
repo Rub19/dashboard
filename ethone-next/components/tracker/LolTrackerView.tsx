@@ -8,7 +8,7 @@ import {
   Clock,
   AlertCircle,
   User,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";

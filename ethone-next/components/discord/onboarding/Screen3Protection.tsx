@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ShieldAlert, ShieldCheck, AlertTriangle, Zap, Lock } from "lucide-react";
+import { ShieldAlert, ShieldCheck, AlertTriangle, Zap, Lock } from "@/components/icons/ph";
 import DiscordIcon from "@/components/DiscordIcon";
 
 export default function Screen3Protection() {

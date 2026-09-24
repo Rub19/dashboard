@@ -46,7 +46,7 @@ import {
   Wallet,
   Music2,
   Brain,
-} from "lucide-react";
+} from "@/components/icons/ph";
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 

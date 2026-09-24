@@ -17,7 +17,7 @@ import {
   ExternalLink,
   RefreshCw,
   Loader2,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { MarketplaceItem, VerificationTier } from "@/lib/marketplace/marketplace-registry";

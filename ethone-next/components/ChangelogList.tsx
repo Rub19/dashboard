@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Wrench, Sparkles, RefreshCw, Tag, Dot } from "lucide-react";
+import { Wrench, Sparkles, RefreshCw, Tag, Dot } from "@/components/icons/ph";
 import { motion } from "framer-motion";
 import { useSettings } from "@/components/SettingsProvider";
 import { cn } from "@/lib/utils";

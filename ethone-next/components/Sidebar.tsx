@@ -14,7 +14,7 @@ import {
   Image as ImageIcon,
   ImageOff,
   LucideIcon,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useModKey, applyModKey } from "@/lib/hooks/useModKey";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";

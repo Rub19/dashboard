@@ -38,7 +38,7 @@ import {
   Users,
   Wifi,
   XCircle,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import SecurityGroup from "@/components/discord/bot-control/SecurityGroup";

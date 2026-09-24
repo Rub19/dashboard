@@ -14,7 +14,7 @@ import {
   AlertTriangle,
   CornerDownLeft,
   Brain,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useCommandItems, type CommandItem } from "@/lib/commands";
 import {

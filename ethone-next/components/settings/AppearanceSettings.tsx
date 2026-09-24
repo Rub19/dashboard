@@ -2,7 +2,7 @@
 
 import { useId, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Check, Moon, Sun, Sparkles } from "lucide-react";
+import { Check, Moon, Sun, Sparkles } from "@/components/icons/ph";
 import { isNativeAndroid } from "@/lib/android";
 import { Icon as IconifyIcon } from "@iconify/react";
 import { useSettings } from "@/components/SettingsProvider";

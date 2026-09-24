@@ -11,7 +11,7 @@ import {
   AlertTriangle,
   Shield,
   Sparkles,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import {
   listBrainMemories,

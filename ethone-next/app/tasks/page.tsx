@@ -15,7 +15,7 @@ import {
   RefreshCw,
   AlertTriangle,
   ChevronDown,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useCloudTasks } from "@/lib/hooks/useCloudTasks";
 import { useToast } from "@/components/ToastProvider";
 import { type Task, type TaskPriority } from "@/components/TasksWidget";

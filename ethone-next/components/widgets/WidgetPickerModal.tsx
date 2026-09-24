@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, Plus, Check, Sparkles } from "lucide-react";
+import { Search, Plus, Check, Sparkles } from "@/components/icons/ph";
 import Modal from "@/components/ui/Modal";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";

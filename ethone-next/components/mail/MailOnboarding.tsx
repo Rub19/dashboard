@@ -12,7 +12,7 @@ import {
   Globe,
   Server,
   Zap,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import Button from "@/components/ui/Button";
 import Input from "@/components/Input";
 import FormField from "@/components/FormField";

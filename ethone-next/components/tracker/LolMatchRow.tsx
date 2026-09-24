@@ -6,7 +6,7 @@ import {
   MoreVertical,
   Shield,
   ChevronUp,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import {
   type LolMatch,
   type LolPlayer,

@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles, Brain, ArrowRight, ShieldCheck, Download } from "lucide-react";
+import { Sparkles, Brain, ArrowRight, ShieldCheck, Download } from "@/components/icons/ph";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import type { MarketplaceItem } from "@/lib/marketplace/marketplace-registry";
 import type { BrainMatchResult } from "@/lib/marketplace/brain-recommendation-engine";

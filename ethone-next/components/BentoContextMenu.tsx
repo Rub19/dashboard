@@ -15,7 +15,7 @@ import {
   Copy,
   Link as LinkIcon,
   Trash2,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useContextMenuActions } from "@/lib/hooks/useContextMenuActions";
 import { useToast } from "@/components/ToastProvider";
 

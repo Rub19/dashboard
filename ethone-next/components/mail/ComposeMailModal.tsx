@@ -11,7 +11,7 @@ import {
   Maximize2,
   Minimize2,
   Clock,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import Button from "@/components/ui/Button";
 import Select, { type SelectOption } from "@/components/ui/Select";
 import Input from "@/components/Input";

@@ -40,7 +40,7 @@ import {
   Gamepad2,
   Swords,
   BarChart3,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useFocus } from "@/components/FocusProvider";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";

@@ -10,7 +10,7 @@ import {
   RotateCw,
   SkipBack,
   SkipForward,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";

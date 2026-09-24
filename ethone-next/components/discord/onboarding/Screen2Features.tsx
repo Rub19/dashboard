@@ -15,7 +15,7 @@ import {
   Code2,
   CheckCircle2,
   Play,
-} from "lucide-react";
+} from "@/components/icons/ph";
 
 interface ModuleInfo {
   id: string;

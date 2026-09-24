@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Activity, AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, RefreshCw } from "lucide-react";
+import { Activity, AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, RefreshCw } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { INTEGRATIONS } from "@/lib/integrations";
 import type { PingResult } from "@/lib/connection-config";

@@ -7,7 +7,7 @@ import {
   TrendingUp,
   TrendingDown,
   Sparkles,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import type { ValorantDayGroup } from "@/lib/valorant-tracker";
 import type { LolDayGroup } from "@/lib/lol-tracker";

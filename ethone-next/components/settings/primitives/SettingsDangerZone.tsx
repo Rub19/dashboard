@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode } from "react";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 
 export interface SettingsDangerZoneProps {

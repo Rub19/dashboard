@@ -16,7 +16,7 @@ import {
   type Bill,
   type BillCategory,
 } from "@/lib/bills-manager";
-import { Check, Trash2, Plus, CreditCard, ChevronDown } from "lucide-react";
+import { Check, Trash2, Plus, CreditCard, ChevronDown } from "@/components/icons/ph";
 import { hapticSuccessPattern, hapticRigidImpact } from "@/lib/haptics";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";

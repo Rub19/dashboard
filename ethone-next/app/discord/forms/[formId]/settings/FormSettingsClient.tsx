@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
-import { ArrowLeft, Save, MessageSquare, Shield, Zap, Star, Plus, Trash2, Sliders, Send } from "lucide-react";
+import { ArrowLeft, Save, MessageSquare, Shield, Zap, Star, Plus, Trash2, Sliders, Send } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import ChannelPicker from "@/components/discord/ChannelPicker";

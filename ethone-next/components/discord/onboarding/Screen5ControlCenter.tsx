@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Users, MessageSquare, ShieldCheck, Ticket, Activity, Music2 } from "lucide-react";
+import { Users, MessageSquare, ShieldCheck, Ticket, Activity, Music2 } from "@/components/icons/ph";
 
 export default function Screen5ControlCenter() {
   return (

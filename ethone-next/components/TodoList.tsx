@@ -2,7 +2,7 @@
 
 import { memo, useCallback, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Plus } from "lucide-react";
+import { CheckCircle2, Plus } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useListKeyboard } from "@/lib/hooks/useListKeyboard";
 import { cn } from "@/lib/utils";

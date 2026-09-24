@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWeatherSafe } from "@/lib/weather-service";
 import { Icon } from "@/lib/icons";
-import { Navigation } from "lucide-react";
+import { Navigation } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import SearchInput from "@/components/ui/SearchInput";
 import Button from "@/components/ui/Button";

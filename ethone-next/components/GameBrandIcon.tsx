@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import { Icon as IconifyIcon } from "@iconify/react";
-import { Gamepad2 } from "lucide-react";
+import { Gamepad2 } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 
 type GameBrandIconProps = {

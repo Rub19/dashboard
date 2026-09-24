@@ -23,7 +23,7 @@ import {
   Heart,
   MessageCircle,
   Share2,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useUserData, type UserDataRecord } from "@/lib/hooks/useUserData";

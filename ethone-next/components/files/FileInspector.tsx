@@ -19,7 +19,7 @@ import {
   Clock,
   Calendar,
   Layers,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { formatBytes, getFileExtension, getFileCategory } from "@/lib/files";
 import SafeImage from "@/components/SafeImage";
 import Button from "@/components/ui/Button";

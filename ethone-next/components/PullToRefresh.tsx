@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from "@/components/icons/ph";
 import { hapticMediumImpact, hapticSuccess } from "@/lib/haptics";
 
 function cn(...parts: (string | false | undefined)[]) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Cpu, Server, Activity, RefreshCw, CheckCircle2 } from "lucide-react";
+import { Cpu, Server, Activity, RefreshCw, CheckCircle2 } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import Card from "@/components/ui/Card";
 import type { BotTab } from "@/app/discord/bot/BotControlClient";

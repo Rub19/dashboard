@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles, Shield, Search } from "lucide-react";
+import { Sparkles, Shield, Search } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/components/SettingsProvider";
 import { PRESET_THEMES, type PremiumThemeId } from "@/lib/theme-tokens";

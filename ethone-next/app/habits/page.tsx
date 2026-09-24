@@ -11,7 +11,7 @@ import {
   Target,
   Trash2,
   AlertTriangle,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useHabits } from "@/lib/hooks/useHabits";
 import { useToast } from "@/components/ToastProvider";
 import { addDays, dateKey } from "@/components/ActivityHeatmap";

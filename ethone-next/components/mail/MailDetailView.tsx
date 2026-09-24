@@ -24,7 +24,7 @@ import {
   ChevronDown,
   ChevronUp,
   ChevronLeft,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { MailMessage, MailAttachment } from "@/lib/hooks/useMail";
 import { cn } from "@/lib/utils";

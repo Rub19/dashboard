@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { NotebookPen, CheckCircle2, Copy, Trash2, SlidersHorizontal } from "lucide-react";
+import { NotebookPen, CheckCircle2, Copy, Trash2, SlidersHorizontal } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import FlatCard from "@/components/FlatCard";
 import Modal from "@/components/ui/Modal";

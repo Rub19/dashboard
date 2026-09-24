@@ -10,7 +10,7 @@ import {
   User,
   Key,
   ExternalLink,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import { useSettings } from "@/components/SettingsProvider";

@@ -1,7 +1,7 @@
 "use client";
 // beui.dev/components/agents/message-bubble
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from "@/components/icons/ph";
 import {
   type HTMLMotionProps,
   motion,

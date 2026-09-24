@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import { AnimatePresence } from "framer-motion";
-import { CheckCircle2, Clock, Flame } from "lucide-react";
+import { CheckCircle2, Clock, Flame } from "@/components/icons/ph";
 import { type Task } from "@/components/TasksWidget";
 import { TaskItemRow } from "./TaskItemRow";
 

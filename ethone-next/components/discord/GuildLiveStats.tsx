@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Activity, Users, MessageSquare, Terminal, Mic, HeartPulse, RefreshCw, ChevronRight, TrendingUp, TrendingDown } from "lucide-react";
+import { Activity, Users, MessageSquare, Terminal, Mic, HeartPulse, RefreshCw, ChevronRight, TrendingUp, TrendingDown } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";

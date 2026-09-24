@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { WifiOff, Loader2, Wifi } from "lucide-react";
+import { WifiOff, Loader2, Wifi } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 
 type IndicatorStatus = "idle" | "offline" | "syncing" | "online";

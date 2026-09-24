@@ -26,7 +26,7 @@ import {
   Lightbulb,
   ArrowLeft,
   Bot,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";

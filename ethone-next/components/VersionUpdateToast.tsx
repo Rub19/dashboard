@@ -3,7 +3,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpCircle, RefreshCw, X, Sparkles } from "lucide-react";
+import { ArrowUpCircle, RefreshCw, X, Sparkles } from "@/components/icons/ph";
 import { useVersionChecker } from "@/lib/hooks/useVersionChecker";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";

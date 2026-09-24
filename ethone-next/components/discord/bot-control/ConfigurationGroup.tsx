@@ -21,7 +21,7 @@ import {
   Terminal,
   ShieldAlert,
   X,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import Card from "@/components/ui/Card";
 import type { BotTab } from "@/app/discord/bot/BotControlClient";

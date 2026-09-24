@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Mail } from "lucide-react";
+import { Mail } from "@/components/icons/ph";
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/Input";
 import Button from "@/components/ui/Button";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Users, UserCheck, Clock, Send } from "lucide-react";
+import { Users, UserCheck, Clock, Send } from "@/components/icons/ph";
 
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useTeam } from "@/lib/hooks/useTeam";

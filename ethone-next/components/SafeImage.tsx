@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import ClientImage from "@/components/ClientImage";
-import { Music } from "lucide-react";
+import { Music } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 
 export type SafeImageProps = {

@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ClientImage from "@/components/ClientImage";
-import { GripVertical, Radio, Maximize2, ChevronDown, X, Music, ClipboardPaste } from "lucide-react";
+import { GripVertical, Radio, Maximize2, ChevronDown, X, Music, ClipboardPaste } from "@/components/icons/ph";
 import { useLiveWidgetStore } from "@/lib/hooks/useLiveWidgetStore";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useLiveData } from "@/lib/hooks/useLiveData";

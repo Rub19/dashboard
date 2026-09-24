@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search } from "@/components/icons/ph";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useModKey } from "@/lib/hooks/useModKey";
 import { cn } from "@/lib/utils";

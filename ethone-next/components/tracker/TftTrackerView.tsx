@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { RefreshCw, Search, Clock, AlertCircle, User, Trophy, Crown, Target } from "lucide-react";
+import { RefreshCw, Search, Clock, AlertCircle, User, Trophy, Crown, Target } from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
 import { fetchWorker } from "@/lib/api";
 import { type TftMatch, fetchTftMatchesDirect } from "@/lib/tft-tracker";

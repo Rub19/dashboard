@@ -14,7 +14,7 @@ import {
   RefreshCw,
   Plus,
   Upload,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import { formatBytes, FILE_CATEGORIES, type FileCategory } from "@/lib/files";
 import type { CloudFile, Quota } from "@/lib/hooks/useCloudFiles";

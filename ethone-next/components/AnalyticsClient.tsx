@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LineChart as LineChartIcon, Gamepad2, Receipt, CheckCircle2, Timer, ArrowRight } from "lucide-react";
+import { LineChart as LineChartIcon, Gamepad2, Receipt, CheckCircle2, Timer, ArrowRight } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useTasks } from "@/lib/hooks/useTasks";
 import { useGamingAnalytics } from "@/lib/hooks/useGamingAnalytics";

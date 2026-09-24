@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronUp, CloudSun } from "lucide-react";
+import { ChevronUp, CloudSun } from "@/components/icons/ph";
 import { useWeatherOnly } from "@/lib/hooks/useWeatherOnly";
 import WeatherDetailPopover from "@/components/WeatherDetailPopover";
 import { cn } from "@/lib/utils";

@@ -2,7 +2,7 @@
 
 import { memo, useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { User, Activity } from "lucide-react";
+import { User, Activity } from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { TiltCard } from "@/components/ui/TiltCard";

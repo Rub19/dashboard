@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { Icon } from "@/lib/icons";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 
 interface BrainIntegrationsHubProps {

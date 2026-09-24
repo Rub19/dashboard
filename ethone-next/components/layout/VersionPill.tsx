@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpCircle, Tag } from "lucide-react";
+import { ArrowUpCircle, Tag } from "@/components/icons/ph";
 import { useVersionChecker, type VersionData } from "@/lib/hooks/useVersionChecker";
 import { forceAppReload } from "@/lib/force-reload";
 import { formatVersion } from "@/lib/version";

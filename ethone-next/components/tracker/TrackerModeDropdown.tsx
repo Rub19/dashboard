@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Check } from "lucide-react";
+import { Check } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import {
   AnimatedDropdown,

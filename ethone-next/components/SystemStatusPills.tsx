@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useEffect, useState } from "react";
-import { Briefcase, Cloud, CloudOff, RefreshCw } from "lucide-react";
+import { Briefcase, Cloud, CloudOff, RefreshCw } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";

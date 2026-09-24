@@ -1,7 +1,7 @@
 "use client";
 // beui.dev/components/motion/animated-sidebar
 
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from "@/components/icons/ph";
 import {
   AnimatePresence,
   type HTMLMotionProps,

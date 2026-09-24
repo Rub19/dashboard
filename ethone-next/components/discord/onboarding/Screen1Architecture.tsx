@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { LayoutDashboard, Cpu, Activity, ShieldCheck, Zap, Radio } from "lucide-react";
+import { LayoutDashboard, Cpu, Activity, ShieldCheck, Zap, Radio } from "@/components/icons/ph";
 import DiscordIcon from "@/components/DiscordIcon";
 
 export default function Screen1Architecture() {

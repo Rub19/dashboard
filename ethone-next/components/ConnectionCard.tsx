@@ -7,7 +7,7 @@ import {
   RefreshCw,
   SlidersHorizontal,
   Loader2,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { startOAuthConnect, PROVIDERS as OAUTH_PROVIDERS, OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";

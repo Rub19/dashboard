@@ -12,7 +12,7 @@ import {
   Download,
   Sparkles,
   Box,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { MinecraftProfile } from "@/lib/hooks/useMinecraftLive";

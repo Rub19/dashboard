@@ -11,7 +11,7 @@ import RichToast, { type RichToastVariant } from "@/components/RichToast";
 import FlagIcon, { LANGUAGE_LABELS, type Language } from "@/components/FlagIcon";
 import DiscordIcon from "@/components/DiscordIcon";
 import ClientImage from "@/components/ClientImage";
-import { Brain, Palette, Layers } from "lucide-react";
+import { Brain, Palette, Layers } from "@/components/icons/ph";
 
 type ToastType = "success" | "error" | "info" | "warning" | "loading";
 

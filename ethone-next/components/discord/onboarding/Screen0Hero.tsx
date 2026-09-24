@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Sparkles, Shield, Zap, ArrowRight, Music, Bell } from "lucide-react";
+import { Sparkles, Shield, Zap, ArrowRight, Music, Bell } from "@/components/icons/ph";
 import DiscordIcon from "@/components/DiscordIcon";
 
 interface Screen0Props {

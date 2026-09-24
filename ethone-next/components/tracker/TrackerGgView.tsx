@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { RefreshCw, Search, Clock, AlertCircle, User, Gamepad2, BarChart3, Star } from "lucide-react";
+import { RefreshCw, Search, Clock, AlertCircle, User, Gamepad2, BarChart3, Star } from "@/components/icons/ph";
 import Select, { type SelectOption } from "@/components/ui/Select";
 import {
   TRACKER_GAMES,

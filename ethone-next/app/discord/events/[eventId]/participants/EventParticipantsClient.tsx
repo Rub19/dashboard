@@ -12,7 +12,7 @@ import {
   UserCheck,
   Trash2,
   RefreshCw,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 

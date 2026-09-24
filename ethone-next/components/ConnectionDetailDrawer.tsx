@@ -23,14 +23,14 @@ import {
   Radio,
   CheckCircle2,
   Bot,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useProviderCredentials } from "@/lib/hooks/useProviderCredentials";
 import { getCapabilities, getPermissions, getAssociatedWidgets } from "@/lib/connection-capabilities";
-import { ShieldCheck, LayoutGrid } from "lucide-react";
+import { ShieldCheck, LayoutGrid } from "@/components/icons/ph";
 import { PUBLIC_FIELDS, CREDENTIAL_FIELDS } from "@/lib/connection-config";
 import type { Integration } from "@/lib/integrations";
 import type { IntegrationConfig } from "@/lib/integrations.config";

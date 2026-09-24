@@ -1,6 +1,6 @@
 "use client";
 
-import { Check } from "lucide-react";
+import { Check } from "@/components/icons/ph";
 import { PREMIUM_THEMES, THEME_DEFINITIONS } from "@/lib/theme-engine";
 import { cn } from "@/lib/utils";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { ArrowUp, Loader2 } from "lucide-react";
+import { ArrowUp, Loader2 } from "@/components/icons/ph";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import BrainModelSelector from "./BrainModelSelector";

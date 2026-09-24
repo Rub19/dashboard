@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Component, type ReactNode } from "react";
-import { AlertTriangle, RotateCcw } from "lucide-react";
+import { AlertTriangle, RotateCcw } from "@/components/icons/ph";
 import Button from "@/components/ui/Button";
 
 interface Props {

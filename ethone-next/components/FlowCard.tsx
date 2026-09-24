@@ -9,7 +9,7 @@ import {
   MoreVertical,
   ArrowRight,
   Trash2,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { Icon } from "@/lib/icons";
 import {
   AnimatedDropdown,

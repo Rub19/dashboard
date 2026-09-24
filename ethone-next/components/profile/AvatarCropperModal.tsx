@@ -9,7 +9,7 @@ import {
   X,
   Move,
   Crop as CropIcon,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import Modal from "@/components/ui/Modal";
 
 interface AvatarCropperModalProps {

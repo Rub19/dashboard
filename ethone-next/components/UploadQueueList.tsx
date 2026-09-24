@@ -10,7 +10,7 @@ import {
   CheckCircle2,
   AlertCircle,
   File as FileIcon,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import { formatBytes, mimeIcon } from "@/lib/files";

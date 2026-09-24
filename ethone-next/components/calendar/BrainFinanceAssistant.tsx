@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Sparkles, Plus, Loader2 } from "lucide-react";
+import { Brain, Sparkles, Plus, Loader2 } from "@/components/icons/ph";
 import { BILL_BRANDS, detectBrandMeta } from "@/lib/bills-brands";
 import { Icon } from "@/lib/icons";
 import { addBill, type Bill, toISODate } from "@/lib/bills-manager";

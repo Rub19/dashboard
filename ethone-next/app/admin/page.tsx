@@ -10,7 +10,7 @@ import { useToast } from "@/components/ToastProvider";
 import { ADMIN_EMAIL } from "@/lib/admin";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import { RefreshCw, Lock, Users, Layers, HardDrive, Mail, Activity, BarChart3, Gamepad2, Upload, Trash2 } from "lucide-react";
+import { RefreshCw, Lock, Users, Layers, HardDrive, Mail, Activity, BarChart3, Gamepad2, Upload, Trash2 } from "@/components/icons/ph";
 
 const adminCardClass =
   "min-w-0 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] transition-colors duration-150 hover:border-[var(--accent)]/30";

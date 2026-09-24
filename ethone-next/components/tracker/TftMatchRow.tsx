@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ChevronDown, Swords, Coins, Skull, Clock } from "lucide-react";
+import { ChevronDown, Swords, Coins, Skull, Clock } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import { EASE_OUT } from "@/lib/ease";
 import { useSettings } from "@/components/SettingsProvider";

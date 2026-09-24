@@ -1,6 +1,6 @@
 "use client";
 
-import { Radio, Wifi, AlertCircle, RefreshCw, ListRestart, Terminal, Search } from "lucide-react";
+import { Radio, Wifi, AlertCircle, RefreshCw, ListRestart, Terminal, Search } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import Card from "@/components/ui/Card";
 import type { BotTab } from "@/app/discord/bot/BotControlClient";

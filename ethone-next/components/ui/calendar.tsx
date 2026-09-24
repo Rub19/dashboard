@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "@/components/icons/ph";
 import Select, { type SelectOption } from "@/components/ui/Select";
 import {
   CalendarDate,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Share2 } from "lucide-react";
+import { Share2 } from "@/components/icons/ph";
 import { motion, useReducedMotion } from "framer-motion";
 import { useItems } from "@/lib/hooks/useItems";
 import { useSelection } from "@/lib/hooks/useSelection";

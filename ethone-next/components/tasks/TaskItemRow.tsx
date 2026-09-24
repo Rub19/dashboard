@@ -2,7 +2,7 @@
 
 import { memo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Check, Trash2, Calendar, Tag, Target, Edit2 } from "lucide-react";
+import { Check, Trash2, Calendar, Tag, Target, Edit2 } from "@/components/icons/ph";
 import { type Task, type TaskPriority } from "@/components/TasksWidget";
 import { hapticSuccessPattern, hapticRigidImpact } from "@/lib/haptics";
 import { useRouter } from "next/navigation";

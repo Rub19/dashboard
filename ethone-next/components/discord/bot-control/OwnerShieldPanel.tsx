@@ -29,7 +29,7 @@ import {
   Ghost,
   ShieldCheck,
   FlaskConical,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import Card from "@/components/ui/Card";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";

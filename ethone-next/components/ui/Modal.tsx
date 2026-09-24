@@ -3,7 +3,7 @@
 import { useEffect, useId, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { X } from "lucide-react";
+import { X } from "@/components/icons/ph";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import Button from "@/components/ui/Button";
 import { hapticLightImpact } from "@/lib/haptics";

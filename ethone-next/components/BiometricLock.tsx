@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ShieldCheck, Fingerprint } from "lucide-react";
+import { ShieldCheck, Fingerprint } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { authenticateWithBiometric, checkBiometric } from "@/lib/apple";
 

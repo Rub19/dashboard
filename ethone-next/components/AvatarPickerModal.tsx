@@ -20,7 +20,7 @@ import {
   Palette,
   Upload,
   Info,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";

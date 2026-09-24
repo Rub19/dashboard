@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Apple } from "lucide-react";
+import { Apple } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { signInWithApple } from "@/lib/apple";

@@ -15,7 +15,7 @@ import {
   Unlock,
   RotateCcw,
   Plus,
-} from "lucide-react";
+} from "@/components/icons/ph";
 import {
   DndContext,
   type DragEndEvent,

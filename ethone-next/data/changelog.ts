@@ -34196,6 +34196,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_68_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_68_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_68_de);
 
+const v1_28_69_fr: ChangelogEntry = {
+  version: "v1.28.69",
+  date: "2026-09-24",
+  title: "Interface mobile : trois pages qui débordaient",
+  items: [
+    "Centre d'invitations : la page ne s'élargit plus au-delà de l'écran du téléphone, l'entonnoir passe sur 2 colonnes et l'en-tête revient à la ligne.",
+    "Notes et Météo : la barre de recherche / le champ de ville prennent toute la largeur sur mobile au lieu de sortir de l'écran.",
+    "Nouveau script d'audit mobile (Playwright, 360 et 393 px) qui vérifie les 230 pages : aucune ne déborde plus horizontalement. Limite : pages vides, sans données du bot.",
+  ],
+};
+
+const v1_28_69_en: ChangelogEntry = {
+  version: "v1.28.69",
+  date: "2026-09-24",
+  title: "Mobile UI: three pages that overflowed",
+  items: [
+    "Invites center: the page no longer grows wider than the phone screen, the funnel uses 2 columns and the header wraps.",
+    "Notes and Weather: the search bar / city field now fill the width on mobile instead of running off-screen.",
+    "New mobile audit script (Playwright, 360 and 393 px) checking all 230 pages: none overflows horizontally any more. Limit: empty-state pages only, no bot data.",
+  ],
+};
+
+const v1_28_69_es: ChangelogEntry = {
+  version: "v1.28.69",
+  date: "2026-09-24",
+  title: "Interfaz móvil: tres páginas que se desbordaban",
+  items: [
+    "Centro de invitaciones: la página ya no supera el ancho de la pantalla, el embudo usa 2 columnas y la cabecera se ajusta.",
+    "Notas y Tiempo: la barra de búsqueda / el campo de ciudad ocupan todo el ancho en móvil en lugar de salirse de la pantalla.",
+    "Nuevo script de auditoría móvil (Playwright, 360 y 393 px) que revisa las 230 páginas: ninguna se desborda horizontalmente. Límite: solo páginas vacías, sin datos del bot.",
+  ],
+};
+
+const v1_28_69_de: ChangelogEntry = {
+  version: "v1.28.69",
+  date: "2026-09-24",
+  title: "Mobile Oberfläche: drei überlaufende Seiten",
+  items: [
+    "Einladungszentrale: Die Seite wird nicht mehr breiter als der Handybildschirm, der Trichter nutzt 2 Spalten und die Kopfzeile bricht um.",
+    "Notizen und Wetter: Suchleiste bzw. Stadtfeld füllen auf dem Handy die volle Breite, statt aus dem Bild zu laufen.",
+    "Neues Mobil-Audit-Skript (Playwright, 360 und 393 px) prüft alle 230 Seiten: keine läuft mehr horizontal über. Grenze: nur leere Zustände, keine Bot-Daten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_69_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_69_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_69_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_69_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

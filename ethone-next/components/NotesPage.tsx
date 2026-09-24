@@ -174,14 +174,14 @@ export default function NotesPage() {
 
         <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-2xl v8-panel p-3">
           <CustomCheckbox checked={isAllSelected} onChange={() => (isAllSelected ? clear() : selectAll())} label={i18n("selectAll")} />
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex w-full items-center gap-2 sm:ml-auto sm:w-auto">
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={i18n("search")}
               aria-label={i18n("search")}
               icon="search"
-              className="w-40"
+              className="min-w-0 flex-1 sm:w-40 sm:flex-none"
             />
             <Select
               value={sort}

@@ -339,7 +339,7 @@ export default function WeatherPage() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <form onSubmit={handleSubmit} className="flex items-center gap-2">
+              <form onSubmit={handleSubmit} className="flex w-full items-center gap-2 sm:w-auto">
                 <SearchInput
                   value={query}
                   onChange={(e) => handleQueryChange(e.target.value)}
@@ -351,7 +351,7 @@ export default function WeatherPage() {
                   }}
                   placeholder={i18n("city", "Ville")}
                   inputSize="compact"
-                  className="min-w-0 w-40 sm:w-56"
+                  className="min-w-0 flex-1 sm:w-56 sm:flex-none"
                 />
 
                 <IconButton type="button" variant="ghost" size="sm" onClick={handleGeolocate} aria-label={i18n("geolocate", "Géolocalisation")} haptic="light">

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.69 — 2026-09-24
+
+**Interface mobile : trois pages qui débordaient**
+
+- Centre d'invitations : la page ne s'élargit plus au-delà de l'écran du téléphone, l'entonnoir passe sur 2 colonnes et l'en-tête revient à la ligne.
+- Notes et Météo : la barre de recherche / le champ de ville prennent toute la largeur sur mobile au lieu de sortir de l'écran.
+- Nouveau script d'audit mobile (Playwright, 360 et 393 px) qui vérifie les 230 pages : aucune ne déborde plus horizontalement. Limite : pages vides, sans données du bot.
+
 ## v1.28.68 — 2026-09-24
 
 **Pages de détail rechargeables, page Performance honnête, fenêtres au-dessus de l'en-tête**

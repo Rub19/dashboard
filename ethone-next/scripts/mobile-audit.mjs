@@ -17,7 +17,7 @@ const shots = args.includes("--shots");
 const widthArg = args.indexOf("--width");
 const width = widthArg >= 0 ? Number(args[widthArg + 1]) : 393;
 const filter = args.find((a) => !a.startsWith("--") && !/^\d+$/.test(a));
-const PORT = 3055;
+const PORT = 3061;
 // Le build local est fait sans variables Supabase : l'URL est « placeholder.supabase.co », donc la clé de session aussi.
 const SUPABASE_REF = "placeholder";
 
@@ -49,6 +49,17 @@ const session = {
 
 const server = spawn("npx", ["serve", "dist", "-l", String(PORT), "--no-clipboard"], { shell: true, stdio: "ignore" });
 await new Promise((r) => setTimeout(r, 4000));
+
+// Garde-fou : le serveur qui répond doit servir CE dossier dist/ (un ancien serveur resté sur le port fausserait l'audit).
+{
+  const { readFile } = await import("node:fs/promises");
+  const expected = JSON.parse(await readFile("dist/version.json", "utf8")).version;
+  const served = await fetch(`http://localhost:${PORT}/version.json`).then((r) => r.json()).then((j) => j.version).catch(() => null);
+  if (served !== expected) {
+    console.error(`Le serveur du port ${PORT} sert la version ${served}, pas ${expected} : arrêtez les anciens serveurs « serve ».`);
+    process.exit(1);
+  }
+}
 
 const browser = await chromium.launch();
 const device = { ...devices["Pixel 5"], viewport: { width, height: 851 } };
@@ -114,22 +125,39 @@ for (const route of list) {
       "navigation"
     );
     await page.waitForTimeout(2600);
+    // La navigation interne peut être ignorée par une page (garde de sortie, redirection) : on recharge alors directement l'adresse.
+    const here = () => page.evaluate(() => location.pathname.replace(/\/$/, ""));
+    if ((await here()) !== route.replace(/\/$/, "")) {
+      await page.goto(`http://localhost:${PORT}${route}${route.endsWith("/") ? "" : "/"}`, { waitUntil: "domcontentloaded", timeout: 20000 });
+      await page.waitForTimeout(3500);
+      if ((await here()) !== route.replace(/\/$/, "")) {
+        // la session factice a été refusée au rechargement (retour par /login) : on revient à « / » puis on réessaie en interne
+        await page.goto(`http://localhost:${PORT}/`, { waitUntil: "domcontentloaded", timeout: 20000 });
+        await page.waitForTimeout(6000);
+        await page.evaluate((path) => window.next.router.push(path), `${route}${route.endsWith("/") ? "" : "/"}`).catch(() => {});
+        await page.waitForTimeout(2600);
+      }
+    }
     const result = await withTimeout(page.evaluate(() => {
       const vw = window.innerWidth;
       const doc = document.documentElement;
       const overflowX = Math.max(doc.scrollWidth, document.body.scrollWidth) - vw;
       // éléments visibles dont le bord droit dépasse l'écran, hors conteneurs qui défilent volontairement
       const offenders = [];
+      // Seuls les conteneurs qui DÉFILENT volontairement (auto / scroll) excusent un débordement. Un conteneur « hidden » ou
+      // « clip » ne l'excuse pas : le contenu y est simplement rogné, donc illisible sur téléphone.
       const scrolls = (el) => {
         for (let p = el.parentElement; p; p = p.parentElement) {
           const s = getComputedStyle(p);
-          if (/(auto|scroll|hidden|clip)/.test(s.overflowX) && p !== doc && p !== document.body) return true;
+          if (/(auto|scroll)/.test(s.overflowX) && p !== doc && p !== document.body) return true;
         }
         return false;
       };
       for (const el of document.querySelectorAll("body *")) {
         const r = el.getBoundingClientRect();
-        if (r.width === 0 || r.height === 0 || r.right <= vw + 1) continue;
+        if (r.width === 0 || r.height === 0 || (r.right <= vw + 1 && r.left >= -1)) continue;
+        if (r.left > vw) continue; // élément volontairement hors écran (menus repliés, carrousels)
+        if (getComputedStyle(el).transform !== "none" && r.width > vw * 1.5) continue;
         const cs = getComputedStyle(el);
         if (cs.visibility === "hidden" || cs.display === "none" || cs.position === "fixed") continue;
         if (scrolls(el)) continue;
@@ -151,8 +179,10 @@ for (const route of list) {
 await browser.close();
 if (server.pid) spawn("taskkill", ["/pid", String(server.pid), "/T", "/F"], { stdio: "ignore" });
 await writeFile("audit/mobile-report.json", JSON.stringify(report, null, 2));
+const misplaced = report.filter((r) => r.landed && r.landed.replace(/\/$/, "") !== r.route.replace(/\/$/, ""));
 const bad = report.filter((r) => r.failed || r.overflowX > 4 || (r.offenders && r.offenders.length));
-console.log(`${report.length} pages auditées à ${width}px — ${bad.length} avec un défaut`);
+console.log(`${report.length} pages auditées à ${width}px — ${bad.length} avec un défaut — ${misplaced.length} n'ont pas pu être ouvertes à leur adresse`);
+for (const r of misplaced.slice(0, 20)) console.log(`  ? ${r.route} -> ${r.landed}`);
 for (const r of bad) {
   if (r.failed) console.log(`  ✗ ${r.route} : ${r.failed}`);
   else console.log(`  ▸ ${r.route} : déborde de ${r.overflowX}px${r.offenders.length ? ` — ${r.offenders.map((o) => `${o.tag}.${o.cls.split(" ")[0]}(${o.right})`).join(", ")}` : ""}`);

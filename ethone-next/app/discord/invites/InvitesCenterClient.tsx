@@ -272,7 +272,7 @@ export default function InvitesCenterClient() {
   const rewardedPct = trackedCount > 0 ? Math.round((funnel.rewardedMembers / trackedCount) * 100) : 0;
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white flex flex-col p-4 sm:p-8 pb-44 md:pb-44 max-w-7xl mx-auto">
+    <div className="h-full w-full min-w-0 overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white flex flex-col p-4 sm:p-8 pb-44 md:pb-44 max-w-7xl mx-auto">
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-zinc-800">
         <div>
@@ -424,8 +424,8 @@ export default function InvitesCenterClient() {
       {/* Growth Funnel & Live Ticker */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-6">
         {/* Growth Funnel */}
-        <div className="lg:col-span-8 p-5 rounded-3xl bg-zinc-900/60 border border-zinc-800/80 shadow-xl">
-          <div className="flex items-center justify-between mb-3">
+        <div className="min-w-0 lg:col-span-8 p-4 sm:p-5 rounded-3xl bg-zinc-900/60 border border-zinc-800/80 shadow-xl">
+          <div className="flex flex-wrap items-center justify-between gap-1 mb-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-pink-400" />
               <span>Entonnoir de Croissance Communautaire (Growth Funnel)</span>
@@ -433,7 +433,7 @@ export default function InvitesCenterClient() {
             <span className="text-[10px] font-mono text-emerald-400 font-semibold">Taux Global : {kpis.retentionRate}%</span>
           </div>
 
-          <div className="grid grid-cols-5 gap-2 text-center">
+          <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-5">
             <div className="p-3 rounded-2xl bg-zinc-950 border border-zinc-800">
               <div className="text-[10px] text-zinc-500 font-mono mb-0.5">1. INVITATIONS</div>
               <div className="text-sm font-bold text-white font-mono">{funnel.invitationsTracked}</div>
@@ -467,7 +467,7 @@ export default function InvitesCenterClient() {
         </div>
 
         {/* Live Stream Ticker */}
-        <div className="lg:col-span-4 p-5 rounded-3xl bg-zinc-900/60 border border-zinc-800/80 shadow-xl flex flex-col justify-between">
+        <div className="min-w-0 lg:col-span-4 p-4 sm:p-5 rounded-3xl bg-zinc-900/60 border border-zinc-800/80 shadow-xl flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">

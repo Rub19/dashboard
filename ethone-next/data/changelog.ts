@@ -33485,6 +33485,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_53_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_53_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_53_de);
 
+const v1_28_54_fr: ChangelogEntry = {
+  version: "v1.28.54",
+  date: "2026-09-24",
+  title: "Pages publiques accessibles aux comptes connectés",
+  items: [
+    "Les pages /bot, /terms et /privacy restent lisibles quand on est déjà connecté (avant, on était renvoyé vers l'accueil)",
+  ],
+};
+
+const v1_28_54_en: ChangelogEntry = {
+  version: "v1.28.54",
+  date: "2026-09-24",
+  title: "Public pages reachable while signed in",
+  items: [
+    "The /bot, /terms and /privacy pages stay readable when already signed in (previously you were sent back to the home page)",
+  ],
+};
+
+const v1_28_54_es: ChangelogEntry = {
+  version: "v1.28.54",
+  date: "2026-09-24",
+  title: "Páginas públicas accesibles con sesión iniciada",
+  items: [
+    "Las páginas /bot, /terms y /privacy siguen siendo legibles con la sesión iniciada (antes se volvía a la página de inicio)",
+  ],
+};
+
+const v1_28_54_de: ChangelogEntry = {
+  version: "v1.28.54",
+  date: "2026-09-24",
+  title: "Öffentliche Seiten auch angemeldet erreichbar",
+  items: [
+    "Die Seiten /bot, /terms und /privacy bleiben auch angemeldet lesbar (zuvor wurde man zur Startseite zurückgeleitet)",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_54_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_54_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_54_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_54_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

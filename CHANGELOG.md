@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.54 — 2026-09-24
+
+**Pages publiques accessibles aux comptes connectés**
+
+- Les pages /bot, /terms et /privacy restent lisibles quand on est déjà connecté (avant, on était renvoyé vers l'accueil)
+
 ## v1.28.53 — 2026-09-24
 
 **Page publique du bot et corrections de la page Bot**

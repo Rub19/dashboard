@@ -69,6 +69,15 @@ const SEGMENT_1 = 40;
 const SEGMENT_2 = 80;
 const SEGMENT_3 = 120;
 
+// Pages d'information (vitrine du bot, conditions, confidentialité) : lisibles par tous, connectés ou non. Contrairement
+// à /login, un utilisateur déjà connecté n'en est pas renvoyé vers l'accueil.
+const INFO_ROUTES = ["/terms", "/privacy", "/bot"];
+
+function isInfoRoute(pathname: string | null): boolean {
+  if (!pathname) return false;
+  return INFO_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
+}
+
 function isPublicRoute(pathname: string | null): boolean {
   if (!pathname) return false;
   return PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
@@ -149,6 +158,10 @@ export default function BootProvider({ children }: { children: ReactNode }) {
         return;
       }
       if (mfaPending) {
+        if (isInfoRoute(pathname)) {
+          setState("ready");
+          return;
+        }
         if (!isMfaChallengeRoute(pathname)) {
           setState("recovering");
           router.replace(MFA_CHALLENGE_ROUTE);
@@ -165,7 +178,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
         return;
       }
       setState("authenticated");
-      if (publicRoute) {
+      if (publicRoute && !isInfoRoute(pathname)) {
         setState("recovering");
         router.replace("/");
       }

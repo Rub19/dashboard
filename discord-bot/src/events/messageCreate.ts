@@ -22,6 +22,7 @@ import { syncEngine } from '../services/syncEngine.js';
 import { logger } from '../utils/logger.js';
 import { formatString, getTranslation } from '../utils/i18n.js';
 import { noticeEmbed } from '../utils/embeds.js';
+import { disabledModuleEmbeds } from '../services/moduleGate.js';
 
 export async function onMessageCreate(message: Message) {
   // Ignorer les bots
@@ -175,6 +176,21 @@ export async function onMessageCreate(message: Message) {
     message.member?.permissions.has(PermissionFlagsBits.ManageGuild) ||
     message.member?.permissions.has(PermissionFlagsBits.Administrator)
   );
+  // Module désactivé sur ce serveur : message d'erreur à la place de la commande (et, pour le staff, comment le réactiver)
+  const disabledEmbeds = disabledModuleEmbeds({
+    guildId: message.guildId,
+    commandName: command.name,
+    isStaff:
+      isStaffOrAdmin ||
+      message.author.id === config.botOwnerId ||
+      [...(guildConfig.adminRoles ?? []), ...(guildConfig.modRoles ?? [])].some((r) => message.member?.roles.cache.has(r)),
+    prefix,
+  });
+  if (disabledEmbeds) {
+    await message.reply({ embeds: disabledEmbeds }).catch(() => null);
+    return;
+  }
+
   const cooldownDuration = guildConfig.commandCooldown || 0;
   const { onCooldown, remainingSeconds } = cooldownService.checkAndApply(
     message.guildId || 'dm',

@@ -1,3 +1,4 @@
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { checkHierarchy } from '../permissions/hierarchy.js';
@@ -28,7 +29,7 @@ export const warnCommand: Command = {
       return;
     }
 
-    if (!conf.modules.moderation) {
+    if (!isModuleEnabled(ctx.guild.id, 'moderation')) {
       await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.mod_module_disabled, { emoji: conf.emojis.error }))] });
       return;
     }

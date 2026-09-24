@@ -9,7 +9,7 @@ import { config } from '../config.js';
 import { logger } from '../utils/logger.js';
 import { authRouter } from './routes/authRoutes.js';
 import { createGuildRouter } from './routes/guildRoutes.js';
-import { getModuleStatus } from './moduleStatus.js';
+import { getModuleStatus, setModuleEnabled } from './moduleStatus.js';
 import { createPublicRouter } from './routes/publicRoutes.js';
 import { createModuleRouter } from './routes/moduleRoutes.js';
 import { createSettingsRouter } from './routes/settingsRoutes.js';
@@ -112,6 +112,20 @@ export function startWebServer(client: Client): http.Server {
   // Interrupteur général de chaque module (pastilles « actif / désactivé » du hub).
   app.get('/api/guilds/:guildId/module-status', authMiddleware, createGuildAuthMiddleware(client), (req, res) => {
     res.json({ modules: getModuleStatus(String(req.params.guildId)) });
+  });
+  // Interrupteur d'un module depuis le hub du dashboard (même effet que /module sur Discord).
+  app.put('/api/guilds/:guildId/module-status/:moduleId', authMiddleware, createGuildAuthMiddleware(client), (req, res) => {
+    const enabled = req.body?.enabled;
+    if (typeof enabled !== 'boolean') {
+      res.status(400).json({ error: 'La propriété "enabled" (boolean) est requise' });
+      return;
+    }
+    const guildId = String(req.params.guildId);
+    if (!setModuleEnabled(guildId, String(req.params.moduleId), enabled, 'DASHBOARD', req.user?.id)) {
+      res.status(404).json({ error: 'Module introuvable' });
+      return;
+    }
+    res.json({ success: true, modules: getModuleStatus(guildId) });
   });
   // Page vitrine du bot : compteurs globaux et liste des commandes (sans authentification, lecture seule).
   app.use('/api/public', createPublicRouter(client));

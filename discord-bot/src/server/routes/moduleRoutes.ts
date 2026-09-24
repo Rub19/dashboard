@@ -5,7 +5,7 @@ import { guildConfigService } from '../../services/guildConfigService.js';
 import { GuildModules } from '../../types/guildConfig.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { createGuildAuthMiddleware } from '../middleware/guildAuth.js';
-import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { getModule, isModuleEnabled, listModuleStates, setModuleEnabled } from '../../services/moduleRegistry.js';
 
 interface ModuleDefinition {
   id: keyof GuildModules;
@@ -78,9 +78,14 @@ export function createModuleRouter(client: Client): express.Router {
     const guildId = String(req.params.guildId);
     const config = guildConfigService.getConfig(guildId);
 
-    const modulesWithState = AVAILABLE_MODULES.map((mod) => ({
-      ...mod,
-      enabled: config.modules[mod.id] ?? false,
+    // Registre central (services/moduleRegistry.ts) : mêmes modules et mêmes états que le hub et que /module.
+    const modulesWithState = listModuleStates(guildId).map((m) => ({
+      id: m.id,
+      name: m.label,
+      description: m.description,
+      icon: 'Puzzle',
+      available: true,
+      enabled: m.enabled,
     }));
 
     res.json({ modules: modulesWithState });
@@ -91,7 +96,7 @@ export function createModuleRouter(client: Client): express.Router {
    */
   router.patch('/:guildId/modules/:moduleId', authMiddleware, guildAuth, (req: Request, res: Response): void => {
     const guildId = String(req.params.guildId);
-    const moduleId = req.params.moduleId as keyof GuildModules;
+    const moduleId = String(req.params.moduleId);
     const { enabled } = req.body;
 
     if (typeof enabled !== 'boolean') {
@@ -99,36 +104,17 @@ export function createModuleRouter(client: Client): express.Router {
       return;
     }
 
-    const validModule = AVAILABLE_MODULES.find((m) => m.id === moduleId);
-    if (!validModule) {
+    const def = getModule(moduleId);
+    if (!def) {
       res.status(404).json({ error: `Module introuvable : ${moduleId}` });
       return;
     }
 
-    if (!validModule.available && enabled) {
-      res.status(400).json({ error: `Le module ${validModule.name} sera bientôt disponible.` });
-      return;
-    }
-
     try {
-      const updated = guildConfigService.updateConfig(
-        guildId,
-        {
-          modules: {
-            [moduleId]: enabled,
-          },
-        },
-        { source: 'DASHBOARD', actorId: req.user?.id }
-      );
-      emitConfigUpdated('modules', guildId, updated.modules, 'DASHBOARD', req.user?.id);
-
+      setModuleEnabled(guildId, moduleId, enabled, 'DASHBOARD', req.user?.id);
       res.json({
         success: true,
-        module: {
-          ...validModule,
-          enabled: updated.modules[moduleId],
-        },
-        allModules: updated.modules,
+        module: { id: def.id, name: def.label, description: def.description, icon: 'Puzzle', available: true, enabled: isModuleEnabled(guildId, moduleId) },
       });
     } catch (err) {
       res.status(500).json({ error: 'Erreur lors de la mise à jour du module' });

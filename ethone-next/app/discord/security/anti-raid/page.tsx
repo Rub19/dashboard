@@ -50,6 +50,51 @@ type RaidAction =
   | "ALERT_STAFF"
   | "ENABLE_RAID_MODE";
 
+const ACTION_CHOICES: Array<{ id: RaidAction; label: string; hint: string }> = [
+  { id: "DELETE", label: "Supprimer le message", hint: "Efface les messages détectés." },
+  { id: "WARN", label: "Avertir", hint: "Ajoute un avertissement au membre." },
+  { id: "TIMEOUT", label: "Timeout automatique", hint: "Réduit le membre au silence pour la durée choisie." },
+  { id: "KICK", label: "Expulser", hint: "Expulse le membre du serveur." },
+  { id: "BAN", label: "Bannir", hint: "Bannit le membre du serveur." },
+  { id: "ALERT_STAFF", label: "Alerter le staff", hint: "Envoie une alerte dans le salon du staff." },
+];
+
+/** Choix des sanctions automatiques d'une protection. Tout peut être décoché : le bot détecte alors sans sanctionner. */
+function ActionPicker({ actions, onChange }: { actions: RaidAction[]; onChange: (next: RaidAction[]) => void }) {
+  return (
+    <div>
+      <p className="mb-2 text-xs font-medium text-white/70">Actions automatiques</p>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        {ACTION_CHOICES.map((choice) => {
+          const checked = actions.includes(choice.id);
+          return (
+            <label
+              key={choice.id}
+              className={`flex cursor-pointer items-start gap-2.5 rounded-xl border px-3 py-2 transition-colors ${
+                checked ? "border-white/20 bg-white/[0.06]" : "border-[var(--panel-border)] hover:bg-white/[0.03]"
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={(e) => onChange(e.target.checked ? [...actions, choice.id] : actions.filter((x) => x !== choice.id))}
+                className="mt-0.5 h-4 w-4 cursor-pointer accent-red-500"
+              />
+              <span>
+                <span className="block text-xs font-semibold text-white">{choice.label}</span>
+                <span className="block text-[11px] text-white/60">{choice.hint}</span>
+              </span>
+            </label>
+          );
+        })}
+      </div>
+      {actions.length === 0 && (
+        <p className="mt-2 text-[11px] text-amber-300/90">Aucune action cochée : la protection détecte et journalise, sans sanctionner personne.</p>
+      )}
+    </div>
+  );
+}
+
 interface LiveMetrics {
   joinsPerMinute: number;
   messagesPerMinute: number;
@@ -1462,6 +1507,30 @@ export default function AntiRaidDashboardPage() {
                     />
                   </div>
                 </div>
+
+                <ActionPicker
+                  actions={settings.messageRaid.actions}
+                  onChange={(next) => setSettings((prev) => ({ ...prev, messageRaid: { ...prev.messageRaid, actions: next } }))}
+                />
+
+                {settings.messageRaid.actions.includes("TIMEOUT") && (
+                  <div className="max-w-xs">
+                    <label className="text-xs font-medium text-white/70 block mb-1.5">Durée du timeout automatique</label>
+                    <select
+                      value={settings.messageRaid.timeoutDurationSeconds}
+                      onChange={(e) =>
+                        setSettings((prev) => ({ ...prev, messageRaid: { ...prev.messageRaid, timeoutDurationSeconds: parseInt(e.target.value) || 600 } }))
+                      }
+                      className="w-full bg-white/[0.04] border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500/50"
+                    >
+                      <option value={60}>1 minute</option>
+                      <option value={300}>5 minutes</option>
+                      <option value={600}>10 minutes</option>
+                      <option value={3600}>1 heure</option>
+                      <option value={86400}>1 jour</option>
+                    </select>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1526,10 +1595,15 @@ export default function AntiRaidDashboardPage() {
                       className="w-4 h-4 accent-red-500 rounded cursor-pointer"
                     />
                     <label htmlFor="blockEveryone" className="text-xs text-white/80 ml-2 cursor-pointer">
-                      Bloquer et timeout immédiatement tout non-staff tentant @everyone ou @here
+                      Bloquer tout non-staff tentant @everyone ou @here (sanctions selon les actions ci-dessous)
                     </label>
                   </div>
                 </div>
+
+                <ActionPicker
+                  actions={settings.mentionRaid.actions}
+                  onChange={(next) => setSettings((prev) => ({ ...prev, mentionRaid: { ...prev.mentionRaid, actions: next } }))}
+                />
               </div>
             )}
 

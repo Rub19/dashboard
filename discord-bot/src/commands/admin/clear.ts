@@ -1,3 +1,4 @@
+import { isModuleEnabled } from '../../services/moduleRegistry.js';
 import {
   SlashCommandBuilder,
   PermissionFlagsBits,
@@ -42,7 +43,7 @@ export const clearCommand: Command = {
     }
 
     // Vérifier si le module Modération est activé
-    if (!config.modules.moderation) {
+    if (!isModuleEnabled(ctx.guild.id, 'moderation')) {
       await ctx.reply({
         embeds: [ctx.createEmbed('error').setDescription(formatString(t.mod_module_disabled, { emoji: config.emojis.error || '❌' }))],
         ephemeral: true,

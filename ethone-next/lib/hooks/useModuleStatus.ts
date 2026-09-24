@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { subscribeGuildLive } from "@/lib/guildLive";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -10,7 +10,10 @@ const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
  * seul quand une configuration change, que ce soit depuis le dashboard ou depuis Discord. Un module absent du résultat
  * n'a pas d'interrupteur unique : aucune pastille n'est alors affichée.
  */
-export function useModuleStatus(guildId: string | undefined, active: boolean): Record<string, boolean> {
+export function useModuleStatus(
+  guildId: string | undefined,
+  active: boolean
+): { status: Record<string, boolean>; setModuleEnabled: (moduleId: string, enabled: boolean) => Promise<boolean> } {
   const [status, setStatus] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -43,5 +46,30 @@ export function useModuleStatus(guildId: string | undefined, active: boolean): R
     };
   }, [guildId, active]);
 
-  return status;
+  /** Active ou désactive un module (même effet que /module sur Discord). Renvoie false si le bot a refusé. */
+  const setModuleEnabled = useCallback(
+    async (moduleId: string, enabled: boolean) => {
+      if (!guildId || !BOT_API_URL) return false;
+      const previous = status[moduleId];
+      setStatus((prev) => ({ ...prev, [moduleId]: enabled })); // affichage immédiat, annulé si le bot refuse
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${encodeURIComponent(guildId)}/module-status/${encodeURIComponent(moduleId)}`, {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ enabled }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data?.error || "refusé");
+        if (data?.modules) setStatus(data.modules as Record<string, boolean>);
+        return true;
+      } catch {
+        setStatus((prev) => ({ ...prev, [moduleId]: previous ?? !enabled }));
+        return false;
+      }
+    },
+    [guildId, status]
+  );
+
+  return { status, setModuleEnabled };
 }

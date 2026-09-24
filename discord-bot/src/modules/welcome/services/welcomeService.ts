@@ -1,3 +1,4 @@
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 import {
   ActionRowBuilder,
   AttachmentBuilder,
@@ -115,7 +116,7 @@ class WelcomeService {
     await OnboardingService.startOnboarding(member);
 
     // 5. Si le module global ou le système welcome est inactif, on arrête ici
-    if (!globalConfig.modules.welcome || !welcomeConfig.enabled) {
+    if (!isModuleEnabled(member.guild.id, 'welcome') || !welcomeConfig.enabled) {
       return;
     }
 
@@ -169,7 +170,7 @@ class WelcomeService {
       detail: 'Départ du membre du serveur.',
     });
 
-    if (!globalConfig.modules.welcome || !goodbyeConfig.enabled) {
+    if (!isModuleEnabled(member.guild.id, 'welcome') || !goodbyeConfig.enabled) {
       return;
     }
 
@@ -356,8 +357,12 @@ class WelcomeService {
       components?: ActionRowBuilder<ButtonBuilder>[];
     } = {};
 
-    // 2. Contenu textuel
-    if (config.messageContent) {
+    // 2. Contenu textuel : quand l'embed est activé, le message reste DANS l'embed (plus de texte brut en double au-dessus) ;
+    //    seule la mention du nouveau membre reste en texte, car une mention dans un embed ne notifie personne.
+    const embedEnabled = Boolean(config.embed && config.embed.enabled);
+    if (embedEnabled) {
+      if ('mentionUser' in config && config.mentionUser && ctx.userId) payload.content = `<@${ctx.userId}>`;
+    } else if (config.messageContent) {
       payload.content = VariableParser.parse(config.messageContent, ctx);
     }
 

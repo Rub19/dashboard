@@ -27,6 +27,7 @@ import RolePicker from "@/components/discord/RolePicker";
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+// "none" : pas de timeout automatique (le bot supprime le message et alerte le staff, sans réduire le membre au silence)
 const TIMEOUT_DURATION_SECONDS: Record<string, number> = { "5m": 300, "10m": 600, "1h": 3600 };
 
 interface GuildChannel {
@@ -182,8 +183,12 @@ export default function SetupWizardClient() {
           body: JSON.stringify({
             messageRaid: {
               enabled: antiSpamEnabled,
-              timeoutDurationSeconds: TIMEOUT_DURATION_SECONDS[timeoutDuration] ?? 600,
+              ...(timeoutDuration === "none"
+                ? { actions: ["DELETE", "ALERT_STAFF"] }
+                : { actions: ["DELETE", "TIMEOUT", "ALERT_STAFF"], timeoutDurationSeconds: TIMEOUT_DURATION_SECONDS[timeoutDuration] ?? 600 }),
             },
+            // Sans timeout automatique, les mentions de masse sont aussi seulement supprimées
+            ...(timeoutDuration === "none" ? { mentionRaid: { actions: ["DELETE", "ALERT_STAFF"] } } : {}),
           }),
         }),
         // Welcome message + auto-role
@@ -195,7 +200,8 @@ export default function SetupWizardClient() {
             welcome: {
               enabled: welcomeEnabled,
               channelId: welcomeChannelId,
-              messageContent: welcomeMessage,
+              // Le message d'accueil est envoyé dans un embed (le texte saisi devient sa description)
+              embed: { enabled: true, description: welcomeMessage },
               autoRoleIds: autoRoleId ? [autoRoleId] : [],
             },
           }),
@@ -530,10 +536,10 @@ export default function SetupWizardClient() {
                 {/* Default Timeout Duration */}
                 <div>
                   <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
-                    Durée par défaut d'un Timeout automatique
+                    Timeout automatique (durée, ou « Aucun » pour le désactiver)
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {["5m", "10m", "1h"].map((d) => (
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    {["none", "5m", "10m", "1h"].map((d) => (
                       <button
                         key={d}
                         onClick={() => setTimeoutDuration(d)}
@@ -543,7 +549,7 @@ export default function SetupWizardClient() {
                             : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:text-white"
                         }`}
                       >
-                        {d === "5m" ? "5 Minutes" : d === "10m" ? "10 Minutes" : "1 Heure"}
+                        {d === "none" ? "Aucun" : d === "5m" ? "5 Minutes" : d === "10m" ? "10 Minutes" : "1 Heure"}
                       </button>
                     ))}
                   </div>
@@ -602,7 +608,7 @@ export default function SetupWizardClient() {
                 {/* Welcome Message */}
                 <div>
                   <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
-                    Modèle de message
+                    Message de l'embed d'accueil
                   </label>
                   <textarea
                     rows={3}

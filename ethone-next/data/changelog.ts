@@ -33898,6 +33898,67 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_62_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_62_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_62_de);
 
+const v1_28_63_fr: ChangelogEntry = {
+  version: "v1.28.63",
+  date: "2026-09-24",
+  title: "Interrupteur On/Off pour chaque module, embeds d'accueil et sanctions automatiques réglables",
+  items: [
+    "Chaque module du hub a maintenant un interrupteur ON / OFF par serveur (29 modules), synchronisé en direct avec Discord ; commande /module (avec recherche) pour faire la même chose depuis Discord",
+    "Une commande d'un module désactivé répond par un embed d'erreur « Module désactivé » ; les modérateurs reçoivent en plus un second message avec la commande exacte (/module nom:… activer:True) et le lien du dashboard pour le réactiver",
+    "Messages de bienvenue et d'au revoir : envoyés dans un embed (plus de texte brut en double), seule la mention du nouveau membre reste en texte ; l'assistant de configuration enregistre le message comme description de l'embed ; l'accueil ne dépendait plus d'un ancien réglage caché du module qui empêchait l'envoi",
+    "Timeout automatique désactivable : option « Aucun » dans l'assistant, choix des actions (supprimer, avertir, timeout, expulser, bannir, alerter) par protection Anti-Raid, interrupteur des sanctions progressives d'AutoMod, et nouvelle carte « Sanction automatique après plusieurs avertissements » (elle était active en secret par défaut ; désormais désactivée par défaut pour les nouveaux serveurs)",
+    "Modération > Réglages : les boutons de durée de conservation étaient sans effet, ils enregistrent maintenant vraiment",
+    "Palette Ctrl K : chaque module Discord a sa propre icône colorée",
+  ],
+};
+
+const v1_28_63_en: ChangelogEntry = {
+  version: "v1.28.63",
+  date: "2026-09-24",
+  title: "ON/OFF switch on every module, embed welcomes and adjustable automatic sanctions",
+  items: [
+    "Every hub module now has an ON / OFF switch per server (29 modules), synced live with Discord; a /module command (with search) does the same from Discord",
+    "A command from a disabled module replies with a 'Module disabled' error embed; moderators also get a second message with the exact command (/module name:… enable:True) and the dashboard link to re-enable it",
+    "Welcome and goodbye messages are sent as an embed (no more duplicated plain text), only the new member's mention stays as text; the setup wizard saves the message as the embed description; welcome no longer depended on a hidden legacy module flag that prevented sending",
+    "Automatic timeout can be turned off: 'None' option in the wizard, per-protection action choice (delete, warn, timeout, kick, ban, alert) for Anti-Raid, a switch for AutoMod progressive sanctions, and a new 'Automatic sanction after several warnings' card (it was silently on by default; now off by default for new servers)",
+    "Moderation > Settings: the retention duration buttons did nothing, they now really save",
+    "Ctrl K palette: every Discord module has its own coloured icon",
+  ],
+};
+
+const v1_28_63_es: ChangelogEntry = {
+  version: "v1.28.63",
+  date: "2026-09-24",
+  title: "Interruptor ON/OFF en cada módulo, bienvenidas con embed y sanciones automáticas ajustables",
+  items: [
+    "Cada módulo del hub tiene ahora un interruptor ON / OFF por servidor (29 módulos), sincronizado en directo con Discord; un comando /module (con búsqueda) hace lo mismo desde Discord",
+    "Un comando de un módulo desactivado responde con un embed de error «Módulo desactivado»; los moderadores reciben además un segundo mensaje con el comando exacto (/module nombre:… activar:True) y el enlace del dashboard para reactivarlo",
+    "Los mensajes de bienvenida y despedida se envían en un embed (sin texto plano duplicado), solo la mención del nuevo miembro queda como texto; el asistente guarda el mensaje como descripción del embed; la bienvenida ya no dependía de un ajuste oculto antiguo que impedía el envío",
+    "El timeout automático se puede desactivar: opción «Ninguno» en el asistente, elección de acciones (borrar, avisar, timeout, expulsar, banear, alertar) por protección Anti-Raid, interruptor de las sanciones progresivas de AutoMod y nueva tarjeta «Sanción automática tras varios avisos» (estaba activa en secreto por defecto; ahora desactivada por defecto en servidores nuevos)",
+    "Moderación > Ajustes: los botones de duración de conservación no hacían nada, ahora guardan de verdad",
+    "Paleta Ctrl K: cada módulo de Discord tiene su propio icono de color",
+  ],
+};
+
+const v1_28_63_de: ChangelogEntry = {
+  version: "v1.28.63",
+  date: "2026-09-24",
+  title: "EIN/AUS-Schalter für jedes Modul, Willkommens-Embeds und einstellbare automatische Sanktionen",
+  items: [
+    "Jedes Hub-Modul hat jetzt einen EIN / AUS-Schalter pro Server (29 Module), live mit Discord synchronisiert; ein Befehl /module (mit Suche) macht dasselbe in Discord",
+    "Ein Befehl eines deaktivierten Moduls antwortet mit einem Fehler-Embed „Modul deaktiviert“; Moderatoren erhalten zusätzlich eine zweite Nachricht mit dem genauen Befehl (/module name:… aktivieren:True) und dem Dashboard-Link zum Reaktivieren",
+    "Willkommens- und Abschiedsnachrichten werden als Embed gesendet (kein doppelter Klartext mehr), nur die Erwähnung des neuen Mitglieds bleibt Text; der Einrichtungsassistent speichert die Nachricht als Embed-Beschreibung; die Begrüßung hing nicht mehr von einer versteckten alten Moduleinstellung ab, die das Senden verhinderte",
+    "Automatischer Timeout abschaltbar: Option „Keine“ im Assistenten, Auswahl der Aktionen (löschen, verwarnen, Timeout, kicken, bannen, alarmieren) je Anti-Raid-Schutz, Schalter für die progressiven AutoMod-Sanktionen und neue Karte „Automatische Sanktion nach mehreren Verwarnungen“ (war heimlich standardmäßig aktiv; jetzt für neue Server standardmäßig aus)",
+    "Moderation > Einstellungen: Die Schaltflächen für die Aufbewahrungsdauer taten nichts, sie speichern jetzt wirklich",
+    "Ctrl-K-Palette: Jedes Discord-Modul hat sein eigenes farbiges Symbol",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_63_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_63_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_63_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_63_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

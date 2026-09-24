@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.63 — 2026-09-24
+
+**Interrupteur On/Off pour chaque module, embeds d'accueil et sanctions automatiques réglables**
+
+- Chaque module du hub a maintenant un interrupteur ON / OFF par serveur (29 modules), synchronisé en direct avec Discord ; commande /module (avec recherche) pour faire la même chose depuis Discord
+- Une commande d'un module désactivé répond par un embed d'erreur « Module désactivé » ; les modérateurs reçoivent en plus un second message avec la commande exacte (/module nom:… activer:True) et le lien du dashboard pour le réactiver
+- Messages de bienvenue et d'au revoir : envoyés dans un embed (plus de texte brut en double), seule la mention du nouveau membre reste en texte ; l'assistant de configuration enregistre le message comme description de l'embed ; l'accueil ne dépendait plus d'un ancien réglage caché du module qui empêchait l'envoi
+- Timeout automatique désactivable : option « Aucun » dans l'assistant, choix des actions (supprimer, avertir, timeout, expulser, bannir, alerter) par protection Anti-Raid, interrupteur des sanctions progressives d'AutoMod, et nouvelle carte « Sanction automatique après plusieurs avertissements » (elle était active en secret par défaut ; désormais désactivée par défaut pour les nouveaux serveurs)
+- Modération > Réglages : les boutons de durée de conservation étaient sans effet, ils enregistrent maintenant vraiment
+- Palette Ctrl K : chaque module Discord a sa propre icône colorée
+
 ## v1.28.62 — 2026-09-24
 
 **Correctifs des menus de la barre du haut**

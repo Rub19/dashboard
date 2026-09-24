@@ -1,6 +1,7 @@
 "use client";
 
 import { DISCORD_MODULES } from "@/lib/discord-modules";
+import { EthoneIcon } from "@/components/EthoneIcon";
 import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
@@ -254,7 +255,11 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
         label: `Discord : ${m.title}`,
         subtitle: "Module du bot Discord",
         category: "Discord",
-        icon: <Icon name="discord" />,
+        icon: (
+          <span className={m.tint}>
+            <EthoneIcon name={m.icon} className="h-[18px] w-[18px]" />
+          </span>
+        ),
         keywords: ["discord", "bot", m.id, ...m.keywords],
         contexts: ["/discord/"],
         contextPriority: 70,

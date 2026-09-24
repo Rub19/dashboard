@@ -257,6 +257,71 @@ export default function ModerationCenterPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
+  // Réglages : rétention des dossiers et sanction automatique après N avertissements
+  const [retentionDays, setRetentionDays] = useState<number | null>(null);
+  const [escalation, setEscalation] = useState<{ enabled: boolean; threshold: number; action: "timeout" | "kick" | "ban"; durationSeconds: number } | null>(null);
+
+  useEffect(() => {
+    if (activeTab !== "settings" || !BOT_API_URL || !selectedGuild) return;
+    let cancelled = false;
+    const base = `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation`;
+    fetch(`${base}/settings`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!cancelled && d?.settings) setRetentionDays(Number(d.settings.retentionDays ?? 0));
+      })
+      .catch(() => {});
+    fetch(`${base}/warning-escalation`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!cancelled && d?.escalation) setEscalation(d.escalation);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [activeTab, selectedGuild]);
+
+  const saveRetention = async (days: number) => {
+    if (!BOT_API_URL || !selectedGuild) return;
+    const previous = retentionDays;
+    setRetentionDays(days);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/settings`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ retentionDays: days }),
+      });
+      if (!res.ok) throw new Error();
+      success("Conservation mise à jour", days === 0 ? "Les dossiers sont conservés sans limite." : `Les dossiers sont conservés ${days} jours.`);
+    } catch {
+      setRetentionDays(previous);
+      showError("Échec", "Le bot n'a pas enregistré la durée de conservation.");
+    }
+  };
+
+  const saveEscalation = async (patch: Partial<NonNullable<typeof escalation>>) => {
+    if (!BOT_API_URL || !selectedGuild || !escalation) return;
+    const previous = escalation;
+    setEscalation({ ...escalation, ...patch });
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/warning-escalation`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error();
+      if (data?.escalation) setEscalation(data.escalation);
+      success("Sanctions automatiques", "Réglage enregistré.");
+    } catch {
+      setEscalation(previous);
+      showError("Échec", "Le bot n'a pas enregistré ce réglage.");
+    }
+  };
+
   // Recherche Rapide Membre (Staff Console)
   const [memberSearchQuery, setMemberSearchQuery] = useState("");
   const [memberSearchResults, setMemberSearchResults] = useState<any[]>([]);
@@ -1202,17 +1267,89 @@ export default function ModerationCenterPage() {
                     { label: "30 jours", value: 30 },
                     { label: "90 jours", value: 90 },
                     { label: "1 an", value: 365 },
-                    { label: "Illimité (Forever)", value: 0 },
+                    { label: "Illimité", value: 0 },
                   ].map((p) => (
                     <button
                       key={p.value}
                       type="button"
-                      className="h-10 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] text-xs font-semibold hover:border-orange-500 hover:text-orange-400 transition-all"
+                      onClick={() => saveRetention(p.value)}
+                      aria-pressed={retentionDays === p.value}
+                      className={`h-10 cursor-pointer rounded-[var(--inset-radius)] border text-xs font-semibold transition-all ${
+                        retentionDays === p.value
+                          ? "border-orange-500 bg-orange-500/10 text-orange-300"
+                          : "border-[var(--panel-border)] bg-white/[0.02] hover:border-orange-500 hover:text-orange-400"
+                      }`}
                     >
                       {p.label}
                     </button>
                   ))}
                 </div>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-white">Sanction automatique après plusieurs avertissements</h3>
+                    <p className="mt-1 text-xs text-zinc-400">
+                      Quand un membre atteint le nombre d&apos;avertissements actifs choisi, le bot applique lui-même une sanction. Désactivez-la si vous voulez décider à la main.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={Boolean(escalation?.enabled)}
+                    aria-label="Sanction automatique après avertissements"
+                    disabled={!escalation}
+                    onClick={() => escalation && saveEscalation({ enabled: !escalation.enabled })}
+                    className={`relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors disabled:opacity-40 ${escalation?.enabled ? "bg-emerald-500" : "bg-white/15"}`}
+                  >
+                    <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${escalation?.enabled ? "translate-x-[22px]" : "translate-x-0.5"}`} />
+                  </button>
+                </div>
+                {!escalation && <p className="text-xs text-zinc-500">Réglage indisponible : bot injoignable ou serveur non sélectionné.</p>}
+                {escalation && escalation.enabled && (
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    <label className="text-xs text-zinc-300">
+                      Après
+                      <select
+                        value={escalation.threshold}
+                        onChange={(e) => saveEscalation({ threshold: Number(e.target.value) })}
+                        className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2 text-xs text-white"
+                      >
+                        {[2, 3, 4, 5, 6, 8, 10].map((n) => (
+                          <option key={n} value={n} className="bg-zinc-900">{n} avertissements</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="text-xs text-zinc-300">
+                      Sanction
+                      <select
+                        value={escalation.action}
+                        onChange={(e) => saveEscalation({ action: e.target.value as "timeout" | "kick" | "ban" })}
+                        className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2 text-xs text-white"
+                      >
+                        <option value="timeout" className="bg-zinc-900">Timeout</option>
+                        <option value="kick" className="bg-zinc-900">Expulsion</option>
+                        <option value="ban" className="bg-zinc-900">Bannissement</option>
+                      </select>
+                    </label>
+                    {escalation.action === "timeout" && (
+                      <label className="text-xs text-zinc-300">
+                        Durée du timeout
+                        <select
+                          value={escalation.durationSeconds}
+                          onChange={(e) => saveEscalation({ durationSeconds: Number(e.target.value) })}
+                          className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2 text-xs text-white"
+                        >
+                          <option value={600} className="bg-zinc-900">10 minutes</option>
+                          <option value={3600} className="bg-zinc-900">1 heure</option>
+                          <option value={86400} className="bg-zinc-900">1 jour</option>
+                          <option value={604800} className="bg-zinc-900">7 jours</option>
+                        </select>
+                      </label>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}

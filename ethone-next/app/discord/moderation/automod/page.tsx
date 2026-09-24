@@ -2256,6 +2256,20 @@ export default function AutoModCommandCenterPage() {
                     Chaque infraction peut attribuer un ou plusieurs strikes. En accumulant des strikes, les sanctions s'intensifient automatiquement.
                   </p>
                 </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-white">
+                    <input
+                      type="checkbox"
+                      checked={config.strikes.enabled}
+                      onChange={(e) => setConfig({ ...config, strikes: { ...config.strikes, enabled: e.target.checked } })}
+                      className="h-4 w-4 cursor-pointer accent-indigo-500"
+                    />
+                    Sanctions progressives automatiques
+                  </label>
+                  {!config.strikes.enabled && (
+                    <span className="text-[11px] text-amber-300/90">Désactivées : les strikes sont comptés mais aucun timeout, expulsion ou bannissement automatique n'est appliqué.</span>
+                  )}
+                </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-zinc-400">Expiration :</span>
                   <input

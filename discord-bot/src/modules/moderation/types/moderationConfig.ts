@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const WarningEscalationSchema = z.object({
-  enabled: z.boolean().default(true),
+  enabled: z.boolean().default(false), // pas de sanction automatique par défaut : c'est un choix du serveur (dashboard > Modération > Réglages)
   threshold: z.number().min(1).max(20).default(3), // Après 3 warns
   action: z.enum(['timeout', 'kick', 'ban']).default('timeout'),
   durationSeconds: z.number().default(3600), // 1 heure si timeout

@@ -876,7 +876,16 @@ export default function DiscordDashboardPage() {
   };
 
   const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
-  const moduleStatus = useModuleStatus(selectedGuild?.id, !botPresenceKnown || Boolean(selectedGuild && botGuildIds.has(selectedGuild.id)));
+  const { status: moduleStatus, setModuleEnabled } = useModuleStatus(selectedGuild?.id, !botPresenceKnown || Boolean(selectedGuild && botGuildIds.has(selectedGuild.id)));
+  const handleModuleToggle = useCallback(
+    async (id: string, enabled: boolean) => {
+      const ok = await setModuleEnabled(id, enabled);
+      const title = NAV_MODULES.find((m) => m.id === id)?.title ?? id;
+      if (ok) success(enabled ? "Module activé" : "Module désactivé", `${title} : ${enabled ? "ses commandes sont de nouveau disponibles." : "ses commandes répondent maintenant « module désactivé »."}`);
+      else showError("Action refusée", `Impossible de modifier « ${title} » (droits ou bot injoignable).`);
+    },
+    [setModuleEnabled, success, showError]
+  );
 
   // --- Live Music Center State ---
   const [liveMusicState, setLiveMusicState] = useState<any>({
@@ -1565,7 +1574,7 @@ export default function DiscordDashboardPage() {
               </div>
 
               {/* Navigation des modules : catégories, recherche, favoris */}
-              <ModuleNavigator modules={NAV_MODULES} categories={MODULE_CATEGORIES} activeId={activeModule} onSelect={handleSelectModule} status={moduleStatus} />
+              <ModuleNavigator modules={NAV_MODULES} categories={MODULE_CATEGORIES} activeId={activeModule} onSelect={handleSelectModule} status={moduleStatus} onToggle={handleModuleToggle} />
 
               {/* Functional Module Settings Panel */}
               <div id="module-panel" className="scroll-mt-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-5 sm:p-6 backdrop-blur-xl">

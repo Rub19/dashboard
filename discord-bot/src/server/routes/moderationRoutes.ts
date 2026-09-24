@@ -1,3 +1,5 @@
+import { sanctionService } from '../../modules/moderation/sanctions/sanctionService.js';
+import { WarningEscalationSchema, type WarningEscalation } from '../../modules/moderation/types/moderationConfig.js';
 import express, { Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { ModerationService } from '../../modules/moderation/services/moderationService.js';
@@ -402,6 +404,23 @@ export function createModerationRouter(discordClient: Client) {
     } catch (err: any) {
       res.status(500).json({ error: err.message || 'Erreur mise à jour configuration' });
     }
+  });
+
+  // 12 bis. ESCALADE DES AVERTISSEMENTS (sanction automatique après N avertissements)
+  router.get('/warning-escalation', (req: Request, res: Response): void => {
+    res.json({ success: true, escalation: sanctionService.getConfig(String(req.params.guildId)).warningEscalation });
+  });
+
+  router.put('/warning-escalation', rateLimit('CONFIG', { byGuild: true, actionName: 'moderation_warning_escalation' }), (req: Request, res: Response): void => {
+    const guildId = String(req.params.guildId);
+    const parsed = WarningEscalationSchema.partial().safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: 'Paramètres invalides' });
+      return;
+    }
+    const updated = sanctionService.updateConfig(guildId, { warningEscalation: parsed.data as WarningEscalation });
+    emitConfigUpdated('moderation', guildId, updated, 'DASHBOARD', req.user?.id);
+    res.json({ success: true, escalation: updated.warningEscalation });
   });
 
   // 13. AUDIT LOGS

@@ -1,3 +1,4 @@
+import { isModuleEnabled } from '../../services/moduleRegistry.js';
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -38,7 +39,7 @@ export const ticketCommand: Command = {
     const config = ctx.guildConfig;
 
     // Vérifier si le module Tickets est activé
-    if (!config.modules.tickets) {
+    if (!isModuleEnabled(ctx.guild.id, 'tickets')) {
       await ctx.reply({
         embeds: [ctx.createEmbed('error').setDescription(formatString(t.ticket_module_disabled, { emoji: config.emojis.error || '❌' }))],
         ephemeral: true,

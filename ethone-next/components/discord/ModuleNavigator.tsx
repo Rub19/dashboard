@@ -30,6 +30,8 @@ interface ModuleNavigatorProps {
   onSelect: (id: string) => void;
   /** Interrupteur général réel de chaque module (id → activé). Un module absent n'affiche pas de pastille. */
   status?: Record<string, boolean>;
+  /** Interrupteur du module : appelé avec le nouvel état souhaité. Sans lui, la pastille reste en lecture seule. */
+  onToggle?: (id: string, enabled: boolean) => void;
 }
 
 const FAV_KEY = "ethone.discord.favoriteModules";
@@ -42,7 +44,7 @@ const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCa
  * en haut et accès direct à la page complète de chaque module. Un clic sur une carte ouvre sa configuration
  * rapide ; la flèche ouvre la page complète.
  */
-export default function ModuleNavigator({ modules, categories, activeId, onSelect, status = {} }: ModuleNavigatorProps) {
+export default function ModuleNavigator({ modules, categories, activeId, onSelect, status = {}, onToggle }: ModuleNavigatorProps) {
   const [query, setQuery] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
 
@@ -110,19 +112,37 @@ export default function ModuleNavigator({ modules, categories, activeId, onSelec
             <span className={cn("block truncate text-xs font-semibold", current ? "text-white" : "text-zinc-200")}>{m.title}</span>
             {typeof status[m.id] === "boolean" && (
               <span
-                title={status[m.id] ? "Module activé" : "Module désactivé"}
                 className={cn(
-                  "shrink-0 rounded-full border px-1.5 py-px text-[9px] font-bold uppercase tracking-wide",
-                  status[m.id] ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" : "border-white/10 bg-white/[0.04] text-zinc-500"
+                  "shrink-0 rounded-md px-1.5 py-px text-[9px] font-bold tracking-wide",
+                  status[m.id] ? "bg-emerald-500/15 text-emerald-300" : "bg-white/[0.06] text-zinc-500"
                 )}
               >
-                {status[m.id] ? "Actif" : "Off"}
+                {status[m.id] ? "ON" : "OFF"}
               </span>
             )}
           </span>
           <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-zinc-500">{m.description}</span>
         </span>
         <span className="flex shrink-0 flex-col items-center gap-1">
+          {typeof status[m.id] === "boolean" && onToggle && (
+            <button
+              type="button"
+              role="switch"
+              aria-checked={status[m.id]}
+              aria-label={`${status[m.id] ? "Désactiver" : "Activer"} ${m.title}`}
+              title={status[m.id] ? "Désactiver ce module sur ce serveur" : "Activer ce module sur ce serveur"}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggle(m.id, !status[m.id]);
+              }}
+              className={cn(
+                "relative h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors",
+                status[m.id] ? "bg-emerald-500" : "bg-white/15"
+              )}
+            >
+              <span className={cn("absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform", status[m.id] ? "translate-x-[18px]" : "translate-x-0.5")} />
+            </button>
+          )}
           <button
             type="button"
             onClick={(e) => {

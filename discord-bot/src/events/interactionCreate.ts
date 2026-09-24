@@ -39,6 +39,7 @@ import { youtubeSuggestions } from '../modules/music/providers/searchSuggest.js'
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
 import { handlePermissionPresetButton } from '../commands/admin/permissionsCommand.js';
 import { baseEmbed, noticeEmbed } from '../utils/embeds.js';
+import { disabledModuleEmbeds } from '../services/moduleGate.js';
 import { HelpPanel } from '../commands/general/helpPanel.js';
 import { syncEngine } from '../services/syncEngine.js';
 import { BotCommandStatsService } from '../modules/botControl/services/botCommandStatsService.js';
@@ -298,6 +299,24 @@ export async function onInteractionCreate(interaction: Interaction) {
     (interaction.memberPermissions && interaction.memberPermissions.has('ManageGuild')) ||
     (interaction.memberPermissions && interaction.memberPermissions.has('Administrator'))
   );
+
+  // Module désactivé sur ce serveur : la commande est remplacée par un message d'erreur (et, pour le staff, la façon de le réactiver)
+  const disabledEmbeds = disabledModuleEmbeds({
+    guildId: interaction.guildId,
+    commandName: command.name,
+    isStaff:
+      isStaffOrAdmin ||
+      interaction.user.id === config.botOwnerId ||
+      Boolean(
+        interaction.member && 'roles' in interaction.member &&
+          [...(guildConfig.adminRoles ?? []), ...(guildConfig.modRoles ?? [])].some((r) => (interaction.member!.roles as any).cache?.has(r))
+      ),
+    prefix: null,
+  });
+  if (disabledEmbeds) {
+    await interaction.reply({ embeds: disabledEmbeds, ephemeral: true });
+    return;
+  }
   const cooldownDuration = guildConfig.commandCooldown || 0;
   const { onCooldown, remainingSeconds } = cooldownService.checkAndApply(
     interaction.guildId || 'dm',

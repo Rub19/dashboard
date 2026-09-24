@@ -33105,6 +33105,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_45_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_45_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_45_de);
 
+const v1_28_46_fr: ChangelogEntry = {
+  version: "v1.28.46",
+  date: "2026-09-24",
+  title: "Aller à n'importe quel module Discord depuis la palette de commandes (Ctrl K)",
+  items: [
+    "La palette de commandes (Ctrl K) propose maintenant les 34 modules du bot Discord (sécurité, modération, tickets, musique, économie, événements…) avec une pastille « Discord » et une recherche par mots-clés (« ban », « xp », « rappel », « anti raid »…). On saute directement au module voulu depuis n'importe quelle page, en gardant le serveur sélectionné. Sur les pages Discord, ces entrées remontent en priorité.",
+  ],
+};
+
+const v1_28_46_en: ChangelogEntry = {
+  version: "v1.28.46",
+  date: "2026-09-24",
+  title: "Jump to any Discord module from the command palette (Ctrl K)",
+  items: [
+    "The command palette (Ctrl K) now offers all 34 Discord bot modules (security, moderation, tickets, music, economy, events…) with a \"Discord\" chip and keyword search (\"ban\", \"xp\", \"reminder\", \"anti raid\"…). You jump straight to the module you want from any page, keeping the selected server. On Discord pages these entries rank first.",
+  ],
+};
+
+const v1_28_46_es: ChangelogEntry = {
+  version: "v1.28.46",
+  date: "2026-09-24",
+  title: "Ir a cualquier módulo de Discord desde la paleta de comandos (Ctrl K)",
+  items: [
+    "La paleta de comandos (Ctrl K) ofrece ahora los 34 módulos del bot de Discord (seguridad, moderación, tickets, música, economía, eventos…) con una etiqueta « Discord » y búsqueda por palabras clave (« ban », « xp », « recordatorio », « anti raid »…). Se salta directamente al módulo deseado desde cualquier página, conservando el servidor seleccionado. En las páginas de Discord estas entradas aparecen primero.",
+  ],
+};
+
+const v1_28_46_de: ChangelogEntry = {
+  version: "v1.28.46",
+  date: "2026-09-24",
+  title: "Zu jedem Discord-Modul über die Befehlspalette springen (Strg K)",
+  items: [
+    "Die Befehlspalette (Strg K) bietet jetzt alle 34 Discord-Bot-Module (Sicherheit, Moderation, Tickets, Musik, Wirtschaft, Events…) mit einem „Discord“-Filter und Stichwortsuche („ban“, „xp“, „erinnerung“, „anti raid“…). Man springt von jeder Seite direkt zum gewünschten Modul und behält den gewählten Server. Auf Discord-Seiten stehen diese Einträge an erster Stelle.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_46_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_46_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_46_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_46_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

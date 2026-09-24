@@ -29,6 +29,7 @@ const CATEGORY_CHIPS = [
   { id: "all", label: "Tous" },
   { id: "Actions Rapides", label: "Actions" },
   { id: "Navigation", label: "Pages" },
+  { id: "Discord", label: "Discord" },
   { id: "Focus", label: "Focus" },
   { id: "Thèmes & Apparence", label: "Thèmes" },
   { id: "Intégrations", label: "Intégrations" },

@@ -1,5 +1,6 @@
 "use client";
 
+import { DISCORD_MODULES } from "@/lib/discord-modules";
 import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
@@ -246,6 +247,22 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
       { id: "nav-notes", label: "Voir mes Notes", subtitle: "Prise de notes et synthèses", category: "Navigation", icon: <Icon name="file-text" />, keywords: ["notes", "scratchpad", "ecriture", "bloc-notes"], action: () => navigate("/notes/") },
       { id: "nav-calendar", label: "Ouvrir le Calendrier", subtitle: "Événements et plannings", category: "Navigation", icon: <Icon name="calendar" />, keywords: ["calendar", "calendrier", "agenda", "planning", "events"], action: () => navigate("/calendar/") },
       { id: "nav-weather", label: "Météo en direct", subtitle: "Prévisions et conditions locales", category: "Navigation", icon: <Icon name="cloud" />, keywords: ["weather", "meteo", "temperature", "pluie", "soleil"], action: () => navigate("/weather/") },
+
+      // Modules du bot Discord : aller directement à n'importe lequel depuis n'importe quelle page (serveur conservé).
+      ...DISCORD_MODULES.map<CommandItem>((m) => ({
+        id: `discord-${m.id}`,
+        label: `Discord : ${m.title}`,
+        subtitle: "Module du bot Discord",
+        category: "Discord",
+        icon: <Icon name="discord" />,
+        keywords: ["discord", "bot", m.id, ...m.keywords],
+        contexts: ["/discord/"],
+        contextPriority: 70,
+        action: () => {
+          const guildId = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("guildId") : null;
+          navigate(guildId ? `${m.href}/?guildId=${encodeURIComponent(guildId)}` : `${m.href}/`);
+        },
+      })),
 
       // 2. Actions Focus Timer
       { id: "focus-pomodoro-25", label: "Lancer un Pomodoro (25 min)", subtitle: "25 min concentration + 5 min pause", category: "Focus", icon: <Icon name="timer" />, contexts: ["/focus/"], contextPriority: 95, keywords: ["pomodoro", "start pomodoro", "lance un pomodoro", "focus 25", "travail 25"], action: () => startFocus("pomodoro") },

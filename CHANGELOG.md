@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.46 — 2026-09-24
+
+**Aller à n'importe quel module Discord depuis la palette de commandes (Ctrl K)**
+
+- La palette de commandes (Ctrl K) propose maintenant les 34 modules du bot Discord (sécurité, modération, tickets, musique, économie, événements…) avec une pastille « Discord » et une recherche par mots-clés (« ban », « xp », « rappel », « anti raid »…). On saute directement au module voulu depuis n'importe quelle page, en gardant le serveur sélectionné. Sur les pages Discord, ces entrées remontent en priorité.
+
 ## v1.28.45 — 2026-09-24
 
 **Sécurité : isolation entre serveurs renforcée, adresses privées refusées pour la musique**

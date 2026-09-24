@@ -32672,6 +32672,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_36_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_36_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_36_de);
 
+const v1_28_37_fr: ChangelogEntry = {
+  version: "v1.28.37",
+  date: "2026-09-24",
+  title: "Icônes de la barre latérale en couleur (option), page Équipe corrigée",
+  items: [
+    "Nouvelle option : icônes en couleur dans la barre latérale. Un bouton palette apparaît à côté du bouton « masquer les icônes » (en bas de la barre latérale) ; chaque application prend sa propre teinte douce (accueil bleu ciel, tâches vert, calendrier rouge, Discord indigo…). Désactivée par défaut : le mode monochrome reste celui d'origine.",
+    "Page Équipe : le contenu était collé à la barre latérale ; elle a maintenant des marges comme les autres pages.",
+    "Page Équipe : les onglets de filtre affichaient des clés brutes (« teamFilterall », « teamFilteradmins »…) car les traductions manquaient ; ils affichent maintenant Tous / Admins / Membres / En attente (fr, en, es, de, ja).",
+  ],
+};
+
+const v1_28_37_en: ChangelogEntry = {
+  version: "v1.28.37",
+  date: "2026-09-24",
+  title: "Coloured sidebar icons (option), Team page fixed",
+  items: [
+    "New option: coloured icons in the sidebar. A palette button appears next to the \"hide icons\" button (at the bottom of the sidebar); each app gets its own soft tint (home sky blue, tasks green, calendar red, Discord indigo…). Off by default: monochrome stays the original mode.",
+    "Team page: the content was glued to the sidebar; it now has margins like the other pages.",
+    "Team page: the filter tabs showed raw keys (\"teamFilterall\", \"teamFilteradmins\"…) because translations were missing; they now show All / Admins / Members / Pending (fr, en, es, de, ja).",
+  ],
+};
+
+const v1_28_37_es: ChangelogEntry = {
+  version: "v1.28.37",
+  date: "2026-09-24",
+  title: "Iconos de la barra lateral en color (opción), página Equipo corregida",
+  items: [
+    "Nueva opción: iconos en color en la barra lateral. Aparece un botón de paleta junto al botón « ocultar iconos » (abajo en la barra lateral); cada aplicación toma su propio tono suave (inicio azul cielo, tareas verde, calendario rojo, Discord índigo…). Desactivada por defecto: el modo monocromo sigue siendo el original.",
+    "Página Equipo: el contenido estaba pegado a la barra lateral; ahora tiene márgenes como las demás páginas.",
+    "Página Equipo: las pestañas de filtro mostraban claves sin traducir (« teamFilterall », « teamFilteradmins »…); ahora muestran Todos / Admins / Miembros / Pendientes (fr, en, es, de, ja).",
+  ],
+};
+
+const v1_28_37_de: ChangelogEntry = {
+  version: "v1.28.37",
+  date: "2026-09-24",
+  title: "Farbige Seitenleisten-Symbole (Option), Team-Seite korrigiert",
+  items: [
+    "Neue Option: farbige Symbole in der Seitenleiste. Neben der Schaltfläche „Symbole ausblenden“ (unten in der Seitenleiste) erscheint eine Paletten-Schaltfläche; jede App erhält ihren eigenen sanften Farbton (Start himmelblau, Aufgaben grün, Kalender rot, Discord indigo…). Standardmäßig aus: einfarbig bleibt der ursprüngliche Modus.",
+    "Team-Seite: Der Inhalt klebte an der Seitenleiste; er hat jetzt Abstände wie die anderen Seiten.",
+    "Team-Seite: Die Filter-Tabs zeigten rohe Schlüssel („teamFilterall“, „teamFilteradmins“…), weil Übersetzungen fehlten; jetzt Alle / Admins / Mitglieder / Ausstehend (fr, en, es, de, ja).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_37_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_37_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_37_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_37_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

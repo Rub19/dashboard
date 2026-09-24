@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.37 — 2026-09-24
+
+**Icônes de la barre latérale en couleur (option), page Équipe corrigée**
+
+- Nouvelle option : icônes en couleur dans la barre latérale. Un bouton palette apparaît à côté du bouton « masquer les icônes » (en bas de la barre latérale) ; chaque application prend sa propre teinte douce (accueil bleu ciel, tâches vert, calendrier rouge, Discord indigo…). Désactivée par défaut : le mode monochrome reste celui d'origine.
+- Page Équipe : le contenu était collé à la barre latérale ; elle a maintenant des marges comme les autres pages.
+- Page Équipe : les onglets de filtre affichaient des clés brutes (« teamFilterall », « teamFilteradmins »…) car les traductions manquaient ; ils affichent maintenant Tous / Admins / Membres / En attente (fr, en, es, de, ja).
+
 ## v1.28.36 — 2026-09-24
 
 **Toutes les icônes du dashboard passent au même style**

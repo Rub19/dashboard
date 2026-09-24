@@ -135,6 +135,8 @@ export type Settings = {
   layoutPreset: "default" | "minimal" | "dock-only" | "sidebar-only";
   sidebarVisible: boolean;
   sidebarIcons: boolean;
+  /** Icônes de la barre latérale en couleur (une teinte par application) plutôt que monochromes. */
+  sidebarColoredIcons: boolean;
   sidebarItems: string[];
   masterVolume: boolean;
   soundEffects: boolean;
@@ -321,6 +323,7 @@ export const DEFAULTS: Settings = {
   layoutPreset: "default",
   sidebarVisible: true,
   sidebarIcons: true,
+  sidebarColoredIcons: false,
   sidebarItems: [
     "notes", "tasks", "habits", "calendar", "files", "mail", "brain", "focus", "weather",
     "activity", "analytics", "interactions", "connections", "discord", "plugins",

@@ -108,7 +108,7 @@ export default function TeamPage() {
   const roleOptions = ROLES.map((r) => ({ id: r, label: i18n(r) || ROLE_LABELS[r] }));
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden px-4 pt-4 sm:px-6 lg:px-8">
       <div className="shrink-0 mb-4">
         <h1 className="text-2xl font-bold text-white">{i18n("teamTitle")}</h1>
         <p className="text-sm text-zinc-500 mt-1">{i18n("teamDescription")}</p>

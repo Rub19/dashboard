@@ -83,6 +83,7 @@ export const CATEGORY_KEYS: Record<string, (keyof Settings)[]> = {
   workspace: [
     "layoutPreset",
     "sidebarVisible",
+    "sidebarColoredIcons",
     "homeGrid",
     "homeHero",
     "homeHiddenLiveCards",

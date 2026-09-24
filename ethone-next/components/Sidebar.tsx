@@ -14,6 +14,7 @@ import {
   Image as ImageIcon,
   ImageOff,
   LucideIcon,
+  Palette,
 } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useModKey, applyModKey } from "@/lib/hooks/useModKey";
@@ -62,6 +63,33 @@ const SIDEBAR_ICONS = {
   team: ethoneIcon("team"),
   admin: ethoneIcon("admin"),
   settings: ethoneIcon("settings"),
+};
+
+/** Teinte de chaque application quand « icônes en couleur » est activé (nuances 300/400 : douces sur fond sombre). */
+const APP_ICON_COLORS: Record<string, string> = {
+  home: "text-sky-400",
+  notes: "text-amber-300",
+  tasks: "text-emerald-400",
+  habits: "text-rose-400",
+  calendar: "text-red-400",
+  files: "text-yellow-300",
+  mail: "text-blue-400",
+  brain: "text-pink-400",
+  focus: "text-orange-400",
+  weather: "text-cyan-300",
+  activity: "text-green-400",
+  analytics: "text-violet-400",
+  interactions: "text-orange-500",
+  connections: "text-teal-400",
+  discord: "text-indigo-400",
+  plugins: "text-fuchsia-400",
+  games: "text-purple-400",
+  matches: "text-red-500",
+  spaces: "text-sky-500",
+  flows: "text-lime-300",
+  team: "text-cyan-400",
+  admin: "text-lime-400",
+  settings: "text-slate-300",
 };
 
 type AppItem = {
@@ -285,6 +313,22 @@ const SidebarFooter = memo(function SidebarFooter() {
           )}
         </button>
 
+        {settings.sidebarIcons && (
+          <button
+            type="button"
+            onClick={() => update({ sidebarColoredIcons: !settings.sidebarColoredIcons })}
+            className={cn(
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border-transparent bg-transparent transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] cursor-pointer",
+              settings.sidebarColoredIcons ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]"
+            )}
+            aria-pressed={settings.sidebarColoredIcons}
+            aria-label={settings.sidebarColoredIcons ? i18n("monoSidebarIcons", "Icônes monochromes") : i18n("coloredSidebarIcons", "Icônes en couleur")}
+            title={settings.sidebarColoredIcons ? i18n("monoSidebarIcons", "Icônes monochromes") : i18n("coloredSidebarIcons", "Icônes en couleur")}
+          >
+            <Palette className="h-4.5 w-4.5" strokeWidth={1.85} />
+          </button>
+        )}
+
         <button
           type="button"
           onClick={() => router.push("/settings")}
@@ -340,7 +384,10 @@ const SidebarNavList = memo(function SidebarNavList({
               icon={
                 showIcons ? (
                   <IconComponent
-                    className="h-[21px] w-[21px] transition-transform duration-200 group-hover:scale-110"
+                    className={cn(
+                      "h-[21px] w-[21px] transition-transform duration-200 group-hover:scale-110",
+                      settings.sidebarColoredIcons && APP_ICON_COLORS[app.id]
+                    )}
                     strokeWidth={1.9}
                   />
                 ) : undefined

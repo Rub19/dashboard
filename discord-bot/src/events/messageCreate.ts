@@ -21,6 +21,7 @@ import { config } from '../config.js';
 import { syncEngine } from '../services/syncEngine.js';
 import { logger } from '../utils/logger.js';
 import { formatString, getTranslation } from '../utils/i18n.js';
+import { noticeEmbed } from '../utils/embeds.js';
 
 export async function onMessageCreate(message: Message) {
   // Ignorer les bots
@@ -150,7 +151,7 @@ export async function onMessageCreate(message: Message) {
   // Mode maintenance global : seules les commandes du propriétaire sont acceptées
   const botGlobalSettings = BotConfigService.getInstance().getSettings();
   if (botGlobalSettings.maintenanceMode && message.author.id !== config.botOwnerId) {
-    await message.reply(`🛠️ **Bot en maintenance** : ${botGlobalSettings.maintenanceReason || 'Le bot est actuellement en maintenance. Veuillez réessayer plus tard.'}`).catch(() => {});
+    await message.reply({ embeds: [noticeEmbed('warning', `**Bot en maintenance** : ${botGlobalSettings.maintenanceReason || 'Le bot est actuellement en maintenance. Veuillez réessayer plus tard.'}`, { title: 'Maintenance', icon: 'warning' })] }).catch(() => {});
     return;
   }
 
@@ -213,7 +214,7 @@ export async function onMessageCreate(message: Message) {
 
     if (command.category === 'Administration') {
       if (!hasConfiguredAdminRole) {
-        await message.reply(`${guildConfig.emojis.error} ${tAccess.access_denied_admin}`).catch(() => null);
+        await message.reply({ embeds: [noticeEmbed('denied', tAccess.access_denied_admin)] }).catch(() => null);
         return;
       }
     } else if (command.category === 'Modération') {
@@ -222,7 +223,7 @@ export async function onMessageCreate(message: Message) {
       ) ?? false;
 
       if (!hasConfiguredAdminRole && !hasConfiguredModRole && !hasPermissionFlags) {
-        await message.reply(`${guildConfig.emojis.error} ${tAccess.access_denied_mod}`).catch(() => null);
+        await message.reply({ embeds: [noticeEmbed('denied', tAccess.access_denied_mod)] }).catch(() => null);
         return;
       }
     }
@@ -251,7 +252,7 @@ export async function onMessageCreate(message: Message) {
   } catch (error) {
     logger.error(`Erreur lors de l'exécution de la commande préfixe ${prefix}${command.name} :`, error);
     try {
-      await message.reply(`${guildConfig.emojis.error} Une erreur est survenue lors de l'exécution de la commande.`);
+      await message.reply({ embeds: [noticeEmbed('error', "Une erreur est survenue lors de l'exécution de la commande.")] });
     } catch {
       // Ignorer si permissions manquantes
     }

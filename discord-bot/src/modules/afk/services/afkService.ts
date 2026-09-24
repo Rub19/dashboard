@@ -1,6 +1,7 @@
 import { Message, PermissionFlagsBits } from 'discord.js';
 import { afkStorage } from '../storage/afkStorage.js';
 import { logger } from '../../../utils/logger.js';
+import { noticeEmbed } from '../../../utils/embeds.js';
 
 const AFK_PREFIX = '[AFK] ';
 
@@ -36,10 +37,15 @@ class AfkService {
         const mentions = own.mentionCount;
         const back = await channel
           .send({
-            content:
-              `👋 <@${message.author.id}> content de te revoir — tu étais AFK depuis ${humanDuration(own.since)}.` +
-              (mentions > 0 ? ` Tu as été mentionné **${mentions}** fois.` : ''),
-            allowedMentions: { users: [message.author.id] },
+            embeds: [
+              noticeEmbed(
+                'info',
+                `<@${message.author.id}> content de te revoir — tu étais AFK depuis ${humanDuration(own.since)}.` +
+                  (mentions > 0 ? ` Tu as été mentionné **${mentions}** fois.` : ''),
+                { title: 'De retour', icon: 'reminder' }
+              ),
+            ],
+            allowedMentions: { parse: [] },
           })
           .catch(() => null);
         if (back && config.autoDeleteSeconds > 0) {
@@ -60,7 +66,7 @@ class AfkService {
       }
       if (lines.length > 0) {
         const notice = await channel
-          .send({ content: lines.join('\n'), allowedMentions: { parse: [] } })
+          .send({ embeds: [noticeEmbed('neutral', lines.join('\n'), { title: 'Membre AFK', icon: 'reminder' })], allowedMentions: { parse: [] } })
           .catch(() => null);
         if (notice && config.autoDeleteSeconds > 0) {
           setTimeout(() => notice.delete().catch(() => {}), config.autoDeleteSeconds * 1000);

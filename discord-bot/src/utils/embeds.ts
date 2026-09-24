@@ -132,3 +132,49 @@ export function infoEmbed(options: EmbedChromeOptions = {}): EmbedBuilder {
 export function neutralEmbed(options: EmbedChromeOptions = {}): EmbedBuilder {
   return baseEmbed('neutral', options);
 }
+
+/** Adresse des icônes personnalisées des embeds (générées par ethone-next/scripts/build-bot-icons.mjs, servies par le site). */
+export const BOT_ICON_BASE = 'https://ethone.dev/bot-icons';
+
+export type NoticeKind = 'success' | 'error' | 'warning' | 'info' | 'denied' | 'neutral';
+
+const LEAD_TONES: Array<[string, NoticeKind]> = [
+  ['⛔', 'denied'], ['❌', 'error'], ['✅', 'success'], ['🔨', 'success'], ['⚠️', 'warning'],
+  ['⏳', 'warning'], ['🔒', 'denied'], ['⚪', 'neutral'], ['🛠️', 'warning'], ['ℹ️', 'info'],
+];
+
+const NOTICE_META: Record<NoticeKind, { label: string; color: number }> = {
+  success: { label: 'Succès', color: BRAND_COLORS.success },
+  error: { label: 'Erreur', color: BRAND_COLORS.error },
+  warning: { label: 'Attention', color: BRAND_COLORS.warning },
+  info: { label: 'Information', color: BRAND_COLORS.info },
+  denied: { label: 'Accès refusé', color: 0xe11d48 },
+  neutral: { label: 'Information', color: BRAND_COLORS.neutral },
+};
+
+/**
+ * Message de statut court (succès, erreur, refus, information) présenté en embed : pastille d'icône personnalisée
+ * dans l'en-tête (sans texte dans l'image), couleur de marque, pied de page ETHONE. À utiliser à la place d'un
+ * `content` en texte brut pour toute réponse du bot.
+ */
+export function noticeEmbed(kind: NoticeKind, text: string, options: { title?: string; icon?: string } = {}): EmbedBuilder {
+  // Un texte qui commence par un émoji de statut (❌ ⏳ ✅ …) : l'émoji est retiré (l'icône de l'en-tête le remplace)
+  // et détermine le ton quand aucun ton précis n'a été demandé (« info » par défaut).
+  let tone = kind;
+  let body = String(text);
+  if (kind === 'info') {
+    for (const [emoji, mapped] of LEAD_TONES) {
+      if (body.startsWith(emoji)) {
+        tone = mapped;
+        body = body.slice(emoji.length).trimStart();
+        break;
+      }
+    }
+  }
+  const meta = NOTICE_META[tone];
+  return new EmbedBuilder()
+    .setColor(meta.color)
+    .setAuthor({ name: options.title ?? meta.label, iconURL: `${BOT_ICON_BASE}/${options.icon ?? tone}.png` })
+    .setDescription(body.slice(0, 4000))
+    .setFooter({ text: DEFAULT_FOOTER_TEXT, iconURL: `${BOT_ICON_BASE}/ethone.png` });
+}

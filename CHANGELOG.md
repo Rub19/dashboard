@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.43 — 2026-09-24
+
+**Messages du bot Discord en embeds avec icônes personnalisées**
+
+- Les réponses en texte brut du bot (erreurs, refus d'accès, confirmations, disponibilité, rappels, annonces de tirage au sort, retour d'AFK, arrivées via invitation, DM de suggestions, commandes par préfixe…) sont maintenant présentées en embeds : couleur de marque, en-tête avec une icône personnalisée sans texte (succès, erreur, attention, accès refusé, cadeau, musique, salon vocal, événement…) et pied de page ETHONE avec le nouveau logo prisme.
+- Les annonces de gagnants continuent de notifier les personnes (les mentions restent dans le message, pas dans l'embed). Nouveau helper noticeEmbed(ton, texte) dans discord-bot/src/utils/embeds.ts qui reconnaît aussi un émoji de statut en tête de texte pour choisir le bon ton. 20 icônes générées par node scripts/build-bot-icons.mjs et servies par https://ethone.dev/bot-icons/.
+
 ## v1.28.42 — 2026-09-24
 
 **Nouveau logo sans lettre, hub Discord organisé par catégories avec recherche et favoris**

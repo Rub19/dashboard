@@ -2,6 +2,7 @@ import { Guild, GuildMember, VoiceChannel } from 'discord.js';
 import { voiceRepository } from '../storage/voiceRepository.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { noticeEmbed } from '../../../utils/embeds.js';
 
 export class VoiceAutomationService {
   public static async dispatch(
@@ -38,7 +39,7 @@ export class VoiceAutomationService {
               .replace('{user}', context.member ? '<@' + context.member.id + '>' : 'Utilisateur')
               .replace('{username}', context.member?.user.username || 'Utilisateur')
               .replace('{room}', context.roomName || 'Salon vocal');
-            await (textChan as any).send({ content: formatted }).catch(() => null);
+            await (textChan as any).send({ embeds: [noticeEmbed('info', formatted, { title: 'Salon vocal', icon: 'voice' })] }).catch(() => null);
           }
         } else if (rule.action === 'LOG_AUDIT') {
           logService.emit({

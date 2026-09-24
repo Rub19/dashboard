@@ -38,7 +38,7 @@ import { handleLogsInteraction } from '../modules/logs/interactions/logsInteract
 import { youtubeSuggestions } from '../modules/music/providers/searchSuggest.js';
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
 import { handlePermissionPresetButton } from '../commands/admin/permissionsCommand.js';
-import { baseEmbed } from '../utils/embeds.js';
+import { baseEmbed, noticeEmbed } from '../utils/embeds.js';
 import { HelpPanel } from '../commands/general/helpPanel.js';
 import { syncEngine } from '../services/syncEngine.js';
 import { BotCommandStatsService } from '../modules/botControl/services/botCommandStatsService.js';
@@ -72,9 +72,9 @@ async function safeHandleComponent(
         if (interaction.deferred || interaction.replied) {
           // followUp posts a new ephemeral message instead of overwriting
           // whatever the original reply already showed.
-          await interaction.followUp({ content: errorMessage, ephemeral: true });
+          await interaction.followUp({ embeds: [noticeEmbed('error', errorMessage)], ephemeral: true });
         } else {
-          await interaction.reply({ content: errorMessage, ephemeral: true });
+          await interaction.reply({ embeds: [noticeEmbed('error', errorMessage)], ephemeral: true });
         }
       }
     } catch (replyError) {
@@ -309,13 +309,10 @@ export async function onInteractionCreate(interaction: Interaction) {
 
   if (onCooldown) {
     const tCooldown = getTranslation(guildConfig.language);
-    await interaction.reply({
-      content: formatString(tCooldown.cooldown_wait, {
+    await interaction.reply({ embeds: [noticeEmbed('warning', formatString(tCooldown.cooldown_wait, {
         seconds: remainingSeconds,
         command: `/${command.name}`,
-      }),
-      ephemeral: true,
-    });
+      }))], ephemeral: true });
     return;
   }
 

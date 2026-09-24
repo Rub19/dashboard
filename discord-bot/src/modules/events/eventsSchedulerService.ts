@@ -4,6 +4,7 @@ import { DiscordEvent, EventRecurrence } from './eventsTypes.js';
 import { EventService } from './eventsService.js';
 import { logger } from '../../utils/logger.js';
 import { BotJobSchedulerService } from '../../modules/botControl/services/botJobSchedulerService.js';
+import { noticeEmbed } from '../../utils/embeds.js';
 
 export class EventsSchedulerService {
   private client?: Client;
@@ -182,7 +183,7 @@ export class EventsSchedulerService {
       try {
         const channel = await this.client.channels.fetch(event.discordPanelChannelId).catch(() => null);
         if (channel && channel.isTextBased()) {
-          await (channel as TextChannel).send({ content });
+          await (channel as TextChannel).send({ embeds: [noticeEmbed('info', content.replace(/^⏰\s*/, ''), { title: 'Rappel d\u2019événement', icon: 'event' })] });
         }
       } catch (err) {
         logger.error(`[EventsSchedulerService] Erreur lors de l'envoi du rappel sur channel ${event.discordPanelChannelId}:`, err);

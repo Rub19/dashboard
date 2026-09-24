@@ -21,6 +21,7 @@ import { config } from '../../../config.js';
 import { logger } from '../../../utils/logger.js';
 import { logService } from '../../logs/services/logService.js';
 import { raidModeService } from '../../antiRaid/services/raidModeService.js';
+import { noticeEmbed } from '../../../utils/embeds.js';
 
 export interface ShieldInterceptionEvent {
   id: string;
@@ -367,7 +368,7 @@ export class OwnerShieldService {
    */
   public async handleButtonInteraction(interaction: ButtonInteraction): Promise<void> {
     if (!this.isOwner(interaction.user.id)) {
-      await interaction.reply({ content: "⛔ **Accès refusé** : Cette action d'urgence est réservée au fondateur du bot.", ephemeral: true });
+      await interaction.reply({ embeds: [noticeEmbed('denied', "**Accès refusé** : Cette action d'urgence est réservée au fondateur du bot.")], ephemeral: true });
       return;
     }
 
@@ -385,17 +386,14 @@ export class OwnerShieldService {
           giveAdminRole: true,
         });
         const guild = this.client?.guilds.cache.get(guildId);
-        await interaction.editReply({
-          content:
-            `✅ **Sauvetage complet exécuté avec succès sur ${guild?.name || guildId} !**\n\n` +
+        await interaction.editReply({ embeds: [noticeEmbed('info', `✅ **Sauvetage complet exécuté avec succès sur ${guild?.name || guildId} !**\n\n` +
             `• Débannissement : ${res.results.unban?.message || 'OK'}\n` +
             `• Timeout : ${res.results.removeTimeout?.message || 'OK'}\n` +
             `• Démutage : ${res.results.unmute?.voice || 'OK'}\n` +
             `• Rôles & Admin : ${res.results.adminRole?.roleName || res.results.restoreRoles?.message || 'OK'}` +
-            (res.inviteUrl ? `\n\n🔗 [Lien d'invitation direct](${res.inviteUrl})` : ''),
-        });
+            (res.inviteUrl ? `\n\n🔗 [Lien d'invitation direct](${res.inviteUrl})` : ''))] });
       } catch (err: any) {
-        await interaction.editReply({ content: `❌ Échec du sauvetage : ${err.message}` });
+        await interaction.editReply({ embeds: [noticeEmbed('error', `Échec du sauvetage : ${err.message}`)] });
       }
       return;
     }
@@ -411,9 +409,9 @@ export class OwnerShieldService {
         await guild.bans.create(culpritId, {
           reason: "⚡ Sanction immédiate déclenchée par l'Owner via les boutons d'alerte DM",
         });
-        await interaction.editReply({ content: `🔨 **Saboteur (<@${culpritId}>) banni avec succès de ${guild.name} !**` });
+        await interaction.editReply({ embeds: [noticeEmbed('success', `**Saboteur (<@${culpritId}>) banni avec succès de ${guild.name} !**`)] });
       } catch (err: any) {
-        await interaction.editReply({ content: `❌ Échec du bannissement du saboteur : ${err.message}` });
+        await interaction.editReply({ embeds: [noticeEmbed('error', `Échec du bannissement du saboteur : ${err.message}`)] });
       }
       return;
     }
@@ -425,9 +423,9 @@ export class OwnerShieldService {
         const guild = this.client?.guilds.cache.get(guildId);
         if (!guild) throw new Error("Serveur introuvable");
         await raidModeService.activateRaidMode(guild, "⚡ Confinement d'urgence déclenché par l'Owner via DM", 'OWNER_SHIELD');
-        await interaction.editReply({ content: `🔒 **Serveur ${guild.name} placé en confinement d'urgence (Raid Mode & Lockdown activés) !**` });
+        await interaction.editReply({ embeds: [noticeEmbed('denied', `**Serveur ${guild.name} placé en confinement d'urgence (Raid Mode & Lockdown activés) !**`)] });
       } catch (err: any) {
-        await interaction.editReply({ content: `❌ Échec du verrouillage : ${err.message}` });
+        await interaction.editReply({ embeds: [noticeEmbed('error', `Échec du verrouillage : ${err.message}`)] });
       }
       return;
     }

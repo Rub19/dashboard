@@ -26,6 +26,7 @@ import type { VariableContext } from '../types/variables.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { noticeEmbed } from '../../../utils/embeds.js';
 
 /**
  * Moteur d'Onboarding : présente au membre, étape par étape, le parcours configuré sur le dashboard
@@ -251,13 +252,13 @@ export class OnboardingRunner {
     parsed: ParsedId
   ): Promise<{ guild: Guild; member: GuildMember; flow: OnboardingFlow; steps: OnboardingStep[]; index: number } | null> {
     if (interaction.user.id !== parsed.userId) {
-      await interaction.reply({ content: 'Ce parcours ne t’est pas destiné.', ephemeral: true }).catch(() => {});
+      await interaction.reply({ embeds: [noticeEmbed('error', 'Ce parcours ne t’est pas destiné.')], ephemeral: true }).catch(() => {});
       return null;
     }
     const guild = client.guilds.cache.get(parsed.guildId);
     const member = guild ? await guild.members.fetch(parsed.userId).catch(() => null) : null;
     if (!guild || !member) {
-      await interaction.reply({ content: 'Je ne te trouve plus sur ce serveur.', ephemeral: true }).catch(() => {});
+      await interaction.reply({ embeds: [noticeEmbed('error', 'Je ne te trouve plus sur ce serveur.')], ephemeral: true }).catch(() => {});
       return null;
     }
     const flow = welcomeRepository.getOnboardingFlow(guild.id);
@@ -268,7 +269,7 @@ export class OnboardingRunner {
     if (index < 0) {
       // Étape supprimée ou remplacée depuis l'envoi du message.
       await interaction
-        .reply({ content: 'Ce parcours a été modifié : demande à un administrateur de le relancer.', ephemeral: true })
+        .reply({ embeds: [noticeEmbed('info', 'Ce parcours a été modifié : demande à un administrateur de le relancer.')], ephemeral: true })
         .catch(() => {});
       return null;
     }
@@ -343,7 +344,7 @@ export class OnboardingRunner {
       await interaction.deferUpdate();
       const res = await VerificationService.verifyMember(member);
       if (!res.success) {
-        await interaction.followUp({ content: `❌ ${res.message}`, ephemeral: true }).catch(() => {});
+        await interaction.followUp({ embeds: [noticeEmbed('error', `${res.message}`)], ephemeral: true }).catch(() => {});
         return;
       }
     }
@@ -362,7 +363,7 @@ export class OnboardingRunner {
     if (step.type === 'ROLE_SELECTION' && step.required && step.roleChoices.length > 0) {
       const has = step.roleChoices.some((c) => member.roles.cache.has(c.roleId));
       if (!has) {
-        await interaction.reply({ content: 'Choisis au moins un rôle dans la liste avant de continuer.', ephemeral: true }).catch(() => {});
+        await interaction.reply({ embeds: [noticeEmbed('warning', 'Choisis au moins un rôle dans la liste avant de continuer.')], ephemeral: true }).catch(() => {});
         return;
       }
     }
@@ -411,7 +412,7 @@ export class OnboardingRunner {
 
     const bot = guild.members.me;
     if (!bot || !bot.permissions.has(PermissionFlagsBits.ManageRoles)) {
-      await interaction.reply({ content: '❌ Je n’ai pas la permission de gérer les rôles sur ce serveur.', ephemeral: true }).catch(() => {});
+      await interaction.reply({ embeds: [noticeEmbed('error', 'Je n’ai pas la permission de gérer les rôles sur ce serveur.')], ephemeral: true }).catch(() => {});
       return;
     }
 

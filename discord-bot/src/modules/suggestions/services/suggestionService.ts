@@ -14,7 +14,7 @@ import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { formatString, getTranslation, SupportedLanguage } from '../../../utils/i18n.js';
-import { baseEmbed } from '../../../utils/embeds.js';
+import { baseEmbed, noticeEmbed } from '../../../utils/embeds.js';
 
 export class SuggestionService {
   /**
@@ -294,13 +294,13 @@ export class SuggestionService {
           const user = await client.users.fetch(followerId).catch(() => null);
           if (user) {
             await user.send({
-              content: formatString(t.suggest_dm_update, {
+              embeds: [noticeEmbed('info', formatString(t.suggest_dm_update, {
                 numericId: updated.numericId,
                 title: updated.title,
                 emoji: meta.emoji,
                 label: meta.label,
                 responseLine: staffResponse ? formatString(t.suggest_dm_response_line, { response: staffResponse }) : '',
-              }),
+              }), { title: 'Suggestion mise à jour', icon: 'info' })],
             });
           }
         } catch {

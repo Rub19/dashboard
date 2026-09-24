@@ -4,6 +4,7 @@ import { economyService } from '../services/economyService.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { levelingStorage } from '../../leveling/storage/levelingStorage.js';
 import { container, footer, progressBar, separator, text, toneToColor } from '../../../utils/components.js';
+import { noticeEmbed } from '../../../utils/embeds.js';
 
 // Boutons rapides sous les cartes /economy (Quotidien, Travailler, Classement,
 // Boutique, Rejouer) et le bouton "Classement" de /rank. Les réponses sont
@@ -26,7 +27,7 @@ const V2_EPHEMERAL = MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral;
 
 export async function handleEconomyButton(interaction: ButtonInteraction): Promise<void> {
   if (!interaction.guildId) {
-    await interaction.reply({ content: 'Disponible uniquement sur un serveur.', flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('error', 'Disponible uniquement sur un serveur.')], flags: MessageFlags.Ephemeral });
     return;
   }
   const guildId = interaction.guildId;
@@ -37,7 +38,7 @@ export async function handleEconomyButton(interaction: ButtonInteraction): Promi
   const id = interaction.customId;
 
   if (!config.enabled) {
-    await interaction.reply({ content: '⚪ L’économie est désactivée sur ce serveur.', flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('neutral', 'L’économie est désactivée sur ce serveur.')], flags: MessageFlags.Ephemeral });
     return;
   }
 
@@ -45,7 +46,7 @@ export async function handleEconomyButton(interaction: ButtonInteraction): Promi
     const r = economyService.claimDaily(guildId, me);
     if (!r.ok) {
       const msg = r.reason === 'cooldown' ? `⏳ Déjà réclamé. Reviens dans **${humanDuration(r.remainingMs || 0)}**.` : '⚪ Économie désactivée.';
-      await interaction.reply({ content: msg, flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('info', msg)], flags: MessageFlags.Ephemeral });
       return;
     }
     const card = container(toneToColor('success', gConf.successColor), [
@@ -60,7 +61,7 @@ export async function handleEconomyButton(interaction: ButtonInteraction): Promi
     const r = economyService.work(guildId, me);
     if (!r.ok) {
       const msg = r.reason === 'cooldown' ? `⏳ Prochain boulot dans **${humanDuration(r.remainingMs || 0)}**.` : '⚪ Le travail est désactivé.';
-      await interaction.reply({ content: msg, flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('info', msg)], flags: MessageFlags.Ephemeral });
       return;
     }
     const card = container(toneToColor('primary', gConf.primaryColor), [
@@ -74,7 +75,7 @@ export async function handleEconomyButton(interaction: ButtonInteraction): Promi
   if (id === 'eco_btn_leaderboard') {
     const entries = economyStorage.getLeaderboard(guildId, config.leaderboardSize);
     if (entries.length === 0) {
-      await interaction.reply({ content: 'Aucun membre n’a encore de solde.', flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('warning', 'Aucun membre n’a encore de solde.')], flags: MessageFlags.Ephemeral });
       return;
     }
     const medals = ['🥇', '🥈', '🥉'];
@@ -91,7 +92,7 @@ export async function handleEconomyButton(interaction: ButtonInteraction): Promi
   if (id === 'eco_btn_shop') {
     const items = economyStorage.getShopItems(guildId).filter((i) => i.enabled);
     if (items.length === 0) {
-      await interaction.reply({ content: 'La boutique est vide pour le moment.', flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('warning', 'La boutique est vide pour le moment.')], flags: MessageFlags.Ephemeral });
       return;
     }
     const wallet = economyStorage.getWallet(guildId, me.id, me);
@@ -113,7 +114,7 @@ export async function handleEconomyButton(interaction: ButtonInteraction): Promi
     const r = economyService.gamble(guildId, me, Number.isFinite(bet) ? bet : config.gambleMinBet);
     if (!r.ok) {
       const msg = r.reason === 'invalid_bet' ? `❌ Mise minimale : ${fmt(config.gambleMinBet, sym)}.` : '❌ Solde insuffisant.';
-      await interaction.reply({ content: msg, flags: MessageFlags.Ephemeral });
+      await interaction.reply({ embeds: [noticeEmbed('info', msg)], flags: MessageFlags.Ephemeral });
       return;
     }
     const card = container(toneToColor(r.won ? 'success' : 'error', r.won ? gConf.successColor : gConf.errorColor), [
@@ -124,18 +125,18 @@ export async function handleEconomyButton(interaction: ButtonInteraction): Promi
     return;
   }
 
-  await interaction.reply({ content: 'Action inconnue.', flags: MessageFlags.Ephemeral });
+  await interaction.reply({ embeds: [noticeEmbed('error', 'Action inconnue.')], flags: MessageFlags.Ephemeral });
 }
 
 /** Bouton "Classement" sous la carte /rank : classement XP du serveur. */
 export async function handleRankButton(interaction: ButtonInteraction): Promise<void> {
   if (!interaction.guildId || !interaction.guild) {
-    await interaction.reply({ content: 'Disponible uniquement sur un serveur.', flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('error', 'Disponible uniquement sur un serveur.')], flags: MessageFlags.Ephemeral });
     return;
   }
   const top = levelingStorage.getLeaderboard(interaction.guildId, undefined, 10);
   if (top.length === 0) {
-    await interaction.reply({ content: 'Personne n’a encore gagné d’XP ici.', flags: MessageFlags.Ephemeral });
+    await interaction.reply({ embeds: [noticeEmbed('info', 'Personne n’a encore gagné d’XP ici.')], flags: MessageFlags.Ephemeral });
     return;
   }
   const medals = ['🥇', '🥈', '🥉'];

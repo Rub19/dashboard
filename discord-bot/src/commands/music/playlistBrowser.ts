@@ -12,7 +12,7 @@ import { Command, CommandContext } from '../../types/command.js';
 import { musicService } from '../../modules/music/services/musicService.js';
 import { musicProviderManager } from '../../modules/music/providers/musicProvider.js';
 import type { Track } from '../../modules/music/types/music.js';
-import { baseEmbed } from '../../utils/embeds.js';
+import { baseEmbed, noticeEmbed } from '../../utils/embeds.js';
 
 /**
  * /playlist <lien> : affiche TOUS les titres d'une playlist / album Spotify
@@ -120,11 +120,11 @@ export const playlistCommand: Command = {
 
 async function ownerCheck(interaction: ButtonInteraction | StringSelectMenuInteraction, s: Session | undefined): Promise<Session | null> {
   if (!s) {
-    await interaction.reply({ content: 'Cette liste a expiré — relance `/playlist`.', ephemeral: true });
+    await interaction.reply({ embeds: [noticeEmbed('error', 'Cette liste a expiré — relance `/playlist`.')], ephemeral: true });
     return null;
   }
   if (interaction.user.id !== s.userId) {
-    await interaction.reply({ content: 'Seule la personne qui a lancé `/playlist` peut utiliser ce menu.', ephemeral: true });
+    await interaction.reply({ embeds: [noticeEmbed('error', 'Seule la personne qui a lancé `/playlist` peut utiliser ce menu.')], ephemeral: true });
     return null;
   }
   return s;
@@ -143,7 +143,7 @@ export async function handlePlaylistBrowser(interaction: ButtonInteraction | Str
 
   const member = interaction.member as GuildMember;
   if (!member?.voice?.channel) {
-    await interaction.reply({ content: 'Rejoins d\'abord un salon vocal.', ephemeral: true });
+    await interaction.reply({ embeds: [noticeEmbed('warning', 'Rejoins d\'abord un salon vocal.')], ephemeral: true });
     return;
   }
   await interaction.deferReply({ ephemeral: true });

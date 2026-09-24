@@ -13,7 +13,7 @@ import {
 } from 'discord.js';
 import { auditRepository } from '../storage/auditRepository.js';
 import type { AuditChannelRouting, AuditSettings, ChannelLogThreshold } from '../types/auditEvent.js';
-import { baseEmbed } from '../../../utils/embeds.js';
+import { baseEmbed, noticeEmbed } from '../../../utils/embeds.js';
 import { logger } from '../../../utils/logger.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
@@ -179,7 +179,7 @@ export async function handleLogsInteraction(
   const perms =
     member && typeof member.permissions !== 'string' ? member.permissions : interaction.memberPermissions;
   if (!perms?.has('ManageGuild')) {
-    await interaction.reply({ content: "❌ Il te faut la permission « Gérer le serveur ».", ephemeral: true });
+    await interaction.reply({ embeds: [noticeEmbed('error', "Il te faut la permission « Gérer le serveur ».")], ephemeral: true });
     return;
   }
 
@@ -238,7 +238,7 @@ export async function handleLogsInteraction(
     logger.error('[Logs] Échec du traitement de l\'interaction du panneau :', err);
     if (!interaction.replied && !interaction.deferred) {
       await interaction
-        .reply({ content: "❌ Une erreur est survenue. Réessaie.", ephemeral: true })
+        .reply({ embeds: [noticeEmbed('error', "Une erreur est survenue. Réessaie.")], ephemeral: true })
         .catch(() => {});
     }
   }

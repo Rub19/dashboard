@@ -17,7 +17,7 @@ import { xpWriteBuffer } from '../../leveling/storage/xpWriteBuffer.js';
 import { logService } from '../../logs/services/logService.js';
 import { giveawayScheduler } from './giveawayScheduler.js';
 import { logger } from '../../../utils/logger.js';
-import { baseEmbed } from '../../../utils/embeds.js';
+import { baseEmbed, noticeEmbed } from '../../../utils/embeds.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { formatString, getTranslation, SupportedLanguage } from '../../../utils/i18n.js';
 
@@ -435,11 +435,13 @@ class GiveawayService {
       if (selectedWinners.length > 0) {
         const mentions = selectedWinners.map((id) => `<@${id}>`).join(' ');
         await channel.send({
-          content: formatString(t.giveaway_announce_winners, { mentions, prize: giveaway.prize }),
+          // Les mentions restent dans `content` : dans un embed elles ne notifieraient personne.
+          content: mentions,
+          embeds: [noticeEmbed('success', formatString(t.giveaway_announce_winners, { mentions, prize: giveaway.prize }), { title: 'Tirage terminé', icon: 'giveaway' })],
         }).catch(() => {});
       } else {
         await channel.send({
-          content: formatString(t.giveaway_announce_no_winner, { prize: giveaway.prize }),
+          embeds: [noticeEmbed('warning', formatString(t.giveaway_announce_no_winner, { prize: giveaway.prize }), { title: 'Tirage terminé', icon: 'giveaway' })],
         }).catch(() => {});
       }
     }
@@ -466,7 +468,7 @@ class GiveawayService {
       const m = await guild.members.fetch(wId).catch(() => null);
       if (m) {
         await m.send({
-          content: formatString(t.giveaway_dm_winner, { prize: giveaway.prize, guildName: guild.name }),
+          embeds: [noticeEmbed('success', formatString(t.giveaway_dm_winner, { prize: giveaway.prize, guildName: guild.name }), { title: 'Tu as gagné !', icon: 'giveaway' })],
         }).catch(() => {});
       }
     }

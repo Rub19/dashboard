@@ -1,5 +1,5 @@
 import { GuildMember, TextChannel, ChannelType } from 'discord.js';
-import { baseEmbed } from '../../../utils/embeds.js';
+import { baseEmbed, noticeEmbed } from '../../../utils/embeds.js';
 import { inviteSnapshotService } from './inviteSnapshotService.js';
 import { referralRiskService } from './referralRiskService.js';
 import { referralRewardService } from './referralRewardService.js';
@@ -93,7 +93,7 @@ export class InviteTrackingService {
               .replace('{server}', member.guild.name)
               .replace('{inviteCount}', String(validCount));
 
-            await channel.send({ content: msg }).catch(() => null);
+            await channel.send({ embeds: [noticeEmbed('success', msg, { title: 'Nouveau membre', icon: 'welcome' })] }).catch(() => null);
           } else if (risk.suspicious && settings.notificationEvents.onSuspiciousJoin) {
             const warnEmbed = baseEmbed('error')
               .setTitle('⚠️ Invitation Suspecte Interceptée')

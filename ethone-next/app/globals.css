@@ -1,6 +1,78 @@
 @import "tailwindcss";
 @import "./liquid-glass.css";
 
+/* Menus déroulants (profil, langue, notifications, support, Focus) : une seule apparence, sobre et opaque.
+   Le fond reprend celui de la page en un peu plus clair (donc il suit le thème sans le teinter) ; l'accent du thème
+   n'apparaît que sur les états actifs. */
+:root {
+  --menu-bg: color-mix(in srgb, var(--bg-main, #0e1015) 91%, white);
+  --menu-border: rgba(255, 255, 255, 0.08);
+  --menu-hover: rgba(255, 255, 255, 0.06);
+  --menu-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+html[data-color-scheme="light"] {
+  --menu-bg: #ffffff;
+  --menu-border: rgba(0, 0, 0, 0.1);
+  --menu-hover: rgba(0, 0, 0, 0.05);
+  --menu-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+}
+.ethone-menu {
+  background: var(--menu-bg);
+  border: 1px solid var(--menu-border);
+  border-radius: 14px;
+  box-shadow: var(--menu-shadow);
+  color: var(--text-primary);
+}
+.ethone-menu-item {
+  display: flex;
+  width: 100%;
+  height: 2.25rem;
+  align-items: center;
+  gap: 0.625rem;
+  border-radius: 8px;
+  padding: 0 0.625rem;
+  font-size: 0.8125rem;
+  line-height: 1;
+  text-align: left;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color 90ms ease;
+}
+.ethone-menu-item:hover,
+.ethone-menu-item:focus-visible {
+  background: var(--menu-hover);
+  outline: none;
+}
+.ethone-menu-item[data-active="true"] {
+  background: color-mix(in srgb, var(--accent-primary, #6366f1) 14%, transparent);
+}
+.ethone-menu-item > svg,
+.ethone-menu-item > .ethone-menu-icon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+.ethone-menu-item[data-tone="danger"],
+.ethone-menu-item[data-tone="danger"] > svg {
+  color: var(--danger, #f43f5e);
+}
+.ethone-menu-sep {
+  height: 1px;
+  margin: 0.375rem 0;
+  background: var(--menu-border);
+}
+.ethone-menu-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.ethone-menu-hint {
+  margin-left: auto;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
 /* Menus déroulants de la barre du haut : fondu rapide avec 4 px de glissement, coupé si « réduire les animations ». */
 @keyframes ethone-popover-in {
   from {

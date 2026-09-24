@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.61 — 2026-09-24
+
+**Menus de la barre du haut : nouveau fond et contenu allégé**
+
+- Tous les menus (profil, langue, notifications, support, Focus) partagent la même apparence : fond opaque qui reprend celui de la page en un peu plus clair, bordure fine, lignes compactes, accent du thème réservé aux états actifs
+- Menu profil simplifié : en-tête avatar / nom / @identifiant, statut en cinq pastilles, une seule liste (profil, réglages, sécurité, palette, nouveautés) et déconnexion en simple ligne ; disparition du bloc « Stockage cloud » (c'était une mesure du navigateur présentée comme un quota de 10 Go) et de l'étiquette fixe « Actif » sur Sécurité
+- Notifications : recherche, filtres et groupes plus neutres, sans pastilles pleines de la couleur d'accent
+
 ## v1.28.60 — 2026-09-24
 
 **Menus de la barre du haut plus sobres**

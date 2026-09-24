@@ -33804,6 +33804,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_60_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_60_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_60_de);
 
+const v1_28_61_fr: ChangelogEntry = {
+  version: "v1.28.61",
+  date: "2026-09-24",
+  title: "Menus de la barre du haut : nouveau fond et contenu allégé",
+  items: [
+    "Tous les menus (profil, langue, notifications, support, Focus) partagent la même apparence : fond opaque qui reprend celui de la page en un peu plus clair, bordure fine, lignes compactes, accent du thème réservé aux états actifs",
+    "Menu profil simplifié : en-tête avatar / nom / @identifiant, statut en cinq pastilles, une seule liste (profil, réglages, sécurité, palette, nouveautés) et déconnexion en simple ligne ; disparition du bloc « Stockage cloud » (c'était une mesure du navigateur présentée comme un quota de 10 Go) et de l'étiquette fixe « Actif » sur Sécurité",
+    "Notifications : recherche, filtres et groupes plus neutres, sans pastilles pleines de la couleur d'accent",
+  ],
+};
+
+const v1_28_61_en: ChangelogEntry = {
+  version: "v1.28.61",
+  date: "2026-09-24",
+  title: "Top bar menus: new background and lighter content",
+  items: [
+    "All menus (profile, language, notifications, support, Focus) share one look: opaque background taken from the page one step lighter, thin border, compact rows, theme accent reserved for active states",
+    "Simplified profile menu: avatar / name / @handle header, status as five dots, a single list (profile, settings, security, palette, what's new) and sign-out as a plain row; the 'Cloud storage' block (a browser measurement presented as a 10 GB quota) and the fixed 'Active' label on Security are gone",
+    "Notifications: search, filters and groups are more neutral, without solid accent-coloured pills",
+  ],
+};
+
+const v1_28_61_es: ChangelogEntry = {
+  version: "v1.28.61",
+  date: "2026-09-24",
+  title: "Menús de la barra superior: nuevo fondo y contenido más ligero",
+  items: [
+    "Todos los menús (perfil, idioma, notificaciones, soporte, Focus) comparten el mismo aspecto: fondo opaco tomado de la página un poco más claro, borde fino, filas compactas, acento del tema reservado a los estados activos",
+    "Menú de perfil simplificado: cabecera avatar / nombre / @usuario, estado en cinco puntos, una sola lista (perfil, ajustes, seguridad, paleta, novedades) y cerrar sesión como fila simple; desaparecen el bloque «Almacenamiento en la nube» (una medida del navegador presentada como cuota de 10 GB) y la etiqueta fija «Activo» en Seguridad",
+    "Notificaciones: búsqueda, filtros y grupos más neutros, sin píldoras sólidas del color de acento",
+  ],
+};
+
+const v1_28_61_de: ChangelogEntry = {
+  version: "v1.28.61",
+  date: "2026-09-24",
+  title: "Menüs der oberen Leiste: neuer Hintergrund und schlankerer Inhalt",
+  items: [
+    "Alle Menüs (Profil, Sprache, Benachrichtigungen, Support, Focus) teilen dasselbe Aussehen: undurchsichtiger Hintergrund, eine Stufe heller als die Seite, feiner Rand, kompakte Zeilen, Theme-Akzent nur für aktive Zustände",
+    "Vereinfachtes Profilmenü: Kopf mit Avatar / Name / @Kennung, Status als fünf Punkte, eine einzige Liste (Profil, Einstellungen, Sicherheit, Palette, Neuigkeiten) und Abmelden als einfache Zeile; der Block „Cloud-Speicher“ (eine Browsermessung, als 10-GB-Kontingent dargestellt) und die feste Angabe „Aktiv“ bei Sicherheit entfallen",
+    "Benachrichtigungen: Suche, Filter und Gruppen neutraler, ohne vollfarbige Akzent-Pillen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_61_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_61_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_61_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_61_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

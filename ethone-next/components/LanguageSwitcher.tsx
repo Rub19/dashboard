@@ -7,7 +7,6 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import FlagIcon, { LANGUAGES, LANGUAGE_LABELS, type Language } from "@/components/FlagIcon";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
-import { cn } from "@/lib/utils";
 
 export default function LanguageSwitcher() {
   const i18n = useI18n();
@@ -51,16 +50,9 @@ export default function LanguageSwitcher() {
         </button>
       </PopoverTrigger>
 
-      {/* Solid surface, not the translucent glass --panel-bg — same
-          readability fix as UserProfileDropdown's menu. */}
-      <PopoverContent className="w-52 max-w-[calc(100vw-2rem)] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-1.5 shadow-2xl">
-        <div role="listbox" aria-label={i18n("language")} className="space-y-1">
-          <div className="px-2.5 py-1.5 border-b border-[var(--panel-border)]/50">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              {i18n("language")}
-            </span>
-          </div>
-
+      <PopoverContent className="ethone-menu w-48 max-w-[calc(100vw-2rem)] overflow-hidden p-1.5">
+        <div role="listbox" aria-label={i18n("language")}>
+          <p className="ethone-menu-label px-2.5 pb-1 pt-1.5">{i18n("language")}</p>
           {LANGUAGES.map((lang) => {
             const active = lang === current;
             return (
@@ -69,20 +61,13 @@ export default function LanguageSwitcher() {
                 type="button"
                 role="option"
                 aria-selected={active}
+                data-active={active}
                 onClick={() => select(lang)}
-                className={cn(
-                  "flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-xs font-medium transition-all",
-                  active
-                    ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold shadow-sm"
-                    : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
-                )}
+                className="ethone-menu-item"
               >
-                <div className="flex items-center gap-2">
-                  <FlagIcon code={lang} className="h-3.5 w-4.5 rounded-sm" />
-                  <span>{LANGUAGE_LABELS[lang]}</span>
-                </div>
-
-                {active && <Icon name="check" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />}
+                <FlagIcon code={lang} className="h-3.5 w-5 rounded-sm" />
+                <span className={active ? "font-semibold" : undefined}>{LANGUAGE_LABELS[lang]}</span>
+                {active && <Icon name="check" className="ml-auto h-3.5 w-3.5 !text-[var(--accent-primary)]" />}
               </button>
             );
           })}

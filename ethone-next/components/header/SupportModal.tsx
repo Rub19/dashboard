@@ -39,46 +39,27 @@ export default function SupportModal() {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-4 shadow-2xl">
-        <div className="flex flex-col gap-4 select-none">
-          {/* Header */}
-          <div className="flex items-center gap-3 border-b border-[var(--panel-border)]/50 pb-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold">
-              <Icon name="heart" className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                Soutenir ETHONE OS
-              </h3>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Projet indépendant & open-source
-              </p>
-            </div>
+      <PopoverContent className="ethone-menu w-[300px] max-w-[calc(100vw-2rem)] overflow-hidden p-4">
+        <div className="flex select-none flex-col gap-3">
+          <div>
+            <h3 className="text-sm font-semibold text-[var(--text-primary)]">Soutenir ETHONE</h3>
+            <p className="mt-1 text-xs leading-relaxed text-[var(--text-muted)]">
+              Projet indépendant et sans publicité. Votre soutien finance les serveurs et le développement.
+            </p>
           </div>
-
-          <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-            ETHONE est conçu pour offrir une expérience numérique fluide, sombre, respectueuse de votre vie privée et sans publicité. Votre soutien permet de financer les serveurs et le développement continu.
-          </p>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1.5">
             <a
               href={STRIPE_DONATION_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-primary)] py-2.5 px-3 text-xs font-bold text-[var(--accent-contrast)] shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="flex h-9 w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent-primary)] px-3 text-xs font-semibold text-[var(--accent-contrast)] transition-opacity hover:opacity-90"
             >
               <Icon name="coffee" className="h-4 w-4" />
-              <span>Faire un don Stripe</span>
+              <span>Faire un don</span>
             </a>
-
-            <button
-              type="button"
-              onClick={handleCopyLink}
-              className="flex w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] py-2 px-3 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-[0.98]"
-            >
+            <button type="button" onClick={handleCopyLink} className="ethone-menu-item justify-center text-xs">
               <Icon name="share-network" className="h-3.5 w-3.5" />
-              <span>Partager le projet</span>
+              <span>Copier le lien du projet</span>
             </button>
           </div>
         </div>

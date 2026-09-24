@@ -218,7 +218,7 @@ export default function NotificationCenter() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={i18n("tbNotifSearch", "Rechercher une notification…")}
-          className="w-full rounded-xl border border-transparent bg-[var(--surface-raised)] py-2 pl-8 pr-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--accent-primary)]/60 focus:outline-none"
+          className="h-9 w-full rounded-lg border border-[var(--menu-border)] bg-transparent pl-8 pr-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--accent-primary)]/50 focus:outline-none"
         />
       </div>
 
@@ -234,18 +234,17 @@ export default function NotificationCenter() {
               aria-selected={active}
               onClick={() => setFilter(f.id)}
               className={cn(
-                "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold whitespace-nowrap transition-all cursor-pointer",
+                "inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer",
                 active
-                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
-                  : "bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  ? "bg-[var(--menu-hover)] text-[var(--text-primary)]"
+                  : "text-[var(--text-muted)] hover:bg-[var(--menu-hover)] hover:text-[var(--text-primary)]"
               )}
             >
               {i18n(f.key, f.label)}
               {f.id === "unread" && unreadCount > 0 && (
                 <span
                   className={cn(
-                    "rounded-full px-1.5 text-[10px] font-bold leading-4",
-                    active ? "bg-black/20" : "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
+                    "rounded-full bg-[var(--accent-primary)]/20 px-1.5 text-[10px] font-semibold leading-4 text-[var(--accent-primary)]"
                   )}
                 >
                   {unreadCount}
@@ -280,15 +279,15 @@ export default function NotificationCenter() {
                 return (
                   <div
                     key={item.groupKey}
-                    className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 overflow-hidden transition-all shadow-xs"
+                    className="overflow-hidden rounded-lg border border-[var(--menu-border)]"
                   >
                     {/* Group Header */}
                     <div
                       onClick={() => toggleGroup(item.groupKey)}
-                      className="flex items-center justify-between p-3 cursor-pointer hover:bg-[var(--surface-hover)]/40 transition-colors"
+                      className="flex cursor-pointer items-center justify-between p-2.5 transition-colors hover:bg-[var(--menu-hover)]"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold text-xs">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[var(--menu-hover)] text-xs font-semibold text-[var(--text-primary)]">
                           {item.count}
                         </span>
                         <div className="min-w-0">
@@ -358,7 +357,7 @@ export default function NotificationCenter() {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[400px] max-w-[calc(100vw-1.5rem)] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-4 shadow-2xl">
+      <PopoverContent className="ethone-menu w-[380px] max-w-[calc(100vw-1.5rem)] p-3.5">
         {content}
       </PopoverContent>
     </Popover>

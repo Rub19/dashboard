@@ -144,7 +144,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
   const hasUnpaid = dayBills.some((b) => !b.paid);
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/90 p-4 sm:p-5 backdrop-blur-2xl shadow-xl">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-4 sm:p-5 backdrop-blur-2xl shadow-xl">
       {/* Header with Selected Date & Total Due */}
       <div className="mb-4 flex shrink-0 items-start justify-between gap-3 border-b border-[var(--panel-border)] pb-3.5">
         <div>

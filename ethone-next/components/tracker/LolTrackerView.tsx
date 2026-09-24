@@ -235,7 +235,7 @@ export default function LolTrackerView() {
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
       {/* Top Search & Filter Bar */}
-      <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/90 p-4 backdrop-blur-2xl shadow-lg">
+      <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-4 backdrop-blur-2xl shadow-lg">
         <form onSubmit={handleSearchSubmit} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           {/* Riot ID Input */}
           <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
@@ -305,7 +305,7 @@ export default function LolTrackerView() {
       {matches.length > 0 && (
         <div className="shrink-0 grid grid-cols-2 md:grid-cols-4 gap-3">
           {/* Win Rate */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
             <span className="block text-[11px] font-bold text-zinc-400">
               Win Rate <span className="text-sm font-black text-white">{winRate}%</span>
             </span>
@@ -321,7 +321,7 @@ export default function LolTrackerView() {
           </div>
 
           {/* Avg DPM */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
             <span className="block text-[11px] font-bold text-zinc-400">
               Avg DPM <span className="text-sm font-black text-white">{avgDpm}</span>
             </span>
@@ -331,7 +331,7 @@ export default function LolTrackerView() {
           </div>
 
           {/* Avg KDA */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
             <span className="block text-[11px] font-bold text-zinc-400">
               Avg KDA <span className="text-sm font-black text-white">{avgKda}</span>
             </span>
@@ -341,7 +341,7 @@ export default function LolTrackerView() {
           </div>
 
           {/* Avg GPM */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
             <span className="block text-[11px] font-bold text-zinc-400">
               Avg GPM <span className="text-sm font-black text-white">{avgGpm}</span>
             </span>
@@ -354,7 +354,7 @@ export default function LolTrackerView() {
 
       {/* Quick Champion Filter */}
       {matches.length > 0 && availableChampions.length > 1 && (
-        <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/60 p-2 backdrop-blur-xl">
+        <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/60 p-2 backdrop-blur-xl">
           <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 px-2">Champion :</span>
           <div className="flex items-center gap-1 overflow-x-auto os-scroll">
             <button

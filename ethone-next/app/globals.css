@@ -1,6 +1,27 @@
 @import "tailwindcss";
 @import "./liquid-glass.css";
 
+/*
+ * Fonds unifiés : les gris « en dur » de Tailwind (zinc / neutral / slate / gray, nuances sombres 800-950, utilisés plus de
+ * 800 fois dans les pages) sont des gris NEUTRES qui juraient avec le bleu nuit du thème et créaient des bandes de teintes
+ * différentes (barre du haut, cartes, zones de page). Ils sont rattachés ici aux couleurs du thème actif : toute la page
+ * partage la même teinte, qu'on change de thème ou non. Le thème clair (arctic) est exclu : ses surfaces ne sont pas sombres.
+ */
+html:not([data-theme="arctic"]) {
+  --color-zinc-950: var(--bg-main);
+  --color-zinc-900: var(--bg-surface);
+  --color-zinc-800: var(--bg-surface-elevated, var(--bg-surface));
+  --color-neutral-950: var(--bg-main);
+  --color-neutral-900: var(--bg-surface);
+  --color-neutral-800: var(--bg-surface-elevated, var(--bg-surface));
+  --color-slate-950: var(--bg-main);
+  --color-slate-900: var(--bg-surface);
+  --color-slate-800: var(--bg-surface-elevated, var(--bg-surface));
+  --color-gray-950: var(--bg-main);
+  --color-gray-900: var(--bg-surface);
+  --color-gray-800: var(--bg-surface-elevated, var(--bg-surface));
+}
+
 :root {
   /* Premium theme engine semantic defaults (Dyno Rose default accent) */
   --bg-main: #0E1015;

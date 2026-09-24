@@ -195,7 +195,7 @@ export default function TrackerGgView() {
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
       {/* Controls */}
-      <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/90 p-4 backdrop-blur-2xl shadow-lg">
+      <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-4 backdrop-blur-2xl shadow-lg">
         <form onSubmit={handleSubmit} className="flex flex-col gap-3 lg:flex-row lg:items-center">
           <div className="flex items-center gap-2 shrink-0">
             <div className="w-56">
@@ -272,7 +272,7 @@ export default function TrackerGgView() {
 
       {/* Profile header */}
       {available && profile && (
-        <div className="shrink-0 flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
+        <div className="shrink-0 flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
           {profile.avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={profile.avatarUrl} alt="" className="h-10 w-10 rounded-lg object-cover" />
@@ -295,7 +295,7 @@ export default function TrackerGgView() {
       {tiles.length > 0 && (
         <div className="shrink-0 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {tiles.map((s) => (
-            <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
+            <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400">
                 <BarChart3 className="h-3.5 w-3.5 text-indigo-400" />
                 {s.label}
@@ -330,7 +330,7 @@ export default function TrackerGgView() {
             {profile!.segments
               .filter((seg) => Object.keys(seg.stats).length > 0)
               .map((seg, i) => (
-                <div key={`${seg.type}-${i}`} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-4 backdrop-blur-xl">
+                <div key={`${seg.type}-${i}`} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-4 backdrop-blur-xl">
                   <p className="mb-3 text-xs font-bold uppercase tracking-wide text-zinc-400">{seg.name || seg.type}</p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                     {Object.entries(seg.stats).slice(0, 16).map(([k, stat]) => (

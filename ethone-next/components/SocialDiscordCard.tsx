@@ -303,7 +303,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
   return (
     <TiltCard
       className={cn(
-        "relative flex h-full min-h-0 flex-col overflow-hidden no-scrollbar select-none rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/95 p-4 shadow-2xl backdrop-blur-[var(--panel-blur)] transition-all duration-300 hover:border-[var(--input-border-hover)] group",
+        "relative flex h-full min-h-0 flex-col overflow-hidden no-scrollbar select-none rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/95 p-4 shadow-2xl backdrop-blur-[var(--panel-blur)] transition-all duration-300 hover:border-[var(--input-border-hover)] group",
         className
       )}
     >
@@ -403,19 +403,19 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
                     />
                   </div>
                   {/* Official Discord Status Badge (Overlayed ON TOP of avatar with high z-index) */}
-                  <div className="absolute -bottom-0.5 -right-0.5 z-30 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#0c0d14] p-0.5 shadow-lg">
+                  <div className="absolute -bottom-0.5 -right-0.5 z-30 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[var(--bg-main)] p-0.5 shadow-lg">
                     {status === "dnd" ? (
                       <div className="flex h-full w-full items-center justify-center rounded-full bg-rose-500 shadow-sm shadow-rose-500/50">
                         <div className="h-0.5 w-2 rounded-full bg-white" />
                       </div>
                     ) : status === "idle" ? (
                       <div className="relative h-full w-full rounded-full bg-amber-400 shadow-sm shadow-amber-500/50">
-                        <div className="absolute -left-0.5 -top-0.5 h-2 w-2 rounded-full bg-[#0c0d14]" />
+                        <div className="absolute -left-0.5 -top-0.5 h-2 w-2 rounded-full bg-[var(--bg-main)]" />
                       </div>
                     ) : status === "online" ? (
                       <div className="h-full w-full rounded-full bg-emerald-400 shadow-sm shadow-emerald-500/50" />
                     ) : (
-                      <div className="h-full w-full rounded-full border-2 border-zinc-500 bg-[#0c0d14]" />
+                      <div className="h-full w-full rounded-full border-2 border-zinc-500 bg-[var(--bg-main)]" />
                     )}
                   </div>
                 </div>

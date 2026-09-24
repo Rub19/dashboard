@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.47 — 2026-09-24
+
+**Fonds uniformes sur toutes les pages**
+
+- Les gris neutres en dur (zinc, neutral, slate, gray) suivent maintenant les couleurs du thème actif : plus de bandes de teintes différentes entre la barre du haut, les cartes et le fond de page
+- Les fonds bleu nuit codés en dur (#0c0d14, #0c1017) utilisent les couleurs du thème
+- Le thème clair (Arctic) reste inchangé
+
 ## v1.28.46 — 2026-09-24
 
 **Aller à n'importe quel module Discord depuis la palette de commandes (Ctrl K)**

@@ -33146,6 +33146,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_46_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_46_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_46_de);
 
+const v1_28_47_fr: ChangelogEntry = {
+  version: "v1.28.47",
+  date: "2026-09-24",
+  title: "Fonds uniformes sur toutes les pages",
+  items: [
+    "Les gris neutres en dur (zinc, neutral, slate, gray) suivent maintenant les couleurs du thème actif : plus de bandes de teintes différentes entre la barre du haut, les cartes et le fond de page",
+    "Les fonds bleu nuit codés en dur (#0c0d14, #0c1017) utilisent les couleurs du thème",
+    "Le thème clair (Arctic) reste inchangé",
+  ],
+};
+
+const v1_28_47_en: ChangelogEntry = {
+  version: "v1.28.47",
+  date: "2026-09-24",
+  title: "Uniform backgrounds across all pages",
+  items: [
+    "Hard-coded neutral grays (zinc, neutral, slate, gray) now follow the active theme colours: no more mismatched tints between the top bar, cards and page background",
+    "Hard-coded navy backgrounds (#0c0d14, #0c1017) now use theme colours",
+    "The light theme (Arctic) is unchanged",
+  ],
+};
+
+const v1_28_47_es: ChangelogEntry = {
+  version: "v1.28.47",
+  date: "2026-09-24",
+  title: "Fondos uniformes en todas las páginas",
+  items: [
+    "Los grises neutros fijos (zinc, neutral, slate, gray) ahora siguen los colores del tema activo: se acabaron los tonos desiguales entre la barra superior, las tarjetas y el fondo",
+    "Los fondos azul noche fijos (#0c0d14, #0c1017) usan los colores del tema",
+    "El tema claro (Arctic) no cambia",
+  ],
+};
+
+const v1_28_47_de: ChangelogEntry = {
+  version: "v1.28.47",
+  date: "2026-09-24",
+  title: "Einheitliche Hintergründe auf allen Seiten",
+  items: [
+    "Fest codierte neutrale Grautöne (zinc, neutral, slate, gray) folgen jetzt den Farben des aktiven Themes: keine unterschiedlichen Farbtöne mehr zwischen oberer Leiste, Karten und Seitenhintergrund",
+    "Fest codierte Nachtblau-Hintergründe (#0c0d14, #0c1017) nutzen die Theme-Farben",
+    "Das helle Theme (Arctic) bleibt unverändert",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_47_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_47_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_47_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_47_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

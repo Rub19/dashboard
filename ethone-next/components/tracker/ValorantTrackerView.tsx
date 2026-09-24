@@ -334,7 +334,7 @@ export default function ValorantTrackerView() {
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
       {/* Top Search & Filter Bar */}
-      <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/90 p-4 backdrop-blur-2xl shadow-lg">
+      <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-4 backdrop-blur-2xl shadow-lg">
         <form onSubmit={handleSearchSubmit} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           {/* Riot ID Input */}
           <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
@@ -420,7 +420,7 @@ export default function ValorantTrackerView() {
       {matches.length > 0 && (
         <div className="shrink-0 grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* Winrate & Match Stats */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Victoires / Ratio</p>
               <p className="text-lg font-black text-white">{winRate}% <span className="text-xs font-normal text-zinc-400">({totalWins}V - {totalLosses}D)</span></p>
@@ -431,7 +431,7 @@ export default function ValorantTrackerView() {
           </div>
 
           {/* Average Combat Score (ACS) */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Score de Combat Moyen (ACS)</p>
               <p className="text-lg font-black text-cyan-400">{avgAcs} <span className="text-xs font-normal text-zinc-400">pts/round</span></p>
@@ -442,7 +442,7 @@ export default function ValorantTrackerView() {
           </div>
 
           {/* Top Agent */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
             <div className="min-w-0">
               <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Agent Principal</p>
               <p className="text-lg font-black text-white truncate">{topAgents[0]?.name || "Valorant"}</p>
@@ -459,7 +459,7 @@ export default function ValorantTrackerView() {
 
       {/* Quick Agent & Map Filters */}
       {matches.length > 0 && (availableAgents.length > 1 || availableMaps.length > 1) && (
-        <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/50 p-2 backdrop-blur-xl">
+        <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/50 p-2 backdrop-blur-xl">
           <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 px-2">Filtres :</span>
           
           {/* Agent Filter */}

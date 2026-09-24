@@ -141,7 +141,7 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
   };
 
   return (
-    <div className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/90 p-4 backdrop-blur-2xl">
+    <div className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-4 backdrop-blur-2xl">
       {/* Header Bar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">

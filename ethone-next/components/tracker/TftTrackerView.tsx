@@ -125,7 +125,7 @@ export default function TftTrackerView() {
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
-      <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/90 p-4 backdrop-blur-2xl shadow-lg">
+      <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-4 backdrop-blur-2xl shadow-lg">
         <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
             <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 flex-1 min-w-[180px]">
@@ -185,7 +185,7 @@ export default function TftTrackerView() {
             { label: "Top 4", value: `${stats.top4Rate}%`, icon: Trophy, tone: "text-emerald-400" },
             { label: "Tops 1", value: `${stats.firstRate}%`, icon: Crown, tone: "text-amber-400" },
           ].map((s) => (
-            <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
+            <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400">
                 <s.icon className={cn("h-3.5 w-3.5", s.tone)} />
                 {s.label}

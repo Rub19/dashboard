@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.39 — 2026-09-24
+
+**Hub Discord en couleur, barre latérale : bouton coupé corrigé**
+
+- Hub des modules Discord : chaque module a maintenant sa propre teinte douce et des icônes un peu plus grandes (18 px) au lieu d'un gris uniforme, pour se repérer plus vite. L'icône de « Highlights » (un « A » dans un cercle, peu parlant) devient un œil.
+- Barre latérale ouverte : avec le nouveau bouton palette, la ligne de boutons en bas débordait et le dernier bouton était coupé. Le badge de synchronisation se réduit maintenant pour que tout tienne.
+
 ## v1.28.38 — 2026-09-24
 
 **Pages Espaces et Flows décalées du bord, textes manquants corrigés**

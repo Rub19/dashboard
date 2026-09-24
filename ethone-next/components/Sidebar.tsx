@@ -217,7 +217,7 @@ const SyncBadge = memo(function SyncBadge({ collapsed }: { collapsed: boolean })
         "flex items-center gap-2 rounded-[var(--inset-radius)] border-transparent bg-transparent text-[10px] font-medium text-[var(--text-muted)]",
         collapsed
           ? "h-9 w-9 shrink-0 items-center justify-center p-0"
-          : "px-2.5 py-2"
+          : "min-w-0 flex-1 overflow-hidden px-2.5 py-2"
       )}
       title={tooltip}
     >

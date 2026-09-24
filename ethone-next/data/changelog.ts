@@ -32766,6 +32766,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_38_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_38_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_38_de);
 
+const v1_28_39_fr: ChangelogEntry = {
+  version: "v1.28.39",
+  date: "2026-09-24",
+  title: "Hub Discord en couleur, barre latérale : bouton coupé corrigé",
+  items: [
+    "Hub des modules Discord : chaque module a maintenant sa propre teinte douce et des icônes un peu plus grandes (18 px) au lieu d'un gris uniforme, pour se repérer plus vite. L'icône de « Highlights » (un « A » dans un cercle, peu parlant) devient un œil.",
+    "Barre latérale ouverte : avec le nouveau bouton palette, la ligne de boutons en bas débordait et le dernier bouton était coupé. Le badge de synchronisation se réduit maintenant pour que tout tienne.",
+  ],
+};
+
+const v1_28_39_en: ChangelogEntry = {
+  version: "v1.28.39",
+  date: "2026-09-24",
+  title: "Coloured Discord hub, sidebar clipped button fixed",
+  items: [
+    "Discord modules hub: each module now has its own soft tint and slightly larger icons (18 px) instead of a uniform grey, for quicker scanning. The \"Highlights\" icon (an \"A\" in a circle, not very meaningful) becomes an eye.",
+    "Open sidebar: with the new palette button, the bottom button row overflowed and the last button was cut off. The sync badge now shrinks so everything fits.",
+  ],
+};
+
+const v1_28_39_es: ChangelogEntry = {
+  version: "v1.28.39",
+  date: "2026-09-24",
+  title: "Hub de Discord en color, botón cortado de la barra lateral corregido",
+  items: [
+    "Hub de módulos de Discord: cada módulo tiene ahora su propio tono suave e iconos algo más grandes (18 px) en lugar de un gris uniforme, para orientarse más rápido. El icono de « Highlights » (una « A » en un círculo, poco claro) pasa a ser un ojo.",
+    "Barra lateral abierta: con el nuevo botón de paleta, la fila de botones inferior se desbordaba y el último botón quedaba cortado. La insignia de sincronización se reduce ahora para que todo quepa.",
+  ],
+};
+
+const v1_28_39_de: ChangelogEntry = {
+  version: "v1.28.39",
+  date: "2026-09-24",
+  title: "Discord-Hub in Farbe, abgeschnittene Seitenleisten-Schaltfläche korrigiert",
+  items: [
+    "Discord-Modulhub: Jedes Modul hat jetzt seinen eigenen sanften Farbton und etwas größere Icons (18 px) statt einheitlichem Grau, zur schnelleren Orientierung. Das Icon von „Highlights“ (ein „A“ im Kreis, wenig aussagekräftig) wird zu einem Auge.",
+    "Geöffnete Seitenleiste: Mit der neuen Paletten-Schaltfläche lief die untere Schaltflächenreihe über und die letzte Schaltfläche war abgeschnitten. Das Sync-Badge schrumpft jetzt, damit alles passt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_39_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_39_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_39_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_39_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

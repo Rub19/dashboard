@@ -114,6 +114,18 @@ interface BotModule {
   badge: string;
 }
 
+/** Teinte douce de chaque module dans la grille du hub (repérage rapide sans nuire à la lisibilité). */
+const MODULE_TINTS: Record<string, string> = {
+  overview: "text-indigo-400", security: "text-emerald-400", commands: "text-sky-400", suggestions: "text-yellow-300",
+  leveling: "text-amber-400", giveaways: "text-pink-400", tickets: "text-orange-400", welcome: "text-fuchsia-400",
+  moderation: "text-red-400", logs: "text-slate-300", music: "text-green-400", invites: "text-teal-400",
+  voice: "text-cyan-400", backups: "text-blue-400", ai: "text-violet-400", forms: "text-lime-400",
+  polls: "text-purple-400", roles: "text-rose-400", analytics: "text-indigo-300", events: "text-orange-300",
+  server: "text-zinc-300", starboard: "text-yellow-400", sticky: "text-amber-300", reminders: "text-sky-300",
+  afk: "text-blue-300", birthdays: "text-pink-300", tags: "text-cyan-300", serverstats: "text-emerald-300",
+  highlights: "text-lime-300", bot: "text-indigo-400",
+};
+
 const MODULE_ICONS = {
   overview: ethoneIcon("mod-overview"),
   security: ethoneIcon("mod-security"),
@@ -1522,7 +1534,7 @@ export default function DiscordDashboardPage() {
                           : "border-[var(--panel-border)] bg-white/[0.02] text-zinc-400 hover:border-[var(--input-border-hover)] hover:text-white"
                       )}
                     >
-                      <IconComponent className={cn("h-4 w-4 shrink-0", isCurrent ? "text-emerald-400" : mod.color)} />
+                      <IconComponent className={cn("h-[18px] w-[18px] shrink-0", MODULE_TINTS[mod.id] ?? mod.color)} />
                       <span className="truncate text-xs font-semibold">{mod.title}</span>
                     </button>
                   );

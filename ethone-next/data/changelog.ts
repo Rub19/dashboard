@@ -33011,6 +33011,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_43_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_43_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_43_de);
 
+const v1_28_44_fr: ChangelogEntry = {
+  version: "v1.28.44",
+  date: "2026-09-24",
+  title: "Synchronisation en direct Discord → dashboard : rôles et salons à jour sans recharger",
+  items: [
+    "Jusqu'ici, seuls les changements faits DEPUIS le dashboard étaient diffusés en direct. Quand un rôle ou un salon était créé, renommé ou supprimé sur Discord, les listes du dashboard restaient périmées jusqu'au rechargement de la page. Le bot prévient maintenant les dashboards ouverts (événements regroupés : créer 20 salons d'un coup n'en envoie qu'un), et les sélecteurs de rôles et de salons se rafraîchissent tout seuls.",
+    "Une seule connexion temps réel par serveur est partagée par tous les composants de la page, fermée automatiquement quand plus personne ne l'écoute, avec reconnexion automatique. Le bot signale aussi les arrivées/départs de membres et les changements du serveur (prêts pour d'autres écrans).",
+  ],
+};
+
+const v1_28_44_en: ChangelogEntry = {
+  version: "v1.28.44",
+  date: "2026-09-24",
+  title: "Live sync Discord → dashboard: roles and channels up to date without reloading",
+  items: [
+    "Until now, only changes made FROM the dashboard were pushed live. When a role or channel was created, renamed or deleted on Discord, the dashboard lists stayed stale until the page was reloaded. The bot now notifies open dashboards (grouped events: creating 20 channels at once sends just one), and the role and channel pickers refresh by themselves.",
+    "A single live connection per server is shared by every component on the page, closed automatically once nobody listens, with automatic reconnection. The bot also signals member joins/leaves and server changes (ready for other screens).",
+  ],
+};
+
+const v1_28_44_es: ChangelogEntry = {
+  version: "v1.28.44",
+  date: "2026-09-24",
+  title: "Sincronización en vivo Discord → panel: roles y canales al día sin recargar",
+  items: [
+    "Hasta ahora solo se difundían en directo los cambios hechos DESDE el panel. Cuando un rol o canal se creaba, renombraba o borraba en Discord, las listas del panel quedaban desactualizadas hasta recargar la página. El bot avisa ahora a los paneles abiertos (eventos agrupados: crear 20 canales de golpe envía solo uno) y los selectores de roles y canales se actualizan solos.",
+    "Una única conexión en tiempo real por servidor es compartida por todos los componentes de la página, se cierra sola cuando nadie escucha y se reconecta automáticamente. El bot también señala llegadas/salidas de miembros y cambios del servidor (listo para otras pantallas).",
+  ],
+};
+
+const v1_28_44_de: ChangelogEntry = {
+  version: "v1.28.44",
+  date: "2026-09-24",
+  title: "Live-Sync Discord → Dashboard: Rollen und Kanäle aktuell ohne Neuladen",
+  items: [
+    "Bisher wurden nur Änderungen VOM Dashboard aus live verteilt. Wurde eine Rolle oder ein Kanal auf Discord erstellt, umbenannt oder gelöscht, blieben die Dashboard-Listen bis zum Neuladen der Seite veraltet. Der Bot benachrichtigt jetzt geöffnete Dashboards (gebündelte Ereignisse: 20 Kanäle auf einmal erzeugen nur eines), und die Rollen- und Kanalauswahl aktualisiert sich von selbst.",
+    "Eine einzige Live-Verbindung pro Server wird von allen Komponenten der Seite geteilt, schließt sich automatisch, wenn niemand mehr zuhört, und verbindet sich selbständig neu. Der Bot meldet auch Mitglieder-Beitritte/-Abgänge und Serveränderungen (bereit für weitere Bildschirme).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_44_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_44_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_44_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_44_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

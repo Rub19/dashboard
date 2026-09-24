@@ -38,6 +38,7 @@ import { starboardService } from '../modules/starboard/services/starboardService
 import { healthStatusService } from '../services/resilience/healthStatusService.js';
 import { BotTelemetryService } from '../modules/botControl/services/botTelemetryService.js';
 import { BotEventBusService } from '../modules/botControl/services/botEventBusService.js';
+import { LIVE_DISCORD_EVENTS, guildIdOfEvent, notifyDiscordState } from '../services/discordStateNotifier.js';
 import { logger } from '../utils/logger.js';
 
 let isEventsRegistered = false;
@@ -65,6 +66,12 @@ export function registerEvents(client: Client): void {
       botTelemetryService.incrementEventCount();
       // « debug » et « raw » sont du bruit interne de discord.js, pas des événements métier.
       if (event === 'debug' || event === 'raw') return originalEmit(event, ...args);
+      // Changement d'état côté Discord (rôle, salon, membre, serveur) : prévenir les dashboards ouverts.
+      const liveKind = LIVE_DISCORD_EVENTS[event];
+      if (liveKind) {
+        const liveGuildId = guildIdOfEvent(event, args[0]);
+        if (liveGuildId) notifyDiscordState(liveGuildId, liveKind, event);
+      }
       const started = performance.now();
       let ok = true;
       try {

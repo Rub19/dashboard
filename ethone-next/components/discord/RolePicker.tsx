@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Shield, Edit3, ListFilter, X, Check, Loader2 } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
+import { subscribeGuildLive } from "@/lib/guildLive";
 
 export interface RoleOption {
   id: string;
@@ -144,7 +145,19 @@ export default function RolePicker({
     return [];
   });
   const [loading, setLoading] = useState(false);
+  const [refreshTick, setRefreshTick] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Un rôle est créé, renommé ou supprimé sur Discord : on oublie le cache et on recharge la liste (sans recharger la page).
+  useEffect(() => {
+    if (!guildId) return;
+    return subscribeGuildLive(guildId, (ev) => {
+      if (ev.type === "DISCORD_EVENT" && ev.payload?.kind === "roles") {
+        globalRoleCache.delete(guildId);
+        setRefreshTick((t) => t + 1);
+      }
+    });
+  }, [guildId]);
 
   // Charger automatiquement si guildId est fourni et propRoles non fourni
   useEffect(() => {
@@ -168,7 +181,7 @@ export default function RolePicker({
     return () => {
       active = false;
     };
-  }, [guildId, propRoles]);
+  }, [guildId, propRoles, refreshTick]);
 
   // Liste finale des rôles disponibles
   const availableRoles = useMemo(() => {

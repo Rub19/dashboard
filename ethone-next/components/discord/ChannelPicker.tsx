@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Hash, Edit3, ListFilter, X, Check, Loader2 } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
+import { subscribeGuildLive } from "@/lib/guildLive";
 
 export interface ChannelOption {
   id: string;
@@ -111,7 +112,19 @@ export default function ChannelPicker({
 }: ChannelPickerProps) {
   const [fetchedChannels, setFetchedChannels] = useState<ChannelOption[]>([]);
   const [loading, setLoading] = useState(false);
+  const [refreshTick, setRefreshTick] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Un salon est créé, renommé ou supprimé sur Discord : on oublie le cache et on recharge la liste en direct.
+  useEffect(() => {
+    if (!guildId) return;
+    return subscribeGuildLive(guildId, (ev) => {
+      if (ev.type === "DISCORD_EVENT" && ev.payload?.kind === "channels") {
+        globalChannelCache.delete(guildId);
+        setRefreshTick((t) => t + 1);
+      }
+    });
+  }, [guildId]);
 
   // Charger les salons via guildId si non fournis
   useEffect(() => {
@@ -139,7 +152,7 @@ export default function ChannelPicker({
     return () => {
       active = false;
     };
-  }, [guildId, propChannels]);
+  }, [guildId, propChannels, refreshTick]);
 
   // Liste finale des salons disponibles
   const rawChannels = (propChannels && propChannels.length > 0) ? propChannels : fetchedChannels;

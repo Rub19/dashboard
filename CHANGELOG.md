@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.44 — 2026-09-24
+
+**Synchronisation en direct Discord → dashboard : rôles et salons à jour sans recharger**
+
+- Jusqu'ici, seuls les changements faits DEPUIS le dashboard étaient diffusés en direct. Quand un rôle ou un salon était créé, renommé ou supprimé sur Discord, les listes du dashboard restaient périmées jusqu'au rechargement de la page. Le bot prévient maintenant les dashboards ouverts (événements regroupés : créer 20 salons d'un coup n'en envoie qu'un), et les sélecteurs de rôles et de salons se rafraîchissent tout seuls.
+- Une seule connexion temps réel par serveur est partagée par tous les composants de la page, fermée automatiquement quand plus personne ne l'écoute, avec reconnexion automatique. Le bot signale aussi les arrivées/départs de membres et les changements du serveur (prêts pour d'autres écrans).
+
 ## v1.28.43 — 2026-09-24
 
 **Messages du bot Discord en embeds avec icônes personnalisées**

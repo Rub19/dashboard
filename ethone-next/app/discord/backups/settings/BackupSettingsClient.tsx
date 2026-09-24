@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -131,7 +132,7 @@ export default function BackupSettingsClient() {
   };
 
   const handleUnprotect = async (b: ProtectedBackup) => {
-    if (!confirm(`Retirer la protection de « ${b.name} » ? Elle pourra être purgée par la rétention.`)) return;
+    if (!await confirmDialog(`Retirer la protection de « ${b.name} » ? Elle pourra être purgée par la rétention.`)) return;
     const previous = protectedBackups;
     setProtectedBackups((prev) => prev.filter((x) => x.backupId !== b.backupId));
     if (isDemo) return;

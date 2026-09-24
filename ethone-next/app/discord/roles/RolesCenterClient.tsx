@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -355,8 +356,11 @@ export default function RolesCenterClient() {
   };
 
   const deletePanel = async (p: RolePanel) => {
-    const deleteMessage = p.messageId ? confirm(`Supprimer « ${p.name} » ET son message Discord ? (Annuler = garder le message)`) : false;
-    if (!p.messageId && !confirm(`Supprimer le panneau « ${p.name} » ?`)) return;
+    if (!(await confirmDialog(`Supprimer le panneau « ${p.name} » ?`))) return;
+    // Deuxième choix, distinct : annuler la suppression n'est plus confondu avec « garder le message Discord ».
+    const deleteMessage = p.messageId
+      ? await confirmDialog("Supprimer aussi le message publié sur Discord ?", { title: "Message Discord", confirmLabel: "Supprimer le message", cancelLabel: "Le garder", tone: "danger" })
+      : false;
     setPanels((prev) => prev.filter((x) => x.id !== p.id));
     if (isDemo) return;
     try {

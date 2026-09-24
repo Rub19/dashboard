@@ -190,6 +190,21 @@ export function createPollRouter(client: Client): Router {
     res.json({ success: true, message: 'Sondage supprimé.' });
   });
 
+  // POST /api/guilds/:guildId/polls/:pollId/reset-votes : remet le scrutin à zéro (le sondage est conservé)
+  router.post('/:pollId/reset-votes', (req: Request, res: Response) => {
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
+    const poll = pollRepository.getPollById(guildId, pollId);
+
+    if (!poll) {
+      return res.status(404).json({ success: false, error: 'Sondage introuvable.' });
+    }
+
+    const removed = pollRepository.clearPollVotes(guildId, pollId);
+    emitConfigUpdated('polls', guildId, poll, 'DASHBOARD', req.user?.id);
+    res.json({ success: true, removed });
+  });
+
   // POST /api/guilds/:guildId/polls/:pollId/publish
   router.post('/:pollId/publish', (req: Request, res: Response) => {
     const guildId = requireStringParam(req.params.guildId, 'guildId');

@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import { useState } from "react";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -123,7 +124,7 @@ export default function SessionsManager() {
           "Cette session est la vôtre : vous serez déconnecté immédiatement. Continuer ?"
         )
       : i18n("revokeConfirm", "Déconnecter cet appareil ? Il devra se reconnecter.");
-    if (!window.confirm(message)) return;
+    if (!await confirmDialog(message)) return;
 
     setBusyId(device.id);
     try {
@@ -134,7 +135,7 @@ export default function SessionsManager() {
         // Belt-and-suspenders: the Worker refused a same-session revoke that
         // wasn't explicitly confirmed. We already confirm above, but if this
         // ever fires (stale device list, race), ask again rather than fail.
-        if (window.confirm(message)) {
+        if (await confirmDialog(message)) {
           try {
             await revokeDevice(device.id, true);
             success(i18n("saved"));
@@ -151,7 +152,7 @@ export default function SessionsManager() {
   }
 
   async function handleRemove(device: DeviceWithCurrent) {
-    if (!window.confirm(i18n("removeDeviceConfirm", "Supprimer définitivement cet appareil de la liste ?"))) return;
+    if (!await confirmDialog(i18n("removeDeviceConfirm", "Supprimer définitivement cet appareil de la liste ?"))) return;
     setBusyId(device.id);
     try {
       await removeDevice(device.id);
@@ -166,7 +167,7 @@ export default function SessionsManager() {
   async function handleRevokeAllOthers() {
     if (otherActiveCount === 0) return;
     if (
-      !window.confirm(
+      !await confirmDialog(
         i18n(
           "revokeAllOthersConfirm",
           "Déconnecter tous les autres appareils ? Ils devront se reconnecter. Cette action est immédiate."

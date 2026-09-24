@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -548,7 +549,7 @@ export function TicketCenterClient() {
   };
 
   const handleDeleteCategory = async (catId: string) => {
-    if (!confirm("Voulez-vous vraiment supprimer cette catégorie de ticket ?")) return;
+    if (!await confirmDialog("Voulez-vous vraiment supprimer cette catégorie de ticket ?")) return;
     if (!API_BASE) {
       showError("Bot injoignable", "Rien n'a été enregistré.");
       return;

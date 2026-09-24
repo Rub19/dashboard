@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -732,7 +733,7 @@ export default function ServerManagementClient({
 
   // Delete Channel
   const handleDeleteChannel = async (channelId: string, channelName: string) => {
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer définitivement #${channelName} ?`)) return;
+    if (!await confirmDialog(`Êtes-vous sûr de vouloir supprimer définitivement #${channelName} ?`)) return;
     try {
       if (BOT_API_URL) {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/channels/${channelId}`, {
@@ -857,7 +858,7 @@ export default function ServerManagementClient({
 
   // Delete Webhook
   const handleDeleteWebhook = async (webhookId: string) => {
-    if (!confirm("Voulez-vous supprimer ce webhook ?")) return;
+    if (!await confirmDialog("Voulez-vous supprimer ce webhook ?")) return;
     try {
       if (BOT_API_URL) {
         await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/webhooks/${webhookId}`, { credentials: "include", method: "DELETE" });

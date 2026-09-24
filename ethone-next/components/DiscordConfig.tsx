@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, Plug, RefreshCw, Save, Unlink } from "@/components/icons/ph";
 import { useIntegrationStore } from "@/lib/hooks/useIntegrationStore";
@@ -175,8 +176,8 @@ export default function DiscordConfig() {
     }
   }
 
-  function handleLanyardDisconnect() {
-    if (!window.confirm(`${i18n("disconnect")} Discord ?`)) return;
+  async function handleLanyardDisconnect() {
+    if (!await confirmDialog(`${i18n("disconnect")} Discord ?`)) return;
     setRawValue("");
     setField(PROVIDER, FIELD, "");
     update({ [SETTINGS_KEY]: "" } as Partial<typeof settings>);
@@ -185,7 +186,7 @@ export default function DiscordConfig() {
   }
 
   async function handleOAuthDisconnect() {
-    if (!window.confirm(`${i18n("disconnect")} Discord ?`)) return;
+    if (!await confirmDialog(`${i18n("disconnect")} Discord ?`)) return;
     await disconnect();
     notify.discordDisconnect();
   }

@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -421,7 +422,7 @@ export default function SuggestionsCenterClient() {
   };
 
   const deleteSuggestion = async (s: Suggestion) => {
-    if (!confirm(`Supprimer définitivement la suggestion #${s.numericId} ?`)) return;
+    if (!await confirmDialog(`Supprimer définitivement la suggestion #${s.numericId} ?`)) return;
     if (isDemo) return;
     setSuggestions((prev) => {
       const next = prev.filter((x) => x.id !== s.id);

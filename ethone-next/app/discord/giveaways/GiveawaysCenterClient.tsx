@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -346,7 +347,7 @@ export default function GiveawaysCenterClient() {
 
   async function handleCancel(gwId: string, prize: string) {
     if (!selectedGuild) return;
-    if (!confirm(`Êtes-vous sûr de vouloir annuler le concours "${prize}" ?`)) return;
+    if (!await confirmDialog(`Êtes-vous sûr de vouloir annuler le concours "${prize}" ?`)) return;
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/giveaways/${gwId}/cancel`, {
         method: "POST",
@@ -434,7 +435,7 @@ export default function GiveawaysCenterClient() {
 
   async function handleDisqualifyParticipant(userId: string, username: string) {
     if (!selectedGuild || !participantsTarget) return;
-    if (!confirm(`Voulez-vous vraiment retirer @${username} de ce concours ?`)) return;
+    if (!await confirmDialog(`Voulez-vous vraiment retirer @${username} de ce concours ?`)) return;
     setDisqualifyBusy(userId);
     try {
       const res = await fetch(

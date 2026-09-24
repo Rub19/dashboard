@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import { useState } from "react";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -177,7 +178,7 @@ export default function SecurityAuthManager() {
   }
 
   async function handleRevokePasskey(id: string) {
-    if (!window.confirm(i18n("passkeyRevokeConfirm", "Supprimer ce passkey ?"))) return;
+    if (!await confirmDialog(i18n("passkeyRevokeConfirm", "Supprimer ce passkey ?"))) return;
     try {
       await revokePasskey(id);
       success(i18n("removed"));

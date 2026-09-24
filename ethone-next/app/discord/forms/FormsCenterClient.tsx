@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -296,7 +297,7 @@ export default function FormsCenterClient() {
   };
 
   const handleDelete = async (formId: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer ce formulaire ? Toutes ses réponses seront archivées.")) return;
+    if (!await confirmDialog("Êtes-vous sûr de vouloir supprimer ce formulaire ? Toutes ses réponses seront archivées.")) return;
     const snapshot = forms;
     saveFormsList(forms.filter((f) => f.id !== formId));
     const ok = await formAction(formId, "", "DELETE");

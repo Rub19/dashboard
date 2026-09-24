@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -829,7 +830,7 @@ export default function DiscordDashboardPage() {
       setGuildSettings((p) => ({ ...p, emergencyLockdown: next }));
       return;
     }
-    if (next && !confirm(`Verrouiller immédiatement les salons de « ${selectedGuild.name} » ?`)) return;
+    if (next && !await confirmDialog(`Verrouiller immédiatement les salons de « ${selectedGuild.name} » ?`)) return;
     try {
       const res = await fetch(`${api}/api/guilds/${selectedGuild.id}/anti-raid/lockdown`, {
         method: "POST", credentials: "include", headers: { "content-type": "application/json" },

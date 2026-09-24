@@ -33706,6 +33706,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_58_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_58_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_58_de);
 
+const v1_28_59_fr: ChangelogEntry = {
+  version: "v1.28.59",
+  date: "2026-09-24",
+  title: "Confirmations propres et page Sondages réellement branchée",
+  items: [
+    "Les 27 boîtes de confirmation natives du navigateur (suppression de webhook, de salon, de snapshot, de giveaway, de ticket, déconnexions…) sont remplacées par une fenêtre aux couleurs du thème : Échap pour annuler, focus sur Annuler pour les actions destructrices",
+    "Réglages d'un sondage : la page charge maintenant le vrai sondage (fini les titres inventés), enregistre vraiment côté bot et n'affiche « enregistré » que si le bot a accepté ; supprimer un sondage et remettre ses votes à zéro appellent réellement le bot (nouvelle route POST /polls/:id/reset-votes)",
+    "Panneaux de rôles : « annuler » ne supprime plus le panneau par erreur ; la question du message Discord est posée séparément",
+  ],
+};
+
+const v1_28_59_en: ChangelogEntry = {
+  version: "v1.28.59",
+  date: "2026-09-24",
+  title: "Clean confirmations and a truly wired Polls page",
+  items: [
+    "The 27 native browser confirmation boxes (deleting a webhook, channel, snapshot, giveaway, ticket, disconnects…) are replaced by a theme-styled dialog: Escape to cancel, focus on Cancel for destructive actions",
+    "Poll settings: the page now loads the real poll (no more invented titles), really saves to the bot and only says 'saved' if the bot accepted; deleting a poll and resetting its votes now really call the bot (new route POST /polls/:id/reset-votes)",
+    "Role panels: 'cancel' no longer deletes the panel by mistake; the Discord message question is asked separately",
+  ],
+};
+
+const v1_28_59_es: ChangelogEntry = {
+  version: "v1.28.59",
+  date: "2026-09-24",
+  title: "Confirmaciones limpias y página de Encuestas realmente conectada",
+  items: [
+    "Los 27 cuadros de confirmación nativos del navegador (eliminar webhook, canal, snapshot, sorteo, ticket, desconexiones…) se sustituyen por una ventana con el estilo del tema: Esc para cancelar, foco en Cancelar en acciones destructivas",
+    "Ajustes de encuesta: la página carga la encuesta real (sin títulos inventados), guarda de verdad en el bot y solo dice «guardado» si el bot lo aceptó; eliminar una encuesta y reiniciar sus votos llaman de verdad al bot (nueva ruta POST /polls/:id/reset-votes)",
+    "Paneles de roles: «cancelar» ya no elimina el panel por error; la pregunta sobre el mensaje de Discord se hace por separado",
+  ],
+};
+
+const v1_28_59_de: ChangelogEntry = {
+  version: "v1.28.59",
+  date: "2026-09-24",
+  title: "Saubere Bestätigungen und wirklich angebundene Umfrageseite",
+  items: [
+    "Die 27 nativen Browser-Bestätigungsfenster (Webhook, Kanal, Snapshot, Gewinnspiel, Ticket löschen, Trennungen…) werden durch ein themenkonformes Fenster ersetzt: Esc zum Abbrechen, Fokus auf Abbrechen bei destruktiven Aktionen",
+    "Umfrageeinstellungen: Die Seite lädt jetzt die echte Umfrage (keine erfundenen Titel mehr), speichert wirklich im Bot und meldet „gespeichert“ nur, wenn der Bot zugestimmt hat; Umfrage löschen und Stimmen zurücksetzen rufen wirklich den Bot auf (neue Route POST /polls/:id/reset-votes)",
+    "Rollenpanels: „Abbrechen“ löscht das Panel nicht mehr versehentlich; die Frage zur Discord-Nachricht wird separat gestellt",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_59_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_59_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_59_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_59_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

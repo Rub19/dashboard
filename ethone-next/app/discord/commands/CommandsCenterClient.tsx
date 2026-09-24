@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -301,7 +302,7 @@ export default function CommandsCenterClient() {
   };
 
   const deleteCommand = async (cmd: CustomCommand) => {
-    if (!confirm(`Supprimer la commande /${cmd.name} ?`)) return;
+    if (!await confirmDialog(`Supprimer la commande /${cmd.name} ?`)) return;
     const previous = commands;
     setCommands((prev) => prev.filter((c) => c.id !== cmd.id));
     if (isDemo) return;

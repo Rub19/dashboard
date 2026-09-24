@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useCloudFiles, type CloudFile } from "@/lib/hooks/useCloudFiles";
 import { useUserState } from "@/lib/hooks/useUserState";
@@ -301,7 +302,7 @@ export default function FilesPage() {
   }
 
   async function handleBulkDelete() {
-    if (!confirm(`Voulez-vous supprimer les ${selectedItems.length} fichier(s) sélectionnés ?`)) return;
+    if (!await confirmDialog(`Voulez-vous supprimer les ${selectedItems.length} fichier(s) sélectionnés ?`)) return;
     for (const f of selectedItems) {
       await trashFile(f.driveFileId);
     }

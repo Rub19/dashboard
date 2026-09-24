@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -183,7 +184,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   }, [activeTab, isOwner, router]);
 
   const handleRemoteRestart = async () => {
-    if (!confirm("⚠️ Confirmation Propriétaire : Êtes-vous sûr de vouloir redémarrer le bot Discord à distance ?")) return;
+    if (!await confirmDialog("⚠️ Confirmation Propriétaire : Êtes-vous sûr de vouloir redémarrer le bot Discord à distance ?")) return;
     setRestartingBot(true);
     try {
       await fetch(`${BOT_API_URL}/api/bot/restart`, {

@@ -159,6 +159,15 @@ export class PollRepository {
     return index >= 0 ? this.votes[index] : validated;
   }
 
+  /** Supprime tous les votes d'un sondage (le sondage lui-même reste). Renvoie le nombre de votes retirés. */
+  public clearPollVotes(guildId: string, pollId: string): number {
+    const before = this.votes.length;
+    this.votes = this.votes.filter((v) => !(v.guildId === guildId && v.pollId === pollId));
+    const removed = before - this.votes.length;
+    if (removed > 0) this.saveVotes();
+    return removed;
+  }
+
   public deleteUserVote(guildId: string, pollId: string, userId: string, questionId: string): boolean {
     const initialLen = this.votes.length;
     this.votes = this.votes.filter(

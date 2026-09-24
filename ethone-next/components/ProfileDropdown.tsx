@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -211,7 +212,7 @@ export default function ProfileDropdown() {
       showError(i18n("error"));
       return;
     }
-    if (!window.confirm(`${i18n("deleteProfile")} ?`)) return;
+    if (!await confirmDialog(`${i18n("deleteProfile")} ?`)) return;
     try {
       setPending(true);
       await remove(active);

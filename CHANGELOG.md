@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.59 — 2026-09-24
+
+**Confirmations propres et page Sondages réellement branchée**
+
+- Les 27 boîtes de confirmation natives du navigateur (suppression de webhook, de salon, de snapshot, de giveaway, de ticket, déconnexions…) sont remplacées par une fenêtre aux couleurs du thème : Échap pour annuler, focus sur Annuler pour les actions destructrices
+- Réglages d'un sondage : la page charge maintenant le vrai sondage (fini les titres inventés), enregistre vraiment côté bot et n'affiche « enregistré » que si le bot a accepté ; supprimer un sondage et remettre ses votes à zéro appellent réellement le bot (nouvelle route POST /polls/:id/reset-votes)
+- Panneaux de rôles : « annuler » ne supprime plus le panneau par erreur ; la question du message Discord est posée séparément
+
 ## v1.28.58 — 2026-09-24
 
 **Nouvelle bannière du bot**

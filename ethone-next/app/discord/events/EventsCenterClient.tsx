@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -298,7 +299,7 @@ export default function EventsCenterClient() {
   };
 
   const handleCancelEvent = async (event: EventItem) => {
-    if (!confirm(`Annuler l'événement "${event.title}" ?`)) return;
+    if (!await confirmDialog(`Annuler l'événement "${event.title}" ?`)) return;
     const snapshot = events;
     setEvents((prev) => prev.map((ev) => (ev.id === event.id ? { ...ev, status: "CANCELLED" } : ev)));
     const ok = await eventAction(event.id, "", "DELETE");

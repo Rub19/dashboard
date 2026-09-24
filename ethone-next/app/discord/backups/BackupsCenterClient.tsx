@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -266,7 +267,7 @@ export default function BackupsCenterClient() {
       toastError("Impossible de supprimer une sauvegarde protégée. Retirez la protection d'abord.");
       return;
     }
-    if (!confirm(`Supprimer définitivement le snapshot « ${bkp.name} » ?`)) return;
+    if (!await confirmDialog(`Supprimer définitivement le snapshot « ${bkp.name} » ?`)) return;
     if (isDemo) {
       setBackups((prev) => prev.filter((b) => b.backupId !== bkp.backupId));
       return;

@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, Plug, RefreshCw, Unlink } from "@/components/icons/ph";
 import { useIntegrationStore } from "@/lib/hooks/useIntegrationStore";
@@ -136,7 +137,7 @@ export default function SpotifyConfig() {
   }
 
   async function handleDisconnect() {
-    if (!window.confirm(`${i18n("disconnect", "Déconnecter")} Spotify ?`)) return;
+    if (!await confirmDialog(`${i18n("disconnect", "Déconnecter")} Spotify ?`)) return;
     setSubmitting(true);
     try {
       await fetchWorker(`/api/${PROVIDER}/oauth/disconnect`, {

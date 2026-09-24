@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -40,15 +41,13 @@ export default function PollSettingsClient() {
   const searchParams = useSearchParams();
   const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
 
-  const [title, setTitle] = useState(
-    pollId === "staff-decision-01"
-      ? "Décision Staff : Révision des Sanctions AutoMod"
-      : "Sondage Communautaire : Soirée Jeux du Vendredi"
-  );
-  const [description, setDescription] = useState(
-    "Consultation officielle pour organiser les activités du serveur."
-  );
-  const [category, setCategory] = useState(pollId === "staff-decision-01" ? "Décisions Staff" : "Communauté");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("Communauté");
+  const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  // Panneau du sondage tel que stocké par le bot : on ne modifie que la couleur et le salon, le reste est conservé.
+  const [panelConfig, setPanelConfig] = useState<Record<string, unknown>>({});
   const [anonymity, setAnonymity] = useState<"PUBLIC" | "ANONYMOUS" | "FULLY_ANONYMOUS">("PUBLIC");
   const [resultsVisibility, setResultsVisibility] = useState<"LIVE" | "AFTER_END" | "STAFF_ONLY">("LIVE");
   const [allowVoteChange, setAllowVoteChange] = useState(true);
@@ -106,47 +105,100 @@ export default function PollSettingsClient() {
     fetchChannels(false);
   }, [fetchChannels]);
 
+  useEffect(() => {
+    if (!guildParam || !BOT_API_URL) return;
+    let cancelled = false;
+    fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/${encodeURIComponent(pollId)}`, { credentials: "include" })
+      .then(async (res) => {
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data?.poll) throw new Error(data?.error || "Sondage introuvable.");
+        return data.poll;
+      })
+      .then((poll) => {
+        if (cancelled) return;
+        setTitle(poll.title ?? "");
+        setDescription(poll.description ?? "");
+        setCategory(poll.category ?? "Communauté");
+        setAnonymity(poll.anonymity ?? "PUBLIC");
+        setResultsVisibility(poll.resultsVisibility ?? "LIVE");
+        setAllowVoteChange(Boolean(poll.allowVoteChange));
+        setAllowVoteRetract(Boolean(poll.allowVoteRetract));
+        setPanelConfig(poll.panelConfig ?? {});
+        setPanelColor(poll.panelConfig?.embedColor || "#8b5cf6");
+        setTargetChannel(poll.panelConfig?.channelId || "");
+        setLoaded(true);
+        setLoadError(null);
+      })
+      .catch((e: Error) => {
+        if (!cancelled) setLoadError(e.message || "Impossible de charger ce sondage.");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [guildParam, pollId]);
+
   const handleSaveSettings = async () => {
+    if (!BOT_API_URL || !guildParam) {
+      showToast("Bot injoignable : sélectionnez un serveur où il est installé.", "error");
+      return;
+    }
     setIsSaving(true);
     try {
-      if (BOT_API_URL && guildParam) {
-        await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/${pollId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            title,
-            description,
-            category,
-            panelConfig: {
-              channelId: targetChannel,
-              color: panelColor,
-            },
-            securityConfig: {
-              anonymity,
-              resultsVisibility,
-              allowVoteChange,
-              allowVoteRetract,
-            },
-          }),
-        }).catch(() => {});
-      }
-      showToast("Paramètres du sondage mis à jour avec succès !", "success");
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/${encodeURIComponent(pollId)}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          title,
+          description,
+          category,
+          anonymity,
+          resultsVisibility,
+          allowVoteChange,
+          allowVoteRetract,
+          panelConfig: { ...panelConfig, channelId: targetChannel, embedColor: panelColor },
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || "Le bot a refusé les modifications.");
+      showToast("Paramètres du sondage enregistrés.", "success");
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "Enregistrement impossible.", "error");
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleResetVotes = () => {
-    if (confirm("Êtes-vous sûr de vouloir réinitialiser TOUS les votes de ce scrutin ? Cette action est irréversible.")) {
-      showToast("Tous les votes ont été réinitialisés.", "info");
+  const handleResetVotes = async () => {
+    if (!BOT_API_URL || !guildParam) return;
+    if (!(await confirmDialog("Êtes-vous sûr de vouloir réinitialiser TOUS les votes de ce scrutin ? Cette action est irréversible."))) return;
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/${encodeURIComponent(pollId)}/reset-votes`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || "Réinitialisation impossible.");
+      showToast(data.removed > 0 ? `${data.removed} vote(s) supprimé(s).` : "Ce scrutin ne contenait aucun vote.", "info");
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "Réinitialisation impossible.", "error");
     }
   };
 
-  const handleDeletePoll = () => {
-    if (confirm("Confirmez-vous la suppression définitive de ce sondage ?")) {
-      showToast("Sondage supprimé avec succès.", "success");
+  const handleDeletePoll = async () => {
+    if (!BOT_API_URL || !guildParam) return;
+    if (!(await confirmDialog("Confirmez-vous la suppression définitive de ce sondage ?"))) return;
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/${encodeURIComponent(pollId)}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || "Suppression impossible.");
+      showToast("Sondage supprimé.", "success");
       router.push(`/discord/polls?guildId=${guildParam}`);
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "Suppression impossible.", "error");
     }
   };
 
@@ -157,6 +209,11 @@ export default function PollSettingsClient() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8 pb-44 md:pb-44">
+        {loadError && (
+          <div className="mb-6 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+            {loadError} Les réglages ci-dessous ne correspondent à aucun sondage enregistré : rien ne sera modifié.
+          </div>
+        )}
         {/* Breadcrumb */}
         <div className="mb-6 flex items-center gap-2 text-xs text-zinc-400">
           <Link href={`/discord?guildId=${guildParam}`} className="hover:text-white transition-colors">
@@ -196,7 +253,7 @@ export default function PollSettingsClient() {
             </button>
             <button
               onClick={handleSaveSettings}
-              disabled={isSaving}
+              disabled={isSaving || !loaded}
               className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
             >
               <Save className="h-3.5 w-3.5" />

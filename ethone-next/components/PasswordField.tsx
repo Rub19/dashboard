@@ -179,7 +179,7 @@ export default function PasswordField({
                   initial={{ opacity: 0, x: 8, scale: 0.8 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, x: 8, scale: 0.8 }}
-                  className="rounded-lg bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] text-[var(--accent-primary)]"
+                  className="rounded-lg bg-[var(--accent-primary)]/15 px-2 py-0.5 text-[10px] text-[var(--accent-primary)]"
                 >
                   ✓ Collé
                 </motion.span>
@@ -223,7 +223,7 @@ export default function PasswordField({
                     {["Généré", "Unique", "Sécurisé"].map((badge) => (
                       <span
                         key={badge}
-                        className="rounded-[var(--inset-radius)] border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-medium text-[var(--accent-primary)]"
+                        className="rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-2 py-0.5 text-[10px] font-medium text-[var(--accent-primary)]"
                       >
                         {badge}
                       </span>

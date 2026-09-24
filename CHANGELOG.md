@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.52 — 2026-09-24
+
+**Avatar animé, bannière ETHONE et badges corrigés**
+
+- Photo de profil du bot Discord animée (GIF : halos qui orbitent, liseré qui tourne, reflet qui traverse la tuile) et nouvelle bannière avec le mot ETHONE tracé comme le logo et la rangée des fonctions du bot
+- Correction des badges illisibles (pastille rose vide « Actif » dans Flows, profils, mots de passe, widgets) : le fond et le texte avaient la même couleur
+- Génération reproductible avec scripts/build-discord-profile.mjs
+
 ## v1.28.51 — 2026-09-24
 
 **Retour au logo ETHONE « E »**

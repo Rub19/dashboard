@@ -262,7 +262,7 @@ export default function ProfileDropdown() {
                   <p className="truncate text-[11px] text-[var(--text-muted)] max-w-[160px]">{email}</p>
                 </div>
               </div>
-              <span className="flex shrink-0 items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
+              <span className="flex shrink-0 items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
                 {i18n("active") || "Actif"}
               </span>

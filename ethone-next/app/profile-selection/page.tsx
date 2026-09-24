@@ -228,7 +228,7 @@ export default function ProfileSelectionPage() {
                 <div className="flex items-center gap-2">
                   <p className="font-medium">{p.name}</p>
                   {active === p.id && (
-                    <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
+                    <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)]/15 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
                       <Icon name="check" className="h-3 w-3" /> {i18n("active")}
                     </span>
                   )}

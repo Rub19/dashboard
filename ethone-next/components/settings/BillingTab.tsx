@@ -8,7 +8,7 @@ import { Icon } from "@/lib/icons";
 type Accent = "emerald" | "amber" | "sky" | "violet" | "rose";
 
 const accentMap: Record<Accent, string> = {
-  emerald: "text-[var(--accent-primary)] bg-[var(--accent-primary)] border-[var(--accent-primary)]",
+  emerald: "text-[var(--accent-primary)] bg-[var(--accent-primary)]/15 border-[var(--accent-primary)]/40",
   amber: "text-amber-400 bg-amber-500/10 border-amber-500/20",
   sky: "text-sky-400 bg-sky-500/10 border-sky-500/20",
   violet: "text-violet-400 bg-violet-500/10 border-violet-500/20",

@@ -33387,6 +33387,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_51_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_51_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_51_de);
 
+const v1_28_52_fr: ChangelogEntry = {
+  version: "v1.28.52",
+  date: "2026-09-24",
+  title: "Avatar animé, bannière ETHONE et badges corrigés",
+  items: [
+    "Photo de profil du bot Discord animée (GIF : halos qui orbitent, liseré qui tourne, reflet qui traverse la tuile) et nouvelle bannière avec le mot ETHONE tracé comme le logo et la rangée des fonctions du bot",
+    "Correction des badges illisibles (pastille rose vide « Actif » dans Flows, profils, mots de passe, widgets) : le fond et le texte avaient la même couleur",
+    "Génération reproductible avec scripts/build-discord-profile.mjs",
+  ],
+};
+
+const v1_28_52_en: ChangelogEntry = {
+  version: "v1.28.52",
+  date: "2026-09-24",
+  title: "Animated avatar, ETHONE banner and fixed badges",
+  items: [
+    "Discord bot profile picture is now animated (GIF: orbiting glows, rotating rim, a glint sweeping across the tile) with a new banner featuring the ETHONE wordmark drawn like the logo and a row of the bot's features",
+    "Fixed unreadable badges (empty pink 'Active' pill in Flows, profiles, passwords, widgets): background and text had the same colour",
+    "Reproducible with scripts/build-discord-profile.mjs",
+  ],
+};
+
+const v1_28_52_es: ChangelogEntry = {
+  version: "v1.28.52",
+  date: "2026-09-24",
+  title: "Avatar animado, banner ETHONE y badges corregidos",
+  items: [
+    "La foto de perfil del bot de Discord ahora es animada (GIF: halos que orbitan, borde que gira, un reflejo que cruza la ficha) con un nuevo banner con la palabra ETHONE dibujada como el logo y una fila de funciones del bot",
+    "Corregidos badges ilegibles (píldora rosa vacía «Activo» en Flows, perfiles, contraseñas, widgets): fondo y texto tenían el mismo color",
+    "Reproducible con scripts/build-discord-profile.mjs",
+  ],
+};
+
+const v1_28_52_de: ChangelogEntry = {
+  version: "v1.28.52",
+  date: "2026-09-24",
+  title: "Animierter Avatar, ETHONE-Banner und korrigierte Badges",
+  items: [
+    "Das Profilbild des Discord-Bots ist jetzt animiert (GIF: kreisende Lichter, drehender Rand, ein Glanz über der Kachel) mit neuem Banner: ETHONE-Schriftzug im Stil des Logos und eine Reihe der Bot-Funktionen",
+    "Unlesbare Badges korrigiert (leere rosa „Aktiv“-Pille in Flows, Profile, Passwörter, Widgets): Hintergrund und Text hatten dieselbe Farbe",
+    "Reproduzierbar mit scripts/build-discord-profile.mjs",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_52_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_52_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_52_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_52_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

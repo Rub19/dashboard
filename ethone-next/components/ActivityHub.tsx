@@ -93,7 +93,7 @@ function weeksForPeriod(days: number): number {
 const CATEGORY_META: Record<ActivityCategory, { color: string; bg: string; border: string }> = {
   productivity: { color: "text-[var(--info)]", bg: "bg-[var(--info)]", border: "border-[var(--info)]" },
   work: { color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
-  system: { color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]", border: "border-[var(--accent-primary)]" },
+  system: { color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]/15", border: "border-[var(--accent-primary)]/40" },
   brain: { color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
 };
 
@@ -115,7 +115,7 @@ const CATEGORY_CHIPS: ChipDef[] = [
 ];
 
 const TONE_META: Record<string, { labelKey: string; color: string; bg: string }> = {
-  success: { labelKey: "statusSuccess", color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)] border border-[var(--accent-primary)]" },
+  success: { labelKey: "statusSuccess", color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/40" },
   error: { labelKey: "statusError", color: "text-red-300", bg: "bg-red-500/15 border border-red-500/25" },
   failure: { labelKey: "statusError", color: "text-red-300", bg: "bg-red-500/15 border border-red-500/25" },
   warning: { labelKey: "statusWarning", color: "text-amber-300", bg: "bg-amber-500/15 border border-amber-500/25" },

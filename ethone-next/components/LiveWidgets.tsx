@@ -759,7 +759,7 @@ export default function LiveWidgets({
           </div>
           <div className="flex flex-wrap items-center justify-end gap-1.5">
             {model && (
-              <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)] px-2 py-1 text-[10px] text-[var(--accent-primary)]">
+              <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)]/15 px-2 py-1 text-[10px] text-[var(--accent-primary)]">
                 <Icon name="box" className="h-3 w-3" />
                 {model}
               </span>
@@ -1069,7 +1069,7 @@ export default function LiveWidgets({
 
         <div className="mb-3 flex flex-wrap gap-2">
           {model && (
-            <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)] px-2 py-1 text-[10px] text-[var(--accent-primary)]">
+            <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)]/15 px-2 py-1 text-[10px] text-[var(--accent-primary)]">
               <Icon name="box" className="h-3 w-3" />
               {model}
             </span>

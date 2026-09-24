@@ -32811,6 +32811,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_39_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_39_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_39_de);
 
+const v1_28_40_fr: ChangelogEntry = {
+  version: "v1.28.40",
+  date: "2026-09-24",
+  title: "Sécurité de la base de données renforcée (2FA, journal, fonctions)",
+  items: [
+    "Faille corrigée : un compte connecté pouvait, en appelant directement l'API de la base, lire, modifier ou supprimer sa propre ligne « totp » (secret 2FA et codes de secours) et donc désactiver la double authentification sans code. La table qui les contient est maintenant réservée au serveur (Worker) : aucun accès direct depuis un navigateur.",
+    "Tables du propriétaire du bot : les droits par défaut donnaient tous les pouvoirs (dont la suppression totale) aux visiteurs anonymes et connectés. Seuls la lecture et l'ajout du journal / la lecture des rôles restent ouverts, toujours limités au propriétaire.",
+    "Journal de sécurité : il ne peut plus être modifié ni effacé par l'utilisateur (lecture seule). Quatre fonctions ont un chemin de recherche figé et trois fonctions réservées aux déclencheurs ne sont plus appelables depuis l'extérieur. Audit Supabase : plus aucun avertissement de sécurité de niveau WARN, sauf « protection contre les mots de passe compromis » à activer dans les réglages d'authentification Supabase.",
+  ],
+};
+
+const v1_28_40_en: ChangelogEntry = {
+  version: "v1.28.40",
+  date: "2026-09-24",
+  title: "Database security hardened (2FA, audit log, functions)",
+  items: [
+    "Flaw fixed: a signed-in account could, by calling the database API directly, read, modify or delete its own \"totp\" row (2FA secret and backup codes) and so disable two-factor authentication without a code. The table holding them is now server-only (Worker): no direct access from a browser.",
+    "Bot owner tables: default grants gave every power (including full deletion) to anonymous and signed-in visitors. Only reading and appending the log / reading roles remain open, still restricted to the owner.",
+    "Security log: it can no longer be modified or erased by the user (read-only). Four functions have a pinned search path and three trigger-only functions can no longer be called from outside. Supabase audit: no more WARN-level security warnings, except \"compromised password protection\" to enable in Supabase auth settings.",
+  ],
+};
+
+const v1_28_40_es: ChangelogEntry = {
+  version: "v1.28.40",
+  date: "2026-09-24",
+  title: "Seguridad de la base de datos reforzada (2FA, registro, funciones)",
+  items: [
+    "Fallo corregido: una cuenta conectada podía, llamando directamente a la API de la base, leer, modificar o borrar su propia fila « totp » (secreto 2FA y códigos de respaldo) y así desactivar la autenticación en dos pasos sin código. La tabla que los contiene es ahora solo del servidor (Worker): sin acceso directo desde un navegador.",
+    "Tablas del propietario del bot: los permisos por defecto daban todos los poderes (incluido el borrado total) a visitantes anónimos y conectados. Solo quedan abiertos leer y añadir al registro / leer roles, siempre limitados al propietario.",
+    "Registro de seguridad: el usuario ya no puede modificarlo ni borrarlo (solo lectura). Cuatro funciones tienen la ruta de búsqueda fijada y tres funciones exclusivas de disparadores ya no se pueden llamar desde fuera. Auditoría de Supabase: sin más avisos de seguridad de nivel WARN, salvo « protección contra contraseñas comprometidas », que se activa en los ajustes de autenticación de Supabase.",
+  ],
+};
+
+const v1_28_40_de: ChangelogEntry = {
+  version: "v1.28.40",
+  date: "2026-09-24",
+  title: "Datenbanksicherheit verstärkt (2FA, Protokoll, Funktionen)",
+  items: [
+    "Lücke behoben: Ein angemeldetes Konto konnte über direkte Aufrufe der Datenbank-API seine eigene „totp“-Zeile (2FA-Geheimnis und Backup-Codes) lesen, ändern oder löschen und so die Zwei-Faktor-Authentifizierung ohne Code abschalten. Die Tabelle ist jetzt nur noch für den Server (Worker) zugänglich: kein direkter Zugriff aus dem Browser.",
+    "Tabellen des Bot-Besitzers: Standardrechte gaben anonymen und angemeldeten Besuchern alle Befugnisse (auch komplettes Löschen). Offen bleiben nur Lesen/Anhängen des Protokolls und Lesen der Rollen, weiterhin auf den Besitzer beschränkt.",
+    "Sicherheitsprotokoll: Es kann vom Nutzer nicht mehr geändert oder gelöscht werden (schreibgeschützt). Vier Funktionen haben einen festen Suchpfad, drei reine Trigger-Funktionen sind von außen nicht mehr aufrufbar. Supabase-Audit: keine Sicherheitswarnungen der Stufe WARN mehr, außer „Schutz vor kompromittierten Passwörtern“, den man in den Supabase-Auth-Einstellungen aktiviert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_40_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_40_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_40_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_40_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

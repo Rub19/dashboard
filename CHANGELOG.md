@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.40 — 2026-09-24
+
+**Sécurité de la base de données renforcée (2FA, journal, fonctions)**
+
+- Faille corrigée : un compte connecté pouvait, en appelant directement l'API de la base, lire, modifier ou supprimer sa propre ligne « totp » (secret 2FA et codes de secours) et donc désactiver la double authentification sans code. La table qui les contient est maintenant réservée au serveur (Worker) : aucun accès direct depuis un navigateur.
+- Tables du propriétaire du bot : les droits par défaut donnaient tous les pouvoirs (dont la suppression totale) aux visiteurs anonymes et connectés. Seuls la lecture et l'ajout du journal / la lecture des rôles restent ouverts, toujours limités au propriétaire.
+- Journal de sécurité : il ne peut plus être modifié ni effacé par l'utilisateur (lecture seule). Quatre fonctions ont un chemin de recherche figé et trois fonctions réservées aux déclencheurs ne sont plus appelables depuis l'extérieur. Audit Supabase : plus aucun avertissement de sécurité de niveau WARN, sauf « protection contre les mots de passe compromis » à activer dans les réglages d'authentification Supabase.
+
 ## v1.28.39 — 2026-09-24
 
 **Hub Discord en couleur, barre latérale : bouton coupé corrigé**

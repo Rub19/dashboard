@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.70 — 2026-09-24
+
+**/play plus rapide, alertes de sécurité en embeds, bio du bot**
+
+- /play : la commande ne reste plus « en réflexion » pendant toute la préparation du son. Elle répond au bout de 2,5 s au plus avec le titre demandé ; si la source audio échoue ensuite, le bot le signale dans le salon.
+- Recherche musicale : on n'attend plus la recherche YouTube classique quand la recherche YouTube Music a déjà répondu (jusqu'à plusieurs secondes gagnées).
+- Avec le service yt-dlp, plus de détour d'office par SoundCloud après un échec passager (environ 9 s perdues sur le lancement suivant).
+- Les 11 alertes de la Protection Suprême (sabotage du bot, bot retiré d'un serveur, ban / timeout / expulsion bloqués…) sont maintenant des embeds avec champs, et des boutons « Réinviter le bot » et « Dashboard ».
+- Bio du bot (« À propos de moi ») : site web et lien d'invitation, mise à jour automatiquement au démarrage si elle a changé.
+
 ## v1.28.69 — 2026-09-24
 
 **Interface mobile : trois pages qui débordaient**

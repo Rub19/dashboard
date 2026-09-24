@@ -228,10 +228,18 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
       return false;
     }
     try {
+      // Le titre demandé apparaît tout de suite (panneau, dashboard) pendant que la source audio se prépare.
+      this.queue.setCurrentTrack(track);
+      this.position = 0;
+      this.positionAt = Date.now();
+      this.status = 'PLAYING';
+      this.emitState();
       const ready = await lavalinkManager.ensureEncoded(track, track.requestedBy);
       if (!ready?.encoded) {
         logger.error(`[Lavalink] Impossible d’encoder "${track.title}" (${track.url}) — titre suivant.`);
         void musicNotifier.error(this.guildId, track.title, "Aucune source Lavalink n'a pu charger ce titre (recherche vide ou refusée).");
+        // Le titre affiché d'avance n'a jamais démarré : on l'oublie pour qu'un mode « répéter le titre » ne le rejoue pas en boucle.
+        this.queue.setCurrentTrack(null);
         void this.handleTrackEnd();
         return false;
       }
@@ -249,6 +257,7 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
       return true;
     } catch (err) {
       logger.error(`[Lavalink] Erreur lecture "${track.title}" guild ${this.guildId} :`, err);
+      this.queue.setCurrentTrack(null);
       void this.handleTrackEnd();
       return false;
     }

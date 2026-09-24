@@ -224,21 +224,21 @@ class LavalinkManager {
       }
     }
 
-    // Recherche texte : lancer ytmsearch et ytsearch EN PARALLÈLE pour diviser le temps de latence
-    const [ytmSettled, ytSettled] = await Promise.allSettled([
-      node.rest.resolve(`ytmsearch:${q}`),
-      node.rest.resolve(`ytsearch:${q}`),
-    ]);
+    // Recherche texte : ytmsearch (résultats « chanson » propres) et ytsearch partent EN PARALLÈLE, mais on ne
+    // ATTEND ytsearch que si ytmsearch ne donne rien — avant, la plus lente des deux (jusqu'à 7 s) retardait
+    // chaque lecture même quand ytmsearch avait déjà répondu.
+    const ytmPromise = node.rest.resolve(`ytmsearch:${q}`);
+    const ytPromise = node.rest.resolve(`ytsearch:${q}`);
+    ytPromise.catch(() => undefined); // évite un rejet non géré si on n'attend pas cette recherche
 
-    const ytmTracks = ytmSettled.status === 'fulfilled' && ytmSettled.value
-      ? this.parseResolveResult(ytmSettled.value, requestedBy, limit, opts?.maxPlaylist ?? 100)
-      : [];
+    const ytmTracks = await ytmPromise
+      .then((res) => (res ? this.parseResolveResult(res, requestedBy, limit, opts?.maxPlaylist ?? 100) : []))
+      .catch(() => [] as Track[]);
     if (ytmTracks.length > 0) return ytmTracks;
 
-    const ytTracks = ytSettled.status === 'fulfilled' && ytSettled.value
-      ? this.parseResolveResult(ytSettled.value, requestedBy, limit, opts?.maxPlaylist ?? 100)
-      : [];
-    return ytTracks;
+    return ytPromise
+      .then((res) => (res ? this.parseResolveResult(res, requestedBy, limit, opts?.maxPlaylist ?? 100) : []))
+      .catch(() => [] as Track[]);
   }
 
   private parseResolveResult(
@@ -499,7 +499,9 @@ class LavalinkManager {
     // YouTube refuse déjà de streamer depuis ce serveur : inutile d'encoder un
     // titre YouTube pour l'échec garanti, on va directement chez SoundCloud
     // (choisi par durée) pour les titres issus de recherches / playlists Spotify.
-    if (this.youtubeBlocked && !/^https?:\/\/(?!open\.spotify)/i.test(track.url || '')) {
+    // Avec le service yt-dlp, YouTube n'est PAS bloqué pour de bon (un échec y est passager) : on ne fait pas
+    // de détour SoundCloud d'office, qui ajoutait ~9 s au lancement quand il ne trouvait rien.
+    if (this.youtubeBlocked && !config.ytResolverUrl && !/^https?:\/\/(?!open\.spotify)/i.test(track.url || '')) {
       const sc = await this.resolveSoundCloudFallback(track, requestedBy);
       if (sc?.encoded) return sc;
     }

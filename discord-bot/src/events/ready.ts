@@ -11,6 +11,31 @@ import { backupService } from '../modules/backup/services/backupService.js';
 import { aiService } from '../modules/ai/services/aiService.js';
 import { logger } from '../utils/logger.js';
 
+const BOT_SITE_URL = 'https://ethone.dev/bot';
+
+/** « À propos de moi » du bot (400 caractères max) : présentation, site web et lien d'invitation. */
+function buildBotBio(clientId: string): string {
+  const invite = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&scope=bot%20applications.commands`;
+  return [
+    'ETHONE : le bot Discord tout-en-un piloté depuis un dashboard en temps réel (modération, musique, tickets, niveaux, sécurité…).',
+    `🌐 Site : ${BOT_SITE_URL}`,
+    `➕ Inviter le bot : ${invite}`,
+  ].join('\n').slice(0, 400);
+}
+
+/** Met la bio à jour uniquement si elle a changé (évite d'appeler l'API Discord à chaque démarrage). */
+async function syncBotBio(client: Client<true>): Promise<void> {
+  try {
+    const bio = buildBotBio(client.user.id);
+    const app = await client.application.fetch();
+    if ((app.description || '').trim() === bio) return;
+    await client.application.edit({ description: bio });
+    logger.success('[Profil] Bio du bot mise à jour (site web + lien d\'invitation).');
+  } catch (err) {
+    logger.warn('[Profil] Impossible de mettre à jour la bio du bot :', err);
+  }
+}
+
 export async function onReady(client: Client<true>) {
   logger.success(`Connecté avec succès en tant que ${client.user.tag} !`);
 
@@ -19,6 +44,8 @@ export async function onReady(client: Client<true>) {
     activities: [{ name: 'vos commandes | /help ou !help', type: ActivityType.Custom }],
     status: 'online',
   });
+
+  void syncBotBio(client);
 
   // Déploiement automatique des slash commands au démarrage
   await commandRegistry.deploySlashCommands();

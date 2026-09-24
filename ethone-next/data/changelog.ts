@@ -34245,6 +34245,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_69_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_69_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_69_de);
 
+const v1_28_70_fr: ChangelogEntry = {
+  version: "v1.28.70",
+  date: "2026-09-24",
+  title: "/play plus rapide, alertes de sécurité en embeds, bio du bot",
+  items: [
+    "/play : la commande ne reste plus « en réflexion » pendant toute la préparation du son. Elle répond au bout de 2,5 s au plus avec le titre demandé ; si la source audio échoue ensuite, le bot le signale dans le salon.",
+    "Recherche musicale : on n'attend plus la recherche YouTube classique quand la recherche YouTube Music a déjà répondu (jusqu'à plusieurs secondes gagnées).",
+    "Avec le service yt-dlp, plus de détour d'office par SoundCloud après un échec passager (environ 9 s perdues sur le lancement suivant).",
+    "Les 11 alertes de la Protection Suprême (sabotage du bot, bot retiré d'un serveur, ban / timeout / expulsion bloqués…) sont maintenant des embeds avec champs, et des boutons « Réinviter le bot » et « Dashboard ».",
+    "Bio du bot (« À propos de moi ») : site web et lien d'invitation, mise à jour automatiquement au démarrage si elle a changé.",
+  ],
+};
+
+const v1_28_70_en: ChangelogEntry = {
+  version: "v1.28.70",
+  date: "2026-09-24",
+  title: "Faster /play, security alerts as embeds, bot bio",
+  items: [
+    "/play: the command no longer stays on \"thinking\" while the audio is prepared. It answers within 2.5 s with the requested track; if the audio source fails afterwards, the bot reports it in the channel.",
+    "Music search: the plain YouTube search is no longer awaited when YouTube Music has already answered (up to several seconds saved).",
+    "With the yt-dlp service, no more automatic SoundCloud detour after a transient failure (about 9 s lost on the next start).",
+    "The 11 Supreme Protection alerts (bot sabotage, bot removed from a server, blocked ban / timeout / kick…) are now embeds with fields, plus \"Re-invite the bot\" and \"Dashboard\" buttons.",
+    "Bot bio (\"About me\"): website and invite link, updated automatically at startup when it changed.",
+  ],
+};
+
+const v1_28_70_es: ChangelogEntry = {
+  version: "v1.28.70",
+  date: "2026-09-24",
+  title: "/play más rápido, alertas de seguridad en embeds, bio del bot",
+  items: [
+    "/play: el comando ya no se queda en «pensando» mientras se prepara el audio. Responde en 2,5 s como máximo con el título pedido; si la fuente de audio falla después, el bot lo avisa en el canal.",
+    "Búsqueda de música: ya no se espera la búsqueda normal de YouTube cuando YouTube Music ya respondió (hasta varios segundos ahorrados).",
+    "Con el servicio yt-dlp, se acabó el desvío automático por SoundCloud tras un fallo pasajero (unos 9 s perdidos en el siguiente inicio).",
+    "Las 11 alertas de la Protección Suprema (sabotaje del bot, bot expulsado de un servidor, ban / timeout / expulsión bloqueados…) ahora son embeds con campos, con botones «Reinvitar al bot» y «Dashboard».",
+    "Bio del bot («Sobre mí»): sitio web y enlace de invitación, actualizada automáticamente al iniciar si cambió.",
+  ],
+};
+
+const v1_28_70_de: ChangelogEntry = {
+  version: "v1.28.70",
+  date: "2026-09-24",
+  title: "Schnelleres /play, Sicherheitsalarme als Embeds, Bot-Bio",
+  items: [
+    "/play: Der Befehl bleibt nicht mehr so lange auf „denkt nach“, während der Ton vorbereitet wird. Er antwortet spätestens nach 2,5 s mit dem gewünschten Titel; scheitert die Audioquelle danach, meldet der Bot das im Kanal.",
+    "Musiksuche: Die normale YouTube-Suche wird nicht mehr abgewartet, wenn YouTube Music schon geantwortet hat (mehrere Sekunden gespart).",
+    "Mit dem yt-dlp-Dienst gibt es nach einem kurzen Fehler keinen automatischen Umweg über SoundCloud mehr (ca. 9 s Verlust beim nächsten Start).",
+    "Die 11 Alarme des Obersten Schutzes (Bot-Sabotage, Bot vom Server entfernt, blockierter Bann / Timeout / Kick …) sind jetzt Embeds mit Feldern sowie Buttons „Bot erneut einladen“ und „Dashboard“.",
+    "Bot-Bio („Über mich“): Website und Einladungslink, beim Start automatisch aktualisiert, wenn sie sich geändert hat.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_70_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_70_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_70_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_70_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

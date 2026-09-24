@@ -192,8 +192,17 @@ class MusicService {
     // 4. Premier titre : lecture directe si rien ne joue, sinon file d'attente.
     let queuePosition: number;
     if (state.status === 'IDLE' && !state.currentTrack) {
-      const started = await player.playTrack(track);
-      if (!started) return { success: false, error: 'Échec du lancement audio.' };
+      const startPromise = player.playTrack(track);
+      if (config.musicBackend === 'lavalink') {
+        // Préparer la source audio peut prendre plusieurs secondes (recherche + flux yt-dlp) : la commande répond
+        // au bout de 2,5 s au plus au lieu de rester en « réflexion ». En cas d'échec tardif, le bot le signale
+        // dans le salon (musicNotifier) et passe au titre suivant.
+        const outcome = await Promise.race([startPromise, new Promise<'pending'>((r) => setTimeout(() => r('pending'), 2500))]);
+        if (outcome === false) return { success: false, error: 'Échec du lancement audio.' };
+        if (outcome === 'pending') startPromise.catch((err) => logger.warn('[MusicService] Lancement tardif en échec :', err));
+      } else if (!(await startPromise)) {
+        return { success: false, error: 'Échec du lancement audio.' };
+      }
       queuePosition = 0;
     } else if (options?.playNext) {
       player.queue.addNext(track);

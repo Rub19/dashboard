@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.67 — 2026-09-24
+
+**Fenêtre de confirmation : libellés adaptés**
+
+- La fenêtre de confirmation reconnaît maintenant « suppression » et « réinitialisation » : bouton rouge « Supprimer » / « Réinitialiser » au lieu d'un « Confirmer » neutre
+
 ## v1.28.66 — 2026-09-24
 
 **Pages d'un sondage : données réelles à la place de chiffres de démonstration**

@@ -21,13 +21,13 @@ export interface ConfirmOptions {
   tone?: "danger" | "default";
 }
 
-const DANGER_WORDS = /supprim|retir|annul|réinitialis|reinitialis|verrouill|redémarr|redemarr|révoqu|revoqu|déconnect|deconnect|purg|expuls|banni/i;
+const DANGER_WORDS = /suppr|retir|annul|réinitialis|reinitialis|verrouill|redémarr|redemarr|révoqu|revoqu|déconnect|deconnect|purg|expuls|banni/i;
 
 function resolveOptions(message: string, options: ConfirmOptions | undefined) {
   const danger = options?.tone ? options.tone === "danger" : DANGER_WORDS.test(message);
   return {
     title: options?.title ?? (danger ? "Confirmer l'action" : "Confirmation"),
-    confirmLabel: options?.confirmLabel ?? (/supprim/i.test(message) ? "Supprimer" : "Confirmer"),
+    confirmLabel: options?.confirmLabel ?? (/suppr/i.test(message) ? "Supprimer" : /réinitialis|reinitialis/i.test(message) ? "Réinitialiser" : "Confirmer"),
     cancelLabel: options?.cancelLabel ?? "Annuler",
     danger,
   };

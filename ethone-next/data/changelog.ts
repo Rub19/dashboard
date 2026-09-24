@@ -34098,6 +34098,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_66_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_66_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_66_de);
 
+const v1_28_67_fr: ChangelogEntry = {
+  version: "v1.28.67",
+  date: "2026-09-24",
+  title: "Fenêtre de confirmation : libellés adaptés",
+  items: [
+    "La fenêtre de confirmation reconnaît maintenant « suppression » et « réinitialisation » : bouton rouge « Supprimer » / « Réinitialiser » au lieu d'un « Confirmer » neutre",
+  ],
+};
+
+const v1_28_67_en: ChangelogEntry = {
+  version: "v1.28.67",
+  date: "2026-09-24",
+  title: "Confirmation dialog: matching labels",
+  items: [
+    "The confirmation dialog now recognises 'deletion' and 'reset' wording: red 'Delete' / 'Reset' button instead of a neutral 'Confirm'",
+  ],
+};
+
+const v1_28_67_es: ChangelogEntry = {
+  version: "v1.28.67",
+  date: "2026-09-24",
+  title: "Ventana de confirmación: etiquetas adecuadas",
+  items: [
+    "La ventana de confirmación reconoce ahora «eliminación» y «reinicio»: botón rojo «Eliminar» / «Reiniciar» en lugar de un «Confirmar» neutro",
+  ],
+};
+
+const v1_28_67_de: ChangelogEntry = {
+  version: "v1.28.67",
+  date: "2026-09-24",
+  title: "Bestätigungsfenster: passende Beschriftungen",
+  items: [
+    "Das Bestätigungsfenster erkennt jetzt „Löschung“ und „Zurücksetzen“: roter Button „Löschen“ / „Zurücksetzen“ statt eines neutralen „Bestätigen“",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_67_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_67_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_67_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_67_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

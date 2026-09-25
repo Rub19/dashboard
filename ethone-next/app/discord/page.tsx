@@ -104,6 +104,7 @@ type ModuleType =
   | "reminders"
   | "afk"
   | "counting"
+  | "stats"
   | "birthdays"
   | "tags"
   | "serverstats"
@@ -127,7 +128,7 @@ const MODULE_TINTS: Record<string, string> = {
   voice: "text-cyan-400", backups: "text-blue-400", ai: "text-violet-400", forms: "text-lime-400",
   polls: "text-purple-400", roles: "text-rose-400", analytics: "text-indigo-300", events: "text-orange-300",
   server: "text-zinc-300", starboard: "text-yellow-400", sticky: "text-amber-300", reminders: "text-sky-300",
-  afk: "text-blue-300", counting: "text-teal-300", birthdays: "text-pink-300", tags: "text-cyan-300", serverstats: "text-emerald-300",
+  afk: "text-blue-300", counting: "text-teal-300", stats: "text-sky-300", birthdays: "text-pink-300", tags: "text-cyan-300", serverstats: "text-emerald-300",
   highlights: "text-lime-300", bot: "text-indigo-400",
 };
 
@@ -138,7 +139,7 @@ const MODULE_PAGES: Record<string, string> = {
   moderation: "/discord/moderation", logs: "/discord/logs", music: "/discord/music", invites: "/discord/invites", voice: "/discord/voice",
   backups: "/discord/backups", ai: "/discord/ai", forms: "/discord/forms", polls: "/discord/polls", roles: "/discord/roles",
   analytics: "/discord/analytics", events: "/discord/events", server: "/discord/server", starboard: "/discord/starboard",
-  sticky: "/discord/sticky", reminders: "/discord/reminders", afk: "/discord/afk", counting: "/discord/counting", birthdays: "/discord/birthdays", tags: "/discord/tags",
+  sticky: "/discord/sticky", reminders: "/discord/reminders", afk: "/discord/afk", counting: "/discord/counting", stats: "/discord/stats", birthdays: "/discord/birthdays", tags: "/discord/tags",
   serverstats: "/discord/server-stats", highlights: "/discord/highlights", bot: "/discord/bot", economy: "/discord/economy", calendar: "/discord/calendar",
 };
 
@@ -148,7 +149,7 @@ const MODULE_CATEGORIES: NavigatorCategory[] = [
   { id: "community", label: "Communauté", hint: "Accueillez et animez vos membres", modules: ["welcome", "roles", "leveling", "invites", "suggestions", "polls", "forms", "starboard", "highlights", "birthdays"] },
   { id: "fun", label: "Animation & médias", hint: "Musique, jeux et événements", modules: ["music", "giveaways", "economy", "counting", "events", "calendar", "voice"] },
   { id: "tools", label: "Outils du quotidien", hint: "Support et automatisations", modules: ["tickets", "commands", "tags", "reminders", "sticky", "afk", "serverstats"] },
-  { id: "manage", label: "Gestion & intelligence", hint: "Vue globale, IA et bot", modules: ["overview", "server", "analytics", "ai", "bot"] },
+  { id: "manage", label: "Gestion & intelligence", hint: "Vue globale, IA et bot", modules: ["overview", "server", "analytics", "stats", "ai", "bot"] },
 ];
 
 const MODULE_ICONS = {
@@ -178,6 +179,7 @@ const MODULE_ICONS = {
   reminders: ethoneIcon("mod-reminders"),
   afk: ethoneIcon("mod-afk"),
   counting: ethoneIcon("mod-counting"),
+  stats: ethoneIcon("mod-stats"),
   birthdays: ethoneIcon("mod-birthdays"),
   tags: ethoneIcon("mod-tags"),
   serverstats: ethoneIcon("mod-serverstats"),
@@ -377,6 +379,14 @@ const MODULES: BotModule[] = [
     icon: MODULE_ICONS.reminders,
     color: "text-zinc-400",
     badge: "Utilitaires",
+  },
+  {
+    id: "stats",
+    title: "Statistiques",
+    description: "Messages et vocal par jour, évolution des membres, classements et fiche par membre, comme Statbot.",
+    icon: MODULE_ICONS.stats,
+    color: "text-zinc-400",
+    badge: "Gestion",
   },
   {
     id: "counting",
@@ -3086,6 +3096,26 @@ export default function DiscordDashboardPage() {
                         <li><code className="rounded bg-black/30 px-1">/reminder list</code> — tes rappels en attente</li>
                         <li><code className="rounded bg-black/30 px-1">/reminder cancel &lt;id&gt;</code> — annuler</li>
                       </ul>
+                    </div>
+                  </div>
+                )}
+
+                {activeModule === "stats" && (
+                  <div className="space-y-4 text-xs">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                      <div>
+                        <p className="text-xs font-bold text-white">Statistiques</p>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Messages et vocal par jour, arrivées / départs, top membres et salons, fiche par membre. Sur Discord : <code className="rounded bg-black/30 px-1">/stats server</code>, <code className="rounded bg-black/30 px-1">/stats member</code>, <code className="rounded bg-black/30 px-1">/stats top</code>. Désactivé par défaut : les données se collectent à partir de l&apos;activation.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/stats?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                      >
+                        <span>Ouvrir Statistiques</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
                     </div>
                   </div>
                 )}

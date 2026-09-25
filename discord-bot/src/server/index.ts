@@ -44,6 +44,7 @@ import { createReminderRouter } from './routes/reminderRoutes.js';
 import { reminderService } from '../modules/reminders/services/reminderService.js';
 import { createAfkRouter } from './routes/afkRoutes.js';
 import { createCountingRouter } from './routes/countingRoutes.js';
+import { createStatsRouter } from './routes/statsRoutes.js';
 import { createBirthdayRouter } from './routes/birthdayRoutes.js';
 import { createTagRouter } from './routes/tagRoutes.js';
 import { createServerStatsRouter } from './routes/serverStatsRoutes.js';
@@ -319,6 +320,12 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createAfkRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/stats',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createStatsRouter(client)
   );
   app.use(
     '/api/guilds/:guildId/counting',

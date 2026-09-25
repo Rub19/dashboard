@@ -40,6 +40,7 @@ import { BotTelemetryService } from '../modules/botControl/services/botTelemetry
 import { BotEventBusService } from '../modules/botControl/services/botEventBusService.js';
 import { LIVE_DISCORD_EVENTS, guildIdOfEvent, notifyDiscordState } from '../services/discordStateNotifier.js';
 import { guildSetupService } from '../services/guildSetupService.js';
+import { statsCollector } from '../modules/stats/services/statsCollector.js';
 import { logger } from '../utils/logger.js';
 
 let isEventsRegistered = false;
@@ -254,6 +255,7 @@ export function registerEvents(client: Client): void {
     handleVoiceStateUpdate(oldState, newState);
     voiceService.handleVoiceStateUpdate(oldState, newState);
     voiceStayService.onVoiceStateUpdate(oldState, newState);
+    statsCollector.onVoiceStateUpdate(oldState, newState);
     ownerShieldService.handleVoiceStateUpdate(oldState, newState);
   });
 

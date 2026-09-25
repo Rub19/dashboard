@@ -3,6 +3,7 @@ import { guildConfigService } from '../services/guildConfigService.js';
 import { baseEmbed } from '../utils/embeds.js';
 import { welcomeService } from '../modules/welcome/services/welcomeService.js';
 import { analyticsService } from '../modules/analytics/services/analyticsService.js';
+import { statsCollector } from '../modules/stats/services/statsCollector.js';
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
 import { logService } from '../modules/logs/services/logService.js';
 import { DiscordAuditAdapter } from '../modules/logs/services/discordAuditAdapter.js';
@@ -26,6 +27,7 @@ export async function onGuildMemberRemove(member: GuildMember | PartialGuildMemb
 
     // 2. Analytics
     analyticsService.recordLeave(member.guild.id, member.id);
+    statsCollector.recordLeave(member.guild.id, member.guild.memberCount);
 
     // 3. Audit Center 2.0 Log (Corrélation expulsion vs départ volontaire)
     if ('guild' in member && member.guild) {

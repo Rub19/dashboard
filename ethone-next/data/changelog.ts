@@ -35094,6 +35094,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_86_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_86_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_86_de);
 
+const v1_28_87_fr: ChangelogEntry = {
+  version: "v1.28.87",
+  date: "2026-09-25",
+  title: "Nouveau module : Statistiques (façon Statbot)",
+  items: [
+    "Le bot compte, jour par jour (UTC), les messages par salon et par membre, le temps vocal de TOUS les salons vocaux (salon AFK exclu) par salon et par membre, les arrivées / départs et le nombre de membres. Historique conservé 400 jours. Désactivé par défaut : les données se collectent à partir de l'activation.",
+    "Commande /stats : server (graphique messages / vocal / membres sur 7 à 365 jours + totaux, top membres et salons), member (fiche image façon Statbot : rangs, messages et vocal sur 1 / 7 / 60 jours, salons préférés, courbes), top (classement messages ou vocal) et channel (graphique d'un salon). Les images sont dessinées par le bot lui-même, sans service externe.",
+    "Page dashboard « Statistiques » : sélecteur de période (7 à 365 jours), cartes de totaux, graphiques messages / vocal / membres / arrivées / départs, classements des membres et des salons, fiche détaillée par membre (clic sur un membre), activation et effacement des données.",
+    "Nouveau test automatisé (collecte, sessions vocales, rangs, séries, rétention, images).",
+  ],
+};
+
+const v1_28_87_en: ChangelogEntry = {
+  version: "v1.28.87",
+  date: "2026-09-25",
+  title: "New module: Statistics (Statbot-style)",
+  items: [
+    "The bot counts, day by day (UTC), messages per channel and per member, voice time in ALL voice channels (AFK channel excluded) per channel and per member, joins / leaves and member count. History kept 400 days. Disabled by default: data is collected from activation onward.",
+    "/stats command: server (messages / voice / members chart over 7 to 365 days + totals, top members and channels), member (Statbot-style image card: ranks, messages and voice over 1 / 7 / 60 days, favourite channels, curves), top (messages or voice leaderboard) and channel (a channel's chart). Images are drawn by the bot itself, with no external service.",
+    "\"Statistics\" dashboard page: period selector (7 to 365 days), total cards, messages / voice / members / joins / leaves charts, member and channel leaderboards, detailed per-member card (click a member), enable and erase data.",
+    "New automated test (collection, voice sessions, ranks, series, retention, images).",
+  ],
+};
+
+const v1_28_87_es: ChangelogEntry = {
+  version: "v1.28.87",
+  date: "2026-09-25",
+  title: "Módulo nuevo: Estadísticas (estilo Statbot)",
+  items: [
+    "El bot cuenta, día a día (UTC), los mensajes por canal y por miembro, el tiempo de voz en TODOS los canales de voz (canal AFK excluido) por canal y por miembro, las llegadas / salidas y el número de miembros. Historial de 400 días. Desactivado por defecto: los datos se recogen desde la activación.",
+    "Comando /stats: server (gráfico de mensajes / voz / miembros de 7 a 365 días + totales, top de miembros y canales), member (ficha en imagen estilo Statbot: rangos, mensajes y voz en 1 / 7 / 60 días, canales favoritos, curvas), top (clasificación de mensajes o voz) y channel (gráfico de un canal). Las imágenes las dibuja el propio bot, sin servicio externo.",
+    "Página «Estadísticas» del dashboard: selector de periodo (7 a 365 días), tarjetas de totales, gráficos de mensajes / voz / miembros / llegadas / salidas, clasificaciones de miembros y canales, ficha detallada por miembro (clic en un miembro), activación y borrado de datos.",
+    "Nueva prueba automática (recogida, sesiones de voz, rangos, series, retención, imágenes).",
+  ],
+};
+
+const v1_28_87_de: ChangelogEntry = {
+  version: "v1.28.87",
+  date: "2026-09-25",
+  title: "Neues Modul: Statistiken (à la Statbot)",
+  items: [
+    "Der Bot zählt Tag für Tag (UTC) Nachrichten pro Kanal und Mitglied, die Sprachzeit in ALLEN Sprachkanälen (AFK-Kanal ausgenommen) pro Kanal und Mitglied, Beitritte / Abgänge und die Mitgliederzahl. Verlauf 400 Tage. Standardmäßig deaktiviert: Daten werden ab der Aktivierung erfasst.",
+    "Befehl /stats: server (Diagramm für Nachrichten / Sprache / Mitglieder über 7 bis 365 Tage + Summen, Top-Mitglieder und -Kanäle), member (Bildkarte im Statbot-Stil: Ränge, Nachrichten und Sprache über 1 / 7 / 60 Tage, Lieblingskanäle, Kurven), top (Rangliste nach Nachrichten oder Sprache) und channel (Diagramm eines Kanals). Die Bilder zeichnet der Bot selbst, ohne externen Dienst.",
+    "Dashboard-Seite „Statistiken“: Zeitraumauswahl (7 bis 365 Tage), Summenkarten, Diagramme für Nachrichten / Sprache / Mitglieder / Beitritte / Abgänge, Ranglisten für Mitglieder und Kanäle, detaillierte Mitgliedskarte (Klick auf ein Mitglied), Aktivieren und Löschen der Daten.",
+    "Neuer automatischer Test (Erfassung, Sprachsitzungen, Ränge, Reihen, Aufbewahrung, Bilder).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_87_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_87_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_87_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_87_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

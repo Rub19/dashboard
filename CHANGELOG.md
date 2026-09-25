@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.87 — 2026-09-25
+
+**Nouveau module : Statistiques (façon Statbot)**
+
+- Le bot compte, jour par jour (UTC), les messages par salon et par membre, le temps vocal de TOUS les salons vocaux (salon AFK exclu) par salon et par membre, les arrivées / départs et le nombre de membres. Historique conservé 400 jours. Désactivé par défaut : les données se collectent à partir de l'activation.
+- Commande /stats : server (graphique messages / vocal / membres sur 7 à 365 jours + totaux, top membres et salons), member (fiche image façon Statbot : rangs, messages et vocal sur 1 / 7 / 60 jours, salons préférés, courbes), top (classement messages ou vocal) et channel (graphique d'un salon). Les images sont dessinées par le bot lui-même, sans service externe.
+- Page dashboard « Statistiques » : sélecteur de période (7 à 365 jours), cartes de totaux, graphiques messages / vocal / membres / arrivées / départs, classements des membres et des salons, fiche détaillée par membre (clic sur un membre), activation et effacement des données.
+- Nouveau test automatisé (collecte, sessions vocales, rangs, séries, rétention, images).
+
 ## v1.28.86 — 2026-09-25
 
 **Nouveau module : Comptage**

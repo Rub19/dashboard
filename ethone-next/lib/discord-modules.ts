@@ -45,6 +45,7 @@ export const DISCORD_MODULES: DiscordModuleMeta[] = [
   { id: "tags", title: "Tags", href: "/discord/tags", keywords: ["tag", "reponse rapide", "faq", "snippet"], icon: "mod-tags", tint: "text-cyan-300" },
   { id: "reminders", title: "Reminders", href: "/discord/reminders", keywords: ["rappel", "reminder", "alarme"], icon: "mod-reminders", tint: "text-sky-300" },
   { id: "sticky", title: "Sticky Messages", href: "/discord/sticky", keywords: ["message epingle", "sticky", "toujours visible"], icon: "mod-sticky", tint: "text-amber-300" },
+  { id: "stats", title: "Statistiques", href: "/discord/stats", keywords: ["stats", "statistiques", "messages", "vocal", "activite", "classement", "graphique", "statbot"], icon: "mod-stats", tint: "text-sky-300" },
   { id: "counting", title: "Comptage", href: "/discord/counting", keywords: ["compter", "comptage", "counting", "jeu", "nombre", "record"], icon: "mod-counting", tint: "text-teal-300" },
   { id: "afk", title: "AFK", href: "/discord/afk", keywords: ["absent", "afk", "away"], icon: "mod-afk", tint: "text-blue-300" },
   { id: "serverstats", title: "Server Stats", href: "/discord/server-stats", keywords: ["statistiques", "compteur", "membres en ligne", "salon compteur"], icon: "mod-serverstats", tint: "text-emerald-300" },

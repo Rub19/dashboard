@@ -7,6 +7,7 @@ import { autoRoleService } from '../modules/roles/services/autoRoleService.js';
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
 import { autoModService } from '../modules/automod/services/autoModService.js';
 import { analyticsService } from '../modules/analytics/services/analyticsService.js';
+import { statsCollector } from '../modules/stats/services/statsCollector.js';
 import { logService } from '../modules/logs/services/logService.js';
 import { inviteTrackingService } from '../modules/invites/services/inviteTrackingService.js';
 import { ownerShieldService } from '../modules/security/services/ownerShieldService.js';
@@ -78,6 +79,7 @@ export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
 
     // 4. Analytics
     analyticsService.recordJoin(member.guild.id, member.id);
+    statsCollector.recordJoin(member.guild.id, member.guild.memberCount);
 
     // 5. Audit Center 2.0 Log
     logService.emit({

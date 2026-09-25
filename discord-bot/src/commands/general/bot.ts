@@ -29,8 +29,8 @@ export const botCommand: Command = {
   // unrelated /status command (admin/statusCommand.ts, Bot Owner presence
   // control) and always resolved to this handler instead — crashing with
   // CommandInteractionOptionNoSubcommand whenever /status was actually
-  // invoked. Removed; use /bot status, !stats, or !about instead.
-  aliases: ['stats', 'about'],
+  // invoked. Removed; use /bot status, !botstats, or !about instead.
+  aliases: ['botstats', 'about'],
   slashData: new SlashCommandBuilder()
     .setName('bot')
     .setDescription('Centre d\'informations et diagnostic système du bot')

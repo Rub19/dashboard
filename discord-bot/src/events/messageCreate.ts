@@ -15,6 +15,7 @@ import { aiService } from '../modules/ai/services/aiService.js';
 import { stickyService } from '../modules/stickyMessages/services/stickyService.js';
 import { afkService } from '../modules/afk/services/afkService.js';
 import { countingService } from '../modules/counting/services/countingService.js';
+import { statsCollector } from '../modules/stats/services/statsCollector.js';
 import { highlightService } from '../modules/highlights/services/highlightService.js';
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
 import { BotConfigService } from '../modules/botControl/services/botConfigService.js';
@@ -69,6 +70,9 @@ export async function onMessageCreate(message: Message) {
 
   // Comptage : vérification du nombre donné dans le salon de comptage (ignoré ailleurs et si le module est désactivé).
   countingService.handleMessage(message).catch(() => {});
+
+  // Statistiques d'activité : compteur du jour (messages par salon et par membre).
+  statsCollector.recordMessage(message);
 
   // Highlights : DM des membres qui surveillent un mot-clé présent dans ce message.
   highlightService.handleMessage(message).catch(() => {});

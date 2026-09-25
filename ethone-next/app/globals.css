@@ -3106,3 +3106,20 @@ html[data-hide-chrome="true"] [data-chrome] {
 .ethone-seek:disabled::-moz-range-thumb {
   transform: scale(0);
 }
+
+/* Boutons « Actualiser » : l'icône tourne pendant le rafraîchissement (voir components/RefreshSpinner.tsx). */
+@keyframes ethone-refresh-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.refresh-spin svg:first-of-type {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ethone-refresh-spin 0.8s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .refresh-spin svg:first-of-type {
+    animation: none;
+  }
+}

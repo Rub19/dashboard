@@ -294,7 +294,7 @@ export default function EconomyCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [base, currentGuildId, profile?.user?.id]);
+  }, [base, currentGuildId, profile?.user?.id, isBotPresent]);
 
   useEffect(() => {
     load();

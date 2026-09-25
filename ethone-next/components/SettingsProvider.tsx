@@ -264,6 +264,8 @@ export default function SettingsProvider({
 
     if (changed) {
       root.setAttribute("data-no-transitions", "true");
+      // Filet de sécurité : si l'application du thème lève une exception, l'attribut ne doit jamais rester (il coupe TOUTES les animations, loaders compris).
+      requestAnimationFrame(() => requestAnimationFrame(() => root.removeAttribute("data-no-transitions")));
     }
 
     // Apply the premium theme engine directly to the root for zero-lag switching.

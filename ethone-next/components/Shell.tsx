@@ -11,6 +11,7 @@ import { AnimatedSidebarProvider } from "@/components/motion/animated-sidebar";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import CommandPalette from "@/components/CommandPalette";
+import RefreshSpinner from "@/components/RefreshSpinner";
 import FloatingLiquidDock from "@/components/FloatingLiquidDock";
 import DocumentMetadata from "@/components/DocumentMetadata";
 import { ActivityJournalProvider } from "@/components/ActivityJournalProvider";
@@ -64,6 +65,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <LiveWidget />
                 <CosmicBackground />
                 <Spotlight />
+                <RefreshSpinner />
                 <VisualHaptics />
                 <PrivacyShield>
                 <main

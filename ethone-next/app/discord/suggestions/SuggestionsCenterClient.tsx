@@ -301,7 +301,7 @@ export default function SuggestionsCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [base, isRealGuild, computeOverview]);
+  }, [base, isRealGuild, computeOverview, isBotPresent]);
 
   useEffect(() => {
     load();
@@ -371,7 +371,7 @@ export default function SuggestionsCenterClient() {
     if (!selected) return;
     setNewPriority(priority);
     if (isDemo) {
-      patchLocal(selected.id, { priority });
+      toastError("Bot injoignable", "La priorité n'a pas été modifiée.");
       return;
     }
     try {
@@ -392,13 +392,7 @@ export default function SuggestionsCenterClient() {
   const addComment = async () => {
     if (!selected || !commentText.trim()) return;
     if (isDemo) {
-      patchLocal(selected.id, {
-        comments: [
-          ...selected.comments,
-          { id: `c-${Date.now()}`, userId: "staff", userTag: "Staff", avatarUrl: null, content: commentText.trim(), isStaff: true, timestamp: new Date().toISOString() },
-        ],
-      });
-      setCommentText("");
+      toastError("Bot injoignable", "Le commentaire n'a pas été publié.");
       return;
     }
     setSubmitting(true);

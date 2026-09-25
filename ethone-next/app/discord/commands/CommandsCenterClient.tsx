@@ -218,7 +218,7 @@ export default function CommandsCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [base, isRealGuild]);
+  }, [base, isRealGuild, isBotPresent]);
 
   useEffect(() => {
     load();

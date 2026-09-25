@@ -579,7 +579,7 @@ export function WelcomeCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [currentGuildId]);
+  }, [currentGuildId, botGuildIds, selectedGuild]);
 
   useEffect(() => {
     fetchAllData();

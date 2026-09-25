@@ -269,7 +269,7 @@ export default function BackupsCenterClient() {
     }
     if (!await confirmDialog(`Supprimer définitivement le snapshot « ${bkp.name} » ?`)) return;
     if (isDemo) {
-      setBackups((prev) => prev.filter((b) => b.backupId !== bkp.backupId));
+      toastError("Bot injoignable : rien n'a été supprimé.");
       return;
     }
     try {
@@ -323,7 +323,7 @@ export default function BackupsCenterClient() {
 
   const fetchPlan = useCallback(async (bkp: BackupItem, level: SafetyLevel) => {
     if (isDemo) {
-      setRestorePlan({ counts: { willCreate: 2, willModify: 4, willDelete: level === "DESTRUCTIVE" ? 1 : 0, willSkip: 2 }, actions: [] });
+      toastError("Bot injoignable : le plan de restauration ne peut pas être calculé.");
       return;
     }
     setPlanLoading(true);

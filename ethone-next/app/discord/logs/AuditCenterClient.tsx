@@ -383,7 +383,7 @@ export function AuditCenterClient() {
         setTextChannels(all.filter((c) => c.type === 0 || c.type === 5).map(({ id, name }) => ({ id, name })));
       }
     } catch {}
-  }, [selectedGuild]);
+  }, [selectedGuild, isBotPresent]);
 
   // Reflète en direct les changements faits via la commande Discord /logs
   // (ou un autre onglet dashboard) sans attendre un rechargement manuel — même

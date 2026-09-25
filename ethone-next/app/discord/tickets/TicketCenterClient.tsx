@@ -407,7 +407,7 @@ export function TicketCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [currentGuildId, statusFilter, priorityFilter, categoryFilter, searchQuery, periodFilter]);
+  }, [currentGuildId, statusFilter, priorityFilter, categoryFilter, searchQuery, periodFilter, botGuildIds, selectedGuild]);
 
   useEffect(() => {
     fetchAllData();

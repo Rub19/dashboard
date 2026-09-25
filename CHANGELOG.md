@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.97 — 2026-09-25
+
+**Boutons Actualiser animés, carte de rang en image, corrections du dashboard**
+
+- Tous les boutons « Actualiser » (et Synchroniser) du dashboard font maintenant tourner leur icône pendant le rafraîchissement, au moins 0,9 s et tant que le chargement dure.
+- /rank : nouvelle carte en image (avatar avec anneau aux couleurs du serveur, pseudo, rang, niveau, barre de progression, XP restante, prochaine récompense de rôle) ; la carte texte reste en secours si le rendu échoue.
+- Faux succès supprimés : dupliquer un sondage, changer la priorité d'une suggestion, commenter une suggestion, supprimer une sauvegarde ou calculer un plan de restauration ne simulent plus la réussite quand le bot est injoignable ; ils l'indiquent.
+- Chargement : plusieurs pages (commandes, économie, journaux, suggestions, tickets, accueil) ne restaient pas sur « bot injoignable » quand la présence du bot se confirmait après coup ; elles se rechargent maintenant.
+- Toutes les animations pouvaient rester coupées si l'application d'un thème échouait ; l'attribut de coupure est désormais toujours retiré.
+
 ## v1.28.96 — 2026-09-25
 
 **Noms décoratifs lisibles dans les images du bot**

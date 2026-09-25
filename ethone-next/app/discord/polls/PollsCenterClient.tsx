@@ -242,10 +242,10 @@ export default function PollsCenterClient() {
     loadPolls();
   }, [loadPolls]);
 
-  // Fire a bot action for a poll; falls back to a local-only mutation in demo mode.
+  // Envoie une action au bot pour un sondage. Bot injoignable : échec (jamais de faux succès local).
   const pollAction = useCallback(
     async (poll: PollSummary, path: string, body?: Record<string, unknown>): Promise<boolean> => {
-      if (isDemo || !BOT_API_URL) return true;
+      if (isDemo || !BOT_API_URL) return false;
       try {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/${poll.id}/${path}`, {
           method: "POST",
@@ -293,20 +293,7 @@ export default function PollsCenterClient() {
 
   const handleDuplicate = async (poll: PollSummary) => {
     if (isDemo || !BOT_API_URL) {
-      setPolls((prev) => [
-        {
-          ...poll,
-          id: `poll-${Date.now().toString(36)}`,
-          title: `${poll.title} (Copie)`,
-          status: "DRAFT",
-          totalVotes: 0,
-          uniqueVoters: 0,
-          participationRate: 0,
-          updatedAt: "À l'instant",
-        },
-        ...prev,
-      ]);
-      showToast("Sondage dupliqué en brouillon !", "success");
+      showToast("Bot injoignable : le sondage n'a pas été dupliqué.", "error");
       return;
     }
     const ok = await pollAction(poll, "duplicate");

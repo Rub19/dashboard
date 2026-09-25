@@ -35684,6 +35684,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_96_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_96_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_96_de);
 
+const v1_28_97_fr: ChangelogEntry = {
+  version: "v1.28.97",
+  date: "2026-09-25",
+  title: "Boutons Actualiser animés, carte de rang en image, corrections du dashboard",
+  items: [
+    "Tous les boutons « Actualiser » (et Synchroniser) du dashboard font maintenant tourner leur icône pendant le rafraîchissement, au moins 0,9 s et tant que le chargement dure.",
+    "/rank : nouvelle carte en image (avatar avec anneau aux couleurs du serveur, pseudo, rang, niveau, barre de progression, XP restante, prochaine récompense de rôle) ; la carte texte reste en secours si le rendu échoue.",
+    "Faux succès supprimés : dupliquer un sondage, changer la priorité d'une suggestion, commenter une suggestion, supprimer une sauvegarde ou calculer un plan de restauration ne simulent plus la réussite quand le bot est injoignable ; ils l'indiquent.",
+    "Chargement : plusieurs pages (commandes, économie, journaux, suggestions, tickets, accueil) ne restaient pas sur « bot injoignable » quand la présence du bot se confirmait après coup ; elles se rechargent maintenant.",
+    "Toutes les animations pouvaient rester coupées si l'application d'un thème échouait ; l'attribut de coupure est désormais toujours retiré.",
+  ],
+};
+
+const v1_28_97_en: ChangelogEntry = {
+  version: "v1.28.97",
+  date: "2026-09-25",
+  title: "Animated Refresh buttons, image rank card, dashboard fixes",
+  items: [
+    "Every \"Refresh\" (and Sync) button in the dashboard now spins its icon while refreshing, for at least 0.9 s and as long as loading lasts.",
+    "/rank: new image card (avatar with a ring in the server colours, name, rank, level, progress bar, remaining XP, next role reward); the text card remains as a fallback if rendering fails.",
+    "Fake successes removed: duplicating a poll, changing a suggestion priority, commenting a suggestion, deleting a backup or computing a restore plan no longer pretend to succeed when the bot is unreachable; they say so.",
+    "Loading: several pages (commands, economy, logs, suggestions, tickets, welcome) stayed on \"bot unreachable\" when the bot's presence was confirmed later; they now reload.",
+    "All animations could stay disabled if applying a theme failed; the switch-off attribute is now always removed.",
+  ],
+};
+
+const v1_28_97_es: ChangelogEntry = {
+  version: "v1.28.97",
+  date: "2026-09-25",
+  title: "Botones Actualizar animados, tarjeta de rango en imagen, correcciones del dashboard",
+  items: [
+    "Todos los botones «Actualizar» (y Sincronizar) del dashboard hacen girar su icono mientras se actualiza, al menos 0,9 s y mientras dure la carga.",
+    "/rank: nueva tarjeta en imagen (avatar con anillo en los colores del servidor, nombre, rango, nivel, barra de progreso, XP restante, próxima recompensa de rol); la tarjeta de texto queda como respaldo si falla el renderizado.",
+    "Falsos éxitos eliminados: duplicar una encuesta, cambiar la prioridad de una sugerencia, comentarla, borrar una copia de seguridad o calcular un plan de restauración ya no simulan éxito si el bot no responde; lo indican.",
+    "Carga: varias páginas (comandos, economía, registros, sugerencias, tickets, bienvenida) se quedaban en «bot inaccesible» cuando la presencia del bot se confirmaba después; ahora se recargan.",
+    "Todas las animaciones podían quedar desactivadas si fallaba la aplicación de un tema; el atributo de desactivación ahora siempre se retira.",
+  ],
+};
+
+const v1_28_97_de: ChangelogEntry = {
+  version: "v1.28.97",
+  date: "2026-09-25",
+  title: "Animierte Aktualisieren-Schaltflächen, Rangkarte als Bild, Dashboard-Korrekturen",
+  items: [
+    "Alle „Aktualisieren“- (und Synchronisieren-) Schaltflächen im Dashboard drehen jetzt ihr Symbol beim Aktualisieren, mindestens 0,9 s und solange das Laden dauert.",
+    "/rank: neue Bildkarte (Avatar mit Ring in den Serverfarben, Name, Rang, Level, Fortschrittsbalken, verbleibende XP, nächste Rollenbelohnung); die Textkarte bleibt als Ersatz, falls das Rendern fehlschlägt.",
+    "Falsche Erfolgsmeldungen entfernt: Umfrage duplizieren, Priorität eines Vorschlags ändern, Vorschlag kommentieren, Backup löschen oder Wiederherstellungsplan berechnen täuschen keinen Erfolg mehr vor, wenn der Bot nicht erreichbar ist; sie melden es.",
+    "Laden: Mehrere Seiten (Befehle, Wirtschaft, Protokolle, Vorschläge, Tickets, Willkommen) blieben bei „Bot nicht erreichbar“, wenn die Bot-Präsenz erst später bestätigt wurde; sie laden jetzt neu.",
+    "Alle Animationen konnten deaktiviert bleiben, wenn das Anwenden eines Themes fehlschlug; das Abschalt-Attribut wird jetzt immer entfernt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_97_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_97_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_97_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_97_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

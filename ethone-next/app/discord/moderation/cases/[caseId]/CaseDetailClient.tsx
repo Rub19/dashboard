@@ -108,31 +108,11 @@ export default function CaseDetailClient() {
           }
         }
       } catch {
-        // Fallback
+        // bot injoignable : voir plus bas
       }
     }
-      // Fallback display
-      setModCase({
-        id: `CASE-${guildId}-${caseNumber}`,
-        caseNumber: Number(caseNumber),
-        guildId: guildId || "123456789",
-        userId: "999888777",
-        userTag: "Exemple#0001",
-        moderatorId: "staff-1",
-        moderatorTag: "Modérateur#0001",
-        action: "TIMEOUT",
-        reason: "Spam publicitaire répété",
-        standardCategory: "Advertising",
-        durationSeconds: 3600,
-        createdAt: new Date().toISOString(),
-        expiresAt: new Date(Date.now() + 3600000).toISOString(),
-        status: "ACTIVE",
-        source: "MANUAL",
-        metadata: {
-          channelName: "général",
-          messageContent: "Venez voir mon site d'arnaque https://steam-gift.xyz",
-        },
-      });
+      // Dossier absent ou bot injoignable : la page affiche « Dossier introuvable ». Aucun dossier de démonstration n'est inventé.
+      setModCase(null);
     } finally {
       setIsLoading(false);
     }

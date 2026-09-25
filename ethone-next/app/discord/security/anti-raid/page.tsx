@@ -474,13 +474,7 @@ export default function AntiRaidDashboardPage() {
 
     // Si le bot n'est pas installé, charger directement le cache local sans requête réseau
     if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
-      try {
-        const saved = localStorage.getItem(`ethone:anti-raid:${selectedGuild.id}`);
-        if (saved) setSettings(JSON.parse(saved));
-        else setSettings(DEFAULT_ANTI_RAID_SETTINGS);
-      } catch {
-        setSettings(DEFAULT_ANTI_RAID_SETTINGS);
-      }
+      setSettings(DEFAULT_ANTI_RAID_SETTINGS);
       return;
     }
 
@@ -495,14 +489,8 @@ export default function AntiRaidDashboardPage() {
       }
     } catch {}
 
-    // Fallback localStorage
-    try {
-      const saved = localStorage.getItem(`ethone:anti-raid:${selectedGuild.id}`);
-      if (saved) setSettings(JSON.parse(saved));
-      else setSettings(DEFAULT_ANTI_RAID_SETTINGS);
-    } catch {
-      setSettings(DEFAULT_ANTI_RAID_SETTINGS);
-    }
+    // Bot injoignable : valeurs par défaut (aucune ancienne copie locale présentée comme l'état réel)
+    setSettings(DEFAULT_ANTI_RAID_SETTINGS);
   }, [selectedGuild, botGuildIds]);
 
   // Reflète en direct les changements faits via la commande Discord /antiraid
@@ -569,8 +557,8 @@ export default function AntiRaidDashboardPage() {
         throw new Error();
       }
     } catch {
-      localStorage.setItem(`ethone:anti-raid:${selectedGuild.id}`, JSON.stringify(settings));
-      success("Configuration sauvegardée localement", "Les paramètres sont mémorisés pour ce serveur.");
+      // Pas de « sauvegarde locale » présentée comme un succès : la protection n'a pas changé sur le serveur.
+      showError("Configuration non enregistrée : le bot n'a pas répondu ou l'a refusée. La protection n'a pas changé.");
     } finally {
       setIsSaving(false);
     }
@@ -712,14 +700,6 @@ export default function AntiRaidDashboardPage() {
         }
       }
 
-      // 3. Persistance localStorage
-      try {
-        const saved = localStorage.getItem(`ethone:anti-raid:${selectedGuild.id}`);
-        const parsed = saved ? JSON.parse(saved) : settings;
-        parsed.raidMode = { ...parsed.raidMode, blockAllInvites: false };
-        localStorage.setItem(`ethone:anti-raid:${selectedGuild.id}`, JSON.stringify(parsed));
-      } catch {}
-
       success(
         "Invitations débloquées",
         "Le blocage des invitations a été désactivé (OFF). Les liens d'invitation sont de nouveau actifs."
@@ -762,13 +742,6 @@ export default function AntiRaidDashboardPage() {
           throw new Error(errData?.error || `HTTP ${res.status}`);
         }
       }
-
-      try {
-        const saved = localStorage.getItem(`ethone:anti-raid:${selectedGuild.id}`);
-        const parsed = saved ? JSON.parse(saved) : settings;
-        parsed.raidMode = { ...parsed.raidMode, blockAllInvites: next };
-        localStorage.setItem(`ethone:anti-raid:${selectedGuild.id}`, JSON.stringify(parsed));
-      } catch {}
 
       toggle(
         "Blocage des invitations",

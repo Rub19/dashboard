@@ -34604,6 +34604,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_76_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_76_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_76_de);
 
+const v1_28_77_fr: ChangelogEntry = {
+  version: "v1.28.77",
+  date: "2026-09-25",
+  title: "Fin des faux contenus et des faux succès",
+  items: [
+    "Dossier de modération inexistant : la page affichait un faux dossier (« Exemple#0001 », bouton Pardonner actif). Elle affiche maintenant « Dossier introuvable ».",
+    "Événement inexistant : la page affichait un faux événement « DÉMO » avec boutons de participation actifs. Elle affiche maintenant une vraie page « Événement introuvable » (et « Chargement… » pendant la requête).",
+    "Salon vocal temporaire : verrouiller, renommer, limiter, liste blanche / noire affichaient « Action exécutée (mode local) » même quand le bot n'avait rien fait. Une erreur claire est maintenant affichée et rien n'est simulé.",
+    "AutoMod : l'enregistrement d'une règle personnalisée partait sans cookie de session (donc refusé par le bot) puis affichait « enregistrée en local » ; la suppression affichait « retirée du moteur » sans vérifier la réponse. Corrigé, avec de vraies erreurs.",
+    "AutoMod et Anti-Raid : plus de « sauvegarde locale » présentée comme un succès, et plus d'ancienne copie locale affichée à la place des vrais réglages quand le bot est injoignable.",
+  ],
+};
+
+const v1_28_77_en: ChangelogEntry = {
+  version: "v1.28.77",
+  date: "2026-09-25",
+  title: "No more fake content or fake successes",
+  items: [
+    "Non-existent moderation case: the page showed a fake case (\"Exemple#0001\", active Pardon button). It now shows \"Case not found\".",
+    "Non-existent event: the page showed a fake \"DEMO\" event with active RSVP buttons. It now shows a proper \"Event not found\" page (and \"Loading…\" during the request).",
+    "Temporary voice room: lock, rename, limit, allow/block lists reported \"Action executed (local mode)\" even when the bot did nothing. A clear error is now shown and nothing is simulated.",
+    "AutoMod: saving a custom rule was sent without the session cookie (so the bot refused it) and then reported \"saved locally\"; deleting reported \"removed from the engine\" without checking the response. Fixed, with real errors.",
+    "AutoMod and Anti-Raid: no more \"local save\" presented as a success, and no more stale local copy shown instead of the real settings when the bot is unreachable.",
+  ],
+};
+
+const v1_28_77_es: ChangelogEntry = {
+  version: "v1.28.77",
+  date: "2026-09-25",
+  title: "Fin de los contenidos falsos y los éxitos falsos",
+  items: [
+    "Caso de moderación inexistente: la página mostraba un caso falso («Exemple#0001», botón Perdonar activo). Ahora muestra «Caso no encontrado».",
+    "Evento inexistente: la página mostraba un evento «DEMO» falso con botones de participación activos. Ahora muestra una página «Evento no encontrado» (y «Cargando…» durante la petición).",
+    "Sala de voz temporal: bloquear, renombrar, limitar y listas blanca/negra indicaban «Acción ejecutada (modo local)» aunque el bot no hubiera hecho nada. Ahora se muestra un error claro y no se simula nada.",
+    "AutoMod: guardar una regla personalizada se enviaba sin la cookie de sesión (el bot la rechazaba) y luego indicaba «guardada en local»; eliminar indicaba «retirada del motor» sin comprobar la respuesta. Corregido, con errores reales.",
+    "AutoMod y Anti-Raid: ya no se presenta un «guardado local» como éxito, ni se muestra una copia local antigua en lugar de los ajustes reales cuando el bot no responde.",
+  ],
+};
+
+const v1_28_77_de: ChangelogEntry = {
+  version: "v1.28.77",
+  date: "2026-09-25",
+  title: "Schluss mit falschen Inhalten und falschen Erfolgsmeldungen",
+  items: [
+    "Nicht vorhandener Moderationsfall: Die Seite zeigte einen falschen Fall („Exemple#0001“, aktiver Begnadigen-Button). Jetzt erscheint „Fall nicht gefunden“.",
+    "Nicht vorhandenes Event: Die Seite zeigte ein falsches „DEMO“-Event mit aktiven Teilnahme-Buttons. Jetzt erscheint eine echte Seite „Event nicht gefunden“ (und „Lädt …“ während der Anfrage).",
+    "Temporärer Sprachkanal: Sperren, Umbenennen, Limit, Weiß-/Sperrliste meldeten „Aktion ausgeführt (lokaler Modus)“, auch wenn der Bot nichts getan hatte. Jetzt erscheint ein klarer Fehler, nichts wird simuliert.",
+    "AutoMod: Das Speichern einer eigenen Regel wurde ohne Sitzungs-Cookie gesendet (vom Bot abgelehnt) und meldete dann „lokal gespeichert“; das Löschen meldete „aus der Engine entfernt“, ohne die Antwort zu prüfen. Behoben, mit echten Fehlern.",
+    "AutoMod und Anti-Raid: Kein „lokales Speichern“ mehr als Erfolg, und keine veraltete lokale Kopie statt der echten Einstellungen, wenn der Bot nicht erreichbar ist.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_77_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_77_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_77_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_77_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

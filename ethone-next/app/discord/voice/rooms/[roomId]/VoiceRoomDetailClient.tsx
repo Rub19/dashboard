@@ -81,7 +81,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
   const guildId = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds) || "";
-  const { success } = useToast();
+  const { success, error: showError } = useToast();
 
   const [room, setRoom] = useState<TemporaryRoomDetail | null>(null);
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
@@ -141,18 +141,10 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
         return;
       }
     } catch {
-      // Local demo fallback
+      // réseau : traité ci-dessous
     }
-
-    if (!room) return;
-    if (action === "lock") setRoom({ ...room, isLocked: true });
-    if (action === "unlock") setRoom({ ...room, isLocked: false });
-    if (action === "rename" && typeof value === "string") setRoom({ ...room, name: value });
-    if (action === "set_limit" && typeof value === "number") setRoom({ ...room, userLimit: value });
-    if (action === "delete" || action === "cleanup") {
-      router.push(`/discord/voice?guildId=${guildId}`);
-    }
-    success("Action exécutée (mode local) !");
+    // Aucune modification locale simulée : si le bot n'a pas appliqué l'action, on le dit.
+    showError("Action non appliquée", "Le bot n'a pas répondu ou a refusé l'action. Rien n'a été modifié.");
   };
 
   // Whitelist manipulation
@@ -171,16 +163,9 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
         return;
       }
     } catch {
-      // Fallback
+      // réseau : traité ci-dessous
     }
-
-    if (!room) return;
-    let list = [...(room.allowedUserIds || room.whitelist || [])];
-    if (action === "add" && !list.includes(userId)) list.push(userId);
-    if (action === "remove") list = list.filter((id) => id !== userId);
-    setRoom({ ...room, allowedUserIds: list, whitelist: list });
-    setTargetUserId("");
-    success("Whitelist mise à jour !");
+    showError("Whitelist non modifiée", "Le bot n'a pas répondu ou a refusé la modification.");
   };
 
   // Banlist manipulation
@@ -199,21 +184,9 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
         return;
       }
     } catch {
-      // Fallback
+      // réseau : traité ci-dessous
     }
-
-    if (!room) return;
-    let list = [...(room.blockedUserIds || room.banlist || [])];
-    if (action === "add" && !list.includes(userId)) list.push(userId);
-    if (action === "remove") list = list.filter((id) => id !== userId);
-    setRoom({
-      ...room,
-      blockedUserIds: list,
-      banlist: list,
-      currentUsers: room.currentUsers.filter((u) => u.id !== userId),
-    });
-    setTargetUserId("");
-    success("Banlist mise à jour !");
+    showError("Banlist non modifiée", "Le bot n'a pas répondu ou a refusé la modification.");
   };
 
   if (loading) {

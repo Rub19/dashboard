@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.77 — 2026-09-25
+
+**Fin des faux contenus et des faux succès**
+
+- Dossier de modération inexistant : la page affichait un faux dossier (« Exemple#0001 », bouton Pardonner actif). Elle affiche maintenant « Dossier introuvable ».
+- Événement inexistant : la page affichait un faux événement « DÉMO » avec boutons de participation actifs. Elle affiche maintenant une vraie page « Événement introuvable » (et « Chargement… » pendant la requête).
+- Salon vocal temporaire : verrouiller, renommer, limiter, liste blanche / noire affichaient « Action exécutée (mode local) » même quand le bot n'avait rien fait. Une erreur claire est maintenant affichée et rien n'est simulé.
+- AutoMod : l'enregistrement d'une règle personnalisée partait sans cookie de session (donc refusé par le bot) puis affichait « enregistrée en local » ; la suppression affichait « retirée du moteur » sans vérifier la réponse. Corrigé, avec de vraies erreurs.
+- AutoMod et Anti-Raid : plus de « sauvegarde locale » présentée comme un succès, et plus d'ancienne copie locale affichée à la place des vrais réglages quand le bot est injoignable.
+
 ## v1.28.76 — 2026-09-25
 
 **Tickets et sondages : numéros en double et votes truqués**

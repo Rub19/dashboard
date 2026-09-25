@@ -136,6 +136,8 @@ export default function EventDetailClient() {
     id: eventId,
   });
   const [isDemo, setIsDemo] = useState(true);
+  // « missing » : la réponse du bot dit que l'événement n'existe pas (ou le bot est injoignable) → page d'erreur, pas un faux événement.
+  const [loadState, setLoadState] = useState<"loading" | "ok" | "missing">("loading");
 
   const [userRsvp, setUserRsvp] = useState<"GOING" | "MAYBE" | "NOT_GOING" | null>(null);
   const [isCheckedIn, setIsCheckedIn] = useState(false);
@@ -154,6 +156,7 @@ export default function EventDetailClient() {
   const loadEvent = useCallback(async () => {
     if (!BOT_API_URL) {
       setIsDemo(true);
+      setLoadState("missing");
       return;
     }
     try {
@@ -162,11 +165,14 @@ export default function EventDetailClient() {
       if (res.ok && data?.event) {
         setEvent(mapEvent(data.event, eventId));
         setIsDemo(false);
+        setLoadState("ok");
       } else {
         setIsDemo(true);
+        setLoadState("missing");
       }
     } catch {
       setIsDemo(true);
+      setLoadState("missing");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guildParam, eventId]);
@@ -274,6 +280,30 @@ export default function EventDetailClient() {
   };
 
   const startDate = new Date(event.startDate);
+
+  if (loadState === "loading") {
+    return <div className="flex h-full items-center justify-center bg-[var(--bg-main)] text-sm text-slate-400">Chargement de l&apos;événement…</div>;
+  }
+
+  if (loadState === "missing") {
+    return (
+      <div className="flex h-full items-center justify-center bg-[var(--bg-main)] p-6 text-center">
+        <div className="max-w-md">
+          <h1 className="text-xl font-bold text-white">Événement introuvable</h1>
+          <p className="mt-2 text-sm text-slate-400">
+            Cet événement n&apos;existe pas, a été supprimé, ou le bot n&apos;est pas joignable sur ce serveur.
+          </p>
+          <Link
+            href={`/discord/events${guildParam ? `?guildId=${guildParam}` : ""}`}
+            className="mt-6 inline-flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-white/[0.04] px-4 py-2 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/[0.08]"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Retour aux événements
+          </Link>
+        </div>
+      </div>
+    );
+  }
   const fillRate = !event.capacity.unlimited && event.capacity.maxParticipants > 0
     ? Math.min(100, Math.round((event.stats.goingCount / event.capacity.maxParticipants) * 100))
     : 100;

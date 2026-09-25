@@ -525,15 +525,10 @@ export default function AutoModCommandCenterPage() {
         setIsLoading(false);
         return;
       } catch {
-        // Fallback localStorage si bot local ou offline
+        // Bot injoignable ou hors ligne : voir plus bas
       }
     }
-    try {
-      const savedCfg = localStorage.getItem(`ethone:automod:cfg:${selectedGuild.id}`);
-      if (savedCfg) setConfig(JSON.parse(savedCfg));
-      const savedRules = localStorage.getItem(`ethone:automod:rules:${selectedGuild.id}`);
-      if (savedRules) setRules(JSON.parse(savedRules));
-    } catch {}
+    // Bot injoignable : on n'affiche pas une ancienne copie locale comme si c'était l'état réel du serveur.
     setIsLoading(false);
   }, [selectedGuild, botGuildIds]);
 
@@ -571,12 +566,10 @@ export default function AutoModCommandCenterPage() {
       if (res.ok) {
         success("AutoMod mis à jour", "Les configurations des détecteurs et strikes ont été synchronisées.");
       } else {
-        showError("Erreur", "Impossible de synchroniser avec le bot, sauvegarde locale activée.");
+        showError("Erreur", "Le bot a refusé la configuration : rien n'a été enregistré.");
       }
-      localStorage.setItem(`ethone:automod:cfg:${selectedGuild.id}`, JSON.stringify(config));
-    } catch (err: any) {
-      localStorage.setItem(`ethone:automod:cfg:${selectedGuild.id}`, JSON.stringify(config));
-      success("Sauvegarde locale effectuée", "Vos modifications sont conservées en local.");
+    } catch {
+      showError("Bot injoignable", "Rien n'a été enregistré : la protection n'a pas changé.");
     } finally {
       setIsSaving(false);
     }
@@ -818,6 +811,7 @@ export default function AutoModCommandCenterPage() {
       const method = isExisting ? "PUT" : "POST";
 
       const res = await fetch(url, {
+        credentials: "include",
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(ruleToSave),
@@ -828,7 +822,6 @@ export default function AutoModCommandCenterPage() {
           ? rules.map((r) => (r.id === ruleToSave.id ? ruleToSave : r))
           : [...rules, ruleToSave];
         setRules(updatedRules);
-        localStorage.setItem(`ethone:automod:rules:${selectedGuild.id}`, JSON.stringify(updatedRules));
         success("Règle sauvegardée", `La règle « ${ruleToSave.name} » est opérationnelle.`);
         setEditingRule(null);
         setIsCreatingRule(false);
@@ -836,33 +829,23 @@ export default function AutoModCommandCenterPage() {
         throw new Error("Échec API");
       }
     } catch {
-      const updatedRules = rules.some((r) => r.id === ruleToSave.id)
-        ? rules.map((r) => (r.id === ruleToSave.id ? ruleToSave : r))
-        : [...rules, ruleToSave];
-      setRules(updatedRules);
-      localStorage.setItem(`ethone:automod:rules:${selectedGuild.id}`, JSON.stringify(updatedRules));
-      success("Règle enregistrée en local", `Règle « ${ruleToSave.name} » mise à jour.`);
-      setEditingRule(null);
-      setIsCreatingRule(false);
+      // Le formulaire reste ouvert : rien n'a été enregistré sur le bot.
+      showError("Règle non enregistrée", "Le bot n'a pas répondu ou a refusé la règle. Rien n'a été modifié.");
     }
   };
 
   const handleDeleteCustomRule = async (ruleId: string) => {
     if (!selectedGuild) return;
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/rules/${ruleId}`, {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/rules/${ruleId}`, {
         credentials: "include",
         method: "DELETE",
       });
-      const filtered = rules.filter((r) => r.id !== ruleId);
-      setRules(filtered);
-      localStorage.setItem(`ethone:automod:rules:${selectedGuild.id}`, JSON.stringify(filtered));
+      if (!res.ok) throw new Error("Suppression refusée");
+      setRules(rules.filter((r) => r.id !== ruleId));
       success("Règle supprimée", "La règle a été retirée du moteur.");
     } catch {
-      const filtered = rules.filter((r) => r.id !== ruleId);
-      setRules(filtered);
-      localStorage.setItem(`ethone:automod:rules:${selectedGuild.id}`, JSON.stringify(filtered));
-      success("Règle supprimée en local", "La règle a été retirée.");
+      showError("Règle non supprimée", "Le bot n'a pas répondu ou a refusé la suppression.");
     }
   };
 

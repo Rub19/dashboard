@@ -110,6 +110,14 @@ export class PollVotingService {
       return { success: false, error: 'Question introuvable dans ce sondage.' };
     }
 
+    // Options : identifiants existants uniquement, sans doublon (['a','a'] comptait deux fois la même option).
+    const knownOptionIds = new Set(question.options.map((o) => o.id));
+    const uniqueSelections = [...new Set(params.selectedOptionIds)];
+    if (uniqueSelections.some((id) => !knownOptionIds.has(id))) {
+      return { success: false, error: 'Option invalide pour cette question.' };
+    }
+    params.selectedOptionIds = uniqueSelections;
+
     // 2. Validate selections count
     if (params.selectedOptionIds.length < (question.minSelections || 1)) {
       return {

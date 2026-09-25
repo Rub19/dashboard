@@ -34551,6 +34551,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_75_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_75_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_75_de);
 
+const v1_28_76_fr: ChangelogEntry = {
+  version: "v1.28.76",
+  date: "2026-09-25",
+  title: "Tickets et sondages : numéros en double et votes truqués",
+  items: [
+    "Tickets : deux membres qui ouvraient un ticket en même temps recevaient le même numéro, et le second écrasait le premier ; un ticket supprimé faisait aussi réutiliser un numéro. La numérotation prend maintenant le plus grand numéro existant + 1, avec réservation immédiate.",
+    "Sondages (vote depuis le site) : les rôles et l'ancienneté du votant venaient de la requête et pouvaient être falsifiés (poids de vote élevé, restriction par rôle contournée). Ils sont maintenant lus sur Discord, et un non-membre ne peut plus voter.",
+    "Sondages : une option envoyée deux fois comptait deux fois, et un identifiant d'option inexistant était accepté. Les doublons sont fusionnés et les options inconnues refusées.",
+    "Nouveaux tests automatisés (numérotation des tickets, validation des votes).",
+  ],
+};
+
+const v1_28_76_en: ChangelogEntry = {
+  version: "v1.28.76",
+  date: "2026-09-25",
+  title: "Tickets and polls: duplicate numbers and rigged votes",
+  items: [
+    "Tickets: two members opening a ticket at the same time got the same number and the second overwrote the first; deleting a ticket also caused a number to be reused. Numbering now takes the highest existing number + 1, reserved immediately.",
+    "Polls (voting from the website): the voter's roles and seniority came from the request and could be forged (high vote weight, role restriction bypassed). They are now read from Discord, and a non-member can no longer vote.",
+    "Polls: an option sent twice counted twice, and a non-existent option id was accepted. Duplicates are merged and unknown options refused.",
+    "New automated tests (ticket numbering, vote validation).",
+  ],
+};
+
+const v1_28_76_es: ChangelogEntry = {
+  version: "v1.28.76",
+  date: "2026-09-25",
+  title: "Tickets y encuestas: números duplicados y votos manipulados",
+  items: [
+    "Tickets: dos miembros que abrían un ticket a la vez recibían el mismo número y el segundo sobrescribía al primero; borrar un ticket también hacía reutilizar un número. Ahora la numeración toma el mayor número existente + 1, con reserva inmediata.",
+    "Encuestas (voto desde la web): los roles y la antigüedad del votante venían de la petición y podían falsificarse (peso de voto alto, restricción por rol eludida). Ahora se leen desde Discord, y quien no es miembro ya no puede votar.",
+    "Encuestas: una opción enviada dos veces contaba dos veces y se aceptaba un identificador de opción inexistente. Los duplicados se fusionan y las opciones desconocidas se rechazan.",
+    "Nuevas pruebas automáticas (numeración de tickets, validación de votos).",
+  ],
+};
+
+const v1_28_76_de: ChangelogEntry = {
+  version: "v1.28.76",
+  date: "2026-09-25",
+  title: "Tickets und Umfragen: doppelte Nummern und manipulierte Stimmen",
+  items: [
+    "Tickets: Zwei Mitglieder, die gleichzeitig ein Ticket öffneten, bekamen dieselbe Nummer und das zweite überschrieb das erste; auch das Löschen eines Tickets führte zur Wiederverwendung einer Nummer. Die Nummerierung nimmt jetzt die höchste vorhandene Nummer + 1, sofort reserviert.",
+    "Umfragen (Abstimmung über die Website): Rollen und Mitgliedsdauer des Abstimmenden kamen aus der Anfrage und ließen sich fälschen (hohes Stimmgewicht, Rollenbeschränkung umgangen). Sie werden jetzt von Discord gelesen, und Nichtmitglieder können nicht mehr abstimmen.",
+    "Umfragen: Eine doppelt gesendete Option zählte doppelt, und eine nicht existierende Options-ID wurde akzeptiert. Duplikate werden zusammengeführt, unbekannte Optionen abgelehnt.",
+    "Neue automatische Tests (Ticket-Nummerierung, Stimmenprüfung).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_76_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_76_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_76_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_76_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

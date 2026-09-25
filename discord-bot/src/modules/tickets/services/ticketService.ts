@@ -76,7 +76,7 @@ class TicketService {
       }
 
       // Génération de l'identifiant séquentiel / unique
-      const totalTickets = ticketRepository.getOverview(guild.id).totalTickets + 1;
+      const totalTickets = ticketRepository.reserveTicketNumber(guild.id);
       const ticketId = `TICKET-${totalTickets.toString().padStart(4, '0')}`;
 
       // Détermination du nom de salon

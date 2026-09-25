@@ -399,6 +399,14 @@ async function runTests() {
   );
   assert(overflowVote.success === false, 'Rejected vote exceeding maxSelections limit');
 
+  // Options : inconnues refusées, doublons comptés une seule fois
+  const unknownOpt = pollVotingService.castVote(testGuildId, testLimitPoll.id, `voter-unknown-${Date.now()}`, 'U#1', undefined, [], 10, 10, { 'ql': ['zzz'] });
+  assert(unknownOpt.success === false, 'Rejected vote on an option id that does not exist');
+  const dupVote = pollVotingService.castVote(testGuildId, testLimitPoll.id, `voter-dup-${Date.now()}`, 'D#1', undefined, [], 10, 10, { 'ql': ['o1', 'o1'] });
+  assert(dupVote.success === true, 'Duplicate option ids are collapsed instead of rejected');
+  const dupPoll = pollRepository.getPollById(testGuildId, testLimitPoll.id)!;
+  assert(dupPoll.questions[0].options.find((o) => o.id === 'o1')!.votesCount === 1, 'Duplicate option ids count once (no vote stuffing)');
+
   // 4. Results & Quorum Calculation Tests
   console.log('\n📊 4. Results & Quorum Calculation Service:');
   // The seed data's `endsAt` is computed relative to whenever this poll was

@@ -281,6 +281,26 @@ export class TicketRepository {
     return match || null;
   }
 
+  /** Dernier numéro réservé par serveur : deux ouvertures simultanées ne peuvent pas obtenir le même numéro. */
+  private reservedTicketNumbers = new Map<string, number>();
+
+  /**
+   * Prochain numéro de ticket du serveur : plus grand numéro existant + 1. Avant, on comptait les tickets : un ticket
+   * supprimé faisait réutiliser un numéro, et deux membres qui ouvraient un ticket en même temps recevaient le même
+   * (le second écrasait le premier dans la base).
+   */
+  public reserveTicketNumber(guildId: string): number {
+    let max = 0;
+    for (const t of this.tickets) {
+      if (t.guildId !== guildId) continue;
+      const m = /^TICKET-(\d+)$/.exec(t.id);
+      if (m) max = Math.max(max, Number(m[1]));
+    }
+    const next = Math.max(max, this.reservedTicketNumbers.get(guildId) ?? 0) + 1;
+    this.reservedTicketNumbers.set(guildId, next);
+    return next;
+  }
+
   public saveTicket(ticket: Ticket): void {
     const idx = this.tickets.findIndex((t) => t.guildId === ticket.guildId && t.id === ticket.id);
     if (idx >= 0) {

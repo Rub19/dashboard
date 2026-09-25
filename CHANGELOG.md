@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.76 — 2026-09-25
+
+**Tickets et sondages : numéros en double et votes truqués**
+
+- Tickets : deux membres qui ouvraient un ticket en même temps recevaient le même numéro, et le second écrasait le premier ; un ticket supprimé faisait aussi réutiliser un numéro. La numérotation prend maintenant le plus grand numéro existant + 1, avec réservation immédiate.
+- Sondages (vote depuis le site) : les rôles et l'ancienneté du votant venaient de la requête et pouvaient être falsifiés (poids de vote élevé, restriction par rôle contournée). Ils sont maintenant lus sur Discord, et un non-membre ne peut plus voter.
+- Sondages : une option envoyée deux fois comptait deux fois, et un identifiant d'option inexistant était accepté. Les doublons sont fusionnés et les options inconnues refusées.
+- Nouveaux tests automatisés (numérotation des tickets, validation des votes).
+
 ## v1.28.75 — 2026-09-25
 
 **IA : adresse email retirée du prompt de sécurité**

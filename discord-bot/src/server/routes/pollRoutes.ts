@@ -315,10 +315,10 @@ export function createPollRouter(client: Client): Router {
   });
 
   // POST /api/guilds/:guildId/polls/:pollId/vote (Web Submission)
-  router.post('/:pollId/vote', (req: Request, res: Response) => {
+  router.post('/:pollId/vote', async (req: Request, res: Response) => {
     const guildId = requireStringParam(req.params.guildId, 'guildId');
     const pollId = requireStringParam(req.params.pollId, 'pollId');
-    const { userRoles, selections, satisfactionScore, rankingOrder } = req.body;
+    const { selections, satisfactionScore, rankingOrder } = req.body;
     // Identité tirée de la session : un identifiant envoyé dans le corps est ignoré (sinon on pourrait voter au nom d'un autre).
     const sessionUser = (req as any).user as { id?: string; username?: string; avatar?: string } | undefined;
     const userId = sessionUser?.id;
@@ -329,15 +329,27 @@ export function createPollRouter(client: Client): Router {
       return res.status(401).json({ success: false, error: 'Utilisateur non identifié.' });
     }
 
+    // Rôles, ancienneté du compte et du membre : lus sur Discord, jamais dans le corps de la requête (sinon on pourrait
+    // s'attribuer un rôle à poids de vote élevé, ou contourner une restriction par rôle / ancienneté).
+    const guildForVote = client.guilds.cache.get(guildId);
+    const voterMember = guildForVote ? await guildForVote.members.fetch(userId).catch(() => null) : null;
+    if (!voterMember) {
+      return res.status(403).json({ success: false, error: 'Vous devez être membre de ce serveur pour voter.' });
+    }
+    const dayMs = 24 * 60 * 60 * 1000;
+    const voterRoleIds = [...voterMember.roles.cache.keys()];
+    const voterAccountAgeDays = Math.floor((Date.now() - voterMember.user.createdTimestamp) / dayMs);
+    const voterMemberDays = voterMember.joinedTimestamp ? Math.floor((Date.now() - voterMember.joinedTimestamp) / dayMs) : 0;
+
     const voteResult = pollVotingService.castVote(
       guildId,
       pollId,
       userId,
       userTag || 'Web Voter',
       userAvatar,
-      userRoles || [],
-      0, // account age checked on Discord side or passed in body
-      0,
+      voterRoleIds,
+      voterAccountAgeDays,
+      voterMemberDays,
       selections || {},
       satisfactionScore,
       rankingOrder

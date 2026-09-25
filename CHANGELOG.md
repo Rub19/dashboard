@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.75 — 2026-09-25
+
+**IA : adresse email retirée du prompt de sécurité**
+
+- L'adresse email du propriétaire n'est plus écrite dans les consignes envoyées au modèle d'IA (elle y figurait pour lui interdire de la révéler, ce qui la lui donnait). Le filtre de sortie qui masque cette adresse reste actif.
+
 ## v1.28.74 — 2026-09-25
 
 **Giveaways de longue durée**

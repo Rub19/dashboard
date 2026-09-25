@@ -34510,6 +34510,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_74_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_74_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_74_de);
 
+const v1_28_75_fr: ChangelogEntry = {
+  version: "v1.28.75",
+  date: "2026-09-25",
+  title: "IA : adresse email retirée du prompt de sécurité",
+  items: [
+    "L'adresse email du propriétaire n'est plus écrite dans les consignes envoyées au modèle d'IA (elle y figurait pour lui interdire de la révéler, ce qui la lui donnait). Le filtre de sortie qui masque cette adresse reste actif.",
+  ],
+};
+
+const v1_28_75_en: ChangelogEntry = {
+  version: "v1.28.75",
+  date: "2026-09-25",
+  title: "AI: email address removed from the safety prompt",
+  items: [
+    "The owner's email address is no longer written in the instructions sent to the AI model (it was there to forbid revealing it, which handed it over). The output filter that masks this address stays active.",
+  ],
+};
+
+const v1_28_75_es: ChangelogEntry = {
+  version: "v1.28.75",
+  date: "2026-09-25",
+  title: "IA: dirección de correo retirada del prompt de seguridad",
+  items: [
+    "La dirección de correo del propietario ya no aparece en las instrucciones enviadas al modelo de IA (estaba para prohibir revelarla, lo que se la entregaba). El filtro de salida que oculta esa dirección sigue activo.",
+  ],
+};
+
+const v1_28_75_de: ChangelogEntry = {
+  version: "v1.28.75",
+  date: "2026-09-25",
+  title: "KI: E-Mail-Adresse aus dem Sicherheits-Prompt entfernt",
+  items: [
+    "Die E-Mail-Adresse des Besitzers steht nicht mehr in den Anweisungen an das KI-Modell (sie stand dort, um ihre Preisgabe zu verbieten, und gab sie damit preis). Der Ausgabefilter, der diese Adresse maskiert, bleibt aktiv.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_75_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_75_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_75_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_75_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

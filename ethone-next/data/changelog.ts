@@ -35147,6 +35147,67 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_87_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_87_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_87_de);
 
+const v1_28_88_fr: ChangelogEntry = {
+  version: "v1.28.88",
+  date: "2026-09-25",
+  title: "Compteurs de salons personnalisables + Statroles",
+  items: [
+    "Compteurs de salons entièrement refaits : le nom d'un salon vocal est un modèle libre avec des jetons — membres, humains, bots, boosts, salons, membres d'un rôle ; horloge {time12:UTC} / {time:Europe/Paris} et date ; compte à rebours {members_until:15000}, {members_until:next} (prochain palier rond) et {days_until:2026-12-31} ; activité {msg:7d}, {voice:7d}, {joins:7d}, {active:7d} ; classements {top_member:7d}, {top_voice_member:7d}, {top_channel:7d}, {top_voice_channel:7d}. Jusqu'à 25 compteurs par serveur (au lieu de 10).",
+    "Catégorie « 📊 SERVER STATS 📊 » créée en un clic (/serverstats setup ou dashboard) avec des salons vocaux verrouillés, en version simple (membres / humains / bots) ou complète (horloge, objectif, messages, top membre). Les salons ne sont renommés que si leur nom change, dans la limite de Discord (2 fois par 10 minutes).",
+    "Page « Compteurs de salons » du dashboard : aperçu façon Discord des deux ensembles, liste des compteurs avec leur nom actuel, éditeur de modèle avec aperçu en direct calculé par le bot, avertissements (jeton inconnu, module Statistiques désactivé) et sélecteur de jetons. Commande /serverstats tokens.",
+    "Nouveau module Statroles : des rôles donnés ET retirés automatiquement selon l'activité. Conditions : messages sur N jours, heures de vocal, ancienneté sur le serveur, ancienneté du compte, possession d'un rôle — dans des groupes TOUT (ET) / AU MOINS UN (OU) imbriqués. Appliqué toutes les 10 minutes ; option pour garder le rôle une fois obtenu ; garde-fous (rôle au-dessus du bot, rôle géré, groupe vide = personne, 250 changements maximum par passage).",
+    "Page dashboard Statroles avec constructeur visuel des conditions (menu +, groupes imbriqués, comparaisons), aperçu (combien correspondent, recevraient ou perdraient le rôle) et « Appliquer maintenant » ; commandes /statroles list, check et run.",
+    "Nouveaux tests automatisés : moteur de modèles (dont un bug d'horloge 12 h trouvé et corrigé) et statroles (arbres ET/OU, ajout et retrait).",
+  ],
+};
+
+const v1_28_88_en: ChangelogEntry = {
+  version: "v1.28.88",
+  date: "2026-09-25",
+  title: "Customizable channel counters + Statroles",
+  items: [
+    "Channel counters rebuilt: a voice channel's name is a free template with tokens — members, humans, bots, boosts, channels, role members; clock {time12:UTC} / {time:Europe/Paris} and date; countdowns {members_until:15000}, {members_until:next} (next round milestone) and {days_until:2026-12-31}; activity {msg:7d}, {voice:7d}, {joins:7d}, {active:7d}; leaderboards {top_member:7d}, {top_voice_member:7d}, {top_channel:7d}, {top_voice_channel:7d}. Up to 25 counters per server (was 10).",
+    "\"📊 SERVER STATS 📊\" category created in one click (/serverstats setup or dashboard) with locked voice channels, simple (members / humans / bots) or full (clock, goal, messages, top member). Channels are only renamed when their name changes, within Discord's limit (2 per 10 minutes).",
+    "\"Channel counters\" dashboard page: Discord-style preview of both sets, counter list with current names, template editor with a live preview computed by the bot, warnings (unknown token, Statistics module off) and a token picker. /serverstats tokens command.",
+    "New Statroles module: roles given AND removed automatically based on activity. Conditions: messages over N days, voice hours, server seniority, account age, holding a role — inside nested ALL (AND) / ANY (OR) groups. Applied every 10 minutes; option to keep the role once earned; safeguards (role above the bot, managed role, empty group = nobody, 250 changes max per pass).",
+    "Statroles dashboard page with a visual condition builder (+ menu, nested groups, comparisons), preview (how many match, would receive or lose the role) and \"Apply now\"; /statroles list, check and run commands.",
+    "New automated tests: template engine (including a 12-hour clock bug found and fixed) and statroles (AND/OR trees, add and remove).",
+  ],
+};
+
+const v1_28_88_es: ChangelogEntry = {
+  version: "v1.28.88",
+  date: "2026-09-25",
+  title: "Contadores de canal personalizables + Statroles",
+  items: [
+    "Contadores de canal rehechos: el nombre de un canal de voz es una plantilla libre con marcadores — miembros, humanos, bots, boosts, canales, miembros de un rol; reloj {time12:UTC} / {time:Europe/Paris} y fecha; cuentas atrás {members_until:15000}, {members_until:next} (próximo hito redondo) y {days_until:2026-12-31}; actividad {msg:7d}, {voice:7d}, {joins:7d}, {active:7d}; clasificaciones {top_member:7d}, {top_voice_member:7d}, {top_channel:7d}, {top_voice_channel:7d}. Hasta 25 contadores por servidor (antes 10).",
+    "Categoría «📊 SERVER STATS 📊» creada con un clic (/serverstats setup o dashboard) con canales de voz bloqueados, versión simple (miembros / humanos / bots) o completa (reloj, objetivo, mensajes, top miembro). Los canales solo se renombran si su nombre cambia, dentro del límite de Discord (2 cada 10 minutos).",
+    "Página «Contadores de canal» del dashboard: vista previa estilo Discord de los dos conjuntos, lista de contadores con su nombre actual, editor de plantillas con vista previa en directo calculada por el bot, avisos (marcador desconocido, módulo Estadísticas desactivado) y selector de marcadores. Comando /serverstats tokens.",
+    "Módulo nuevo Statroles: roles dados Y retirados automáticamente según la actividad. Condiciones: mensajes en N días, horas de voz, antigüedad en el servidor, antigüedad de la cuenta, tener un rol — dentro de grupos TODO (Y) / AL MENOS UNO (O) anidados. Se aplica cada 10 minutos; opción de conservar el rol una vez obtenido; salvaguardas (rol por encima del bot, rol gestionado, grupo vacío = nadie, 250 cambios máximo por pasada).",
+    "Página Statroles del dashboard con constructor visual de condiciones (menú +, grupos anidados, comparaciones), vista previa (cuántos coinciden, recibirían o perderían el rol) y «Aplicar ahora»; comandos /statroles list, check y run.",
+    "Nuevas pruebas automáticas: motor de plantillas (incluido un error del reloj de 12 h encontrado y corregido) y statroles (árboles Y/O, añadir y retirar).",
+  ],
+};
+
+const v1_28_88_de: ChangelogEntry = {
+  version: "v1.28.88",
+  date: "2026-09-25",
+  title: "Anpassbare Kanalzähler + Statroles",
+  items: [
+    "Kanalzähler komplett neu: Der Name eines Sprachkanals ist eine freie Vorlage mit Platzhaltern — Mitglieder, Menschen, Bots, Boosts, Kanäle, Mitglieder einer Rolle; Uhr {time12:UTC} / {time:Europe/Paris} und Datum; Countdowns {members_until:15000}, {members_until:next} (nächste runde Marke) und {days_until:2026-12-31}; Aktivität {msg:7d}, {voice:7d}, {joins:7d}, {active:7d}; Ranglisten {top_member:7d}, {top_voice_member:7d}, {top_channel:7d}, {top_voice_channel:7d}. Bis zu 25 Zähler pro Server (vorher 10).",
+    "Kategorie „📊 SERVER STATS 📊“ mit einem Klick erstellt (/serverstats setup oder Dashboard) mit gesperrten Sprachkanälen, einfach (Mitglieder / Menschen / Bots) oder vollständig (Uhr, Ziel, Nachrichten, Top-Mitglied). Kanäle werden nur umbenannt, wenn sich ihr Name ändert, im Rahmen des Discord-Limits (2 pro 10 Minuten).",
+    "Dashboard-Seite „Kanalzähler“: Discord-artige Vorschau beider Sets, Zählerliste mit aktuellem Namen, Vorlageneditor mit vom Bot berechneter Live-Vorschau, Warnungen (unbekannter Platzhalter, Statistik-Modul aus) und Platzhalter-Auswahl. Befehl /serverstats tokens.",
+    "Neues Modul Statroles: Rollen werden automatisch nach Aktivität vergeben UND entzogen. Bedingungen: Nachrichten über N Tage, Sprachstunden, Serverzugehörigkeit, Kontoalter, Besitz einer Rolle — in verschachtelten ALLE (UND) / MINDESTENS EINE (ODER) Gruppen. Alle 10 Minuten angewendet; Option, die Rolle nach dem Erwerb zu behalten; Schutzmaßnahmen (Rolle über dem Bot, verwaltete Rolle, leere Gruppe = niemand, max. 250 Änderungen pro Durchlauf).",
+    "Statroles-Dashboard-Seite mit visuellem Bedingungs-Editor (+ Menü, verschachtelte Gruppen, Vergleiche), Vorschau (wie viele passen, würden die Rolle erhalten oder verlieren) und „Jetzt anwenden“; Befehle /statroles list, check und run.",
+    "Neue automatische Tests: Vorlagen-Engine (darunter ein gefundener und behobener 12-Stunden-Uhr-Fehler) und Statroles (UND/ODER-Bäume, Hinzufügen und Entziehen).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_88_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_88_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_88_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_88_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

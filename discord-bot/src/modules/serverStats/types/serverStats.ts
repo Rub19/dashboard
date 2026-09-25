@@ -20,6 +20,7 @@ export const StatTypeSchema = z.enum([
   'roles', // nombre de rôles
   'channels', // nombre de salons
   'roleMembers', // membres portant un rôle donné (roleId requis)
+  'custom', // modèle libre avec jetons {members}, {time12:UTC}, {msg:7d}, {top_member:7d}… (voir counterTemplate.ts)
 ]);
 export type StatType = z.infer<typeof StatTypeSchema>;
 
@@ -28,11 +29,13 @@ export const StatChannelSchema = z.object({
   channelId: z.string(),
   type: StatTypeSchema,
   /** `{count}` = la valeur. Ex : « 👥 {count} membres ». */
-  template: z.string().min(1).max(80).default('{count}'),
+  template: z.string().min(1).max(100).default('{count}'),
   /** Requis pour `roleMembers`. */
   roleId: z.string().nullable().default(null),
   /** Dernière valeur poussée (évite un renommage inutile). */
   lastValue: z.number().nullable().default(null),
+  /** Dernier nom appliqué au salon : sert à ne pas renommer quand rien n'a changé (indispensable pour l'horloge et les modèles). */
+  lastName: z.string().nullable().default(null),
   createdAt: z.string().default(() => new Date().toISOString()),
 });
 export type StatChannel = z.infer<typeof StatChannelSchema>;
@@ -49,5 +52,5 @@ export type StatsConfig = z.infer<typeof StatsConfigSchema>;
 export interface StatsOverview {
   enabled: boolean;
   updateIntervalMinutes: number;
-  channels: Array<{ channelId: string; type: StatType; template: string; roleId: string | null; lastValue: number | null }>;
+  channels: Array<{ channelId: string; type: StatType; template: string; roleId: string | null; lastValue: number | null; lastName: string | null }>;
 }

@@ -11,6 +11,7 @@ import { backupService } from '../modules/backup/services/backupService.js';
 import { aiService } from '../modules/ai/services/aiService.js';
 import { runModuleMigrations } from '../services/moduleMigrations.js';
 import { statsCollector } from '../modules/stats/services/statsCollector.js';
+import { statrolesEngine } from '../modules/statroles/services/statrolesEngine.js';
 import { logger } from '../utils/logger.js';
 
 const BOT_SITE_URL = 'https://discord.ethone.dev';
@@ -54,6 +55,7 @@ export async function onReady(client: Client<true>) {
 
   // Statistiques : reprise des sessions vocales en cours et crédit périodique
   statsCollector.init(client);
+  statrolesEngine.initialize(client);
 
   // Déploiement automatique des slash commands au démarrage
   await commandRegistry.deploySlashCommands();

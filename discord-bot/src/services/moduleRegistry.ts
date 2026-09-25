@@ -14,6 +14,7 @@ import { economyStorage } from '../modules/economy/storage/economyStorage.js';
 import { afkStorage } from '../modules/afk/storage/afkStorage.js';
 import { countingStorage } from '../modules/counting/storage/countingStorage.js';
 import { statsStorage } from '../modules/stats/storage/statsStorage.js';
+import { statrolesStorage } from '../modules/statroles/storage/statrolesStorage.js';
 import { serverStatsStorage } from '../modules/serverStats/storage/serverStatsStorage.js';
 import { ticketRepository } from '../modules/tickets/storage/ticketRepository.js';
 import { emitConfigUpdated } from './syncConfigEmitter.js';
@@ -214,6 +215,14 @@ export const MODULES: ModuleDef[] = [
     own: { get: (g) => statsStorage.getConfig(g).enabled, set: (g, enabled) => void statsStorage.updateConfig(g, { enabled }) },
   },
   {
+    id: 'statroles',
+    label: 'Statroles',
+    emoji: '🏅',
+    description: 'Rôles donnés et retirés automatiquement selon l’activité (messages, vocal, ancienneté).',
+    commands: ['statroles'],
+    own: { get: (g) => statrolesStorage.getConfig(g).enabled, set: (g, enabled) => void statrolesStorage.updateConfig(g, { enabled }) },
+  },
+  {
     id: 'serverstats',
     label: 'Stats du serveur',
     emoji: '📊',
@@ -305,7 +314,7 @@ export const CORE_MODULE_IDS: readonly string[] = ['moderation', 'music', 'remin
 
 export type ModulePresetId = 'minimal' | 'community' | 'security' | 'all';
 
-const COMMUNITY_IDS = ['welcome', 'roles', 'leveling', 'economy', 'suggestions', 'polls', 'giveaways', 'events', 'forms', 'starboard', 'highlights', 'birthdays', 'voice', 'tickets', 'invites', 'afk', 'counting', 'stats', 'serverstats', 'sticky', 'commands'];
+const COMMUNITY_IDS = ['welcome', 'roles', 'leveling', 'economy', 'suggestions', 'polls', 'giveaways', 'events', 'forms', 'starboard', 'highlights', 'birthdays', 'voice', 'tickets', 'invites', 'afk', 'counting', 'stats', 'statroles', 'serverstats', 'sticky', 'commands'];
 const SECURITY_IDS = ['security', 'anti-nuke', 'automod', 'logs', 'welcome', 'tickets', 'backups'];
 
 /** Ensembles de modules proposés par la configuration rapide (le socle est toujours inclus). */

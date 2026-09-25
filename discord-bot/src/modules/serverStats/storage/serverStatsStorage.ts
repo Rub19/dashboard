@@ -9,7 +9,7 @@ import {
 } from '../types/serverStats.js';
 import { logger } from '../../../utils/logger.js';
 
-const MAX_STAT_CHANNELS = 10;
+const MAX_STAT_CHANNELS = 25;
 
 /** Persistance JSON du module Server Stats (`data/` gitignore). */
 class ServerStatsStorage {
@@ -98,7 +98,7 @@ class ServerStatsStorage {
     return this.getGuild(guildId).length < MAX_STAT_CHANNELS;
   }
 
-  public upsert(input: Omit<StatChannel, 'lastValue' | 'createdAt'> & Partial<Pick<StatChannel, 'lastValue' | 'createdAt'>>): StatChannel {
+  public upsert(input: Omit<StatChannel, 'lastValue' | 'lastName' | 'createdAt'> & Partial<Pick<StatChannel, 'lastValue' | 'lastName' | 'createdAt'>>): StatChannel {
     const existing = this.get(input.guildId, input.channelId);
     const valid = StatChannelSchema.parse({
       ...(existing ?? {}),
@@ -114,6 +114,15 @@ class ServerStatsStorage {
     const deleted = this.channels.delete(this.key(guildId, channelId));
     if (deleted) this.saveChannels();
     return deleted;
+  }
+
+  public setLastName(guildId: string, channelId: string, name: string, value?: number): void {
+    const c = this.get(guildId, channelId);
+    if (!c) return;
+    c.lastName = name;
+    if (value !== undefined) c.lastValue = value;
+    this.channels.set(this.key(guildId, channelId), c);
+    this.saveChannels();
   }
 
   public setLastValue(guildId: string, channelId: string, value: number): void {
@@ -135,6 +144,7 @@ class ServerStatsStorage {
         template: c.template,
         roleId: c.roleId,
         lastValue: c.lastValue,
+        lastName: c.lastName,
       })),
     };
   }

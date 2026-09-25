@@ -1,14 +1,15 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, GuildChannel } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { serverStatsStorage, MAX_STAT_CHANNELS } from '../storage/serverStatsStorage.js';
-import { serverStatsService, computeStat, renderName } from '../services/serverStatsService.js';
+import { serverStatsService, computeStat, renderName, computeName, COUNTER_PRESETS } from '../services/serverStatsService.js';
+import { TOKEN_DOCS } from '../services/counterTemplate.js';
 import { StatType } from '../types/serverStats.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
 const TYPE_LABELS: Record<StatType, string> = {
   members: 'Membres', humans: 'Humains', bots: 'Bots', online: 'En ligne',
   boosts: 'Boosts', boostTier: 'Niveau de boost', roles: 'Rôles',
-  channels: 'Salons', roleMembers: "Membres d'un rôle",
+  channels: 'Salons', roleMembers: "Membres d'un rôle", custom: 'Modèle personnalisé',
 };
 
 export const serverStatsCommand: Command = {
@@ -41,10 +42,11 @@ export const serverStatsCommand: Command = {
               { name: 'Niveau de boost', value: 'boostTier' },
               { name: 'Rôles', value: 'roles' },
               { name: 'Salons', value: 'channels' },
-              { name: "Membres d'un rôle", value: 'roleMembers' }
+              { name: "Membres d'un rôle", value: 'roleMembers' },
+              { name: 'Modèle personnalisé (jetons : horloge, objectif, activité…)', value: 'custom' }
             )
         )
-        .addStringOption((o) => o.setName('format').setDescription('Ex : « 👥 {count} membres » ({count} = valeur)').setMaxLength(80))
+        .addStringOption((o) => o.setName('format').setDescription('Ex : « 👥 {count} membres » ou, en modèle : « 🕐 {time12:UTC} UTC »').setMaxLength(100))
         .addRoleOption((o) => o.setName('role').setDescription('Rôle à compter (type « Membres d\'un rôle »)'))
     )
     .addSubcommand((sub) =>
@@ -53,6 +55,15 @@ export const serverStatsCommand: Command = {
         .setDescription('Retire un salon compteur')
         .addChannelOption((o) => o.setName('salon').setDescription('Salon compteur').setRequired(true))
     )
+    .addSubcommand((sub) =>
+      sub
+        .setName('setup')
+        .setDescription('Crée la catégorie « SERVER STATS » avec ses salons compteurs verrouillés')
+        .addStringOption((o) =>
+          o.setName('modele').setDescription('Ensemble de compteurs').setRequired(true).addChoices(...COUNTER_PRESETS.map((p) => ({ name: p.label, value: p.id })))
+        )
+    )
+    .addSubcommand((sub) => sub.setName('tokens').setDescription('Liste des jetons utilisables dans un modèle personnalisé'))
     .addSubcommand((sub) => sub.setName('list').setDescription('Liste les salons compteurs'))
     .addSubcommand((sub) => sub.setName('refresh').setDescription('Rafraîchit tous les compteurs maintenant'))
     .addSubcommand((sub) =>
@@ -76,6 +87,26 @@ export const serverStatsCommand: Command = {
     }
     const sub = ctx.interaction!.options.getSubcommand();
 
+    if (sub === 'tokens') {
+      const groups = new Map<string, string[]>();
+      for (const t of TOKEN_DOCS) groups.set(t.group, [...(groups.get(t.group) ?? []), `\`${t.token}\` — ${t.label} (ex. ${t.example})`]);
+      const embed = ctx.createEmbed('info').setTitle('🧩 Jetons des compteurs').setDescription('Mélangez texte, emojis et jetons : « 🕐 {time12:UTC} UTC », « {members_until:next} avant {members_next} ».');
+      for (const [group, lines] of groups) embed.addFields({ name: group, value: lines.join(String.fromCharCode(10)).slice(0, 1024) });
+      await ctx.reply({ embeds: [embed], ephemeral: true });
+      return;
+    }
+
+    if (sub === 'setup') {
+      await ctx.deferReply({ ephemeral: true });
+      try {
+        const res = await serverStatsService.createCategory(guild, ctx.interaction!.options.getString('modele', true) as 'draftbot' | 'statbot');
+        await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(`📊 Catégorie créée avec ${res.channelIds.length} compteur(s) : ${res.channelIds.map((id) => `<#${id}>`).join(' ')}`)] });
+      } catch (err) {
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ ${err instanceof Error ? err.message : 'Création impossible.'}`)] });
+      }
+      return;
+    }
+
     if (sub === 'add') {
       const channel = ctx.interaction!.options.getChannel('salon', true);
       const type = ctx.interaction!.options.getString('type', true) as StatType;
@@ -84,6 +115,10 @@ export const serverStatsCommand: Command = {
 
       if (channel.type === ChannelType.GuildCategory) {
         await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Une catégorie ne peut pas être un compteur.')], ephemeral: true });
+        return;
+      }
+      if (type === 'custom' && !format) {
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Le type « Modèle personnalisé » demande l’option `format` (voir `/serverstats tokens`).')], ephemeral: true });
         return;
       }
       if (type === 'roleMembers' && !role) {
@@ -110,7 +145,7 @@ export const serverStatsCommand: Command = {
         lastValue: null,
       });
       await serverStatsService.forceRefresh(guild).catch(() => {});
-      const preview = renderName(stat, computeStat(guild, type, role?.id ?? null));
+      const preview = computeName(guild, stat).name;
       await ctx.reply({
         embeds: [
           ctx.createEmbed('success').setTitle('📊 Salon compteur ajouté').setDescription(`<#${channel.id}> → **${preview}**\nMise à jour toutes les ${serverStatsStorage.getConfig(guild.id).updateIntervalMinutes} min.`),

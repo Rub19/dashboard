@@ -1,7 +1,8 @@
 import express, { Request, Response } from 'express';
 import { ChannelType, Client } from 'discord.js';
 import { serverStatsStorage, MAX_STAT_CHANNELS } from '../../modules/serverStats/storage/serverStatsStorage.js';
-import { serverStatsService } from '../../modules/serverStats/services/serverStatsService.js';
+import { serverStatsService, COUNTER_PRESETS } from '../../modules/serverStats/services/serverStatsService.js';
+import { renderTemplate, needsMemberFetch, TOKEN_DOCS } from '../../modules/serverStats/services/counterTemplate.js';
 import { StatChannelSchema, StatsConfigSchema } from '../../modules/serverStats/types/serverStats.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
@@ -33,6 +34,40 @@ export function createServerStatsRouter(client: Client) {
     res.json({ success: true, config: updated });
   });
 
+  // Catalogue des jetons (pour le sélecteur du dashboard) et des ensembles prêts à l'emploi.
+  router.get('/tokens', (_req: Request, res: Response): void => {
+    res.json({ tokens: TOKEN_DOCS, presets: COUNTER_PRESETS });
+  });
+
+  // Aperçu en direct d'un modèle avec les valeurs actuelles du serveur.
+  router.post('/preview', async (req: Request, res: Response): Promise<void> => {
+    const guild = client.guilds.cache.get(String(req.params.guildId));
+    const template = typeof req.body?.template === 'string' ? req.body.template.slice(0, 100) : '';
+    if (!guild || !template) {
+      res.status(400).json({ error: 'Serveur ou modèle manquant' });
+      return;
+    }
+    if (needsMemberFetch(template)) await guild.members.fetch().catch(() => {});
+    res.json(renderTemplate(guild, template));
+  });
+
+  // Crée la catégorie « SERVER STATS » et ses salons compteurs verrouillés.
+  router.post('/setup', async (req: Request, res: Response): Promise<void> => {
+    const guild = client.guilds.cache.get(String(req.params.guildId));
+    const preset = String(req.body?.preset ?? '');
+    if (!guild || !COUNTER_PRESETS.some((p) => p.id === preset)) {
+      res.status(400).json({ error: 'Serveur ou ensemble inconnu' });
+      return;
+    }
+    try {
+      const created = await serverStatsService.createCategory(guild, preset as 'draftbot' | 'statbot');
+      emitConfigUpdated('serverStats', guild.id, serverStatsStorage.getConfig(guild.id), 'DASHBOARD', req.user?.id);
+      res.json({ success: true, ...created, overview: serverStatsStorage.getOverview(guild.id) });
+    } catch (err) {
+      res.status(400).json({ error: err instanceof Error ? err.message : 'Création impossible' });
+    }
+  });
+
   router.put('/channels/:channelId', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const channelId = String(req.params.channelId);
@@ -50,7 +85,7 @@ export function createServerStatsRouter(client: Client) {
       guildId,
       channelId,
       type: parsed.data.type,
-      template: parsed.data.template ?? '{count}',
+      template: parsed.data.template ?? (parsed.data.type === 'custom' ? '{members}' : '{count}'),
       roleId: parsed.data.roleId ?? null,
       lastValue: null,
     });

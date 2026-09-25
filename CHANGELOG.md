@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.88 — 2026-09-25
+
+**Compteurs de salons personnalisables + Statroles**
+
+- Compteurs de salons entièrement refaits : le nom d'un salon vocal est un modèle libre avec des jetons — membres, humains, bots, boosts, salons, membres d'un rôle ; horloge {time12:UTC} / {time:Europe/Paris} et date ; compte à rebours {members_until:15000}, {members_until:next} (prochain palier rond) et {days_until:2026-12-31} ; activité {msg:7d}, {voice:7d}, {joins:7d}, {active:7d} ; classements {top_member:7d}, {top_voice_member:7d}, {top_channel:7d}, {top_voice_channel:7d}. Jusqu'à 25 compteurs par serveur (au lieu de 10).
+- Catégorie « 📊 SERVER STATS 📊 » créée en un clic (/serverstats setup ou dashboard) avec des salons vocaux verrouillés, en version simple (membres / humains / bots) ou complète (horloge, objectif, messages, top membre). Les salons ne sont renommés que si leur nom change, dans la limite de Discord (2 fois par 10 minutes).
+- Page « Compteurs de salons » du dashboard : aperçu façon Discord des deux ensembles, liste des compteurs avec leur nom actuel, éditeur de modèle avec aperçu en direct calculé par le bot, avertissements (jeton inconnu, module Statistiques désactivé) et sélecteur de jetons. Commande /serverstats tokens.
+- Nouveau module Statroles : des rôles donnés ET retirés automatiquement selon l'activité. Conditions : messages sur N jours, heures de vocal, ancienneté sur le serveur, ancienneté du compte, possession d'un rôle — dans des groupes TOUT (ET) / AU MOINS UN (OU) imbriqués. Appliqué toutes les 10 minutes ; option pour garder le rôle une fois obtenu ; garde-fous (rôle au-dessus du bot, rôle géré, groupe vide = personne, 250 changements maximum par passage).
+- Page dashboard Statroles avec constructeur visuel des conditions (menu +, groupes imbriqués, comparaisons), aperçu (combien correspondent, recevraient ou perdraient le rôle) et « Appliquer maintenant » ; commandes /statroles list, check et run.
+- Nouveaux tests automatisés : moteur de modèles (dont un bug d'horloge 12 h trouvé et corrigé) et statroles (arbres ET/OU, ajout et retrait).
+
 ## v1.28.87 — 2026-09-25
 
 **Nouveau module : Statistiques (façon Statbot)**

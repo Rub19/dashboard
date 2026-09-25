@@ -1,20 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { BarChart3, ArrowLeft, RefreshCw, Save, Plus, Trash2, AlertTriangle, Bot } from "@/components/icons/ph";
+import { ArrowLeft, RefreshCw, Plus, Trash2, Volume2 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
-import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
-import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
-import { useDiscordSync } from "@/lib/useDiscordSync";
-import { cn } from "@/lib/utils";
-import { GuildSelector } from "@/components/GuildSelector";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import { subscribeGuildLive } from "@/lib/guildLive";
+import { confirmDialog } from "@/lib/confirmDialog";
 import ChannelPicker from "@/components/discord/ChannelPicker";
-import RolePicker from "@/components/discord/RolePicker";
+import { EthoneIcon } from "@/components/EthoneIcon";
+import { cn } from "@/lib/utils";
 
-const BOT_CLIENT_ID = "1545139931154878464";
-const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 interface StatChannelRow {
@@ -23,410 +21,360 @@ interface StatChannelRow {
   template: string;
   roleId: string | null;
   lastValue: number | null;
+  lastName: string | null;
 }
-
 interface Overview {
   enabled: boolean;
   updateIntervalMinutes: number;
   channels: StatChannelRow[];
 }
-
 interface Target {
   id: string;
   name: string;
   type?: string;
 }
+interface TokenDoc {
+  token: string;
+  label: string;
+  example: string;
+  group: string;
+  needsStats?: boolean;
+}
+interface Preset {
+  id: string;
+  label: string;
+  categoryName: string;
+  templates: string[];
+}
 
-const STAT_TYPES = [
-  { value: "members", label: "Membres" },
-  { value: "humans", label: "Humains" },
-  { value: "bots", label: "Bots" },
-  { value: "online", label: "En ligne" },
-  { value: "boosts", label: "Boosts" },
-  { value: "boostTier", label: "Niveau de boost" },
-  { value: "roles", label: "Rôles" },
-  { value: "channels", label: "Salons" },
-  { value: "roleMembers", label: "Membres d'un rôle" },
-] as const;
+const LEGACY_LABEL: Record<string, string> = {
+  members: "Membres",
+  humans: "Humains",
+  bots: "Bots",
+  online: "En ligne",
+  boosts: "Boosts",
+  boostTier: "Niveau de boost",
+  roles: "Rôles",
+  channels: "Salons",
+  roleMembers: "Membres d'un rôle",
+};
 
+/** Exemple affiché avant le rendu réel (aperçu de la liste de salons Discord). */
+const PRESET_SAMPLE: Record<string, string[]> = {
+  draftbot: ["Tous les membres : 56", "Membres : 47", "Bots : 9"],
+  statbot: ["🕐 9:00am UTC", "Membres : 13855", "1145 avant 15000", "Messages 7 j : 806", "Top membre : Lando"],
+};
+
+function useDebounced<T>(value: T, delay = 350): T {
+  const [v, setV] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setV(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return v;
+}
+
+/** Aperçu d'une catégorie de compteurs comme dans la barre latérale de Discord. */
+function DiscordPreview({ title, lines }: { title: string; lines: string[] }) {
+  return (
+    <div className="rounded-xl bg-[#2b2d31] p-3 text-[#b5bac1]">
+      <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-[#949ba4]">⌄ {title}</p>
+      <ul className="space-y-1">
+        {lines.map((l, i) => (
+          <li key={i} className="flex items-center gap-2 rounded-md px-2 py-1 text-[13px] hover:bg-white/5">
+            <Volume2 className="h-4 w-4 shrink-0 opacity-70" />
+            <span className="truncate">{l}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/**
+ * Compteurs de salons : catégorie « SERVER STATS » en un clic, modèles personnalisés (jetons : horloge, objectif, activité,
+ * classements) avec aperçu en direct. Le bot renomme les salons au plus toutes les 10 minutes (limite de Discord).
+ */
 export default function ServerStatsCenterClient() {
   const searchParams = useSearchParams();
-  const { success, error: showError, toggle } = useToast();
-  const { profile, loading: discordLoading } = useDiscordOAuth();
-  const allGuilds: DiscordGuild[] = useMemo(() => {
-    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
-    return getStoredDiscordGuilds();
-  }, [profile?.guilds]);
-
-  const botGuildIds = useBotGuildIds(allGuilds);
-
-  const manageableGuilds: DiscordGuild[] = useMemo(() => {
-    if (allGuilds.length === 0) return [];
-    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
-    return manageable.length > 0 ? manageable : allGuilds;
-  }, [allGuilds, botGuildIds]);
-
-  // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
-  const appliedQueryGuild = useRef<string | null>(null);
-  const userSelectedRef = useRef(false);
-  const queryGuildId = searchParams.get("guildId");
-  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
-
-  useEffect(() => {
-    if (manageableGuilds.length === 0) return;
-    if (queryGuildId && appliedQueryGuild.current !== queryGuildId) {
-      const m = manageableGuilds.find((g) => g.id === queryGuildId);
-      if (m) {
-        appliedQueryGuild.current = queryGuildId;
-        setSelectedGuild(m);
-        return;
-      }
-    }
-    if (!userSelectedRef.current && !queryGuildId) {
-      if (!selectedGuild) {
-        if (botGuildIds !== null) {
-          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
-        }
-      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
-        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
-        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
-          setSelectedGuild(botGuild);
-        }
-      }
-    }
-  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
+  const { profile } = useDiscordOAuth();
+  const guildId = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
+  const { success, error: showError } = useToast();
 
   const [overview, setOverview] = useState<Overview | null>(null);
-  const [channels, setChannels] = useState<Target[]>([]);
-  const [roles, setRoles] = useState<Target[]>([]);
-  const [enabled, setEnabled] = useState(true);
-  const [interval, setIntervalMin] = useState(15);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [offline, setOffline] = useState(false);
+  const [state, setState] = useState<"loading" | "ok" | "offline">("loading");
+  const [tokens, setTokens] = useState<TokenDoc[]>([]);
+  const [presets, setPresets] = useState<Preset[]>([]);
+  const [targets, setTargets] = useState<Target[]>([]);
+  const [busy, setBusy] = useState(false);
 
-  // add form
-  const [fChannel, setFChannel] = useState("");
-  const [fType, setFType] = useState<string>("members");
-  const [fTemplate, setFTemplate] = useState("👥 {count} membres");
-  const [fRole, setFRole] = useState("");
+  // formulaire d'ajout / modification
+  const [channelId, setChannelId] = useState<string | null>(null);
+  const [template, setTemplate] = useState("👥 {members} membres");
+  const [preview, setPreview] = useState<{ text: string; warnings: string[] } | null>(null);
+  const debounced = useDebounced(template);
+
+  const base = `${BOT_API_URL}/api/guilds/${encodeURIComponent(guildId)}/server-stats`;
 
   const load = useCallback(async () => {
-    if (!selectedGuild) return;
-
-    // Si le bot n'est pas installé sur ce serveur
-    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
-      setOffline(false);
-      setOverview(null);
-      setChannels([]);
-      setRoles([]);
+    if (!guildId || !BOT_API_URL) {
+      setState(BOT_API_URL ? "loading" : "offline");
       return;
     }
-
-    if (!BOT_API_URL) {
-      setOffline(true);
-      return;
-    }
-    setLoading(true);
-    setOffline(false);
     try {
-      const base = `${BOT_API_URL}/api/guilds/${selectedGuild.id}/server-stats`;
-      const [ovRes, tRes] = await Promise.all([
+      const [ov, tk, tg] = await Promise.all([
         fetch(`${base}/overview`, { credentials: "include" }),
+        fetch(`${base}/tokens`, { credentials: "include" }),
         fetch(`${base}/targets`, { credentials: "include" }),
       ]);
-      if (!ovRes.ok) throw new Error("overview");
-      const ov = await ovRes.json();
-      setOverview(ov);
-      setEnabled(ov.enabled);
-      setIntervalMin(ov.updateIntervalMinutes);
-      if (tRes.ok) {
-        const t = await tRes.json();
-        setChannels(t.channels ?? []);
-        setRoles(t.roles ?? []);
+      if (!ov.ok) throw new Error(String(ov.status));
+      setOverview((await ov.json()) as Overview);
+      if (tk.ok) {
+        const d = await tk.json();
+        setTokens(d.tokens ?? []);
+        setPresets(d.presets ?? []);
       }
+      if (tg.ok) setTargets(((await tg.json()).channels ?? []) as Target[]);
+      setState("ok");
     } catch {
-      setOffline(true);
-    } finally {
-      setLoading(false);
+      setState("offline");
     }
-  }, [selectedGuild, botGuildIds]);
+  }, [guildId, base]);
 
   useEffect(() => {
-    load();
+    void load();
   }, [load]);
 
-  // Reflète en direct les changements faits via la commande Discord /serverstats
-  // (ou un autre onglet dashboard) sans attendre un rechargement manuel.
-  useDiscordSync({
-    guildId: selectedGuild?.id,
-    onConfigUpdated: (module, updatedConfig: any) => {
-      if (module !== "serverStats" || !updatedConfig) return;
-      if (typeof updatedConfig.enabled === "boolean") setEnabled(updatedConfig.enabled);
-      if (typeof updatedConfig.updateIntervalMinutes === "number") setIntervalMin(updatedConfig.updateIntervalMinutes);
-    },
-  });
+  useEffect(() => {
+    if (!guildId) return;
+    let t: ReturnType<typeof setTimeout> | null = null;
+    const unsub = subscribeGuildLive(guildId, (e) => {
+      if (e.type !== "CONFIG_UPDATED") return;
+      if (t) clearTimeout(t);
+      t = setTimeout(() => void load(), 300);
+    });
+    return () => {
+      if (t) clearTimeout(t);
+      unsub();
+    };
+  }, [guildId, load]);
 
-  const channelName = (id: string) => channels.find((c) => c.id === id)?.name ?? id;
-  const roleName = (id: string | null) => (id ? roles.find((r) => r.id === id)?.name ?? id : "");
-  const usedChannels = new Set(overview?.channels.map((c) => c.channelId) ?? []);
-
-  const saveConfig = async () => {
-    if (!selectedGuild || !BOT_API_URL) return showError("Bot injoignable", "Rien n'a été enregistré.");
-    setSaving(true);
-    try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/server-stats/config`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ enabled, updateIntervalMinutes: interval }),
+  // Aperçu en direct du modèle avec les vraies valeurs du serveur
+  useEffect(() => {
+    if (state !== "ok" || !debounced.trim()) {
+      setPreview(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(`${base}/preview`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ template: debounced }) })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!cancelled) setPreview(d);
+      })
+      .catch(() => {
+        if (!cancelled) setPreview(null);
       });
-      if (!res.ok) throw new Error();
-      success("Réglages enregistrés", "");
-      load();
-    } catch {
-      showError("Échec", "Impossible d'enregistrer.");
+    return () => {
+      cancelled = true;
+    };
+  }, [debounced, base, state]);
+
+  const nameOf = useMemo(() => new Map(targets.map((t) => [t.id, t.name])), [targets]);
+  const groups = useMemo(() => {
+    const m = new Map<string, TokenDoc[]>();
+    for (const t of tokens) m.set(t.group, [...(m.get(t.group) ?? []), t]);
+    return [...m.entries()];
+  }, [tokens]);
+
+  const call = async (fn: () => Promise<Response>, okTitle: string, okText: string) => {
+    setBusy(true);
+    try {
+      const res = await fn();
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || String(res.status));
+      success(okTitle, okText);
+      await load();
+      return true;
+    } catch (err) {
+      showError("Action impossible", err instanceof Error && err.message ? err.message : "Le bot n'a pas répondu.");
+      return false;
     } finally {
-      setSaving(false);
+      setBusy(false);
     }
   };
 
-  const addChannel = async () => {
-    if (!selectedGuild) return;
-    if (!fChannel) return showError("Choisis un salon", "Un salon vocal verrouillé est idéal.");
-    if (fType === "roleMembers" && !fRole) return showError("Rôle requis", "Le type « Membres d'un rôle » a besoin d'un rôle.");
-    if (!BOT_API_URL) return showError("Bot injoignable", "Rien n'a été enregistré.");
-    try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/server-stats/channels/${fChannel}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ type: fType, template: fTemplate, roleId: fType === "roleMembers" ? fRole : null }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error || "");
-      success("Salon compteur ajouté", `#${channelName(fChannel)} sera renommé toutes les ${interval} min.`);
-      load();
-    } catch (e) {
-      showError("Échec", e instanceof Error && e.message ? e.message : "Impossible d'ajouter.");
+  const setup = (id: string) =>
+    call(() => fetch(`${base}/setup`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ preset: id }) }), "Catégorie créée", "Les salons compteurs sont créés (verrouillés) et se mettent à jour tout seuls.");
+
+  const saveCounter = async () => {
+    if (!channelId) {
+      showError("Salon requis", "Choisissez le salon vocal à transformer en compteur.");
+      return;
     }
+    const ok = await call(
+      () => fetch(`${base}/channels/${channelId}`, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "custom", template }) }),
+      "Compteur enregistré",
+      "Le salon est renommé tout de suite, puis à chaque rafraîchissement."
+    );
+    if (ok) setChannelId(null);
   };
 
-  const removeChannel = async (channelId: string) => {
-    if (!selectedGuild || !BOT_API_URL) return;
-    try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/server-stats/channels/${channelId}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error();
-      success("Retiré", "");
-      load();
-    } catch {
-      showError("Échec", "");
-    }
+  const removeCounter = async (id: string) => {
+    if (!(await confirmDialog("Retirer ce compteur ? Le salon reste sur le serveur avec son dernier nom, il n'est simplement plus mis à jour.", { title: "Retirer le compteur", confirmLabel: "Retirer", tone: "danger" }))) return;
+    await call(() => fetch(`${base}/channels/${id}`, { method: "DELETE", credentials: "include" }), "Compteur retiré", "Le salon n'est plus mis à jour.");
   };
 
-  const refreshNow = async () => {
-    if (!selectedGuild || !BOT_API_URL) return;
-    try {
-      await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/server-stats/refresh`, { method: "POST", credentials: "include" });
-      success("Compteurs rafraîchis", "");
-      setTimeout(load, 1500);
-    } catch {
-      showError("Échec", "");
-    }
-  };
+  const setConfig = (patch: Partial<Pick<Overview, "enabled" | "updateIntervalMinutes">>) =>
+    call(() => fetch(`${base}/config`, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) }), "Réglage enregistré", "Le bot applique ce réglage tout de suite.");
+
+  const insert = (token: string) => setTemplate((t) => (t.trim() ? `${t} ${token}` : token));
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden bg-[var(--bg-main)] text-white">
-      <div className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--bg-surface-elevated)]/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 z-20">
-        <div className="flex items-center gap-3">
-          <Link href="/discord" className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors" title="Retour au hub Discord">
-            <ArrowLeft className="w-5 h-5" />
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] p-4 pb-44 text-white sm:p-8">
+      <div className="mx-auto w-full min-w-0 max-w-5xl space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex items-center gap-2 text-xs font-medium text-zinc-400 transition hover:text-white">
+            <ArrowLeft className="h-4 w-4" />
+            Retour au hub Discord
           </Link>
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-[var(--panel-border)] flex items-center justify-center text-zinc-300">
-              <BarChart3 className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-base font-semibold tracking-tight text-white">Server Stats</h1>
-              <p className="text-xs text-white/70">Salons compteurs : membres, boosts, en ligne…</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2.5">
-          {manageableGuilds.length > 0 ? (
-            <GuildSelector
-              guilds={manageableGuilds}
-              value={selectedGuild?.id || ""}
-              onChange={(g) => {
-                userSelectedRef.current = true;
-                setSelectedGuild(g);
-              }}
-            />
-          ) : (
-            <span className="text-xs text-white/70">Aucun serveur administrable</span>
-          )}
-          <button onClick={load} className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-[var(--panel-border)] text-white/70 hover:text-white transition-colors" title="Rafraîchir">
-            <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+          <button type="button" onClick={() => void load()} className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition hover:bg-white/[0.05]">
+            <RefreshCw className="h-3.5 w-3.5" />
+            Actualiser
           </button>
         </div>
-      </div>
 
-      <div className="flex-1 overflow-y-auto os-scroll px-4 sm:px-6 py-6 pb-44 md:pb-44 space-y-6 [overscroll-behavior:contain]">
-        {!discordLoading && manageableGuilds.length === 0 && (
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-6 text-center text-sm text-zinc-400">
-            Connectez un serveur Discord où vous êtes administrateur.
+        <header className="flex items-center gap-4">
+          <span className="grid h-12 w-12 place-items-center rounded-2xl border border-[var(--panel-border)] bg-white/[0.03]">
+            <EthoneIcon name="mod-serverstats" className="h-6 w-6 text-emerald-300" />
+          </span>
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold tracking-tight">Compteurs de salons</h1>
+            <p className="mt-0.5 text-xs text-zinc-400">Affichez les statistiques du serveur dans le nom de salons vocaux : membres, horloge, objectif, activité, membre le plus actif…</p>
           </div>
-        )}
+        </header>
 
-        {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
-            <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
-                <Bot className="h-5 w-5" />
+        {state === "loading" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-zinc-500">Chargement…</div>}
+        {state === "offline" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-zinc-400">Le bot n&apos;a pas répondu pour ce serveur. Vérifiez qu&apos;il est présent, puis actualisez.</div>}
+
+        {state === "ok" && overview && (
+          <>
+            <section className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
+              <h2 className="text-sm font-semibold">Démarrage en un clic</h2>
+              <p className="mt-1 text-xs text-zinc-400">Crée la catégorie « SERVER STATS » avec des salons vocaux verrouillés (visibles, personne ne peut s&apos;y connecter) déjà configurés.</p>
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                {presets.map((p) => (
+                  <div key={p.id} className="flex flex-col gap-3 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-4">
+                    <div>
+                      <p className="text-sm font-semibold">{p.label}</p>
+                      <p className="text-[11px] text-zinc-500">{p.templates.length} salons</p>
+                    </div>
+                    <DiscordPreview title={p.categoryName} lines={PRESET_SAMPLE[p.id] ?? p.templates} />
+                    <button type="button" disabled={busy} onClick={() => void setup(p.id)} className="cursor-pointer rounded-xl bg-[#5865F2] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#4752C4] disabled:opacity-50">
+                      Créer cette catégorie
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-sm font-semibold">Vos compteurs ({overview.channels.length}/25)</h2>
+                <div className="flex flex-wrap items-center gap-3 text-xs">
+                  <label className="flex items-center gap-2 text-zinc-400">
+                    Rafraîchir toutes les
+                    <select value={overview.updateIntervalMinutes} disabled={busy} onChange={(e) => void setConfig({ updateIntervalMinutes: Number(e.target.value) })} className="rounded-lg border border-[var(--panel-border)] bg-[var(--bg-surface)] px-2 py-1 text-white">
+                      {[10, 15, 30, 60, 180, 360].map((m) => (
+                        <option key={m} value={m}>
+                          {m} min
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button type="button" role="switch" aria-checked={overview.enabled} disabled={busy} onClick={() => void setConfig({ enabled: !overview.enabled })} className={cn("cursor-pointer rounded-full px-3 py-1 font-semibold transition", overview.enabled ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-500/15 text-zinc-400")}>
+                    {overview.enabled ? "Actif" : "En pause"}
+                  </button>
+                </div>
+              </div>
+              {overview.channels.length === 0 ? (
+                <p className="rounded-xl border border-dashed border-[var(--panel-border)] p-6 text-center text-xs text-zinc-500">Aucun compteur. Utilisez un démarrage en un clic ci-dessus ou ajoutez-en un ci-dessous.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {overview.channels.map((c) => (
+                    <li key={c.channelId} className="flex flex-wrap items-center gap-3 rounded-xl bg-white/[0.03] px-4 py-3 text-xs">
+                      <Volume2 className="h-4 w-4 shrink-0 text-zinc-500" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-semibold text-white">{c.lastName ?? nameOf.get(c.channelId) ?? "(pas encore renommé)"}</p>
+                        <p className="truncate font-mono text-[11px] text-zinc-500">
+                          {c.type === "custom" ? c.template : `${LEGACY_LABEL[c.type] ?? c.type} · ${c.template}`}
+                        </p>
+                      </div>
+                      {c.type === "custom" && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setChannelId(c.channelId);
+                            setTemplate(c.template);
+                          }}
+                          className="cursor-pointer rounded-lg border border-[var(--panel-border)] px-2.5 py-1 font-semibold text-zinc-300 transition hover:bg-white/[0.06]"
+                        >
+                          Modifier
+                        </button>
+                      )}
+                      <button type="button" aria-label="Retirer ce compteur" disabled={busy} onClick={() => void removeCounter(c.channelId)} className="cursor-pointer rounded-lg p-1.5 text-zinc-400 transition hover:bg-rose-500/10 hover:text-rose-300">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+
+            <section className="space-y-4 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
+              <h2 className="text-sm font-semibold">{channelId && overview.channels.some((c) => c.channelId === channelId) ? "Modifier le compteur" : "Ajouter un compteur"}</h2>
+              <div>
+                <p className="mb-1.5 text-[11px] font-medium text-zinc-400">Salon vocal à transformer</p>
+                <ChannelPicker value={channelId} guildId={guildId} filterTypes={[2, 13]} onChange={(id) => setChannelId(id)} placeholder="Choisir un salon vocal" />
               </div>
               <div>
-                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
-                <p className="mt-0.5 text-zinc-300">
-                  Invitez le bot sur « {selectedGuild.name} » pour créer et synchroniser des salons compteurs de statistiques.
+                <p className="mb-1.5 text-[11px] font-medium text-zinc-400">Modèle du nom</p>
+                <input value={template} maxLength={100} onChange={(e) => setTemplate(e.target.value)} placeholder="🕐 {time12:UTC} UTC" className="h-10 w-full rounded-xl border border-[var(--panel-border)] bg-white/[0.03] px-3 text-sm text-white outline-none focus:border-indigo-400/60" />
+                <div className="mt-2 rounded-xl bg-[#2b2d31] px-3 py-2 text-[13px] text-[#dbdee1]">
+                  <span className="mr-2 text-[11px] uppercase tracking-wide text-[#949ba4]">Aperçu</span>
+                  {preview?.text || "…"}
+                </div>
+                {preview && preview.warnings.length > 0 && (
+                  <ul className="mt-2 space-y-1 text-[11px] text-amber-300">
+                    {preview.warnings.map((w, i) => (
+                      <li key={i}>⚠ {w}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div className="space-y-3">
+                <p className="text-[11px] font-medium text-zinc-400">Jetons (cliquez pour insérer)</p>
+                {groups.map(([group, list]) => (
+                  <div key={group}>
+                    <p className="mb-1 text-[11px] font-semibold text-zinc-500">{group}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {list.map((t) => (
+                        <button key={t.token} type="button" title={`${t.label} — ex. ${t.example}${t.needsStats ? " (module Statistiques requis)" : ""}`} onClick={() => insert(t.token)} className="cursor-pointer rounded-lg border border-[var(--panel-border)] bg-white/[0.03] px-2 py-1 font-mono text-[11px] text-zinc-300 transition hover:border-indigo-400/50 hover:text-white">
+                          {t.token}
+                          {t.needsStats && <span className="ml-1 text-sky-300">•</span>}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                <p className="text-[11px] text-zinc-500">
+                  <span className="text-sky-300">•</span> = nécessite le module <Link href={`/discord/stats?guildId=${guildId}`} className="underline">Statistiques</Link>. Discord limite le renommage d&apos;un salon à 2 fois toutes les 10 minutes : l&apos;horloge s&apos;affiche à la dizaine de minutes près.
                 </p>
               </div>
-            </div>
-            <a
-              href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium text-xs transition-colors shrink-0 shadow-lg shadow-[#5865F2]/25 cursor-pointer"
-            >
-              Inviter le bot
-            </a>
-          </div>
-        )}
-
-        {offline && selectedGuild && (botGuildIds === null || botGuildIds.includes(selectedGuild.id)) && (
-          <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
-            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-            <span>Mode hors-ligne : le serveur du bot n&apos;est pas joignable ici. Utilise <code className="rounded bg-black/30 px-1">/serverstats add</code> sur Discord.</span>
-          </div>
-        )}
-
-        {selectedGuild && (
-          <>
-            {/* Config */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4">
-              <button
-                type="button"
-                role="switch"
-                aria-checked={enabled}
-                onClick={() => {
-                  const next = !enabled;
-                  setEnabled(next);
-                  toggle("Compteurs de serveur", next, next ? "Module activé." : "Module désactivé.");
-                }}
-                className={cn(
-                  "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200 outline-none select-none",
-                  enabled ? "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.3)]" : "bg-white/20 border border-white/10"
-                )}
-              >
-                <span
-                  className={cn(
-                    "pointer-events-none block h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-200",
-                    enabled ? "translate-x-5" : "translate-x-0"
-                  )}
-                />
+              <button type="button" disabled={busy || !channelId} onClick={() => void saveCounter()} className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[#5865F2] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#4752C4] disabled:cursor-not-allowed disabled:opacity-50">
+                <Plus className="h-4 w-4" />
+                Enregistrer le compteur
               </button>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-white">Module {enabled ? "actif" : "désactivé"}</p>
-                <p className="text-xs text-white/70">Rafraîchissement toutes les {interval} min (Discord limite les renommages à 2 / 10 min).</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="range" min={10} max={60} value={interval} onChange={(e) => setIntervalMin(Number(e.target.value))} className="w-28 accent-[#5865F2]" />
-                <span className="text-xs font-mono text-zinc-300 w-10">{interval}m</span>
-                <button onClick={saveConfig} disabled={saving} className="inline-flex items-center gap-1.5 rounded-xl bg-[#5865F2] px-3 py-2 text-xs font-semibold text-white hover:bg-[#4752C4] transition-colors disabled:opacity-50 cursor-pointer">
-                  <Save className="h-3.5 w-3.5" />{saving ? "…" : "OK"}
-                </button>
-              </div>
-            </div>
-
-            {/* Add */}
-            <div className="rounded-2xl border border-[#5865F2]/30 bg-white/[0.02] p-4 sm:p-5 space-y-3">
-              <p className="text-sm font-bold text-white flex items-center gap-2"><Plus className="h-4 w-4" />Nouveau compteur</p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="mb-1 block text-[11px] font-medium text-zinc-400">Salon</label>
-                  <ChannelPicker
-                    value={fChannel}
-                    onChange={(id) => setFChannel(id)}
-                    channels={channels.filter((c) => !usedChannels.has(c.id)).map((c) => ({ id: c.id, name: c.name }))}
-                    guildId={selectedGuild?.id}
-                    placeholder="Choisir un salon..."
-                    size="sm"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-[11px] font-medium text-zinc-400">Statistique</label>
-                  <select value={fType} onChange={(e) => setFType(e.target.value)} className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]/50 [&>option]:bg-[var(--bg-surface-elevated)]">
-                    {STAT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-                  </select>
-                </div>
-                {fType === "roleMembers" && (
-                  <div>
-                    <label className="mb-1 block text-[11px] font-medium text-zinc-400">Rôle</label>
-                    <RolePicker
-                      value={fRole}
-                      onChange={(id) => setFRole(id)}
-                      roles={roles}
-                      guildId={selectedGuild?.id}
-                      placeholder="Choisir un rôle..."
-                      size="sm"
-                    />
-                  </div>
-                )}
-              </div>
-              <div>
-                <label className="mb-1 block text-[11px] font-medium text-zinc-400">Format — <code className="rounded bg-black/30 px-1">{"{count}"}</code> = la valeur</label>
-                <div className="flex gap-2">
-                  <input value={fTemplate} onChange={(e) => setFTemplate(e.target.value.slice(0, 80))} placeholder="👥 {count} membres" className="flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#5865F2]/50" />
-                  <button onClick={addChannel} className="inline-flex items-center gap-1.5 rounded-xl bg-[#5865F2] px-4 py-2 text-xs font-semibold text-white hover:bg-[#4752C4] transition-colors cursor-pointer">Ajouter</button>
-                </div>
-              </div>
-            </div>
-
-            {/* List */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] overflow-hidden">
-              <div className="flex items-center justify-between border-b border-[var(--panel-border)] px-4 py-3">
-                <p className="text-xs font-bold uppercase tracking-wide text-zinc-400">Compteurs ({overview?.channels.length ?? 0})</p>
-                {overview && overview.channels.length > 0 && (
-                  <button onClick={refreshNow} className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-zinc-300 hover:bg-white/10 transition-colors cursor-pointer">
-                    <RefreshCw className="h-3 w-3" /> Rafraîchir maintenant
-                  </button>
-                )}
-              </div>
-              {!overview || overview.channels.length === 0 ? (
-                <p className="px-4 py-8 text-center text-sm text-zinc-500">Aucun salon compteur.</p>
-              ) : (
-                <div className="divide-y divide-white/5">
-                  {overview.channels.map((c) => (
-                    <div key={c.channelId} className="flex items-center gap-3 p-4">
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-white">
-                          {STAT_TYPES.find((t) => t.value === c.type)?.label ?? c.type}
-                          {c.roleId && <span className="ml-1 text-[11px] font-normal text-zinc-500">@{roleName(c.roleId)}</span>}
-                          {c.lastValue !== null && <span className="ml-2 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-mono">{c.lastValue}</span>}
-                        </p>
-                        <p className="mt-0.5 text-[11px] text-zinc-400">#{channelName(c.channelId)} · <code className="text-zinc-500">{c.template}</code></p>
-                      </div>
-                      <button onClick={() => removeChannel(c.channelId)} title="Retirer" className="shrink-0 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 p-2 text-rose-300 hover:bg-rose-500/15 hover:text-rose-200 transition-colors cursor-pointer">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            </section>
           </>
         )}
       </div>

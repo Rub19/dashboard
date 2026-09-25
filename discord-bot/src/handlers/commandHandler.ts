@@ -77,6 +77,7 @@ import { reminderCommand } from '../modules/reminders/commands/reminderCommand.j
 import { afkCommand } from '../modules/afk/commands/afkCommand.js';
 import { countingCommand } from '../modules/counting/commands/countingCommand.js';
 import { statsCommand } from '../modules/stats/commands/statsCommand.js';
+import { statrolesCommand } from '../modules/statroles/commands/statrolesCommand.js';
 import { birthdayCommand } from '../modules/birthdays/commands/birthdayCommand.js';
 import { tagCommand } from '../modules/tags/commands/tagCommand.js';
 import { serverStatsCommand } from '../modules/serverStats/commands/serverStatsCommand.js';
@@ -195,6 +196,7 @@ class CommandRegistry {
     this.register(afkCommand);
     this.register(countingCommand);
     this.register(statsCommand);
+    this.register(statrolesCommand);
 
     // Birthdays (anniversaires + annonce quotidienne + rôle)
     this.register(birthdayCommand);

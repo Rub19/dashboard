@@ -119,6 +119,20 @@ class StatsQueries {
     };
   }
 
+  /** Messages et heures de vocal de CHAQUE membre sur les `days` derniers jours (sert aux statroles : un seul passage pour tous). */
+  public userTotals(guildId: string, days: number, now = new Date()): { messages: Record<string, number>; voiceHours: Record<string, number> } {
+    const messages: Record<string, number> = {};
+    const voiceSec: Record<string, number> = {};
+    for (const [, d] of daysData(guildId, lastDays(days, now))) {
+      if (!d) continue;
+      addTo(messages, d.byUser);
+      addTo(voiceSec, d.voiceByUser);
+    }
+    const voiceHours: Record<string, number> = {};
+    for (const [id, sec] of Object.entries(voiceSec)) voiceHours[id] = sec / 3600;
+    return { messages, voiceHours };
+  }
+
   public channel(guildId: string, channelId: string, days: number, now = new Date()): ChannelStats {
     const list = lastDays(days, now);
     const msgByUser: Record<string, number> = {};

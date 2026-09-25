@@ -350,12 +350,10 @@ class RaidDetectionService {
         userId,
         config.messageRaid.timeWindowSeconds
       );
-      const duplicates = raidCache.getUserDuplicateMessageCount(
-        guild.id,
-        userId,
-        contentHash,
-        15
-      );
+      // Un message sans texte (sondage Discord, image, autocollant) n'est jamais un doublon : même contenu vide.
+      const duplicates = content
+        ? raidCache.getUserDuplicateMessageCount(guild.id, userId, contentHash, 15)
+        : 0;
 
       const isRateExceeded = userMsgsInWindow >= config.messageRaid.maxMessagesPerUser;
       const isDuplicateExceeded = duplicates >= config.messageRaid.duplicateMessageThreshold;

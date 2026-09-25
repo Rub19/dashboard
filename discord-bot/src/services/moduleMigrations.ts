@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import type { Client } from 'discord.js';
-import { setModuleEnabled } from './moduleRegistry.js';
+import { MODULES, setModuleEnabled } from './moduleRegistry.js';
 import { autoModRepository } from '../modules/automod/storage/autoModRepository.js';
 import { logger } from '../utils/logger.js';
 
@@ -24,6 +24,9 @@ const MIGRATIONS: ModuleMigration[] = [
   // Demande du propriétaire : AutoMod entièrement désactivé (détecteurs et sanctions automatiques compris), à réactiver au choix.
   { id: '2026-09-25-automod-everything-off', disable: [], run: () => autoModRepository.turnEverythingOff() },
   { id: '2026-09-25-automod-external-links-all-b', disable: [], run: () => autoModRepository.alignExternalLinksDetector() },
+  // Demande du propriétaire : tout est désactivé sur tous les serveurs sauf la musique (protections, modération, tags, etc. compris).
+  // Chaque module se réactive ensuite à la demande (dashboard, /module, /setup). Un module verrouillé (rôles sécurisés en place) reste actif.
+  { id: '2026-09-25-everything-off-except-music', disable: MODULES.filter((m) => m.id !== 'music').map((m) => m.id) },
 ];
 
 const FILE = path.resolve(process.cwd(), 'data', 'module_migrations.json');

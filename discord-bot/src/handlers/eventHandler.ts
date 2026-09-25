@@ -1,4 +1,5 @@
 import { Client, Events, AuditLogEvent, GuildMember, Role } from 'discord.js';
+import { isModuleEnabled } from '../services/moduleRegistry.js';
 import { logService } from '../modules/logs/services/logService.js';
 import { onInteractionCreate } from '../events/interactionCreate.js';
 import { onMessageCreate } from '../events/messageCreate.js';
@@ -254,10 +255,12 @@ export function registerEvents(client: Client): void {
 
   // Logs & Gestion Salons : Vocal
   client.on(Events.VoiceStateUpdate, (oldState, newState) => {
+    const guildId = newState.guild.id;
     handleVoiceStateUpdate(oldState, newState);
-    voiceService.handleVoiceStateUpdate(oldState, newState);
+    // Salons vocaux temporaires : un module désactivé ne crée ni ne supprime aucun salon.
+    if (isModuleEnabled(guildId, 'voice')) voiceService.handleVoiceStateUpdate(oldState, newState);
     voiceStayService.onVoiceStateUpdate(oldState, newState);
-    statsCollector.onVoiceStateUpdate(oldState, newState);
+    if (isModuleEnabled(guildId, 'stats')) statsCollector.onVoiceStateUpdate(oldState, newState);
     ownerShieldService.handleVoiceStateUpdate(oldState, newState);
   });
 

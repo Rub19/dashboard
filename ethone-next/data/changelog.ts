@@ -35925,6 +35925,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_101_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_101_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_101_de);
 
+const v1_28_102_fr: ChangelogEntry = {
+  version: "v1.28.102",
+  date: "2026-09-25",
+  title: "Messages supprimés à tort et modules désactivés partout sauf la musique",
+  items: [
+    "Anti-Raid et AutoMod : un message sans texte (sondage Discord, image, autocollant) était compté comme « message répété » ; à la troisième occurrence il était supprimé et son auteur mis en sourdine. Ces messages ne sont plus jamais considérés comme des doublons.",
+    "Tous les modules sont désactivés sur tous les serveurs, sauf la musique (protections, modération, tags, rappels compris) ; ils se réactivent à la demande depuis le dashboard, /module ou /setup. Appliqué une seule fois au prochain démarrage du bot.",
+    "Un module désactivé ne fait plus rien de passif : messages épinglés, AFK, comptage, statistiques, highlights, Anti-Raid, AutoMod, XP, économie, assistant IA, commandes personnalisées et salons vocaux temporaires s'arrêtent vraiment (avant, seules leurs commandes étaient refusées).",
+  ],
+};
+
+const v1_28_102_en: ChangelogEntry = {
+  version: "v1.28.102",
+  date: "2026-09-25",
+  title: "Wrongly deleted messages and modules off everywhere except music",
+  items: [
+    "Anti-Raid and AutoMod: a message with no text (Discord poll, image, sticker) was counted as a \"repeated message\"; on the third one it was deleted and its author timed out. Such messages are never treated as duplicates any more.",
+    "All modules are turned off on every server except music (protections, moderation, tags and reminders included); they can be re-enabled on demand from the dashboard, /module or /setup. Applied once at the bot's next start.",
+    "A disabled module no longer does anything passive: sticky messages, AFK, counting, statistics, highlights, Anti-Raid, AutoMod, XP, economy, AI assistant, custom commands and temporary voice channels really stop (before, only their commands were refused).",
+  ],
+};
+
+const v1_28_102_es: ChangelogEntry = {
+  version: "v1.28.102",
+  date: "2026-09-25",
+  title: "Mensajes borrados por error y módulos desactivados salvo la música",
+  items: [
+    "Anti-Raid y AutoMod: un mensaje sin texto (sondeo de Discord, imagen, pegatina) se contaba como «mensaje repetido»; al tercero se borraba y su autor era silenciado. Estos mensajes ya nunca se consideran duplicados.",
+    "Todos los módulos se desactivan en todos los servidores excepto la música (protecciones, moderación, etiquetas y recordatorios incluidos); se reactivan a petición desde el panel, /module o /setup. Se aplica una sola vez en el próximo inicio del bot.",
+    "Un módulo desactivado ya no hace nada pasivo: mensajes fijados, AFK, recuento, estadísticas, highlights, Anti-Raid, AutoMod, XP, economía, asistente IA, comandos personalizados y canales de voz temporales se detienen de verdad (antes solo se rechazaban sus comandos).",
+  ],
+};
+
+const v1_28_102_de: ChangelogEntry = {
+  version: "v1.28.102",
+  date: "2026-09-25",
+  title: "Zu Unrecht gelöschte Nachrichten und Module überall aus außer Musik",
+  items: [
+    "Anti-Raid und AutoMod: Eine Nachricht ohne Text (Discord-Umfrage, Bild, Sticker) wurde als „wiederholte Nachricht“ gezählt; bei der dritten wurde sie gelöscht und der Autor stummgeschaltet. Solche Nachrichten gelten nie mehr als Duplikate.",
+    "Alle Module sind auf allen Servern deaktiviert, außer Musik (Schutzfunktionen, Moderation, Tags und Erinnerungen eingeschlossen); sie lassen sich bei Bedarf über das Dashboard, /module oder /setup wieder aktivieren. Wird einmalig beim nächsten Bot-Start angewendet.",
+    "Ein deaktiviertes Modul tut nichts Passives mehr: angeheftete Nachrichten, AFK, Zählen, Statistiken, Highlights, Anti-Raid, AutoMod, XP, Wirtschaft, KI-Assistent, eigene Befehle und temporäre Sprachkanäle stoppen wirklich (vorher wurden nur ihre Befehle abgelehnt).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_102_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_102_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_102_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_102_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -25,6 +25,7 @@ import { logger } from '../utils/logger.js';
 import { formatString, getTranslation } from '../utils/i18n.js';
 import { noticeEmbed } from '../utils/embeds.js';
 import { disabledModuleEmbeds } from '../services/moduleGate.js';
+import { isModuleEnabled } from '../services/moduleRegistry.js';
 
 export async function onMessageCreate(message: Message) {
   // Ignorer les bots
@@ -62,20 +63,24 @@ export async function onMessageCreate(message: Message) {
     }
   }
 
+  // Un module désactivé sur ce serveur ne doit rien faire de passif (suppression, réponse, DM…), pas seulement refuser ses commandes.
+  const guildId = message.guild.id;
+  const on = (moduleId: string) => isModuleEnabled(guildId, moduleId);
+
   // Sticky Messages : repositionner le message épinglé du salon (anti-rebond interne).
-  stickyService.handleMessage(message);
+  if (on('sticky')) stickyService.handleMessage(message);
 
   // AFK : retour d'absence de l'auteur + notification des membres AFK mentionnés.
-  afkService.handleMessage(message).catch(() => {});
+  if (on('afk')) afkService.handleMessage(message).catch(() => {});
 
   // Comptage : vérification du nombre donné dans le salon de comptage (ignoré ailleurs et si le module est désactivé).
-  countingService.handleMessage(message).catch(() => {});
+  if (on('counting')) countingService.handleMessage(message).catch(() => {});
 
   // Statistiques d'activité : compteur du jour (messages par salon et par membre).
-  statsCollector.recordMessage(message);
+  if (on('stats')) statsCollector.recordMessage(message);
 
   // Highlights : DM des membres qui surveillent un mot-clé présent dans ce message.
-  highlightService.handleMessage(message).catch(() => {});
+  if (on('highlights')) highlightService.handleMessage(message).catch(() => {});
 
   // Each downstream step below is independent (raid detection, automod,
   // leveling, analytics, AI) — an uncaught throw in one used to silently
@@ -85,7 +90,7 @@ export async function onMessageCreate(message: Message) {
 
   // 1. Analyse Anti-Raid 2.0 (Spam burst, Mention Raid, @everyone)
   try {
-    await raidDetectionService.handleMessage(message);
+    if (on('security')) await raidDetectionService.handleMessage(message);
   } catch (err) {
     logger.error('[messageCreate] raidDetectionService.handleMessage a échoué :', err);
   }
@@ -93,7 +98,7 @@ export async function onMessageCreate(message: Message) {
   // 2. Analyse AutoMod 2.0 (Pipeline de détection modulaire & Rule Engine)
   let triggered = false;
   try {
-    triggered = await autoModService.processMessage(message);
+    triggered = on('automod') ? await autoModService.processMessage(message) : false;
   } catch (err) {
     logger.error('[messageCreate] autoModService.processMessage a échoué :', err);
   }
@@ -104,14 +109,14 @@ export async function onMessageCreate(message: Message) {
 
   // 2. Traitement du système de Leveling & XP
   try {
-    await levelingService.handleMessage(message);
+    if (on('leveling')) await levelingService.handleMessage(message);
   } catch (err) {
     logger.error('[messageCreate] levelingService.handleMessage a échoué :', err);
   }
 
   // 2b. Gain passif d'économie (même principe que l'XP : cooldown par membre,
   // longueur minimale, pas de bots) — silencieux, pas de message envoyé.
-  if (message.guild && !message.author.bot) {
+  if (message.guild && !message.author.bot && on('economy')) {
     try {
       economyService.earnPassive(
         message.guild.id,
@@ -133,7 +138,7 @@ export async function onMessageCreate(message: Message) {
   // 4. Traitement par l'Assistant IA (si mentionné ou salon automatique)
   let aiHandled = false;
   try {
-    aiHandled = await aiService.handleMessage(message);
+    aiHandled = on('ai') ? await aiService.handleMessage(message) : false;
   } catch (err) {
     logger.error('[messageCreate] aiService.handleMessage a échoué :', err);
   }
@@ -169,7 +174,7 @@ export async function onMessageCreate(message: Message) {
   // Fall-through to custom commands if no built-in command matches
   if (!command && message.guildId) {
     const customCmd = customCommandStorage.getByName(message.guildId, commandName);
-    if (customCmd && customCmd.enabled && (customCmd.triggerType === 'prefix' || customCmd.triggerType === 'both')) {
+    if (customCmd && customCmd.enabled && on('commands') && (customCmd.triggerType === 'prefix' || customCmd.triggerType === 'both')) {
       await CustomCommandService.executePrefix(customCmd, message, args).catch((err) => {
         logger.error(`[CustomCommand] Prefix exec error "${commandName}":`, err);
       });

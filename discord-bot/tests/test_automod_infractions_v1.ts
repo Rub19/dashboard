@@ -90,5 +90,16 @@ ok(n >= 3 && !autoModRepository.getConfig(H).enabled && !autoModRepository.getCo
 ok(autoModRepository.getConfig(H).strikes.progressiveSteps.length === 1, 'une échelle de sanctions personnalisée est conservée');
 ok(autoModRepository.getConfig(I).strikes.progressiveSteps.length === 0, 'l’ancienne échelle par défaut est effacée');
 
+console.log('\nMessages sans texte (sondage Discord, image, autocollant) : jamais du spam');
+const { SpamDetector } = await import('../src/modules/automod/detectors/spamDetector.js');
+const { autoModCache } = await import('../src/modules/automod/services/autoModCache.js');
+const SG = '100000000000000031';
+const spamCfg = AutoModConfigSchema.parse({ enabled: true, spam: { enabled: true, maxMessages: 20 } });
+const emptyMsg = { guildId: SG, author: { id: 'u9' }, channelId: 'c1', content: '' } as any;
+for (let i = 0; i < 5; i++) autoModCache.recordMessage(SG, 'u9', 'c1', '');
+ok(!SpamDetector.check(emptyMsg, spamCfg).triggered, '5 messages vides d’affilée : pas de « message répété »');
+for (let i = 0; i < 4; i++) autoModCache.recordMessage(SG, 'u9', 'c1', 'même texte');
+ok(SpamDetector.check({ ...emptyMsg, content: 'même texte' }, spamCfg).triggered, 'un vrai texte répété est toujours détecté');
+
 console.log(fail ? `\n${fail} échec(s)` : '\nTout est bon');
 process.exit(fail ? 1 : 0);

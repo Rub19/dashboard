@@ -32,8 +32,9 @@ export class SpamDetector {
       };
     }
 
-    // Détection de doublons répétés
-    const duplicates = autoModCache.getUserDuplicateCount(guildId, userId, content, 15);
+    // Détection de doublons répétés. Un message sans texte (sondage Discord, image, autocollant) n'est jamais un doublon :
+    // tous ont le même contenu vide et seraient sinon supprimés à la troisième occurrence.
+    const duplicates = content.trim() ? autoModCache.getUserDuplicateCount(guildId, userId, content, 15) : 0;
     if (duplicates >= 3) {
       return {
         detectorName: 'SpamDetector',

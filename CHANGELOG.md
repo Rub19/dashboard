@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.102 — 2026-09-25
+
+**Messages supprimés à tort et modules désactivés partout sauf la musique**
+
+- Anti-Raid et AutoMod : un message sans texte (sondage Discord, image, autocollant) était compté comme « message répété » ; à la troisième occurrence il était supprimé et son auteur mis en sourdine. Ces messages ne sont plus jamais considérés comme des doublons.
+- Tous les modules sont désactivés sur tous les serveurs, sauf la musique (protections, modération, tags, rappels compris) ; ils se réactivent à la demande depuis le dashboard, /module ou /setup. Appliqué une seule fois au prochain démarrage du bot.
+- Un module désactivé ne fait plus rien de passif : messages épinglés, AFK, comptage, statistiques, highlights, Anti-Raid, AutoMod, XP, économie, assistant IA, commandes personnalisées et salons vocaux temporaires s'arrêtent vraiment (avant, seules leurs commandes étaient refusées).
+
 ## v1.28.101 — 2026-09-25
 
 **Sondages : création depuis le dashboard réparée**

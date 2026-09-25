@@ -10,6 +10,7 @@ import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import { subscribeGuildLive } from "@/lib/guildLive";
 import { MemberIdsInput, MultiRolePicker } from "@/components/discord/MultiPickers";
 import { Field, Section, ToggleField, inputCls } from "@/components/discord/SettingsUI";
+import PageHeader from "@/components/discord/PageHeader";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -190,11 +191,7 @@ export default function SettingsCenterClient() {
   return (
     <div className="h-full overflow-y-auto bg-[var(--bg-main)] px-4 pb-44 pt-6 text-white sm:px-6 lg:px-10">
       <div className="mx-auto max-w-4xl space-y-8">
-        <div>
-          <div className="mb-2">{back}</div>
-          <h1 className="text-3xl font-black tracking-tight">Paramètres</h1>
-          <p className="mt-1 text-sm text-zinc-400">Configurez les réglages de base du bot sur votre serveur.</p>
-        </div>
+        <PageHeader guildId={guildId} icon="mod-commands" tint="zinc" title="Paramètres" subtitle="Langue, fuseau horaire, contacts d'urgence, aperçu des messages du bot et commandes." />
 
         {issues.length > 0 && (
           <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4">

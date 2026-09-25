@@ -12,7 +12,7 @@ export const dynamic = "force-static";
 export default function BotControlPage() {
   return (
     <BotControlErrorBoundary>
-      <Suspense fallback={<div className="min-h-screen bg-[var(--bg-main)]" />}>
+      <Suspense fallback={<div className="min-h-full bg-[var(--bg-main)]" />}>
         <BotControlClient initialTab="overview" />
       </Suspense>
     </BotControlErrorBoundary>

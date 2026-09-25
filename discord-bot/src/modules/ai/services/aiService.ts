@@ -163,7 +163,7 @@ export class AIService {
         answer: sanitizedText,
         sourcesUsed: completion.sourcesUsed,
         userTag: message.author.username,
-        botAvatarUrl: message.client.user?.displayAvatarURL() || 'https://ethone.dev/icons/ethone-icon-512.png',
+        botAvatarUrl: message.client.user?.displayAvatarURL() || 'https://ethone.dev/icons/ethone-icon-512.png?v=r2',
       });
 
       const actionRow = DiscordAiPanel.buildActionRow(message.id);

@@ -19,7 +19,7 @@ export function generateStaticParams() {
 export default async function ChannelDetailPage({ params }: { params: Promise<{ channelId: string }> }) {
   const resolved = await params;
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-main)]" />}>
+    <Suspense fallback={<div className="min-h-full bg-[var(--bg-main)]" />}>
       <ServerManagementClient initialTab="channels" openedChannelId={resolved.channelId} />
     </Suspense>
   );

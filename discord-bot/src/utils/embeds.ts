@@ -135,6 +135,9 @@ export function neutralEmbed(options: EmbedChromeOptions = {}): EmbedBuilder {
 
 /** Adresse des icônes personnalisées des embeds (générées par ethone-next/scripts/build-bot-icons.mjs, servies par le site). */
 export const BOT_ICON_BASE = 'https://ethone.dev/bot-icons';
+/** Révision des icônes : Discord garde les images d'embed en cache (proxy) très longtemps — changer cette valeur force le rechargement quand un logo change. */
+export const ICON_REV = 'r2';
+export const brandIcon = (name: string): string => `${BOT_ICON_BASE}/${name}.png?v=${ICON_REV}`;
 
 export type NoticeKind = 'success' | 'error' | 'warning' | 'info' | 'denied' | 'neutral';
 
@@ -174,7 +177,7 @@ export function noticeEmbed(kind: NoticeKind, text: string, options: { title?: s
   const meta = NOTICE_META[tone];
   return new EmbedBuilder()
     .setColor(meta.color)
-    .setAuthor({ name: options.title ?? meta.label, iconURL: `${BOT_ICON_BASE}/${options.icon ?? tone}.png` })
+    .setAuthor({ name: options.title ?? meta.label, iconURL: brandIcon(options.icon ?? tone) })
     .setDescription(body.slice(0, 4000))
-    .setFooter({ text: DEFAULT_FOOTER_TEXT, iconURL: `${BOT_ICON_BASE}/ethone.png` });
+    .setFooter({ text: DEFAULT_FOOTER_TEXT, iconURL: brandIcon('ethone') });
 }

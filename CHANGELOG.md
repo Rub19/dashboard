@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.94 — 2026-09-25
+
+**Statistiques poussées, en-têtes de pages corrigés, défilement et logo des embeds**
+
+- Statistiques : quatre onglets (Vue d'ensemble, Membres, Rythme d'activité, Salons). Variations en % par rapport à la période précédente, classement complet des membres avec recherche, tri (messages, vocal, jours actifs), parts du serveur et pagination, carte de chaleur jour × heure, messages et vocal par heure et par jour de semaine, records, série d'activité, concentration de l'activité, détail d'un salon, export CSV.
+- Les données horaires se collectent à partir de cette version du bot : la carte de chaleur se remplit au fil des jours.
+- Graphiques : axes lisibles (plus de chiffres coupés, entiers pour les compteurs, valeurs compactes) et infobulles avec le nom de la série au lieu de « : 0 ».
+- En-têtes de pages : les blocs sombres derrière les titres disparaissent (le style « verre » ne s'applique plus qu'à la barre du haut) ; nouvel en-tête commun avec pastille d'icône colorée sur Statistiques, Comptage, Statroles, Compteurs, Rôles sécurisés et Paramètres.
+- Défilement : le bas de plusieurs pages n'était pas atteignable (réglages et détail d'un salon vocal, constructeur et réglages de formulaire, pages en hauteur d'écran) ; corrigé, avec un défilement de secours sur la zone principale.
+- Embeds du bot : le logo dans le pied de page et les icônes sont rechargés (Discord gardait l'ancien logo en cache).
+- Comptage : le classement affiche pseudos et avatars au lieu d'identifiants.
+
 ## v1.28.93 — 2026-09-25
 
 **Niveaux façon DraftBot, page Paramètres avec contacts d'urgence, aperçu des messages du bot**

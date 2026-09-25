@@ -42,7 +42,7 @@ export class DiscordFormPanel {
       .setColor((config.embedColor as any) || '#5865F2')
       .setFooter({
         text: config.footerText || 'ETHONE Application Center',
-        iconURL: 'https://ethone.dev/icons/ethone-icon-512.png',
+        iconURL: 'https://ethone.dev/icons/ethone-icon-512.png?v=r2',
       })
       .setTimestamp();
 

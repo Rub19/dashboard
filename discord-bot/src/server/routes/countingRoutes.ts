@@ -8,11 +8,26 @@ import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 export function createCountingRouter(client: Client) {
   const router = express.Router({ mergeParams: true });
 
-  router.get('/overview', (req: Request, res: Response): void => {
-    res.json(countingStorage.getOverview(String(req.params.guildId)));
+  /** Vue d'ensemble avec pseudo et avatar des membres du classement (« Ancien membre » s'ils ont quitté le serveur). */
+  const overviewWithNames = async (guildId: string) => {
+    const overview = countingStorage.getOverview(guildId);
+    const guild = client.guilds.cache.get(guildId);
+    const ids = overview.leaderboard.map((e) => e.userId);
+    const found = guild && ids.length > 0 ? await guild.members.fetch({ user: ids.slice(0, 100) }).catch(() => null) : null;
+    return {
+      ...overview,
+      leaderboard: overview.leaderboard.map((e) => {
+        const m = found?.get(e.userId) ?? guild?.members.cache.get(e.userId);
+        return { ...e, name: m?.displayName ?? 'Ancien membre', avatarUrl: m?.user.displayAvatarURL({ extension: 'png', size: 64 }) ?? null };
+      }),
+    };
+  };
+
+  router.get('/overview', async (req: Request, res: Response): Promise<void> => {
+    res.json(await overviewWithNames(String(req.params.guildId)));
   });
 
-  router.put('/config', (req: Request, res: Response): void => {
+  router.put('/config', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const schema = z
       .object({
@@ -41,14 +56,14 @@ export function createCountingRouter(client: Client) {
     const channelChanged = parsed.data.channelId !== undefined && parsed.data.channelId !== before.channelId;
     const updated = countingStorage.updateConfig(guildId, { ...parsed.data, ...(channelChanged ? { count: 0, lastUserId: null } : {}) });
     emitConfigUpdated('counting', guildId, updated, 'DASHBOARD', req.user?.id);
-    res.json({ success: true, ...countingStorage.getOverview(guildId) });
+    res.json({ success: true, ...(await overviewWithNames(guildId)) });
   });
 
-  router.post('/reset', (req: Request, res: Response): void => {
+  router.post('/reset', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const updated = countingStorage.resetCount(guildId);
     emitConfigUpdated('counting', guildId, updated, 'DASHBOARD', req.user?.id);
-    res.json({ success: true, ...countingStorage.getOverview(guildId) });
+    res.json({ success: true, ...(await overviewWithNames(guildId)) });
   });
 
   return router;

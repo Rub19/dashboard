@@ -319,7 +319,7 @@ export default function FilesPage() {
   }
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)]">
+    <div className="flex h-full w-full overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)]">
       {/* 1. Left Navigation Sidebar */}
       {!isMobile && (
         <FileNavigationSidebar

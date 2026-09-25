@@ -34,7 +34,7 @@ export default class BotControlErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-[var(--bg-main)] text-zinc-100 flex flex-col items-center justify-center p-6">
+        <div className="min-h-full bg-[var(--bg-main)] text-zinc-100 flex flex-col items-center justify-center p-6">
           <div className="max-w-md w-full rounded-2xl border border-zinc-800 bg-zinc-950/80 p-8 text-center space-y-6 shadow-xl backdrop-blur-md">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20">
               <AlertTriangle className="h-7 w-7" />

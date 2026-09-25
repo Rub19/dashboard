@@ -25,7 +25,7 @@ export class DiscordAiPanel {
   }): EmbedBuilder {
     const { settings, answer, sourcesUsed, userTag, botAvatarUrl } = params;
     const personality = settings.personality;
-    const fallbackAvatar = 'https://ethone.dev/icons/ethone-icon-512.png';
+    const fallbackAvatar = 'https://ethone.dev/icons/ethone-icon-512.png?v=r2';
     const rawAvatar = personality.avatarUrl;
     const iconURL = (rawAvatar && !rawAvatar.includes('cdn.discordapp.com/embed/avatars'))
       ? rawAvatar

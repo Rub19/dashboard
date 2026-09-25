@@ -9,7 +9,7 @@ import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import { subscribeGuildLive } from "@/lib/guildLive";
 import { confirmDialog } from "@/lib/confirmDialog";
-import { EthoneIcon } from "@/components/EthoneIcon";
+import PageHeader from "@/components/discord/PageHeader";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -404,15 +404,7 @@ export default function StatrolesCenterClient() {
           </button>
         </div>
 
-        <header className="flex items-center gap-4">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl border border-[var(--panel-border)] bg-white/[0.03]">
-            <EthoneIcon name="mod-roles" className="h-6 w-6 text-amber-300" />
-          </span>
-          <div className="min-w-0">
-            <h1 className="text-xl font-bold tracking-tight">Statroles</h1>
-            <p className="mt-0.5 text-xs text-zinc-400">Des rôles donnés — et retirés — automatiquement selon l&apos;activité des membres dans la durée. Ce qu&apos;un rôle de niveau ne sait pas faire.</p>
-          </div>
-        </header>
+        <PageHeader hideBack guildId={guildId} icon="mod-roles" tint="amber" title="Statroles" subtitle="Des rôles donnés, et retirés, automatiquement selon l'activité des membres dans la durée." />
 
         {state === "loading" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-zinc-500">Chargement…</div>}
         {state === "offline" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-zinc-400">Le bot n&apos;a pas répondu pour ce serveur. Vérifiez qu&apos;il est présent, puis actualisez.</div>}

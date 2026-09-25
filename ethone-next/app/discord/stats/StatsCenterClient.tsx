@@ -9,9 +9,11 @@ import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import { subscribeGuildLive } from "@/lib/guildLive";
 import { confirmDialog } from "@/lib/confirmDialog";
-import { EthoneIcon } from "@/components/EthoneIcon";
+import PageHeader from "@/components/discord/PageHeader";
 import AnalyticsBarChart from "@/components/charts/AnalyticsBarChart";
 import AnalyticsLineChart from "@/components/charts/AnalyticsLineChart";
+import StatsHeatmap from "./StatsHeatmap";
+import StatsMembersBoard from "./StatsMembersBoard";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -44,6 +46,44 @@ interface Overview {
   topChannelsMessages: Ranked[];
   topChannelsVoice: Ranked[];
 }
+interface Totals {
+  messages: number;
+  voiceHours: number;
+  joins: number;
+  leaves: number;
+  activeUsers: number;
+}
+interface Insights {
+  days: number;
+  current: Totals;
+  previous: Totals;
+  change: Record<keyof Totals, number | null>;
+  averages: { messagesPerDay: number; voiceHoursPerDay: number; messagesPerActiveMember: number };
+  records: { bestMessageDay: { day: string; value: number } | null; bestVoiceDay: { day: string; value: number } | null; bestJoinDay: { day: string; value: number } | null; longestActiveStreak: number };
+  concentration: { topTenPercentShare: number | null; membersCounted: number };
+  weekday: Array<{ weekday: number; messages: number; voiceHours: number }>;
+  hours: Array<{ hour: number; messages: number; voiceHours: number }>;
+  heatmap: number[][];
+  hasHourly: boolean;
+}
+type Tab = "overview" | "members" | "activity" | "channels";
+const TABS: Array<[Tab, string]> = [
+  ["overview", "Vue d'ensemble"],
+  ["members", "Membres"],
+  ["activity", "Rythme d'activité"],
+  ["channels", "Salons"],
+];
+const WEEKDAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+
+interface ChannelDetail {
+  channel: { id: string; name: string };
+  days: number;
+  totals: { messages: number; voiceHours: number };
+  series: Array<{ day: string; messages: number; voiceHours: number }>;
+  topMembersMessages: Ranked[];
+  topMembersVoice: Ranked[];
+}
+
 interface MemberDetail {
   member: { id: string; name: string; avatarUrl: string | null; joinedAt: string | null; createdAt: string | null };
   windows: Record<"1" | "7" | "60", { messages: number; voiceHours: number }>;
@@ -72,28 +112,55 @@ function Card({ title, hint, children, className }: { title: string; hint?: stri
   );
 }
 
-function Kpi({ label, value, hint }: { label: string; value: string; hint?: string }) {
+/** Variation par rapport à la période précédente (vert si ça monte, rouge si ça baisse ; `invert` pour les départs). */
+function Delta({ value, invert }: { value: number | null | undefined; invert?: boolean }) {
+  if (value === null || value === undefined) return <span className="text-[11px] text-zinc-600">pas de période précédente</span>;
+  const good = invert ? value <= 0 : value >= 0;
+  return (
+    <span className={cn("text-[11px] font-semibold", value === 0 ? "text-zinc-400" : good ? "text-emerald-400" : "text-rose-400")}>
+      {value > 0 ? "▲ +" : value < 0 ? "▼ " : "= "}
+      {fmt(value)} %<span className="ml-1 font-normal text-zinc-500">vs période précédente</span>
+    </span>
+  );
+}
+
+function Kpi({ label, value, hint, delta, invert }: { label: string; value: string; hint?: string; delta?: number | null; invert?: boolean }) {
   return (
     <div className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-4">
       <p className="text-[11px] text-zinc-500">{label}</p>
-      <p className="mt-1 text-2xl font-bold tabular-nums text-white">{value}</p>
-      {hint && <p className="mt-1 text-[11px] text-zinc-500">{hint}</p>}
+      <p className="mt-1 whitespace-nowrap text-xl font-bold tabular-nums text-white xl:text-2xl">{value}</p>
+      {delta !== undefined ? <p className="mt-1">
+        <Delta value={delta} invert={invert} />
+      </p> : hint && <p className="mt-1 text-[11px] text-zinc-500">{hint}</p>}
     </div>
   );
 }
 
+function downloadCsv(name: string, header: string[], rows: Array<Array<string | number | null>>) {
+  const esc = (v: string | number | null) => (v === null ? "" : /[",;\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v));
+  const csv = [header, ...rows].map((r) => r.map(esc).join(";")).join("\n");
+  const url = URL.createObjectURL(new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function RankList({ rows, unit, isMember, onPick }: { rows: Ranked[]; unit: string; isMember?: boolean; onPick?: (id: string) => void }) {
+  // Membres et salons sont cliquables dès qu'un gestionnaire est fourni (fiche membre / détail du salon).
+  const clickable = Boolean(onPick);
   if (rows.length === 0) return <p className="py-6 text-center text-xs text-zinc-500">Aucune donnée sur cette période.</p>;
   const max = Math.max(...rows.map((r) => r.value), 1);
   return (
     <ol className="space-y-1.5">
       {rows.map((r, i) => {
-        const Row = isMember && onPick ? "button" : "div";
+        const Row = clickable ? "button" : "div";
         return (
           <li key={r.id}>
             <Row
-              {...(isMember && onPick ? { type: "button" as const, onClick: () => onPick(r.id) } : {})}
-              className={cn("relative flex w-full items-center gap-3 overflow-hidden rounded-xl bg-white/[0.03] px-3 py-2 text-left text-xs", isMember && onPick && "cursor-pointer transition hover:bg-white/[0.07]")}
+              {...(clickable && onPick ? { type: "button" as const, onClick: () => onPick(r.id) } : {})}
+              className={cn("relative flex w-full items-center gap-3 overflow-hidden rounded-xl bg-white/[0.03] px-3 py-2 text-left text-xs", clickable && "cursor-pointer transition hover:bg-white/[0.07]")}
             >
               <span aria-hidden className="absolute inset-y-0 left-0 bg-indigo-400/10" style={{ width: `${(r.value / max) * 100}%` }} />
               <span className="relative w-5 shrink-0 text-center font-bold text-zinc-500">{i + 1}</span>
@@ -125,11 +192,16 @@ export default function StatsCenterClient() {
 
   const [days, setDays] = useState(30);
   const [overview, setOverview] = useState<Overview | null>(null);
+  const [insights, setInsights] = useState<Insights | null>(null);
+  const [tab, setTab] = useState<Tab>("overview");
+  const [refreshKey, setRefreshKey] = useState(0);
   const [state, setState] = useState<"loading" | "ok" | "offline">("loading");
   const [board, setBoard] = useState<"messages" | "voice">("messages");
   const [saving, setSaving] = useState(false);
   const [member, setMember] = useState<MemberDetail | null>(null);
   const [memberLoading, setMemberLoading] = useState(false);
+  const [channel, setChannel] = useState<ChannelDetail | null>(null);
+  const [channelLoading, setChannelLoading] = useState(false);
 
   const base = `${BOT_API_URL}/api/guilds/${encodeURIComponent(guildId)}/stats`;
 
@@ -139,9 +211,15 @@ export default function StatsCenterClient() {
       return;
     }
     try {
-      const res = await fetch(`${base}/overview?days=${days}`, { credentials: "include" });
+      const [res, insightsRes] = await Promise.all([
+        fetch(`${base}/overview?days=${days}`, { credentials: "include" }),
+        fetch(`${base}/insights?days=${days}`, { credentials: "include" }).catch(() => null),
+      ]);
       if (!res.ok) throw new Error(String(res.status));
       setOverview((await res.json()) as Overview);
+      // Bot pas encore mis à jour : pas d'analyse approfondie, le reste de la page fonctionne.
+      setInsights(insightsRes?.ok ? ((await insightsRes.json()) as Insights) : null);
+      setRefreshKey((k) => k + 1);
       setState("ok");
     } catch {
       setState("offline");
@@ -212,6 +290,25 @@ export default function StatsCenterClient() {
     }
   };
 
+  // Le classement affiché par défaut est celui qui contient des données (souvent le vocal seul au début).
+  useEffect(() => {
+    if (overview && overview.topMembersMessages.length === 0 && overview.topMembersVoice.length > 0) setBoard("voice");
+  }, [overview]);
+
+  const openChannel = async (id: string) => {
+    setChannelLoading(true);
+    setChannel(null);
+    try {
+      const res = await fetch(`${base}/channel/${encodeURIComponent(id)}?days=${days}`, { credentials: "include" });
+      if (!res.ok) throw new Error(String(res.status));
+      setChannel((await res.json()) as ChannelDetail);
+    } catch {
+      showError("Détail indisponible", "Le bot n'a pas répondu.");
+    } finally {
+      setChannelLoading(false);
+    }
+  };
+
   const ov = overview;
   const enabled = ov?.config.enabled ?? false;
   const series = ov?.series ?? [];
@@ -237,6 +334,14 @@ export default function StatsCenterClient() {
                 </button>
               ))}
             </div>
+            <button
+              type="button"
+              disabled={series.length === 0}
+              onClick={() => downloadCsv(`statistiques-${days}j.csv`, ["jour", "messages", "vocal_heures", "arrivees", "departs", "membres", "membres_actifs"], series.map((p) => [p.day, p.messages, p.voiceHours, p.joins, p.leaves, p.members, p.activeUsers]))}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition hover:bg-white/[0.05] disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Exporter (CSV)
+            </button>
             <button type="button" onClick={() => void load()} className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition hover:bg-white/[0.05]">
               <RefreshCw className="h-3.5 w-3.5" />
               Actualiser
@@ -244,15 +349,7 @@ export default function StatsCenterClient() {
           </div>
         </div>
 
-        <header className="flex items-center gap-4">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl border border-[var(--panel-border)] bg-white/[0.03]">
-            <EthoneIcon name="mod-stats" className="h-6 w-6 text-sky-300" />
-          </span>
-          <div className="min-w-0">
-            <h1 className="text-xl font-bold tracking-tight">Statistiques</h1>
-            <p className="mt-0.5 text-xs text-zinc-400">Messages et vocal par jour, évolution des membres, classements. Jours en UTC.</p>
-          </div>
-        </header>
+        <PageHeader hideBack guildId={guildId} icon="mod-stats" tint="sky" title="Statistiques" subtitle="Messages et vocal par jour, évolution des membres, classements, rythme d'activité. Jours en UTC." />
 
         {state === "loading" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-zinc-500">Chargement…</div>}
         {state === "offline" && (
@@ -287,53 +384,175 @@ export default function StatsCenterClient() {
             </div>
 
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-              <Kpi label="Messages" value={fmt(ov.totals.messages)} hint={`${days} derniers jours`} />
-              <Kpi label="Vocal" value={`${fmt(ov.totals.voiceHours)} h`} hint={`${days} derniers jours`} />
-              <Kpi label="Membres actifs" value={fmt(ov.totals.activeUsers)} hint="au moins un message ou du vocal" />
+              <Kpi label={`Messages (${days} j)`} value={fmt(ov.totals.messages)} hint={`${days} derniers jours`} delta={insights ? insights.change.messages : undefined} />
+              <Kpi label={`Vocal (${days} j)`} value={`${fmt(ov.totals.voiceHours)} h`} hint={`${days} derniers jours`} delta={insights ? insights.change.voiceHours : undefined} />
+              <Kpi label="Membres actifs" value={fmt(ov.totals.activeUsers)} hint="au moins un message ou du vocal" delta={insights ? insights.change.activeUsers : undefined} />
               <Kpi label="Arrivées / départs" value={`+${ov.totals.joins} / −${ov.totals.leaves}`} hint={`solde ${ov.totals.joins - ov.totals.leaves >= 0 ? "+" : ""}${ov.totals.joins - ov.totals.leaves}`} />
               <Kpi label="Membres" value={ov.memberCount !== null ? fmt(ov.memberCount) : "—"} hint="actuellement" />
             </div>
 
-            <Card title="Messages" hint="Nombre de messages par jour (bots exclus)">
-              <AnalyticsBarChart data={messagesData} height={240} color="#5aa9f6" valueSuffix=" messages" />
-            </Card>
-
-            <div className="grid gap-6 lg:grid-cols-2">
-              <Card title="Activité vocale" hint="Heures passées en vocal par jour (salon AFK exclu)">
-                <AnalyticsBarChart data={voiceData} height={200} color="#f0559a" valueSuffix=" h" />
-              </Card>
-              <Card title="Évolution des membres" hint="Nombre de membres au fil des jours">
-                <AnalyticsLineChart data={membersData} height={200} color="#3fd28a" />
-              </Card>
+            <div className="flex gap-1 overflow-x-auto border-b border-white/10 pb-px" role="tablist">
+              {TABS.map(([id, label]) => (
+                <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={cn("cursor-pointer whitespace-nowrap rounded-t-lg px-4 py-2 text-xs font-semibold transition", tab === id ? "border-b-2 border-sky-400 bg-white/[0.05] text-white" : "text-zinc-400 hover:text-white")}>
+                  {label}
+                </button>
+              ))}
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
-              <Card title="Arrivées" hint="Nouveaux membres par jour">
-                <AnalyticsBarChart data={joinsData} height={150} color="#34d399" />
+            {tab === "overview" && (
+              <>
+              <Card title="Messages" hint="Nombre de messages par jour (bots exclus)">
+                <AnalyticsBarChart data={messagesData} height={240} color="#5aa9f6" valueSuffix=" messages" seriesLabel="Messages" />
               </Card>
-              <Card title="Départs" hint="Membres partis par jour">
-                <AnalyticsBarChart data={leavesData} height={150} color="#fb7185" />
-              </Card>
-            </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
-              <Card title="Top membres" hint="Cliquez sur un membre pour ouvrir sa fiche">
-                <div className="mb-3 inline-flex rounded-xl border border-[var(--panel-border)] p-0.5">
-                  {(["messages", "voice"] as const).map((b) => (
-                    <button key={b} type="button" onClick={() => setBoard(b)} className={cn("cursor-pointer rounded-lg px-3 py-1 text-xs font-semibold transition", board === b ? "bg-white/10 text-white" : "text-zinc-400 hover:text-white")}>
-                      {b === "messages" ? "Messages" : "Vocal"}
-                    </button>
-                  ))}
-                </div>
-                <RankList rows={board === "messages" ? ov.topMembersMessages : ov.topMembersVoice} unit={board === "messages" ? "msg" : "h"} isMember onPick={(id) => void openMember(id)} />
-              </Card>
-              <Card title="Top salons" hint={board === "messages" ? "Salons textuels les plus actifs" : "Salons vocaux les plus fréquentés"}>
-                <RankList rows={board === "messages" ? ov.topChannelsMessages : ov.topChannelsVoice} unit={board === "messages" ? "msg" : "h"} />
-              </Card>
-            </div>
+              <div className="grid gap-6 lg:grid-cols-2">
+                <Card title="Activité vocale" hint="Heures passées en vocal par jour (salon AFK exclu)">
+                  <AnalyticsBarChart data={voiceData} height={200} color="#f0559a" valueSuffix=" h" seriesLabel="Vocal" decimals />
+                </Card>
+                <Card title="Évolution des membres" hint="Nombre de membres au fil des jours">
+                  <AnalyticsLineChart data={membersData} height={200} color="#3fd28a" seriesLabel="Membres" />
+                </Card>
+              </div>
+
+              <div className="grid gap-6 lg:grid-cols-2">
+                <Card title="Arrivées" hint="Nouveaux membres par jour">
+                  <AnalyticsBarChart data={joinsData} height={150} color="#34d399" seriesLabel="Arrivées" />
+                </Card>
+                <Card title="Départs" hint="Membres partis par jour">
+                  <AnalyticsBarChart data={leavesData} height={150} color="#fb7185" seriesLabel="Départs" />
+                </Card>
+              </div>
+
+              <div className="grid gap-6 lg:grid-cols-2">
+                <Card title="Top membres" hint="Cliquez sur un membre pour ouvrir sa fiche">
+                  <div className="mb-3 inline-flex rounded-xl border border-[var(--panel-border)] p-0.5">
+                    {(["messages", "voice"] as const).map((b) => (
+                      <button key={b} type="button" onClick={() => setBoard(b)} className={cn("cursor-pointer rounded-lg px-3 py-1 text-xs font-semibold transition", board === b ? "bg-white/10 text-white" : "text-zinc-400 hover:text-white")}>
+                        {b === "messages" ? "Messages" : "Vocal"}
+                      </button>
+                    ))}
+                  </div>
+                  <RankList rows={board === "messages" ? ov.topMembersMessages : ov.topMembersVoice} unit={board === "messages" ? "msg" : "h"} isMember onPick={(id) => void openMember(id)} />
+                </Card>
+                <Card title="Top salons" hint={board === "messages" ? "Salons textuels les plus actifs" : "Salons vocaux les plus fréquentés"}>
+                  <RankList rows={board === "messages" ? ov.topChannelsMessages : ov.topChannelsVoice} unit={board === "messages" ? "msg" : "h"} />
+                </Card>
+              </div>
+              </>
+            )}
+
+            {tab === "members" && <StatsMembersBoard base={base} days={days} refreshKey={refreshKey} onPick={(id) => void openMember(id)} />}
+
+            {tab === "channels" && (
+              <div className="grid gap-6 lg:grid-cols-2">
+                <Card title="Salons textuels les plus actifs" hint={`Messages sur ${days} jours · cliquez sur un salon pour le détail`}>
+                  <RankList rows={ov.topChannelsMessages} unit="msg" onPick={(id) => void openChannel(id)} />
+                </Card>
+                <Card title="Salons vocaux les plus fréquentés" hint={`Heures sur ${days} jours`}>
+                  <RankList rows={ov.topChannelsVoice} unit="h" onPick={(id) => void openChannel(id)} />
+                </Card>
+              </div>
+            )}
+
+            {tab === "activity" && (
+              <div className="space-y-6">
+                {!insights ? (
+                  <Card title="Rythme d'activité">
+                    <p className="py-6 text-center text-xs text-zinc-400">L&apos;analyse approfondie nécessite la dernière version du bot : redéployez-le, puis actualisez.</p>
+                  </Card>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                      <Kpi label="Messages par jour" value={fmt(insights.averages.messagesPerDay)} hint="moyenne sur la période" />
+                      <Kpi label="Messages par membre actif" value={fmt(insights.averages.messagesPerActiveMember)} hint="moyenne sur la période" />
+                      <Kpi label="Série d'activité" value={`${insights.records.longestActiveStreak} j`} hint="plus longue suite de jours actifs" />
+                      <Kpi label="Concentration" value={insights.concentration.topTenPercentShare !== null ? `${fmt(insights.concentration.topTenPercentShare)} %` : "—"} hint={`des messages écrits par les 10 % de membres les plus actifs`} />
+                    </div>
+
+                    <Card title="Carte de chaleur des messages" hint="Jour de la semaine × heure (UTC). Plus la case est claire, plus il y a de messages.">
+                      {insights.hasHourly ? <StatsHeatmap matrix={insights.heatmap} /> : <p className="py-6 text-center text-xs text-zinc-400">Les données horaires se collectent depuis la dernière mise à jour du bot : la carte se remplit au fil des jours.</p>}
+                    </Card>
+
+                    <div className="grid gap-6 lg:grid-cols-2">
+                      <Card title="Messages par heure" hint="Cumul sur la période, heure UTC">
+                        <AnalyticsBarChart data={insights.hours.map((h) => ({ label: `${h.hour}h`, value: h.messages }))} height={200} color="#5aa9f6" seriesLabel="Messages" />
+                      </Card>
+                      <Card title="Vocal par heure" hint="Heures cumulées, heure UTC">
+                        <AnalyticsBarChart data={insights.hours.map((h) => ({ label: `${h.hour}h`, value: h.voiceHours }))} height={200} color="#f0559a" valueSuffix=" h" seriesLabel="Vocal" decimals />
+                      </Card>
+                    </div>
+
+                    <div className="grid gap-6 lg:grid-cols-2">
+                      <Card title="Messages par jour de la semaine">
+                        <AnalyticsBarChart data={insights.weekday.map((w) => ({ label: WEEKDAYS[w.weekday].slice(0, 3), value: w.messages }))} height={180} color="#a78bfa" seriesLabel="Messages" />
+                      </Card>
+                      <Card title="Records de la période">
+                        <dl className="space-y-3 text-sm">
+                          {[
+                            ["Jour le plus bavard", insights.records.bestMessageDay ? `${dateFr(insights.records.bestMessageDay.day)} · ${fmt(insights.records.bestMessageDay.value)} messages` : "—"],
+                            ["Plus grosse journée vocale", insights.records.bestVoiceDay ? `${dateFr(insights.records.bestVoiceDay.day)} · ${fmt(insights.records.bestVoiceDay.value)} h` : "—"],
+                            ["Plus d'arrivées en un jour", insights.records.bestJoinDay ? `${dateFr(insights.records.bestJoinDay.day)} · ${insights.records.bestJoinDay.value}` : "—"],
+                            ["Créneau le plus actif", (() => { const top = [...insights.hours].sort((x, y) => y.messages - x.messages)[0]; return top && top.messages > 0 ? `${top.hour} h – ${top.hour + 1} h UTC` : "—"; })()],
+                            ["Jour de semaine le plus actif", (() => { const top = [...insights.weekday].sort((x, y) => y.messages - x.messages)[0]; return top && top.messages > 0 ? WEEKDAYS[top.weekday] : "—"; })()],
+                          ].map(([k, v]) => (
+                            <div key={k} className="flex items-baseline justify-between gap-3 border-b border-white/5 pb-2 last:border-0">
+                              <dt className="text-zinc-400">{k}</dt>
+                              <dd className="text-right font-semibold text-white">{v}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </Card>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </>
         )}
       </div>
+
+      {(channel || channelLoading) && (
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={() => setChannel(null)} role="dialog" aria-modal="true" aria-label="Détail du salon">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6" onClick={(e) => e.stopPropagation()}>
+            {channelLoading && !channel && <p className="py-10 text-center text-sm text-zinc-400">Chargement du salon…</p>}
+            {channel && (
+              <div className="space-y-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-lg font-bold"># {channel.channel.name}</h3>
+                    <p className="text-[11px] text-zinc-400">
+                      {fmt(channel.totals.messages)} messages · {fmt(channel.totals.voiceHours)} h de vocal sur {channel.days} jours
+                    </p>
+                  </div>
+                  <button type="button" aria-label="Fermer" onClick={() => setChannel(null)} className="cursor-pointer rounded-lg p-1.5 text-zinc-400 transition hover:bg-white/10 hover:text-white">
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <p className="mb-1 text-[11px] font-semibold text-zinc-400">Messages par jour</p>
+                    <AnalyticsBarChart data={channel.series.map((p) => ({ label: shortDay(p.day), value: p.messages }))} height={140} color="#5aa9f6" seriesLabel="Messages" />
+                  </div>
+                  <div>
+                    <p className="mb-1 text-[11px] font-semibold text-zinc-400">Vocal par jour</p>
+                    <AnalyticsBarChart data={channel.series.map((p) => ({ label: shortDay(p.day), value: p.voiceHours }))} height={140} color="#f0559a" valueSuffix=" h" seriesLabel="Vocal" decimals />
+                  </div>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <p className="mb-2 text-[11px] font-semibold text-zinc-400">Membres les plus actifs (messages)</p>
+                    <RankList rows={channel.topMembersMessages} unit="msg" isMember onPick={(id) => { setChannel(null); void openMember(id); }} />
+                  </div>
+                  <div>
+                    <p className="mb-2 text-[11px] font-semibold text-zinc-400">Membres les plus présents (vocal)</p>
+                    <RankList rows={channel.topMembersVoice} unit="h" isMember onPick={(id) => { setChannel(null); void openMember(id); }} />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {(member || memberLoading) && (
         <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={() => setMember(null)} role="dialog" aria-modal="true" aria-label="Fiche membre">

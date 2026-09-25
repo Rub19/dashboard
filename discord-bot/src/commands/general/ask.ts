@@ -140,7 +140,7 @@ export const askCommand: Command = {
         answer: completion.text,
         sourcesUsed: completion.sourcesUsed,
         userTag: ctx.author?.username || ctx.interaction?.user?.username || 'Membre',
-        botAvatarUrl: ctx.client?.user?.displayAvatarURL() || 'https://ethone.dev/icons/ethone-icon-512.png',
+        botAvatarUrl: ctx.client?.user?.displayAvatarURL() || 'https://ethone.dev/icons/ethone-icon-512.png?v=r2',
       });
 
       const actionRow = DiscordAiPanel.buildActionsForIntent(

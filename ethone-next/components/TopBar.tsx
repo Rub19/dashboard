@@ -349,6 +349,7 @@ function TopBar() {
 
   return (
     <header
+      data-app-chrome
       data-v8-topbar
       className="pointer-events-none relative z-40 shrink-0 select-none border-b border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/80 px-4 pt-safe backdrop-blur-[var(--panel-blur)] transition-all"
     >

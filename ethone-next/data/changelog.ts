@@ -35509,6 +35509,71 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_93_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_93_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_93_de);
 
+const v1_28_94_fr: ChangelogEntry = {
+  version: "v1.28.94",
+  date: "2026-09-25",
+  title: "Statistiques poussées, en-têtes de pages corrigés, défilement et logo des embeds",
+  items: [
+    "Statistiques : quatre onglets (Vue d'ensemble, Membres, Rythme d'activité, Salons). Variations en % par rapport à la période précédente, classement complet des membres avec recherche, tri (messages, vocal, jours actifs), parts du serveur et pagination, carte de chaleur jour × heure, messages et vocal par heure et par jour de semaine, records, série d'activité, concentration de l'activité, détail d'un salon, export CSV.",
+    "Les données horaires se collectent à partir de cette version du bot : la carte de chaleur se remplit au fil des jours.",
+    "Graphiques : axes lisibles (plus de chiffres coupés, entiers pour les compteurs, valeurs compactes) et infobulles avec le nom de la série au lieu de « : 0 ».",
+    "En-têtes de pages : les blocs sombres derrière les titres disparaissent (le style « verre » ne s'applique plus qu'à la barre du haut) ; nouvel en-tête commun avec pastille d'icône colorée sur Statistiques, Comptage, Statroles, Compteurs, Rôles sécurisés et Paramètres.",
+    "Défilement : le bas de plusieurs pages n'était pas atteignable (réglages et détail d'un salon vocal, constructeur et réglages de formulaire, pages en hauteur d'écran) ; corrigé, avec un défilement de secours sur la zone principale.",
+    "Embeds du bot : le logo dans le pied de page et les icônes sont rechargés (Discord gardait l'ancien logo en cache).",
+    "Comptage : le classement affiche pseudos et avatars au lieu d'identifiants.",
+  ],
+};
+
+const v1_28_94_en: ChangelogEntry = {
+  version: "v1.28.94",
+  date: "2026-09-25",
+  title: "Advanced statistics, page headers fixed, scrolling and embed logo",
+  items: [
+    "Statistics: four tabs (Overview, Members, Activity rhythm, Channels). Percentage change versus the previous period, full member leaderboard with search, sorting (messages, voice, active days), server shares and pagination, day × hour heatmap, messages and voice by hour and by weekday, records, activity streak, activity concentration, channel detail, CSV export.",
+    "Hourly data is collected from this bot version onwards: the heatmap fills up over the coming days.",
+    "Charts: readable axes (no more cut-off numbers, integers for counters, compact values) and tooltips showing the series name instead of \": 0\".",
+    "Page headers: the dark blocks behind titles are gone (the \"glass\" style now only applies to the top bar); new shared header with a coloured icon tile on Statistics, Counting, Statroles, Counters, Secure Roles and Settings.",
+    "Scrolling: the bottom of several pages could not be reached (voice settings and voice room detail, form builder and settings, full-screen-height pages); fixed, with a fallback scroll on the main area.",
+    "Bot embeds: the footer logo and icons are refreshed (Discord kept the old logo in its cache).",
+    "Counting: the leaderboard shows names and avatars instead of IDs.",
+  ],
+};
+
+const v1_28_94_es: ChangelogEntry = {
+  version: "v1.28.94",
+  date: "2026-09-25",
+  title: "Estadísticas avanzadas, cabeceras corregidas, desplazamiento y logo de los embeds",
+  items: [
+    "Estadísticas: cuatro pestañas (Resumen, Miembros, Ritmo de actividad, Canales). Variación en % respecto al periodo anterior, clasificación completa de miembros con búsqueda, orden (mensajes, voz, días activos), cuotas del servidor y paginación, mapa de calor día × hora, mensajes y voz por hora y día de la semana, récords, racha de actividad, concentración, detalle de un canal, exportación CSV.",
+    "Los datos por hora se recopilan desde esta versión del bot: el mapa de calor se llena con los días.",
+    "Gráficos: ejes legibles (sin cifras cortadas, enteros para contadores, valores compactos) y tooltips con el nombre de la serie en lugar de «: 0».",
+    "Cabeceras: desaparecen los bloques oscuros detrás de los títulos (el estilo «cristal» solo se aplica a la barra superior); nueva cabecera común con icono de color en Estadísticas, Conteo, Statroles, Contadores, Roles protegidos y Ajustes.",
+    "Desplazamiento: no se podía llegar al final de varias páginas (ajustes y detalle de canal de voz, constructor y ajustes de formularios, páginas a altura de pantalla); corregido, con desplazamiento de respaldo en el área principal.",
+    "Embeds del bot: se recargan el logo del pie y los iconos (Discord conservaba el logo antiguo en caché).",
+    "Conteo: la clasificación muestra nombres y avatares en lugar de identificadores.",
+  ],
+};
+
+const v1_28_94_de: ChangelogEntry = {
+  version: "v1.28.94",
+  date: "2026-09-25",
+  title: "Erweiterte Statistiken, korrigierte Seitenköpfe, Scrollen und Embed-Logo",
+  items: [
+    "Statistiken: vier Tabs (Übersicht, Mitglieder, Aktivitätsrhythmus, Kanäle). Veränderung in % gegenüber dem Vorzeitraum, vollständige Mitgliederrangliste mit Suche, Sortierung (Nachrichten, Voice, aktive Tage), Serveranteilen und Seitenwechsel, Heatmap Tag × Stunde, Nachrichten und Voice pro Stunde und Wochentag, Rekorde, Aktivitätsserie, Konzentration der Aktivität, Kanaldetail, CSV-Export.",
+    "Stundendaten werden ab dieser Bot-Version erfasst: Die Heatmap füllt sich im Lauf der Tage.",
+    "Diagramme: lesbare Achsen (keine abgeschnittenen Zahlen, ganze Zahlen für Zähler, kompakte Werte) und Tooltips mit dem Serienname statt „: 0“.",
+    "Seitenköpfe: Die dunklen Blöcke hinter den Titeln verschwinden (der „Glas“-Stil gilt nur noch für die obere Leiste); neuer gemeinsamer Kopf mit farbigem Icon bei Statistiken, Zählen, Statroles, Zählern, Gesicherten Rollen und Einstellungen.",
+    "Scrollen: Das Ende mehrerer Seiten war nicht erreichbar (Voice-Einstellungen und Voice-Raum-Detail, Formular-Builder und -Einstellungen, Seiten mit Bildschirmhöhe); behoben, mit Ersatz-Scrollen im Hauptbereich.",
+    "Bot-Embeds: Das Logo in der Fußzeile und die Icons werden neu geladen (Discord hielt das alte Logo im Cache).",
+    "Zählen: Die Rangliste zeigt Namen und Avatare statt IDs.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_94_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_94_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_94_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_94_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

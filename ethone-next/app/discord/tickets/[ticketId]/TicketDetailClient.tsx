@@ -318,7 +318,7 @@ export default function TicketDetailClient() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-950 text-white">
+      <div className="flex min-h-full items-center justify-center bg-zinc-950 text-white">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
           <p className="text-xs text-zinc-400">Chargement des détails du ticket #{ticketId}...</p>
@@ -329,7 +329,7 @@ export default function TicketDetailClient() {
 
   if (!ticket) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-950 text-white p-4">
+      <div className="flex min-h-full flex-col items-center justify-center bg-zinc-950 text-white p-4">
         <Ticket className="h-12 w-12 text-zinc-600 mb-3" />
         <h2 className="text-lg font-bold">Ticket introuvable</h2>
         <p className="text-xs text-zinc-400 mt-1">Le ticket #{ticketId} n&apos;existe pas ou a été purgé.</p>

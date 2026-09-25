@@ -10,7 +10,7 @@ import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import { subscribeGuildLive } from "@/lib/guildLive";
 import { confirmDialog } from "@/lib/confirmDialog";
 import ChannelPicker from "@/components/discord/ChannelPicker";
-import { EthoneIcon } from "@/components/EthoneIcon";
+import PageHeader from "@/components/discord/PageHeader";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -31,7 +31,7 @@ interface CountingConfig {
 
 interface CountingOverview {
   config: CountingConfig;
-  leaderboard: Array<{ userId: string; correct: number; mistakes: number }>;
+  leaderboard: Array<{ userId: string; correct: number; mistakes: number; name?: string; avatarUrl?: string | null }>;
 }
 
 function Switch({ checked, onChange, label, hint, disabled }: { checked: boolean; onChange: (v: boolean) => void; label: string; hint?: string; disabled?: boolean }) {
@@ -172,15 +172,7 @@ export default function CountingCenterClient() {
           </button>
         </div>
 
-        <header className="flex items-center gap-4">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl border border-[var(--panel-border)] bg-white/[0.03]">
-            <EthoneIcon name="mod-counting" className="h-6 w-6 text-teal-300" />
-          </span>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight">Comptage</h1>
-            <p className="mt-0.5 text-xs text-zinc-400">Les membres comptent 1, 2, 3… à tour de rôle dans un salon. Une erreur remet le compteur à zéro.</p>
-          </div>
-        </header>
+        <PageHeader hideBack guildId={guildId} icon="mod-counting" tint="teal" title="Comptage" subtitle="Les membres comptent 1, 2, 3… à tour de rôle dans un salon. Une erreur remet le compteur à zéro." />
 
         {state === "loading" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-zinc-500">Chargement…</div>}
 
@@ -258,7 +250,13 @@ export default function CountingCenterClient() {
                     <li key={e.userId} className="flex items-center justify-between gap-3 rounded-xl bg-white/[0.03] px-3.5 py-2 text-xs">
                       <span className="flex min-w-0 items-center gap-3">
                         <span className="w-5 shrink-0 text-center font-bold text-zinc-500">{i + 1}</span>
-                        <span className="truncate font-mono text-zinc-300">{e.userId}</span>
+                        {e.avatarUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={e.avatarUrl} alt="" className="h-6 w-6 shrink-0 rounded-full" />
+                        ) : (
+                          <span className="h-6 w-6 shrink-0 rounded-full bg-white/10" />
+                        )}
+                        <span className="truncate text-sm font-semibold text-zinc-200">{e.name ?? e.userId}</span>
                       </span>
                       <span className="shrink-0 tabular-nums text-zinc-300">
                         {e.correct} juste{e.correct > 1 ? "s" : ""}

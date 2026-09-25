@@ -10,6 +10,7 @@ import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import { subscribeGuildLive } from "@/lib/guildLive";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { EthoneIcon } from "@/components/EthoneIcon";
+import PageHeader from "@/components/discord/PageHeader";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -259,21 +260,23 @@ export default function SecureRolesCenterClient() {
     <div className="h-full overflow-y-auto bg-[var(--bg-main)] px-4 pb-44 pt-6 text-white sm:px-6 lg:px-10">
       {welcome && <WelcomeModal onClose={closeWelcome} />}
       <div className="mx-auto max-w-5xl space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="mb-2 flex items-center gap-2">{back}</div>
-            <h1 className="text-2xl font-black tracking-tight sm:text-3xl">Rôles sécurisés</h1>
-            <p className="mt-1 max-w-2xl text-sm text-zinc-400">Les permissions sensibles de votre équipe ne s&apos;activent qu&apos;après un code à usage unique.</p>
-          </div>
-          <div className="flex gap-2">
-            <button type="button" onClick={() => setWelcome(true)} className="cursor-pointer rounded-xl border border-zinc-700 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/5">
-              Comment ça marche
-            </button>
-            <button type="button" onClick={() => void load()} aria-label="Actualiser" className="cursor-pointer rounded-xl border border-zinc-700 p-2 text-zinc-300 transition hover:bg-white/5">
-              <RefreshCw className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
+        <PageHeader
+          guildId={guildId}
+          icon="mod-security"
+          tint="emerald"
+          title="Rôles sécurisés"
+          subtitle="Les permissions sensibles de votre équipe ne s'activent qu'après un code à usage unique."
+          actions={
+            <>
+              <button type="button" onClick={() => setWelcome(true)} className="cursor-pointer rounded-xl border border-zinc-700 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/5">
+                Comment ça marche
+              </button>
+              <button type="button" onClick={() => void load()} aria-label="Actualiser" className="cursor-pointer rounded-xl border border-zinc-700 p-2 text-zinc-300 transition hover:bg-white/5">
+                <RefreshCw className="h-4 w-4" />
+              </button>
+            </>
+          }
+        />
 
         {!config.enabled ? (
           <section className="rounded-3xl border border-[var(--panel-border)] bg-white/[0.02] p-8 text-center">

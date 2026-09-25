@@ -24,6 +24,23 @@ async function withMembers(guild: Guild | undefined, entries: RankedEntry[]) {
   );
 }
 
+/** Noms et avatars de membres : d'abord le cache, puis une requête groupée (100 par 100) pour les absents. */
+async function resolveMembers(guild: Guild | undefined, ids: string[]): Promise<Map<string, { name: string; avatarUrl: string | null }>> {
+  const out = new Map<string, { name: string; avatarUrl: string | null }>();
+  if (!guild) return out;
+  const missing: string[] = [];
+  for (const id of ids) {
+    const m = guild.members.cache.get(id);
+    if (m) out.set(id, { name: m.displayName, avatarUrl: m.user.displayAvatarURL({ extension: 'png', size: 64 }) });
+    else missing.push(id);
+  }
+  for (let i = 0; i < missing.length; i += 100) {
+    const fetched = await guild.members.fetch({ user: missing.slice(i, i + 100) }).catch(() => null);
+    for (const m of fetched?.values() ?? []) out.set(m.id, { name: m.displayName, avatarUrl: m.user.displayAvatarURL({ extension: 'png', size: 64 }) });
+  }
+  return out;
+}
+
 function withChannels(guild: Guild | undefined, entries: RankedEntry[]) {
   return entries.map((e) => ({ id: e.id, value: e.value, name: guild?.channels.cache.get(e.id)?.name ?? 'salon supprimé' }));
 }
@@ -64,6 +81,34 @@ export function createStatsRouter(client: Client) {
       topMembersVoice: await withMembers(guild, summary.topMembersVoice),
       topChannelsMessages: withChannels(guild, summary.topChannelsMessages),
       topChannelsVoice: withChannels(guild, summary.topChannelsVoice),
+    });
+  });
+
+  /** Comparaison avec la période précédente, records, rythme de la semaine et carte de chaleur. */
+  router.get('/insights', (req: Request, res: Response): void => {
+    res.json(statsQueries.insights(String(req.params.guildId), parseDays(req.query.days)));
+  });
+
+  /** Classement complet des membres (tri, recherche par nom, pagination). */
+  router.get('/leaderboard', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const guild = client.guilds.cache.get(guildId);
+    const sort = ['messages', 'voice', 'active'].includes(String(req.query.sort)) ? (String(req.query.sort) as 'messages' | 'voice' | 'active') : 'messages';
+    const q = String(req.query.q ?? '').trim().toLowerCase().slice(0, 40);
+    const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 50));
+    const offset = Math.max(0, Number(req.query.offset) || 0);
+    const board = statsQueries.leaderboard(guildId, parseDays(req.query.days), sort);
+
+    // Sans recherche : on ne résout que la page demandée. Avec recherche : on résout les 500 premiers pour filtrer par nom.
+    const pool = q ? board.rows.slice(0, 500) : board.rows.slice(offset, offset + limit);
+    const names = await resolveMembers(guild, pool.map((r) => r.id));
+    const decorated = pool.map((r, i) => ({ ...r, rank: (q ? board.rows.indexOf(r) : offset + i) + 1, name: names.get(r.id)?.name ?? 'Ancien membre', avatarUrl: names.get(r.id)?.avatarUrl ?? null }));
+    const filtered = q ? decorated.filter((r) => r.name.toLowerCase().includes(q)) : decorated;
+    res.json({
+      sort,
+      total: q ? filtered.length : board.rows.length,
+      totals: { messages: board.totalMessages, voiceHours: board.totalVoiceHours, members: board.members },
+      rows: q ? filtered.slice(offset, offset + limit) : filtered,
     });
   });
 

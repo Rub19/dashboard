@@ -344,11 +344,11 @@ export default function FormBuilderClient() {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-[var(--bg-main)] text-xs text-zinc-400 flex items-center justify-center">Chargement du formulaire...</div>;
+    return <div className="min-h-full bg-[var(--bg-main)] text-xs text-zinc-400 flex items-center justify-center">Chargement du formulaire...</div>;
   }
   if (loadError) {
     return (
-      <div className="min-h-screen bg-[var(--bg-main)] text-white p-8 space-y-4">
+      <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white p-8 pb-44 space-y-4">
         <Link href={`/discord/forms?guildId=${rawGuildId}`} className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white"><ArrowLeft className="h-4 w-4" /> Retour aux formulaires</Link>
         <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300">{loadError}</div>
       </div>

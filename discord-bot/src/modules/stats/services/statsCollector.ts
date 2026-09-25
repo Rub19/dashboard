@@ -42,6 +42,7 @@ class StatsCollector {
     const user = message.author.id;
     const channel = message.channelId;
     d.messages += 1;
+    d.byHour[new Date().getUTCHours()] += 1;
     d.byChannel[channel] = (d.byChannel[channel] ?? 0) + 1;
     d.byUser[user] = (d.byUser[user] ?? 0) + 1;
     statsStorage.bumpPair(d.byUserChannel, `${user}|${channel}`, 1);
@@ -66,6 +67,7 @@ class StatsCollector {
     if (seconds <= 0 || !statsStorage.isEnabled(guildId)) return;
     const d = statsStorage.day(guildId, dayKey(at));
     d.voiceSec += seconds;
+    d.voiceByHour[at.getUTCHours()] += seconds;
     d.voiceByChannel[channelId] = (d.voiceByChannel[channelId] ?? 0) + seconds;
     d.voiceByUser[userId] = (d.voiceByUser[userId] ?? 0) + seconds;
     statsStorage.bumpPair(d.voiceByUserChannel, `${userId}|${channelId}`, seconds);

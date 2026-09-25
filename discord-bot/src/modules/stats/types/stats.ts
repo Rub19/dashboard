@@ -25,6 +25,10 @@ export interface DayStats {
   voiceByChannel: Record<string, number>;
   voiceByUser: Record<string, number>;
   voiceByUserChannel: Record<string, number>;
+  /** Messages par heure UTC (0–23) : sert à la carte de chaleur d'activité. Les jours enregistrés avant cette version restent à zéro. */
+  byHour: number[];
+  /** Secondes de vocal par heure UTC (0–23). */
+  voiceByHour: number[];
   joins: number;
   leaves: number;
   /** Nombre de membres vu le plus récemment ce jour-là. */
@@ -40,6 +44,8 @@ export const emptyDay = (): DayStats => ({
   voiceByChannel: {},
   voiceByUser: {},
   voiceByUserChannel: {},
+  byHour: new Array(24).fill(0),
+  voiceByHour: new Array(24).fill(0),
   joins: 0,
   leaves: 0,
   members: null,
@@ -58,6 +64,45 @@ export interface SeriesPoint {
 export interface RankedEntry {
   id: string;
   value: number;
+}
+
+/** Ligne du classement des membres (période choisie). */
+export interface MemberRow {
+  id: string;
+  messages: number;
+  voiceHours: number;
+  /** Part des messages du serveur (0–100). */
+  messageShare: number;
+  voiceShare: number;
+  /** Jours où le membre a été actif (message ou vocal). */
+  activeDays: number;
+}
+
+export interface PeriodTotals {
+  messages: number;
+  voiceHours: number;
+  joins: number;
+  leaves: number;
+  activeUsers: number;
+}
+
+/** Analyse approfondie d'une période : comparaison avec la précédente, records, rythme de la semaine et carte de chaleur. */
+export interface Insights {
+  days: number;
+  current: PeriodTotals;
+  previous: PeriodTotals;
+  /** Variation en % par rapport à la période précédente (null si la précédente est vide). */
+  change: Record<keyof PeriodTotals, number | null>;
+  averages: { messagesPerDay: number; voiceHoursPerDay: number; messagesPerActiveMember: number };
+  records: { bestMessageDay: { day: string; value: number } | null; bestVoiceDay: { day: string; value: number } | null; bestJoinDay: { day: string; value: number } | null; longestActiveStreak: number };
+  /** Part des messages écrite par les 10 % de membres les plus actifs (concentration de l'activité). */
+  concentration: { topTenPercentShare: number | null; membersCounted: number };
+  weekday: Array<{ weekday: number; messages: number; voiceHours: number }>;
+  hours: Array<{ hour: number; messages: number; voiceHours: number }>;
+  /** heatmap[jourDeSemaine 0=lundi..6=dimanche][heure UTC] = messages. */
+  heatmap: number[][];
+  /** Vrai s'il existe des données horaires (collectées à partir de cette version). */
+  hasHourly: boolean;
 }
 
 export interface ServerSummary {

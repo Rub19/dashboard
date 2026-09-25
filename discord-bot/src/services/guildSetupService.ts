@@ -15,7 +15,7 @@ import {
   type BaseMessageOptions,
 } from 'discord.js';
 import { CORE_MODULE_IDS, MODULES, MODULE_PRESETS, applyModuleSelection, isModuleEnabled, type ModulePresetId } from './moduleRegistry.js';
-import { BOT_ICON_BASE, baseEmbed, noticeEmbed } from '../utils/embeds.js';
+import { brandIcon, baseEmbed, noticeEmbed } from '../utils/embeds.js';
 import { logger } from '../utils/logger.js';
 
 /**
@@ -113,7 +113,7 @@ export const guildSetupService = {
     const list = (xs: typeof states) => (xs.length ? xs.map((s) => `${s.m.emoji} ${s.m.label}`).join('  ·  ') : '—');
 
     const embed = baseEmbed('primary')
-      .setAuthor({ name: 'ETHONE · Configuration rapide', iconURL: `${BOT_ICON_BASE}/ethone.png` })
+      .setAuthor({ name: 'ETHONE · Configuration rapide', iconURL: brandIcon('ethone') })
       .setTitle(isWelcome ? '👋 Merci d\'avoir ajouté ETHONE !' : '⚙️ Modules du serveur')
       .setDescription(
         [
@@ -124,7 +124,7 @@ export const guildSetupService = {
           '> Réservé aux membres qui ont la permission **Gérer le serveur**. Modifiable à tout moment avec `/module` ou sur le dashboard.',
         ].join('\n')
       )
-      .setThumbnail('https://ethone.dev/icons/ethone-icon-192.png')
+      .setThumbnail('https://ethone.dev/icons/ethone-icon-192.png?v=r2')
       .addFields(
         { name: `✅ Actifs (${active.length})`, value: list(active).slice(0, 1024) },
         { name: `⚪ Désactivés (${inactive.length})`, value: list(inactive).slice(0, 1024) },
@@ -195,10 +195,10 @@ export const guildSetupService = {
       this.markDone(guildId);
       const active = MODULES.filter((m) => isModuleEnabled(guildId, m.id));
       const embed = baseEmbed('success')
-        .setAuthor({ name: 'ETHONE · Configuration rapide', iconURL: `${BOT_ICON_BASE}/ethone.png` })
+        .setAuthor({ name: 'ETHONE · Configuration rapide', iconURL: brandIcon('ethone') })
         .setTitle('✅ Configuration enregistrée')
         .setDescription(`${active.length} module(s) actif(s) : ${active.map((m) => `${m.emoji} ${m.label}`).join('  ·  ') || '—'}\n\nPour changer plus tard : \`/module\` ou le dashboard.`)
-        .setThumbnail('https://ethone.dev/icons/ethone-icon-192.png');
+        .setThumbnail('https://ethone.dev/icons/ethone-icon-192.png?v=r2');
       await interaction.update({ embeds: [embed], components: [] });
     }
   },

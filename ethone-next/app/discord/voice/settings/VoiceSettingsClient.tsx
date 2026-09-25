@@ -197,7 +197,7 @@ export default function VoiceSettingsClient() {
   }
 
   return (
-    <div className="space-y-6 px-4 sm:px-6 lg:px-10 pt-6 pb-44">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] space-y-6 px-4 sm:px-6 lg:px-10 pt-6 pb-44">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

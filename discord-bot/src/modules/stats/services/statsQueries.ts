@@ -1,5 +1,5 @@
 import { statsStorage, dayKey, RETENTION_DAYS } from '../storage/statsStorage.js';
-import { ChannelStats, DayStats, MemberStats, RankedEntry, ServerSummary, SeriesPoint } from '../types/stats.js';
+import { ChannelStats, DayStats, Insights, MemberRow, MemberStats, PeriodTotals, RankedEntry, ServerSummary, SeriesPoint } from '../types/stats.js';
 
 /** Liste des jours (UTC, ordre chronologique) des `days` derniers jours, aujourd'hui compris. */
 export function lastDays(days: number, now = new Date()): string[] {
@@ -27,7 +27,128 @@ function daysData(guildId: string, days: string[]): Array<[string, DayStats | un
   return days.map((d) => [d, statsStorage.peekDay(guildId, d)]);
 }
 
+const pct = (now: number, before: number): number | null => (before > 0 ? Math.round(((now - before) / before) * 1000) / 10 : null);
+
 class StatsQueries {
+  /** Totaux d'une liste de jours. */
+  private totalsOf(guildId: string, list: string[]): PeriodTotals {
+    const active = new Set<string>();
+    let messages = 0;
+    let voiceSec = 0;
+    let joins = 0;
+    let leaves = 0;
+    for (const [, d] of daysData(guildId, list)) {
+      if (!d) continue;
+      messages += d.messages;
+      voiceSec += d.voiceSec;
+      joins += d.joins;
+      leaves += d.leaves;
+      for (const u of Object.keys(d.byUser)) active.add(u);
+      for (const u of Object.keys(d.voiceByUser)) active.add(u);
+    }
+    return { messages, voiceHours: hours(voiceSec), joins, leaves, activeUsers: active.size };
+  }
+
+  /** Comparaison avec la période précédente de même durée, records, rythme de la semaine et carte de chaleur. */
+  public insights(guildId: string, days: number, now = new Date()): Insights {
+    const n = Math.max(1, Math.min(RETENTION_DAYS, Math.floor(days)));
+    const list = lastDays(n, now);
+    const previousList = lastDays(n * 2, now).slice(0, n);
+    const current = this.totalsOf(guildId, list);
+    const previous = this.totalsOf(guildId, previousList);
+
+    const weekday = Array.from({ length: 7 }, (_, i) => ({ weekday: i, messages: 0, voiceHours: 0 }));
+    const hoursArr = Array.from({ length: 24 }, (_, h) => ({ hour: h, messages: 0, voiceHours: 0 }));
+    const heatmap = Array.from({ length: 7 }, () => new Array<number>(24).fill(0));
+    const msgByUser: Record<string, number> = {};
+    let best: { day: string; value: number } | null = null;
+    let bestVoice: { day: string; value: number } | null = null;
+    let bestJoin: { day: string; value: number } | null = null;
+    let streak = 0;
+    let longest = 0;
+    let hasHourly = false;
+
+    for (const [day, d] of daysData(guildId, list)) {
+      const wd = (new Date(`${day}T00:00:00Z`).getUTCDay() + 6) % 7; // lundi = 0
+      if (d) {
+        weekday[wd].messages += d.messages;
+        weekday[wd].voiceHours += d.voiceSec / 3600;
+        for (let h = 0; h < 24; h++) {
+          const m = d.byHour?.[h] ?? 0;
+          const v = d.voiceByHour?.[h] ?? 0;
+          if (m > 0 || v > 0) hasHourly = true;
+          heatmap[wd][h] += m;
+          hoursArr[h].messages += m;
+          hoursArr[h].voiceHours += v / 3600;
+        }
+        addTo(msgByUser, d.byUser);
+        if (d.messages > (best?.value ?? 0)) best = { day, value: d.messages };
+        if (d.voiceSec > (bestVoice ? bestVoice.value * 3600 : 0)) bestVoice = { day, value: hours(d.voiceSec) };
+        if (d.joins > (bestJoin?.value ?? 0)) bestJoin = { day, value: d.joins };
+      }
+      const activeThatDay = d && (d.messages > 0 || d.voiceSec > 0);
+      streak = activeThatDay ? streak + 1 : 0;
+      longest = Math.max(longest, streak);
+    }
+
+    const counts = Object.values(msgByUser).sort((a, b) => b - a);
+    const totalMsgs = counts.reduce((a, b) => a + b, 0);
+    const topN = Math.max(1, Math.ceil(counts.length * 0.1));
+    return {
+      days: list.length,
+      current,
+      previous,
+      change: {
+        messages: pct(current.messages, previous.messages),
+        voiceHours: pct(current.voiceHours, previous.voiceHours),
+        joins: pct(current.joins, previous.joins),
+        leaves: pct(current.leaves, previous.leaves),
+        activeUsers: pct(current.activeUsers, previous.activeUsers),
+      },
+      averages: {
+        messagesPerDay: Math.round((current.messages / list.length) * 10) / 10,
+        voiceHoursPerDay: Math.round((current.voiceHours / list.length) * 100) / 100,
+        messagesPerActiveMember: current.activeUsers > 0 ? Math.round((current.messages / current.activeUsers) * 10) / 10 : 0,
+      },
+      records: { bestMessageDay: best, bestVoiceDay: bestVoice, bestJoinDay: bestJoin, longestActiveStreak: longest },
+      concentration: { topTenPercentShare: totalMsgs > 0 ? Math.round((counts.slice(0, topN).reduce((a, b) => a + b, 0) / totalMsgs) * 1000) / 10 : null, membersCounted: counts.length },
+      weekday: weekday.map((w) => ({ ...w, voiceHours: Math.round(w.voiceHours * 100) / 100 })),
+      hours: hoursArr.map((h) => ({ ...h, voiceHours: Math.round(h.voiceHours * 100) / 100 })),
+      heatmap,
+      hasHourly,
+    };
+  }
+
+  /** Classement complet des membres sur la période : messages, vocal, parts du serveur, jours actifs. Trié puis tronqué. */
+  public leaderboard(guildId: string, days: number, sort: 'messages' | 'voice' | 'active', now = new Date()): { rows: MemberRow[]; totalMessages: number; totalVoiceHours: number; members: number } {
+    const list = lastDays(days, now);
+    const msg: Record<string, number> = {};
+    const voiceSec: Record<string, number> = {};
+    const activeDays: Record<string, number> = {};
+    let totalMessages = 0;
+    let totalVoiceSec = 0;
+    for (const [, d] of daysData(guildId, list)) {
+      if (!d) continue;
+      totalMessages += d.messages;
+      totalVoiceSec += d.voiceSec;
+      addTo(msg, d.byUser);
+      addTo(voiceSec, d.voiceByUser);
+      for (const u of new Set([...Object.keys(d.byUser), ...Object.keys(d.voiceByUser)])) activeDays[u] = (activeDays[u] ?? 0) + 1;
+    }
+    const ids = [...new Set([...Object.keys(msg), ...Object.keys(voiceSec)])];
+    const rows: MemberRow[] = ids.map((id) => ({
+      id,
+      messages: msg[id] ?? 0,
+      voiceHours: hours(voiceSec[id] ?? 0),
+      messageShare: totalMessages > 0 ? Math.round(((msg[id] ?? 0) / totalMessages) * 1000) / 10 : 0,
+      voiceShare: totalVoiceSec > 0 ? Math.round(((voiceSec[id] ?? 0) / totalVoiceSec) * 1000) / 10 : 0,
+      activeDays: activeDays[id] ?? 0,
+    }));
+    const key = sort === 'voice' ? (r: MemberRow) => r.voiceHours : sort === 'active' ? (r: MemberRow) => r.activeDays : (r: MemberRow) => r.messages;
+    rows.sort((a, b) => key(b) - key(a) || b.messages - a.messages || b.voiceHours - a.voiceHours);
+    return { rows, totalMessages, totalVoiceHours: hours(totalVoiceSec), members: ids.length };
+  }
+
   public serverSeries(guildId: string, days: number, now = new Date()): SeriesPoint[] {
     let lastMembers: number | null = null;
     return daysData(guildId, lastDays(days, now)).map(([day, d]) => {

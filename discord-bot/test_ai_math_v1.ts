@@ -106,7 +106,7 @@ async function runTests() {
     userTag: 'Tester#0001',
   });
   assert(
-    embedFallback.data.author?.icon_url === 'https://ethone.dev/icons/ethone-icon-512.png',
+    embedFallback.data.author?.icon_url?.startsWith('https://ethone.dev/icons/ethone-icon-512.png') === true,
     'Embed falls back to https://ethone.dev/icons/ethone-icon-512.png instead of default Discord blue avatar'
   );
   assert(

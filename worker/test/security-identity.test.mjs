@@ -32,7 +32,8 @@ function createMockSupabaseFetch() {
     }
 
     if (url.pathname === "/auth/v1/admin/generate_link") {
-      return json({ properties: { hashed_token: "test-magic-link-token-hash", action_link: "https://example.com/auth/v1/verify?token=test-magic-link-token-hash&type=magiclink" } });
+      // Forme réelle de GoTrue : champs à la racine (pas sous « properties »), avec le code à 6 chiffres `email_otp`.
+      return json({ id: "4a8ad6a5-7f6e-4d41-9d07-28f6dca8719a", email: "qa@ethone.dev", email_otp: "test-magic-link-token-hash", hashed_token: "hashed-not-preferred", verification_type: "magiclink", action_link: "https://example.com/auth/v1/verify?token=test-magic-link-token-hash&type=magiclink" });
     }
 
     if (url.pathname.startsWith("/rest/v1/ethone_")) {

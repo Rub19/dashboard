@@ -381,8 +381,13 @@ export async function generateMagicLinkToken(env, email) {
     retries: 0,
     maxBytes: 8192
   });
-  const properties = response.data?.properties || {};
-  const tokenHash = properties.hashed_token || properties.token_hash || properties.email_otp || null;
+  // GoTrue renvoie ces champs À LA RACINE de la réponse (`properties` n'existe que dans le client supabase-js) : lire
+  // seulement `properties` faisait échouer la génération (« Magic link token not generated »). Le client échange ce jeton
+  // avec `verifyOtp({ email, token, type: "magiclink" })`, qui attend le code à 6 chiffres (`email_otp`) ; le
+  // `hashed_token` ne convient qu'au paramètre `token_hash`, d'où cet ordre de préférence.
+  const data = response.data || {};
+  const properties = data.properties && typeof data.properties === "object" ? data.properties : data;
+  const tokenHash = properties.email_otp || properties.hashed_token || properties.token_hash || null;
   if (!tokenHash) throw new Error("Magic link token not generated");
   return tokenHash;
 }

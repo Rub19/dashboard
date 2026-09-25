@@ -34902,6 +34902,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_82_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_82_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_82_de);
 
+const v1_28_83_fr: ChangelogEntry = {
+  version: "v1.28.83",
+  date: "2026-09-25",
+  title: "Connexion par code (et passkey) : jeton de session correctement généré",
+  items: [
+    "Le Worker cherchait le jeton de lien magique au mauvais endroit dans la réponse de Supabase Auth (« Magic link token not generated »), donc la nouvelle voie de connexion retombait sur l'ancien jeton refusé par le navigateur. Le champ est maintenant lu à la racine de la réponse, avec le code à 6 chiffres attendu par le navigateur. Cela répare aussi la connexion par passkey, qui utilisait le même code.",
+    "Le test du Worker imitait une réponse qui n'existe pas (champ « properties ») : il reprend maintenant la vraie forme de la réponse.",
+  ],
+};
+
+const v1_28_83_en: ChangelogEntry = {
+  version: "v1.28.83",
+  date: "2026-09-25",
+  title: "Code (and passkey) sign-in: session token generated correctly",
+  items: [
+    "The Worker looked for the magic-link token in the wrong place in Supabase Auth's response (\"Magic link token not generated\"), so the new sign-in path fell back to the old token the browser rejects. The field is now read at the root of the response, with the 6-digit code the browser expects. This also repairs passkey sign-in, which used the same code.",
+    "The Worker test imitated a response that does not exist (\"properties\" field): it now uses the real response shape.",
+  ],
+};
+
+const v1_28_83_es: ChangelogEntry = {
+  version: "v1.28.83",
+  date: "2026-09-25",
+  title: "Inicio de sesión por código (y passkey): token de sesión generado correctamente",
+  items: [
+    "El Worker buscaba el token de enlace mágico en el lugar equivocado de la respuesta de Supabase Auth («Magic link token not generated»), así que la nueva vía de inicio de sesión recurría al token antiguo que el navegador rechaza. Ahora el campo se lee en la raíz de la respuesta, con el código de 6 dígitos que espera el navegador. Esto también repara el inicio de sesión con passkey, que usaba el mismo código.",
+    "La prueba del Worker imitaba una respuesta que no existe (campo «properties»): ahora usa la forma real de la respuesta.",
+  ],
+};
+
+const v1_28_83_de: ChangelogEntry = {
+  version: "v1.28.83",
+  date: "2026-09-25",
+  title: "Code- (und Passkey-)Anmeldung: Sitzungs-Token korrekt erzeugt",
+  items: [
+    "Der Worker suchte das Magic-Link-Token an der falschen Stelle in der Antwort von Supabase Auth („Magic link token not generated“), sodass der neue Anmeldeweg auf das alte Token zurückfiel, das der Browser ablehnt. Das Feld wird jetzt an der Wurzel der Antwort gelesen, mit dem 6-stelligen Code, den der Browser erwartet. Das repariert auch die Passkey-Anmeldung, die denselben Code nutzte.",
+    "Der Worker-Test bildete eine Antwort nach, die es nicht gibt (Feld „properties“): Er nutzt jetzt die echte Antwortform.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_83_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_83_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_83_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_83_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

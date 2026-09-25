@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.83 — 2026-09-25
+
+**Connexion par code (et passkey) : jeton de session correctement généré**
+
+- Le Worker cherchait le jeton de lien magique au mauvais endroit dans la réponse de Supabase Auth (« Magic link token not generated »), donc la nouvelle voie de connexion retombait sur l'ancien jeton refusé par le navigateur. Le champ est maintenant lu à la racine de la réponse, avec le code à 6 chiffres attendu par le navigateur. Cela répare aussi la connexion par passkey, qui utilisait le même code.
+- Le test du Worker imitait une réponse qui n'existe pas (champ « properties ») : il reprend maintenant la vraie forme de la réponse.
+
 ## v1.28.82 — 2026-09-25
 
 **Connexion : le message d'erreur indique le motif**

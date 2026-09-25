@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import EventDetailClient from "./EventDetailClient";
+import EventCreateClient from "../create/EventCreateClient";
+import ChildRouter from "@/components/discord/ChildRouter";
 
 export const dynamic = "force-static";
 
@@ -25,7 +27,9 @@ export default function EventDetailPage() {
         </div>
       }
     >
-      <EventDetailClient />
+      <ChildRouter after="events" routes={{ create: <EventCreateClient /> }}>
+        <EventDetailClient />
+      </ChildRouter>
     </Suspense>
   );
 }

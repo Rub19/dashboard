@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.103 — 2026-09-25
+
+**Pages « créer » et « comparer » ouvertes correctement**
+
+- Les pages de création de sondage, formulaire et événement, ainsi que la comparaison et les paramètres des sauvegardes, affichaient à nouveau la page d'un élément de démonstration à l'ouverture directe ou au rechargement. La page de détail choisit maintenant elle-même le bon écran d'après l'adresse, sans dépendre des règles de redirection de l'hébergeur.
+
 ## v1.28.102 — 2026-09-25
 
 **Messages supprimés à tort et modules désactivés partout sauf la musique**

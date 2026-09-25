@@ -1,4 +1,8 @@
+import { Suspense } from "react";
 import BackupDetailClient from "./BackupDetailClient";
+import BackupCompareClient from "../compare/BackupCompareClient";
+import BackupSettingsClient from "../settings/BackupSettingsClient";
+import ChildRouter from "@/components/discord/ChildRouter";
 
 export const dynamic = "force-static";
 
@@ -12,5 +16,11 @@ export const metadata = {
 };
 
 export default function BackupDetailPage() {
-  return <BackupDetailClient />;
+  return (
+    <Suspense fallback={null}>
+      <ChildRouter after="backups" routes={{ compare: <BackupCompareClient />, settings: <BackupSettingsClient /> }}>
+        <BackupDetailClient />
+      </ChildRouter>
+    </Suspense>
+  );
 }

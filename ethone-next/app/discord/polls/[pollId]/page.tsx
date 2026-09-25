@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import PollDetailClient from "./PollDetailClient";
+import PollCreateClient from "../create/PollCreateClient";
+import ChildRouter from "@/components/discord/ChildRouter";
 
 export const dynamic = "force-static";
 
@@ -24,7 +26,9 @@ export default function PollDetailPage() {
         </div>
       }
     >
-      <PollDetailClient />
+      <ChildRouter after="polls" routes={{ create: <PollCreateClient /> }}>
+        <PollDetailClient />
+      </ChildRouter>
     </Suspense>
   );
 }

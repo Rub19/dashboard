@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import FormBuilderClient from "./FormBuilderClient";
+import FormCreateClient from "../create/FormCreateClient";
+import ChildRouter from "@/components/discord/ChildRouter";
 
 export const dynamic = "force-static";
 
@@ -19,7 +21,9 @@ export default function FormBuilderPage() {
         </div>
       }
     >
-      <FormBuilderClient />
+      <ChildRouter after="forms" routes={{ create: <FormCreateClient /> }}>
+        <FormBuilderClient />
+      </ChildRouter>
     </Suspense>
   );
 }

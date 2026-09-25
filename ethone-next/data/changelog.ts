@@ -35974,6 +35974,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_102_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_102_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_102_de);
 
+const v1_28_103_fr: ChangelogEntry = {
+  version: "v1.28.103",
+  date: "2026-09-25",
+  title: "Pages « créer » et « comparer » ouvertes correctement",
+  items: [
+    "Les pages de création de sondage, formulaire et événement, ainsi que la comparaison et les paramètres des sauvegardes, affichaient à nouveau la page d'un élément de démonstration à l'ouverture directe ou au rechargement. La page de détail choisit maintenant elle-même le bon écran d'après l'adresse, sans dépendre des règles de redirection de l'hébergeur.",
+  ],
+};
+
+const v1_28_103_en: ChangelogEntry = {
+  version: "v1.28.103",
+  date: "2026-09-25",
+  title: "Create and compare pages open correctly",
+  items: [
+    "The create pages for polls, forms and events, and the backup compare and settings pages, again showed a demo item's page on direct load or reload. The detail page now picks the right screen from the address itself, without depending on the host's redirect rules.",
+  ],
+};
+
+const v1_28_103_es: ChangelogEntry = {
+  version: "v1.28.103",
+  date: "2026-09-25",
+  title: "Las páginas de crear y comparar se abren correctamente",
+  items: [
+    "Las páginas de creación de sondeos, formularios y eventos, y la comparación y los ajustes de copias de seguridad, volvían a mostrar la página de un elemento de demostración al abrir directamente o recargar. La página de detalle elige ahora ella misma la pantalla correcta según la dirección, sin depender de las reglas de redirección del alojamiento.",
+  ],
+};
+
+const v1_28_103_de: ChangelogEntry = {
+  version: "v1.28.103",
+  date: "2026-09-25",
+  title: "Erstellen- und Vergleichsseiten öffnen korrekt",
+  items: [
+    "Die Erstellungsseiten für Umfragen, Formulare und Events sowie Vergleich und Einstellungen der Backups zeigten beim direkten Öffnen oder Neuladen wieder die Seite eines Demo-Eintrags. Die Detailseite wählt jetzt selbst den richtigen Bildschirm anhand der Adresse, unabhängig von den Weiterleitungsregeln des Hosts.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_103_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_103_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_103_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_103_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

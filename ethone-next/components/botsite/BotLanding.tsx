@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import FlagIcon, { LANGUAGE_LABELS } from "@/components/FlagIcon";
+import { BOT_COPY, BOT_LANGS, BOT_LANG_KEY, detectBotLang, type BotCopy, type BotLang } from "./botLandingI18n";
 
 /**
  * Page vitrine publique du bot Discord (discord.ethone.dev / ethone.dev/bot). Aucune donnée inventée : les compteurs et
@@ -27,33 +29,21 @@ interface PublicStats {
   commands: number;
 }
 
-const FEATURES: Array<{ icon: string; title: string; text: string; tint: string; wide?: boolean }> = [
-  { icon: "moderation", title: "Modération", text: "Avertissements, mutes, expulsions, bannissements et historique des cas, en commande ou depuis le dashboard.", tint: "#f43f5e", wide: true },
-  { icon: "security", title: "Anti-Raid & Anti-Nuke", text: "Détection des arrivées massives et des suppressions en série, avec verrouillage d'urgence du serveur.", tint: "#f59e0b" },
-  { icon: "logs", title: "Journal d'audit", text: "Chaque action importante est enregistrée : messages, rôles, salons, sanctions. Recherchable et filtrable.", tint: "#38bdf8" },
-  { icon: "welcome", title: "Bienvenue & vérification", text: "Messages d'accueil en embed, rôles automatiques et vérification des nouveaux membres avant l'accès au serveur.", tint: "#34d399", wide: true },
-  { icon: "level", title: "Niveaux & récompenses", text: "Expérience par messages, classement et rôles décernés automatiquement selon le niveau.", tint: "#a78bfa" },
-  { icon: "economy", title: "Économie & boutique", text: "Monnaie du serveur, récompense quotidienne, boutique de rôles et classement des membres.", tint: "#facc15" },
-  { icon: "music", title: "Musique", text: "Lecture dans les salons vocaux avec file d'attente, playlists et contrôles depuis le dashboard.", tint: "#ec4899" },
-  { icon: "ticket", title: "Tickets", text: "Un système de support par salons privés, avec équipes de staff, transcriptions et statistiques.", tint: "#22d3ee" },
-  { icon: "giveaway", title: "Giveaways & événements", text: "Tirages au sort, sondages, événements avec inscriptions et rappels automatiques.", tint: "#fb923c" },
-  { icon: "reminder", title: "Outils du quotidien", text: "Rappels, anniversaires, messages épinglés, tags de réponse, statut AFK et salons compteurs.", tint: "#94a3b8" },
+const FEATURE_META: Array<{ icon: string; tint: string; wide?: boolean }> = [
+  { icon: "moderation", tint: "#f43f5e", wide: true },
+  { icon: "security", tint: "#f59e0b" },
+  { icon: "logs", tint: "#38bdf8" },
+  { icon: "welcome", tint: "#34d399", wide: true },
+  { icon: "level", tint: "#a78bfa" },
+  { icon: "economy", tint: "#facc15" },
+  { icon: "music", tint: "#ec4899" },
+  { icon: "ticket", tint: "#22d3ee" },
+  { icon: "giveaway", tint: "#fb923c" },
+  { icon: "reminder", tint: "#94a3b8" },
 ];
 
-const STEPS: Array<{ title: string; text: string }> = [
-  { title: "Invitez le bot", text: "Un clic, et ETHONE rejoint votre serveur avec les permissions nécessaires." },
-  { title: "Choisissez vos modules", text: "Chaque module s'active ou se désactive par serveur, depuis le dashboard ou avec /module." },
-  { title: "Réglez tout en ligne", text: "Salons, rôles, messages, seuils : la configuration se fait sur le dashboard, appliquée en direct." },
-];
-
-const PREVIEW_MODULES: Array<{ name: string; on: boolean }> = [
-  { name: "Modération", on: true },
-  { name: "Anti-Raid", on: true },
-  { name: "Bienvenue", on: true },
-  { name: "Musique", on: true },
-  { name: "Économie", on: false },
-  { name: "Tickets", on: true },
-];
+/** État ON/OFF des six modules montrés dans l'aperçu (mêmes noms que dans le dictionnaire). */
+const PREVIEW_ON = [true, true, true, true, false, true];
 
 function useLiveData() {
   const [stats, setStats] = useState<PublicStats | null>(null);
@@ -141,8 +131,79 @@ function Eyebrow({ children }: { children: ReactNode }) {
   return <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-indigo-300/80">{children}</p>;
 }
 
+/** Les variables du bot ({user}, {server}, {membercount}) sont surlignées comme une mention. */
+function highlightVars(text: string): ReactNode[] {
+  return text.split(/(\{[a-z]+\})/g).map((part, i) =>
+    /^\{[a-z]+\}$/.test(part) ? (
+      <span key={i} className="rounded bg-indigo-400/15 px-1 text-indigo-300">{part}</span>
+    ) : (
+      part
+    )
+  );
+}
+
+/** Sélecteur de langue : drapeau + code, menu de quatre langues. */
+function LanguageSelect({ lang, onChange, label }: { lang: BotLang; onChange: (l: BotLang) => void; label: string }) {
+  const [open, setOpen] = useState(false);
+  const boxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent | KeyboardEvent) => {
+      if (e instanceof KeyboardEvent) {
+        if (e.key === "Escape") setOpen(false);
+      } else if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [open]);
+
+  return (
+    <div ref={boxRef} className="relative">
+      <button
+        type="button"
+        aria-label={label}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className="flex h-9 cursor-pointer items-center gap-2 rounded-full border border-white/10 px-3 text-xs font-semibold uppercase text-zinc-200 transition-colors hover:border-white/25 hover:text-white"
+      >
+        <FlagIcon code={lang} className="h-3 w-[18px]" />
+        {lang}
+        <svg viewBox="0 0 12 12" className={`h-2.5 w-2.5 transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+          <path d="M2.5 4.5 6 8l3.5-3.5" />
+        </svg>
+      </button>
+      {open && (
+        <ul role="listbox" aria-label={label} className="absolute right-0 top-[calc(100%+8px)] z-40 w-44 overflow-hidden rounded-xl border border-white/10 bg-[#0e0f16] p-1 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.8)]">
+          {BOT_LANGS.map((l) => (
+            <li key={l} role="option" aria-selected={l === lang}>
+              <button
+                type="button"
+                onClick={() => {
+                  onChange(l);
+                  setOpen(false);
+                }}
+                className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-white/[0.06] ${l === lang ? "text-white" : "text-zinc-400"}`}
+              >
+                <FlagIcon code={l} className="h-3.5 w-5" />
+                <span className="flex-1">{LANGUAGE_LABELS[l]}</span>
+                {l === lang && <span className="text-indigo-300">✓</span>}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 /** Aperçu de l'interface : liste de modules avec leurs interrupteurs + message d'accueil Discord (variables non remplacées). */
-function ProductPreview() {
+function ProductPreview({ c }: { c: BotCopy }) {
   return (
     <div className="relative mx-auto mt-16 w-full max-w-4xl">
       <div aria-hidden className="absolute -inset-x-6 -inset-y-8 -z-10 rounded-[40px] bg-[radial-gradient(60%_60%_at_50%_40%,rgba(99,102,241,0.28),rgba(56,189,248,0.10)_55%,transparent_75%)] blur-2xl" />
@@ -155,23 +216,26 @@ function ProductPreview() {
         </div>
         <div className="grid gap-px bg-white/[0.06] md:grid-cols-[1fr_1.15fr]">
           <div className="bg-[#0d0e15] p-5 text-left">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Modules du serveur</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{c.preview.modulesTitle}</p>
             <ul className="mt-4 space-y-2">
-              {PREVIEW_MODULES.map((m) => (
-                <li key={m.name} className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-3.5 py-2.5">
-                  <span className="text-sm font-medium text-zinc-200">{m.name}</span>
-                  <span className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider ${m.on ? "bg-emerald-500/12 text-emerald-300" : "bg-zinc-500/12 text-zinc-400"}`}>
-                    <span className={`relative h-3.5 w-6 rounded-full ${m.on ? "bg-emerald-400/80" : "bg-zinc-600"}`}>
-                      <span className={`absolute top-0.5 h-2.5 w-2.5 rounded-full bg-white transition-all ${m.on ? "left-[12px]" : "left-0.5"}`} />
+              {c.preview.modules.map((name, idx) => {
+                const on = PREVIEW_ON[idx];
+                return (
+                  <li key={name} className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-3.5 py-2.5">
+                    <span className="text-sm font-medium text-zinc-200">{name}</span>
+                    <span className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider ${on ? "bg-emerald-500/12 text-emerald-300" : "bg-zinc-500/12 text-zinc-400"}`}>
+                      <span className={`relative h-3.5 w-6 rounded-full ${on ? "bg-emerald-400/80" : "bg-zinc-600"}`}>
+                        <span className={`absolute top-0.5 h-2.5 w-2.5 rounded-full bg-white transition-all ${on ? "left-[12px]" : "left-0.5"}`} />
+                      </span>
+                      {on ? "ON" : "OFF"}
                     </span>
-                    {m.on ? "ON" : "OFF"}
-                  </span>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           </div>
           <div className="bg-[#0d0e15] p-5 text-left">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Message de bienvenue</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{c.preview.welcomeTitle}</p>
             <div className="mt-4 flex gap-3 rounded-xl bg-[#131420] p-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/icons/ethone-icon-192.png" alt="" width={38} height={38} className="h-9 w-9 shrink-0 rounded-full" />
@@ -180,15 +244,13 @@ function ProductPreview() {
                   Ethone Bot <span className="rounded bg-[#5865f2] px-1.5 py-px text-[9px] font-bold uppercase text-white">App</span>
                 </p>
                 <div className="mt-2 rounded-md border-l-4 border-indigo-400 bg-[#1a1b28] p-3">
-                  <p className="text-sm font-semibold text-white">Bienvenue sur {"{serveur}"} !</p>
-                  <p className="mt-1.5 text-[13px] leading-relaxed text-zinc-400">
-                    Ravi de te voir, <span className="rounded bg-indigo-400/15 px-1 text-indigo-300">@{"{membre}"}</span>. Lis les règles, choisis tes rôles et présente-toi.
-                  </p>
-                  <p className="mt-2 text-[11px] text-zinc-500">Membre n°{"{compteur}"}</p>
+                  <p className="text-sm font-semibold text-white">{c.preview.embedTitle}</p>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-zinc-400">{highlightVars(c.preview.embedBody)}</p>
+                  <p className="mt-2 text-[11px] text-zinc-500">{c.preview.embedFooter}</p>
                 </div>
               </div>
             </div>
-            <p className="mt-3 text-xs leading-relaxed text-zinc-500">Les messages d'accueil et d'au revoir sont des embeds personnalisables, avec variables.</p>
+            <p className="mt-3 text-xs leading-relaxed text-zinc-500">{c.preview.note}</p>
           </div>
         </div>
       </div>
@@ -199,8 +261,38 @@ function ProductPreview() {
 export default function BotLanding() {
   const { stats, commands, commandsFailed } = useLiveData();
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("Toutes");
+  const [category, setCategory] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  // Rendu initial en français (identique au HTML statique), puis langue enregistrée ou celle du navigateur.
+  const [lang, setLang] = useState<BotLang>("fr");
+  const c = BOT_COPY[lang];
+
+  useEffect(() => {
+    setLang(detectBotLang());
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    const applyMeta = () => {
+      if (document.title !== c.meta.title) document.title = c.meta.title;
+      document.querySelector('meta[name="description"]')?.setAttribute("content", c.meta.description);
+    };
+    applyMeta();
+    // Le gestionnaire de titres du dashboard (et les métadonnées de Next) réécrivent le titre après coup : on le rétablit.
+    const titleNode = document.querySelector("title");
+    const observer = titleNode ? new MutationObserver(applyMeta) : null;
+    if (titleNode) observer?.observe(titleNode, { childList: true, characterData: true, subtree: true });
+    return () => observer?.disconnect();
+  }, [lang, c]);
+
+  const changeLang = (l: BotLang) => {
+    setLang(l);
+    try {
+      localStorage.setItem(BOT_LANG_KEY, l);
+    } catch {
+      /* stockage indisponible : le choix vaut pour cette visite */
+    }
+  };
 
   const categories = useMemo(() => {
     if (!commands) return [];
@@ -212,10 +304,10 @@ export default function BotLanding() {
   const visible = useMemo(() => {
     if (!commands) return [];
     const q = fold(query.trim());
-    return commands.filter((c) => {
-      if (category !== "Toutes" && c.category !== category) return false;
+    return commands.filter((cmd) => {
+      if (category && cmd.category !== category) return false;
       if (!q) return true;
-      return fold(`${c.name} ${c.description} ${c.subcommands.map((s) => `${s.name} ${s.description}`).join(" ")}`).includes(q);
+      return fold(`${cmd.name} ${cmd.description} ${cmd.subcommands.map((s) => `${s.name} ${s.description}`).join(" ")}`).includes(q);
     });
   }, [commands, query, category]);
 
@@ -247,24 +339,25 @@ export default function BotLanding() {
           <a href="/bot" className="flex items-center gap-2.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/icons/ethone-icon-192.png" alt="" width={34} height={34} className="rounded-[10px]" />
-            <span className="text-[15px] font-bold tracking-[0.18em] text-white">ETHONE</span>
+            <span className="hidden text-[15px] font-bold tracking-[0.18em] text-white min-[420px]:inline">ETHONE</span>
           </a>
-          <nav className="hidden items-center gap-8 md:flex" aria-label="Navigation principale">
-            <a href="#fonctionnalites" onClick={scrollTo("fonctionnalites")} className={linkClass}>Fonctionnalités</a>
-            <a href="#dashboard" onClick={scrollTo("dashboard")} className={linkClass}>Dashboard</a>
-            <a href="#commandes" onClick={scrollTo("commandes")} className={linkClass}>Commandes</a>
-            <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" className={linkClass}>Support</a>
+          <nav className="hidden items-center gap-8 md:flex" aria-label={c.nav.mainNav}>
+            <a href="#fonctionnalites" onClick={scrollTo("fonctionnalites")} className={linkClass}>{c.nav.features}</a>
+            <a href="#dashboard" onClick={scrollTo("dashboard")} className={linkClass}>{c.nav.dashboard}</a>
+            <a href="#commandes" onClick={scrollTo("commandes")} className={linkClass}>{c.nav.commands}</a>
+            <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" className={linkClass}>{c.nav.support}</a>
           </nav>
           <div className="flex items-center gap-2">
             <a href={DASHBOARD_URL} className="hidden rounded-full border border-white/10 px-4 py-2 text-sm font-medium text-zinc-200 transition-colors hover:border-white/25 hover:text-white sm:inline-block">
-              Dashboard
+              {c.nav.dashboard}
             </a>
             <a href={INVITE_URL} target="_blank" rel="noopener noreferrer" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-zinc-900 transition-colors hover:bg-zinc-200">
-              Inviter
+              {c.nav.invite}
             </a>
+            <LanguageSelect lang={lang} onChange={changeLang} label={c.nav.language} />
             <button
               type="button"
-              aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-label={menuOpen ? c.nav.closeMenu : c.nav.openMenu}
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((v) => !v)}
               className="ml-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-white/10 text-zinc-300 transition-colors hover:border-white/25 hover:text-white md:hidden"
@@ -276,14 +369,14 @@ export default function BotLanding() {
           </div>
         </div>
         {menuOpen && (
-          <nav className="mx-auto flex w-full max-w-6xl flex-col gap-1 border-t border-white/[0.06] px-5 py-3 md:hidden" aria-label="Menu mobile">
-            {[["fonctionnalites", "Fonctionnalités"], ["dashboard", "Dashboard"], ["commandes", "Commandes"]].map(([id, label]) => (
+          <nav className="mx-auto flex w-full max-w-6xl flex-col gap-1 border-t border-white/[0.06] px-5 py-3 md:hidden" aria-label={c.nav.mobileMenu}>
+            {[["fonctionnalites", c.nav.features], ["dashboard", c.nav.dashboard], ["commandes", c.nav.commands]].map(([id, label]) => (
               <a key={id} href={`#${id}`} onClick={scrollTo(id)} className="rounded-lg px-3 py-2.5 text-[15px] text-zinc-300 hover:bg-white/[0.04] hover:text-white">
                 {label}
               </a>
             ))}
-            <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" className="rounded-lg px-3 py-2.5 text-[15px] text-zinc-300 hover:bg-white/[0.04] hover:text-white">Support</a>
-            <a href={DASHBOARD_URL} className="rounded-lg px-3 py-2.5 text-[15px] text-zinc-300 hover:bg-white/[0.04] hover:text-white">Ouvrir le dashboard</a>
+            <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" className="rounded-lg px-3 py-2.5 text-[15px] text-zinc-300 hover:bg-white/[0.04] hover:text-white">{c.nav.support}</a>
+            <a href={DASHBOARD_URL} className="rounded-lg px-3 py-2.5 text-[15px] text-zinc-300 hover:bg-white/[0.04] hover:text-white">{c.hero.openDashboard}</a>
           </nav>
         )}
       </div>
@@ -296,26 +389,26 @@ export default function BotLanding() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
             </span>
-            {stats ? `Actif sur ${numberFr(stats.guilds)} serveur${stats.guilds > 1 ? "s" : ""} · ${numberFr(stats.members)} membres` : "Le bot Discord tout-en-un"}
+            {stats ? c.hero.badgeActive(stats.guilds, numberFr(stats.members)) : c.hero.badgeDefault}
           </div>
           <h1 className="text-[clamp(2.6rem,7.2vw,5.4rem)] font-extrabold leading-[0.98] tracking-[-0.045em] text-white">
-            Le bot qui gère
+            {c.hero.titleTop}
             <br />
-            votre serveur, <span className="bg-gradient-to-r from-violet-400 via-sky-400 to-emerald-400 bg-clip-text text-transparent">vraiment.</span>
+            {c.hero.titleBottom} <span className="bg-gradient-to-r from-violet-400 via-sky-400 to-emerald-400 bg-clip-text text-transparent">{c.hero.titleAccent}</span>
           </h1>
           <p className="mx-auto mt-7 max-w-xl text-lg leading-relaxed text-zinc-400">
-            Modération, sécurité, musique, économie, tickets. Tout se configure depuis un dashboard synchronisé en direct avec Discord.
+            {c.hero.subtitle}
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <a href={INVITE_URL} target="_blank" rel="noopener noreferrer" className={primaryBtn}>
               <DiscordGlyph className="h-5 w-5" />
-              Ajouter à Discord
+              {c.hero.add}
             </a>
             <a href={DASHBOARD_URL} className={ghostBtn}>
-              Ouvrir le dashboard
+              {c.hero.openDashboard}
             </a>
           </div>
-          <ProductPreview />
+          <ProductPreview c={c} />
         </section>
 
         {/* Chiffres réels (masqués si l'API du bot ne répond pas) */}
@@ -324,9 +417,9 @@ export default function BotLanding() {
             <Reveal>
               <dl className="grid grid-cols-3 divide-x divide-white/[0.07] rounded-2xl border border-white/[0.07] bg-white/[0.02] py-6">
                 {[
-                  [numberFr(stats.guilds), stats.guilds > 1 ? "serveurs" : "serveur"],
-                  [numberFr(stats.members), "membres"],
-                  [numberFr(stats.commands), "commandes"],
+                  [numberFr(stats.guilds), stats.guilds > 1 ? c.stats.servers[1] : c.stats.servers[0]],
+                  [numberFr(stats.members), c.stats.members],
+                  [numberFr(stats.commands), c.stats.commands],
                 ].map(([value, label]) => (
                   <div key={label} className="px-3 text-center">
                     <dt className="sr-only">{label}</dt>
@@ -342,13 +435,15 @@ export default function BotLanding() {
         {/* Fonctionnalités */}
         <section id="fonctionnalites" className="mx-auto w-full max-w-6xl scroll-mt-20 px-5 py-20">
           <Reveal className="max-w-3xl">
-            <Eyebrow>Fonctionnalités</Eyebrow>
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Ce que le bot fait pour vous</h2>
-            <p className="mt-3 text-zinc-400">Des modules indépendants : activez seulement ce dont votre serveur a besoin.</p>
+            <Eyebrow>{c.features.eyebrow}</Eyebrow>
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">{c.features.title}</h2>
+            <p className="mt-3 text-zinc-400">{c.features.subtitle}</p>
           </Reveal>
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
-            {FEATURES.map((f, i) => (
-              <Reveal key={f.title} delay={(i % 3) * 70} className={f.wide ? "lg:col-span-4" : "lg:col-span-2"}>
+            {FEATURE_META.map((f, i) => {
+              const item = c.features.items[i];
+              return (
+              <Reveal key={f.icon} delay={(i % 3) * 70} className={f.wide ? "lg:col-span-4" : "lg:col-span-2"}>
                 <div
                   style={{ ["--tint" as string]: f.tint }}
                   className="group relative h-full overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0c0d13] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[color:color-mix(in_srgb,var(--tint)_45%,transparent)]"
@@ -358,11 +453,12 @@ export default function BotLanding() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={`/bot-icons/${f.icon}.png`} alt="" width={32} height={32} loading="lazy" className="h-8 w-8" />
                   </div>
-                  <h3 className="relative mt-5 text-[16px] font-semibold text-white">{f.title}</h3>
-                  <p className="relative mt-2 text-sm leading-relaxed text-zinc-400">{f.text}</p>
+                  <h3 className="relative mt-5 text-[16px] font-semibold text-white">{item.title}</h3>
+                  <p className="relative mt-2 text-sm leading-relaxed text-zinc-400">{item.text}</p>
                 </div>
               </Reveal>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -370,15 +466,15 @@ export default function BotLanding() {
         <section id="dashboard" className="mx-auto w-full max-w-6xl scroll-mt-20 px-5 py-20">
           <div className="grid items-start gap-12 lg:grid-cols-[1fr_1.1fr]">
             <Reveal>
-              <Eyebrow>Dashboard</Eyebrow>
-              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Un vrai dashboard, pas une liste de commandes</h2>
-              <p className="mt-3 text-zinc-400">Connectez-vous avec Discord et gérez chaque serveur dont vous êtes administrateur. Un réglage enregistré s'applique tout de suite, et ce qui change sur Discord apparaît sans recharger.</p>
+              <Eyebrow>{c.dashboard.eyebrow}</Eyebrow>
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">{c.dashboard.title}</h2>
+              <p className="mt-3 text-zinc-400">{c.dashboard.text}</p>
               <a href={DASHBOARD_URL} className={`${ghostBtn} mt-8`}>
-                Ouvrir le dashboard
+                {c.dashboard.open}
               </a>
             </Reveal>
             <ol className="space-y-4">
-              {STEPS.map((s, i) => (
+              {c.dashboard.steps.map((s, i) => (
                 <Reveal key={s.title} delay={i * 90}>
                   <li className="flex gap-4 rounded-2xl border border-white/[0.07] bg-[#0c0d13] p-5">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500/30 to-sky-500/30 text-sm font-bold text-white ring-1 ring-white/10">{i + 1}</span>
@@ -397,18 +493,19 @@ export default function BotLanding() {
         <section id="commandes" className="mx-auto w-full max-w-6xl scroll-mt-20 px-5 py-20">
           <Reveal className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <Eyebrow>Commandes</Eyebrow>
-              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Toutes les commandes</h2>
+              <Eyebrow>{c.commands.eyebrow}</Eyebrow>
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">{c.commands.title}</h2>
               <p className="mt-3 text-zinc-400">
-                {commands ? `${numberFr(commands.length)} commandes slash, lues directement sur le bot.` : "La liste complète des commandes slash du bot."}
+                {commands ? c.commands.subtitleLive(numberFr(commands.length)) : c.commands.subtitleStatic}
               </p>
+              {commands && c.commands.frenchNote && <p className="mt-1 text-xs text-zinc-600">{c.commands.frenchNote}</p>}
             </div>
             {commands && (
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Rechercher une commande"
-                aria-label="Rechercher une commande"
+                placeholder={c.commands.search}
+                aria-label={c.commands.search}
                 className="h-11 w-full rounded-full border border-white/10 bg-white/[0.03] px-5 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-indigo-400/60 focus:bg-white/[0.05] sm:w-72"
               />
             )}
@@ -416,37 +513,37 @@ export default function BotLanding() {
 
           {commandsFailed && !commands && (
             <p className="mt-10 rounded-2xl border border-dashed border-white/10 p-8 text-center text-sm text-zinc-500">
-              La liste des commandes n'est pas disponible pour le moment. Elle reste consultable avec <span className="font-mono text-zinc-300">/help</span> sur Discord.
+              {c.commands.unavailable[0]}<span className="font-mono text-zinc-300">/help</span>{c.commands.unavailable[1]}
             </p>
           )}
 
           {commands && (
             <>
               <div className="mt-8 flex flex-wrap gap-2">
-                {[["Toutes", commands.length] as [string, number], ...categories].map(([name, count]) => (
+                {[["", commands.length] as [string, number], ...categories].map(([name, count]) => (
                   <button
-                    key={name}
+                    key={name || "all"}
                     type="button"
                     onClick={() => setCategory(name)}
                     className={`cursor-pointer rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${
                       category === name ? "border-indigo-400/50 bg-indigo-400/15 text-white" : "border-white/10 text-zinc-400 hover:border-white/25 hover:text-white"
                     }`}
                   >
-                    {name} <span className={category === name ? "text-indigo-200/70" : "text-zinc-600"}>{count}</span>
+                    {name || c.commands.all} <span className={category === name ? "text-indigo-200/70" : "text-zinc-600"}>{count}</span>
                   </button>
                 ))}
               </div>
               <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {visible.map((c) => (
-                  <div key={c.name} className="rounded-xl border border-white/[0.07] bg-[#0c0d13] p-4 transition-colors hover:border-white/15 hover:bg-[#0f1018]">
+                {visible.map((cmd) => (
+                  <div key={cmd.name} className="rounded-xl border border-white/[0.07] bg-[#0c0d13] p-4 transition-colors hover:border-white/15 hover:bg-[#0f1018]">
                     <div className="flex items-baseline justify-between gap-3">
-                      <span className="font-mono text-sm font-semibold text-white">/{c.name}</span>
-                      <span className="shrink-0 rounded-full bg-white/[0.05] px-2 py-0.5 text-[10px] uppercase tracking-wider text-zinc-500">{c.category}</span>
+                      <span className="font-mono text-sm font-semibold text-white">/{cmd.name}</span>
+                      <span className="shrink-0 rounded-full bg-white/[0.05] px-2 py-0.5 text-[10px] uppercase tracking-wider text-zinc-500">{cmd.category}</span>
                     </div>
-                    <p className="mt-2 text-sm leading-relaxed text-zinc-400">{c.description}</p>
-                    {c.subcommands.length > 0 && (
+                    <p className="mt-2 text-sm leading-relaxed text-zinc-400">{cmd.description}</p>
+                    {cmd.subcommands.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-1.5">
-                        {c.subcommands.map((s) => (
+                        {cmd.subcommands.map((s) => (
                           <span key={s.name} title={s.description} className="rounded-md bg-white/[0.05] px-2 py-0.5 font-mono text-[11px] text-zinc-400">
                             {s.name}
                           </span>
@@ -455,7 +552,7 @@ export default function BotLanding() {
                     )}
                   </div>
                 ))}
-                {visible.length === 0 && <p className="col-span-full py-10 text-center text-sm text-zinc-500">Aucune commande ne correspond à « {query} ».</p>}
+                {visible.length === 0 && <p className="col-span-full py-10 text-center text-sm text-zinc-500">{c.commands.noMatch(query)}</p>}
               </div>
             </>
           )}
@@ -467,15 +564,15 @@ export default function BotLanding() {
             <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0c0d13] px-6 py-16 text-center sm:px-12">
               <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_50%_0%,rgba(99,102,241,0.28),transparent_70%)]" />
               <div className="relative">
-                <h2 className="text-3xl font-bold tracking-tight text-white sm:text-5xl">Prêt à l'essayer ?</h2>
-                <p className="mx-auto mt-4 max-w-md text-zinc-400">L'invitation prend une minute. Vous choisissez ensuite les modules à activer.</p>
+                <h2 className="text-3xl font-bold tracking-tight text-white sm:text-5xl">{c.cta.title}</h2>
+                <p className="mx-auto mt-4 max-w-md text-zinc-400">{c.cta.text}</p>
                 <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
                   <a href={INVITE_URL} target="_blank" rel="noopener noreferrer" className={primaryBtn}>
                     <DiscordGlyph className="h-5 w-5" />
-                    Ajouter à Discord
+                    {c.cta.add}
                   </a>
                   <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" className={ghostBtn}>
-                    Rejoindre le support
+                    {c.cta.support}
                   </a>
                 </div>
               </div>
@@ -489,13 +586,13 @@ export default function BotLanding() {
           <div className="flex items-center gap-2.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/icons/ethone-icon-192.png" alt="" width={22} height={22} className="rounded-md opacity-80" />
-            <p>© {new Date().getFullYear()} ETHONE · projet indépendant</p>
+            <p>© {new Date().getFullYear()} ETHONE · {c.footer.tagline}</p>
           </div>
-          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2" aria-label="Liens du pied de page">
-            <a href={DASHBOARD_URL} className="transition-colors hover:text-white">Dashboard</a>
-            <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white">Support</a>
-            <a href="/terms" className="transition-colors hover:text-white">Conditions</a>
-            <a href="/privacy" className="transition-colors hover:text-white">Confidentialité</a>
+          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2" aria-label={c.nav.footerNav}>
+            <a href={DASHBOARD_URL} className="transition-colors hover:text-white">{c.nav.dashboard}</a>
+            <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white">{c.nav.support}</a>
+            <a href="/terms" className="transition-colors hover:text-white">{c.footer.terms}</a>
+            <a href="/privacy" className="transition-colors hover:text-white">{c.footer.privacy}</a>
           </nav>
         </div>
       </footer>

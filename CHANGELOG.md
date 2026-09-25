@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.72 — 2026-09-25
+
+**Site du bot : sélecteur de langue**
+
+- Sélecteur de langue dans la barre du haut (français, anglais, espagnol, allemand) : toute la page est traduite, y compris l'aperçu, les fonctionnalités, le pied de page, le titre de l'onglet et la langue de la page.
+- La langue choisie est mémorisée ; sans choix, la page suit la langue du navigateur (français par défaut).
+- L'aperçu utilise les vraies variables du bot ({user}, {server}, {membercount}).
+- Les descriptions et catégories des commandes viennent du bot et restent en français ; une note l'indique dans les autres langues.
+- Sur les très petits téléphones (moins de 420 px), le texte « ETHONE » de la barre est masqué pour laisser la place au sélecteur.
+
 ## v1.28.71 — 2026-09-25
 
 **Site du bot : refonte visuelle**

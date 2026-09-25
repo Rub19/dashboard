@@ -34355,6 +34355,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_71_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_71_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_71_de);
 
+const v1_28_72_fr: ChangelogEntry = {
+  version: "v1.28.72",
+  date: "2026-09-25",
+  title: "Site du bot : sélecteur de langue",
+  items: [
+    "Sélecteur de langue dans la barre du haut (français, anglais, espagnol, allemand) : toute la page est traduite, y compris l'aperçu, les fonctionnalités, le pied de page, le titre de l'onglet et la langue de la page.",
+    "La langue choisie est mémorisée ; sans choix, la page suit la langue du navigateur (français par défaut).",
+    "L'aperçu utilise les vraies variables du bot ({user}, {server}, {membercount}).",
+    "Les descriptions et catégories des commandes viennent du bot et restent en français ; une note l'indique dans les autres langues.",
+    "Sur les très petits téléphones (moins de 420 px), le texte « ETHONE » de la barre est masqué pour laisser la place au sélecteur.",
+  ],
+};
+
+const v1_28_72_en: ChangelogEntry = {
+  version: "v1.28.72",
+  date: "2026-09-25",
+  title: "Bot website: language selector",
+  items: [
+    "Language selector in the top bar (French, English, Spanish, German): the whole page is translated, including the preview, features, footer, tab title and page language.",
+    "The chosen language is remembered; without a choice, the page follows the browser language (French by default).",
+    "The preview uses the bot's real variables ({user}, {server}, {membercount}).",
+    "Command descriptions and categories come from the bot and stay in French; a note says so in the other languages.",
+    "On very small phones (under 420 px), the \"ETHONE\" text in the bar is hidden to make room for the selector.",
+  ],
+};
+
+const v1_28_72_es: ChangelogEntry = {
+  version: "v1.28.72",
+  date: "2026-09-25",
+  title: "Web del bot: selector de idioma",
+  items: [
+    "Selector de idioma en la barra superior (francés, inglés, español, alemán): toda la página está traducida, incluida la vista previa, las funciones, el pie de página, el título de la pestaña y el idioma de la página.",
+    "El idioma elegido se recuerda; sin elección, la página sigue el idioma del navegador (francés por defecto).",
+    "La vista previa usa las variables reales del bot ({user}, {server}, {membercount}).",
+    "Las descripciones y categorías de los comandos vienen del bot y siguen en francés; una nota lo indica en los demás idiomas.",
+    "En teléfonos muy pequeños (menos de 420 px), el texto «ETHONE» de la barra se oculta para dejar sitio al selector.",
+  ],
+};
+
+const v1_28_72_de: ChangelogEntry = {
+  version: "v1.28.72",
+  date: "2026-09-25",
+  title: "Bot-Website: Sprachauswahl",
+  items: [
+    "Sprachauswahl in der oberen Leiste (Französisch, Englisch, Spanisch, Deutsch): Die gesamte Seite ist übersetzt, einschließlich Vorschau, Funktionen, Seitenfuß, Tab-Titel und Seitensprache.",
+    "Die gewählte Sprache wird gespeichert; ohne Auswahl folgt die Seite der Browsersprache (standardmäßig Französisch).",
+    "Die Vorschau verwendet die echten Variablen des Bots ({user}, {server}, {membercount}).",
+    "Beschreibungen und Kategorien der Befehle stammen vom Bot und bleiben auf Französisch; ein Hinweis nennt das in den anderen Sprachen.",
+    "Auf sehr kleinen Handys (unter 420 px) wird der Text „ETHONE“ in der Leiste ausgeblendet, um Platz für die Auswahl zu schaffen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_72_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_72_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_72_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_72_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

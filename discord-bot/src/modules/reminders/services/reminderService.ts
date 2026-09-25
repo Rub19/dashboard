@@ -64,14 +64,15 @@ class ReminderService {
   }
 
   private buildEmbed(reminder: Reminder): EmbedBuilder {
-    return baseEmbed('warning', {
-      footerText:
-        reminder.recurrence === 'none'
-          ? `Programmé le ${new Date(reminder.createdAt).toLocaleString('fr-FR')}`
-          : `Rappel ${reminder.recurrence === 'daily' ? 'quotidien' : 'hebdomadaire'}`,
-    })
+    // Horodatage Discord (<t:…>) : affiché dans le fuseau de chaque lecteur (le texte brut d'un pied de page était en UTC).
+    const createdUnix = Math.floor(new Date(reminder.createdAt).getTime() / 1000);
+    const footerText =
+      reminder.recurrence === 'none'
+        ? 'Rappel programmé'
+        : `Rappel ${reminder.recurrence === 'daily' ? 'quotidien' : 'hebdomadaire'}`;
+    return baseEmbed('warning', { footerText })
       .setTitle('⏰ Rappel')
-      .setDescription(reminder.message);
+      .setDescription(reminder.recurrence === 'none' && Number.isFinite(createdUnix) ? `${reminder.message}\n\n-# Programmé <t:${createdUnix}:f>` : reminder.message);
   }
 
   async tick(): Promise<{ delivered: number; pruned: number }> {

@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.107 — 2026-09-26
+
+**Commande /ticket réparée et heure des rappels**
+
+- /ticket : le salon privé était créé mais le message d'accueil était refusé par Discord (texte simple mélangé à une carte moderne), et le bot répondait « Impossible de créer le ticket » en laissant un salon vide. Le message d'accueil est maintenant envoyé correctement, l'erreur est journalisée, et un salon créé par erreur est supprimé.
+- Rappels : l'heure de programmation affichée dans le rappel reçu était en UTC ; elle s'affiche maintenant dans le fuseau horaire de chaque lecteur.
+
 ## v1.28.106 — 2026-09-26
 
 **Plus de contre-mesures automatiques quand la sécurité est désactivée**

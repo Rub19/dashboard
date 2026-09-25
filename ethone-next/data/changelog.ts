@@ -36142,6 +36142,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_106_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_106_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_106_de);
 
+const v1_28_107_fr: ChangelogEntry = {
+  version: "v1.28.107",
+  date: "2026-09-26",
+  title: "Commande /ticket réparée et heure des rappels",
+  items: [
+    "/ticket : le salon privé était créé mais le message d'accueil était refusé par Discord (texte simple mélangé à une carte moderne), et le bot répondait « Impossible de créer le ticket » en laissant un salon vide. Le message d'accueil est maintenant envoyé correctement, l'erreur est journalisée, et un salon créé par erreur est supprimé.",
+    "Rappels : l'heure de programmation affichée dans le rappel reçu était en UTC ; elle s'affiche maintenant dans le fuseau horaire de chaque lecteur.",
+  ],
+};
+
+const v1_28_107_en: ChangelogEntry = {
+  version: "v1.28.107",
+  date: "2026-09-26",
+  title: "/ticket command fixed and reminder time",
+  items: [
+    "/ticket: the private channel was created but Discord rejected the welcome message (plain text mixed with a modern card), and the bot answered \"Unable to create the ticket\" leaving an empty channel. The welcome message is now sent correctly, the error is logged, and a channel created by mistake is deleted.",
+    "Reminders: the scheduling time shown in the received reminder was in UTC; it is now shown in each reader's time zone.",
+  ],
+};
+
+const v1_28_107_es: ChangelogEntry = {
+  version: "v1.28.107",
+  date: "2026-09-26",
+  title: "Comando /ticket reparado y hora de los recordatorios",
+  items: [
+    "/ticket: el canal privado se creaba pero Discord rechazaba el mensaje de bienvenida (texto simple mezclado con una tarjeta moderna), y el bot respondía «No se pudo crear el ticket» dejando un canal vacío. El mensaje de bienvenida se envía ahora correctamente, el error se registra y un canal creado por error se elimina.",
+    "Recordatorios: la hora de programación mostrada en el recordatorio recibido estaba en UTC; ahora se muestra en la zona horaria de cada lector.",
+  ],
+};
+
+const v1_28_107_de: ChangelogEntry = {
+  version: "v1.28.107",
+  date: "2026-09-26",
+  title: "Befehl /ticket repariert und Uhrzeit der Erinnerungen",
+  items: [
+    "/ticket: Der private Kanal wurde erstellt, aber Discord lehnte die Willkommensnachricht ab (einfacher Text mit moderner Karte gemischt), und der Bot antwortete „Ticket konnte nicht erstellt werden“ und ließ einen leeren Kanal zurück. Die Willkommensnachricht wird jetzt korrekt gesendet, der Fehler protokolliert und ein irrtümlich erstellter Kanal gelöscht.",
+    "Erinnerungen: Die in der erhaltenen Erinnerung angezeigte Planungszeit war in UTC; sie wird jetzt in der Zeitzone des jeweiligen Lesers angezeigt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_107_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_107_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_107_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_107_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

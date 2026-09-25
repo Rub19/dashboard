@@ -10,6 +10,7 @@ import {
   SlashCommandBuilder,
 } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
+import { logger } from '../../utils/logger.js';
 import { formatString, getTranslation } from '../../utils/i18n.js';
 import { container, footer, sectionWithThumbnail, separator, text, toneToColor } from '../../utils/components.js';
 
@@ -68,9 +69,10 @@ export const ticketCommand: Command = {
     // 3s de Discord et invalider le token d'interaction ("Unknown interaction" / 10062).
     await ctx.deferReply({ ephemeral: true });
 
+    let ticketChannel: Awaited<ReturnType<typeof ctx.guild.channels.create>> | null = null;
     try {
       // Création du salon privé
-      const ticketChannel = await ctx.guild.channels.create({
+      ticketChannel = await ctx.guild.channels.create({
         name: `ticket-${ctx.author.username.toLowerCase().replace(/[^a-z0-9]/g, '')}`,
         type: ChannelType.GuildText,
         permissionOverwrites: [
@@ -117,7 +119,8 @@ export const ticketCommand: Command = {
         ),
         footer(`${config.botName} · Support`),
       ]);
-      await ticketChannel.send({ content: `${ctx.author}`, components: [welcome], flags: MessageFlags.IsComponentsV2 });
+      // Pas de `content` avec Components V2 (refusé par Discord) : la mention du demandeur est dans la carte, elle le notifie.
+      await ticketChannel.send({ components: [welcome], flags: MessageFlags.IsComponentsV2 });
 
       await ctx.reply({
         components: [
@@ -132,7 +135,10 @@ export const ticketCommand: Command = {
         componentsV2: true,
         ephemeral: true,
       });
-    } catch {
+    } catch (err) {
+      logger.error('[Ticket] Création du ticket impossible :', err);
+      // Ne laisse pas un salon vide derrière soi si l'envoi du message d'accueil a échoué.
+      if (ticketChannel) await ticketChannel.delete('Échec de la création du ticket').catch(() => null);
       await ctx.reply({
         embeds: [ctx.createEmbed('error').setDescription(formatString(t.ticket_create_failed, { emoji: config.emojis.error || '❌' }))],
         ephemeral: true,

@@ -24,6 +24,7 @@ import {
   listSecurityEvents,
   getUserIdByEmail,
   generateMagicLinkToken,
+  deleteDevice,
   listPasskeys,
   getDeviceBySession,
   getTotpRecord,
@@ -285,6 +286,13 @@ export async function otpVerifyRoute({ request, env }) {
   let tokenHash = null;
   try {
     tokenHash = await generateMagicLinkToken(env, email);
+    // La vraie session Supabase aura son propre appareil (créé à sa première requête, avec son session_id réel) : la ligne
+    // préparée plus haut pour la session fabriquée d'avance ne servirait à rien et resterait « fantôme » dans la liste.
+    try {
+      await deleteDevice(env, userId, device.id);
+    } catch (cleanupErr) {
+      console.warn("[otp.verify] ghost device cleanup failed", { message: cleanupErr instanceof Error ? cleanupErr.message : String(cleanupErr) });
+    }
   } catch (err) {
     console.error("[otp.verify] magic link token not generated, falling back to legacy token", {
       message: err instanceof Error ? err.message : String(err)

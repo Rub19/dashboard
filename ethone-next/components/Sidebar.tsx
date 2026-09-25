@@ -9,6 +9,7 @@ import {
   Settings,
   PanelLeftClose,
   Loader2,
+  EyeOff,
   AlertCircle,
   WifiOff,
   Image as ImageIcon,
@@ -367,8 +368,11 @@ const SidebarNavList = memo(function SidebarNavList({
   onPrefetch: (href: string) => void;
 }) {
   const i18n = useI18n();
-  const { settings } = useSettings();
+  const { settings, update } = useSettings();
   const { collapsed } = useAnimatedSidebarPanel();
+  // « Accueil » et « Paramètres » restent toujours visibles (de là on peut tout réafficher) ; « Admin » dépend du compte.
+  const canHide = (id: string) => id !== "home" && id !== "settings" && id !== "admin";
+  const hideApp = (id: string) => update({ sidebarItems: settings.sidebarItems.filter((item) => item !== id) });
   // The icon rail (collapsed state) has nothing else to show per row, so the
   // "hide icons" preference only applies while the sidebar is expanded.
   const showIcons = settings.sidebarIcons || collapsed;
@@ -378,7 +382,7 @@ const SidebarNavList = memo(function SidebarNavList({
       {visibleApps.map((app) => {
         const IconComponent = app.icon;
         return (
-          <AnimatedSidebarMenuItem key={app.id} onMouseEnter={() => onPrefetch(app.href)}>
+          <AnimatedSidebarMenuItem key={app.id} className="group/item" onMouseEnter={() => onPrefetch(app.href)}>
             <AnimatedSidebarMenuButton
               isActive={isActive(app)}
               icon={
@@ -397,6 +401,21 @@ const SidebarNavList = memo(function SidebarNavList({
             >
               {i18n(app.id, app.id === "admin" ? "Admin" : app.id)}
             </AnimatedSidebarMenuButton>
+            {/* Au survol d'une ligne : icône à droite pour la masquer (réaffichable dans Réglages > Barre latérale) */}
+            {!collapsed && canHide(app.id) && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  hideApp(app.id);
+                }}
+                aria-label={`${i18n("hideFromSidebar", "Masquer de la barre latérale")} : ${i18n(app.id, app.id)}`}
+                title={i18n("hideFromSidebar", "Masquer de la barre latérale")}
+                className="absolute right-2 top-1/2 z-20 grid h-6 w-6 -translate-y-1/2 cursor-pointer place-items-center rounded-md text-[var(--text-muted)] opacity-0 transition-opacity duration-150 hover:bg-[var(--text-primary)]/[0.1] hover:text-[var(--text-primary)] focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] group-hover/item:opacity-100"
+              >
+                <EyeOff className="h-3.5 w-3.5" />
+              </button>
+            )}
           </AnimatedSidebarMenuItem>
         );
       })}

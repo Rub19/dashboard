@@ -34947,6 +34947,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_83_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_83_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_83_de);
 
+const v1_28_84_fr: ChangelogEntry = {
+  version: "v1.28.84",
+  date: "2026-09-25",
+  title: "Barre latérale : icône « masquer » au survol",
+  items: [
+    "Au survol d'une ligne de la barre latérale, une petite icône (œil barré) apparaît à droite pour masquer l'élément d'un clic (ex. Flows, Spaces). Accueil, Paramètres et Admin ne peuvent pas être masqués ; tout se réaffiche dans Réglages. L'icône est aussi accessible au clavier et n'apparaît pas quand la barre est repliée.",
+  ],
+};
+
+const v1_28_84_en: ChangelogEntry = {
+  version: "v1.28.84",
+  date: "2026-09-25",
+  title: "Sidebar: \"hide\" icon on hover",
+  items: [
+    "Hovering a sidebar row shows a small icon (crossed-out eye) on the right to hide the item in one click (e.g. Flows, Spaces). Home, Settings and Admin cannot be hidden; everything can be shown again in Settings. The icon is also keyboard-accessible and does not appear when the bar is collapsed.",
+  ],
+};
+
+const v1_28_84_es: ChangelogEntry = {
+  version: "v1.28.84",
+  date: "2026-09-25",
+  title: "Barra lateral: icono «ocultar» al pasar el ratón",
+  items: [
+    "Al pasar el ratón por una fila de la barra lateral aparece a la derecha un pequeño icono (ojo tachado) para ocultar el elemento con un clic (p. ej. Flows, Spaces). Inicio, Ajustes y Admin no se pueden ocultar; todo se vuelve a mostrar en Ajustes. El icono también es accesible con el teclado y no aparece con la barra replegada.",
+  ],
+};
+
+const v1_28_84_de: ChangelogEntry = {
+  version: "v1.28.84",
+  date: "2026-09-25",
+  title: "Seitenleiste: Ausblenden-Symbol beim Überfahren",
+  items: [
+    "Fährt man über eine Zeile der Seitenleiste, erscheint rechts ein kleines Symbol (durchgestrichenes Auge), um den Eintrag mit einem Klick auszublenden (z. B. Flows, Spaces). Start, Einstellungen und Admin lassen sich nicht ausblenden; alles kann in den Einstellungen wieder eingeblendet werden. Das Symbol ist auch per Tastatur erreichbar und erscheint nicht bei eingeklappter Leiste.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_84_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_84_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_84_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_84_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

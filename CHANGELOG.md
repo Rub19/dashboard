@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.84 — 2026-09-25
+
+**Barre latérale : icône « masquer » au survol**
+
+- Au survol d'une ligne de la barre latérale, une petite icône (œil barré) apparaît à droite pour masquer l'élément d'un clic (ex. Flows, Spaces). Accueil, Paramètres et Admin ne peuvent pas être masqués ; tout se réaffiche dans Réglages. L'icône est aussi accessible au clavier et n'apparaît pas quand la barre est repliée.
+
 ## v1.28.83 — 2026-09-25
 
 **Connexion par code (et passkey) : jeton de session correctement généré**

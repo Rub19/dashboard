@@ -34465,6 +34465,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_73_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_73_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_73_de);
 
+const v1_28_74_fr: ChangelogEntry = {
+  version: "v1.28.74",
+  date: "2026-09-25",
+  title: "Giveaways de longue durée",
+  items: [
+    "Un giveaway de plus de 24 jours était tiré immédiatement (limite des timers de Node) : le timer est maintenant plafonné et reprogrammé jusqu'à la vraie date de fin.",
+    "Nouveau test automatisé (giveaway à 40 jours et giveaway déjà expiré), exécuté dans un dossier temporaire.",
+  ],
+};
+
+const v1_28_74_en: ChangelogEntry = {
+  version: "v1.28.74",
+  date: "2026-09-25",
+  title: "Long-running giveaways",
+  items: [
+    "A giveaway longer than 24 days was drawn immediately (Node timer limit): the timer is now capped and rescheduled until the real end date.",
+    "New automated test (40-day giveaway and already-expired giveaway), run in a temporary folder.",
+  ],
+};
+
+const v1_28_74_es: ChangelogEntry = {
+  version: "v1.28.74",
+  date: "2026-09-25",
+  title: "Sorteos de larga duración",
+  items: [
+    "Un sorteo de más de 24 días se sorteaba de inmediato (límite de los temporizadores de Node): ahora el temporizador se limita y se reprograma hasta la fecha de fin real.",
+    "Nueva prueba automática (sorteo a 40 días y sorteo ya vencido), ejecutada en una carpeta temporal.",
+  ],
+};
+
+const v1_28_74_de: ChangelogEntry = {
+  version: "v1.28.74",
+  date: "2026-09-25",
+  title: "Langlaufende Gewinnspiele",
+  items: [
+    "Ein Gewinnspiel mit mehr als 24 Tagen Laufzeit wurde sofort ausgelost (Timer-Limit von Node): Der Timer wird jetzt begrenzt und bis zum echten Enddatum neu geplant.",
+    "Neuer automatischer Test (40-Tage-Gewinnspiel und bereits abgelaufenes Gewinnspiel), in einem temporären Ordner ausgeführt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_74_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_74_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_74_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_74_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

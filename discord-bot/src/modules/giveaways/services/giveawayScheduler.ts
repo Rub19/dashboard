@@ -4,6 +4,9 @@ import { giveawayStorage } from '../storage/giveawayStorage.js';
 import { giveawayService } from './giveawayService.js';
 import { logger } from '../../../utils/logger.js';
 
+/** Plus grand délai accepté par setTimeout (~24,8 jours) : au-delà, Node le ramène à 1 ms et le timer part tout de suite. */
+const MAX_TIMER_MS = 2_147_483_647;
+
 class GiveawayScheduler {
   private timers = new Map<string, NodeJS.Timeout>();
 
@@ -42,13 +45,20 @@ class GiveawayScheduler {
 
     const timer = setTimeout(async () => {
       this.timers.delete(giveaway.id);
+      // Giveaway plus long que le délai maximal d'un timer : on n'a attendu qu'une partie, on reprogramme le reste
+      // (sans ça, un tirage à 30 jours se déclenchait aussitôt).
+      const fresh = giveawayStorage.getById(giveaway.id);
+      if (fresh && fresh.status === 'active' && new Date(fresh.endsAt).getTime() - Date.now() > 1000) {
+        this.schedule(fresh, client);
+        return;
+      }
       logger.info(`Fin du giveaway "${giveaway.prize}" (${giveaway.id}), tirage en cours...`);
       try {
         await giveawayService.drawWinners(giveaway.id, client);
       } catch (err) {
         logger.error(`Erreur lors du tirage du giveaway ${giveaway.id} :`, err);
       }
-    }, delay);
+    }, Math.min(delay, MAX_TIMER_MS));
 
     // .unref() pour ne jamais bloquer l'extinction du processus Node
     timer.unref();

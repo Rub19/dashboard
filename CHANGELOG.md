@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.74 — 2026-09-25
+
+**Giveaways de longue durée**
+
+- Un giveaway de plus de 24 jours était tiré immédiatement (limite des timers de Node) : le timer est maintenant plafonné et reprogrammé jusqu'à la vraie date de fin.
+- Nouveau test automatisé (giveaway à 40 jours et giveaway déjà expiré), exécuté dans un dossier temporaire.
+
 ## v1.28.73 — 2026-09-25
 
 **Économie : failles de solde corrigées**

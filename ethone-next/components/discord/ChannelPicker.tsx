@@ -34,7 +34,7 @@ const globalChannelLoading = new Map<string, Promise<ChannelOption[]>>();
 /**
  * Charge les salons d'un serveur depuis l'API bot avec mise en cache mémoire
  */
-async function fetchGuildChannels(guildId: string): Promise<ChannelOption[]> {
+export async function fetchGuildChannels(guildId: string): Promise<ChannelOption[]> {
   if (globalChannelCache.has(guildId)) {
     return globalChannelCache.get(guildId)!;
   }

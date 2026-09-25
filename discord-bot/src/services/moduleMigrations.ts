@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import type { Client } from 'discord.js';
 import { setModuleEnabled } from './moduleRegistry.js';
+import { autoModRepository } from '../modules/automod/storage/autoModRepository.js';
 import { logger } from '../utils/logger.js';
 
 /**
@@ -13,11 +14,15 @@ interface ModuleMigration {
   id: string;
   /** Modules à désactiver sur tous les serveurs existants. */
   disable: string[];
+  /** Traitement supplémentaire (exécuté une seule fois) ; renvoie le nombre d'éléments touchés. */
+  run?: () => number;
 }
 
 const MIGRATIONS: ModuleMigration[] = [
   // Demande du propriétaire : le système d'XP / niveaux est désactivé partout (message « Progression de niveau » compris).
   { id: '2026-09-25-disable-leveling-everywhere', disable: ['leveling'] },
+  // Demande du propriétaire : AutoMod entièrement désactivé (détecteurs et sanctions automatiques compris), à réactiver au choix.
+  { id: '2026-09-25-automod-everything-off', disable: [], run: () => autoModRepository.turnEverythingOff() },
 ];
 
 const FILE = path.resolve(process.cwd(), 'data', 'module_migrations.json');
@@ -55,6 +60,7 @@ export function runModuleMigrations(client: Pick<Client, 'guilds'>): string[] {
         if (setModuleEnabled(guild.id, moduleId, false, 'DISCORD_COMMAND')) touched++;
       }
     }
+    if (migration.run) touched += migration.run();
     applied.push(migration.id);
     done.push(migration.id);
     logger.success(`[Migrations] « ${migration.id} » appliquée (${touched} interrupteur(s) sur ${client.guilds.cache.size} serveur(s)).`);

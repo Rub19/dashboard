@@ -138,6 +138,34 @@ class AutoModRepository {
     return conf;
   }
 
+  /**
+   * Migration « tout désactivé » : coupe l'interrupteur général et tous les détecteurs de chaque serveur, et efface l'échelle
+   * de sanctions livrée par défaut autrefois (une échelle modifiée par le serveur est conservée). Renvoie le nombre de serveurs touchés.
+   */
+  public turnEverythingOff(): number {
+    const OLD_DEFAULT_STEPS = [
+      [1, 'WARN', 0],
+      [2, 'TIMEOUT', 300],
+      [3, 'TIMEOUT', 3600],
+      [4, 'KICK', 0],
+      [5, 'BAN', 0],
+    ];
+    const DETECTORS = ['spam', 'flood', 'links', 'invites', 'mentions', 'ghostPing', 'caps', 'keywords', 'regex', 'profiles'] as const;
+    let touched = 0;
+    for (const [guildId, conf] of this.configs) {
+      const next: Record<string, unknown> = { ...conf, enabled: false };
+      for (const key of DETECTORS) next[key] = { ...(conf as Record<string, any>)[key], enabled: false };
+      const isOldDefault =
+        conf.strikes.progressiveSteps.length === OLD_DEFAULT_STEPS.length &&
+        conf.strikes.progressiveSteps.every((st, i) => st.strikeCount === OLD_DEFAULT_STEPS[i][0] && st.action === OLD_DEFAULT_STEPS[i][1] && st.durationSeconds === OLD_DEFAULT_STEPS[i][2]);
+      next.strikes = { ...conf.strikes, enabled: false, progressiveSteps: isOldDefault ? [] : conf.strikes.progressiveSteps };
+      this.configs.set(guildId, AutoModConfigSchema.parse(next));
+      touched++;
+    }
+    if (touched > 0) this.saveConfigs();
+    return touched;
+  }
+
   public updateConfig(guildId: string, partial: Partial<AutoModConfig>): AutoModConfig {
     const current = this.getConfig(guildId);
     const updated = AutoModConfigSchema.parse({

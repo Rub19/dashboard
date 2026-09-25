@@ -35387,6 +35387,67 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_91_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_91_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_91_de);
 
+const v1_28_92_fr: ChangelogEntry = {
+  version: "v1.28.92",
+  date: "2026-09-25",
+  title: "AutoMod : détection des infractions façon DraftBot, tout désactivé par défaut",
+  items: [
+    "Nouvel onglet « Infractions » : neuf détections en cartes (vocabulaire interdit, invitations Discord, liens externes, majuscules, émojis, mentions excessives, mentions interdites, spam, mise en forme interdite), chacune avec un interrupteur et une fenêtre de réglages.",
+    "Chaque détection a ses actions (supprimer, avertir, compter comme infraction), ses rôles et salons ignorés et un mode silencieux où le bot ne répond pas publiquement.",
+    "Trois nouvelles détections : émojis excessifs, mentions interdites (membres ou rôles précis) et mise en forme interdite (titres, gras, spoilers, blocs de code… avec renvoi du message sans mise en forme).",
+    "Sanctions automatiques : « à partir de N infractions, avertir / exclure / expulser / bannir » ; aucune par défaut, durée de vie des infractions réglable.",
+    "Tout est désactivé par défaut (interrupteur général, détecteurs, sanctions) et, une seule fois au démarrage du bot, coupé sur les serveurs existants ; une échelle de sanctions personnalisée est conservée.",
+    "Correctif : le module Rôles sécurisés ne fait plus échouer la liste des modules d'un serveur dont l'identifiant est inattendu.",
+  ],
+};
+
+const v1_28_92_en: ChangelogEntry = {
+  version: "v1.28.92",
+  date: "2026-09-25",
+  title: "AutoMod: DraftBot-style infraction detection, everything off by default",
+  items: [
+    "New \"Infractions\" tab: nine detections as cards (forbidden vocabulary, Discord invites, external links, caps, emojis, excessive mentions, forbidden pings, spam, forbidden markdown), each with a switch and a settings window.",
+    "Every detection has its actions (delete, warn, count as infraction), ignored roles and channels, and a silent mode where the bot does not answer publicly.",
+    "Three new detections: excessive emojis, forbidden pings (specific members or roles) and forbidden markdown (headers, bold, spoilers, code blocks… with the message resent without formatting).",
+    "Automatic sanctions: \"from N infractions, warn / timeout / kick / ban\"; none by default, infraction lifetime is adjustable.",
+    "Everything is off by default (master switch, detectors, sanctions) and, once at bot startup, switched off on existing servers; a customised sanction ladder is kept.",
+    "Fix: the Secure Roles module no longer breaks the module list of a server with an unexpected ID.",
+  ],
+};
+
+const v1_28_92_es: ChangelogEntry = {
+  version: "v1.28.92",
+  date: "2026-09-25",
+  title: "AutoMod: detección de infracciones estilo DraftBot, todo desactivado por defecto",
+  items: [
+    "Nueva pestaña «Infracciones»: nueve detecciones en tarjetas (vocabulario prohibido, invitaciones de Discord, enlaces externos, mayúsculas, emojis, menciones excesivas, menciones prohibidas, spam, formato prohibido), cada una con un interruptor y una ventana de ajustes.",
+    "Cada detección tiene sus acciones (eliminar, avisar, contar como infracción), roles y canales ignorados y un modo silencioso en el que el bot no responde públicamente.",
+    "Tres nuevas detecciones: emojis excesivos, menciones prohibidas (miembros o roles concretos) y formato prohibido (títulos, negrita, spoilers, bloques de código… reenviando el mensaje sin formato).",
+    "Sanciones automáticas: «a partir de N infracciones, avisar / aislar / expulsar / banear»; ninguna por defecto, duración de las infracciones ajustable.",
+    "Todo está desactivado por defecto (interruptor general, detectores, sanciones) y, una sola vez al iniciar el bot, se apaga en los servidores existentes; una escala de sanciones personalizada se conserva.",
+    "Corrección: el módulo Roles protegidos ya no rompe la lista de módulos de un servidor con un identificador inesperado.",
+  ],
+};
+
+const v1_28_92_de: ChangelogEntry = {
+  version: "v1.28.92",
+  date: "2026-09-25",
+  title: "AutoMod: Verstoßerkennung im DraftBot-Stil, standardmäßig alles aus",
+  items: [
+    "Neuer Tab „Verstöße“: neun Erkennungen als Karten (verbotenes Vokabular, Discord-Einladungen, externe Links, Großbuchstaben, Emojis, übermäßige Erwähnungen, verbotene Erwähnungen, Spam, verbotene Formatierung), jeweils mit Schalter und Einstellungsfenster.",
+    "Jede Erkennung hat ihre Aktionen (löschen, warnen, als Verstoß zählen), ignorierte Rollen und Kanäle und einen stillen Modus, in dem der Bot nicht öffentlich antwortet.",
+    "Drei neue Erkennungen: übermäßige Emojis, verbotene Erwähnungen (bestimmte Mitglieder oder Rollen) und verbotene Formatierung (Überschriften, Fett, Spoiler, Codeblöcke … mit erneutem Senden ohne Formatierung).",
+    "Automatische Sanktionen: „ab N Verstößen warnen / Timeout / kicken / bannen“; standardmäßig keine, Lebensdauer der Verstöße einstellbar.",
+    "Alles ist standardmäßig aus (Hauptschalter, Erkennungen, Sanktionen) und wird einmalig beim Bot-Start auf bestehenden Servern ausgeschaltet; eine angepasste Sanktionsleiter bleibt erhalten.",
+    "Korrektur: Das Modul Gesicherte Rollen bricht die Modulliste eines Servers mit unerwarteter ID nicht mehr.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_92_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_92_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_92_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_92_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

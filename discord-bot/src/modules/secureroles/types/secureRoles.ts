@@ -22,7 +22,7 @@ export const SecuredRoleSchema = z.object({
 export type SecuredRole = z.infer<typeof SecuredRoleSchema>;
 
 export const SecureRolesConfigSchema = z.object({
-  guildId: snowflake,
+  guildId: z.string().min(1),
   enabled: z.boolean().default(false),
   sessionMinutes: z.number().int().min(5).max(240).default(30),
   roles: z.array(SecuredRoleSchema).max(25).default([]),

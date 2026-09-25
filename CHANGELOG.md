@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.92 — 2026-09-25
+
+**AutoMod : détection des infractions façon DraftBot, tout désactivé par défaut**
+
+- Nouvel onglet « Infractions » : neuf détections en cartes (vocabulaire interdit, invitations Discord, liens externes, majuscules, émojis, mentions excessives, mentions interdites, spam, mise en forme interdite), chacune avec un interrupteur et une fenêtre de réglages.
+- Chaque détection a ses actions (supprimer, avertir, compter comme infraction), ses rôles et salons ignorés et un mode silencieux où le bot ne répond pas publiquement.
+- Trois nouvelles détections : émojis excessifs, mentions interdites (membres ou rôles précis) et mise en forme interdite (titres, gras, spoilers, blocs de code… avec renvoi du message sans mise en forme).
+- Sanctions automatiques : « à partir de N infractions, avertir / exclure / expulser / bannir » ; aucune par défaut, durée de vie des infractions réglable.
+- Tout est désactivé par défaut (interrupteur général, détecteurs, sanctions) et, une seule fois au démarrage du bot, coupé sur les serveurs existants ; une échelle de sanctions personnalisée est conservée.
+- Correctif : le module Rôles sécurisés ne fait plus échouer la liste des modules d'un serveur dont l'identifiant est inattendu.
+
 ## v1.28.91 — 2026-09-25
 
 **Nouveau module : Rôles sécurisés (protection des comptes du personnel)**

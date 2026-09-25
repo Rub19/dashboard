@@ -16,6 +16,8 @@ export interface ActionExecutionContext {
   config: AutoModConfig;
   customTimeoutSeconds?: number;
   addStrikesCount?: number;
+  /** Mode silencieux : aucun message public dans le salon (le MP d'avertissement reste envoyé). */
+  silent?: boolean;
 }
 
 export class ActionEngine {
@@ -23,7 +25,7 @@ export class ActionEngine {
     executed: AutoModAction[];
     newStrikesCount: number;
   }> {
-    const { message, member, actions, reason, config: modConfig, customTimeoutSeconds, addStrikesCount } = context;
+    const { message, member, actions, reason, config: modConfig, customTimeoutSeconds, addStrikesCount, silent } = context;
     const guild = message.guild!;
     const executed: AutoModAction[] = [];
 
@@ -72,7 +74,7 @@ export class ActionEngine {
 
         // Tenter en MP, sinon message éphémère dans le salon
         await member.send({ embeds: [warnEmbed] }).catch(async () => {
-          if (message.channel && 'send' in message.channel) {
+          if (!silent && message.channel && 'send' in message.channel) {
             const temp = await (message.channel as TextChannel).send({
               content: `<@${member.id}>`,
               embeds: [warnEmbed],

@@ -11,6 +11,9 @@ import { GhostPingDetector } from '../detectors/ghostPingDetector.js';
 import { CapsDetector } from '../detectors/capsDetector.js';
 import { KeywordDetector } from '../detectors/keywordDetector.js';
 import { RegexDetector } from '../detectors/regexDetector.js';
+import { EmojiDetector } from '../detectors/emojiDetector.js';
+import { PingDetector } from '../detectors/pingDetector.js';
+import { MarkdownDetector, stripMarkdown } from '../detectors/markdownDetector.js';
 import { ProfileDetector } from '../detectors/profileDetector.js';
 import { AutoModRiskEngine } from './autoModRiskEngine.js';
 import { RuleEngine } from './ruleEngine.js';
@@ -57,14 +60,23 @@ class AutoModService {
     const isRaidMode = raidModeService.isRaidModeActive(guildId);
 
     // 1.4 Exécution du pipeline de détection
+    // Rôles / salons ignorés par détecteur (et salons parents des fils) ; mode silencieux repris dans le résultat.
+    const channelIds = [message.channelId, (message.channel as { parentId?: string | null }).parentId].filter(Boolean) as string[];
+    const gate = (r: DetectionResult, c: { ignoredRoleIds?: string[]; ignoredChannelIds?: string[]; silent?: boolean }): DetectionResult => {
+      const ignored = (c.ignoredChannelIds ?? []).some((id) => channelIds.includes(id)) || (c.ignoredRoleIds ?? []).some((id) => message.member!.roles.cache.has(id));
+      return ignored ? { ...r, triggered: false, actions: [] } : { ...r, silent: c.silent === true };
+    };
     const detectionResults: DetectionResult[] = [
-      SpamDetector.check(message, config, isRaidMode),
+      gate(SpamDetector.check(message, config, isRaidMode), config.spam),
       FloodDetector.check(message, config),
-      LinkDetector.check(message, config),
-      InviteDetector.check(message, config),
-      MentionDetector.check(message, config),
-      CapsDetector.check(message, config),
-      KeywordDetector.check(message, config),
+      gate(LinkDetector.check(message, config), config.links),
+      gate(InviteDetector.check(message, config), config.invites),
+      gate(MentionDetector.check(message, config), config.mentions),
+      gate(CapsDetector.check(message, config), config.caps),
+      gate(KeywordDetector.check(message, config), config.keywords),
+      gate(EmojiDetector.check(message, config), config.emojis),
+      gate(PingDetector.check(message, config), config.pings),
+      gate(MarkdownDetector.check(message, config), config.markdown),
       RegexDetector.check(message, config),
     ];
 
@@ -133,7 +145,16 @@ class AutoModService {
       reason: primaryReason,
       config,
       addStrikesCount,
+      silent: matchedCustomRules.length === 0 && triggeredDetectors.every((d) => d.silent),
     });
+
+    // Mise en forme interdite : le message est renvoyé sans elle (le membre garde son texte).
+    if (executed.includes('DELETE') && config.markdown.removeMarkdown && triggeredDetectors.some((d) => d.detectorName === 'MarkdownDetector') && content && 'send' in message.channel) {
+      const cleaned = stripMarkdown(content, config.markdown.types).trim();
+      if (cleaned) {
+        await message.channel.send({ content: `**${message.member.displayName}** : ${cleaned}`.slice(0, 2000), allowedMentions: { parse: [] } }).catch(() => null);
+      }
+    }
 
     // 1.10 Enregistrement de l'incident
     AutoModIncidentService.addIncident({

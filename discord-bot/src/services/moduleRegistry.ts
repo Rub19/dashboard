@@ -292,10 +292,19 @@ function persistSwitches(): void {
   }
 }
 
+/** Module verrouillé « actif » (ex. rôles sécurisés en place). Une erreur de lecture ne verrouille rien. */
+function isPinned(def: ModuleDef, guildId: string): boolean {
+  try {
+    return def.own?.pinned?.(guildId) === true;
+  } catch {
+    return false;
+  }
+}
+
 export function isModuleEnabled(guildId: string, moduleId: string): boolean {
   const def = BY_ID.get(moduleId);
   if (!def) return true;
-  if (def.own?.pinned?.(guildId)) return true;
+  if (isPinned(def, guildId)) return true;
   if (disabled[guildId]?.includes(moduleId)) return false;
   if (def.own) {
     try {
@@ -311,7 +320,7 @@ export function isModuleEnabled(guildId: string, moduleId: string): boolean {
 export function setModuleEnabled(guildId: string, moduleId: string, enabled: boolean, source: 'DASHBOARD' | 'DISCORD_COMMAND' = 'DASHBOARD', userId?: string, emit = true): boolean {
   const def = BY_ID.get(moduleId);
   if (!def) return false;
-  if (!enabled && def.own?.pinned?.(guildId)) return true;
+  if (!enabled && isPinned(def, guildId)) return true;
 
   const list = new Set(disabled[guildId] ?? []);
   if (enabled) list.delete(moduleId);

@@ -70,8 +70,17 @@ export const CustomRuleSchema = z.object({
 export type CustomRule = z.infer<typeof CustomRuleSchema>;
 
 // Configurations des Détecteurs Spécifiques
+/** Réglages communs aux détecteurs « infractions » : rôles et salons ignorés, mode silencieux (le bot ne répond pas au message fautif). */
+const detectorCommon = {
+  ignoredRoleIds: z.array(z.string()).default([]),
+  ignoredChannelIds: z.array(z.string()).default([]),
+  silent: z.boolean().default(false),
+};
+const DEFAULT_INFRACTION_ACTIONS = ['DELETE', 'WARN', 'STRIKE'] as const;
+
 export const SpamDetectorConfigSchema = z.object({
-  enabled: z.boolean().default(true),
+  enabled: z.boolean().default(false),
+  ...detectorCommon,
   maxMessages: z.number().min(3).max(30).default(5),
   timeWindowSeconds: z.number().min(2).max(60).default(5),
   similarityThreshold: z.number().min(0.5).max(1.0).default(0.85),
@@ -79,7 +88,7 @@ export const SpamDetectorConfigSchema = z.object({
 });
 
 export const FloodDetectorConfigSchema = z.object({
-  enabled: z.boolean().default(true),
+  enabled: z.boolean().default(false),
   maxCharacterRepeats: z.number().min(3).max(50).default(8),
   maxWordRepeats: z.number().min(2).max(20).default(5),
   maxMessageLength: z.number().min(100).max(4000).default(1500),
@@ -87,17 +96,19 @@ export const FloodDetectorConfigSchema = z.object({
 });
 
 export const LinkDetectorConfigSchema = z.object({
-  enabled: z.boolean().default(true),
+  enabled: z.boolean().default(false),
+  ...detectorCommon,
   blockAllLinks: z.boolean().default(false),
   blockShortenedLinks: z.boolean().default(true),
   blockIpAddresses: z.boolean().default(true),
   whitelistedDomains: z.array(z.string()).default(['youtube.com', 'youtu.be', 'twitter.com', 'x.com', 'github.com', 'spotify.com']),
   blacklistedDomains: z.array(z.string()).default([]),
-  actions: z.array(AutoModActionSchema).default(['DELETE', 'WARN']),
+  actions: z.array(AutoModActionSchema).default(['DELETE', 'WARN', 'STRIKE']),
 });
 
 export const InviteDetectorConfigSchema = z.object({
-  enabled: z.boolean().default(true),
+  enabled: z.boolean().default(false),
+  ...detectorCommon,
   blockAllInvites: z.boolean().default(false),
   allowedGuildIds: z.array(z.string()).default([]),
   allowedChannelIds: z.array(z.string()).default([]),
@@ -106,33 +117,64 @@ export const InviteDetectorConfigSchema = z.object({
 });
 
 export const MentionDetectorConfigSchema = z.object({
-  enabled: z.boolean().default(true),
+  enabled: z.boolean().default(false),
+  ...detectorCommon,
   maxUserMentions: z.number().min(2).max(50).default(5),
   maxRoleMentions: z.number().min(1).max(20).default(3),
   maxTotalMentions: z.number().min(2).max(50).default(6),
   blockEveryoneHere: z.boolean().default(true),
-  actions: z.array(AutoModActionSchema).default(['DELETE', 'TIMEOUT', 'ALERT_STAFF']),
+  actions: z.array(AutoModActionSchema).default(['DELETE', 'WARN', 'STRIKE']),
 });
 
 export const GhostPingDetectorConfigSchema = z.object({
-  enabled: z.boolean().default(true),
+  enabled: z.boolean().default(false),
   timeWindowSeconds: z.number().min(3).max(60).default(15),
   actions: z.array(AutoModActionSchema).default(['LOG', 'WARN']),
 });
 
 export const CapsDetectorConfigSchema = z.object({
-  enabled: z.boolean().default(true),
+  enabled: z.boolean().default(false),
+  ...detectorCommon,
   minMessageLength: z.number().min(5).max(50).default(10),
   maxCapsPercentage: z.number().min(40).max(100).default(70),
-  actions: z.array(AutoModActionSchema).default(['DELETE', 'WARN']),
+  actions: z.array(AutoModActionSchema).default(['DELETE', 'WARN', 'STRIKE']),
 });
 
 export const KeywordDetectorConfigSchema = z.object({
-  enabled: z.boolean().default(true),
+  enabled: z.boolean().default(false),
+  ...detectorCommon,
   blacklist: z.array(z.string()).default([]),
   whitelist: z.array(z.string()).default([]),
   wildcardsEnabled: z.boolean().default(true),
   actions: z.array(AutoModActionSchema).default(['DELETE', 'WARN', 'STRIKE']),
+});
+
+export const EmojiDetectorConfigSchema = z.object({
+  enabled: z.boolean().default(false),
+  ...detectorCommon,
+  maxEmojis: z.number().int().min(2).max(100).default(10),
+  actions: z.array(AutoModActionSchema).default([...DEFAULT_INFRACTION_ACTIONS]),
+});
+
+export const PingDetectorConfigSchema = z.object({
+  enabled: z.boolean().default(false),
+  ...detectorCommon,
+  /** Membres et rôles que personne ne doit mentionner. */
+  userIds: z.array(z.string().regex(/^\d{5,25}$/)).max(50).default([]),
+  roleIds: z.array(z.string().regex(/^\d{5,25}$/)).max(50).default([]),
+  actions: z.array(AutoModActionSchema).default([...DEFAULT_INFRACTION_ACTIONS]),
+});
+
+export const MARKDOWN_TYPES = ['header', 'bold', 'italic', 'underline', 'strikethrough', 'spoiler', 'inlineCode', 'codeBlock', 'quote', 'list', 'maskedLink', 'subtext'] as const;
+export type MarkdownType = (typeof MARKDOWN_TYPES)[number];
+
+export const MarkdownDetectorConfigSchema = z.object({
+  enabled: z.boolean().default(false),
+  ...detectorCommon,
+  types: z.array(z.enum(MARKDOWN_TYPES)).default([]),
+  /** Renvoie le message sans mise en forme après l'avoir supprimé. */
+  removeMarkdown: z.boolean().default(true),
+  actions: z.array(AutoModActionSchema).default(['DELETE']),
 });
 
 export const RegexRuleSchema = z.object({
@@ -145,13 +187,13 @@ export const RegexRuleSchema = z.object({
 });
 
 export const RegexDetectorConfigSchema = z.object({
-  enabled: z.boolean().default(true),
+  enabled: z.boolean().default(false),
   maxExecutionTimeMs: z.number().default(20),
   rules: z.array(RegexRuleSchema).default([]),
 });
 
 export const ProfileDetectorConfigSchema = z.object({
-  enabled: z.boolean().default(true),
+  enabled: z.boolean().default(false),
   scanUsername: z.boolean().default(true),
   scanNickname: z.boolean().default(true),
   blockedWords: z.array(z.string()).default([]),
@@ -168,20 +210,14 @@ export const ProgressiveSanctionStepSchema = z.object({
 export type ProgressiveSanctionStep = z.infer<typeof ProgressiveSanctionStepSchema>;
 
 export const StrikeConfigSchema = z.object({
-  enabled: z.boolean().default(true),
+  enabled: z.boolean().default(false),
   expirationDays: z.number().min(1).max(90).default(7),
-  progressiveSteps: z.array(ProgressiveSanctionStepSchema).default([
-    { strikeCount: 1, action: 'WARN', durationSeconds: 0, reason: '1er avertissement' },
-    { strikeCount: 2, action: 'TIMEOUT', durationSeconds: 300, reason: '2 strikes : Timeout 5 min' },
-    { strikeCount: 3, action: 'TIMEOUT', durationSeconds: 3600, reason: '3 strikes : Timeout 1 heure' },
-    { strikeCount: 4, action: 'KICK', durationSeconds: 0, reason: '4 strikes : Expulsion du serveur' },
-    { strikeCount: 5, action: 'BAN', durationSeconds: 0, reason: '5 strikes : Bannissement définitif' },
-  ]),
+  progressiveSteps: z.array(ProgressiveSanctionStepSchema).max(20).default([]),
 });
 export type StrikeConfig = z.infer<typeof StrikeConfigSchema>;
 
 export const AutoModConfigSchema = z.object({
-  enabled: z.boolean().default(true),
+  enabled: z.boolean().default(false),
   smartMode: z.boolean().default(true), // Adapts thresholds based on activity and Anti-Raid state
   trustLevels: z
     .object({
@@ -202,6 +238,9 @@ export const AutoModConfigSchema = z.object({
   mentions: MentionDetectorConfigSchema.default({}),
   ghostPing: GhostPingDetectorConfigSchema.default({}),
   caps: CapsDetectorConfigSchema.default({}),
+  emojis: EmojiDetectorConfigSchema.default({}),
+  pings: PingDetectorConfigSchema.default({}),
+  markdown: MarkdownDetectorConfigSchema.default({}),
   keywords: KeywordDetectorConfigSchema.default({}),
   regex: RegexDetectorConfigSchema.default({}),
   profiles: ProfileDetectorConfigSchema.default({}),
@@ -217,6 +256,8 @@ export interface DetectionResult {
   reason: string;
   matchedContent?: string;
   actions: AutoModAction[];
+  /** Mode silencieux du détecteur : le bot ne répond pas publiquement à l'infraction. */
+  silent?: boolean;
 }
 
 export interface AutoModIncident {

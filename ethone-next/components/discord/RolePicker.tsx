@@ -35,7 +35,7 @@ const globalRoleLoading = new Map<string, Promise<RoleOption[]>>();
 /**
  * Charge les rôles d'un serveur depuis l'API bot avec mise en cache mémoire
  */
-async function fetchGuildRoles(guildId: string): Promise<RoleOption[]> {
+export async function fetchGuildRoles(guildId: string): Promise<RoleOption[]> {
   if (globalRoleCache.has(guildId)) {
     return globalRoleCache.get(guildId)!;
   }

@@ -46,6 +46,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import InfractionsPanel from "./InfractionsPanel";
 
 // ==========================================
 // TYPES AUTOMOD
@@ -240,7 +241,7 @@ interface SandboxTestResult {
 
 // Configuration par défaut
 const DEFAULT_AUTOMOD_CONFIG: AutoModConfig = {
-  enabled: true,
+  enabled: false,
   smartMode: true,
   alertChannelId: "",
   staffMentionRoleId: "",
@@ -248,67 +249,67 @@ const DEFAULT_AUTOMOD_CONFIG: AutoModConfig = {
   exemptChannels: [],
   exemptUsers: [],
   spam: {
-    enabled: true,
+    enabled: false,
     maxDuplicates: 3,
     timeWindowSeconds: 10,
     similarityThreshold: 85,
     actions: ["DELETE", "WARN", "STRIKE"],
   },
   flood: {
-    enabled: true,
+    enabled: false,
     maxMessagesPerWindow: 5,
     timeWindowSeconds: 5,
     actions: ["DELETE", "TIMEOUT"],
   },
   links: {
-    enabled: true,
+    enabled: false,
     allowedDomains: ["youtube.com", "youtu.be", "twitter.com", "x.com", "github.com", "tenor.com", "giphy.com"],
     blockAllExceptAllowed: false,
     actions: ["DELETE", "WARN"],
   },
   invites: {
-    enabled: true,
+    enabled: false,
     allowedGuildIds: [],
     allowedInviteCodes: [],
     actions: ["DELETE", "WARN", "STRIKE"],
   },
   mentions: {
-    enabled: true,
+    enabled: false,
     maxMentionsPerMessage: 4,
     blockEveryoneHere: true,
     actions: ["DELETE", "WARN", "TIMEOUT"],
   },
   ghostPing: {
-    enabled: true,
+    enabled: false,
     windowSeconds: 15,
     actions: ["ALERT_STAFF", "WARN"],
   },
   caps: {
-    enabled: true,
+    enabled: false,
     minPercentage: 70,
     minMessageLength: 10,
     actions: ["DELETE", "WARN"],
   },
   keywords: {
-    enabled: true,
+    enabled: false,
     blacklistedWords: ["free nitro", "discord.gift", "steam gift", "airdrop", "crypto giveaway", "token grabber"],
     wildcardsEnabled: true,
     actions: ["DELETE", "WARN", "STRIKE"],
   },
   regex: {
-    enabled: true,
+    enabled: false,
     patterns: ["(discord\\.gg|discord\\.com\\/invite)\\/[a-zA-Z0-9]+", "https?:\\/\\/t\\.me\\/[a-zA-Z0-9_]+"],
     actions: ["DELETE", "TIMEOUT"],
   },
   profiles: {
-    enabled: true,
+    enabled: false,
     blockDefaultAvatars: false,
     minAccountAgeDays: 1,
     suspiciousNamePatterns: ["announcement", "moderator", "admin_help", "support_discord"],
     actions: ["QUARANTINE", "ALERT_STAFF"],
   },
   strikes: {
-    enabled: true,
+    enabled: false,
     expirationDays: 7,
     progressiveSteps: [
       { strikeCount: 1, action: "WARN" },
@@ -425,8 +426,8 @@ export default function AutoModCommandCenterPage() {
 
   // Onglet principal
   const [activeTab, setActiveTab] = useState<
-    "overview" | "builder" | "detectors" | "strikes" | "tester"
-  >("overview");
+    "infractions" | "overview" | "builder" | "detectors" | "strikes" | "tester"
+  >("infractions");
 
   // Détecteur actif dans l'onglet Detectors
   const [activeDetector, setActiveDetector] = useState<
@@ -968,6 +969,7 @@ export default function AutoModCommandCenterPage() {
         {/* BARRE D'ONGLETS */}
         <div className="max-w-7xl mx-auto mt-3 flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none">
           {[
+            { id: "infractions", label: "Infractions", icon: ShieldCheck },
             { id: "overview", label: "Vue d'ensemble & Monitor", icon: Activity },
             { id: "builder", label: `Rule Builder (${rules.length})`, icon: Layers },
             { id: "detectors", label: "10 Détecteurs Intégrés", icon: Sliders },
@@ -1023,6 +1025,11 @@ export default function AutoModCommandCenterPage() {
                 Inviter le bot
               </a>
             </div>
+          )}
+
+          {/* DÉTECTION DES INFRACTIONS (tout désactivé par défaut) */}
+          {activeTab === "infractions" && selectedGuild && (
+            <InfractionsPanel guildId={selectedGuild.id} config={config as never} onConfigChange={(c) => setConfig(c as never)} />
           )}
 
           {/* ======================================================== */}

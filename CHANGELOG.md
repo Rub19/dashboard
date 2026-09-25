@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.99 — 2026-09-25
+
+**Pages liste des modules ouvertes en direct**
+
+- Sondages, Formulaires, Événements, Tickets, Sauvegardes, Membres et Salons du serveur : l'ouverture directe ou le rechargement de la page liste affichait la page d'un élément de démonstration (« Chargement du sondage… » sans fin). Les pages liste et de création s'ouvrent maintenant correctement.
+
 ## v1.28.98 — 2026-09-25
 
 **Corrections issues des tests en direct sur Discord**

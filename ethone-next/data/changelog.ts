@@ -35790,6 +35790,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_98_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_98_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_98_de);
 
+const v1_28_99_fr: ChangelogEntry = {
+  version: "v1.28.99",
+  date: "2026-09-25",
+  title: "Pages liste des modules ouvertes en direct",
+  items: [
+    "Sondages, Formulaires, Événements, Tickets, Sauvegardes, Membres et Salons du serveur : l'ouverture directe ou le rechargement de la page liste affichait la page d'un élément de démonstration (« Chargement du sondage… » sans fin). Les pages liste et de création s'ouvrent maintenant correctement.",
+  ],
+};
+
+const v1_28_99_en: ChangelogEntry = {
+  version: "v1.28.99",
+  date: "2026-09-25",
+  title: "Module list pages open correctly on direct load",
+  items: [
+    "Polls, Forms, Events, Tickets, Backups, Server members and channels: opening or reloading the list page directly showed a demo item's page (an endless \"Loading poll…\"). List and create pages now open correctly.",
+  ],
+};
+
+const v1_28_99_es: ChangelogEntry = {
+  version: "v1.28.99",
+  date: "2026-09-25",
+  title: "Las páginas de lista de los módulos se abren correctamente",
+  items: [
+    "Sondeos, Formularios, Eventos, Tickets, Copias de seguridad, Miembros y Canales del servidor: al abrir o recargar directamente la página de lista se mostraba la página de un elemento de demostración («Cargando el sondeo…» sin fin). Las páginas de lista y de creación ahora se abren correctamente.",
+  ],
+};
+
+const v1_28_99_de: ChangelogEntry = {
+  version: "v1.28.99",
+  date: "2026-09-25",
+  title: "Listenseiten der Module öffnen sich korrekt",
+  items: [
+    "Umfragen, Formulare, Events, Tickets, Backups, Servermitglieder und -kanäle: Beim direkten Öffnen oder Neuladen der Listenseite erschien die Seite eines Demo-Eintrags (endloses „Umfrage wird geladen…“). Listen- und Erstellungsseiten öffnen sich jetzt korrekt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_99_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_99_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_99_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_99_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

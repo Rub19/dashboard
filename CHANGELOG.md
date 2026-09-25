@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.95 — 2026-09-25
+
+**Multiplicateurs d'XP bonus et malus, podiums des meilleurs membres**
+
+- XP : multiplicateurs sur le serveur entier, un rôle, un salon (les fils héritent), une catégorie, un membre ou une période, pour les messages, le vocal ou les deux. Bonus (×2), malus (×0,5) ou blocage (×0) ; ils se cumulent, plafonnés à ×10.
+- Nouvel écran Multiplicateurs : création guidée avec préréglages, dates de début et de fin, activation/désactivation sans suppression, statut (actif, programmé, terminé), et simulateur qui montre ce qu'un membre gagnerait réellement dans un salon.
+- L'XP en vocal (par minute, membres minimum, muet ignoré) profite des mêmes multiplicateurs.
+- Statistiques : podiums (meilleur score, le plus bavard, roi du vocal, le plus régulier, en progression) et classement complet avec un score global (1 point par message + 1 point par 2 minutes de vocal).
+- Les multiplicateurs sont vérifiés côté serveur : la cible doit exister sur le serveur, les dates doivent être cohérentes.
+- Correctif CI : le test de l'icône de repli suit désormais la révision d'icône.
+
 ## v1.28.94 — 2026-09-25
 
 **Statistiques poussées, en-têtes de pages corrigés, défilement et logo des embeds**

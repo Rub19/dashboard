@@ -62,5 +62,13 @@ ok(byVoice.rows[0].id === 'a' && byVoice.rows[0].voiceHours === 7 && byVoice.row
 const byActive = statsQueries.leaderboard(G, 7, 'active', NOW);
 ok(byActive.rows[0].activeDays === 7, 'jours actifs comptés');
 
+console.log('\nPodiums');
+const champ = statsQueries.champions(G, 7, NOW);
+ok(champ.categories.messages[0].id === 'a' && champ.categories.voice[0].id === 'a' && champ.categories.voice.length === 1, 'meilleur bavard et meilleur vocal (seul le membre a a du vocal)');
+ok(champ.categories.score[0].id === 'a' && byMsg.rows[0].score > byMsg.rows[1].score, 'score = messages + 1 point par 2 minutes de vocal');
+ok(champ.categories.rising[0].value === 28 && champ.categories.rising.length === 2, 'progression : +28 messages pour chacun des deux membres');
+const byScore = statsQueries.leaderboard(G, 7, 'score', NOW);
+ok(byScore.rows[0].id === 'a', 'tri par score');
+
 console.log(fail ? `\n${fail} échec(s)` : '\nTout est bon');
 process.exit(fail ? 1 : 0);

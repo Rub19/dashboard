@@ -74,8 +74,18 @@ export interface MemberRow {
   /** Part des messages du serveur (0–100). */
   messageShare: number;
   voiceShare: number;
+  /** Score d'activité : 1 point par message + 1 point pour 2 minutes de vocal. */
+  score: number;
   /** Jours où le membre a été actif (message ou vocal). */
   activeDays: number;
+}
+
+export type ChampionKind = 'messages' | 'voice' | 'score' | 'active' | 'rising';
+
+/** Meilleurs membres par catégorie (podium). */
+export interface Champions {
+  days: number;
+  categories: Record<ChampionKind, Array<{ id: string; value: number }>>;
 }
 
 export interface PeriodTotals {

@@ -1,5 +1,5 @@
 import { statsStorage, dayKey, RETENTION_DAYS } from '../storage/statsStorage.js';
-import { ChannelStats, DayStats, Insights, MemberRow, MemberStats, PeriodTotals, RankedEntry, ServerSummary, SeriesPoint } from '../types/stats.js';
+import { ChampionKind, Champions, ChannelStats, DayStats, Insights, MemberRow, MemberStats, PeriodTotals, RankedEntry, ServerSummary, SeriesPoint } from '../types/stats.js';
 
 /** Liste des jours (UTC, ordre chronologique) des `days` derniers jours, aujourd'hui compris. */
 export function lastDays(days: number, now = new Date()): string[] {
@@ -119,8 +119,38 @@ class StatsQueries {
     };
   }
 
+  /**
+   * Podiums : meilleur bavard, plus présent en vocal, meilleur score d'activité, plus régulier, et « en progression »
+   * (plus forte hausse de messages par rapport à la période précédente, à partir de 20 messages).
+   */
+  public champions(guildId: string, days: number, now = new Date()): Champions {
+    const top = (sort: 'messages' | 'voice' | 'active' | 'score') => {
+      const { rows } = this.leaderboard(guildId, days, sort, now);
+      const value = (r: MemberRow) => (sort === 'voice' ? r.voiceHours : sort === 'active' ? r.activeDays : sort === 'score' ? r.score : r.messages);
+      return rows.slice(0, 3).filter((r) => value(r) > 0).map((r) => ({ id: r.id, value: value(r) }));
+    };
+    const n = Math.max(1, Math.min(RETENTION_DAYS, Math.floor(days)));
+    const previous: Record<string, number> = {};
+    for (const [, d] of daysData(guildId, lastDays(n * 2, now).slice(0, n))) if (d) addTo(previous, d.byUser);
+    const current = this.leaderboard(guildId, days, 'messages', now).rows;
+    const rising = current
+      .filter((r) => r.messages >= 20)
+      .map((r) => ({ id: r.id, value: r.messages - (previous[r.id] ?? 0) }))
+      .filter((r) => r.value > 0)
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 3);
+    const categories: Record<ChampionKind, Array<{ id: string; value: number }>> = {
+      messages: top('messages'),
+      voice: top('voice'),
+      score: top('score'),
+      active: top('active'),
+      rising,
+    };
+    return { days: n, categories };
+  }
+
   /** Classement complet des membres sur la période : messages, vocal, parts du serveur, jours actifs. Trié puis tronqué. */
-  public leaderboard(guildId: string, days: number, sort: 'messages' | 'voice' | 'active', now = new Date()): { rows: MemberRow[]; totalMessages: number; totalVoiceHours: number; members: number } {
+  public leaderboard(guildId: string, days: number, sort: 'messages' | 'voice' | 'active' | 'score', now = new Date()): { rows: MemberRow[]; totalMessages: number; totalVoiceHours: number; members: number } {
     const list = lastDays(days, now);
     const msg: Record<string, number> = {};
     const voiceSec: Record<string, number> = {};
@@ -142,9 +172,10 @@ class StatsQueries {
       voiceHours: hours(voiceSec[id] ?? 0),
       messageShare: totalMessages > 0 ? Math.round(((msg[id] ?? 0) / totalMessages) * 1000) / 10 : 0,
       voiceShare: totalVoiceSec > 0 ? Math.round(((voiceSec[id] ?? 0) / totalVoiceSec) * 1000) / 10 : 0,
+      score: Math.round((msg[id] ?? 0) + (voiceSec[id] ?? 0) / 120),
       activeDays: activeDays[id] ?? 0,
     }));
-    const key = sort === 'voice' ? (r: MemberRow) => r.voiceHours : sort === 'active' ? (r: MemberRow) => r.activeDays : (r: MemberRow) => r.messages;
+    const key = sort === 'voice' ? (r: MemberRow) => r.voiceHours : sort === 'active' ? (r: MemberRow) => r.activeDays : sort === 'score' ? (r: MemberRow) => r.score : (r: MemberRow) => r.messages;
     rows.sort((a, b) => key(b) - key(a) || b.messages - a.messages || b.voiceHours - a.voiceHours);
     return { rows, totalMessages, totalVoiceHours: hours(totalVoiceSec), members: ids.length };
   }

@@ -83,8 +83,16 @@ class LevelingService {
     // 8. Calcul du gain d'XP avec les multiplicateurs / Boosts
     const baseGain =
       Math.floor(Math.random() * (config.maxXp - config.minXp + 1)) + config.minXp;
-    const multiplier = this.calculateMultiplier(guild.id, member, message.channel.id);
-    await this.award(member, Math.round(baseGain * multiplier), config, message.channel, { message: true, username: message.author.username, avatar: message.author.displayAvatarURL() });
+    const thread = channel.isThread();
+    const { multiplier } = this.effectiveMultiplier(
+      guild.id,
+      member,
+      { channelId: channel.id, parentChannelId: thread ? channel.parentId : null, categoryId: thread ? channel.parent?.parentId ?? null : 'parentId' in channel ? channel.parentId : null },
+      'messages'
+    );
+    const earned = Math.round(baseGain * multiplier);
+    if (earned <= 0) return; // malus à ×0 : aucun gain
+    await this.award(member, earned, config, message.channel, { message: true, username: message.author.username, avatar: message.author.displayAvatarURL() });
   }
 
   /**
@@ -126,28 +134,38 @@ class LevelingService {
     }
   }
 
-  private calculateMultiplier(guildId: string, member: GuildMember, channelId: string): number {
-    let multiplier = 1.0;
-    const boosts = levelingStorage.getBoosts(guildId).filter((b) => b.enabled);
-    const now = new Date();
-
-    for (const boost of boosts) {
-      // Vérifier les dates si présentes
+  /**
+   * Multiplicateur d'XP réellement appliqué : tous les multiplicateurs actifs qui visent le membre (serveur, rôle, membre),
+   * le salon (un fil hérite de son salon), la catégorie ou la période se cumulent (produit), plafonnés à ×10. Un multiplicateur
+   * inférieur à 1 est un malus ; 0 supprime le gain. `applied` liste ce qui a compté (aperçu du dashboard).
+   */
+  public effectiveMultiplier(
+    guildId: string,
+    member: { id: string; roles: { cache: { has(id: string): boolean } } },
+    where: { channelId: string | null; parentChannelId?: string | null; categoryId?: string | null },
+    scope: 'messages' | 'voice',
+    now = new Date()
+  ): { multiplier: number; applied: Array<{ id: string; name: string; multiplier: number }> } {
+    let multiplier = 1;
+    const applied: Array<{ id: string; name: string; multiplier: number }> = [];
+    for (const boost of levelingStorage.getBoosts(guildId)) {
+      if (!boost.enabled) continue;
+      if ((boost.scope ?? 'all') !== 'all' && boost.scope !== scope) continue;
       if (boost.startTime && new Date(boost.startTime) > now) continue;
       if (boost.endTime && new Date(boost.endTime) < now) continue;
-
-      if (boost.targetType === 'server') {
-        multiplier *= boost.multiplier;
-      } else if (boost.targetType === 'channel' && boost.targetId === channelId) {
-        multiplier *= boost.multiplier;
-      } else if (boost.targetType === 'role' && boost.targetId && member.roles.cache.has(boost.targetId)) {
-        multiplier *= boost.multiplier;
-      } else if (boost.targetType === 'event') {
-        multiplier *= boost.multiplier;
-      }
+      const t = boost.targetId;
+      const hit =
+        boost.targetType === 'server' ||
+        boost.targetType === 'event' ||
+        (boost.targetType === 'channel' && !!t && (t === where.channelId || t === where.parentChannelId)) ||
+        (boost.targetType === 'category' && !!t && t === where.categoryId) ||
+        (boost.targetType === 'role' && !!t && member.roles.cache.has(t)) ||
+        (boost.targetType === 'member' && !!t && t === member.id);
+      if (!hit) continue;
+      multiplier *= boost.multiplier;
+      applied.push({ id: boost.id, name: boost.name, multiplier: boost.multiplier });
     }
-
-    return Math.min(10, Math.max(1, multiplier));
+    return { multiplier: Math.min(10, Math.max(0, Math.round(multiplier * 1000) / 1000)), applied };
   }
 
   /** Envoie un embed selon le type d'annonce choisi. Renvoie true si un message a été posté. */
@@ -284,7 +302,8 @@ class LevelingService {
           if (config.voiceXpIgnoreMuted && (m.voice.selfMute || m.voice.selfDeaf || m.voice.serverMute || m.voice.serverDeaf)) continue;
           if (m.roles.cache.some((r) => config.excludedRoleIds.includes(r.id))) continue;
           if (config.maxLevel > 0 && xpWriteBuffer.getUser(guild.id, m.id).level >= config.maxLevel) continue;
-          const gain = Math.round(config.voiceXpPerMinute * this.calculateMultiplier(guild.id, m, channel.id));
+          const gain = Math.round(config.voiceXpPerMinute * this.effectiveMultiplier(guild.id, m, { channelId: channel.id, categoryId: channel.parentId }, 'voice').multiplier);
+          if (gain <= 0) continue;
           await this.award(m, gain, config, null, { message: false, username: m.user.username, avatar: m.user.displayAvatarURL() }).catch((err) => logger.warn('[Leveling] XP vocal :', err?.message));
           credited++;
         }

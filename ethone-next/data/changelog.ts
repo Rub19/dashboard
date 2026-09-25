@@ -35574,6 +35574,67 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_94_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_94_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_94_de);
 
+const v1_28_95_fr: ChangelogEntry = {
+  version: "v1.28.95",
+  date: "2026-09-25",
+  title: "Multiplicateurs d'XP bonus et malus, podiums des meilleurs membres",
+  items: [
+    "XP : multiplicateurs sur le serveur entier, un rôle, un salon (les fils héritent), une catégorie, un membre ou une période, pour les messages, le vocal ou les deux. Bonus (×2), malus (×0,5) ou blocage (×0) ; ils se cumulent, plafonnés à ×10.",
+    "Nouvel écran Multiplicateurs : création guidée avec préréglages, dates de début et de fin, activation/désactivation sans suppression, statut (actif, programmé, terminé), et simulateur qui montre ce qu'un membre gagnerait réellement dans un salon.",
+    "L'XP en vocal (par minute, membres minimum, muet ignoré) profite des mêmes multiplicateurs.",
+    "Statistiques : podiums (meilleur score, le plus bavard, roi du vocal, le plus régulier, en progression) et classement complet avec un score global (1 point par message + 1 point par 2 minutes de vocal).",
+    "Les multiplicateurs sont vérifiés côté serveur : la cible doit exister sur le serveur, les dates doivent être cohérentes.",
+    "Correctif CI : le test de l'icône de repli suit désormais la révision d'icône.",
+  ],
+};
+
+const v1_28_95_en: ChangelogEntry = {
+  version: "v1.28.95",
+  date: "2026-09-25",
+  title: "Bonus and malus XP multipliers, top member podiums",
+  items: [
+    "XP: multipliers on the whole server, a role, a channel (threads inherit), a category, a member or a period, for messages, voice or both. Bonus (×2), malus (×0.5) or block (×0); they stack, capped at ×10.",
+    "New Multipliers screen: guided creation with presets, start and end dates, enable/disable without deleting, status (active, scheduled, ended), and a simulator showing what a member would really earn in a channel.",
+    "Voice XP (per minute, minimum members, muted ignored) uses the same multipliers.",
+    "Statistics: podiums (best score, chattiest, voice king, most regular, rising) and a full leaderboard with a global score (1 point per message + 1 point per 2 minutes of voice).",
+    "Multipliers are validated server-side: the target must exist on the server and dates must be consistent.",
+    "CI fix: the fallback icon test now follows the icon revision.",
+  ],
+};
+
+const v1_28_95_es: ChangelogEntry = {
+  version: "v1.28.95",
+  date: "2026-09-25",
+  title: "Multiplicadores de XP con bonus y malus, podios de los mejores miembros",
+  items: [
+    "XP: multiplicadores para todo el servidor, un rol, un canal (los hilos heredan), una categoría, un miembro o un periodo, para mensajes, voz o ambos. Bonus (×2), malus (×0,5) o bloqueo (×0); se acumulan, con tope ×10.",
+    "Nueva pantalla Multiplicadores: creación guiada con preajustes, fechas de inicio y fin, activar/desactivar sin borrar, estado (activo, programado, terminado) y un simulador que muestra lo que ganaría realmente un miembro en un canal.",
+    "La XP en voz (por minuto, miembros mínimos, silenciados ignorados) usa los mismos multiplicadores.",
+    "Estadísticas: podios (mejor puntuación, más hablador, rey de la voz, más constante, en progreso) y clasificación completa con puntuación global (1 punto por mensaje + 1 punto por 2 minutos de voz).",
+    "Los multiplicadores se validan en el servidor: el objetivo debe existir y las fechas ser coherentes.",
+    "Corrección de CI: la prueba del icono de reserva sigue ahora la revisión del icono.",
+  ],
+};
+
+const v1_28_95_de: ChangelogEntry = {
+  version: "v1.28.95",
+  date: "2026-09-25",
+  title: "XP-Multiplikatoren mit Bonus und Malus, Podien der besten Mitglieder",
+  items: [
+    "XP: Multiplikatoren für den ganzen Server, eine Rolle, einen Kanal (Threads erben), eine Kategorie, ein Mitglied oder einen Zeitraum, für Nachrichten, Voice oder beides. Bonus (×2), Malus (×0,5) oder Sperre (×0); sie werden multipliziert, gedeckelt bei ×10.",
+    "Neuer Bildschirm Multiplikatoren: geführte Erstellung mit Voreinstellungen, Start- und Enddatum, Aktivieren/Deaktivieren ohne Löschen, Status (aktiv, geplant, beendet) und ein Simulator, der zeigt, was ein Mitglied in einem Kanal wirklich verdienen würde.",
+    "Voice-XP (pro Minute, Mindestanzahl Mitglieder, Stummgeschaltete ignoriert) nutzt dieselben Multiplikatoren.",
+    "Statistiken: Podien (beste Punktzahl, Vielschreiber, Voice-König, Beständigster, im Aufstieg) und vollständige Rangliste mit Gesamtpunktzahl (1 Punkt pro Nachricht + 1 Punkt pro 2 Minuten Voice).",
+    "Multiplikatoren werden serverseitig geprüft: Das Ziel muss auf dem Server existieren, Daten müssen stimmig sein.",
+    "CI-Korrektur: Der Test des Ersatz-Icons folgt jetzt der Icon-Revision.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_95_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_95_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_95_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_95_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

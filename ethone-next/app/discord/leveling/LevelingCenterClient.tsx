@@ -11,7 +11,6 @@ import {
   Search,
   Plus,
   Trash2,
-  Hash,
   RefreshCw,
   Palette,
   Lock,
@@ -26,6 +25,7 @@ import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGui
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 import LevelingSettingsPanel, { type LevelingSettings } from "./LevelingSettingsPanel";
+import LevelingBoostsPanel from "./LevelingBoostsPanel";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import { cn } from "@/lib/utils";
@@ -328,45 +328,6 @@ export default function LevelingCenterClient() {
     }
   };
 
-  // XP Boosts
-  const [newBoost, setNewBoost] = useState({ name: "", multiplier: 1.5, targetType: "server" as XpBoost["targetType"], targetId: "" });
-  const addBoost = async () => {
-    if (!newBoost.name.trim()) {
-      toastError("Nom du boost requis.");
-      return;
-    }
-    if (isDemo || !BOT_API_URL) {
-      toastError("Bot injoignable : le boost n'a pas été ajouté.");
-      return;
-    }
-    try {
-      const res = await fetch(`${base}/boosts`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ...newBoost, targetId: newBoost.targetId || null }),
-      });
-      if (!res.ok) throw new Error("save failed");
-      const data = await res.json();
-      setBoosts((prev) => [...prev, data.boost]);
-      setNewBoost({ name: "", multiplier: 1.5, targetType: "server", targetId: "" });
-      success("Boost XP ajouté.");
-    } catch {
-      toastError("Échec de l'ajout du boost.");
-    }
-  };
-
-  const removeBoost = async (id: string) => {
-    const previous = boosts;
-    setBoosts((prev) => prev.filter((b) => b.id !== id));
-    if (isDemo || !BOT_API_URL) return;
-    try {
-      await fetch(`${base}/boosts/${id}`, { method: "DELETE", credentials: "include" });
-    } catch {
-      setBoosts(previous);
-      toastError("Échec de la suppression — le boost a été restauré.");
-    }
-  };
 
   // Excluded channels/roles (blacklist) — plain ID inputs, same convention
   // as GiveawaysCenterClient's role fields: no live Discord role/channel
@@ -816,7 +777,7 @@ export default function LevelingCenterClient() {
 
         {/* TAB 4: Boosts & XP Settings */}
         {activeTab === "boosts" && (
-          <div className="space-y-6 max-w-2xl">
+          <div className="space-y-6 max-w-4xl">
             <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Sliders className="w-4 h-4 text-fuchsia-400" />
@@ -914,57 +875,7 @@ export default function LevelingCenterClient() {
               {savingConfig && <p className="text-[10px] text-neutral-500">Enregistrement...</p>}
             </div>
 
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Zap className="w-4 h-4 text-cyan-400" />
-                Multiplicateurs XP (Boosts)
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
-                <input
-                  type="text"
-                  placeholder="Nom du boost"
-                  value={newBoost.name}
-                  onChange={(e) => setNewBoost((p) => ({ ...p, name: e.target.value }))}
-                  className="h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white sm:col-span-2"
-                />
-                <input
-                  type="number"
-                  min={1.1}
-                  max={10}
-                  step={0.1}
-                  value={newBoost.multiplier}
-                  onChange={(e) => setNewBoost((p) => ({ ...p, multiplier: Number(e.target.value) }))}
-                  className="h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white text-center font-mono"
-                />
-                <button
-                  onClick={addBoost}
-                  className="h-10 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <Plus className="w-4 h-4" />
-                  Ajouter
-                </button>
-              </div>
-
-              <div className="space-y-2">
-                {boosts.length === 0 ? (
-                  <p className="text-xs text-neutral-500 text-center py-4">Aucun boost actif.</p>
-                ) : (
-                  boosts.map((b) => (
-                    <div key={b.id} className="p-3 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between text-xs">
-                      <div>
-                        <span className="font-bold text-white">{b.name}</span>
-                        <span className="text-cyan-400 font-mono ml-2">{b.multiplier}x</span>
-                        <span className="text-neutral-500 ml-2">({b.targetType})</span>
-                      </div>
-                      <button onClick={() => removeBoost(b.id)} className="text-neutral-500 hover:text-rose-400 transition-colors p-1">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
+            <LevelingBoostsPanel guildId={currentGuildId} boosts={boosts} disabled={isDemo} onChanged={load} />
           </div>
         )}
 

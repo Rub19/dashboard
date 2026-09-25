@@ -89,11 +89,25 @@ export function createStatsRouter(client: Client) {
     res.json(statsQueries.insights(String(req.params.guildId), parseDays(req.query.days)));
   });
 
+  /** Podiums par catégorie (bavard, vocal, score, régularité, progression) avec pseudos et avatars. */
+  router.get('/champions', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const guild = client.guilds.cache.get(guildId);
+    const data = statsQueries.champions(guildId, parseDays(req.query.days));
+    const ids = [...new Set(Object.values(data.categories).flatMap((list) => list.map((e) => e.id)))];
+    const names = await resolveMembers(guild, ids);
+    const decorate = (list: Array<{ id: string; value: number }>) => list.map((e) => ({ ...e, name: names.get(e.id)?.name ?? 'Ancien membre', avatarUrl: names.get(e.id)?.avatarUrl ?? null }));
+    res.json({
+      days: data.days,
+      categories: Object.fromEntries(Object.entries(data.categories).map(([k, list]) => [k, decorate(list)])),
+    });
+  });
+
   /** Classement complet des membres (tri, recherche par nom, pagination). */
   router.get('/leaderboard', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const guild = client.guilds.cache.get(guildId);
-    const sort = ['messages', 'voice', 'active'].includes(String(req.query.sort)) ? (String(req.query.sort) as 'messages' | 'voice' | 'active') : 'messages';
+    const sort = ['messages', 'voice', 'active', 'score'].includes(String(req.query.sort)) ? (String(req.query.sort) as 'messages' | 'voice' | 'active' | 'score') : 'messages';
     const q = String(req.query.q ?? '').trim().toLowerCase().slice(0, 40);
     const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 50));
     const offset = Math.max(0, Number(req.query.offset) || 0);

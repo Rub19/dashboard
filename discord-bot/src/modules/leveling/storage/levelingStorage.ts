@@ -57,7 +57,8 @@ class LevelingStorage {
       if (fs.existsSync(this.boostsPath)) {
         const parsed = JSON.parse(fs.readFileSync(this.boostsPath, 'utf-8'));
         for (const [gid, list] of Object.entries(parsed)) {
-          this.boosts.set(gid, list as XpBoost[]);
+          // Anciennes données : les champs ajoutés depuis (portée…) reçoivent leur valeur par défaut.
+          this.boosts.set(gid, (list as unknown[]).flatMap((b) => { const r = XpBoostSchema.safeParse(b); return r.success ? [r.data] : []; }));
         }
       }
     } catch (err) {

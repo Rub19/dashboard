@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { MODULES, isModuleEnabled, moduleForCommand, setModuleEnabled } from '../src/services/moduleRegistry.js';
-import { disabledModuleEmbeds } from '../src/services/moduleGate.js';
+import { disabledModuleEmbeds, disabledComponentEmbed } from '../src/services/moduleGate.js';
 
 const G = 'guild-test-registry';
 let passed = 0;
@@ -68,6 +68,18 @@ check('module à interrupteur propre (starboard) : lu et écrit dans sa configur
   assert.equal(isModuleEnabled(G, 'starboard'), false);
   setModuleEnabled(G, 'starboard', true);
   assert.equal(isModuleEnabled(G, 'starboard'), true);
+});
+
+check('composants (boutons, formulaires) d’un module désactivé : refusés, les autres passent', () => {
+  setModuleEnabled(G, 'tickets', false);
+  setModuleEnabled(G, 'polls', true);
+  assert.ok(disabledComponentEmbed(G, 'ticket_create:cat-support'));
+  assert.ok(disabledComponentEmbed(G, 'modal_ticket_x'));
+  assert.equal(disabledComponentEmbed(G, 'poll_vote:abc'), null);
+  assert.equal(disabledComponentEmbed(G, 'music_pause'), null);
+  assert.equal(disabledComponentEmbed(null, 'ticket_create:x'), null);
+  setModuleEnabled(G, 'tickets', true);
+  assert.equal(disabledComponentEmbed(G, 'ticket_create:cat-support'), null);
 });
 
 console.log(`\n🏁 ${passed} PASSED`);

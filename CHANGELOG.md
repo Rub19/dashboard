@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.109 — 2026-09-26
+
+**Protection Suprême désactivée et boutons des modules éteints inertes**
+
+- La Protection Suprême (annulation des sanctions visant le propriétaire, auto-défense du bot et son alerte) est désactivée une fois pour toutes au prochain démarrage ; elle se réactive à la main depuis la page Owner Shield. L'auto-défense du bot respecte maintenant cet interrupteur, ce qui n'était pas le cas.
+- Un bouton, un menu ou un formulaire d'un module désactivé (panneau de tickets, tirage, sondage, suggestion, économie, etc. resté dans un salon) répond « Module désactivé » et n'exécute plus rien.
+
 ## v1.28.108 — 2026-09-26
 
 **Tâches planifiées : un module désactivé ne fait plus rien tout seul**

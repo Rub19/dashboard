@@ -29,6 +29,9 @@ ok(['g1', 'g2', 'g3'].every((g) => reg.isModuleEnabled(g, 'music')), 'la musique
 const stillOn = ['g1', 'g2', 'g3'].flatMap((g) => all.filter((id) => id !== 'music' && reg.isModuleEnabled(g, id)));
 ok(stillOn.length === 0, `tous les autres modules (protections, modération, tags…) sont désactivés partout${stillOn.length ? ' — encore actifs : ' + [...new Set(stillOn)].join(', ') : ''}`);
 
+const { OwnerShieldService } = await import('../src/modules/security/services/ownerShieldService.js');
+ok(first.includes('2026-09-26-owner-shield-off') && OwnerShieldService.getInstance().getConfig().enabled === false && !OwnerShieldService.getInstance().isGuildProtected('g1'), 'la Protection Suprême est désactivée');
+
 reg.setModuleEnabled('g1', 'economy', true);
 const second = runModuleMigrations(client);
 ok(second.length === 0 && reg.isModuleEnabled('g1', 'economy'), 'redémarrage suivant : rien n’est rejoué, un module réactivé le reste');

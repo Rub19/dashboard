@@ -3,6 +3,7 @@ import path from 'path';
 import type { Client } from 'discord.js';
 import { MODULES, setModuleEnabled } from './moduleRegistry.js';
 import { autoModRepository } from '../modules/automod/storage/autoModRepository.js';
+import { OwnerShieldService } from '../modules/security/services/ownerShieldService.js';
 import { logger } from '../utils/logger.js';
 
 /**
@@ -27,6 +28,9 @@ const MIGRATIONS: ModuleMigration[] = [
   // Demande du propriétaire : tout est désactivé sur tous les serveurs sauf la musique (protections, modération, tags, etc. compris).
   // Chaque module se réactive ensuite à la demande (dashboard, /module, /setup). Un module verrouillé (rôles sécurisés en place) reste actif.
   { id: '2026-09-25-everything-off-except-music', disable: MODULES.filter((m) => m.id !== 'music').map((m) => m.id) },
+  // Demande du propriétaire : la Protection Suprême (annulation des sanctions visant son compte, auto-défense du bot) est désactivée.
+  // Elle se réactive à la main depuis la page « Owner Shield » du dashboard.
+  { id: '2026-09-26-owner-shield-off', disable: [], run: () => { OwnerShieldService.getInstance().disableAll(); return 1; } },
 ];
 
 const FILE = path.resolve(process.cwd(), 'data', 'module_migrations.json');

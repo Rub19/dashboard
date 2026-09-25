@@ -36228,6 +36228,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_108_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_108_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_108_de);
 
+const v1_28_109_fr: ChangelogEntry = {
+  version: "v1.28.109",
+  date: "2026-09-26",
+  title: "Protection Suprême désactivée et boutons des modules éteints inertes",
+  items: [
+    "La Protection Suprême (annulation des sanctions visant le propriétaire, auto-défense du bot et son alerte) est désactivée une fois pour toutes au prochain démarrage ; elle se réactive à la main depuis la page Owner Shield. L'auto-défense du bot respecte maintenant cet interrupteur, ce qui n'était pas le cas.",
+    "Un bouton, un menu ou un formulaire d'un module désactivé (panneau de tickets, tirage, sondage, suggestion, économie, etc. resté dans un salon) répond « Module désactivé » et n'exécute plus rien.",
+  ],
+};
+
+const v1_28_109_en: ChangelogEntry = {
+  version: "v1.28.109",
+  date: "2026-09-26",
+  title: "Supreme Protection disabled and disabled modules' buttons inert",
+  items: [
+    "Supreme Protection (reversing sanctions aimed at the owner, the bot's self-defense and its alert) is turned off once and for all at the next start; it can be re-enabled by hand from the Owner Shield page. The bot's self-defense now honors that switch, which it did not before.",
+    "A button, menu or form from a disabled module (ticket panel, giveaway, poll, suggestion, economy, etc. left in a channel) now answers \"Module disabled\" and no longer runs anything.",
+  ],
+};
+
+const v1_28_109_es: ChangelogEntry = {
+  version: "v1.28.109",
+  date: "2026-09-26",
+  title: "Protección Suprema desactivada y botones de módulos apagados inertes",
+  items: [
+    "La Protección Suprema (anulación de las sanciones dirigidas al propietario, autodefensa del bot y su alerta) se desactiva definitivamente en el próximo inicio; se reactiva a mano desde la página Owner Shield. La autodefensa del bot respeta ahora ese interruptor, cosa que antes no hacía.",
+    "Un botón, menú o formulario de un módulo desactivado (panel de tickets, sorteo, sondeo, sugerencia, economía, etc. que quedó en un canal) responde ahora «Módulo desactivado» y ya no ejecuta nada.",
+  ],
+};
+
+const v1_28_109_de: ChangelogEntry = {
+  version: "v1.28.109",
+  date: "2026-09-26",
+  title: "Oberster Schutz deaktiviert und Schaltflächen deaktivierter Module wirkungslos",
+  items: [
+    "Der Oberste Schutz (Aufhebung von Sanktionen gegen den Besitzer, Selbstverteidigung des Bots und deren Warnung) wird beim nächsten Start ein für alle Mal ausgeschaltet; er lässt sich von Hand auf der Seite Owner Shield wieder aktivieren. Die Selbstverteidigung des Bots beachtet diesen Schalter jetzt, was zuvor nicht der Fall war.",
+    "Eine Schaltfläche, ein Menü oder ein Formular eines deaktivierten Moduls (Ticket-Panel, Verlosung, Umfrage, Vorschlag, Wirtschaft usw., das in einem Kanal geblieben ist) antwortet jetzt „Modul deaktiviert“ und führt nichts mehr aus.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_109_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_109_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_109_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_109_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

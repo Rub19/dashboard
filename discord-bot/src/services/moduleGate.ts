@@ -46,3 +46,35 @@ export function disabledModuleEmbeds({ guildId, commandName, isStaff, prefix }: 
 }
 
 export { getModule };
+
+/** Préfixes d'identifiants de composants (boutons, menus, formulaires) → module propriétaire. Ordre : le plus précis d'abord. */
+const COMPONENT_PREFIXES: Array<[string, string]> = [
+  ['ticket_', 'tickets'], ['modal_ticket_', 'tickets'],
+  ['giveaway_', 'giveaways'],
+  ['sugg_', 'suggestions'], ['modal_sugg_', 'suggestions'],
+  ['welcome_', 'welcome'], ['onb:', 'welcome'], ['onb_modal:', 'welcome'],
+  ['voice_', 'voice'], ['modal_voice_', 'voice'],
+  ['ai_', 'ai'],
+  ['form_', 'forms'],
+  ['poll_', 'polls'],
+  ['event_', 'events'],
+  ['eco_btn_', 'economy'],
+  ['rank_btn_', 'leveling'],
+  ['role_btn:', 'roles'], ['role_select:', 'roles'],
+  ['rep_', 'reports'],
+  ['mod_btn_', 'moderation'],
+  ['logs_', 'logs'],
+];
+
+/**
+ * Filtre des composants (boutons, menus, formulaires) : renvoie un embed si le module auquel ils appartiennent est désactivé
+ * sur ce serveur, sinon null. Les panneaux déjà publiés restent dans les salons mais ne font plus rien.
+ */
+export function disabledComponentEmbed(guildId: string | null | undefined, customId: string): EmbedBuilder | null {
+  if (!guildId) return null;
+  const hit = COMPONENT_PREFIXES.find(([prefix]) => customId.startsWith(prefix));
+  if (!hit) return null;
+  const def = getModule(hit[1]);
+  if (!def || isModuleEnabled(guildId, def.id)) return null;
+  return noticeEmbed('error', `Le module **${def.emoji} ${def.label}** est désactivé sur ce serveur : cette action n'est pas disponible pour le moment.`, { title: 'Module désactivé' });
+}

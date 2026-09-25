@@ -851,7 +851,7 @@ export class OwnerShieldService {
    * INTERCEPTION 5: Auto-Défense du Bot — Détection et neutralisation des tentatives de sabotage / révocation des privilèges du Bot
    */
   public async handleBotMemberUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<void> {
-    if (!this.config.botSelfDefense) return;
+    if (!this.config.botSelfDefense || !this.isGuildProtected(newMember.guild.id)) return;
     const guild = newMember.guild;
     // L'alerte est toujours envoyée, mais les contre-mesures automatiques (timeout du coupable, retrait de ses rôles,
     // restauration des rôles du bot) ne s'exécutent que si le module Sécurité est actif sur ce serveur.

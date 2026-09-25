@@ -39,7 +39,7 @@ import { youtubeSuggestions } from '../modules/music/providers/searchSuggest.js'
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
 import { handlePermissionPresetButton } from '../commands/admin/permissionsCommand.js';
 import { baseEmbed, noticeEmbed } from '../utils/embeds.js';
-import { disabledModuleEmbeds } from '../services/moduleGate.js';
+import { disabledModuleEmbeds, disabledComponentEmbed } from '../services/moduleGate.js';
 import { HelpPanel } from '../commands/general/helpPanel.js';
 import { syncEngine } from '../services/syncEngine.js';
 import { BotCommandStatsService } from '../modules/botControl/services/botCommandStatsService.js';
@@ -101,6 +101,14 @@ export async function onInteractionCreate(interaction: Interaction) {
     'DISCORD_COMMAND',
     interaction.user.id
   );
+  // Composant d'un module désactivé (panneau resté dans un salon) : réponse claire, rien n'est exécuté.
+  if (interaction.guildId && (interaction.isButton() || interaction.isAnySelectMenu() || interaction.isModalSubmit())) {
+    const notice = disabledComponentEmbed(interaction.guildId, interaction.customId);
+    if (notice) {
+      await interaction.reply({ embeds: [notice], ephemeral: true }).catch(() => null);
+      return;
+    }
+  }
   // 1. Gestion des composants d'interaction (Boutons, Menus déroulants, Modals)
   if (interaction.isAnySelectMenu()) {
     if (interaction.customId.startsWith('rep_sanction:') && interaction.isStringSelectMenu()) {

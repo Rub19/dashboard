@@ -14,6 +14,7 @@ import { raidDetectionService } from '../modules/antiRaid/services/raidDetection
 import { aiService } from '../modules/ai/services/aiService.js';
 import { stickyService } from '../modules/stickyMessages/services/stickyService.js';
 import { afkService } from '../modules/afk/services/afkService.js';
+import { countingService } from '../modules/counting/services/countingService.js';
 import { highlightService } from '../modules/highlights/services/highlightService.js';
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
 import { BotConfigService } from '../modules/botControl/services/botConfigService.js';
@@ -65,6 +66,9 @@ export async function onMessageCreate(message: Message) {
 
   // AFK : retour d'absence de l'auteur + notification des membres AFK mentionnés.
   afkService.handleMessage(message).catch(() => {});
+
+  // Comptage : vérification du nombre donné dans le salon de comptage (ignoré ailleurs et si le module est désactivé).
+  countingService.handleMessage(message).catch(() => {});
 
   // Highlights : DM des membres qui surveillent un mot-clé présent dans ce message.
   highlightService.handleMessage(message).catch(() => {});

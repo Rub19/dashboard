@@ -75,6 +75,7 @@ import { starboardCommand } from '../modules/starboard/commands/starboardCommand
 import { stickyCommand } from '../modules/stickyMessages/commands/stickyCommand.js';
 import { reminderCommand } from '../modules/reminders/commands/reminderCommand.js';
 import { afkCommand } from '../modules/afk/commands/afkCommand.js';
+import { countingCommand } from '../modules/counting/commands/countingCommand.js';
 import { birthdayCommand } from '../modules/birthdays/commands/birthdayCommand.js';
 import { tagCommand } from '../modules/tags/commands/tagCommand.js';
 import { serverStatsCommand } from '../modules/serverStats/commands/serverStatsCommand.js';
@@ -191,6 +192,7 @@ class CommandRegistry {
 
     // AFK (statut absent + notification sur mention)
     this.register(afkCommand);
+    this.register(countingCommand);
 
     // Birthdays (anniversaires + annonce quotidienne + rôle)
     this.register(birthdayCommand);

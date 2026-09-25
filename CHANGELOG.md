@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.86 — 2026-09-25
+
+**Nouveau module : Comptage**
+
+- Jeu collectif : les membres comptent 1, 2, 3… à tour de rôle dans un salon dédié. Un message qui commence par un nombre est vérifié (✅ juste, 🏆 nouveau record, ❌ erreur) ; les autres messages du salon sont ignorés, on peut discuter. Une erreur remet le compteur à zéro (réglable) ; le record, les statistiques et le classement sont conservés.
+- Commande /counting : status (état, record, classement), setup (salon + activation, Gérer le serveur) et reset. Désactivé par défaut sur tous les serveurs, comme les nouveaux modules ; il apparaît dans /module, /setup (menu « Communauté & animation », préréglage Communauté) et l'étape « Modules » de l'assistant.
+- Page dashboard « Comptage » : nombre actuel, record, justes / erreurs, classement, choix du salon, interrupteurs (jeu actif, remise à zéro, deux nombres de suite) et remise à zéro ; elle se met à jour toute seule pendant que les membres comptent. Nouvelle icône, entrée dans le hub et la palette Ctrl K.
+- Nouveau test automatisé du jeu (déroulement, erreurs, records, réglages, grands nombres).
+
 ## v1.28.85 — 2026-09-25
 
 **/play : réponse immédiate, connexion vocale en arrière-plan**

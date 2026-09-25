@@ -35041,6 +35041,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_85_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_85_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_85_de);
 
+const v1_28_86_fr: ChangelogEntry = {
+  version: "v1.28.86",
+  date: "2026-09-25",
+  title: "Nouveau module : Comptage",
+  items: [
+    "Jeu collectif : les membres comptent 1, 2, 3… à tour de rôle dans un salon dédié. Un message qui commence par un nombre est vérifié (✅ juste, 🏆 nouveau record, ❌ erreur) ; les autres messages du salon sont ignorés, on peut discuter. Une erreur remet le compteur à zéro (réglable) ; le record, les statistiques et le classement sont conservés.",
+    "Commande /counting : status (état, record, classement), setup (salon + activation, Gérer le serveur) et reset. Désactivé par défaut sur tous les serveurs, comme les nouveaux modules ; il apparaît dans /module, /setup (menu « Communauté & animation », préréglage Communauté) et l'étape « Modules » de l'assistant.",
+    "Page dashboard « Comptage » : nombre actuel, record, justes / erreurs, classement, choix du salon, interrupteurs (jeu actif, remise à zéro, deux nombres de suite) et remise à zéro ; elle se met à jour toute seule pendant que les membres comptent. Nouvelle icône, entrée dans le hub et la palette Ctrl K.",
+    "Nouveau test automatisé du jeu (déroulement, erreurs, records, réglages, grands nombres).",
+  ],
+};
+
+const v1_28_86_en: ChangelogEntry = {
+  version: "v1.28.86",
+  date: "2026-09-25",
+  title: "New module: Counting",
+  items: [
+    "Collective game: members count 1, 2, 3… in turn in a dedicated channel. A message starting with a number is checked (✅ correct, 🏆 new record, ❌ mistake); other messages in the channel are ignored, so people can chat. A mistake resets the counter to zero (configurable); the record, stats and leaderboard are kept.",
+    "/counting command: status (state, record, leaderboard), setup (channel + activation, Manage Server) and reset. Disabled by default on every server, like new modules; it appears in /module, /setup (\"Community & fun\" menu, Community preset) and the wizard's \"Modules\" step.",
+    "\"Counting\" dashboard page: current number, record, correct / mistakes, leaderboard, channel choice, switches (game on, reset on mistake, back-to-back numbers) and reset; it updates by itself while members count. New icon, hub entry and Ctrl K palette entry.",
+    "New automated game test (flow, mistakes, records, settings, large numbers).",
+  ],
+};
+
+const v1_28_86_es: ChangelogEntry = {
+  version: "v1.28.86",
+  date: "2026-09-25",
+  title: "Módulo nuevo: Cuenta",
+  items: [
+    "Juego colectivo: los miembros cuentan 1, 2, 3… por turnos en un canal dedicado. Se comprueba un mensaje que empieza por un número (✅ correcto, 🏆 nuevo récord, ❌ error); los demás mensajes del canal se ignoran, se puede charlar. Un error pone el contador a cero (configurable); el récord, las estadísticas y la clasificación se conservan.",
+    "Comando /counting: status (estado, récord, clasificación), setup (canal + activación, Gestionar el servidor) y reset. Desactivado por defecto en todos los servidores, como los módulos nuevos; aparece en /module, /setup (menú «Comunidad y diversión», ajuste Comunidad) y en el paso «Módulos» del asistente.",
+    "Página del dashboard «Cuenta»: número actual, récord, aciertos / errores, clasificación, elección del canal, interruptores (juego activo, reinicio al fallar, dos números seguidos) y reinicio; se actualiza sola mientras los miembros cuentan. Icono nuevo, entrada en el hub y en la paleta Ctrl K.",
+    "Nueva prueba automática del juego (desarrollo, errores, récords, ajustes, números grandes).",
+  ],
+};
+
+const v1_28_86_de: ChangelogEntry = {
+  version: "v1.28.86",
+  date: "2026-09-25",
+  title: "Neues Modul: Zählen",
+  items: [
+    "Gemeinschaftsspiel: Die Mitglieder zählen abwechselnd 1, 2, 3… in einem eigenen Kanal. Eine Nachricht, die mit einer Zahl beginnt, wird geprüft (✅ richtig, 🏆 neuer Rekord, ❌ Fehler); andere Nachrichten im Kanal werden ignoriert, man kann also plaudern. Ein Fehler setzt den Zähler auf null zurück (einstellbar); Rekord, Statistik und Rangliste bleiben erhalten.",
+    "Befehl /counting: status (Stand, Rekord, Rangliste), setup (Kanal + Aktivierung, Server verwalten) und reset. Auf allen Servern standardmäßig deaktiviert, wie neue Module; er erscheint in /module, /setup (Menü „Community & Spaß“, Voreinstellung Community) und im Schritt „Module“ des Assistenten.",
+    "Dashboard-Seite „Zählen“: aktuelle Zahl, Rekord, richtig / Fehler, Rangliste, Kanalauswahl, Schalter (Spiel aktiv, Rücksetzen bei Fehler, zwei Zahlen hintereinander) und Zurücksetzen; sie aktualisiert sich von selbst, während gezählt wird. Neues Symbol, Eintrag im Hub und in der Ctrl-K-Palette.",
+    "Neuer automatischer Spieltest (Ablauf, Fehler, Rekorde, Einstellungen, große Zahlen).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_86_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_86_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_86_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_86_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -12,6 +12,7 @@ import { starboardStorage } from '../modules/starboard/storage/starboardStorage.
 import { birthdayStorage } from '../modules/birthdays/storage/birthdayStorage.js';
 import { economyStorage } from '../modules/economy/storage/economyStorage.js';
 import { afkStorage } from '../modules/afk/storage/afkStorage.js';
+import { countingStorage } from '../modules/counting/storage/countingStorage.js';
 import { serverStatsStorage } from '../modules/serverStats/storage/serverStatsStorage.js';
 import { ticketRepository } from '../modules/tickets/storage/ticketRepository.js';
 import { emitConfigUpdated } from './syncConfigEmitter.js';
@@ -196,6 +197,14 @@ export const MODULES: ModuleDef[] = [
     own: { get: (g) => afkStorage.getConfig(g).enabled, set: (g, enabled) => void afkStorage.updateConfig(g, { enabled }) },
   },
   {
+    id: 'counting',
+    label: 'Comptage',
+    emoji: '🔢',
+    description: 'Jeu collectif : compter 1, 2, 3… à tour de rôle dans un salon.',
+    commands: ['counting'],
+    own: { get: (g) => countingStorage.getConfig(g).enabled, set: (g, enabled) => void countingStorage.updateConfig(g, { enabled }) },
+  },
+  {
     id: 'serverstats',
     label: 'Stats du serveur',
     emoji: '📊',
@@ -287,7 +296,7 @@ export const CORE_MODULE_IDS: readonly string[] = ['moderation', 'music', 'remin
 
 export type ModulePresetId = 'minimal' | 'community' | 'security' | 'all';
 
-const COMMUNITY_IDS = ['welcome', 'roles', 'leveling', 'economy', 'suggestions', 'polls', 'giveaways', 'events', 'forms', 'starboard', 'highlights', 'birthdays', 'voice', 'tickets', 'invites', 'afk', 'serverstats', 'sticky', 'commands'];
+const COMMUNITY_IDS = ['welcome', 'roles', 'leveling', 'economy', 'suggestions', 'polls', 'giveaways', 'events', 'forms', 'starboard', 'highlights', 'birthdays', 'voice', 'tickets', 'invites', 'afk', 'counting', 'serverstats', 'sticky', 'commands'];
 const SECURITY_IDS = ['security', 'anti-nuke', 'automod', 'logs', 'welcome', 'tickets', 'backups'];
 
 /** Ensembles de modules proposés par la configuration rapide (le socle est toujours inclus). */

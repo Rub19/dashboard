@@ -56,7 +56,7 @@ const GROUPS: Array<{ id: 'protect' | 'community'; placeholder: string; moduleId
   {
     id: 'community',
     placeholder: '🎉 Communauté & animation',
-    moduleIds: ['welcome', 'roles', 'leveling', 'economy', 'suggestions', 'polls', 'giveaways', 'events', 'forms', 'starboard', 'highlights', 'birthdays', 'music', 'voice', 'commands', 'tags', 'reminders', 'sticky', 'afk', 'serverstats', 'ai'],
+    moduleIds: ['welcome', 'roles', 'leveling', 'economy', 'suggestions', 'polls', 'giveaways', 'events', 'forms', 'starboard', 'highlights', 'birthdays', 'music', 'voice', 'commands', 'tags', 'reminders', 'sticky', 'afk', 'counting', 'serverstats', 'ai'],
   },
 ];
 

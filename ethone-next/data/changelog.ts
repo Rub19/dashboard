@@ -34302,6 +34302,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_70_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_70_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_70_de);
 
+const v1_28_71_fr: ChangelogEntry = {
+  version: "v1.28.71",
+  date: "2026-09-25",
+  title: "Site du bot : refonte visuelle",
+  items: [
+    "Page du bot (discord.ethone.dev) refaite : barre de navigation fixe et floutée avec menu mobile, fond quadrillé avec halos de couleur, et un aperçu de l'interface dans le hero (interrupteurs de modules ON/OFF et message de bienvenue en embed).",
+    "Fonctionnalités en grille asymétrique avec icônes teintées et effet de survol ; section « Comment ça marche » en 3 étapes ; bloc final d'appel à l'action ; apparition douce au défilement (désactivée avec « réduire les animations »).",
+    "Les chiffres (serveurs, membres, commandes) et la liste des commandes restent lus sur le bot : aucun chiffre inventé, blocs masqués si l'API ne répond pas.",
+    "Correctif : la barre du haut n'affichait plus un rectangle gris hérité de la feuille de style du dashboard.",
+  ],
+};
+
+const v1_28_71_en: ChangelogEntry = {
+  version: "v1.28.71",
+  date: "2026-09-25",
+  title: "Bot website: visual overhaul",
+  items: [
+    "Bot page (discord.ethone.dev) redesigned: sticky blurred navigation with a mobile menu, grid background with colored glows, and an interface preview in the hero (module ON/OFF switches and an embed welcome message).",
+    "Features in an asymmetric grid with tinted icons and hover effect; a 3-step \"How it works\" section; a closing call to action; gentle reveal on scroll (disabled with \"reduce motion\").",
+    "Counters (servers, members, commands) and the command list are still read from the bot: no invented numbers, blocks hidden if the API does not answer.",
+    "Fix: the top bar no longer shows a gray rectangle inherited from the dashboard stylesheet.",
+  ],
+};
+
+const v1_28_71_es: ChangelogEntry = {
+  version: "v1.28.71",
+  date: "2026-09-25",
+  title: "Web del bot: rediseño visual",
+  items: [
+    "Página del bot (discord.ethone.dev) rediseñada: navegación fija con desenfoque y menú móvil, fondo cuadriculado con halos de color y una vista previa de la interfaz en el hero (interruptores de módulos ON/OFF y mensaje de bienvenida en embed).",
+    "Funciones en una cuadrícula asimétrica con iconos teñidos y efecto al pasar el ratón; sección «Cómo funciona» en 3 pasos; llamada a la acción final; aparición suave al desplazarse (desactivada con «reducir animaciones»).",
+    "Los contadores (servidores, miembros, comandos) y la lista de comandos siguen leyéndose del bot: ninguna cifra inventada, bloques ocultos si la API no responde.",
+    "Corrección: la barra superior ya no muestra un rectángulo gris heredado de la hoja de estilos del dashboard.",
+  ],
+};
+
+const v1_28_71_de: ChangelogEntry = {
+  version: "v1.28.71",
+  date: "2026-09-25",
+  title: "Bot-Website: visuelle Überarbeitung",
+  items: [
+    "Bot-Seite (discord.ethone.dev) neu gestaltet: feste, unscharf hinterlegte Navigation mit Mobilmenü, Rasterhintergrund mit Farbschimmern und eine Oberflächenvorschau im Hero (Modul-Schalter AN/AUS und Willkommensnachricht als Embed).",
+    "Funktionen in einem asymmetrischen Raster mit getönten Symbolen und Hover-Effekt; Abschnitt „So funktioniert es“ in 3 Schritten; abschließender Aufruf zum Handeln; sanftes Einblenden beim Scrollen (deaktiviert bei „Animationen reduzieren“).",
+    "Zahlen (Server, Mitglieder, Befehle) und die Befehlsliste werden weiterhin vom Bot gelesen: keine erfundenen Zahlen, Blöcke werden ausgeblendet, wenn die API nicht antwortet.",
+    "Korrektur: Die obere Leiste zeigt kein graues Rechteck mehr, das aus dem Dashboard-Stylesheet stammte.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_71_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_71_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_71_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_71_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

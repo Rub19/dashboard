@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.71 — 2026-09-25
+
+**Site du bot : refonte visuelle**
+
+- Page du bot (discord.ethone.dev) refaite : barre de navigation fixe et floutée avec menu mobile, fond quadrillé avec halos de couleur, et un aperçu de l'interface dans le hero (interrupteurs de modules ON/OFF et message de bienvenue en embed).
+- Fonctionnalités en grille asymétrique avec icônes teintées et effet de survol ; section « Comment ça marche » en 3 étapes ; bloc final d'appel à l'action ; apparition douce au défilement (désactivée avec « réduire les animations »).
+- Les chiffres (serveurs, membres, commandes) et la liste des commandes restent lus sur le bot : aucun chiffre inventé, blocs masqués si l'API ne répond pas.
+- Correctif : la barre du haut n'affichait plus un rectangle gris hérité de la feuille de style du dashboard.
+
 ## v1.28.70 — 2026-09-24
 
 **/play plus rapide, alertes de sécurité en embeds, bio du bot**

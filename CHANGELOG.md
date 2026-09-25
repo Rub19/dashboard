@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.79 — 2026-09-25
+
+**Connexion par code réparée, XP désactivé, favicon**
+
+- Connexion par code e-mail : le script de vérification anti-robot (Cloudflare Turnstile) était bloqué par la politique de sécurité du site, donc aucun jeton n'était envoyé et le Worker répondait « requête invalide » (affiché « Identifiants invalides »). Le domaine challenges.cloudflare.com est maintenant autorisé pour les scripts et les cadres.
+- Système d'XP / niveaux : désactivé sur tous les serveurs, y compris ceux où le bot est déjà présent (migration unique au prochain démarrage du bot, plus de message « Progression de niveau »). Il reste réactivable ensuite depuis le dashboard, /module ou /setup, sans être recoupé au redémarrage suivant.
+- Icône de l'onglet : l'ancienne icône (hexagone) est remplacée par le logo « E » (favicon.ico régénéré en 16/32/48/64 px ; l'adresse /icons/favicon.ico existe enfin).
+- Nouveau test automatisé de la migration (appliquée une fois, jamais rejouée).
+
 ## v1.28.78 — 2026-09-25
 
 **Nouveaux serveurs : tout désactivé sauf le socle, configuration rapide**

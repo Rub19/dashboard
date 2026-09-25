@@ -34718,6 +34718,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_78_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_78_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_78_de);
 
+const v1_28_79_fr: ChangelogEntry = {
+  version: "v1.28.79",
+  date: "2026-09-25",
+  title: "Connexion par code réparée, XP désactivé, favicon",
+  items: [
+    "Connexion par code e-mail : le script de vérification anti-robot (Cloudflare Turnstile) était bloqué par la politique de sécurité du site, donc aucun jeton n'était envoyé et le Worker répondait « requête invalide » (affiché « Identifiants invalides »). Le domaine challenges.cloudflare.com est maintenant autorisé pour les scripts et les cadres.",
+    "Système d'XP / niveaux : désactivé sur tous les serveurs, y compris ceux où le bot est déjà présent (migration unique au prochain démarrage du bot, plus de message « Progression de niveau »). Il reste réactivable ensuite depuis le dashboard, /module ou /setup, sans être recoupé au redémarrage suivant.",
+    "Icône de l'onglet : l'ancienne icône (hexagone) est remplacée par le logo « E » (favicon.ico régénéré en 16/32/48/64 px ; l'adresse /icons/favicon.ico existe enfin).",
+    "Nouveau test automatisé de la migration (appliquée une fois, jamais rejouée).",
+  ],
+};
+
+const v1_28_79_en: ChangelogEntry = {
+  version: "v1.28.79",
+  date: "2026-09-25",
+  title: "Code sign-in fixed, XP disabled, favicon",
+  items: [
+    "Email-code sign-in: the anti-bot verification script (Cloudflare Turnstile) was blocked by the site's security policy, so no token was sent and the Worker answered \"invalid request\" (shown as \"Invalid credentials\"). The challenges.cloudflare.com domain is now allowed for scripts and frames.",
+    "XP / levels system: disabled on all servers, including those where the bot is already present (one-time migration at the next bot start, no more \"Level progression\" message). It can be re-enabled afterwards from the dashboard, /module or /setup without being cut again at the next restart.",
+    "Tab icon: the old icon (hexagon) is replaced by the \"E\" logo (favicon.ico regenerated at 16/32/48/64 px; the /icons/favicon.ico address finally exists).",
+    "New automated migration test (applied once, never replayed).",
+  ],
+};
+
+const v1_28_79_es: ChangelogEntry = {
+  version: "v1.28.79",
+  date: "2026-09-25",
+  title: "Inicio de sesión por código reparado, XP desactivado, favicon",
+  items: [
+    "Inicio de sesión por código de correo: el script de verificación antirrobot (Cloudflare Turnstile) estaba bloqueado por la política de seguridad del sitio, así que no se enviaba ningún token y el Worker respondía «solicitud inválida» (mostrado como «Credenciales inválidas»). El dominio challenges.cloudflare.com ahora está permitido para scripts y marcos.",
+    "Sistema de XP / niveles: desactivado en todos los servidores, incluidos aquellos donde el bot ya está presente (migración única en el próximo inicio del bot, sin más mensajes «Progreso de nivel»). Después se puede reactivar desde el dashboard, /module o /setup sin que se vuelva a cortar en el siguiente reinicio.",
+    "Icono de la pestaña: el icono antiguo (hexágono) se sustituye por el logo «E» (favicon.ico regenerado en 16/32/48/64 px; la dirección /icons/favicon.ico por fin existe).",
+    "Nueva prueba automática de la migración (aplicada una vez, nunca repetida).",
+  ],
+};
+
+const v1_28_79_de: ChangelogEntry = {
+  version: "v1.28.79",
+  date: "2026-09-25",
+  title: "Code-Anmeldung repariert, XP deaktiviert, Favicon",
+  items: [
+    "Anmeldung per E-Mail-Code: Das Anti-Bot-Prüfskript (Cloudflare Turnstile) wurde von der Sicherheitsrichtlinie der Website blockiert, sodass kein Token gesendet wurde und der Worker „ungültige Anfrage“ antwortete (angezeigt als „Ungültige Zugangsdaten“). Die Domain challenges.cloudflare.com ist jetzt für Skripte und Frames erlaubt.",
+    "XP-/Level-System: auf allen Servern deaktiviert, auch dort, wo der Bot schon ist (einmalige Migration beim nächsten Bot-Start, keine „Levelfortschritt“-Nachricht mehr). Danach lässt es sich über Dashboard, /module oder /setup wieder aktivieren, ohne beim nächsten Neustart erneut abgeschaltet zu werden.",
+    "Tab-Symbol: Das alte Symbol (Sechseck) wird durch das „E“-Logo ersetzt (favicon.ico in 16/32/48/64 px neu erzeugt; die Adresse /icons/favicon.ico existiert jetzt).",
+    "Neuer automatischer Migrationstest (einmal angewendet, nie wiederholt).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_79_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_79_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_79_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_79_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

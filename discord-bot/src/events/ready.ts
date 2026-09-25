@@ -9,6 +9,7 @@ import { inviteService } from '../modules/invites/services/inviteService.js';
 import { voiceService } from '../modules/voice/services/voiceService.js';
 import { backupService } from '../modules/backup/services/backupService.js';
 import { aiService } from '../modules/ai/services/aiService.js';
+import { runModuleMigrations } from '../services/moduleMigrations.js';
 import { logger } from '../utils/logger.js';
 
 const BOT_SITE_URL = 'https://discord.ethone.dev';
@@ -46,6 +47,9 @@ export async function onReady(client: Client<true>) {
   });
 
   void syncBotBio(client);
+
+  // Migrations uniques de modules (ex. XP désactivé partout), avant tout démarrage de module
+  runModuleMigrations(client);
 
   // Déploiement automatique des slash commands au démarrage
   await commandRegistry.deploySlashCommands();

@@ -166,11 +166,11 @@ class AutoModRepository {
     return touched;
   }
 
-  /** Migration : la détection « Liens externes » (désactivée) bloque désormais tous les liens hors domaines autorisés, comme son nom l'indique. */
+  /** Migration : la détection « Liens externes » (activée ou non) bloque désormais tous les liens hors domaines autorisés, comme son nom l'indique. */
   public alignExternalLinksDetector(): number {
     let touched = 0;
     for (const [guildId, conf] of this.configs) {
-      if (conf.links.enabled || conf.links.blockAllLinks) continue;
+      if (conf.links.blockAllLinks) continue;
       this.configs.set(guildId, AutoModConfigSchema.parse({ ...conf, links: { ...conf.links, blockAllLinks: true } }));
       touched++;
     }

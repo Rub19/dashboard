@@ -19,7 +19,7 @@ const client = { guilds: { cache: new Map([['g1', { id: 'g1' }], ['g2', { id: 'g
 
 ok(reg.isModuleEnabled('g1', 'leveling'), 'avant : l’XP est actif sur les serveurs existants');
 const first = runModuleMigrations(client);
-ok(first.includes('2026-09-25-disable-leveling-everywhere') && first.includes('2026-09-25-automod-everything-off') && first.includes('2026-09-25-automod-external-links-all'), 'les migrations (XP coupé, AutoMod coupé) sont appliquées au premier démarrage');
+ok(first.includes('2026-09-25-disable-leveling-everywhere') && first.includes('2026-09-25-automod-everything-off') && first.includes('2026-09-25-automod-external-links-all-b'), 'les migrations (XP coupé, AutoMod coupé) sont appliquées au premier démarrage');
 ok(['g1', 'g2', 'g3'].every((g) => !reg.isModuleEnabled(g, 'leveling')), 'l’XP est désactivé sur les 3 serveurs');
 ok(['g1', 'g2', 'g3'].every((g) => reg.isModuleEnabled(g, 'music') && reg.isModuleEnabled(g, 'economy')), 'les autres modules ne sont pas touchés');
 

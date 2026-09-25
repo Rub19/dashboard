@@ -23,7 +23,7 @@ const MIGRATIONS: ModuleMigration[] = [
   { id: '2026-09-25-disable-leveling-everywhere', disable: ['leveling'] },
   // Demande du propriétaire : AutoMod entièrement désactivé (détecteurs et sanctions automatiques compris), à réactiver au choix.
   { id: '2026-09-25-automod-everything-off', disable: [], run: () => autoModRepository.turnEverythingOff() },
-  { id: '2026-09-25-automod-external-links-all', disable: [], run: () => autoModRepository.alignExternalLinksDetector() },
+  { id: '2026-09-25-automod-external-links-all-b', disable: [], run: () => autoModRepository.alignExternalLinksDetector() },
 ];
 
 const FILE = path.resolve(process.cwd(), 'data', 'module_migrations.json');

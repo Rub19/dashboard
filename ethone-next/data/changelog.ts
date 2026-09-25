@@ -35831,6 +35831,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_99_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_99_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_99_de);
 
+const v1_28_100_fr: ChangelogEntry = {
+  version: "v1.28.100",
+  date: "2026-09-25",
+  title: "Pages liste des modules : correction effective",
+  items: [
+    "La correction de la 1.28.99 (pages liste de Sondages, Formulaires, Événements, Tickets, Sauvegardes, Membres et Salons du serveur qui affichaient une page de démonstration) n'était pas prise en compte par l'hébergeur ; elle utilise maintenant des règles de redirection acceptées.",
+  ],
+};
+
+const v1_28_100_en: ChangelogEntry = {
+  version: "v1.28.100",
+  date: "2026-09-25",
+  title: "Module list pages: fix now in effect",
+  items: [
+    "The 1.28.99 fix (list pages for Polls, Forms, Events, Tickets, Backups, Server members and channels that showed a demo page) was not applied by the host; it now uses redirect rules the host accepts.",
+  ],
+};
+
+const v1_28_100_es: ChangelogEntry = {
+  version: "v1.28.100",
+  date: "2026-09-25",
+  title: "Páginas de lista de los módulos: corrección efectiva",
+  items: [
+    "La corrección de la 1.28.99 (páginas de lista de Sondeos, Formularios, Eventos, Tickets, Copias de seguridad, Miembros y Canales del servidor que mostraban una página de demostración) no fue aplicada por el alojamiento; ahora usa reglas de redirección aceptadas.",
+  ],
+};
+
+const v1_28_100_de: ChangelogEntry = {
+  version: "v1.28.100",
+  date: "2026-09-25",
+  title: "Listenseiten der Module: Korrektur jetzt wirksam",
+  items: [
+    "Die Korrektur aus 1.28.99 (Listenseiten von Umfragen, Formularen, Events, Tickets, Backups, Servermitgliedern und -kanälen zeigten eine Demo-Seite) wurde vom Hosting nicht übernommen; sie verwendet jetzt Weiterleitungsregeln, die akzeptiert werden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_100_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_100_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_100_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_100_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

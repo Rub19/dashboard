@@ -1,10 +1,15 @@
 # Cloudflare Pages SPA Rewrites & Dynamic Route Fallbacks
+#
+# Règles pour les routes dynamiques ([id]) d'un export statique : un identifiant réel n'a pas de fichier, on sert la page « demo »
+# et le composant lit l'identifiant dans l'adresse (usePathSegment).
+# ATTENTION : une règle `/x/*` attrape aussi `/x/` (la page liste elle-même) ; Pages applique les réécritures même quand le fichier existe.
+# On utilise donc `:id` (segment non vide, ne correspond jamais à la liste) et, pour les sous-pages statiques (create, compare, settings),
+# une réécriture vers leur `index.html` placée AVANT. Une réécriture vers la même adresse est ignorée par Pages (boucle) : ne pas l'utiliser.
 /boost/* /boost/ 200
 /browser/* /browser/ 200
 /discord/voice/rooms/* /discord/voice/rooms/demo/ 200
-/discord/tickets /discord/tickets/ 200
-/discord/tickets/ /discord/tickets/ 200
-/discord/tickets/* /discord/tickets/1/ 200
+/discord/tickets/:ticketId /discord/tickets/1/ 200
+/discord/tickets/:ticketId/ /discord/tickets/1/ 200
 /discord/invites/users/* /discord/invites/users/demo/ 200
 /discord/moderation/cases /discord/moderation/ 200
 /discord/moderation/cases/* /discord/moderation/cases/1/ 200
@@ -13,44 +18,38 @@
 /discord/forms/:id/responses/ /discord/forms/demo/responses/ 200
 /discord/forms/:id/settings /discord/forms/demo/settings/ 200
 /discord/forms/:id/settings/ /discord/forms/demo/settings/ 200
-/discord/forms /discord/forms/ 200
-/discord/forms/ /discord/forms/ 200
-/discord/forms/create /discord/forms/create/ 200
-/discord/forms/create/ /discord/forms/create/ 200
-/discord/forms/* /discord/forms/demo/ 200
-/discord/polls /discord/polls/ 200
-/discord/polls/ /discord/polls/ 200
-/discord/polls/create /discord/polls/create/ 200
-/discord/polls/create/ /discord/polls/create/ 200
+/discord/forms/create /discord/forms/create/index.html 200
+/discord/forms/create/ /discord/forms/create/index.html 200
+/discord/forms/:formId /discord/forms/demo/ 200
+/discord/forms/:formId/ /discord/forms/demo/ 200
 /discord/polls/:pollId/settings /discord/polls/demo/settings/ 200
 /discord/polls/:pollId/results /discord/polls/demo/results/ 200
 /discord/polls/:pollId/vote /discord/polls/demo/vote/ 200
 /discord/polls/:pollId/settings/ /discord/polls/demo/settings/ 200
 /discord/polls/:pollId/results/ /discord/polls/demo/results/ 200
 /discord/polls/:pollId/vote/ /discord/polls/demo/vote/ 200
-/discord/polls/* /discord/polls/demo/ 200
+/discord/polls/create /discord/polls/create/index.html 200
+/discord/polls/create/ /discord/polls/create/index.html 200
+/discord/polls/:pollId /discord/polls/demo/ 200
+/discord/polls/:pollId/ /discord/polls/demo/ 200
 /discord/events/:id/analytics /discord/events/demo/analytics/ 200
 /discord/events/:id/analytics/ /discord/events/demo/analytics/ 200
 /discord/events/:id/participants /discord/events/demo/participants/ 200
 /discord/events/:id/participants/ /discord/events/demo/participants/ 200
 /discord/events/:id/settings /discord/events/demo/settings/ 200
 /discord/events/:id/settings/ /discord/events/demo/settings/ 200
-/discord/events /discord/events/ 200
-/discord/events/ /discord/events/ 200
-/discord/events/create /discord/events/create/ 200
-/discord/events/create/ /discord/events/create/ 200
-/discord/events/* /discord/events/demo/ 200
+/discord/events/create /discord/events/create/index.html 200
+/discord/events/create/ /discord/events/create/index.html 200
+/discord/events/:eventId /discord/events/demo/ 200
+/discord/events/:eventId/ /discord/events/demo/ 200
 /settings/* /settings/general/ 200
-/discord/backups /discord/backups/ 200
-/discord/backups/ /discord/backups/ 200
-/discord/backups/compare /discord/backups/compare/ 200
-/discord/backups/compare/ /discord/backups/compare/ 200
-/discord/backups/settings /discord/backups/settings/ 200
-/discord/backups/settings/ /discord/backups/settings/ 200
-/discord/backups/* /discord/backups/backup-1/ 200
-/discord/server/members /discord/server/members/ 200
-/discord/server/members/ /discord/server/members/ 200
-/discord/server/members/* /discord/server/members/1234567890/ 200
-/discord/server/channels /discord/server/channels/ 200
-/discord/server/channels/ /discord/server/channels/ 200
-/discord/server/channels/* /discord/server/channels/c-1/ 200
+/discord/backups/compare /discord/backups/compare/index.html 200
+/discord/backups/compare/ /discord/backups/compare/index.html 200
+/discord/backups/settings /discord/backups/settings/index.html 200
+/discord/backups/settings/ /discord/backups/settings/index.html 200
+/discord/backups/:backupId /discord/backups/backup-1/ 200
+/discord/backups/:backupId/ /discord/backups/backup-1/ 200
+/discord/server/members/:userId /discord/server/members/1234567890/ 200
+/discord/server/members/:userId/ /discord/server/members/1234567890/ 200
+/discord/server/channels/:channelId /discord/server/channels/c-1/ 200
+/discord/server/channels/:channelId/ /discord/server/channels/c-1/ 200

@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.100 — 2026-09-25
+
+**Pages liste des modules : correction effective**
+
+- La correction de la 1.28.99 (pages liste de Sondages, Formulaires, Événements, Tickets, Sauvegardes, Membres et Salons du serveur qui affichaient une page de démonstration) n'était pas prise en compte par l'hébergeur ; elle utilise maintenant des règles de redirection acceptées.
+
 ## v1.28.99 — 2026-09-25
 
 **Pages liste des modules ouvertes en direct**

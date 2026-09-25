@@ -31,6 +31,8 @@ import {
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import VoiceHubsPanel from "./VoiceHubsPanel";
+import { subscribeGuildLive } from "@/lib/guildLive";
 import { cn } from "@/lib/utils";
 import { formatApiError } from "@/lib/format-error";
 
@@ -229,6 +231,21 @@ export default function VoiceCenterClient() {
     fetchOverview().finally(() => setLoading(false));
   }, [fetchOverview]);
 
+  // Salons et hubs créés/modifiés depuis Discord ou un autre onglet : rechargement en direct.
+  useEffect(() => {
+    if (!guildId || !isBotPresent) return;
+    let t: ReturnType<typeof setTimeout> | null = null;
+    const unsub = subscribeGuildLive(guildId, (e) => {
+      if (e.type !== "CONFIG_UPDATED") return;
+      if (t) clearTimeout(t);
+      t = setTimeout(() => void fetchOverview(), 300);
+    });
+    return () => {
+      if (t) clearTimeout(t);
+      unsub();
+    };
+  }, [guildId, isBotPresent, fetchOverview]);
+
   // Execute Room action
   const handleRoomAction = async (roomId: string, action: string, value?: any) => {
     try {
@@ -243,24 +260,11 @@ export default function VoiceCenterClient() {
         await fetchOverview();
         return;
       }
-    } catch {
-      // Local fallback
+      const errJson = await res.json().catch(() => ({}));
+      showError(formatApiError(errJson.error, "Action impossible."));
+    } catch (err: any) {
+      showError(formatApiError(err, "Bot injoignable : l'action n'a pas été appliquée."));
     }
-
-    if (!data) return;
-    const updatedRooms = data.activeRooms
-      .map((r) => {
-        if (r.id === roomId) {
-          if (action === "lock") return { ...r, isLocked: true };
-          if (action === "unlock") return { ...r, isLocked: false };
-          if (action === "rename" && typeof value === "string") return { ...r, name: value };
-        }
-        return r;
-      })
-      .filter((r) => !(r.id === roomId && (action === "delete" || action === "cleanup")));
-
-    setData({ ...data, activeRooms: updatedRooms });
-    success("Action appliquée !");
   };
 
   // Publish Discord Creation Panel
@@ -698,40 +702,7 @@ export default function VoiceCenterClient() {
 
       {/* TAB CONTENT: Hubs */}
       {activeTab === "hubs" && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-base font-bold text-white">Hubs Join-to-Create</h3>
-              <p className="text-xs text-zinc-400">Salons déclencheurs créant des salons vocaux à la connexion</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {(data?.hubs || []).map((hub) => (
-              <div
-                key={hub.id}
-                className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 backdrop-blur-xl flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold text-white">{hub.name}</span>
-                    <span className={cn(
-                      "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase",
-                      hub.enabled ? "bg-emerald-500/10 text-emerald-400" : "bg-zinc-800 text-zinc-400"
-                    )}>
-                      {hub.enabled ? "Actif" : "Désactivé"}
-                    </span>
-                  </div>
-                  <div className="mt-2 space-y-1 text-xs text-zinc-400">
-                    <p>Modèle : <code className="text-zinc-300 font-mono bg-zinc-950 px-1.5 py-0.5 rounded">{hub.namingTemplate}</code></p>
-                    <p>Limite par défaut : {hub.userLimit > 0 ? `${hub.userLimit} membres` : "Illimitée"}</p>
-                    <p>Débit audio : {Math.round(hub.bitrate / 1000)} kbps</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <VoiceHubsPanel guildId={guildId} hubs={data?.hubs || []} onChanged={fetchOverview} />
       )}
 
       {/* TAB CONTENT: Analytics */}

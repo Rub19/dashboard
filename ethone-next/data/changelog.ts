@@ -35269,6 +35269,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_89_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_89_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_89_de);
 
+const v1_28_90_fr: ChangelogEntry = {
+  version: "v1.28.90",
+  date: "2026-09-25",
+  title: "Salons vocaux temporaires : installation en un clic et gestion des hubs",
+  items: [
+    "Nouvel écran d'accueil sur l'onglet Hubs avec aperçu du panneau de contrôle du salon et bouton « Créer mes salons temporaires » : le bot crée la catégorie « SALONS TEMPORAIRES » et le salon « Créer ton salon », puis active le module. Relancer ne crée aucun doublon.",
+    "Création, modification et suppression des hubs directement depuis le dashboard (nom, modèle de nom avec variables cliquables, limite de membres, débit, accès par défaut, numérotation, activation).",
+    "Un hub exige désormais un vrai salon vocal du serveur (fini le faux salon « channel_trigger ») ; un même salon ne peut pas servir à deux hubs ; seuls les champs prévus sont modifiables.",
+    "Le dashboard ne simule plus une action réussie quand le bot ne répond pas : l'erreur est affichée.",
+    "Mise à jour en direct de la liste des hubs lors d'un changement fait sur Discord ou dans un autre onglet.",
+  ],
+};
+
+const v1_28_90_en: ChangelogEntry = {
+  version: "v1.28.90",
+  date: "2026-09-25",
+  title: "Temporary voice channels: one-click setup and hub management",
+  items: [
+    "New welcome screen on the Hubs tab with a preview of the room control panel and a \"Create my temporary channels\" button: the bot creates the \"TEMPORARY CHANNELS\" category and the \"Create your channel\" channel, then enables the module. Running it again creates no duplicates.",
+    "Create, edit and delete hubs straight from the dashboard (name, naming template with clickable variables, member limit, bitrate, default access, numbering, enabled).",
+    "A hub now requires a real voice channel of the server (no more fake \"channel_trigger\"); one channel cannot serve two hubs; only the intended fields can be edited.",
+    "The dashboard no longer pretends an action succeeded when the bot does not answer: the error is shown.",
+    "The hub list refreshes live when something changes on Discord or in another tab.",
+  ],
+};
+
+const v1_28_90_es: ChangelogEntry = {
+  version: "v1.28.90",
+  date: "2026-09-25",
+  title: "Canales de voz temporales: instalación en un clic y gestión de hubs",
+  items: [
+    "Nueva pantalla de bienvenida en la pestaña Hubs con vista previa del panel de control del canal y el botón «Crear mis canales temporales»: el bot crea la categoría «CANALES TEMPORALES» y el canal «Crea tu canal», y activa el módulo. Repetirlo no crea duplicados.",
+    "Creación, edición y eliminación de hubs directamente desde el dashboard (nombre, plantilla de nombre con variables clicables, límite de miembros, bitrate, acceso por defecto, numeración, activación).",
+    "Un hub ahora exige un canal de voz real del servidor (se acabó el falso «channel_trigger»); un mismo canal no puede servir a dos hubs; solo se pueden editar los campos previstos.",
+    "El dashboard ya no simula una acción correcta cuando el bot no responde: se muestra el error.",
+    "La lista de hubs se actualiza en directo cuando algo cambia en Discord o en otra pestaña.",
+  ],
+};
+
+const v1_28_90_de: ChangelogEntry = {
+  version: "v1.28.90",
+  date: "2026-09-25",
+  title: "Temporäre Sprachkanäle: Einrichtung mit einem Klick und Hub-Verwaltung",
+  items: [
+    "Neuer Startbildschirm im Tab Hubs mit Vorschau des Kanal-Bedienfelds und der Schaltfläche „Meine temporären Kanäle erstellen“: Der Bot legt die Kategorie „TEMPORÄRE KANÄLE“ und den Kanal „Erstelle deinen Kanal“ an und aktiviert das Modul. Erneutes Ausführen erzeugt keine Duplikate.",
+    "Hubs direkt im Dashboard erstellen, bearbeiten und löschen (Name, Namensvorlage mit klickbaren Variablen, Mitgliederlimit, Bitrate, Standardzugang, Nummerierung, Aktivierung).",
+    "Ein Hub benötigt jetzt einen echten Sprachkanal des Servers (kein falscher „channel_trigger“ mehr); ein Kanal kann nicht zwei Hubs dienen; nur die vorgesehenen Felder sind änderbar.",
+    "Das Dashboard täuscht keinen Erfolg mehr vor, wenn der Bot nicht antwortet: Der Fehler wird angezeigt.",
+    "Die Hub-Liste aktualisiert sich live, wenn sich etwas auf Discord oder in einem anderen Tab ändert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_90_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_90_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_90_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_90_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -5,7 +5,7 @@ import { VoicePermissionService } from '../../modules/voice/services/voicePermis
 import { VoiceOwnershipService } from '../../modules/voice/services/voiceOwnershipService.js';
 import { TemporaryVoiceService } from '../../modules/voice/services/temporaryVoiceService.js';
 import { VoiceSessionService } from '../../modules/voice/services/voiceSessionService.js';
-import { VoiceHub } from '../../modules/voice/types/index.js';
+import { CreateHubSchema, UpdateHubSchema, VOICE_TEMPLATE_TOKENS, createHub, quickSetup, updateHub } from '../../modules/voice/services/voiceHubService.js';
 import { logger } from '../../utils/logger.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
@@ -70,91 +70,59 @@ export function createVoiceRouter(client: Client): Router {
     }
   });
 
-  // POST /api/guilds/:guildId/voice/hubs
-  router.post('/hubs', async (req: Request, res: Response) => {
+  // GET /api/guilds/:guildId/voice/hubs/tokens : variables utilisables dans le modèle de nom
+  router.get('/hubs/tokens', (_req: Request, res: Response) => {
+    res.json({ tokens: VOICE_TEMPLATE_TOKENS });
+  });
+
+  // POST /api/guilds/:guildId/voice/hubs/quick : catégorie + salon déclencheur + hub par défaut, module activé
+  router.post('/hubs/quick', rateLimit('CONFIG', { byGuild: true, actionName: 'voice_quick_setup' }), async (req: Request, res: Response) => {
+    const guildId = req.params.guildId as string;
+    const guild = client.guilds.cache.get(guildId);
+    if (!guild) return res.status(404).json({ error: 'Serveur Discord introuvable ou bot non connecté' });
     try {
-      const guildId = req.params.guildId as string;
-      const body = req.body;
-
-      let resolvedCategory = body.categoryId || null;
-      if (!resolvedCategory && body.channelId) {
-        const guild = client.guilds.cache.get(guildId);
-        const ch = guild?.channels.cache.get(body.channelId);
-        if (ch?.parentId) {
-          resolvedCategory = ch.parentId;
-        }
-      }
-
-      const newHub: VoiceHub = {
-        id: 'hub_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 6),
-        guildId,
-        name: body.name || 'Nouveau Hub',
-        categoryId: resolvedCategory,
-        channelId: body.channelId || 'channel_trigger',
-        type: body.type || 'voice',
-        namingTemplate: body.namingTemplate || "🎮 {username}'s Room",
-        userLimit: typeof body.userLimit === 'number' ? body.userLimit : 0,
-        bitrate: body.bitrate || 64000,
-        region: body.region || null,
-        allowedRoles: Array.isArray(body.allowedRoles) ? body.allowedRoles : [],
-        excludedRoles: Array.isArray(body.excludedRoles) ? body.excludedRoles : [],
-        roleRequirementMode: body.roleRequirementMode || 'any',
-        accessMode: body.accessMode || 'public',
-        autoNumbering: body.autoNumbering !== false,
-        enabled: body.enabled !== false,
-        createdAt: new Date().toISOString(),
-      };
-
-      voiceRepository.saveHub(newHub);
-      res.status(201).json({ hub: newHub });
+      const out = await quickSetup(guild);
+      emitConfigUpdated('voice', guildId, { hub: out.hub }, 'DASHBOARD', req.user?.id);
+      res.status(out.created ? 201 : 200).json({ success: true, ...out });
     } catch (err: any) {
-      logger.error('Erreur creation voice/hubs :', err);
-      res.status(500).json({ error: err.message });
+      res.status(400).json({ error: err?.message || 'Installation impossible' });
     }
+  });
+
+  // POST /api/guilds/:guildId/voice/hubs
+  router.post('/hubs', (req: Request, res: Response) => {
+    const guildId = req.params.guildId as string;
+    const guild = client.guilds.cache.get(guildId);
+    const parsed = CreateHubSchema.safeParse(req.body);
+    if (!guild) return res.status(404).json({ error: 'Serveur Discord introuvable ou bot non connecté' });
+    if (!parsed.success) return res.status(400).json({ error: 'Hub invalide : un salon vocal déclencheur est requis', details: parsed.error.flatten() });
+    const out = createHub(guild, parsed.data);
+    if (!out.hub) return res.status(400).json({ error: out.error });
+    emitConfigUpdated('voice', guildId, { hub: out.hub }, 'DASHBOARD', req.user?.id);
+    res.status(201).json({ hub: out.hub });
   });
 
   // PUT /api/guilds/:guildId/voice/hubs/:id
   router.put('/hubs/:id', (req: Request, res: Response) => {
-    try {
-      const guildId = req.params.guildId as string;
-      const id = req.params.id as string;
-      const existing = voiceRepository.getHubById(id);
-      if (!existing || existing.guildId !== guildId) {
-        return res.status(404).json({ error: 'Hub introuvable' });
-      }
-
-      let resolvedCategory = req.body.categoryId !== undefined ? req.body.categoryId : existing.categoryId;
-      const targetChannelId = req.body.channelId || existing.channelId;
-      if (!resolvedCategory && targetChannelId) {
-        const guild = client.guilds.cache.get(guildId);
-        const ch = guild?.channels.cache.get(targetChannelId);
-        if (ch?.parentId) {
-          resolvedCategory = ch.parentId;
-        }
-      }
-
-      const updated = voiceRepository.saveHub({
-        ...existing,
-        ...req.body,
-        categoryId: resolvedCategory,
-        id,
-        guildId,
-      });
-
-      res.json({ hub: updated });
-    } catch (err: any) {
-      logger.error('Erreur modification voice/hubs :', err);
-      res.status(500).json({ error: err.message });
-    }
+    const guildId = req.params.guildId as string;
+    const guild = client.guilds.cache.get(guildId);
+    const parsed = UpdateHubSchema.safeParse(req.body);
+    if (!guild) return res.status(404).json({ error: 'Serveur Discord introuvable ou bot non connecté' });
+    if (!parsed.success) return res.status(400).json({ error: 'Réglages du hub invalides', details: parsed.error.flatten() });
+    const out = updateHub(guild, req.params.id as string, parsed.data);
+    if (!out.hub) return res.status(out.notFound ? 404 : 400).json({ error: out.error });
+    emitConfigUpdated('voice', guildId, { hub: out.hub }, 'DASHBOARD', req.user?.id);
+    res.json({ hub: out.hub });
   });
 
-  // DELETE /api/guilds/:guildId/voice/hubs/:id
+  // DELETE /api/guilds/:guildId/voice/hubs/:id : retire le hub (le salon Discord n'est pas supprimé)
   router.delete('/hubs/:id', (req: Request, res: Response) => {
     try {
       const guildId = req.params.guildId as string;
-      const id = req.params.id as string;
-      const deleted = voiceRepository.deleteHub(guildId, id);
-      res.json({ success: deleted });
+      const deleted = voiceRepository.deleteHub(guildId, req.params.id as string);
+      if (!deleted) return res.status(404).json({ error: 'Hub introuvable' });
+      emitConfigUpdated('voice', guildId, { hubDeleted: req.params.id }, 'DASHBOARD', req.user?.id);
+      res.json({ success: true });
     } catch (err: any) {
       logger.error('Erreur suppression voice/hubs :', err);
       res.status(500).json({ error: err.message });

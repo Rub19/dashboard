@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.90 — 2026-09-25
+
+**Salons vocaux temporaires : installation en un clic et gestion des hubs**
+
+- Nouvel écran d'accueil sur l'onglet Hubs avec aperçu du panneau de contrôle du salon et bouton « Créer mes salons temporaires » : le bot crée la catégorie « SALONS TEMPORAIRES » et le salon « Créer ton salon », puis active le module. Relancer ne crée aucun doublon.
+- Création, modification et suppression des hubs directement depuis le dashboard (nom, modèle de nom avec variables cliquables, limite de membres, débit, accès par défaut, numérotation, activation).
+- Un hub exige désormais un vrai salon vocal du serveur (fini le faux salon « channel_trigger ») ; un même salon ne peut pas servir à deux hubs ; seuls les champs prévus sont modifiables.
+- Le dashboard ne simule plus une action réussie quand le bot ne répond pas : l'erreur est affichée.
+- Mise à jour en direct de la liste des hubs lors d'un changement fait sur Discord ou dans un autre onglet.
+
 ## v1.28.89 — 2026-09-25
 
 **Système de signalement**

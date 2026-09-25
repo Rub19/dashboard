@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.104 — 2026-09-25
+
+**Message « module désactivé » plus lisible**
+
+- Le message affiché quand une commande d'un module désactivé est utilisée montre maintenant le lien du dashboard tel quel, au lieu de la syntaxe de lien brute.
+
 ## v1.28.103 — 2026-09-25
 
 **Pages « créer » et « comparer » ouvertes correctement**

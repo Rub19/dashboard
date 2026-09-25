@@ -36015,6 +36015,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_103_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_103_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_103_de);
 
+const v1_28_104_fr: ChangelogEntry = {
+  version: "v1.28.104",
+  date: "2026-09-25",
+  title: "Message « module désactivé » plus lisible",
+  items: [
+    "Le message affiché quand une commande d'un module désactivé est utilisée montre maintenant le lien du dashboard tel quel, au lieu de la syntaxe de lien brute.",
+  ],
+};
+
+const v1_28_104_en: ChangelogEntry = {
+  version: "v1.28.104",
+  date: "2026-09-25",
+  title: "Clearer \"module disabled\" message",
+  items: [
+    "The message shown when a command from a disabled module is used now shows the dashboard link as is, instead of raw link syntax.",
+  ],
+};
+
+const v1_28_104_es: ChangelogEntry = {
+  version: "v1.28.104",
+  date: "2026-09-25",
+  title: "Mensaje de «módulo desactivado» más legible",
+  items: [
+    "El mensaje que aparece al usar un comando de un módulo desactivado muestra ahora el enlace del panel tal cual, en lugar de la sintaxis de enlace sin procesar.",
+  ],
+};
+
+const v1_28_104_de: ChangelogEntry = {
+  version: "v1.28.104",
+  date: "2026-09-25",
+  title: "Verständlichere Meldung „Modul deaktiviert“",
+  items: [
+    "Die Meldung bei der Nutzung eines Befehls eines deaktivierten Moduls zeigt den Dashboard-Link jetzt unverändert an, statt der rohen Link-Syntax.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_104_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_104_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_104_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_104_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

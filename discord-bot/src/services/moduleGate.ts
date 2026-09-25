@@ -37,7 +37,7 @@ export function disabledModuleEmbeds({ guildId, commandName, isStaff, prefix }: 
     embeds.push(
       noticeEmbed(
         'info',
-        `Vous pouvez réactiver ce module :\n• Sur Discord : ${enableWithCommand}\n• Depuis le dashboard : [${DASHBOARD_URL}](${DASHBOARD_URL}), interrupteur du module **${def.label}**.`,
+        `Vous pouvez réactiver ce module :\n• Sur Discord : ${enableWithCommand}\n• Depuis le dashboard : ${DASHBOARD_URL} (interrupteur du module **${def.label}**).`,
         { title: 'Réservé au staff' }
       )
     );

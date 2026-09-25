@@ -70,16 +70,16 @@ export interface PollSummary {
   type:
     | "SINGLE_CHOICE"
     | "MULTIPLE_CHOICE"
-    | "RANKED_CHOICE"
-    | "WEIGHTED_VOTING"
-    | "ANONYMOUS"
+    | "RANKING"
+    | "WEIGHTED_VOTE"
+    | "ANONYMOUS_POLL"
     | "YES_NO"
-    | "SATISFACTION_RATING"
-    | "DATE_SELECTION"
+    | "RATING"
+    | "ELECTION"
     | "APPROVAL";
-  status: "DRAFT" | "ACTIVE" | "PAUSED" | "ENDED";
+  status: "DRAFT" | "SCHEDULED" | "ACTIVE" | "PAUSED" | "ENDED" | "ARCHIVED";
   anonymity: "PUBLIC" | "ANONYMOUS" | "FULLY_ANONYMOUS";
-  resultsVisibility: "LIVE" | "AFTER_END" | "STAFF_ONLY";
+  resultsVisibility: "LIVE" | "AFTER_VOTE" | "AT_END" | "STAFF_ONLY";
   totalVotes: number;
   uniqueVoters: number;
   participationRate: number;
@@ -96,12 +96,12 @@ const DEMO_POLLS: PollSummary[] = [];
 const TYPE_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
   SINGLE_CHOICE: { label: "Choix Unique", color: "bg-indigo-500/10 text-indigo-400 border-indigo-500/30", icon: Vote },
   MULTIPLE_CHOICE: { label: "Choix Multiple", color: "bg-blue-500/10 text-blue-400 border-blue-500/30", icon: Layers },
-  RANKED_CHOICE: { label: "Vote Préférentiel", color: "bg-purple-500/10 text-purple-400 border-purple-500/30", icon: Award },
-  WEIGHTED_VOTING: { label: "Pondéré par Rôles", color: "bg-amber-500/10 text-amber-400 border-amber-500/30", icon: ShieldCheck },
-  ANONYMOUS: { label: "Bulletin Secret", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30", icon: Sparkles },
+  RANKING: { label: "Vote Préférentiel", color: "bg-purple-500/10 text-purple-400 border-purple-500/30", icon: Award },
+  WEIGHTED_VOTE: { label: "Pondéré par Rôles", color: "bg-amber-500/10 text-amber-400 border-amber-500/30", icon: ShieldCheck },
+  ANONYMOUS_POLL: { label: "Bulletin Secret", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30", icon: Sparkles },
   YES_NO: { label: "Oui / Non", color: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30", icon: CheckCircle2 },
-  SATISFACTION_RATING: { label: "Note Satisfaction", color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/30", icon: Sparkles },
-  DATE_SELECTION: { label: "Choix de Date", color: "bg-pink-500/10 text-pink-400 border-pink-500/30", icon: Calendar },
+  RATING: { label: "Note Satisfaction", color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/30", icon: Sparkles },
+  ELECTION: { label: "Élection", color: "bg-pink-500/10 text-pink-400 border-pink-500/30", icon: Calendar },
   APPROVAL: { label: "Approbation Staff", color: "bg-rose-500/10 text-rose-400 border-rose-500/30", icon: ShieldCheck },
 };
 
@@ -204,11 +204,14 @@ export default function PollsCenterClient() {
     const total = polls.length;
     const active = polls.filter((p) => p.status === "ACTIVE").length;
     const totalVotes = polls.reduce((acc, p) => acc + p.totalVotes, 0);
+    const withVotes = polls.filter((p) => p.totalVotes > 0);
     const avgParticipation =
-      total > 0
-        ? Math.round((polls.reduce((acc, p) => acc + p.participationRate, 0) / total) * 10) / 10
-        : 0;
-    return { total, active, totalVotes, avgParticipation };
+      withVotes.length > 0
+        ? Math.round((withVotes.reduce((acc, p) => acc + p.participationRate, 0) / withVotes.length) * 10) / 10
+        : null;
+    const anonymous = polls.filter((p) => p.anonymity !== "PUBLIC").length;
+    const hiddenResults = polls.filter((p) => p.resultsVisibility !== "LIVE").length;
+    return { total, active, totalVotes, avgParticipation, withVotes: withVotes.length, anonymous, hiddenResults };
   }, [polls]);
 
   const loadPolls = useCallback(async () => {
@@ -418,7 +421,9 @@ export default function PollsCenterClient() {
             </div>
             <div className="mt-2 flex items-center gap-1.5 text-xs text-purple-400">
               <TrendingUp className="h-3.5 w-3.5" />
-              +14% cette semaine
+              {kpis.total > 0 && kpis.totalVotes > 0
+                ? `${(kpis.totalVotes / kpis.total).toFixed(1)} voix par sondage en moyenne`
+                : "Aucun vote pour l'instant"}
             </div>
           </div>
 
@@ -430,28 +435,28 @@ export default function PollsCenterClient() {
               </div>
             </div>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-white">{kpis.avgParticipation}%</span>
+              <span className="text-2xl font-bold text-white">{kpis.avgParticipation === null ? "—" : `${kpis.avgParticipation}%`}</span>
               <span className="text-xs text-zinc-500">des membres éligibles</span>
             </div>
             <div className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              Excellent engagement
+              {kpis.withVotes > 0 ? `Calculée sur ${kpis.withVotes} sondage${kpis.withVotes > 1 ? "s" : ""} avec des votes` : "Pas encore de données"}
             </div>
           </div>
 
           <div className="relative overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-xl">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-zinc-400">Gouvernance & Sécurité</span>
+              <span className="text-xs font-medium text-zinc-400">Confidentialité</span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
                 <ShieldCheck className="h-4 w-4" />
               </div>
             </div>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-white">100%</span>
-              <span className="text-xs text-zinc-500">anti-fraude</span>
+              <span className="text-2xl font-bold text-white">{kpis.anonymous}</span>
+              <span className="text-xs text-zinc-500">anonyme{kpis.anonymous > 1 ? "s" : ""} sur {kpis.total}</span>
             </div>
             <div className="mt-2 flex items-center gap-1.5 text-xs text-amber-400">
-              Pondération rôles & secret
+              {kpis.hiddenResults} avec résultats masqués
             </div>
           </div>
         </div>

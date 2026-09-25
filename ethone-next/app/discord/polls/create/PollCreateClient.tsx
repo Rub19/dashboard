@@ -184,17 +184,14 @@ export default function PollCreateClient() {
   const [logicGate, setLogicGate] = useState<"ANY" | "ALL">("ANY");
   const [minAccountAgeDays, setMinAccountAgeDays] = useState(0);
   const [minGuildMembershipDays, setMinGuildMembershipDays] = useState(0);
-  const [roleWeights, setRoleWeights] = useState([
-    { roleId: "role-vip", roleName: "VIP", weightMultiplier: 2 },
-    { roleId: "role-booster", roleName: "Server Booster", weightMultiplier: 2 },
-  ]);
+  const [roleWeights, setRoleWeights] = useState<{ roleId: string; roleName: string; weightMultiplier: number }[]>([]);
 
   // Quorum & Anonymity state
   const [quorumEnabled, setQuorumEnabled] = useState(false);
   const [minParticipantsCount, setMinParticipantsCount] = useState(10);
   const [approvalThreshold, setApprovalThreshold] = useState(50);
   const [anonymity, setAnonymity] = useState<"PUBLIC" | "ANONYMOUS" | "FULLY_ANONYMOUS">("PUBLIC");
-  const [resultsVisibility, setResultsVisibility] = useState<"LIVE" | "AFTER_END" | "STAFF_ONLY">("LIVE");
+  const [resultsVisibility, setResultsVisibility] = useState<"LIVE" | "AFTER_VOTE" | "AT_END" | "STAFF_ONLY">("LIVE");
   const [allowVoteChange, setAllowVoteChange] = useState(true);
 
   // Panel state
@@ -263,77 +260,76 @@ export default function PollCreateClient() {
       return;
     }
 
+    if (!BOT_API_URL || !guildParam) {
+      showToast("Choisis d'abord un serveur où le bot est présent.", "error");
+      return;
+    }
+    if (publish && !targetChannel) {
+      showToast("Choisis le salon où publier le sondage.", "error");
+      setActiveTab("general");
+      return;
+    }
+
     setIsSubmitting(true);
+    const base = `${BOT_API_URL}/api/guilds/${guildParam}/polls`;
+    const call = async (url: string, body: unknown) => {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(body),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.success === false) throw new Error(data?.error || `Erreur ${res.status}`);
+      return data;
+    };
     try {
-      if (BOT_API_URL && guildParam) {
-        const payload = {
-          title: title.trim(),
-          description: description.trim(),
-          category,
-          pollType,
-          status: publish ? "ACTIVE" : "DRAFT",
-          endsAt: new Date(Date.now() + durationHours * 3600 * 1000).toISOString(),
-          questions: questions.map((q) => ({
-            title: q.title,
-            description: q.description,
-            required: q.required,
-            minSelections: q.minSelections,
-            maxSelections: q.maxSelections,
-            options: q.options.map((o) => ({
-              label: o.label,
-              emoji: o.emoji,
-              color: o.color,
-              description: o.description,
-              weight: o.weight,
-            })),
+      const created = await call(base, {
+        title: title.trim(),
+        description: description.trim(),
+        category,
+        type: pollType,
+        anonymity,
+        resultsVisibility,
+        allowVoteChange,
+        endsAt: new Date(Date.now() + durationHours * 3600 * 1000).toISOString(),
+        questions: questions.map((q, i) => ({
+          id: q.id,
+          title: q.title,
+          description: q.description,
+          type: pollType,
+          required: q.required,
+          minSelections: q.minSelections,
+          maxSelections: q.maxSelections,
+          order: i,
+          options: q.options.map((o) => ({
+            id: o.id,
+            label: o.label,
+            emoji: o.emoji,
+            color: o.color,
+            description: o.description,
+            weight: o.weight,
           })),
-          panelConfig: {
-            channelId: targetChannel,
-            color: panelColor,
-          },
-          eligibilityRules: {
-            minAccountAgeDays,
-            minGuildMembershipDays,
-            roleWeights,
-          },
-          securityConfig: {
-            anonymity,
-            quorumEnabled,
-            minParticipantsCount,
-            approvalThreshold,
-          },
-        };
+        })),
+        eligibility: { minAccountAgeDays, minGuildMembershipDays, logicGate },
+        roleWeights,
+        quorum: { enabled: quorumEnabled, minParticipantsCount, approvalThresholdPercentage: approvalThreshold },
+        panelConfig: { channelId: targetChannel, embedTitle: `📊 ${title.trim()}`, embedColor: panelColor },
+      });
+      const pollId = created.poll?.id;
+      if (!pollId) throw new Error("Le bot n'a pas renvoyé d'identifiant de sondage.");
 
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(payload),
-        });
-
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          throw new Error(data.error || "Erreur lors de la sauvegarde du sondage.");
-        }
-
-        const createdPollId = data.poll?.id || data.id;
-
-        if (publish && createdPollId && targetChannel) {
-          await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/${createdPollId}/panel/deploy`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ channelId: targetChannel }),
-          }).catch((err) => console.warn("Deploy error:", err));
+      if (!publish) {
+        showToast("Sondage enregistré comme brouillon.", "success");
+      } else {
+        await call(`${base}/${encodeURIComponent(pollId)}/publish`, {});
+        try {
+          await call(`${base}/${encodeURIComponent(pollId)}/panel/deploy`, { channelId: targetChannel });
+          showToast("Sondage publié dans le salon.", "success");
+        } catch (err: any) {
+          showToast(`Sondage créé et actif, mais le panneau n'a pas pu être publié : ${err?.message || "erreur inconnue"}`, "error");
         }
       }
-
-      showToast(
-        publish
-          ? "Sondage publié et déployé sur le salon avec succès !"
-          : "Sondage enregistré comme brouillon.",
-        "success"
-      );
       router.push(`/discord/polls?guildId=${guildParam}`);
     } catch (err: any) {
       showToast(err?.message || "Une erreur est survenue lors de l'enregistrement.", "error");
@@ -535,9 +531,9 @@ export default function PollCreateClient() {
                     { id: "SINGLE_CHOICE", label: "Choix Unique", desc: "1 seule réponse possible", icon: Vote },
                     { id: "MULTIPLE_CHOICE", label: "Choix Multiple", desc: "Plusieurs choix autorisés", icon: Layers },
                     { id: "APPROVAL", label: "Approbation / Rejet", desc: "Pour, Contre ou Abstention", icon: ShieldCheck },
-                    { id: "RANKED_CHOICE", label: "Vote Préférentiel", desc: "Classement des options par ordre", icon: Award },
-                    { id: "WEIGHTED_VOTING", label: "Pondéré Rôles", desc: "Multiplicateur de voix selon le rang", icon: Zap },
-                    { id: "SATISFACTION_RATING", label: "Score & Notation", desc: "Évaluation sur 5 étoiles ou note", icon: Sparkles },
+                    { id: "RANKING", label: "Vote Préférentiel", desc: "Classement des options par ordre", icon: Award },
+                    { id: "WEIGHTED_VOTE", label: "Pondéré Rôles", desc: "Multiplicateur de voix selon le rang", icon: Zap },
+                    { id: "RATING", label: "Score & Notation", desc: "Évaluation sur 5 étoiles ou note", icon: Sparkles },
                   ].map((item) => {
                     const Icon = item.icon;
                     const isSel = pollType === item.id;

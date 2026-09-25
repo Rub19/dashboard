@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.101 — 2026-09-25
+
+**Sondages : création depuis le dashboard réparée**
+
+- Sondages : créer ou publier un sondage depuis le dashboard échouait toujours (le bot refusait le corps envoyé) sans que l'écran le dise. La création, l'activation et la publication du panneau dans le salon fonctionnent maintenant, et l'écran n'annonce plus « publié » si le bot a refusé ou si le panneau n'a pas pu être envoyé.
+- Sondages : le bot renvoie une erreur claire (400) pour un sondage invalide au lieu d'une erreur 500, et vérifie aussi les modifications d'un sondage existant.
+- Sondages : les cartes de statistiques n'affichent plus « +14 % cette semaine », « Excellent engagement » ni « 100 % anti-fraude » inventés ; elles montrent des chiffres calculés ou un tiret. Les rôles de pondération fictifs « VIP » et « Server Booster » ne sont plus ajoutés d'office.
+- Sondages : les types de scrutin et la visibilité des résultats utilisent maintenant les mêmes valeurs que le bot (vote préférentiel, pondéré, notation).
+
 ## v1.28.100 — 2026-09-25
 
 **Pages liste des modules : correction effective**

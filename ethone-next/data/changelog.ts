@@ -35872,6 +35872,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_100_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_100_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_100_de);
 
+const v1_28_101_fr: ChangelogEntry = {
+  version: "v1.28.101",
+  date: "2026-09-25",
+  title: "Sondages : création depuis le dashboard réparée",
+  items: [
+    "Sondages : créer ou publier un sondage depuis le dashboard échouait toujours (le bot refusait le corps envoyé) sans que l'écran le dise. La création, l'activation et la publication du panneau dans le salon fonctionnent maintenant, et l'écran n'annonce plus « publié » si le bot a refusé ou si le panneau n'a pas pu être envoyé.",
+    "Sondages : le bot renvoie une erreur claire (400) pour un sondage invalide au lieu d'une erreur 500, et vérifie aussi les modifications d'un sondage existant.",
+    "Sondages : les cartes de statistiques n'affichent plus « +14 % cette semaine », « Excellent engagement » ni « 100 % anti-fraude » inventés ; elles montrent des chiffres calculés ou un tiret. Les rôles de pondération fictifs « VIP » et « Server Booster » ne sont plus ajoutés d'office.",
+    "Sondages : les types de scrutin et la visibilité des résultats utilisent maintenant les mêmes valeurs que le bot (vote préférentiel, pondéré, notation).",
+  ],
+};
+
+const v1_28_101_en: ChangelogEntry = {
+  version: "v1.28.101",
+  date: "2026-09-25",
+  title: "Polls: creating from the dashboard fixed",
+  items: [
+    "Polls: creating or publishing a poll from the dashboard always failed (the bot rejected the body sent) without the screen saying so. Creating, activating and posting the panel in the channel now work, and the screen no longer says \"published\" if the bot refused or the panel could not be sent.",
+    "Polls: the bot now returns a clear error (400) for an invalid poll instead of a 500, and also validates edits to an existing poll.",
+    "Polls: the statistics cards no longer show made-up \"+14% this week\", \"Excellent engagement\" or \"100% anti-fraud\"; they show computed numbers or a dash. The fictional \"VIP\" and \"Server Booster\" weighting roles are no longer added by default.",
+    "Polls: voting types and results visibility now use the same values as the bot (ranked, weighted, rating).",
+  ],
+};
+
+const v1_28_101_es: ChangelogEntry = {
+  version: "v1.28.101",
+  date: "2026-09-25",
+  title: "Sondeos: creación desde el panel reparada",
+  items: [
+    "Sondeos: crear o publicar un sondeo desde el panel fallaba siempre (el bot rechazaba el cuerpo enviado) sin que la pantalla lo dijera. La creación, la activación y la publicación del panel en el canal funcionan ahora, y la pantalla ya no dice «publicado» si el bot lo rechazó o no se pudo enviar el panel.",
+    "Sondeos: el bot devuelve un error claro (400) para un sondeo no válido en lugar de un 500, y también valida las modificaciones de un sondeo existente.",
+    "Sondeos: las tarjetas de estadísticas ya no muestran «+14 % esta semana», «Excelente participación» ni «100 % antifraude» inventados; muestran cifras calculadas o un guion. Los roles de ponderación ficticios «VIP» y «Server Booster» ya no se añaden por defecto.",
+    "Sondeos: los tipos de votación y la visibilidad de resultados usan ahora los mismos valores que el bot (preferencial, ponderado, valoración).",
+  ],
+};
+
+const v1_28_101_de: ChangelogEntry = {
+  version: "v1.28.101",
+  date: "2026-09-25",
+  title: "Umfragen: Erstellen im Dashboard repariert",
+  items: [
+    "Umfragen: Das Erstellen oder Veröffentlichen einer Umfrage im Dashboard schlug immer fehl (der Bot lehnte den gesendeten Inhalt ab), ohne dass der Bildschirm es meldete. Erstellen, Aktivieren und das Posten des Panels im Kanal funktionieren jetzt, und der Bildschirm meldet nicht mehr „veröffentlicht“, wenn der Bot abgelehnt hat oder das Panel nicht gesendet werden konnte.",
+    "Umfragen: Der Bot gibt bei einer ungültigen Umfrage einen klaren Fehler (400) statt eines 500 zurück und prüft auch Änderungen an bestehenden Umfragen.",
+    "Umfragen: Die Statistikkarten zeigen kein erfundenes „+14 % diese Woche“, „Ausgezeichnetes Engagement“ oder „100 % Betrugsschutz“ mehr; sie zeigen berechnete Zahlen oder einen Strich. Die fiktiven Gewichtungsrollen „VIP“ und „Server Booster“ werden nicht mehr automatisch hinzugefügt.",
+    "Umfragen: Abstimmungstypen und Ergebnis-Sichtbarkeit verwenden jetzt dieselben Werte wie der Bot (Rangfolge, gewichtet, Bewertung).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_101_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_101_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_101_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_101_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

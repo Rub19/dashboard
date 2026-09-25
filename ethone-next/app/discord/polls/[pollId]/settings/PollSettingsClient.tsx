@@ -49,7 +49,7 @@ export default function PollSettingsClient() {
   // Panneau du sondage tel que stocké par le bot : on ne modifie que la couleur et le salon, le reste est conservé.
   const [panelConfig, setPanelConfig] = useState<Record<string, unknown>>({});
   const [anonymity, setAnonymity] = useState<"PUBLIC" | "ANONYMOUS" | "FULLY_ANONYMOUS">("PUBLIC");
-  const [resultsVisibility, setResultsVisibility] = useState<"LIVE" | "AFTER_END" | "STAFF_ONLY">("LIVE");
+  const [resultsVisibility, setResultsVisibility] = useState<"LIVE" | "AFTER_VOTE" | "AT_END" | "STAFF_ONLY">("LIVE");
   const [allowVoteChange, setAllowVoteChange] = useState(true);
   const [allowVoteRetract, setAllowVoteRetract] = useState(false);
   const [panelColor, setPanelColor] = useState("#8b5cf6");
@@ -334,7 +334,8 @@ export default function PollSettingsClient() {
                   className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:outline-none"
                 >
                   <option value="LIVE">En direct (visible par tous immédiatement)</option>
-                  <option value="AFTER_END">Après la clôture du vote</option>
+                  <option value="AFTER_VOTE">Après avoir voté</option>
+                  <option value="AT_END">Après la clôture du vote</option>
                   <option value="STAFF_ONLY">Réservé au Staff uniquement</option>
                 </select>
               </div>

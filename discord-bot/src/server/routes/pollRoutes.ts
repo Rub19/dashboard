@@ -5,7 +5,7 @@ import { pollService } from '../../modules/polls/services/pollService.js';
 import { pollVotingService } from '../../modules/polls/services/pollVotingService.js';
 import { pollResultService } from '../../modules/polls/services/pollResultService.js';
 import { discordPollPanel } from '../../modules/polls/ui/discordPollPanel.js';
-import { DiscordPoll } from '../../modules/polls/types/index.js';
+import { DiscordPoll, DiscordPollSchema } from '../../modules/polls/types/index.js';
 import { requireStringParam } from '../utils/params.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
@@ -71,66 +71,67 @@ export function createPollRouter(client: Client): Router {
     const body = req.body || {};
     const user = (req as any).user || { id: 'admin', username: 'DashboardAdmin' };
 
-    const newPoll: DiscordPoll = {
-      id: body.id || `poll-${Date.now().toString(36)}`,
+    const uid = (prefix: string) => `${prefix}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+    const type = body.type || 'SINGLE_CHOICE';
+    const rawQuestions: any[] = Array.isArray(body.questions) && body.questions.length > 0
+      ? body.questions
+      : [
+          {
+            title: 'Quelle est votre option préférée ?',
+            options: [
+              { label: 'Option A', emoji: '🟢', color: '#10b981' },
+              { label: 'Option B', emoji: '🔵', color: '#3b82f6' },
+            ],
+          },
+        ];
+    const questions = rawQuestions.map((q: any, i: number) => ({
+      ...q,
+      id: q?.id || uid('q'),
+      order: q?.order ?? i,
+      type: q?.type ?? type,
+      options: (Array.isArray(q?.options) ? q.options : []).map((o: any) => ({ ...o, id: o?.id || uid('opt') })),
+    }));
+
+    const candidate = {
+      id: body.id || uid('poll'),
       guildId,
-      title: body.title || 'Nouveau Sondage',
+      title: typeof body.title === 'string' && body.title.trim() ? body.title.trim() : 'Nouveau Sondage',
       description: body.description || '',
       category: body.category || 'Communauté',
-      type: body.type || 'SINGLE_CHOICE',
+      type,
       status: 'DRAFT',
       creatorId: body.creatorId || user.id,
       creatorTag: body.creatorTag || user.username,
       resultsVisibility: body.resultsVisibility || 'LIVE',
       anonymity: body.anonymity || 'PUBLIC',
-      allowVoteChange: body.allowVoteModification ?? true,
+      allowVoteChange: body.allowVoteChange ?? body.allowVoteModification ?? true,
       allowVoteRetract: body.allowVoteRetract ?? false,
-      questions: body.questions || [
-        {
-          id: 'q1',
-          title: 'Quelle est votre option préférée ?',
-          description: '',
-          type: body.type || 'SINGLE_CHOICE',
-          required: true,
-          minSelections: 1,
-          maxSelections: 1,
-          order: 0,
-          options: [
-            { id: 'opt-1', label: 'Option A', description: '', emoji: '🟢', imageUrl: '', color: '#10b981', weight: 1, votesCount: 0, points: 0 },
-            { id: 'opt-2', label: 'Option B', description: '', emoji: '🔵', imageUrl: '', color: '#3b82f6', weight: 1, votesCount: 0, points: 0 },
-          ],
-        },
-      ],
-      eligibility: body.eligibility || {
-        allowedRoleIds: [],
-        forbiddenRoleIds: [],
-        minAccountAgeDays: 0,
-        minGuildMembershipDays: 0,
-        specificUserIds: [],
-        logicGate: 'ANY',
-      },
+      questions,
+      eligibility: body.eligibility || {},
       roleWeights: body.roleWeights || [],
-      quorum: body.quorum || {
-        enabled: false,
-        minParticipantsCount: 0,
-        minParticipationPercentage: 0,
-        approvalThresholdPercentage: 50,
-      },
-      panelConfig: body.panelConfig || {
-        channelId: '',
-        embedTitle: `📊 ${body.title || 'Sondage Officiel'}`,
-        embedDescription: 'Participez au vote ci-dessous en cliquant sur les options proposées.',
+      quorum: body.quorum || {},
+      panelConfig: {
+        embedTitle: `📊 ${typeof body.title === 'string' && body.title.trim() ? body.title.trim() : 'Sondage Officiel'}`,
         embedColor: '#6366f1',
-        thumbnailUrl: '',
-        imageUrl: '',
-        footerText: 'ETHONE Polls & Decisions 2.0',
-        buttonText: 'Voter',
-        showLiveResultsButton: true,
+        ...(body.panelConfig || {}),
       },
       automations: body.automations || [],
+      endsAt: body.endsAt,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
+
+    const parsed = DiscordPollSchema.safeParse(candidate);
+    if (!parsed.success) {
+      const issue = parsed.error.issues[0];
+      res.status(400).json({ success: false, error: `Sondage invalide (${issue.path.join('.') || 'corps'}) : ${issue.message}` });
+      return;
+    }
+    const newPoll: DiscordPoll = parsed.data;
+    if (newPoll.questions.some((q) => q.options.length < 2)) {
+      res.status(400).json({ success: false, error: 'Chaque question doit avoir au moins 2 options.' });
+      return;
+    }
 
     try {
       const saved = pollRepository.savePoll(newPoll);
@@ -164,15 +165,22 @@ export function createPollRouter(client: Client): Router {
       return res.status(404).json({ success: false, error: 'Sondage introuvable.' });
     }
 
-    const updated: DiscordPoll = {
+    const parsed = DiscordPollSchema.safeParse({
       ...existing,
       ...req.body,
       id: existing.id,
       guildId: existing.guildId,
+      creatorId: existing.creatorId,
+      creatorTag: existing.creatorTag,
+      createdAt: existing.createdAt,
       updatedAt: new Date().toISOString(),
-    };
+    });
+    if (!parsed.success) {
+      const issue = parsed.error.issues[0];
+      return res.status(400).json({ success: false, error: `Modification invalide (${issue.path.join('.') || 'corps'}) : ${issue.message}` });
+    }
 
-    const saved = pollRepository.savePoll(updated);
+    const saved = pollRepository.savePoll(parsed.data);
     emitConfigUpdated('polls', guildId, saved, 'DASHBOARD', req.user?.id);
     res.json({ success: true, poll: saved });
   });
@@ -213,6 +221,7 @@ export function createPollRouter(client: Client): Router {
     if (!result.success) {
       return res.status(400).json(result);
     }
+    emitConfigUpdated('polls', guildId, result.poll, 'DASHBOARD', req.user?.id);
     res.json(result);
   });
 
@@ -224,6 +233,7 @@ export function createPollRouter(client: Client): Router {
     if (!result.success) {
       return res.status(400).json(result);
     }
+    emitConfigUpdated('polls', guildId, result.poll, 'DASHBOARD', req.user?.id);
     res.json(result);
   });
 
@@ -235,6 +245,7 @@ export function createPollRouter(client: Client): Router {
     if (!result.success) {
       return res.status(400).json(result);
     }
+    emitConfigUpdated('polls', guildId, result.poll, 'DASHBOARD', req.user?.id);
     res.json(result);
   });
 

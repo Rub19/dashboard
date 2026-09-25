@@ -34412,6 +34412,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_72_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_72_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_72_de);
 
+const v1_28_73_fr: ChangelogEntry = {
+  version: "v1.28.73",
+  date: "2026-09-25",
+  title: "Économie : failles de solde corrigées",
+  items: [
+    "Boutique : deux achats lancés en même temps pouvaient dépenser deux fois le même solde. Le montant est maintenant débité avant l'attribution du rôle, et rendu si Discord refuse le rôle.",
+    "/pay et /rob : impossible de cibler un bot (les crédits y auraient été perdus) ; seuls les montants entiers sont acceptés.",
+    "Pari : refusé quand l'économie est désactivée, et une victoire rapporte toujours au moins 1 crédit (l'arrondi pouvait afficher « gagné » sans gain sur une petite mise).",
+    "Nouveau test automatisé de l'économie (10 vérifications), exécuté dans un dossier temporaire pour ne jamais toucher aux vraies données.",
+  ],
+};
+
+const v1_28_73_en: ChangelogEntry = {
+  version: "v1.28.73",
+  date: "2026-09-25",
+  title: "Economy: balance loopholes fixed",
+  items: [
+    "Shop: two purchases started at the same time could spend the same balance twice. The amount is now debited before the role is granted, and refunded if Discord refuses the role.",
+    "/pay and /rob: bots can no longer be targeted (the credits would have been lost); only whole amounts are accepted.",
+    "Gamble: refused when the economy is disabled, and a win always pays at least 1 credit (rounding could show \"won\" with no gain on a small bet).",
+    "New automated economy test (10 checks), run in a temporary folder so it never touches real data.",
+  ],
+};
+
+const v1_28_73_es: ChangelogEntry = {
+  version: "v1.28.73",
+  date: "2026-09-25",
+  title: "Economía: fallos de saldo corregidos",
+  items: [
+    "Tienda: dos compras lanzadas a la vez podían gastar dos veces el mismo saldo. Ahora el importe se descuenta antes de asignar el rol y se devuelve si Discord rechaza el rol.",
+    "/pay y /rob: ya no se puede apuntar a un bot (los créditos se habrían perdido); solo se aceptan importes enteros.",
+    "Apuesta: rechazada cuando la economía está desactivada, y una victoria siempre da al menos 1 crédito (el redondeo podía mostrar «ganado» sin ganancia con una apuesta pequeña).",
+    "Nueva prueba automática de la economía (10 comprobaciones), ejecutada en una carpeta temporal para no tocar nunca los datos reales.",
+  ],
+};
+
+const v1_28_73_de: ChangelogEntry = {
+  version: "v1.28.73",
+  date: "2026-09-25",
+  title: "Wirtschaft: Guthaben-Lücken geschlossen",
+  items: [
+    "Shop: Zwei gleichzeitig gestartete Käufe konnten dasselbe Guthaben doppelt ausgeben. Der Betrag wird jetzt vor der Rollenvergabe abgebucht und zurückerstattet, wenn Discord die Rolle ablehnt.",
+    "/pay und /rob: Bots können nicht mehr Ziel sein (die Credits wären verloren gewesen); nur ganze Beträge werden akzeptiert.",
+    "Glücksspiel: wird abgelehnt, wenn die Wirtschaft deaktiviert ist, und ein Gewinn zahlt immer mindestens 1 Credit (durch Rundung konnte bei kleinem Einsatz „gewonnen“ ohne Gewinn erscheinen).",
+    "Neuer automatischer Wirtschaftstest (10 Prüfungen), der in einem temporären Ordner läuft und nie echte Daten berührt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_73_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_73_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_73_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_73_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

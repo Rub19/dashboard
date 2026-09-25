@@ -2,7 +2,7 @@ import { GuildMember, PermissionFlagsBits } from 'discord.js';
 import { economyStorage } from '../storage/economyStorage.js';
 import { logger } from '../../../utils/logger.js';
 
-type UserRef = { id: string; username: string; avatarUrl?: string | null };
+type UserRef = { id: string; username: string; avatarUrl?: string | null; bot?: boolean };
 
 export type DailyClaimResult =
   | { ok: true; amount: number; streak: number; streakBonus: number; balance: number }
@@ -10,11 +10,11 @@ export type DailyClaimResult =
 
 export type TransferResult =
   | { ok: true; fromBalance: number; toBalance: number }
-  | { ok: false; reason: 'disabled' | 'invalid_amount' | 'insufficient_funds' | 'self' };
+  | { ok: false; reason: 'disabled' | 'invalid_amount' | 'insufficient_funds' | 'self' | 'bot' };
 
 export type GambleResult =
   | { ok: true; won: boolean; amount: number; payout: number; balance: number }
-  | { ok: false; reason: 'invalid_bet' | 'insufficient_funds' };
+  | { ok: false; reason: 'disabled' | 'invalid_bet' | 'insufficient_funds' };
 
 export type PurchaseResult =
   | { ok: true; item: { label: string; price: number }; balance: number }
@@ -27,7 +27,7 @@ export type WorkResult =
 export type RobResult =
   | { ok: true; success: true; amount: number; balance: number }
   | { ok: true; success: false; fine: number; balance: number }
-  | { ok: false; reason: 'disabled' | 'cooldown' | 'self' | 'target_too_poor' | 'no_funds'; remainingMs?: number };
+  | { ok: false; reason: 'disabled' | 'cooldown' | 'self' | 'bot' | 'target_too_poor' | 'no_funds'; remainingMs?: number };
 
 // Petits boulots de /work : purement cosmétique, le montant vient de la config.
 const WORK_JOBS = [
@@ -123,6 +123,7 @@ class EconomyService {
     const config = economyStorage.getConfig(guildId);
     if (!config.enabled || !config.robEnabled) return { ok: false, reason: 'disabled' };
     if (thief.id === target.id) return { ok: false, reason: 'self' };
+    if (target.bot) return { ok: false, reason: 'bot' };
 
     const thiefWallet = economyStorage.getWallet(guildId, thief.id, { username: thief.username, avatarUrl: thief.avatarUrl });
     const left = remaining(thiefWallet.lastRobAt, config.robCooldownMinutes * 60 * 1000);
@@ -155,7 +156,10 @@ class EconomyService {
     const config = economyStorage.getConfig(guildId);
     if (!config.enabled || !config.transfersEnabled) return { ok: false, reason: 'disabled' };
     if (from.id === to.id) return { ok: false, reason: 'self' };
-    if (!Number.isFinite(amount) || amount <= 0) return { ok: false, reason: 'invalid_amount' };
+    // Un bot n'a pas de portefeuille : les crédits envoyés y seraient perdus.
+    if (to.bot) return { ok: false, reason: 'bot' };
+    // Montants entiers uniquement (pas de solde fractionnaire).
+    if (!Number.isInteger(amount) || amount <= 0) return { ok: false, reason: 'invalid_amount' };
 
     const fromWallet = economyStorage.getWallet(guildId, from.id, { username: from.username, avatarUrl: from.avatarUrl });
     if (fromWallet.balance < amount) return { ok: false, reason: 'insufficient_funds' };
@@ -177,6 +181,7 @@ class EconomyService {
 
   public gamble(guildId: string, user: UserRef, bet: number): GambleResult {
     const config = economyStorage.getConfig(guildId);
+    if (!config.enabled) return { ok: false, reason: 'disabled' };
     const wallet = economyStorage.getWallet(guildId, user.id, { username: user.username, avatarUrl: user.avatarUrl });
 
     // Never trust the client-supplied bet: clamp to config bounds AND to the
@@ -186,7 +191,8 @@ class EconomyService {
     if (clampedBet < config.gambleMinBet || clampedBet > wallet.balance) return { ok: false, reason: 'insufficient_funds' };
 
     const won = Math.random() < 0.5;
-    const delta = won ? Math.floor(clampedBet * (config.gambleWinMultiplier - 1)) : -clampedBet;
+    // Une victoire rapporte toujours au moins 1 (avec une petite mise, l'arrondi donnait 0 : « gagné » sans gain).
+    const delta = won ? Math.max(1, Math.floor(clampedBet * (config.gambleWinMultiplier - 1))) : -clampedBet;
     const updated = economyStorage.applyDelta(guildId, user.id, delta, {
       trackEarned: won,
       trackSpent: !won,
@@ -217,14 +223,17 @@ class EconomyService {
       return { ok: false, reason: 'role_unavailable' };
     }
 
+    // Débit synchrone AVANT l'attente réseau : deux achats lancés en même temps ne peuvent plus dépenser deux fois
+    // le même solde. Si Discord refuse le rôle, le montant est rendu.
+    const updated = economyStorage.applyDelta(guildId, member.id, -item.price, { trackSpent: true });
     try {
       await member.roles.add(role, `Achat boutique économie (${item.label})`);
     } catch (err) {
       logger.error(`[Economy] Échec attribution du rôle acheté à ${member.user.tag} :`, err);
+      economyStorage.applyDelta(guildId, member.id, item.price);
       return { ok: false, reason: 'role_unavailable' };
     }
 
-    const updated = economyStorage.applyDelta(guildId, member.id, -item.price, { trackSpent: true });
     economyStorage.recordTransaction(guildId, member.id, 'purchase', -item.price, updated.balance, { note: item.label });
     return { ok: true, item: { label: item.label, price: item.price }, balance: updated.balance };
   }

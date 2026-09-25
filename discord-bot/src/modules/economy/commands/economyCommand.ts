@@ -162,11 +162,12 @@ export const economyCommand: Command = {
 
     if (sub === 'rob') {
       const targetUser = interaction.options.getUser('membre', true);
-      const result = economyService.rob(guildId, me, { id: targetUser.id, username: targetUser.username, avatarUrl: targetUser.displayAvatarURL() });
+      const result = economyService.rob(guildId, me, { id: targetUser.id, username: targetUser.username, avatarUrl: targetUser.displayAvatarURL(), bot: targetUser.bot });
       if (!result.ok) {
         const messages: Record<string, string> = {
           disabled: '⚪ Le vol est désactivé sur ce serveur.',
           self: '❌ Tu ne peux pas te voler toi-même.',
+          bot: '❌ Les bots n’ont pas de portefeuille.',
           target_too_poor: `❌ Cette cible n’a pas assez de crédits (minimum ${fmt(config.robMinTargetBalance, sym)}).`,
           no_funds: '❌ Il te faut au moins quelques crédits pour tenter un vol (l’amende doit pouvoir tomber).',
           cooldown: `⏳ Tu as déjà tenté un vol récemment. Réessaie dans **${humanDuration(result.remainingMs || 0)}**.`,
@@ -203,11 +204,12 @@ export const economyCommand: Command = {
 
       const targetUser = interaction.options.getUser('membre', true);
       const amount = interaction.options.getInteger('montant', true);
-      const result = economyService.transfer(guildId, me, { id: targetUser.id, username: targetUser.username, avatarUrl: targetUser.displayAvatarURL() }, amount);
+      const result = economyService.transfer(guildId, me, { id: targetUser.id, username: targetUser.username, avatarUrl: targetUser.displayAvatarURL(), bot: targetUser.bot }, amount);
 
       const messages: Record<string, string> = {
         disabled: '⚪ Les transferts sont désactivés sur ce serveur.',
         self: '❌ Vous ne pouvez pas vous payer vous-même.',
+        bot: '❌ Les bots n’ont pas de portefeuille.',
         invalid_amount: '❌ Montant invalide.',
         insufficient_funds: '❌ Solde insuffisant pour ce transfert.',
       };
@@ -249,6 +251,7 @@ export const economyCommand: Command = {
       const result = economyService.gamble(guildId, me, bet);
       if (!result.ok) {
         const messages: Record<string, string> = {
+          disabled: '⚪ L’économie est désactivée sur ce serveur.',
           invalid_bet: `❌ La mise doit être d’au moins ${fmt(config.gambleMinBet, sym)}.`,
           insufficient_funds: '❌ Solde insuffisant pour cette mise.',
         };

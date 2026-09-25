@@ -113,7 +113,7 @@ export async function handleEconomyButton(interaction: ButtonInteraction): Promi
     const bet = parseInt(id.replace('eco_btn_gamble_', ''), 10);
     const r = economyService.gamble(guildId, me, Number.isFinite(bet) ? bet : config.gambleMinBet);
     if (!r.ok) {
-      const msg = r.reason === 'invalid_bet' ? `❌ Mise minimale : ${fmt(config.gambleMinBet, sym)}.` : '❌ Solde insuffisant.';
+      const msg = r.reason === 'disabled' ? '⚪ L’économie est désactivée sur ce serveur.' : r.reason === 'invalid_bet' ? `❌ Mise minimale : ${fmt(config.gambleMinBet, sym)}.` : '❌ Solde insuffisant.';
       await interaction.reply({ embeds: [noticeEmbed('info', msg)], flags: MessageFlags.Ephemeral });
       return;
     }

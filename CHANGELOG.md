@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.73 — 2026-09-25
+
+**Économie : failles de solde corrigées**
+
+- Boutique : deux achats lancés en même temps pouvaient dépenser deux fois le même solde. Le montant est maintenant débité avant l'attribution du rôle, et rendu si Discord refuse le rôle.
+- /pay et /rob : impossible de cibler un bot (les crédits y auraient été perdus) ; seuls les montants entiers sont acceptés.
+- Pari : refusé quand l'économie est désactivée, et une victoire rapporte toujours au moins 1 crédit (l'arrondi pouvait afficher « gagné » sans gain sur une petite mise).
+- Nouveau test automatisé de l'économie (10 vérifications), exécuté dans un dossier temporaire pour ne jamais toucher aux vraies données.
+
 ## v1.28.72 — 2026-09-25
 
 **Site du bot : sélecteur de langue**

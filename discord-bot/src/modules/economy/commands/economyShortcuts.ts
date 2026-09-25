@@ -187,10 +187,11 @@ export const payCommand: Command = {
     const amount = interaction.options.getInteger('montant', true);
     const me = { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() };
     const sym = config.currencySymbol;
-    const result = economyService.transfer(guildId, me, { id: targetUser.id, username: targetUser.username, avatarUrl: targetUser.displayAvatarURL() }, amount);
+    const result = economyService.transfer(guildId, me, { id: targetUser.id, username: targetUser.username, avatarUrl: targetUser.displayAvatarURL(), bot: targetUser.bot }, amount);
     const messages: Record<string, string> = {
       disabled: '⚪ Les transferts sont désactivés sur ce serveur.',
       self: '❌ Vous ne pouvez pas vous payer vous-même.',
+      bot: '❌ Les bots n’ont pas de portefeuille.',
       invalid_amount: '❌ Montant invalide.',
       insufficient_funds: '❌ Solde insuffisant pour ce transfert.',
     };
@@ -232,7 +233,9 @@ export const gambleCommand: Command = {
     const sym = config.currencySymbol;
     const result = economyService.gamble(guildId, me, bet);
     if (!result.ok) {
-      if (result.reason === 'invalid_bet') {
+      if (result.reason === 'disabled') {
+        await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('⚪ L’économie est désactivée sur ce serveur.')], ephemeral: true });
+      } else if (result.reason === 'invalid_bet') {
         await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ Mise invalide (minimum : ${fmt(config.gambleMinBet, sym)}, maximum : ${fmt(config.gambleMaxBet, sym)}).`)], ephemeral: true });
       } else {
         await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Solde insuffisant pour cette mise.')], ephemeral: true });
@@ -279,11 +282,12 @@ export const robCommand: Command = {
     const targetUser = interaction.options.getUser('membre', true);
     const me = { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() };
     const sym = config.currencySymbol;
-    const result = economyService.rob(guildId, me, { id: targetUser.id, username: targetUser.username, avatarUrl: targetUser.displayAvatarURL() });
+    const result = economyService.rob(guildId, me, { id: targetUser.id, username: targetUser.username, avatarUrl: targetUser.displayAvatarURL(), bot: targetUser.bot });
     if (!result.ok) {
       const messages: Record<string, string> = {
         disabled: '⚪ Le vol est désactivé sur ce serveur.',
         self: '❌ Tu ne peux pas te voler toi-même.',
+        bot: '❌ Les bots n’ont pas de portefeuille.',
         target_too_poor: `❌ Cette cible n’a pas assez de crédits (minimum ${fmt(config.robMinTargetBalance, sym)}).`,
         no_funds: '❌ Il te faut au moins quelques crédits pour tenter un vol (l’amende doit pouvoir tomber).',
         cooldown: `⏳ Tu as déjà tenté un vol récemment. Réessaie dans **${humanDuration(result.remainingMs || 0)}**.`,

@@ -39,6 +39,7 @@ import { healthStatusService } from '../services/resilience/healthStatusService.
 import { BotTelemetryService } from '../modules/botControl/services/botTelemetryService.js';
 import { BotEventBusService } from '../modules/botControl/services/botEventBusService.js';
 import { LIVE_DISCORD_EVENTS, guildIdOfEvent, notifyDiscordState } from '../services/discordStateNotifier.js';
+import { guildSetupService } from '../services/guildSetupService.js';
 import { logger } from '../utils/logger.js';
 
 let isEventsRegistered = false;
@@ -258,6 +259,10 @@ export function registerEvents(client: Client): void {
 
   // Logs : Serveur
   client.on(Events.GuildUpdate, (oldGuild, newGuild) => handleGuildUpdate(oldGuild, newGuild));
+  // Nouveau serveur : socle actif, tout le reste désactivé, panneau de configuration rapide posté
+  client.on(Events.GuildCreate, (guild) => {
+    guildSetupService.provision(guild).catch((err) => logger.error('[Setup] Initialisation du serveur impossible :', err));
+  });
   client.on(Events.GuildDelete, (guild) => {
     ownerShieldService.handleGuildDelete(guild);
   });

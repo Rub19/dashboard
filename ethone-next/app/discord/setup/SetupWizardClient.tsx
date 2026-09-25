@@ -23,6 +23,7 @@ import { useToast } from "@/components/ToastProvider";
 import DiscordIcon from "@/components/DiscordIcon";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
+import SetupModulesStep from "./SetupModulesStep";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -44,9 +45,10 @@ interface GuildRole {
 const STEPS = [
   { id: 1, title: "Serveur Discord", desc: "Sélection du serveur", icon: Server },
   { id: 2, title: "Permissions Bot", desc: "Audit des droits", icon: ShieldCheck },
-  { id: 3, title: "Modération", desc: "Sécurité & Logs", icon: Hammer },
-  { id: 4, title: "Bienvenue", desc: "Accueil & Rôles", icon: Sparkles },
-  { id: 5, title: "Lancement", desc: "Finalisation", icon: Rocket },
+  { id: 3, title: "Modules", desc: "Ce qu'on active", icon: LayoutDashboard },
+  { id: 4, title: "Modération", desc: "Sécurité & Logs", icon: Hammer },
+  { id: 5, title: "Bienvenue", desc: "Accueil & Rôles", icon: Sparkles },
+  { id: 6, title: "Lancement", desc: "Finalisation", icon: Rocket },
 ];
 
 export default function SetupWizardClient() {
@@ -152,7 +154,7 @@ export default function SetupWizardClient() {
       showError("Sélection requise", "Veuillez sélectionner un serveur Discord pour continuer.");
       return;
     }
-    if (currentStep < 5) {
+    if (currentStep < STEPS.length) {
       setCurrentStep((prev) => prev + 1);
     }
   };
@@ -231,7 +233,7 @@ export default function SetupWizardClient() {
       } else {
         success("Configuration terminée !", "Votre serveur est maintenant prêt à utiliser ETHONE Bot.");
       }
-      setCurrentStep(5);
+      setCurrentStep(6);
     } catch {
       showError("Erreur de sauvegarde", "Impossible de sauvegarder la configuration.");
     } finally {
@@ -266,7 +268,7 @@ export default function SetupWizardClient() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">
-              Étape {currentStep} sur 5
+              Étape {currentStep} sur {STEPS.length}
             </span>
             <span className="text-xs font-mono text-zinc-400">
               {STEPS[currentStep - 1]?.title}
@@ -275,7 +277,7 @@ export default function SetupWizardClient() {
           <div className="w-full bg-zinc-900 h-2 rounded-full overflow-hidden border border-zinc-800">
             <div
               className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 transition-all duration-300"
-              style={{ width: `${(currentStep / 5) * 100}%` }}
+              style={{ width: `${(currentStep / STEPS.length) * 100}%` }}
             />
           </div>
 
@@ -486,12 +488,15 @@ export default function SetupWizardClient() {
             </div>
           )}
 
-          {/* STEP 3: MODERATION QUICK SETUP */}
-          {currentStep === 3 && (
+          {/* STEP 3: MODULES (nouveau serveur : tout est désactivé sauf le socle, on choisit ici) */}
+          {currentStep === 3 && selectedGuild && <SetupModulesStep guildId={selectedGuild.id} />}
+
+          {/* STEP 4: MODERATION QUICK SETUP */}
+          {currentStep === 4 && (
             <div className="space-y-5 animate-in fade-in duration-300">
               <div>
                 <h3 className="text-xl font-bold text-white mb-1">
-                  3. Configuration rapide de la Modération
+                  4. Configuration rapide de la Modération
                 </h3>
                 <p className="text-xs text-zinc-400">
                   Définissez vos règles de protection initiale pour neutraliser les abus automatiquement.
@@ -558,12 +563,12 @@ export default function SetupWizardClient() {
             </div>
           )}
 
-          {/* STEP 4: WELCOME QUICK SETUP */}
-          {currentStep === 4 && (
+          {/* STEP 5: WELCOME QUICK SETUP */}
+          {currentStep === 5 && (
             <div className="space-y-5 animate-in fade-in duration-300">
               <div>
                 <h3 className="text-xl font-bold text-white mb-1">
-                  4. Configuration de l'Accueil (Welcome)
+                  5. Configuration de l'Accueil (Welcome)
                 </h3>
                 <p className="text-xs text-zinc-400">
                   Accueillez chaleureusement chaque nouveau membre dès son arrivée sur le serveur.
@@ -641,8 +646,8 @@ export default function SetupWizardClient() {
             </div>
           )}
 
-          {/* STEP 5: FINISH & LAUNCH */}
-          {currentStep === 5 && (
+          {/* STEP 6: FINISH & LAUNCH */}
+          {currentStep === 6 && (
             <div className="space-y-6 text-center py-4 animate-in fade-in duration-300">
               <div className="w-16 h-16 rounded-3xl bg-emerald-600 flex items-center justify-center text-white mx-auto shadow-xl">
                 <Rocket className="w-8 h-8 animate-bounce" />
@@ -703,7 +708,7 @@ export default function SetupWizardClient() {
         </div>
 
         {/* Bottom Control Bar */}
-        {currentStep < 5 && (
+        {currentStep < STEPS.length && (
           <div className="flex items-center justify-between">
             <button
               onClick={handlePrev}
@@ -718,7 +723,7 @@ export default function SetupWizardClient() {
               <span>Précédent</span>
             </button>
 
-            {currentStep < 4 ? (
+            {currentStep < STEPS.length - 1 ? (
               <button
                 onClick={handleNext}
                 className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition cursor-pointer"

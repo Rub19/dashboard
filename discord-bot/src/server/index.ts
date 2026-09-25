@@ -10,6 +10,7 @@ import { logger } from '../utils/logger.js';
 import { authRouter } from './routes/authRoutes.js';
 import { createGuildRouter } from './routes/guildRoutes.js';
 import { getModuleStatus, setModuleEnabled } from './moduleStatus.js';
+import { MODULES, applyModuleSelection } from '../services/moduleRegistry.js';
 import { createPublicRouter } from './routes/publicRoutes.js';
 import { createModuleRouter } from './routes/moduleRoutes.js';
 import { createSettingsRouter } from './routes/settingsRoutes.js';
@@ -125,6 +126,23 @@ export function startWebServer(client: Client): http.Server {
       res.status(404).json({ error: 'Module introuvable' });
       return;
     }
+    res.json({ success: true, modules: getModuleStatus(guildId) });
+  });
+  // Sélection en bloc (configuration rapide) : les modules listés sont activés, tous les autres désactivés.
+  app.put('/api/guilds/:guildId/module-status', authMiddleware, createGuildAuthMiddleware(client), (req, res) => {
+    const ids = req.body?.enabled;
+    if (!Array.isArray(ids) || ids.some((id) => typeof id !== 'string')) {
+      res.status(400).json({ error: 'La propriété "enabled" (liste d\'identifiants de modules) est requise' });
+      return;
+    }
+    const known = new Set(MODULES.map((m) => m.id));
+    const unknown = (ids as string[]).filter((id) => !known.has(id));
+    if (unknown.length > 0) {
+      res.status(400).json({ error: `Modules inconnus : ${unknown.slice(0, 5).join(', ')}` });
+      return;
+    }
+    const guildId = String(req.params.guildId);
+    applyModuleSelection(guildId, ids as string[], 'DASHBOARD', req.user?.id);
     res.json({ success: true, modules: getModuleStatus(guildId) });
   });
   // Page vitrine du bot : compteurs globaux et liste des commandes (sans authentification, lecture seule).

@@ -255,7 +255,7 @@ export function isModuleEnabled(guildId: string, moduleId: string): boolean {
 }
 
 /** Active ou désactive un module. Renvoie false si l'identifiant est inconnu. */
-export function setModuleEnabled(guildId: string, moduleId: string, enabled: boolean, source: 'DASHBOARD' | 'DISCORD_COMMAND' = 'DASHBOARD', userId?: string): boolean {
+export function setModuleEnabled(guildId: string, moduleId: string, enabled: boolean, source: 'DASHBOARD' | 'DISCORD_COMMAND' = 'DASHBOARD', userId?: string, emit = true): boolean {
   const def = BY_ID.get(moduleId);
   if (!def) return false;
 
@@ -275,8 +275,34 @@ export function setModuleEnabled(guildId: string, moduleId: string, enabled: boo
   }
 
   // Tous les dashboards ouverts sur ce serveur se mettent à jour, quelle que soit l'origine du changement.
-  emitConfigUpdated('modules', guildId, listModuleStates(guildId), source, userId);
+  if (emit) emitConfigUpdated('modules', guildId, listModuleStates(guildId), source, userId);
   return true;
+}
+
+/**
+ * Modules actifs d'office sur un serveur qui vient d'inviter le bot : le socle simple et sans effet de bord. Tout le reste
+ * démarre désactivé et s'active à la demande (configuration rapide, /module ou dashboard).
+ */
+export const CORE_MODULE_IDS: readonly string[] = ['moderation', 'music', 'reminders', 'tags'];
+
+export type ModulePresetId = 'minimal' | 'community' | 'security' | 'all';
+
+const COMMUNITY_IDS = ['welcome', 'roles', 'leveling', 'economy', 'suggestions', 'polls', 'giveaways', 'events', 'forms', 'starboard', 'highlights', 'birthdays', 'voice', 'tickets', 'invites', 'afk', 'serverstats', 'sticky', 'commands'];
+const SECURITY_IDS = ['security', 'anti-nuke', 'automod', 'logs', 'welcome', 'tickets', 'backups'];
+
+/** Ensembles de modules proposés par la configuration rapide (le socle est toujours inclus). */
+export const MODULE_PRESETS: Record<ModulePresetId, { label: string; emoji: string; description: string; ids: () => string[] }> = {
+  minimal: { label: 'Minimal', emoji: '⚡', description: 'Modération, musique, rappels et tags seulement.', ids: () => [...CORE_MODULE_IDS] },
+  community: { label: 'Communauté', emoji: '🎉', description: 'Accueil, rôles, niveaux, économie, sondages, événements, tickets…', ids: () => [...CORE_MODULE_IDS, ...COMMUNITY_IDS] },
+  security: { label: 'Sécurité', emoji: '🛡️', description: 'Anti-Raid, Anti-Nuke, AutoMod, journaux, accueil, tickets, sauvegardes.', ids: () => [...CORE_MODULE_IDS, ...SECURITY_IDS] },
+  all: { label: 'Tout activer', emoji: '✅', description: "Tous les modules, y compris l'assistant IA.", ids: () => MODULES.map((m) => m.id) },
+};
+
+/** Applique d'un coup : les modules listés sont activés, tous les autres désactivés (un seul signal envoyé aux dashboards). */
+export function applyModuleSelection(guildId: string, enabledIds: Iterable<string>, source: 'DASHBOARD' | 'DISCORD_COMMAND' = 'DISCORD_COMMAND', userId?: string): void {
+  const wanted = new Set(enabledIds);
+  for (const m of MODULES) setModuleEnabled(guildId, m.id, wanted.has(m.id), source, userId, false);
+  emitConfigUpdated('modules', guildId, listModuleStates(guildId), source, userId);
 }
 
 export interface ModuleState {

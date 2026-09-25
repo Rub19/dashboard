@@ -34661,6 +34661,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_77_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_77_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_77_de);
 
+const v1_28_78_fr: ChangelogEntry = {
+  version: "v1.28.78",
+  date: "2026-09-25",
+  title: "Nouveaux serveurs : tout désactivé sauf le socle, configuration rapide",
+  items: [
+    "Quand le bot est ajouté à un serveur, seuls les modules essentiels sont actifs (modération, musique, rappels, tags) ; les 25 autres démarrent désactivés. Les serveurs déjà présents ne changent pas.",
+    "Le bot poste alors un panneau de configuration rapide dans le salon système : deux menus (« Protection & gestion », « Communauté & animation »), quatre préréglages (Minimal, Communauté, Sécurité, Tout activer), un lien vers la configuration détaillée et un bouton « Terminé ». Chaque choix s'applique tout de suite et se voit dans le dashboard ; réservé à « Gérer le serveur ».",
+    "Nouvelle commande /setup pour rouvrir ce panneau à tout moment (en plus de /module).",
+    "Assistant du dashboard : nouvelle étape « Modules » (préréglages en cartes + interrupteur par module, avec icônes), qui agit en direct sur le bot ; nouvelle route « sélection en bloc » côté bot.",
+    "Nouveau test automatisé de la configuration rapide (socle, préréglages, validité du panneau pour Discord, droits).",
+  ],
+};
+
+const v1_28_78_en: ChangelogEntry = {
+  version: "v1.28.78",
+  date: "2026-09-25",
+  title: "New servers: everything off except the core, quick setup",
+  items: [
+    "When the bot is added to a server, only the essential modules are on (moderation, music, reminders, tags); the other 25 start disabled. Servers already using the bot are unchanged.",
+    "The bot then posts a quick-setup panel in the system channel: two menus (\"Protection & management\", \"Community & fun\"), four presets (Minimal, Community, Security, Enable all), a link to detailed setup and a \"Done\" button. Every choice applies immediately and shows in the dashboard; restricted to \"Manage Server\".",
+    "New /setup command to reopen this panel at any time (in addition to /module).",
+    "Dashboard wizard: new \"Modules\" step (preset cards + a switch per module, with icons) acting live on the bot; new bulk-selection route on the bot side.",
+    "New automated quick-setup test (core, presets, panel validity for Discord, permissions).",
+  ],
+};
+
+const v1_28_78_es: ChangelogEntry = {
+  version: "v1.28.78",
+  date: "2026-09-25",
+  title: "Servidores nuevos: todo desactivado salvo lo esencial, configuración rápida",
+  items: [
+    "Cuando se añade el bot a un servidor, solo están activos los módulos esenciales (moderación, música, recordatorios, etiquetas); los otros 25 empiezan desactivados. Los servidores que ya usan el bot no cambian.",
+    "El bot publica entonces un panel de configuración rápida en el canal del sistema: dos menús («Protección y gestión», «Comunidad y diversión»), cuatro ajustes preestablecidos (Mínimo, Comunidad, Seguridad, Activar todo), un enlace a la configuración detallada y un botón «Terminado». Cada elección se aplica al instante y se ve en el dashboard; reservado a «Gestionar el servidor».",
+    "Nuevo comando /setup para reabrir este panel en cualquier momento (además de /module).",
+    "Asistente del dashboard: nuevo paso «Módulos» (tarjetas de ajustes + un interruptor por módulo, con iconos) que actúa en directo sobre el bot; nueva ruta de selección en bloque en el bot.",
+    "Nueva prueba automática de la configuración rápida (base, ajustes, validez del panel para Discord, permisos).",
+  ],
+};
+
+const v1_28_78_de: ChangelogEntry = {
+  version: "v1.28.78",
+  date: "2026-09-25",
+  title: "Neue Server: alles aus außer dem Kern, Schnelleinrichtung",
+  items: [
+    "Wird der Bot einem Server hinzugefügt, sind nur die wesentlichen Module aktiv (Moderation, Musik, Erinnerungen, Tags); die anderen 25 starten deaktiviert. Server, die den Bot schon nutzen, bleiben unverändert.",
+    "Der Bot postet dann im Systemkanal ein Schnelleinrichtungs-Panel: zwei Menüs („Schutz & Verwaltung“, „Community & Spaß“), vier Voreinstellungen (Minimal, Community, Sicherheit, Alles aktivieren), einen Link zur ausführlichen Einrichtung und einen „Fertig“-Button. Jede Auswahl gilt sofort und erscheint im Dashboard; nur mit „Server verwalten“.",
+    "Neuer Befehl /setup, um dieses Panel jederzeit erneut zu öffnen (zusätzlich zu /module).",
+    "Dashboard-Assistent: neuer Schritt „Module“ (Voreinstellungs-Karten + ein Schalter pro Modul, mit Symbolen), der live auf den Bot wirkt; neue Sammelauswahl-Route im Bot.",
+    "Neuer automatischer Test der Schnelleinrichtung (Kern, Voreinstellungen, Panel-Gültigkeit für Discord, Berechtigungen).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_78_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_78_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_78_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_78_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

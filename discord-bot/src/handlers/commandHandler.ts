@@ -16,6 +16,7 @@ import { statusCommand } from '../commands/admin/statusCommand.js';
 import { godmodeCommand } from '../commands/admin/godmodeCommand.js';
 import { rescueCommand } from '../commands/admin/rescueCommand.js';
 import { moduleCommand } from '../commands/admin/moduleCommand.js';
+import { setupCommand } from '../commands/admin/setupCommand.js';
 import { languageCommand } from '../commands/general/language.js';
 
 // Module Modération
@@ -101,6 +102,7 @@ class CommandRegistry {
     this.register(godmodeCommand);
     this.register(rescueCommand);
     this.register(moduleCommand);
+    this.register(setupCommand);
     this.register(languageCommand);
     this.register(ticketCommand);
     this.register(askCommand);

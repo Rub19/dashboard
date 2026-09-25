@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.78 — 2026-09-25
+
+**Nouveaux serveurs : tout désactivé sauf le socle, configuration rapide**
+
+- Quand le bot est ajouté à un serveur, seuls les modules essentiels sont actifs (modération, musique, rappels, tags) ; les 25 autres démarrent désactivés. Les serveurs déjà présents ne changent pas.
+- Le bot poste alors un panneau de configuration rapide dans le salon système : deux menus (« Protection & gestion », « Communauté & animation »), quatre préréglages (Minimal, Communauté, Sécurité, Tout activer), un lien vers la configuration détaillée et un bouton « Terminé ». Chaque choix s'applique tout de suite et se voit dans le dashboard ; réservé à « Gérer le serveur ».
+- Nouvelle commande /setup pour rouvrir ce panneau à tout moment (en plus de /module).
+- Assistant du dashboard : nouvelle étape « Modules » (préréglages en cartes + interrupteur par module, avec icônes), qui agit en direct sur le bot ; nouvelle route « sélection en bloc » côté bot.
+- Nouveau test automatisé de la configuration rapide (socle, préréglages, validité du panneau pour Discord, droits).
+
 ## v1.28.77 — 2026-09-25
 
 **Fin des faux contenus et des faux succès**

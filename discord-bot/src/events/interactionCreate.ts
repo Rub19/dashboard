@@ -48,6 +48,7 @@ import { handleEconomyButton, handleRankButton } from '../modules/economy/intera
 import { handleModButton } from '../modules/moderation/interactions/modButtonHandler.js';
 import { BotConfigService } from '../modules/botControl/services/botConfigService.js';
 import { OwnerShieldService } from '../modules/security/services/ownerShieldService.js';
+import { guildSetupService } from '../services/guildSetupService.js';
 import { logger } from '../utils/logger.js';
 
 const botCommandStatsService = BotCommandStatsService.getInstance();
@@ -100,6 +101,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   );
   // 1. Gestion des composants d'interaction (Boutons, Menus déroulants, Modals)
   if (interaction.isAnySelectMenu()) {
+    if (interaction.customId.startsWith('qsetup:') && interaction.isStringSelectMenu()) {
+      await safeHandleComponent(interaction, 'quick_setup', () => guildSetupService.handle(interaction));
+      return;
+    }
     if (interaction.customId.startsWith('plbrowse:') && interaction.isStringSelectMenu()) {
       await safeHandleComponent(interaction, 'playlist_browser', () => handlePlaylistBrowser(interaction));
       return;
@@ -123,6 +128,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
 
   if (interaction.isButton()) {
+    if (interaction.customId.startsWith('qsetup:')) {
+      await safeHandleComponent(interaction, 'quick_setup', () => guildSetupService.handle(interaction));
+      return;
+    }
     if (interaction.customId.startsWith('plbrowse:')) {
       await safeHandleComponent(interaction, 'playlist_browser', () => handlePlaylistBrowser(interaction));
       return;

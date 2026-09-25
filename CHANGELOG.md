@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.98 — 2026-09-25
+
+**Corrections issues des tests en direct sur Discord**
+
+- AutoMod : la détection « Liens externes » ne bloquait que les raccourcisseurs et les adresses IP ; elle détecte maintenant tout lien hors des domaines autorisés (youtube.com, github.com…). Les serveurs existants sont mis à jour une seule fois au prochain démarrage du bot.
+- AutoMod : la Sandbox de test prend maintenant en compte les détections Émojis, Mentions interdites et Mise en forme, ainsi que les mentions écrites dans le message.
+- Rôles sécurisés : le nom de la permission « Gérer les émojis et autocollants » s'affiche en français.
+
 ## v1.28.97 — 2026-09-25
 
 **Boutons Actualiser animés, carte de rang en image, corrections du dashboard**

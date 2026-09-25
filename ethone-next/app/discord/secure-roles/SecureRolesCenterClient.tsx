@@ -79,6 +79,7 @@ const PERM_FR: Record<string, string> = {
   ManageChannels: "Gérer les salons",
   ManageWebhooks: "Gérer les webhooks",
   ManageGuildExpressions: "Gérer les émojis",
+  ManageEmojisAndStickers: "Gérer les émojis et autocollants",
   ManageEvents: "Gérer les événements",
   ViewAuditLog: "Voir les logs du serveur",
   KickMembers: "Expulser",

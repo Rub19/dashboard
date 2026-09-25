@@ -98,7 +98,8 @@ export const FloodDetectorConfigSchema = z.object({
 export const LinkDetectorConfigSchema = z.object({
   enabled: z.boolean().default(false),
   ...detectorCommon,
-  blockAllLinks: z.boolean().default(false),
+  // « Liens externes » : tout lien hors domaines autorisés est détecté (les raccourcisseurs et adresses IP le sont toujours).
+  blockAllLinks: z.boolean().default(true),
   blockShortenedLinks: z.boolean().default(true),
   blockIpAddresses: z.boolean().default(true),
   whitelistedDomains: z.array(z.string()).default(['youtube.com', 'youtu.be', 'twitter.com', 'x.com', 'github.com', 'spotify.com']),

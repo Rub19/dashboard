@@ -35741,6 +35741,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_97_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_97_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_97_de);
 
+const v1_28_98_fr: ChangelogEntry = {
+  version: "v1.28.98",
+  date: "2026-09-25",
+  title: "Corrections issues des tests en direct sur Discord",
+  items: [
+    "AutoMod : la détection « Liens externes » ne bloquait que les raccourcisseurs et les adresses IP ; elle détecte maintenant tout lien hors des domaines autorisés (youtube.com, github.com…). Les serveurs existants sont mis à jour une seule fois au prochain démarrage du bot.",
+    "AutoMod : la Sandbox de test prend maintenant en compte les détections Émojis, Mentions interdites et Mise en forme, ainsi que les mentions écrites dans le message.",
+    "Rôles sécurisés : le nom de la permission « Gérer les émojis et autocollants » s'affiche en français.",
+  ],
+};
+
+const v1_28_98_en: ChangelogEntry = {
+  version: "v1.28.98",
+  date: "2026-09-25",
+  title: "Fixes from live tests on Discord",
+  items: [
+    "AutoMod: the \"External links\" detection only blocked shorteners and IP addresses; it now detects any link outside the allowed domains (youtube.com, github.com…). Existing servers are updated once at the next bot start.",
+    "AutoMod: the test Sandbox now includes the Emoji, Forbidden pings and Markdown detections, as well as mentions written in the message.",
+    "Secure Roles: the \"Manage emojis and stickers\" permission name is displayed in French.",
+  ],
+};
+
+const v1_28_98_es: ChangelogEntry = {
+  version: "v1.28.98",
+  date: "2026-09-25",
+  title: "Correcciones tras las pruebas en directo en Discord",
+  items: [
+    "AutoMod: la detección «Enlaces externos» solo bloqueaba acortadores y direcciones IP; ahora detecta cualquier enlace fuera de los dominios permitidos (youtube.com, github.com…). Los servidores existentes se actualizan una sola vez en el próximo inicio del bot.",
+    "AutoMod: la Sandbox de pruebas incluye ahora las detecciones de Emojis, Menciones prohibidas y Formato, además de las menciones escritas en el mensaje.",
+    "Roles protegidos: el nombre del permiso «Gestionar emojis y pegatinas» se muestra en francés.",
+  ],
+};
+
+const v1_28_98_de: ChangelogEntry = {
+  version: "v1.28.98",
+  date: "2026-09-25",
+  title: "Korrekturen aus Live-Tests auf Discord",
+  items: [
+    "AutoMod: Die Erkennung „Externe Links“ blockte nur Kurzlinks und IP-Adressen; jetzt erkennt sie jeden Link außerhalb der erlaubten Domains (youtube.com, github.com …). Bestehende Server werden beim nächsten Bot-Start einmalig aktualisiert.",
+    "AutoMod: Die Test-Sandbox berücksichtigt jetzt auch die Erkennungen Emojis, Verbotene Erwähnungen und Formatierung sowie im Text geschriebene Erwähnungen.",
+    "Gesicherte Rollen: Der Name der Berechtigung „Emojis und Sticker verwalten“ wird auf Französisch angezeigt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_98_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_98_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_98_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_98_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

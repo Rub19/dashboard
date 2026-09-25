@@ -8,6 +8,9 @@ import { MentionDetector } from '../detectors/mentionDetector.js';
 import { CapsDetector } from '../detectors/capsDetector.js';
 import { KeywordDetector } from '../detectors/keywordDetector.js';
 import { RegexDetector } from '../detectors/regexDetector.js';
+import { EmojiDetector } from '../detectors/emojiDetector.js';
+import { PingDetector } from '../detectors/pingDetector.js';
+import { MarkdownDetector } from '../detectors/markdownDetector.js';
 import { AutoModRiskEngine } from './autoModRiskEngine.js';
 
 export class RuleTesterService {
@@ -30,8 +33,9 @@ export class RuleTesterService {
         id: input.channelId || 'test-channel-id',
       },
       mentions: {
-        users: new Map(),
-        roles: new Map(),
+        // Mentions lues dans le texte (<@id>, <@&id>) pour tester aussi les mentions interdites.
+        users: new Map([...messageContent.matchAll(/<@!?(d{5,25})>/g)].map((m) => [m[1], {}])),
+        roles: new Map([...messageContent.matchAll(/<@&(d{5,25})>/g)].map((m) => [m[1], {}])),
         everyone: /@(everyone|here)/i.test(messageContent),
       },
     };
@@ -42,6 +46,9 @@ export class RuleTesterService {
       InviteDetector.check(mockMessage, config),
       MentionDetector.check(mockMessage, config),
       CapsDetector.check(mockMessage, config),
+      EmojiDetector.check(mockMessage, config),
+      PingDetector.check(mockMessage, config),
+      MarkdownDetector.check(mockMessage, config),
       KeywordDetector.check(mockMessage, config),
       RegexDetector.check(mockMessage, config),
     ];

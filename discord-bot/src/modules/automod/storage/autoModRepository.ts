@@ -166,6 +166,18 @@ class AutoModRepository {
     return touched;
   }
 
+  /** Migration : la détection « Liens externes » (désactivée) bloque désormais tous les liens hors domaines autorisés, comme son nom l'indique. */
+  public alignExternalLinksDetector(): number {
+    let touched = 0;
+    for (const [guildId, conf] of this.configs) {
+      if (conf.links.enabled || conf.links.blockAllLinks) continue;
+      this.configs.set(guildId, AutoModConfigSchema.parse({ ...conf, links: { ...conf.links, blockAllLinks: true } }));
+      touched++;
+    }
+    if (touched > 0) this.saveConfigs();
+    return touched;
+  }
+
   public updateConfig(guildId: string, partial: Partial<AutoModConfig>): AutoModConfig {
     const current = this.getConfig(guildId);
     const updated = AutoModConfigSchema.parse({

@@ -30,7 +30,7 @@ if len(TOKEN) < 16:
     raise SystemExit("jeton trop court (16 caractères minimum)")
 
 ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
-CACHE_TTL = 300  # secondes
+CACHE_TTL = 1800  # secondes (les adresses de flux YouTube restent valables plusieurs heures)
 # 2 extractions à la fois au maximum : le NAS n'a que ~200 Mo de RAM libres.
 SLOTS = threading.BoundedSemaphore(2)
 _cache: dict[str, tuple[float, dict]] = {}
@@ -142,6 +142,19 @@ class Handler(BaseHTTPRequestHandler):
         return
 
 
+def warm_up() -> None:
+    """Chauffe yt-dlp au démarrage : la toute première extraction charge les extracteurs et prenait ~15 s sur le NAS,
+    ce que le premier /play après un redémarrage payait en entier. Une extraction à blanc (sans lecture) règle cela."""
+    try:
+        started = time.time()
+        with SLOTS:
+            extract("jNQXAC9IJRE")  # première vidéo publique de YouTube, courte et toujours en ligne
+        print(f"[resolver] préchauffage terminé en {time.time() - started:.1f} s", flush=True)
+    except Exception as err:  # le préchauffage ne doit jamais empêcher le service de démarrer
+        print(f"[resolver] préchauffage ignoré : {str(err)[:160]}", flush=True)
+
+
 if __name__ == "__main__":
     print(f"[resolver] yt-dlp {yt_dlp.version.__version__} — écoute sur {HOST}:{PORT}", flush=True)
+    threading.Thread(target=warm_up, daemon=True).start()
     ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.85 — 2026-09-25
+
+**/play : réponse immédiate, connexion vocale en arrière-plan**
+
+- /play ne reste plus « en réflexion » pendant la connexion au salon vocal : la connexion se poursuit en arrière-plan pendant que le titre est résolu, et la commande répond au bout de 2,5 s au plus. Si la connexion échoue plus tard, le bot le signale dans le salon avec la marche à suivre.
+- Connexion vocale : 8 s par essai au lieu de 15 (deux essais faisaient attendre 30 s avant une erreur).
+- Service yt-dlp du NAS : préchauffage au démarrage (la première extraction prenait ~15 s) et cache des adresses de flux porté à 30 minutes.
+- Nouveau test automatisé de la latence de /play (connexion lente, connexion impossible détectée vite ou tard).
+
 ## v1.28.84 — 2026-09-25
 
 **Barre latérale : icône « masquer » au survol**

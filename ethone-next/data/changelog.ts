@@ -34988,6 +34988,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_84_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_84_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_84_de);
 
+const v1_28_85_fr: ChangelogEntry = {
+  version: "v1.28.85",
+  date: "2026-09-25",
+  title: "/play : réponse immédiate, connexion vocale en arrière-plan",
+  items: [
+    "/play ne reste plus « en réflexion » pendant la connexion au salon vocal : la connexion se poursuit en arrière-plan pendant que le titre est résolu, et la commande répond au bout de 2,5 s au plus. Si la connexion échoue plus tard, le bot le signale dans le salon avec la marche à suivre.",
+    "Connexion vocale : 8 s par essai au lieu de 15 (deux essais faisaient attendre 30 s avant une erreur).",
+    "Service yt-dlp du NAS : préchauffage au démarrage (la première extraction prenait ~15 s) et cache des adresses de flux porté à 30 minutes.",
+    "Nouveau test automatisé de la latence de /play (connexion lente, connexion impossible détectée vite ou tard).",
+  ],
+};
+
+const v1_28_85_en: ChangelogEntry = {
+  version: "v1.28.85",
+  date: "2026-09-25",
+  title: "/play: instant reply, voice connection in the background",
+  items: [
+    "/play no longer stays on \"thinking\" while connecting to the voice channel: the connection continues in the background while the track is resolved, and the command answers within 2.5 s. If the connection fails later, the bot reports it in the channel with what to check.",
+    "Voice connection: 8 s per attempt instead of 15 (two attempts meant a 30 s wait before an error).",
+    "NAS yt-dlp service: warm-up at startup (the first extraction took ~15 s) and stream-address cache raised to 30 minutes.",
+    "New automated /play latency test (slow connection, connection failure detected early or late).",
+  ],
+};
+
+const v1_28_85_es: ChangelogEntry = {
+  version: "v1.28.85",
+  date: "2026-09-25",
+  title: "/play: respuesta inmediata, conexión de voz en segundo plano",
+  items: [
+    "/play ya no se queda en «pensando» mientras se conecta al canal de voz: la conexión continúa en segundo plano mientras se resuelve el título y el comando responde en 2,5 s como máximo. Si la conexión falla después, el bot lo avisa en el canal indicando qué revisar.",
+    "Conexión de voz: 8 s por intento en lugar de 15 (dos intentos hacían esperar 30 s antes de un error).",
+    "Servicio yt-dlp del NAS: precalentamiento al arrancar (la primera extracción tardaba ~15 s) y caché de direcciones de flujo ampliada a 30 minutos.",
+    "Nueva prueba automática de la latencia de /play (conexión lenta, fallo de conexión detectado pronto o tarde).",
+  ],
+};
+
+const v1_28_85_de: ChangelogEntry = {
+  version: "v1.28.85",
+  date: "2026-09-25",
+  title: "/play: sofortige Antwort, Sprachverbindung im Hintergrund",
+  items: [
+    "/play bleibt nicht mehr auf „denkt nach“, während die Verbindung zum Sprachkanal aufgebaut wird: Die Verbindung läuft im Hintergrund weiter, während der Titel aufgelöst wird, und der Befehl antwortet nach höchstens 2,5 s. Scheitert die Verbindung später, meldet der Bot das im Kanal mit einem Hinweis, was zu prüfen ist.",
+    "Sprachverbindung: 8 s pro Versuch statt 15 (zwei Versuche bedeuteten 30 s Wartezeit bis zum Fehler).",
+    "yt-dlp-Dienst auf dem NAS: Aufwärmen beim Start (die erste Extraktion dauerte ~15 s) und Stream-Adress-Cache auf 30 Minuten erhöht.",
+    "Neuer automatischer /play-Latenztest (langsame Verbindung, Verbindungsfehler früh oder spät erkannt).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_85_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_85_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_85_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_85_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -152,20 +152,24 @@ class MusicService {
       avatar: member?.user.displayAvatarURL?.() || null,
     };
 
-    let connected = true;
+    const isLavalink = config.musicBackend === 'lavalink';
+    const NO_CONNECTION = 'Impossible de se connecter au salon vocal.';
+    let connectPromise: Promise<boolean> = Promise.resolve(true);
     let tracks: Track[];
-    if (voiceChannel) {
-      [connected, tracks] = await Promise.all([
-        player.connect(voiceChannel),
-        musicProviderManager.resolveMany(queryOrUrl, requestedBy),
-      ]);
+    if (voiceChannel && isLavalink) {
+      // Lavalink : la connexion vocale peut prendre plusieurs secondes (jusqu'à 15 s si Discord tarde). Elle se poursuit en
+      // arrière-plan pendant que le titre est résolu : la réponse n'attend plus qu'elle ait fini.
+      connectPromise = player.connect(voiceChannel);
+      connectPromise.catch(() => undefined);
+      tracks = await musicProviderManager.resolveMany(queryOrUrl, requestedBy);
+    } else if (voiceChannel) {
+      const [connected, resolved] = await Promise.all([player.connect(voiceChannel), musicProviderManager.resolveMany(queryOrUrl, requestedBy)]);
+      if (!connected) return { success: false, error: NO_CONNECTION };
+      tracks = resolved;
     } else {
       tracks = await musicProviderManager.resolveMany(queryOrUrl, requestedBy);
     }
 
-    if (!connected) {
-      return { success: false, error: 'Impossible de se connecter au salon vocal.' };
-    }
     if (tracks.length === 0) {
       if (/open\.spotify\.com\/(?:[a-z-]+\/)?(?:playlist|album)\//i.test(queryOrUrl)) {
         return {
@@ -192,22 +196,34 @@ class MusicService {
     // 4. Premier titre : lecture directe si rien ne joue, sinon file d'attente.
     let queuePosition: number;
     if (state.status === 'IDLE' && !state.currentTrack) {
-      const startPromise = player.playTrack(track);
-      if (config.musicBackend === 'lavalink') {
-        // Préparer la source audio peut prendre plusieurs secondes (recherche + flux yt-dlp) : la commande répond
-        // au bout de 2,5 s au plus au lieu de rester en « réflexion ». En cas d'échec tardif, le bot le signale
-        // dans le salon (musicNotifier) et passe au titre suivant.
+      if (isLavalink) {
+        // Connexion vocale + préparation de la source audio (recherche, flux yt-dlp) peuvent prendre plusieurs secondes :
+        // la commande répond au bout de 2,5 s au plus au lieu de rester en « réflexion ». En cas d'échec tardif, le bot le
+        // signale dans le salon (musicNotifier).
+        const startPromise: Promise<boolean | 'noconnect'> = (async () => {
+          if (!(await connectPromise)) return 'noconnect';
+          return player.playTrack(track);
+        })();
         const outcome = await Promise.race([startPromise, new Promise<'pending'>((r) => setTimeout(() => r('pending'), 2500))]);
+        if (outcome === 'noconnect') return { success: false, error: NO_CONNECTION };
         if (outcome === false) return { success: false, error: 'Échec du lancement audio.' };
-        if (outcome === 'pending') startPromise.catch((err) => logger.warn('[MusicService] Lancement tardif en échec :', err));
-      } else if (!(await startPromise)) {
+        if (outcome === 'pending') {
+          startPromise
+            .then((late) => {
+              if (late === 'noconnect') void musicNotifier.error(guild.id, track.title, NO_CONNECTION + ' Vérifie que le bot a le droit de rejoindre et de parler dans ce salon.');
+            })
+            .catch((err) => logger.warn('[MusicService] Lancement tardif en échec :', err));
+        }
+      } else if (!(await player.playTrack(track))) {
         return { success: false, error: 'Échec du lancement audio.' };
       }
       queuePosition = 0;
     } else if (options?.playNext) {
+      if (!(await connectPromise)) return { success: false, error: NO_CONNECTION };
       player.queue.addNext(track);
       queuePosition = 1;
     } else {
+      if (!(await connectPromise)) return { success: false, error: NO_CONNECTION };
       const addRes = player.queue.add(track, settings.maxQueueSize, settings.allowDuplicates);
       if (!addRes.success) return { success: false, error: addRes.error };
       queuePosition = player.queue.size();

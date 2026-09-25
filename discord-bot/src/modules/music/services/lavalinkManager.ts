@@ -59,6 +59,8 @@ class LavalinkManager {
         reconnectInterval: 5,
         restTimeout: 15,
         moveOnDisconnect: false,
+        // Connexion vocale : 8 s par essai au lieu de 15 (deux essais = 30 s d'attente avant une erreur)
+        voiceConnectionTimeout: 8,
         userAgent: 'ETHONE-Bot',
       },
     );

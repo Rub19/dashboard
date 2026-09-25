@@ -196,6 +196,13 @@ export default function LoginPage() {
       return;
     }
 
+    // Sans jeton anti-robot le Worker refuse la demande (« requête invalide ») : on attend qu'il soit prêt au lieu d'envoyer dans le vide.
+    if (TURNSTILE_SITE_KEY && !otpTurnstileToken) {
+      setError(i18n("turnstilePending", "Vérification anti-robot en cours… patientez une seconde puis réessayez."));
+      triggerHaptic("error");
+      return;
+    }
+
     setAuthState("loading");
     setError(null);
     authLog("Requesting OTP code for:", email);
@@ -778,6 +785,17 @@ export default function LoginPage() {
                       error={!!error}
                       state={authState}
                     />
+
+                    {/* Le widget doit rester monté à cette étape : « Renvoyer le code » a besoin d'un jeton anti-robot tout neuf (un jeton ne sert qu'une fois). */}
+                    {TURNSTILE_SITE_KEY && (
+                      <TurnstileWidget
+                        ref={otpTurnstileRef}
+                        siteKey={TURNSTILE_SITE_KEY}
+                        action="login_otp"
+                        onToken={setOtpTurnstileToken}
+                        onExpire={() => setOtpTurnstileToken("")}
+                      />
+                    )}
 
                     <div className="flex items-center justify-between text-xs pt-1">
                       <button

@@ -34771,6 +34771,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_79_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_79_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_79_de);
 
+const v1_28_80_fr: ChangelogEntry = {
+  version: "v1.28.80",
+  date: "2026-09-25",
+  title: "Connexion : « Renvoyer le code » réparé",
+  items: [
+    "« Renvoyer le code » (page de saisie du code) affichait « Identifiants invalides » : le widget anti-robot n'était monté qu'à l'étape de l'adresse e-mail, donc la demande partait sans jeton et le Worker la refusait. Le widget reste maintenant monté à l'étape du code, et la demande attend le jeton (message « Vérification anti-robot en cours… ») au lieu de partir dans le vide.",
+  ],
+};
+
+const v1_28_80_en: ChangelogEntry = {
+  version: "v1.28.80",
+  date: "2026-09-25",
+  title: "Sign-in: \"Resend code\" fixed",
+  items: [
+    "\"Resend code\" (on the code entry page) showed \"Invalid credentials\": the anti-bot widget was only mounted at the email step, so the request went out without a token and the Worker refused it. The widget now stays mounted at the code step, and the request waits for the token (\"Anti-bot check in progress…\") instead of going out empty.",
+  ],
+};
+
+const v1_28_80_es: ChangelogEntry = {
+  version: "v1.28.80",
+  date: "2026-09-25",
+  title: "Inicio de sesión: «Reenviar código» reparado",
+  items: [
+    "«Reenviar código» (en la página de introducción del código) mostraba «Credenciales inválidas»: el widget antirrobot solo estaba montado en el paso del correo, así que la solicitud salía sin token y el Worker la rechazaba. Ahora el widget sigue montado en el paso del código, y la solicitud espera el token («Verificación antirrobot en curso…») en lugar de salir vacía.",
+  ],
+};
+
+const v1_28_80_de: ChangelogEntry = {
+  version: "v1.28.80",
+  date: "2026-09-25",
+  title: "Anmeldung: „Code erneut senden“ repariert",
+  items: [
+    "„Code erneut senden“ (auf der Code-Eingabeseite) zeigte „Ungültige Zugangsdaten“: Das Anti-Bot-Widget war nur im E-Mail-Schritt eingebunden, die Anfrage ging also ohne Token hinaus und der Worker lehnte sie ab. Das Widget bleibt jetzt im Code-Schritt eingebunden, und die Anfrage wartet auf das Token („Anti-Bot-Prüfung läuft …“), statt leer hinauszugehen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_80_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_80_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_80_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_80_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

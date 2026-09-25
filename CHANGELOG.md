@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.80 — 2026-09-25
+
+**Connexion : « Renvoyer le code » réparé**
+
+- « Renvoyer le code » (page de saisie du code) affichait « Identifiants invalides » : le widget anti-robot n'était monté qu'à l'étape de l'adresse e-mail, donc la demande partait sans jeton et le Worker la refusait. Le widget reste maintenant monté à l'étape du code, et la demande attend le jeton (message « Vérification anti-robot en cours… ») au lieu de partir dans le vide.
+
 ## v1.28.79 — 2026-09-25
 
 **Connexion par code réparée, XP désactivé, favicon**

@@ -11,7 +11,7 @@ import { backupService } from '../modules/backup/services/backupService.js';
 import { aiService } from '../modules/ai/services/aiService.js';
 import { logger } from '../utils/logger.js';
 
-const BOT_SITE_URL = 'https://ethone.dev/bot';
+const BOT_SITE_URL = 'https://discord.ethone.dev';
 
 /** « À propos de moi » du bot (400 caractères max) : présentation, site web et lien d'invitation. */
 function buildBotBio(clientId: string): string {

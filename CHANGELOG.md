@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.82 — 2026-09-25
+
+**Connexion : le message d'erreur indique le motif**
+
+- Quand la connexion échoue pour une raison inattendue, le message générique est maintenant suivi du détail technique entre parenthèses (et écrit dans la console), pour diagnostiquer sans deviner.
+
 ## v1.28.81 — 2026-09-25
 
 **Connexion par code : la validation fonctionne à nouveau**

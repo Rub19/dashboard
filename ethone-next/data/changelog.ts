@@ -34861,6 +34861,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_81_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_81_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_81_de);
 
+const v1_28_82_fr: ChangelogEntry = {
+  version: "v1.28.82",
+  date: "2026-09-25",
+  title: "Connexion : le message d'erreur indique le motif",
+  items: [
+    "Quand la connexion échoue pour une raison inattendue, le message générique est maintenant suivi du détail technique entre parenthèses (et écrit dans la console), pour diagnostiquer sans deviner.",
+  ],
+};
+
+const v1_28_82_en: ChangelogEntry = {
+  version: "v1.28.82",
+  date: "2026-09-25",
+  title: "Sign-in: the error message shows the reason",
+  items: [
+    "When sign-in fails for an unexpected reason, the generic message is now followed by the technical detail in parentheses (and written to the console), so it can be diagnosed without guessing.",
+  ],
+};
+
+const v1_28_82_es: ChangelogEntry = {
+  version: "v1.28.82",
+  date: "2026-09-25",
+  title: "Inicio de sesión: el mensaje de error indica el motivo",
+  items: [
+    "Cuando el inicio de sesión falla por un motivo inesperado, el mensaje genérico ahora va seguido del detalle técnico entre paréntesis (y se escribe en la consola), para diagnosticar sin adivinar.",
+  ],
+};
+
+const v1_28_82_de: ChangelogEntry = {
+  version: "v1.28.82",
+  date: "2026-09-25",
+  title: "Anmeldung: Die Fehlermeldung nennt den Grund",
+  items: [
+    "Schlägt die Anmeldung aus unerwartetem Grund fehl, folgt der allgemeinen Meldung jetzt die technische Angabe in Klammern (und wird in die Konsole geschrieben), damit sich der Fehler ohne Raten diagnostizieren lässt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_82_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_82_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_82_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_82_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

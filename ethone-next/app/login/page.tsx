@@ -92,7 +92,10 @@ function humanError(err: unknown, i18n: (key: string, fallback?: string) => stri
   if (lower.includes("network") || lower.includes("fetch") || lower.includes("offline")) {
     return i18n("networkError", "Impossible de contacter les serveurs ETHONE. Vérifiez votre connexion.");
   }
-  return i18n("unknownAuthError", "Une erreur est survenue lors de l'authentification.");
+  // Motif inconnu : on garde le message générique mais on ajoute le détail technique (court), pour pouvoir diagnostiquer.
+  const detail = msg.trim().replace(/\s+/g, " ").slice(0, 140);
+  if (detail) console.error("[login] erreur d'authentification :", msg);
+  return i18n("unknownAuthError", "Une erreur est survenue lors de l'authentification.") + (detail ? ` (${detail})` : "");
 }
 
 export default function LoginPage() {

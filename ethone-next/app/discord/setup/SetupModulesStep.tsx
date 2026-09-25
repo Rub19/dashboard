@@ -19,12 +19,12 @@ const PRESETS: Array<{ id: string; emoji: string; label: string; text: string; i
     text: "Accueil, rôles, niveaux, économie, sondages, événements, tickets…",
     ids: [...CORE, "welcome", "roles", "leveling", "economy", "suggestions", "polls", "giveaways", "events", "forms", "starboard", "highlights", "birthdays", "voice", "tickets", "invites", "afk", "counting", "stats", "statroles", "serverstats", "sticky", "commands"],
   },
-  { id: "security", emoji: "🛡️", label: "Sécurité", text: "Anti-Raid, Anti-Nuke, AutoMod, journaux, accueil, tickets, sauvegardes.", ids: [...CORE, "security", "anti-nuke", "automod", "logs", "welcome", "tickets", "backups"] },
+  { id: "security", emoji: "🛡️", label: "Sécurité", text: "Anti-Raid, Anti-Nuke, AutoMod, journaux, accueil, tickets, sauvegardes.", ids: [...CORE, "security", "anti-nuke", "automod", "logs", "welcome", "tickets", "backups", "reports"] },
   { id: "all", emoji: "✅", label: "Tout activer", text: "Tous les modules, y compris l'assistant IA.", ids: "all" },
 ];
 
 const GROUPS: Array<{ title: string; ids: string[] }> = [
-  { title: "Protection & gestion", ids: ["moderation", "security", "anti-nuke", "automod", "logs", "tickets", "backups", "invites"] },
+  { title: "Protection & gestion", ids: ["moderation", "security", "anti-nuke", "automod", "logs", "tickets", "reports", "backups", "invites"] },
   { title: "Communauté & animation", ids: ["welcome", "roles", "leveling", "economy", "suggestions", "polls", "giveaways", "events", "forms", "starboard", "highlights", "birthdays", "music", "voice", "commands", "tags", "reminders", "sticky", "afk", "counting", "stats", "statroles", "serverstats", "ai"] },
 ];
 

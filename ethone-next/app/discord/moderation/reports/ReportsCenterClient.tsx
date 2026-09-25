@@ -18,6 +18,7 @@ import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGui
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import ReportsSetupPanel from "./ReportsSetupPanel";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -305,6 +306,9 @@ export default function ReportsCenterClient() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 pt-6 space-y-6">
+        {/* INSTALLATION / RÉGLAGES DU SYSTÈME DE SIGNALEMENT (Discord) */}
+        {selectedGuild && (!botGuildIds || botGuildIds.includes(selectedGuild.id)) && <ReportsSetupPanel guildId={selectedGuild.id} />}
+
         {/* BANNIÈRE BOT NON INSTALLÉ */}
         {selectedGuild && botGuildIds && !botGuildIds.includes(selectedGuild.id) && (
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">

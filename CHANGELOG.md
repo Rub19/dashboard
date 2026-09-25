@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.89 — 2026-09-25
+
+**Système de signalement**
+
+- Nouveau : les membres peuvent signaler un abus en un clic (clic droit sur un message ou un membre, ou /report) ; le motif est saisi dans une fenêtre dédiée.
+- L'équipe reçoit dans un salon privé un message unique par membre signalé : ancienneté du compte, sanctions passées, tous les signalements regroupés et mis à jour en direct.
+- Menu « Sanctionner le membre » et boutons Prendre en charge / Marquer comme traité / Rejeter, réservés à la permission « Exclure des membres » ou au rôle de l'équipe.
+- Installation en un clic depuis le dashboard (écran d'accueil avec aperçu) ou avec /report setup : le salon « signalements » est créé, visible de l'équipe et du bot seulement.
+- Protections : pas d'auto-signalement, pas de signalement de bots, délai entre deux signalements, mentions saisies neutralisées.
+- Le module est désactivé par défaut et apparaît dans l'assistant de configuration rapide (groupe Protection).
+
 ## v1.28.88 — 2026-09-25
 
 **Compteurs de salons personnalisables + Statroles**

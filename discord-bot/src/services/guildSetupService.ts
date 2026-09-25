@@ -52,7 +52,7 @@ function persist(): void {
 
 /** Les deux familles de modules proposées dans les menus (29 modules → deux menus de 25 options maximum). */
 const GROUPS: Array<{ id: 'protect' | 'community'; placeholder: string; moduleIds: string[] }> = [
-  { id: 'protect', placeholder: '🛡️ Protection & gestion', moduleIds: ['moderation', 'security', 'anti-nuke', 'automod', 'logs', 'tickets', 'backups', 'invites'] },
+  { id: 'protect', placeholder: '🛡️ Protection & gestion', moduleIds: ['moderation', 'security', 'anti-nuke', 'automod', 'logs', 'tickets', 'reports', 'backups', 'invites'] },
   {
     id: 'community',
     placeholder: '🎉 Communauté & animation',

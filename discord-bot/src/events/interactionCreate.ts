@@ -49,6 +49,8 @@ import { handleModButton } from '../modules/moderation/interactions/modButtonHan
 import { BotConfigService } from '../modules/botControl/services/botConfigService.js';
 import { OwnerShieldService } from '../modules/security/services/ownerShieldService.js';
 import { guildSetupService } from '../services/guildSetupService.js';
+import { reportsService } from '../modules/reports/services/reportsService.js';
+import { REPORT_CONTEXT_MENUS } from '../modules/reports/commands/reportCommands.js';
 import { logger } from '../utils/logger.js';
 
 const botCommandStatsService = BotCommandStatsService.getInstance();
@@ -101,6 +103,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   );
   // 1. Gestion des composants d'interaction (Boutons, Menus déroulants, Modals)
   if (interaction.isAnySelectMenu()) {
+    if (interaction.customId.startsWith('rep_sanction:') && interaction.isStringSelectMenu()) {
+      await safeHandleComponent(interaction, 'report_sanction', () => reportsService.handleSelect(interaction));
+      return;
+    }
     if (interaction.customId.startsWith('qsetup:') && interaction.isStringSelectMenu()) {
       await safeHandleComponent(interaction, 'quick_setup', () => guildSetupService.handle(interaction));
       return;
@@ -130,6 +136,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   if (interaction.isButton()) {
     if (interaction.customId.startsWith('qsetup:')) {
       await safeHandleComponent(interaction, 'quick_setup', () => guildSetupService.handle(interaction));
+      return;
+    }
+    if (interaction.customId.startsWith('rep_')) {
+      await safeHandleComponent(interaction, 'report_button', () => reportsService.handleButton(interaction));
       return;
     }
     if (interaction.customId.startsWith('plbrowse:')) {
@@ -193,7 +203,9 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
 
   if (interaction.isModalSubmit()) {
-    if (interaction.customId.startsWith('onb_modal:')) {
+    if (interaction.customId.startsWith('rep_modal:')) {
+      await safeHandleComponent(interaction, 'report_modal', () => reportsService.handleModal(interaction));
+    } else if (interaction.customId.startsWith('onb_modal:')) {
       await safeHandleComponent(interaction, 'onboarding_modal', () => OnboardingRunner.handleModal(interaction));
     } else if (interaction.customId.startsWith('modal_settings_')) {
       await safeHandleComponent(interaction, 'modal_settings', () => handleSettingsModal(interaction));
@@ -252,6 +264,13 @@ export async function onInteractionCreate(interaction: Interaction) {
     }
 
     await interaction.respond([]).catch(() => null);
+    return;
+  }
+
+  // 1.8 Menus contextuels (clic droit sur un message ou un membre)
+  if (interaction.isContextMenuCommand()) {
+    const menu = REPORT_CONTEXT_MENUS.find((m) => m.data.name === interaction.commandName);
+    if (menu && interaction.guildId) await safeHandleComponent(interaction, 'context_menu', () => menu.run(interaction as any));
     return;
   }
 

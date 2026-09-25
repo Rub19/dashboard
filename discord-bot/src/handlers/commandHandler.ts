@@ -78,6 +78,7 @@ import { afkCommand } from '../modules/afk/commands/afkCommand.js';
 import { countingCommand } from '../modules/counting/commands/countingCommand.js';
 import { statsCommand } from '../modules/stats/commands/statsCommand.js';
 import { statrolesCommand } from '../modules/statroles/commands/statrolesCommand.js';
+import { reportCommand, REPORT_CONTEXT_MENUS } from '../modules/reports/commands/reportCommands.js';
 import { birthdayCommand } from '../modules/birthdays/commands/birthdayCommand.js';
 import { tagCommand } from '../modules/tags/commands/tagCommand.js';
 import { serverStatsCommand } from '../modules/serverStats/commands/serverStatsCommand.js';
@@ -197,6 +198,7 @@ class CommandRegistry {
     this.register(countingCommand);
     this.register(statsCommand);
     this.register(statrolesCommand);
+    this.register(reportCommand);
 
     // Birthdays (anniversaires + annonce quotidienne + rôle)
     this.register(birthdayCommand);
@@ -250,6 +252,8 @@ class CommandRegistry {
     const slashDataList = this.getAllCommands()
       .filter((cmd) => cmd.slashData !== undefined)
       .map((cmd) => cmd.slashData!.toJSON());
+    // Menus contextuels (clic droit) : déployés avec les commandes slash
+    const contextMenus = REPORT_CONTEXT_MENUS.map((m) => m.data.toJSON());
 
     const rest = new REST({ version: '10' }).setToken(config.token);
 
@@ -265,7 +269,7 @@ class CommandRegistry {
       // sur les serveurs de production.
       await rest.put(
         Routes.applicationCommands(config.clientId),
-        { body: slashDataList }
+        { body: [...slashDataList, ...contextMenus] }
       );
       logger.success('Slash commands déployées globalement avec succès (tous les serveurs, propagation ~1h).');
 

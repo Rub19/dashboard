@@ -35208,6 +35208,67 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_88_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_88_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_88_de);
 
+const v1_28_89_fr: ChangelogEntry = {
+  version: "v1.28.89",
+  date: "2026-09-25",
+  title: "Système de signalement",
+  items: [
+    "Nouveau : les membres peuvent signaler un abus en un clic (clic droit sur un message ou un membre, ou /report) ; le motif est saisi dans une fenêtre dédiée.",
+    "L'équipe reçoit dans un salon privé un message unique par membre signalé : ancienneté du compte, sanctions passées, tous les signalements regroupés et mis à jour en direct.",
+    "Menu « Sanctionner le membre » et boutons Prendre en charge / Marquer comme traité / Rejeter, réservés à la permission « Exclure des membres » ou au rôle de l'équipe.",
+    "Installation en un clic depuis le dashboard (écran d'accueil avec aperçu) ou avec /report setup : le salon « signalements » est créé, visible de l'équipe et du bot seulement.",
+    "Protections : pas d'auto-signalement, pas de signalement de bots, délai entre deux signalements, mentions saisies neutralisées.",
+    "Le module est désactivé par défaut et apparaît dans l'assistant de configuration rapide (groupe Protection).",
+  ],
+};
+
+const v1_28_89_en: ChangelogEntry = {
+  version: "v1.28.89",
+  date: "2026-09-25",
+  title: "Report system",
+  items: [
+    "New: members can report abuse in one click (right-click a message or member, or /report); the reason is entered in a dedicated window.",
+    "The team gets one message per reported member in a private channel: account age, past sanctions, all reports grouped and updated live.",
+    "\"Sanction the member\" menu and Take charge / Mark as handled / Dismiss buttons, restricted to the Timeout Members permission or the team role.",
+    "One-click setup from the dashboard (welcome screen with preview) or with /report setup: the \"reports\" channel is created, visible only to the team and the bot.",
+    "Safeguards: no self-reports, no reporting bots, a delay between two reports from the same member, typed mentions neutralised.",
+    "The module is off by default and appears in the quick setup wizard (Protection group).",
+  ],
+};
+
+const v1_28_89_es: ChangelogEntry = {
+  version: "v1.28.89",
+  date: "2026-09-25",
+  title: "Sistema de reportes",
+  items: [
+    "Nuevo: los miembros pueden denunciar un abuso con un clic (clic derecho en un mensaje o miembro, o /report); el motivo se escribe en una ventana propia.",
+    "El equipo recibe en un canal privado un único mensaje por miembro denunciado: antigüedad de la cuenta, sanciones pasadas y todas las denuncias agrupadas y actualizadas en directo.",
+    "Menú «Sancionar al miembro» y botones Encargarse / Marcar como tratado / Rechazar, reservados al permiso «Aislar temporalmente a miembros» o al rol del equipo.",
+    "Instalación en un clic desde el dashboard (pantalla de bienvenida con vista previa) o con /report setup: se crea el canal «reportes», visible solo para el equipo y el bot.",
+    "Protecciones: sin autodenuncias, sin denunciar bots, tiempo de espera entre dos denuncias del mismo miembro, menciones escritas neutralizadas.",
+    "El módulo está desactivado por defecto y aparece en el asistente de configuración rápida (grupo Protección).",
+  ],
+};
+
+const v1_28_89_de: ChangelogEntry = {
+  version: "v1.28.89",
+  date: "2026-09-25",
+  title: "Meldesystem",
+  items: [
+    "Neu: Mitglieder können Missbrauch mit einem Klick melden (Rechtsklick auf eine Nachricht oder ein Mitglied, oder /report); der Grund wird in einem eigenen Fenster eingegeben.",
+    "Das Team erhält in einem privaten Kanal eine einzige Nachricht pro gemeldetem Mitglied: Kontoalter, frühere Sanktionen, alle Meldungen gebündelt und live aktualisiert.",
+    "Menü „Mitglied sanktionieren“ und Schaltflächen Übernehmen / Als erledigt markieren / Ablehnen, nur mit der Berechtigung „Mitglieder timeouten“ oder der Team-Rolle.",
+    "Einrichtung mit einem Klick im Dashboard (Startbildschirm mit Vorschau) oder mit /report setup: Der Kanal „meldungen“ wird erstellt und ist nur für Team und Bot sichtbar.",
+    "Schutzmaßnahmen: keine Selbstmeldungen, keine Meldung von Bots, Wartezeit zwischen zwei Meldungen desselben Mitglieds, eingegebene Erwähnungen entschärft.",
+    "Das Modul ist standardmäßig deaktiviert und erscheint im Schnell-Setup-Assistenten (Gruppe Schutz).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_89_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_89_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_89_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_89_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

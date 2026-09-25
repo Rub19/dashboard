@@ -46,6 +46,7 @@ import { createAfkRouter } from './routes/afkRoutes.js';
 import { createCountingRouter } from './routes/countingRoutes.js';
 import { createStatsRouter } from './routes/statsRoutes.js';
 import { createStatrolesRouter } from './routes/statrolesRoutes.js';
+import { createReportSystemRouter } from './routes/reportsRoutes.js';
 import { createBirthdayRouter } from './routes/birthdayRoutes.js';
 import { createTagRouter } from './routes/tagRoutes.js';
 import { createServerStatsRouter } from './routes/serverStatsRoutes.js';
@@ -321,6 +322,12 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createAfkRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/report-system',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createReportSystemRouter(client)
   );
   app.use(
     '/api/guilds/:guildId/statroles',

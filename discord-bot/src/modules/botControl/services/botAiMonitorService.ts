@@ -1,4 +1,5 @@
 import { BotAiStats } from '../types/index.js';
+import { BotConfigService } from './botConfigService.js';
 
 interface AiRequestRecord {
   timestamp: number;
@@ -77,7 +78,9 @@ export class BotAiMonitorService {
     const completionEstimate = totalTokens24h - promptEstimate;
     // Coût estimé : ~$0.80 par 1M prompt tokens, ~$4 par 1M completion tokens pour Claude Haiku/OpenRouter
     const cost = (promptEstimate * 0.0000008) + (completionEstimate * 0.000004);
-    const dailyBudget = 5.0; // $5 USD cap quotidien
+    // Plafond quotidien configuré (réglage global « aiDailySpendLimitUsd »), 5 $ par défaut.
+    const configuredBudget = BotConfigService.getInstance().getSettings().aiDailySpendLimitUsd;
+    const dailyBudget = configuredBudget > 0 ? configuredBudget : 5.0;
     const budgetUsedPercent = Math.min(100, Math.round((cost / dailyBudget) * 100));
     const successRate = requests24h > 0
       ? Math.round(((requests24h - failures24h) / requests24h) * 1000) / 10

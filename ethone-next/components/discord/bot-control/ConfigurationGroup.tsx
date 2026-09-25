@@ -796,41 +796,45 @@ export default function ConfigurationGroup({
               <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
                 <span className="text-[10px] text-zinc-400 block">Requêtes IA (24h)</span>
                 <span className="text-lg font-bold font-mono text-white mt-1 block">{aiTelemetry.dailyRequests}</span>
-                <span className="text-[10px] text-emerald-400 mt-0.5 block font-medium">99.4% succès</span>
+                <span className="text-[10px] text-emerald-400 mt-0.5 block font-medium">
+                  {aiTelemetry.dailyRequests > 0 ? `${aiTelemetry.successRate}% de succès` : "Aucune requête sur 24 h"}
+                </span>
               </div>
               <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
                 <span className="text-[10px] text-zinc-400 block">Tokens Consommés</span>
                 <span className="text-lg font-bold font-mono text-purple-300 mt-1 block">{aiTelemetry.dailyTokens.toLocaleString()}</span>
-                <span className="text-[10px] text-zinc-400 mt-0.5 block font-mono">sur {aiTelemetry.maxTokens.toLocaleString()}</span>
+                <span className="text-[10px] text-zinc-400 mt-0.5 block font-mono">sur 24 h glissantes</span>
               </div>
               <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
                 <span className="text-[10px] text-zinc-400 block">Latence Moyenne</span>
-                <span className="text-lg font-bold font-mono text-emerald-400 mt-1 block">{aiTelemetry.avgLatencyMs}ms</span>
+                <span className="text-lg font-bold font-mono text-emerald-400 mt-1 block">{aiTelemetry.dailyRequests > 0 ? `${aiTelemetry.avgLatencyMs}ms` : "—"}</span>
                 <span className="text-[10px] text-zinc-400 mt-0.5 block">Temps d'inférence</span>
               </div>
               <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
-                <span className="text-[10px] text-zinc-400 block">Coût Actuel</span>
-                <span className="text-lg font-bold font-mono text-emerald-400 mt-1 block">0.00 €</span>
-                <span className="text-[10px] text-zinc-400 mt-0.5 block">Gratuit (Free Built-in)</span>
+                <span className="text-[10px] text-zinc-400 block">Coût estimé (24 h)</span>
+                <span className="text-lg font-bold font-mono text-emerald-400 mt-1 block">
+                  {aiTelemetry.dailyTokens > 0 ? `≈ ${aiTelemetry.estimatedCostUsd.toFixed(3)} $` : "—"}
+                </span>
+                <span className="text-[10px] text-zinc-400 mt-0.5 block">Estimation, pas une facture</span>
               </div>
             </div>
 
             {/* Daily Token Gauge */}
             <div className="p-5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-white">Consommation du Quota Journalier</span>
+                <span className="font-bold text-white">Budget estimé (24 h glissantes)</span>
                 <span className="font-mono text-purple-300 font-semibold">
-                  {((aiTelemetry.dailyTokens / aiTelemetry.maxTokens) * 100).toFixed(1)}% utilisé
+                  {aiTelemetry.budgetUsedPercent}% de {aiTelemetry.dailyBudgetUsd.toFixed(2)} $
                 </span>
               </div>
               <div className="w-full h-3 rounded-full bg-zinc-900 overflow-hidden p-0.5">
                 <div
                   className="h-full rounded-full bg-[#5865F2] transition-all duration-500"
-                  style={{ width: `${(aiTelemetry.dailyTokens / aiTelemetry.maxTokens) * 100}%` }}
+                  style={{ width: `${Math.min(100, aiTelemetry.budgetUsedPercent)}%` }}
                 />
               </div>
               <span className="text-[10px] text-zinc-400 block pt-1">
-                Le budget de tokens est automatiquement réinitialisé chaque nuit à 00:00 UTC.
+                Le coût est estimé à partir des jetons (répartition 50/50 entre question et réponse, tarifs supposés) sur une fenêtre glissante de 24 h : rien n'est facturé par ETHONE.
               </span>
             </div>
 
@@ -847,7 +851,7 @@ export default function ConfigurationGroup({
                   </span>
                 </div>
                 <p className="text-[11px] text-zinc-400">
-                  Filtre prédictif analysant chaque requête utilisateur pour empêcher les fuites de prompt système et attaques par injection.
+                  Filtre par motifs qui analyse chaque requête pour bloquer les tentatives de fuite du prompt système et d'injection, et nettoie les réponses (secrets, mots interdits).
                 </p>
               </div>
 
@@ -858,11 +862,11 @@ export default function ConfigurationGroup({
                     Base de Connaissances RAG
                   </span>
                   <span className="px-1.5 py-0.5 rounded text-[10px] bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-semibold">
-                    {aiTelemetry.ragSources} Sources
+                    Par serveur
                   </span>
                 </div>
                 <p className="text-[11px] text-zinc-400">
-                  Index contextuel fournissant les informations vérifiées du serveur (règlement, tickets, rôles VIP) pour des réponses ultra-précises sans hallucination.
+                  Index contextuel propre à chaque serveur (page Assistant IA) que l'assistant consulte pour répondre. Il réduit les erreurs mais ne les supprime pas.
                 </p>
               </div>
             </div>

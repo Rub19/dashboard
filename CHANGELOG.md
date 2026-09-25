@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.110 — 2026-09-26
+
+**Centre de contrôle : onglet IA sans chiffres inventés**
+
+- L'onglet Assistant IA n'affiche plus « 99.4 % succès » ni un quota de 100 000 jetons inventés, ni un coût « 0.00 € Gratuit » : le taux de succès, la latence (« — » sans requête), le coût estimé et le budget viennent des vraies requêtes des dernières 24 h, le plafond quotidien est celui du réglage global du bot, et le coût est clairement présenté comme une estimation.
+- Les textes du filtre de sécurité et de la base de connaissances décrivent maintenant ce qu'ils font réellement (filtre par motifs, index propre à chaque serveur) au lieu de promesses (« sans hallucination »).
+
 ## v1.28.109 — 2026-09-26
 
 **Protection Suprême désactivée et boutons des modules éteints inertes**

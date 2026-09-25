@@ -36273,6 +36273,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_109_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_109_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_109_de);
 
+const v1_28_110_fr: ChangelogEntry = {
+  version: "v1.28.110",
+  date: "2026-09-26",
+  title: "Centre de contrôle : onglet IA sans chiffres inventés",
+  items: [
+    "L'onglet Assistant IA n'affiche plus « 99.4 % succès » ni un quota de 100 000 jetons inventés, ni un coût « 0.00 € Gratuit » : le taux de succès, la latence (« — » sans requête), le coût estimé et le budget viennent des vraies requêtes des dernières 24 h, le plafond quotidien est celui du réglage global du bot, et le coût est clairement présenté comme une estimation.",
+    "Les textes du filtre de sécurité et de la base de connaissances décrivent maintenant ce qu'ils font réellement (filtre par motifs, index propre à chaque serveur) au lieu de promesses (« sans hallucination »).",
+  ],
+};
+
+const v1_28_110_en: ChangelogEntry = {
+  version: "v1.28.110",
+  date: "2026-09-26",
+  title: "Control center: AI tab without invented figures",
+  items: [
+    "The AI Assistant tab no longer shows a made-up \"99.4% success\", a 100,000-token quota or a \"€0.00 Free\" cost: the success rate, latency (\"—\" with no request), estimated cost and budget come from the real requests of the last 24 hours, the daily cap is the bot's global setting, and the cost is clearly presented as an estimate.",
+    "The security filter and knowledge base texts now describe what they really do (pattern filter, per-server index) instead of promises (\"no hallucination\").",
+  ],
+};
+
+const v1_28_110_es: ChangelogEntry = {
+  version: "v1.28.110",
+  date: "2026-09-26",
+  title: "Centro de control: pestaña de IA sin cifras inventadas",
+  items: [
+    "La pestaña Asistente de IA ya no muestra un «99,4 % de éxito», una cuota de 100 000 tokens ni un coste «0,00 € Gratis» inventados: la tasa de éxito, la latencia («—» sin solicitudes), el coste estimado y el presupuesto provienen de las solicitudes reales de las últimas 24 horas, el límite diario es el ajuste global del bot y el coste se presenta claramente como una estimación.",
+    "Los textos del filtro de seguridad y de la base de conocimientos describen ahora lo que hacen realmente (filtro por patrones, índice por servidor) en lugar de promesas («sin alucinaciones»).",
+  ],
+};
+
+const v1_28_110_de: ChangelogEntry = {
+  version: "v1.28.110",
+  date: "2026-09-26",
+  title: "Kontrollzentrum: KI-Tab ohne erfundene Zahlen",
+  items: [
+    "Der Tab KI-Assistent zeigt keine erfundenen „99,4 % Erfolg“, kein Kontingent von 100.000 Tokens und keine Kosten „0,00 € gratis“ mehr: Erfolgsquote, Latenz („—“ ohne Anfrage), geschätzte Kosten und Budget stammen aus den echten Anfragen der letzten 24 Stunden, die Tagesgrenze ist die globale Einstellung des Bots, und die Kosten werden klar als Schätzung dargestellt.",
+    "Die Texte zu Sicherheitsfilter und Wissensdatenbank beschreiben jetzt, was sie wirklich tun (Musterfilter, Index pro Server), statt Versprechen („keine Halluzinationen“).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_110_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_110_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_110_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_110_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

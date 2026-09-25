@@ -574,12 +574,12 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const [aiTelemetry, setAiTelemetry] = useState({
     dailyRequests: 0,
     dailyTokens: 0,
-    maxTokens: 100000,
     activeModel: "—",
     avgLatencyMs: 0,
     successRate: 0,
-    safetyShield: false,
-    ragSources: 0,
+    estimatedCostUsd: 0,
+    dailyBudgetUsd: 0,
+    budgetUsedPercent: 0,
   });
 
   // Seeded empty until fetchData's GET /api/bot/security response lands.
@@ -1163,9 +1163,12 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
             ...prev,
             dailyRequests: a.requests24h ?? prev.dailyRequests,
             dailyTokens: a.totalTokens24h ?? prev.dailyTokens,
-            activeModel: a.provider || prev.activeModel,
+            activeModel: a.activeModel ? `${a.provider ? a.provider + " · " : ""}${a.activeModel}` : a.provider || prev.activeModel,
             avgLatencyMs: a.avgInferenceLatencyMs ?? prev.avgLatencyMs,
             successRate: a.successRate ?? prev.successRate,
+            estimatedCostUsd: a.estimatedCostTodayUsd ?? prev.estimatedCostUsd,
+            dailyBudgetUsd: a.dailyBudgetUsd ?? prev.dailyBudgetUsd,
+            budgetUsedPercent: a.budgetUsedPercent ?? prev.budgetUsedPercent,
           }));
         }
       }

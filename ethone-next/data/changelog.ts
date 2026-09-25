@@ -35448,6 +35448,67 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_92_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_92_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_92_de);
 
+const v1_28_93_fr: ChangelogEntry = {
+  version: "v1.28.93",
+  date: "2026-09-25",
+  title: "Niveaux façon DraftBot, page Paramètres avec contacts d'urgence, aperçu des messages du bot",
+  items: [
+    "Niveaux : nouvel onglet « Paramètres » avec annonce du niveau et aperçu en direct, gain d'XP, XP en vocal (par minute, membres minimum, muet ignoré), niveau maximum, salons et rôles sans XP, options (fils, forums, bots, XP conservé au départ), couleur du système, annonce séparée des récompenses. Désactivé par défaut.",
+    "Classement en ligne : page publique https://ethone.dev/leaderboard?guildId=… activable par le propriétaire (seuls pseudo, avatar, niveau et XP sont exposés) et interrupteur pour /leaderboard sur Discord.",
+    "Nouvelle page Paramètres : langue, fuseau horaire complet avec décalage UTC, préfixe et types de commandes (impossible de tout couper).",
+    "Contacts d'urgence : administrateurs, propriétaire ou membres et rôles choisis sont mentionnés et reçoivent un message privé quand un problème sérieux est détecté (permission manquante, salon configuré supprimé, rôle caché disparu…), une seule fois par problème (rappel après 24 h). Bouton de test qui indique ce qui a été réellement livré.",
+    "Aperçu des messages du bot : commande /previewmessages et bouton dans Paramètres pour recevoir en message privé un exemplaire de 21 messages (statuts, /ping, /settings, sanctions, niveaux, AutoMod, sécurité et urgences), construits avec les mêmes fonctions que les vrais envois. Le catalogue sera complété.",
+    "Correctifs : /stats est désormais la vraie commande Statistiques (l'ancien alias vers /bot est retiré).",
+  ],
+};
+
+const v1_28_93_en: ChangelogEntry = {
+  version: "v1.28.93",
+  date: "2026-09-25",
+  title: "DraftBot-style Levels, Settings page with emergency contacts, bot message preview",
+  items: [
+    "Levels: new \"Settings\" tab with level-up announcement and live preview, XP gain, voice XP (per minute, minimum members, muted ignored), maximum level, channels and roles without XP, options (threads, forums, bots, XP kept on leave), system colour, separate reward announcement. Off by default.",
+    "Online leaderboard: public page https://ethone.dev/leaderboard?guildId=… that the owner can enable (only name, avatar, level and XP are exposed) and a switch for /leaderboard on Discord.",
+    "New Settings page: language, full time zone list with UTC offset, prefix and command types (you cannot turn everything off).",
+    "Emergency contacts: administrators, the owner, or chosen members and roles are mentioned and receive a private message when a serious problem is detected (missing permission, deleted configured channel, missing hidden role…), once per problem (reminder after 24 h). Test button that reports what was actually delivered.",
+    "Bot message preview: /previewmessages command and a button in Settings to receive 21 sample messages by DM (statuses, /ping, /settings, sanctions, levels, AutoMod, security and emergencies), built with the same functions as the real messages. The catalogue will grow.",
+    "Fixes: /stats is now the real Statistics command (the old alias to /bot is removed).",
+  ],
+};
+
+const v1_28_93_es: ChangelogEntry = {
+  version: "v1.28.93",
+  date: "2026-09-25",
+  title: "Niveles estilo DraftBot, página de Ajustes con contactos de emergencia, vista previa de mensajes del bot",
+  items: [
+    "Niveles: nueva pestaña «Ajustes» con anuncio de nivel y vista previa en vivo, ganancia de XP, XP en voz (por minuto, miembros mínimos, silenciados ignorados), nivel máximo, canales y roles sin XP, opciones (hilos, foros, bots, XP conservada al salir), color del sistema y anuncio separado de recompensas. Desactivado por defecto.",
+    "Clasificación en línea: página pública https://ethone.dev/leaderboard?guildId=… que el propietario puede activar (solo se expone nombre, avatar, nivel y XP) e interruptor para /leaderboard en Discord.",
+    "Nueva página de Ajustes: idioma, zona horaria completa con desfase UTC, prefijo y tipos de comandos (no se puede desactivar todo).",
+    "Contactos de emergencia: administradores, el propietario o miembros y roles elegidos son mencionados y reciben un mensaje privado cuando se detecta un problema grave (permiso que falta, canal configurado eliminado, rol oculto desaparecido…), una vez por problema (recordatorio a las 24 h). Botón de prueba que indica lo que se entregó realmente.",
+    "Vista previa de mensajes del bot: comando /previewmessages y botón en Ajustes para recibir por mensaje privado 21 mensajes de ejemplo (estados, /ping, /settings, sanciones, niveles, AutoMod, seguridad y emergencias), creados con las mismas funciones que los reales. El catálogo se ampliará.",
+    "Correcciones: /stats es ahora el verdadero comando de Estadísticas (se elimina el antiguo alias a /bot).",
+  ],
+};
+
+const v1_28_93_de: ChangelogEntry = {
+  version: "v1.28.93",
+  date: "2026-09-25",
+  title: "Level im DraftBot-Stil, Einstellungsseite mit Notfallkontakten, Vorschau der Bot-Nachrichten",
+  items: [
+    "Level: neuer Tab „Einstellungen“ mit Level-Ankündigung und Live-Vorschau, XP-Gewinn, Voice-XP (pro Minute, Mindestanzahl Mitglieder, Stummgeschaltete ignoriert), Maximallevel, Kanäle und Rollen ohne XP, Optionen (Threads, Foren, Bots, XP bleibt beim Verlassen), Systemfarbe, separate Belohnungsankündigung. Standardmäßig aus.",
+    "Online-Rangliste: öffentliche Seite https://ethone.dev/leaderboard?guildId=…, die der Besitzer aktivieren kann (nur Name, Avatar, Level und XP sichtbar) und Schalter für /leaderboard auf Discord.",
+    "Neue Einstellungsseite: Sprache, vollständige Zeitzonenliste mit UTC-Versatz, Präfix und Befehlsarten (nicht alles abschaltbar).",
+    "Notfallkontakte: Administratoren, der Besitzer oder gewählte Mitglieder und Rollen werden erwähnt und erhalten eine Privatnachricht, wenn ein ernstes Problem erkannt wird (fehlende Berechtigung, gelöschter konfigurierter Kanal, verschwundene versteckte Rolle …), einmal pro Problem (Erinnerung nach 24 h). Testschaltfläche zeigt, was tatsächlich zugestellt wurde.",
+    "Vorschau der Bot-Nachrichten: Befehl /previewmessages und Schaltfläche in den Einstellungen, um 21 Beispielnachrichten per DM zu erhalten (Status, /ping, /settings, Sanktionen, Level, AutoMod, Sicherheit und Notfälle), erzeugt mit denselben Funktionen wie die echten Nachrichten. Der Katalog wird erweitert.",
+    "Korrekturen: /stats ist jetzt der echte Statistik-Befehl (der alte Alias auf /bot entfällt).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_93_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_93_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_93_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_93_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

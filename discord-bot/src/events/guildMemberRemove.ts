@@ -8,6 +8,7 @@ import { raidDetectionService } from '../modules/antiRaid/services/raidDetection
 import { logService } from '../modules/logs/services/logService.js';
 import { DiscordAuditAdapter } from '../modules/logs/services/discordAuditAdapter.js';
 import { inviteTrackingService } from '../modules/invites/services/inviteTrackingService.js';
+import { levelingService } from '../modules/leveling/services/levelingService.js';
 import { logger } from '../utils/logger.js';
 
 export async function onGuildMemberRemove(member: GuildMember | PartialGuildMember): Promise<void> {
@@ -21,6 +22,9 @@ export async function onGuildMemberRemove(member: GuildMember | PartialGuildMemb
     if ('guild' in member && member.guild) {
       raidDetectionService.handleMemberRemove(member as GuildMember);
     }
+
+    // XP : effacé au départ si le serveur l'a choisi
+    levelingService.handleMemberLeave(member);
 
     // 1. Module Goodbye (Message, Embed, Image)
     await welcomeService.handleMemberRemove(member);

@@ -8,6 +8,13 @@ import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
 
+/** Message d'avertissement envoyé au membre (MP, ou salon en secours) : source unique, aussi utilisée par l'aperçu des messages. */
+export function buildAutomodWarnEmbed(guildName: string, reason: string, activeStrikes: number) {
+  return baseEmbed('warning', { footerText: `Strikes actifs : ${activeStrikes}` })
+    .setTitle('⚠️ Avertissement AutoMod')
+    .setDescription(`Votre message sur **${guildName}** a enfreint les règles du serveur.\n**Motif :** ${reason}`);
+}
+
 export interface ActionExecutionContext {
   message: Message;
   member: GuildMember;
@@ -68,9 +75,7 @@ export class ActionEngine {
     // 3. WARN
     if (uniqueActions.includes('WARN')) {
       try {
-        const warnEmbed = baseEmbed('warning', { footerText: `Strikes actifs : ${activeStrikesCount}` })
-          .setTitle('⚠️ Avertissement AutoMod')
-          .setDescription(`Votre message sur **${guild.name}** a enfreint les règles du serveur.\n**Motif :** ${reason}`);
+        const warnEmbed = buildAutomodWarnEmbed(guild.name, reason, activeStrikesCount);
 
         // Tenter en MP, sinon message éphémère dans le salon
         await member.send({ embeds: [warnEmbed] }).catch(async () => {

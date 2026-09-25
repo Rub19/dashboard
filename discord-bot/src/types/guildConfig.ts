@@ -56,6 +56,15 @@ export const GuildConfigSchema = z.object({
   language: z.enum(['fr', 'en', 'es', 'de']).default('fr'),
   timezone: z.string().default('Europe/Paris'),
 
+  // Contacts d'urgence : prévenus quand un problème sérieux est détecté (permission manquante, salon supprimé…)
+  emergencyContacts: z
+    .object({
+      mode: z.enum(['admins', 'owner', 'custom']).default('admins'),
+      userIds: z.array(z.string().regex(/^\d{5,25}$/)).max(10).default([]),
+      roleIds: z.array(z.string().regex(/^\d{5,25}$/)).max(10).default([]),
+    })
+    .default({}),
+
   // Confidentialité & Personnalisation
   responseVisibility: z.enum(['PUBLIC', 'EPHEMERAL']).default('PUBLIC'),
   botPersonality: z.enum(['FRIENDLY', 'PROFESSIONAL', 'HUMOROUS', 'CONCISE', 'CYBER']).default('FRIENDLY'),
@@ -106,6 +115,7 @@ export const defaultGuildConfig: Omit<GuildConfig, 'guildId'> = {
   },
   language: 'fr',
   timezone: 'Europe/Paris',
+  emergencyContacts: { mode: 'admins', userIds: [], roleIds: [] },
   responseVisibility: 'PUBLIC',
   botPersonality: 'FRIENDLY',
   commandCooldown: 0,

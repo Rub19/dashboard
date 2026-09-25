@@ -6,6 +6,9 @@ import path from 'path';
 process.chdir(fs.mkdtempSync(path.join(os.tmpdir(), 'ethone-mig-test-')));
 const reg = await import('../src/services/moduleRegistry.js');
 const { runModuleMigrations } = await import('../src/services/moduleMigrations.js');
+const { levelingStorage } = await import('../src/modules/leveling/storage/levelingStorage.js');
+// Serveurs existants qui avaient activé l'XP (le défaut d'un nouveau serveur est désormais « désactivé »).
+for (const g of ['g1', 'g2', 'g3']) levelingStorage.updateConfig(g, { enabled: true });
 
 let fail = 0;
 const ok = (c: boolean, n: string) => {

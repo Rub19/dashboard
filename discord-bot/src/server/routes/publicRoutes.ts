@@ -1,6 +1,7 @@
 import { Client } from 'discord.js';
 import express, { Request, Response } from 'express';
 import { commandRegistry } from '../../handlers/commandHandler.js';
+import { levelingStorage } from '../../modules/leveling/storage/levelingStorage.js';
 
 /**
  * Données publiques pour la page vitrine du bot (aucune authentification, lecture seule, aucune donnée de serveur :
@@ -87,6 +88,34 @@ export function createPublicRouter(client: Client): express.Router {
       guilds: guilds.size,
       members: guilds.reduce((sum, g) => sum + (g.memberCount || 0), 0),
       commands: listPublicCommands().length,
+    });
+  });
+
+  /**
+   * Classement public d'un serveur : seulement si son propriétaire l'a activé dans le dashboard (Niveaux → Classements).
+   * Pseudo, avatar, niveau et XP : rien d'autre.
+   */
+  router.get('/leaderboard/:guildId', (req: Request, res: Response) => {
+    const guildId = String(req.params.guildId);
+    const guild = /^\d{5,25}$/.test(guildId) ? client.guilds.cache.get(guildId) : undefined;
+    const config = guild ? levelingStorage.getConfig(guildId) : null;
+    // Même réponse pour « serveur inconnu » et « classement privé » : on ne révèle pas quels serveurs utilisent le bot.
+    if (!guild || !config?.enabled || !config.leaderboardPublic) {
+      res.status(404).json({ error: 'not_public' });
+      return;
+    }
+    const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 100));
+    res.json({
+      guild: { name: guild.name, icon: guild.iconURL({ size: 128 }), members: guild.memberCount },
+      accentColor: config.accentColor,
+      entries: levelingStorage.getLeaderboard(guildId, undefined, limit).map((e) => ({
+        rank: e.rank,
+        username: e.username,
+        avatarUrl: e.avatarUrl,
+        level: e.level,
+        totalXp: e.totalXp,
+        progressPercentage: e.progressPercentage,
+      })),
     });
   });
 

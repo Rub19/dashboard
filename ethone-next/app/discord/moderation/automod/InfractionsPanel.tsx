@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useToast } from "@/components/ToastProvider";
-import { MultiChannelPicker, MultiRolePicker, TagInput } from "@/components/discord/MultiPickers";
+import { MemberIdsInput, MultiChannelPicker, MultiRolePicker, TagInput } from "@/components/discord/MultiPickers";
 import { confirmDialog } from "@/lib/confirmDialog";
+import { Field, NumberField, Switch, ToggleField, inputCls } from "@/components/discord/SettingsUI";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -79,45 +80,6 @@ const sanctionText = (s: Step) => {
   const d = s.action === "TIMEOUT" ? ` (${DURATIONS.find(([v]) => v === s.durationSeconds)?.[1] ?? `${Math.round(s.durationSeconds / 60)} min`})` : "";
   return `${a}${d}`;
 };
-
-const inputCls = "h-10 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface)] px-3 text-sm text-white outline-none focus:border-[#5865F2]/70";
-
-function Switch({ checked, onChange, disabled, label }: { checked: boolean; onChange: (v: boolean) => void; disabled?: boolean; label: string }) {
-  return (
-    <button type="button" role="switch" aria-checked={checked} aria-label={label} disabled={disabled} onClick={() => onChange(!checked)} className={cn("relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors disabled:cursor-not-allowed disabled:opacity-50", checked ? "bg-[#5865F2]" : "bg-white/20")}>
-      <span className={cn("block h-5 w-5 rounded-full bg-white shadow transition-transform", checked ? "translate-x-5" : "translate-x-0")} />
-    </button>
-  );
-}
-
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-zinc-300">{label}</p>
-      {children}
-      {hint && <p className="mt-1 text-[11px] text-zinc-500">{hint}</p>}
-    </div>
-  );
-}
-
-function ToggleField({ label, text, checked, onChange }: { label: string; text: string; checked: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <Field label={label}>
-      <div className="flex items-center gap-3">
-        <Switch checked={checked} onChange={onChange} label={label} />
-        <span className="text-sm text-zinc-300">{text}</span>
-      </div>
-    </Field>
-  );
-}
-
-function NumberField({ label, value, min, max, onChange, hint }: { label: string; value: number; min: number; max: number; onChange: (n: number) => void; hint?: string }) {
-  return (
-    <Field label={label} hint={hint}>
-      <input type="number" min={min} max={max} value={value} onChange={(e) => onChange(Math.max(min, Math.min(max, Number(e.target.value) || min)))} className={inputCls} />
-    </Field>
-  );
-}
 
 /** Réglages propres à chaque détection ; les réglages communs (actions, rôles/salons ignorés, silence) sont ajoutés après. */
 function SpecificFields({ k, draft, set }: { k: DetKey; draft: Det; set: (patch: Det) => void; guildId: string }) {
@@ -389,7 +351,7 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
           {editing === "pings" && (
             <>
               <Field label="Membres protégés" hint="Personne ne peut les mentionner (sauf eux-mêmes).">
-                <MembersInput value={draft.userIds ?? []} onChange={(v) => setD({ userIds: v })} />
+                <MemberIdsInput value={draft.userIds ?? []} onChange={(v) => setD({ userIds: v })} />
               </Field>
               <Field label="Rôles protégés">
                 <MultiRolePicker guildId={guildId} value={draft.roleIds ?? []} onChange={(v) => setD({ roleIds: v })} />
@@ -461,44 +423,6 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
           </Field>
         </Modal>
       )}
-    </div>
-  );
-}
-
-/** Membres protégés : identifiants Discord (18 chiffres), ajoutés un par un. */
-function MembersInput({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
-  const [draft, setDraft] = useState("");
-  const [bad, setBad] = useState(false);
-  const add = () => {
-    const id = draft.trim().replace(/[<@!>]/g, "");
-    if (!id) return;
-    if (!/^\d{5,25}$/.test(id)) {
-      setBad(true);
-      return;
-    }
-    setBad(false);
-    onChange([...new Set([...value, id])].slice(0, 50));
-    setDraft("");
-  };
-  return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap gap-1.5">
-        {value.map((id) => (
-          <span key={id} className="inline-flex items-center gap-1 rounded-md bg-[#5865F2]/20 px-2 py-1 font-mono text-xs text-[#c9cdfb]">
-            {id}
-            <button type="button" onClick={() => onChange(value.filter((v) => v !== id))} aria-label="Retirer" className="cursor-pointer rounded px-1 text-[#c9cdfb]/70 hover:bg-white/10 hover:text-white">
-              ×
-            </button>
-          </span>
-        ))}
-      </div>
-      <div className="flex gap-2">
-        <input value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), add())} placeholder="Identifiant du membre (clic droit → Copier l'identifiant)" className={cn(inputCls, bad && "border-rose-500/60")} />
-        <button type="button" onClick={add} className="cursor-pointer rounded-xl border border-zinc-700 px-4 text-xs font-semibold text-white transition hover:bg-white/5">
-          Ajouter
-        </button>
-      </div>
-      {bad && <p className="text-[11px] text-rose-300">Un identifiant Discord est un nombre (ex. 123456789012345678).</p>}
     </div>
   );
 }

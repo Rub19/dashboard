@@ -62,7 +62,7 @@ export default function VersionUpdateToast() {
   // A single slim row fits the gap below the top bar on every page instead
   // of needing one.
   // Page vitrine publique : pas de bandeau d'application par-dessus.
-  if (pathname === "/bot" || pathname?.startsWith("/bot/")) return null;
+  if (pathname === "/bot" || pathname?.startsWith("/bot/") || pathname === "/leaderboard" || pathname === "/leaderboard/") return null;
 
   return (
     <>

@@ -2,8 +2,7 @@ import { SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { endMemberSession, elevate } from '../services/secureRolesService.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
-
-const groups = (secret: string) => secret.match(/.{1,4}/g)?.join(' ') ?? secret;
+import { buildGrantedEmbed, buildSetupEmbed } from '../services/secureMessages.js';
 
 /**
  * /elevate — obtient ses permissions sensibles pour une durée limitée. Première utilisation (après invitation par un
@@ -37,28 +36,11 @@ export const elevateCommand: Command = {
 
     const res = await elevate(member, i.options.getString('code'));
     switch (res.kind) {
-      case 'granted': {
-        const ts = Math.floor(res.expiresAt.getTime() / 1000);
-        await i.editReply({ embeds: [noticeEmbed('success', `Permissions activées jusqu’à <t:${ts}:t> (<t:${ts}:R>). Elles seront retirées automatiquement. Tu peux les retirer avant avec \`/elevate terminer:True\`.`, { title: 'Session élevée' })] });
+      case 'granted':
+        await i.editReply({ embeds: [buildGrantedEmbed(res.expiresAt)] });
         return;
-      }
       case 'setup':
-        await i.editReply({
-          embeds: [
-            noticeEmbed(
-              'info',
-              [
-                '**1.** Dans ton application d’authentification (Google Authenticator, Authy, 1Password…), ajoute un compte **par clé** (saisie manuelle) :',
-                `\`\`\`${groups(res.secret)}\`\`\``,
-                'Type : basé sur l’heure · 6 chiffres · 30 secondes.',
-                '**2.** Envoie le code affiché : `/elevate code:123456`.',
-                `Lien direct pour les applications qui le supportent :\n\`${res.uri}\``,
-                '⚠️ Cette clé n’est montrée qu’à toi et ne sera plus réaffichée une fois activée. Ne la partage jamais.',
-              ].join('\n\n'),
-              { title: 'Configurer la double authentification' }
-            ),
-          ],
-        });
+        await i.editReply({ embeds: [buildSetupEmbed(res.secret, res.uri)] });
         return;
       case 'need_code':
         await i.editReply({ embeds: [noticeEmbed('info', 'Envoie le code de ton application : `/elevate code:123456`.')] });

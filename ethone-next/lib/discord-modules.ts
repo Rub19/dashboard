@@ -45,6 +45,7 @@ export const DISCORD_MODULES: DiscordModuleMeta[] = [
   { id: "tags", title: "Tags", href: "/discord/tags", keywords: ["tag", "reponse rapide", "faq", "snippet"], icon: "mod-tags", tint: "text-cyan-300" },
   { id: "reminders", title: "Reminders", href: "/discord/reminders", keywords: ["rappel", "reminder", "alarme"], icon: "mod-reminders", tint: "text-sky-300" },
   { id: "sticky", title: "Sticky Messages", href: "/discord/sticky", keywords: ["message epingle", "sticky", "toujours visible"], icon: "mod-sticky", tint: "text-amber-300" },
+  { id: "settings", title: "Paramètres", href: "/discord/settings", keywords: ["parametres", "settings", "langue", "fuseau horaire", "timezone", "contact urgence", "urgence", "prefixe", "commandes"], icon: "mod-commands", tint: "text-zinc-300" },
   { id: "secureroles", title: "Rôles sécurisés", href: "/discord/secure-roles", keywords: ["role securise", "secure roles", "2fa", "double authentification", "otp", "permissions", "elevate", "staff", "compte vole", "draftbot"], icon: "mod-security", tint: "text-emerald-300" },
   { id: "statroles", title: "Statroles", href: "/discord/statroles", keywords: ["statrole", "role automatique", "activite", "recompense", "role actif", "retirer role"], icon: "mod-roles", tint: "text-amber-300" },
   { id: "stats", title: "Statistiques", href: "/discord/stats", keywords: ["stats", "statistiques", "messages", "vocal", "activite", "classement", "graphique", "statbot"], icon: "mod-stats", tint: "text-sky-300" },

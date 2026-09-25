@@ -22,7 +22,8 @@ async function run() {
   assert(commandRegistry.getCommand('resume')?.name === 'resume', '/resume resolves to the real music resume command, not /summarize');
 
   console.log('\n📦 3. Aliases still resolve correctly when they do not collide with a real command:');
-  assert(commandRegistry.getCommand('stats')?.name === 'bot', '!stats still aliases /bot');
+  assert(commandRegistry.getCommand('stats')?.name === 'stats', '/stats is now the real Statistiques command (it no longer aliases /bot)');
+  assert(commandRegistry.getCommand('botstats')?.name === 'bot', '!botstats still aliases /bot');
   assert(commandRegistry.getCommand('recap')?.name === 'summarize', '!recap still aliases /summarize');
   assert(commandRegistry.getCommand('about')?.name === 'bot', '!about still aliases /bot');
 

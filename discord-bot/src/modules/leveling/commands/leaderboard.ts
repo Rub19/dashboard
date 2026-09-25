@@ -26,6 +26,11 @@ export const leaderboardCommand: Command = {
       return;
     }
 
+    if (!config.leaderboardOnDiscord) {
+      await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('Le classement est désactivé sur Discord sur ce serveur.')], ephemeral: true });
+      return;
+    }
+
     const topUsers = levelingStorage.getLeaderboard(guild.id, undefined, 10);
 
     if (topUsers.length === 0) {
@@ -45,7 +50,7 @@ export const leaderboardCommand: Command = {
 
     // Podium + barres de progression par membre, en Components V2 — même
     // accent ambré que le module Niveaux.
-    const card = container(toneToColor('warning'), [
+    const card = container(parseInt(config.accentColor.slice(1), 16), [
       text(`## 🏆 ${formatString(t.leveling_leaderboard_title, { guildName: guild.name })}`),
       separator(),
       text(lines.slice(0, 3).join('\n\n')),

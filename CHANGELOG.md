@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.93 — 2026-09-25
+
+**Niveaux façon DraftBot, page Paramètres avec contacts d'urgence, aperçu des messages du bot**
+
+- Niveaux : nouvel onglet « Paramètres » avec annonce du niveau et aperçu en direct, gain d'XP, XP en vocal (par minute, membres minimum, muet ignoré), niveau maximum, salons et rôles sans XP, options (fils, forums, bots, XP conservé au départ), couleur du système, annonce séparée des récompenses. Désactivé par défaut.
+- Classement en ligne : page publique https://ethone.dev/leaderboard?guildId=… activable par le propriétaire (seuls pseudo, avatar, niveau et XP sont exposés) et interrupteur pour /leaderboard sur Discord.
+- Nouvelle page Paramètres : langue, fuseau horaire complet avec décalage UTC, préfixe et types de commandes (impossible de tout couper).
+- Contacts d'urgence : administrateurs, propriétaire ou membres et rôles choisis sont mentionnés et reçoivent un message privé quand un problème sérieux est détecté (permission manquante, salon configuré supprimé, rôle caché disparu…), une seule fois par problème (rappel après 24 h). Bouton de test qui indique ce qui a été réellement livré.
+- Aperçu des messages du bot : commande /previewmessages et bouton dans Paramètres pour recevoir en message privé un exemplaire de 21 messages (statuts, /ping, /settings, sanctions, niveaux, AutoMod, sécurité et urgences), construits avec les mêmes fonctions que les vrais envois. Le catalogue sera complété.
+- Correctifs : /stats est désormais la vraie commande Statistiques (l'ancien alias vers /bot est retiré).
+
 ## v1.28.92 — 2026-09-25
 
 **AutoMod : détection des infractions façon DraftBot, tout désactivé par défaut**

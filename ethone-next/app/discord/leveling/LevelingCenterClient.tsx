@@ -25,6 +25,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
+import LevelingSettingsPanel, { type LevelingSettings } from "./LevelingSettingsPanel";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import { cn } from "@/lib/utils";
@@ -69,23 +70,10 @@ interface XpBoost {
   enabled: boolean;
 }
 
-interface LevelingConfig {
-  enabled: boolean;
-  minXp: number;
-  maxXp: number;
-  cooldownSeconds: number;
-  minMessageLength: number;
-  levelUpChannelType: "same_channel" | "specific_channel" | "dm" | "disabled";
-  levelUpChannelId: string | null;
-  levelUpMessage: string;
-  rewardType: "cumulative" | "progressive";
-  excludedChannelIds: string[];
-  excludedRoleIds: string[];
-  allowBots: boolean;
-}
+type LevelingConfig = LevelingSettings;
 
 const DEFAULT_CONFIG: LevelingConfig = {
-  enabled: true,
+  enabled: false,
   minXp: 15,
   maxXp: 30,
   cooldownSeconds: 60,
@@ -97,6 +85,20 @@ const DEFAULT_CONFIG: LevelingConfig = {
   excludedChannelIds: [],
   excludedRoleIds: [],
   allowBots: false,
+  maxLevel: 0,
+  xpInThreads: true,
+  xpInForums: true,
+  keepXpOnLeave: true,
+  voiceXpEnabled: false,
+  voiceXpPerMinute: 5,
+  voiceXpIgnoreMuted: true,
+  voiceXpMinMembers: 2,
+  leaderboardPublic: false,
+  leaderboardOnDiscord: true,
+  accentColor: "#f59e0b",
+  rewardAnnounceType: "with_levelup",
+  rewardChannelId: null,
+  rewardMessage: "🏅 {user}, tu obtiens le rôle **{role}** en atteignant le niveau **{level}** !",
 };
 
 export default function LevelingCenterClient() {
@@ -147,8 +149,8 @@ export default function LevelingCenterClient() {
   const isRealGuild = Boolean(BOT_API_URL) && Boolean(currentGuildId);
 
   const [activeTab, setActiveTab] = useState<
-    "leaderboard" | "card_designer" | "rewards" | "boosts" | "blacklist"
-  >("leaderboard");
+    "settings" | "leaderboard" | "card_designer" | "rewards" | "boosts" | "blacklist"
+  >("settings");
 
   const [isDemo, setIsDemo] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -514,6 +516,7 @@ export default function LevelingCenterClient() {
         {/* Navigation Tabs */}
         <div className="flex border-b border-neutral-800 gap-2 overflow-x-auto pb-1">
           {[
+            { id: "settings", label: "Paramètres", icon: Zap },
             { id: "leaderboard", label: "Classement & Leaderboard", icon: Trophy },
             { id: "card_designer", label: "Rank Card Designer", icon: Palette },
             { id: "rewards", label: "Rôles Récompenses", icon: Award },
@@ -538,6 +541,18 @@ export default function LevelingCenterClient() {
             );
           })}
         </div>
+
+        {/* Paramètres façon DraftBot (tout désactivé par défaut) */}
+        {activeTab === "settings" && (
+          <LevelingSettingsPanel
+            guildId={currentGuildId}
+            config={config}
+            saving={savingConfig}
+            disabled={isDemo}
+            onSave={saveConfig}
+            onOpenBoosts={() => setActiveTab("boosts")}
+          />
+        )}
 
         {/* TAB 1: Leaderboard */}
         {activeTab === "leaderboard" && (

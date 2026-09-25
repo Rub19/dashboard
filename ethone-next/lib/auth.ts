@@ -44,7 +44,7 @@ export async function verifyOtp(userId: string | null, email: string, code: stri
   const attempt = consumeAuthAttempt("sign-in", `${userId || "unknown"}:${email}`);
   if (!attempt.allowed) return rateLimitedResult(attempt.retryAfterMs);
 
-  let res: { data?: { token?: string; expiresIn?: number } } | null;
+  let res: { data?: { token?: string; tokenHash?: string | null; expiresIn?: number } } | null;
   try {
     res = await fetchWorker("/api/auth/otp/verify", {
       method: "POST",
@@ -59,7 +59,32 @@ export async function verifyOtp(userId: string | null, email: string, code: stri
     }
     return { ok: false as const, error: new Error("Impossible de vérifier le code — réessayez.") };
   }
-  if (!res?.data?.token) return { ok: false as const, error: new Error("Code invalide.") };
+  if (!res?.data?.token && !res?.data?.tokenHash) return { ok: false as const, error: new Error("Code invalide.") };
+
+  // Voie normale : le Worker fournit un jeton de lien magique, échangé contre une vraie session Supabase (avec jeton de
+  // rafraîchissement), comme la connexion par mot de passe ou par passkey. L'ancien jeton signé par le Worker porte un
+  // session_id inconnu de Supabase Auth, que setSession() refuse (« Session from session_id claim in JWT does not exist »).
+  if (res.data.tokenHash) {
+    const { data: linked, error: linkError } = await supabase.auth.verifyOtp({ email, token: res.data.tokenHash, type: "magiclink" });
+    if (!linkError && linked.session) {
+      if (rememberMe) {
+        localStorage.setItem("ethone-remember-me", "true");
+        localStorage.setItem("ethone-remember-token", linked.session.access_token);
+        localStorage.setItem("ethone-remember-refresh", linked.session.refresh_token);
+        localStorage.setItem("ethone-remember-expires", String(Date.now() + 30 * 24 * 60 * 60 * 1000));
+        localStorage.setItem("ethone-auth-type", "otp");
+      } else {
+        localStorage.removeItem("ethone-remember-me");
+        localStorage.removeItem("ethone-remember-token");
+        localStorage.removeItem("ethone-remember-refresh");
+        localStorage.removeItem("ethone-remember-expires");
+        localStorage.removeItem("ethone-auth-type");
+      }
+      resetAuthAttempt("sign-in", `${userId || "unknown"}:${email}`);
+      return { ok: true as const, session: linked.session };
+    }
+    if (!res.data.token) return { ok: false as const, error: linkError ?? new Error("Impossible d'ouvrir la session.") };
+  }
 
   const token = res.data.token as string;
   const refreshToken = typeof crypto !== "undefined" && "randomUUID" in crypto

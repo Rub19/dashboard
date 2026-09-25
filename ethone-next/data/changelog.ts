@@ -34812,6 +34812,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_80_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_80_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_80_de);
 
+const v1_28_81_fr: ChangelogEntry = {
+  version: "v1.28.81",
+  date: "2026-09-25",
+  title: "Connexion par code : la validation fonctionne à nouveau",
+  items: [
+    "Après un code correct, l'écran affichait « Une erreur est survenue lors de l'authentification » : le Worker répondait bien OK, mais le jeton qu'il fabriquait portait un identifiant de session inconnu de Supabase Auth, et le navigateur le refusait (« Session from session_id claim in JWT does not exist »).",
+    "Le Worker fournit maintenant un jeton de lien magique (comme la connexion par passkey) que le navigateur échange contre une vraie session Supabase, avec jeton de rafraîchissement. L'ancien jeton reste renvoyé pour les anciens clients.",
+    "Limite connue : chaque connexion par code laisse un appareil « fantôme » (la session fabriquée d'avance) dans la liste des appareils ; il sera nettoyé dans une prochaine version.",
+  ],
+};
+
+const v1_28_81_en: ChangelogEntry = {
+  version: "v1.28.81",
+  date: "2026-09-25",
+  title: "Code sign-in: verification works again",
+  items: [
+    "After a correct code, the screen showed \"An error occurred during authentication\": the Worker did answer OK, but the token it built carried a session id unknown to Supabase Auth, and the browser rejected it (\"Session from session_id claim in JWT does not exist\").",
+    "The Worker now also provides a magic-link token (like passkey sign-in) that the browser exchanges for a real Supabase session, with a refresh token. The old token is still returned for older clients.",
+    "Known limit: each code sign-in leaves a \"ghost\" device (the pre-built session) in the device list; it will be cleaned up in a later version.",
+  ],
+};
+
+const v1_28_81_es: ChangelogEntry = {
+  version: "v1.28.81",
+  date: "2026-09-25",
+  title: "Inicio de sesión por código: la verificación vuelve a funcionar",
+  items: [
+    "Tras un código correcto, la pantalla mostraba «Se produjo un error durante la autenticación»: el Worker respondía OK, pero el token que fabricaba llevaba un identificador de sesión desconocido para Supabase Auth, y el navegador lo rechazaba («Session from session_id claim in JWT does not exist»).",
+    "El Worker ahora también proporciona un token de enlace mágico (como el inicio de sesión con passkey) que el navegador intercambia por una sesión real de Supabase, con token de renovación. El token antiguo se sigue devolviendo para clientes antiguos.",
+    "Límite conocido: cada inicio de sesión por código deja un dispositivo «fantasma» (la sesión prefabricada) en la lista de dispositivos; se limpiará en una versión posterior.",
+  ],
+};
+
+const v1_28_81_de: ChangelogEntry = {
+  version: "v1.28.81",
+  date: "2026-09-25",
+  title: "Code-Anmeldung: Die Prüfung funktioniert wieder",
+  items: [
+    "Nach einem korrekten Code zeigte der Bildschirm „Bei der Authentifizierung ist ein Fehler aufgetreten“: Der Worker antwortete zwar OK, doch das von ihm erzeugte Token trug eine Sitzungs-ID, die Supabase Auth nicht kennt, und der Browser lehnte es ab („Session from session_id claim in JWT does not exist“).",
+    "Der Worker liefert jetzt zusätzlich ein Magic-Link-Token (wie die Passkey-Anmeldung), das der Browser gegen eine echte Supabase-Sitzung samt Refresh-Token tauscht. Das alte Token wird für ältere Clients weiterhin zurückgegeben.",
+    "Bekannte Einschränkung: Jede Code-Anmeldung hinterlässt ein „Geister“-Gerät (die vorab erzeugte Sitzung) in der Geräteliste; es wird in einer späteren Version bereinigt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_81_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_81_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_81_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_81_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

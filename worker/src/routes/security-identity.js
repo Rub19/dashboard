@@ -23,6 +23,7 @@ import {
 import {
   listSecurityEvents,
   getUserIdByEmail,
+  generateMagicLinkToken,
   listPasskeys,
   getDeviceBySession,
   getTotpRecord,
@@ -276,7 +277,21 @@ export async function otpVerifyRoute({ request, env }) {
   const tokenTtl = rememberMe ? 30 * 24 * 60 * 60 : 8 * 60 * 60;
   const token = await signServiceToken(env, userId, sessionId, tokenTtl);
 
-  return { data: { verified: true, deviceId: device.id, token, rememberMe } };
+  // Le jeton signé ci-dessus porte un session_id que Supabase Auth ne connaît pas : `supabase.auth.setSession` le valide
+  // auprès de /auth/v1/user, qui répond « Session from session_id claim in JWT does not exist » → « une erreur est
+  // survenue » à l'écran alors que le code était bon. On fournit donc aussi un jeton de lien magique (comme la connexion
+  // par passkey) : le navigateur l'échange contre une VRAIE session Supabase (avec jeton de rafraîchissement). Le jeton
+  // signé reste renvoyé pour les anciens clients.
+  let tokenHash = null;
+  try {
+    tokenHash = await generateMagicLinkToken(env, email);
+  } catch (err) {
+    console.error("[otp.verify] magic link token not generated, falling back to legacy token", {
+      message: err instanceof Error ? err.message : String(err)
+    });
+  }
+
+  return { data: { verified: true, deviceId: device.id, token, tokenHash, rememberMe } };
 }
 
 export async function deviceUpsertRoute({ request, env, auth }) {

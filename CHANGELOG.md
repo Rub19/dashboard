@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.81 — 2026-09-25
+
+**Connexion par code : la validation fonctionne à nouveau**
+
+- Après un code correct, l'écran affichait « Une erreur est survenue lors de l'authentification » : le Worker répondait bien OK, mais le jeton qu'il fabriquait portait un identifiant de session inconnu de Supabase Auth, et le navigateur le refusait (« Session from session_id claim in JWT does not exist »).
+- Le Worker fournit maintenant un jeton de lien magique (comme la connexion par passkey) que le navigateur échange contre une vraie session Supabase, avec jeton de rafraîchissement. L'ancien jeton reste renvoyé pour les anciens clients.
+- Limite connue : chaque connexion par code laisse un appareil « fantôme » (la session fabriquée d'avance) dans la liste des appareils ; il sera nettoyé dans une prochaine version.
+
 ## v1.28.80 — 2026-09-25
 
 **Connexion : « Renvoyer le code » réparé**

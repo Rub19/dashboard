@@ -86,9 +86,10 @@ export class BotAiMonitorService {
       ? Math.round(((requests24h - failures24h) / requests24h) * 1000) / 10
       : 0;
 
+    // Sans requête récente, on n'annonce un modèle que s'il est réellement configuré (clé OpenRouter présente).
     const activeModel = this.lastModelUsed !== '—'
       ? this.lastModelUsed
-      : (process.env.OPENROUTER_MODEL || 'anthropic/claude-3.5-haiku');
+      : (process.env.OPENROUTER_API_KEY ? (process.env.OPENROUTER_MODEL || 'anthropic/claude-3.5-haiku') : '');
     const provider = this.lastProviderUsed !== '—'
       ? this.lastProviderUsed
       : (process.env.OPENROUTER_API_KEY ? 'OpenRouter' : 'Local Context');

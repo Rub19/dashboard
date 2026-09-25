@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.111 — 2026-09-26
+
+**Onglet IA : plus de modèle annoncé s'il n'est pas configuré**
+
+- L'onglet Assistant IA du centre de contrôle n'affiche plus un modèle par défaut qui n'a jamais servi : sans requête récente ni clé configurée, seul le fournisseur est indiqué.
+
 ## v1.28.110 — 2026-09-26
 
 **Centre de contrôle : onglet IA sans chiffres inventés**

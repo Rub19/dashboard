@@ -36318,6 +36318,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_110_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_110_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_110_de);
 
+const v1_28_111_fr: ChangelogEntry = {
+  version: "v1.28.111",
+  date: "2026-09-26",
+  title: "Onglet IA : plus de modèle annoncé s'il n'est pas configuré",
+  items: [
+    "L'onglet Assistant IA du centre de contrôle n'affiche plus un modèle par défaut qui n'a jamais servi : sans requête récente ni clé configurée, seul le fournisseur est indiqué.",
+  ],
+};
+
+const v1_28_111_en: ChangelogEntry = {
+  version: "v1.28.111",
+  date: "2026-09-26",
+  title: "AI tab: no model announced unless configured",
+  items: [
+    "The AI Assistant tab of the control center no longer shows a default model that was never used: with no recent request and no configured key, only the provider is shown.",
+  ],
+};
+
+const v1_28_111_es: ChangelogEntry = {
+  version: "v1.28.111",
+  date: "2026-09-26",
+  title: "Pestaña de IA: ningún modelo anunciado si no está configurado",
+  items: [
+    "La pestaña Asistente de IA del centro de control ya no muestra un modelo por defecto que nunca se ha usado: sin solicitudes recientes ni clave configurada, solo se indica el proveedor.",
+  ],
+};
+
+const v1_28_111_de: ChangelogEntry = {
+  version: "v1.28.111",
+  date: "2026-09-26",
+  title: "KI-Tab: kein Modell angezeigt, wenn nicht konfiguriert",
+  items: [
+    "Der Tab KI-Assistent im Kontrollzentrum zeigt kein Standardmodell mehr, das nie benutzt wurde: ohne aktuelle Anfrage und ohne konfigurierten Schlüssel wird nur der Anbieter angezeigt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_111_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_111_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_111_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_111_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

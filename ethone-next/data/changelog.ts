@@ -36187,6 +36187,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_107_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_107_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_107_de);
 
+const v1_28_108_fr: ChangelogEntry = {
+  version: "v1.28.108",
+  date: "2026-09-26",
+  title: "Tâches planifiées : un module désactivé ne fait plus rien tout seul",
+  items: [
+    "Sauvegardes automatiques, événements (démarrage, rappels, récurrences), tirages au sort, rappels personnels et suivi des invitations ne s'exécutent plus sur un serveur où leur module est désactivé. Les tirages et les rappels échus attendent la réactivation du module au lieu d'être perdus.",
+  ],
+};
+
+const v1_28_108_en: ChangelogEntry = {
+  version: "v1.28.108",
+  date: "2026-09-26",
+  title: "Scheduled tasks: a disabled module no longer does anything on its own",
+  items: [
+    "Automatic backups, events (start, reminders, recurrences), giveaways, personal reminders and invite tracking no longer run on a server where their module is disabled. Due giveaway draws and reminders wait for the module to be re-enabled instead of being lost.",
+  ],
+};
+
+const v1_28_108_es: ChangelogEntry = {
+  version: "v1.28.108",
+  date: "2026-09-26",
+  title: "Tareas programadas: un módulo desactivado ya no hace nada por su cuenta",
+  items: [
+    "Las copias de seguridad automáticas, los eventos (inicio, recordatorios, repeticiones), los sorteos, los recordatorios personales y el seguimiento de invitaciones ya no se ejecutan en un servidor donde su módulo está desactivado. Los sorteos y recordatorios vencidos esperan a que se reactive el módulo en lugar de perderse.",
+  ],
+};
+
+const v1_28_108_de: ChangelogEntry = {
+  version: "v1.28.108",
+  date: "2026-09-26",
+  title: "Geplante Aufgaben: Ein deaktiviertes Modul tut nichts mehr von selbst",
+  items: [
+    "Automatische Backups, Events (Start, Erinnerungen, Wiederholungen), Verlosungen, persönliche Erinnerungen und Einladungsverfolgung laufen auf einem Server, auf dem ihr Modul deaktiviert ist, nicht mehr. Fällige Verlosungen und Erinnerungen warten auf die Reaktivierung des Moduls, statt verloren zu gehen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_108_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_108_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_108_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_108_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

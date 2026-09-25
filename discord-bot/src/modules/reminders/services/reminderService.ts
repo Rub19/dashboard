@@ -3,6 +3,7 @@ import { baseEmbed } from '../../../utils/embeds.js';
 import { reminderStorage } from '../storage/reminderStorage.js';
 import { Reminder, ReminderRecurrence } from '../types/reminder.js';
 import { logger } from '../../../utils/logger.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 type SendableChannel = TextChannel | NewsChannel | ThreadChannel;
@@ -82,6 +83,8 @@ class ReminderService {
     try {
       const now = new Date();
       for (const reminder of reminderStorage.getDue(now)) {
+        // Module Rappels désactivé sur ce serveur : le rappel reste en attente et sera livré à la réactivation.
+        if (!isModuleEnabled(reminder.guildId, 'reminders')) continue;
         const ok = await this.deliver(reminder);
         if (ok) delivered++;
 

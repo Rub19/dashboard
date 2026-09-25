@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.108 — 2026-09-26
+
+**Tâches planifiées : un module désactivé ne fait plus rien tout seul**
+
+- Sauvegardes automatiques, événements (démarrage, rappels, récurrences), tirages au sort, rappels personnels et suivi des invitations ne s'exécutent plus sur un serveur où leur module est désactivé. Les tirages et les rappels échus attendent la réactivation du module au lieu d'être perdus.
+
 ## v1.28.107 — 2026-09-26
 
 **Commande /ticket réparée et heure des rappels**

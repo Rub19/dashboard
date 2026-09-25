@@ -5,6 +5,7 @@ import { EventService } from './eventsService.js';
 import { logger } from '../../utils/logger.js';
 import { BotJobSchedulerService } from '../../modules/botControl/services/botJobSchedulerService.js';
 import { noticeEmbed } from '../../utils/embeds.js';
+import { isModuleEnabled } from '../../services/moduleRegistry.js';
 
 export class EventsSchedulerService {
   private client?: Client;
@@ -41,6 +42,8 @@ export class EventsSchedulerService {
 
       for (const event of events) {
         if (event.status === 'CANCELLED') continue;
+        // Module Événements désactivé sur ce serveur : rien n'est annoncé, démarré ni recréé automatiquement.
+        if (!isModuleEnabled(event.guildId, 'events')) continue;
 
         const start = new Date(event.startDate);
         const end = new Date(event.endDate);

@@ -3,9 +3,12 @@ import { Giveaway } from '../types/giveaway.js';
 import { giveawayStorage } from '../storage/giveawayStorage.js';
 import { giveawayService } from './giveawayService.js';
 import { logger } from '../../../utils/logger.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 
 /** Plus grand délai accepté par setTimeout (~24,8 jours) : au-delà, Node le ramène à 1 ms et le timer part tout de suite. */
 const MAX_TIMER_MS = 2_147_483_647;
+/** Module désactivé : on repasse vérifier régulièrement, le tirage n'est fait qu'une fois le module réactivé. */
+const DISABLED_RECHECK_MS = 10 * 60 * 1000;
 
 class GiveawayScheduler {
   private timers = new Map<string, NodeJS.Timeout>();
@@ -34,6 +37,18 @@ class GiveawayScheduler {
     const end = new Date(giveaway.endsAt).getTime();
     const delay = Math.max(0, end - now);
 
+    // Module Tirages désactivé sur ce serveur : aucun tirage ni annonce automatique, on attend la réactivation.
+    if (delay <= 0 && !isModuleEnabled(giveaway.guildId, 'giveaways')) {
+      const wait = setTimeout(() => {
+        this.timers.delete(giveaway.id);
+        const fresh = giveawayStorage.getById(giveaway.id);
+        if (fresh && fresh.status === 'active') this.schedule(fresh, client);
+      }, DISABLED_RECHECK_MS);
+      wait.unref();
+      this.timers.set(giveaway.id, wait);
+      return;
+    }
+
     if (delay <= 0) {
       // Clôture immédiate si déjà expiré
       logger.info(`Giveaway "${giveaway.prize}" (${giveaway.id}) expiré hors-ligne, tirage immédiat.`);
@@ -50,6 +65,10 @@ class GiveawayScheduler {
       const fresh = giveawayStorage.getById(giveaway.id);
       if (fresh && fresh.status === 'active' && new Date(fresh.endsAt).getTime() - Date.now() > 1000) {
         this.schedule(fresh, client);
+        return;
+      }
+      if (fresh && fresh.status === 'active' && !isModuleEnabled(fresh.guildId, 'giveaways')) {
+        this.schedule(fresh, client); // module désactivé : mise en attente (voir plus haut)
         return;
       }
       logger.info(`Fin du giveaway "${giveaway.prize}" (${giveaway.id}), tirage en cours...`);

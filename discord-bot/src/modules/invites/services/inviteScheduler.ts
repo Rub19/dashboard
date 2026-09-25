@@ -1,4 +1,5 @@
 import { Client } from 'discord.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 import { inviteRepository } from '../storage/inviteRepository.js';
 import { logger } from '../../../utils/logger.js';
 import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
@@ -26,6 +27,7 @@ export class InviteScheduler {
       const now = Date.now();
 
       for (const [guildId, guild] of client.guilds.cache) {
+        if (!isModuleEnabled(guildId, 'invites')) continue;
         const referrals = inviteRepository.getAllReferrals(guildId);
 
         for (const ref of referrals) {

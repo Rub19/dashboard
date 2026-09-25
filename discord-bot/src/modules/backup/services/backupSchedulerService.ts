@@ -2,6 +2,7 @@ import { Client } from 'discord.js';
 import { backupRepository } from '../storage/backupRepository.js';
 import { BackupCollectorService } from './backupCollectorService.js';
 import { logger } from '../../../utils/logger.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 export class BackupSchedulerService {
@@ -37,7 +38,8 @@ export class BackupSchedulerService {
     for (const guild of this.client.guilds.cache.values()) {
       try {
         const settings = backupRepository.getSettings(guild.id);
-        if (!settings.enabled) continue;
+        // Module Sauvegardes désactivé : aucune sauvegarde automatique ni purge.
+        if (!settings.enabled || !isModuleEnabled(guild.id, 'backups')) continue;
 
         // 1. Exécution de la retention
         backupRepository.pruneExpired(guild.id);

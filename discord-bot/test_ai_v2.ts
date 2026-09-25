@@ -159,7 +159,8 @@ async function runTests() {
     knowledgeContext: vipRetrieval.contextText,
   });
   assert(completionVIP.text.includes('VIP'), 'AI answer accurately mentions VIP status');
-  assert(completionVIP.tokensUsed > 0, 'Token accounting is tracked');
+  // Moteur local (aucun modèle appelé, pas de clé fournisseur) : 0 jeton, jamais un nombre inventé.
+  assert(completionVIP.tokensUsed === 0, 'Local engine reports 0 tokens (no invented usage)');
 
   const completionGreeting = await AIProviderService.generate({
     settings,

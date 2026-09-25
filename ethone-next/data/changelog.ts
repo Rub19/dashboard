@@ -36359,6 +36359,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_111_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_111_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_111_de);
 
+const v1_28_112_fr: ChangelogEntry = {
+  version: "v1.28.112",
+  date: "2026-09-26",
+  title: "Menus refaits, pastilles de statut corrigées, jetons IA réels",
+  items: [
+    "Menu du profil refait de zéro : en-tête avec grand avatar et pastille de statut, adresse e-mail dans un bloc à copier, statuts sous forme de puces nommées, lignes avec icône dans une tuile et raccourcis en pastilles, déconnexion séparée en bas. Nouveau fond (sombre neutre avec un léger voile de la couleur du thème), bordures plus fines et ombre plus douce, appliqués à tous les menus de la barre du haut (langue, notifications, support, Focus).",
+    "Pastilles de statut : elles ne prennent plus la couleur d'accent du thème (tout paraissait rose). En ligne = vert, Focus = violet, Occupé = rouge, Absent = orange, Invisible = gris, partout dans l'application.",
+    "Assistant IA : le moteur local n'invente plus de nombres de jetons, un fournisseur qui ne renvoie pas d'usage compte 0 au lieu de 150, la répartition question/réponse utilise les vraies valeurs du fournisseur quand elles existent, et les réponses données en dehors de /ask (mention, salon dédié) sont enfin comptées dans le centre de contrôle.",
+  ],
+};
+
+const v1_28_112_en: ChangelogEntry = {
+  version: "v1.28.112",
+  date: "2026-09-26",
+  title: "Menus redone, status dots fixed, real AI tokens",
+  items: [
+    "Profile menu rebuilt from scratch: header with a large avatar and status dot, e-mail in a copyable block, statuses as named chips, rows with an icon in a tile and shortcuts as pills, sign-out set apart at the bottom. New background (neutral dark with a light wash of the theme color), thinner borders and a softer shadow, applied to every top-bar menu (language, notifications, support, Focus).",
+    "Status dots: they no longer take the theme's accent color (everything looked pink). Online = green, Focus = purple, Busy = red, Away = orange, Invisible = gray, everywhere in the app.",
+    "AI assistant: the local engine no longer invents token counts, a provider that returns no usage counts 0 instead of 150, the question/answer split uses the provider's real values when available, and replies given outside /ask (mention, dedicated channel) are finally counted in the control center.",
+  ],
+};
+
+const v1_28_112_es: ChangelogEntry = {
+  version: "v1.28.112",
+  date: "2026-09-26",
+  title: "Menús rehechos, puntos de estado corregidos, tokens de IA reales",
+  items: [
+    "Menú del perfil rehecho desde cero: cabecera con un avatar grande y punto de estado, correo en un bloque copiable, estados como fichas con nombre, filas con icono en una ficha y atajos en píldoras, cierre de sesión separado abajo. Nuevo fondo (oscuro neutro con un ligero tinte del color del tema), bordes más finos y sombra más suave, aplicados a todos los menús de la barra superior (idioma, notificaciones, soporte, Focus).",
+    "Puntos de estado: ya no toman el color de acento del tema (todo se veía rosa). En línea = verde, Focus = morado, Ocupado = rojo, Ausente = naranja, Invisible = gris, en toda la aplicación.",
+    "Asistente de IA: el motor local ya no inventa cifras de tokens, un proveedor que no devuelve uso cuenta 0 en lugar de 150, el reparto pregunta/respuesta usa los valores reales del proveedor cuando existen, y las respuestas dadas fuera de /ask (mención, canal dedicado) por fin se cuentan en el centro de control.",
+  ],
+};
+
+const v1_28_112_de: ChangelogEntry = {
+  version: "v1.28.112",
+  date: "2026-09-26",
+  title: "Menüs neu gestaltet, Statuspunkte korrigiert, echte KI-Tokens",
+  items: [
+    "Profilmenü von Grund auf neu: Kopfbereich mit großem Avatar und Statuspunkt, E-Mail in einem kopierbaren Feld, Status als benannte Chips, Zeilen mit Symbol in einer Kachel und Tastenkürzeln als Pillen, Abmelden abgesetzt unten. Neuer Hintergrund (neutrales Dunkel mit leichtem Farbhauch des Themas), dünnere Rahmen und weicherer Schatten, für alle Menüs der oberen Leiste (Sprache, Benachrichtigungen, Support, Fokus).",
+    "Statuspunkte: Sie übernehmen nicht mehr die Akzentfarbe des Themas (alles wirkte rosa). Online = grün, Fokus = violett, Beschäftigt = rot, Abwesend = orange, Unsichtbar = grau, überall in der App.",
+    "KI-Assistent: Die lokale Engine erfindet keine Token-Zahlen mehr, ein Anbieter ohne Nutzungsangabe zählt 0 statt 150, die Aufteilung Frage/Antwort nutzt die echten Werte des Anbieters, wenn vorhanden, und Antworten außerhalb von /ask (Erwähnung, eigener Kanal) werden im Kontrollzentrum endlich mitgezählt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_112_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_112_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_112_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_112_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

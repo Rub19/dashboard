@@ -6,6 +6,8 @@ interface AiRequestRecord {
   tokens: number;
   latencyMs: number;
   success: boolean;
+  promptTokens?: number;
+  completionTokens?: number;
   model?: string;
   provider?: string;
 }
@@ -39,7 +41,7 @@ export class BotAiMonitorService {
     this.requestHistory = this.requestHistory.filter((r) => r.timestamp >= cutoff);
   }
 
-  public recordAiUsage(totalTokens: number, latencyMs = 0, success = true, model?: string, provider?: string) {
+  public recordAiUsage(totalTokens: number, latencyMs = 0, success = true, model?: string, provider?: string, split?: { prompt?: number; completion?: number }) {
     const now = Date.now();
     this.tokensThisMinute += totalTokens;
     if (model) this.lastModelUsed = model;
@@ -50,6 +52,8 @@ export class BotAiMonitorService {
       tokens: totalTokens,
       latencyMs,
       success,
+      promptTokens: split?.prompt,
+      completionTokens: split?.completion,
       model,
       provider,
     });
@@ -74,8 +78,19 @@ export class BotAiMonitorService {
     const totalTokens24h = records24h.reduce((acc, r) => acc + r.tokens, 0);
     const latencySumMs = records24h.reduce((acc, r) => acc + r.latencyMs, 0);
 
-    const promptEstimate = Math.round(totalTokens24h * 0.5);
-    const completionEstimate = totalTokens24h - promptEstimate;
+    // Jetons prompt/réponse : valeurs réelles du fournisseur quand elles existent, sinon répartition 50/50 supposée.
+    let promptEstimate = 0;
+    let completionEstimate = 0;
+    for (const r of records24h) {
+      if (r.promptTokens !== undefined && r.completionTokens !== undefined) {
+        promptEstimate += r.promptTokens;
+        completionEstimate += r.completionTokens;
+      } else {
+        const half = Math.round(r.tokens * 0.5);
+        promptEstimate += half;
+        completionEstimate += r.tokens - half;
+      }
+    }
     // Coût estimé : ~$0.80 par 1M prompt tokens, ~$4 par 1M completion tokens pour Claude Haiku/OpenRouter
     const cost = (promptEstimate * 0.0000008) + (completionEstimate * 0.000004);
     // Plafond quotidien configuré (réglage global « aiDailySpendLimitUsd »), 5 $ par défaut.

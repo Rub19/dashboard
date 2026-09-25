@@ -24,7 +24,10 @@ export interface GenerateWithIntentParams {
 export interface AICompletionResult {
   text: string;
   sourcesUsed: string[];
+  /** Jetons réellement facturés par le fournisseur ; 0 pour le moteur local (aucun modèle appelé). */
   tokensUsed: number;
+  promptTokens?: number;
+  completionTokens?: number;
   model: string;
   /** Intent détecté (Prompt #18 §34 — réponse structurée) */
   intent?: IntentResult['intent'];
@@ -82,7 +85,9 @@ export class AIProviderService {
             return {
               text,
               sourcesUsed: [],
-              tokensUsed: data.usage?.total_tokens || 150,
+              tokensUsed: Number(data.usage?.total_tokens) || 0,
+              promptTokens: Number(data.usage?.prompt_tokens) || undefined,
+              completionTokens: Number(data.usage?.completion_tokens) || undefined,
               model: settings.model || 'openrouter-model',
             };
           }
@@ -128,7 +133,9 @@ export class AIProviderService {
             return {
               text,
               sourcesUsed: [],
-              tokensUsed: data.usage?.total_tokens || 150,
+              tokensUsed: Number(data.usage?.total_tokens) || 0,
+              promptTokens: Number(data.usage?.prompt_tokens) || undefined,
+              completionTokens: Number(data.usage?.completion_tokens) || undefined,
               model: settings.model || 'gpt-4o-mini',
             };
           }
@@ -174,7 +181,9 @@ export class AIProviderService {
             return {
               text,
               sourcesUsed: [],
-              tokensUsed: data.usage?.total_tokens || 150,
+              tokensUsed: Number(data.usage?.total_tokens) || 0,
+              promptTokens: Number(data.usage?.prompt_tokens) || undefined,
+              completionTokens: Number(data.usage?.completion_tokens) || undefined,
               model: settings.model || 'groq-llama',
             };
           }
@@ -212,7 +221,7 @@ export class AIProviderService {
       return {
         text: mathResult.formattedResult || 'Résultat introuvable.',
         sourcesUsed: [],
-        tokensUsed: 25,
+        tokensUsed: 0,
         model: 'builtin-ethone-math',
       };
     }
@@ -223,7 +232,7 @@ export class AIProviderService {
       return {
         text: answer,
         sourcesUsed: [],
-        tokensUsed: 65,
+        tokensUsed: 0,
         model: 'builtin-ethone-v2',
       };
     }
@@ -234,7 +243,7 @@ export class AIProviderService {
       return {
         text: answer,
         sourcesUsed: [],
-        tokensUsed: 45,
+        tokensUsed: 0,
         model: 'builtin-ethone-v2',
       };
     }
@@ -248,7 +257,7 @@ export class AIProviderService {
       return {
         text: answer,
         sourcesUsed: [],
-        tokensUsed: 35,
+        tokensUsed: 0,
         model: 'builtin-ethone-v2',
       };
     }
@@ -259,7 +268,7 @@ export class AIProviderService {
       return {
         text: answer,
         sourcesUsed: [],
-        tokensUsed: 35,
+        tokensUsed: 0,
         model: 'builtin-ethone-v2',
       };
     }
@@ -270,7 +279,7 @@ export class AIProviderService {
       return {
         text: answer,
         sourcesUsed: [],
-        tokensUsed: 25,
+        tokensUsed: 0,
         model: 'builtin-ethone-v2',
       };
     }
@@ -281,7 +290,7 @@ export class AIProviderService {
       return {
         text: answer,
         sourcesUsed: [],
-        tokensUsed: 60,
+        tokensUsed: 0,
         model: 'builtin-ethone-v2',
       };
     }
@@ -336,7 +345,7 @@ export class AIProviderService {
     return {
       text: answer,
       sourcesUsed,
-      tokensUsed: Math.ceil(answer.length / 4) + 40,
+      tokensUsed: 0,
       model: 'builtin-ethone-v2',
     };
   }
@@ -383,7 +392,7 @@ export class AIProviderService {
         return {
           text: shortText,
           sourcesUsed: [],
-          tokensUsed: Math.ceil(shortText.length / 4),
+          tokensUsed: 0,
           model: 'builtin-ethent-v3',
           intent: detected.intent,
           intentConfidence: detected.confidence,

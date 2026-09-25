@@ -17,6 +17,9 @@ import { logService } from '../../logs/services/logService.js';
 import { AIImageService } from './aiImageService.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { BotAiMonitorService } from '../../botControl/services/botAiMonitorService.js';
+
+const botAiMonitorService = BotAiMonitorService.getInstance();
 
 export class AIService {
   private client: Client | null = null;
@@ -139,12 +142,28 @@ export class AIService {
 
       // 6. Génération de la Réponse
       const systemPrompt = AISafetyService.buildShieldedSystemPrompt(settings, message.guild.name);
-      const completion = await AIProviderService.generate({
-        settings,
-        systemPrompt,
-        messages: conversation.messages,
-        knowledgeContext: knowledge.contextText,
-      });
+      const aiCallStartedAt = Date.now();
+      let completion: Awaited<ReturnType<typeof AIProviderService.generate>>;
+      try {
+        completion = await AIProviderService.generate({
+          settings,
+          systemPrompt,
+          messages: conversation.messages,
+          knowledgeContext: knowledge.contextText,
+        });
+      } catch (genErr) {
+        botAiMonitorService.recordAiUsage(0, Date.now() - aiCallStartedAt, false, undefined, settings.provider);
+        throw genErr;
+      }
+      // Suivi du centre de contrôle (requêtes, jetons réels, latence) : les réponses hors /ask étaient jusqu'ici ignorées.
+      botAiMonitorService.recordAiUsage(
+        completion.tokensUsed || 0,
+        Date.now() - aiCallStartedAt,
+        true,
+        completion.model,
+        settings.provider,
+        { prompt: completion.promptTokens, completion: completion.completionTokens }
+      );
 
       // 6.5 Filtrage hermétique DLP & Caviardage des secrets avant diffusion
       const sanitizedText = AISafetyService.sanitizeOutput(completion.text, settings.bannedWords);

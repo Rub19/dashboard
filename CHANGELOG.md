@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.112 — 2026-09-26
+
+**Menus refaits, pastilles de statut corrigées, jetons IA réels**
+
+- Menu du profil refait de zéro : en-tête avec grand avatar et pastille de statut, adresse e-mail dans un bloc à copier, statuts sous forme de puces nommées, lignes avec icône dans une tuile et raccourcis en pastilles, déconnexion séparée en bas. Nouveau fond (sombre neutre avec un léger voile de la couleur du thème), bordures plus fines et ombre plus douce, appliqués à tous les menus de la barre du haut (langue, notifications, support, Focus).
+- Pastilles de statut : elles ne prennent plus la couleur d'accent du thème (tout paraissait rose). En ligne = vert, Focus = violet, Occupé = rouge, Absent = orange, Invisible = gris, partout dans l'application.
+- Assistant IA : le moteur local n'invente plus de nombres de jetons, un fournisseur qui ne renvoie pas d'usage compte 0 au lieu de 150, la répartition question/réponse utilise les vraies valeurs du fournisseur quand elles existent, et les réponses données en dehors de /ask (mention, salon dédié) sont enfin comptées dans le centre de contrôle.
+
 ## v1.28.111 — 2026-09-26
 
 **Onglet IA : plus de modèle annoncé s'il n'est pas configuré**

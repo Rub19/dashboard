@@ -192,40 +192,53 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
           </button>
         </PopoverTrigger>
 
-        <PopoverContent className="ethone-menu w-[272px] max-w-[calc(100vw-1.5rem)] overflow-hidden p-0 z-[var(--z-dropdown)]">
-          <div data-testid={`${dataTestId}-menu`} data-open={open ? "true" : "false"} className="flex w-full select-none flex-col p-2">
-            {/* En-tête : avatar, nom, identifiant, e-mail */}
-            <div className="flex items-center gap-3 px-2 pb-2 pt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setOpen(false);
-                  setIsAvatarPickerOpen(true);
-                }}
-                className="group relative h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-full"
-                title={i18n("tbChangeAvatar", "Changer d'avatar")}
-                aria-label={i18n("tbChangeAvatar", "Changer d'avatar")}
-              >
-                <span className="flex h-full w-full items-center justify-center bg-[var(--accent-primary)]/15 text-sm font-bold text-[var(--accent-primary)]">
-                  {avatarUrl ? (
-                    <ClientImage src={avatarUrl} alt="" width={40} height={40} className="h-full w-full object-cover" fallback={<span>{initials}</span>} />
-                  ) : (
-                    <span>{initials}</span>
+        <PopoverContent className="ethone-menu w-[304px] max-w-[calc(100vw-1.5rem)] overflow-hidden p-0 z-[var(--z-dropdown)]">
+          <div data-testid={`${dataTestId}-menu`} data-open={open ? "true" : "false"} className="flex w-full select-none flex-col p-2.5">
+            {/* En-tête : avatar avec pastille de statut, nom, identifiant */}
+            <div className="flex items-center gap-3 px-1.5 pb-2.5 pt-1.5">
+              <div className="relative h-12 w-12 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    setIsAvatarPickerOpen(true);
+                  }}
+                  className="group relative block h-12 w-12 cursor-pointer overflow-hidden rounded-2xl"
+                  title={i18n("tbChangeAvatar", "Changer d'avatar")}
+                  aria-label={i18n("tbChangeAvatar", "Changer d'avatar")}
+                >
+                  <span className="flex h-full w-full items-center justify-center bg-[var(--accent-primary)]/15 text-base font-bold text-[var(--accent-primary)]">
+                    {avatarUrl ? (
+                      <ClientImage src={avatarUrl} alt="" width={48} height={48} className="h-full w-full object-cover" fallback={<span>{initials}</span>} />
+                    ) : (
+                      <span>{initials}</span>
+                    )}
+                  </span>
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/55 opacity-0 transition-opacity group-hover:opacity-100">
+                    <Icon name="camera" className="h-4 w-4 text-white" />
+                  </span>
+                </button>
+                <span
+                  aria-hidden
+                  className={cn(
+                    "absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-[3px] border-[var(--menu-bg)]",
+                    USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG]?.dot
                   )}
-                </span>
-                <span className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-                  <Icon name="camera" className="h-3.5 w-3.5 text-white" />
-                </span>
-              </button>
+                />
+              </div>
 
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold leading-tight text-[var(--text-primary)]">
+                <p className="truncate text-[15px] font-semibold leading-tight text-[var(--text-primary)]">
                   {displayName}
-                  {verified && <span className="ml-1 text-[10px] text-[var(--success)]">✓</span>}
+                  {verified && <span className="ml-1 text-[11px] text-[var(--success)]">✓</span>}
                 </p>
-                <p className="mt-0.5 truncate text-xs leading-tight text-[var(--text-muted)]">
-                  @{username}
-                  {isOwner && <span> · {i18n("tbOwner", "Propriétaire")}</span>}
+                <p className="mt-1 flex items-center gap-1.5 truncate text-xs leading-tight text-[var(--text-muted)]">
+                  <span className="truncate">@{username}</span>
+                  {isOwner && (
+                    <span className="shrink-0 rounded-md bg-[var(--menu-kbd-bg)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
+                      {i18n("tbOwner", "Propriétaire")}
+                    </span>
+                  )}
                 </p>
               </div>
             </div>
@@ -235,45 +248,35 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                 type="button"
                 onClick={copyEmail}
                 title={i18n("tbCopyEmail", "Copier l'adresse e-mail")}
-                className="mx-1 mb-1 flex items-center gap-1.5 rounded-md px-1 py-1 text-left text-[11px] text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
+                className="mx-0.5 flex cursor-pointer items-center justify-between gap-2 rounded-lg bg-[var(--menu-tile)] px-3 py-2 text-left text-[11px] text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
               >
                 <span className="truncate">{email}</span>
-                <Icon name={copied ? "check" : "copy"} className="h-3 w-3 shrink-0" />
+                <Icon name={copied ? "check" : "copy"} className="h-3.5 w-3.5 shrink-0" />
               </button>
             )}
 
-            {bio && <p className="mx-2 mb-1 truncate text-[11px] italic text-[var(--text-muted)]">&ldquo;{bio}&rdquo;</p>}
+            {bio && <p className="mx-2 mt-2 truncate text-[11px] italic text-[var(--text-muted)]">&ldquo;{bio}&rdquo;</p>}
 
-            <div className="ethone-menu-sep" />
-
-            {/* Statut : cinq pastilles, le libellé courant à côté */}
-            <div className="flex items-center justify-between px-2.5 py-1.5">
-              <span className="flex items-center gap-2 text-[13px] text-[var(--text-primary)]">
-                <span className={cn("h-2 w-2 rounded-full", USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG]?.dot)} />
-                {i18n(USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG]?.labelKey || "statusOnline")}
-              </span>
-              <span className="flex items-center gap-1" role="group" aria-label={i18n("tbStatus", "Statut")}>
-                {STATUS_KEYS.map((st) => {
-                  const cfg = USER_STATUS_CONFIG[st];
-                  const isSelected = currentStatus === st;
-                  return (
-                    <button
-                      key={st}
-                      type="button"
-                      onClick={() => handleStatusChange(st)}
-                      aria-pressed={isSelected}
-                      title={i18n(cfg.labelKey)}
-                      aria-label={i18n(cfg.labelKey)}
-                      className={cn(
-                        "flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-colors",
-                        isSelected ? "bg-[var(--menu-hover)] ring-1 ring-[var(--accent-primary)]/60" : "hover:bg-[var(--menu-hover)]"
-                      )}
-                    >
-                      <span className={cn("h-2 w-2 rounded-full", cfg.dot)} />
-                    </button>
-                  );
-                })}
-              </span>
+            {/* Statut : cinq puces colorées, la courante est surlignée */}
+            <p className="ethone-menu-label px-2 pb-1.5 pt-3.5">{i18n("tbStatus", "Statut")}</p>
+            <div className="flex flex-wrap gap-1.5 px-0.5 pb-1" role="group" aria-label={i18n("tbStatus", "Statut")}>
+              {STATUS_KEYS.map((st) => {
+                const cfg = USER_STATUS_CONFIG[st];
+                return (
+                  <button
+                    key={st}
+                    type="button"
+                    onClick={() => handleStatusChange(st)}
+                    aria-pressed={currentStatus === st}
+                    title={i18n(cfg.labelKey)}
+                    className="ethone-status-chip"
+                    style={{ "--chip-color": `var(--status-${st})` } as React.CSSProperties}
+                  >
+                    <i aria-hidden />
+                    {i18n(cfg.labelKey)}
+                  </button>
+                );
+              })}
             </div>
 
             <div className="ethone-menu-sep" />
@@ -289,13 +292,16 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                 }}
                 className="ethone-menu-item"
               >
-                <Icon name={item.icon} className="h-4 w-4" />
+                <Icon name={item.icon} />
                 <span className="truncate">{item.label}</span>
                 {item.kbd && <span className="ethone-menu-hint font-mono">{item.kbd}</span>}
                 {item.badge && <span className="ethone-menu-hint">{item.badge}</span>}
               </button>
             ))}
 
+            <div className="ethone-menu-sep" />
+
+            {/* Outils */}
             <button
               type="button"
               onClick={() => {
@@ -304,7 +310,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
               }}
               className="ethone-menu-item"
             >
-              <Icon name="terminal" className="h-4 w-4" />
+              <Icon name="terminal" />
               <span>{i18n("tbPalette", "Palette de commandes")}</span>
               <span className="ethone-menu-hint font-mono">⌘K</span>
             </button>
@@ -317,7 +323,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
               }}
               className="ethone-menu-item"
             >
-              <Icon name="sparkles" className="h-4 w-4" />
+              <Icon name="sparkles" />
               <span>{i18n("tbWhatsNew", "Nouveautés")}</span>
               <span className="ethone-menu-hint font-mono">{VERSION_LABEL}</span>
             </button>
@@ -327,7 +333,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
             {/* Déconnexion */}
             {!confirmSignOut ? (
               <button type="button" data-testid="profile-logout-button" data-menu-tone="danger" onClick={() => setConfirmSignOut(true)} className="ethone-menu-item">
-                <LogOut className="h-4 w-4" />
+                <LogOut />
                 <span>{i18n("tbSignOut", "Se déconnecter")}</span>
               </button>
             ) : (
@@ -344,7 +350,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                   type="button"
                   data-testid="profile-logout-confirm"
                   onClick={handleSignOut}
-                  className="h-8 cursor-pointer rounded-lg bg-[var(--danger)] px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90"
+                  className="h-8 cursor-pointer rounded-lg bg-[var(--status-busy)] px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90"
                 >
                   {i18n("tbConfirm", "Déconnexion")}
                 </button>

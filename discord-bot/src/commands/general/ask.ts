@@ -132,7 +132,8 @@ export const askCommand: Command = {
         Date.now() - aiCallStartedAt,
         true,
         completion.model,
-        settings.provider
+        settings.provider,
+        { prompt: completion.promptTokens, completion: completion.completionTokens }
       );
 
       const embed = DiscordAiPanel.buildResponseEmbed({

@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.106 — 2026-09-26
+
+**Plus de contre-mesures automatiques quand la sécurité est désactivée**
+
+- Auto-défense du bot : quand quelqu'un retire des rôles ou des privilèges au bot, ou modifie les permissions de son rôle, l'alerte en message privé est toujours envoyée, mais le bot ne sanctionne plus automatiquement (timeout de 28 jours, retrait des rôles d'administration du coupable) et ne rétablit plus ses rôles ou permissions si le module Sécurité est désactivé sur ce serveur. L'alerte l'indique clairement.
+
 ## v1.28.105 — 2026-09-25
 
 **Un module désactivé ne réagit plus à l'arrivée ni au départ d'un membre**

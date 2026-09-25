@@ -36101,6 +36101,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_105_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_105_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_105_de);
 
+const v1_28_106_fr: ChangelogEntry = {
+  version: "v1.28.106",
+  date: "2026-09-26",
+  title: "Plus de contre-mesures automatiques quand la sécurité est désactivée",
+  items: [
+    "Auto-défense du bot : quand quelqu'un retire des rôles ou des privilèges au bot, ou modifie les permissions de son rôle, l'alerte en message privé est toujours envoyée, mais le bot ne sanctionne plus automatiquement (timeout de 28 jours, retrait des rôles d'administration du coupable) et ne rétablit plus ses rôles ou permissions si le module Sécurité est désactivé sur ce serveur. L'alerte l'indique clairement.",
+  ],
+};
+
+const v1_28_106_en: ChangelogEntry = {
+  version: "v1.28.106",
+  date: "2026-09-26",
+  title: "No automatic countermeasures when security is disabled",
+  items: [
+    "Bot self-defense: when someone removes roles or privileges from the bot, or edits its role permissions, the private-message alert is still sent, but the bot no longer punishes automatically (28-day timeout, removal of the culprit's admin roles) nor restores its own roles or permissions if the Security module is disabled on that server. The alert says so clearly.",
+  ],
+};
+
+const v1_28_106_es: ChangelogEntry = {
+  version: "v1.28.106",
+  date: "2026-09-26",
+  title: "Sin contramedidas automáticas cuando la seguridad está desactivada",
+  items: [
+    "Autodefensa del bot: cuando alguien quita roles o privilegios al bot, o modifica los permisos de su rol, la alerta por mensaje privado se sigue enviando, pero el bot ya no sanciona automáticamente (aislamiento de 28 días, retirada de los roles de administración del culpable) ni restaura sus roles o permisos si el módulo de Seguridad está desactivado en ese servidor. La alerta lo indica claramente.",
+  ],
+};
+
+const v1_28_106_de: ChangelogEntry = {
+  version: "v1.28.106",
+  date: "2026-09-26",
+  title: "Keine automatischen Gegenmaßnahmen, wenn die Sicherheit deaktiviert ist",
+  items: [
+    "Selbstverteidigung des Bots: Entzieht jemand dem Bot Rollen oder Rechte oder ändert die Berechtigungen seiner Rolle, wird die Warnung per Privatnachricht weiterhin gesendet, aber der Bot bestraft nicht mehr automatisch (28 Tage Timeout, Entzug der Admin-Rollen des Verursachers) und stellt seine Rollen oder Berechtigungen nicht mehr wieder her, wenn das Sicherheitsmodul auf diesem Server deaktiviert ist. Die Warnung weist klar darauf hin.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_106_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_106_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_106_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_106_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

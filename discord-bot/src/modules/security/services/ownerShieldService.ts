@@ -22,6 +22,7 @@ import { logger } from '../../../utils/logger.js';
 import { logService } from '../../logs/services/logService.js';
 import { raidModeService } from '../../antiRaid/services/raidModeService.js';
 import { baseEmbed, noticeEmbed, type EmbedTone } from '../../../utils/embeds.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 
 export interface ShieldInterceptionEvent {
   id: string;
@@ -852,6 +853,9 @@ export class OwnerShieldService {
   public async handleBotMemberUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<void> {
     if (!this.config.botSelfDefense) return;
     const guild = newMember.guild;
+    // L'alerte est toujours envoyée, mais les contre-mesures automatiques (timeout du coupable, retrait de ses rôles,
+    // restauration des rôles du bot) ne s'exécutent que si le module Sécurité est actif sur ce serveur.
+    const countermeasures = isModuleEnabled(guild.id, 'security');
 
     // 1. Détection des rôles retirés au bot
     const removedRoles = oldMember.roles.cache.filter((r) => !newMember.roles.cache.has(r.id));
@@ -883,7 +887,7 @@ export class OwnerShieldService {
       let rolesRestored: string[] = [];
 
       // 4. Contre-mesure active : Neutralisation du coupable
-      if (modInfo?.moderatorId) {
+      if (countermeasures && modInfo?.moderatorId) {
         const culpritMember = await guild.members.fetch(modInfo.moderatorId).catch(() => null);
         if (culpritMember) {
           // A. Timeout maximal (28 jours)
@@ -930,7 +934,7 @@ export class OwnerShieldService {
       }
 
       // 5. Restauration des rôles du bot
-      if (removedRoles.size > 0 && (newMember.permissions.has(PermissionFlagsBits.ManageRoles) || newMember.permissions.has(PermissionFlagsBits.Administrator))) {
+      if (countermeasures && removedRoles.size > 0 && (newMember.permissions.has(PermissionFlagsBits.ManageRoles) || newMember.permissions.has(PermissionFlagsBits.Administrator))) {
         try {
           const botHighest = newMember.roles.highest.position;
           const restorable = removedRoles.filter((r) => r.position < botHighest && !r.managed);
@@ -949,7 +953,9 @@ export class OwnerShieldService {
 
       // 6. Enregistrement dans l'historique d'interception
       const detailMsg =
-        `Tentative d'attaque contre le bot déjouée sur ${guild.name}` +
+        (countermeasures
+          ? `Tentative d'attaque contre le bot déjouée sur ${guild.name}`
+          : `Atteinte aux droits du bot détectée sur ${guild.name} (aucune contre-mesure : module Sécurité désactivé)`) +
         (modInfo ? ` (initiée par ${modInfo.moderatorTag})` : '') +
         (rolesStripped.length > 0 ? ` • Droits saboteur révoqués (${rolesStripped.join(', ')})` : '') +
         (rolesRestored.length > 0 ? ` • Rôles bot restaurés (${rolesRestored.join(', ')})` : '');
@@ -973,9 +979,11 @@ export class OwnerShieldService {
                 modInfo && ["👮 Auteur de l'attaque", `${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)`],
                 ['🛡️ Rôles retirés au bot', removedRoles.map((r) => r.name).join(', ') || 'Privilèges modifiés'],
                 ['⚡ Contre-mesures automatiques',
-                  `• Timeout 28 jours du saboteur : ${timeoutSuccess ? '✅ appliqué' : '⚠️ non modérable (ou permissions insuffisantes)'}\n` +
-                  `• Droits admin/mod révoqués : ${rolesStripped.length > 0 ? '✅ ' + rolesStripped.join(', ') : '—'}\n` +
-                  `• Rôles du bot rétablis : ${rolesRestored.length > 0 ? '✅ ' + rolesRestored.join(', ') : '⚠️ intervention manuelle nécessaire'}`],
+                  countermeasures
+                    ? `• Timeout 28 jours du saboteur : ${timeoutSuccess ? '✅ appliqué' : '⚠️ non modérable (ou permissions insuffisantes)'}\n` +
+                      `• Droits admin/mod révoqués : ${rolesStripped.length > 0 ? '✅ ' + rolesStripped.join(', ') : '—'}\n` +
+                      `• Rôles du bot rétablis : ${rolesRestored.length > 0 ? '✅ ' + rolesRestored.join(', ') : '⚠️ intervention manuelle nécessaire'}`
+                    : "• Désactivées : le module Sécurité est désactivé sur ce serveur, rien n'a été fait automatiquement."],
                 ['🔗 Dashboard', 'https://ethone.dev/owner/shield'],
               ]),
             ],
@@ -1029,8 +1037,11 @@ export class OwnerShieldService {
         return;
       }
 
+      // Contre-mesures (rétablir le rôle, neutraliser le coupable) : seulement si le module Sécurité est actif sur ce serveur.
+      const countermeasures = isModuleEnabled(guild.id, 'security');
+
       // Restauration des permissions d'origine du rôle si le bot en a le pouvoir
-      if (botMember.permissions.has(PermissionFlagsBits.ManageRoles) || botMember.permissions.has(PermissionFlagsBits.Administrator)) {
+      if (countermeasures && (botMember.permissions.has(PermissionFlagsBits.ManageRoles) || botMember.permissions.has(PermissionFlagsBits.Administrator))) {
         await newRole.setPermissions(
           oldRole.permissions,
           "⚡ Auto-Défense du Bot : Rétablissement immédiat des permissions du rôle du bot"
@@ -1039,7 +1050,7 @@ export class OwnerShieldService {
       }
 
       // Neutraliser le saboteur
-      if (modInfo?.moderatorId) {
+      if (countermeasures && modInfo?.moderatorId) {
         const culpritMember = await guild.members.fetch(modInfo.moderatorId).catch(() => null);
         if (culpritMember && culpritMember.moderatable) {
           await culpritMember.disableCommunicationUntil(
@@ -1052,7 +1063,7 @@ export class OwnerShieldService {
       this.addInterception(
         guild,
         'BOT_PROTECTION_TRIGGERED',
-        `Permissions du rôle "${newRole.name}" restaurées` + (modInfo ? ` (modifié par ${modInfo.moderatorTag})` : ''),
+        (countermeasures ? `Permissions du rôle "${newRole.name}" restaurées` : `Permissions du rôle "${newRole.name}" modifiées (aucune contre-mesure : module Sécurité désactivé)`) + (modInfo ? ` (modifié par ${modInfo.moderatorTag})` : ''),
         true,
         modInfo || undefined
       );
@@ -1065,7 +1076,9 @@ export class OwnerShieldService {
             embeds: [
               this.alertEmbed('error', '🚨 Alerte critique — permissions du bot modifiées', `Le rôle **${newRole.name}** du bot sur **${guild.name}** a été altéré pour lui retirer ses privilèges.`, [
                 modInfo && ['👮 Auteur', `${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)`],
-                ['⚡ Action', 'Le bot a automatiquement restauré ses permissions et appliqué les contre-mesures.'],
+                ['⚡ Action', countermeasures
+                  ? 'Le bot a automatiquement restauré ses permissions et appliqué les contre-mesures.'
+                  : "Aucune contre-mesure : le module Sécurité est désactivé sur ce serveur, rien n'a été fait automatiquement."],
               ]),
             ],
             components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],

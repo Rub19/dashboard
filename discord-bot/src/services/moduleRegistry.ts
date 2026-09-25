@@ -15,6 +15,7 @@ import { afkStorage } from '../modules/afk/storage/afkStorage.js';
 import { countingStorage } from '../modules/counting/storage/countingStorage.js';
 import { statsStorage } from '../modules/stats/storage/statsStorage.js';
 import { statrolesStorage } from '../modules/statroles/storage/statrolesStorage.js';
+import { secureRolesStorage } from '../modules/secureroles/storage/secureRolesStorage.js';
 import { reportsStorage } from '../modules/reports/storage/reportsStorage.js';
 import { serverStatsStorage } from '../modules/serverStats/storage/serverStatsStorage.js';
 import { ticketRepository } from '../modules/tickets/storage/ticketRepository.js';
@@ -43,6 +44,8 @@ export interface ModuleDef {
   own?: {
     get: (guildId: string) => boolean | undefined;
     set: (guildId: string, enabled: boolean) => void;
+    /** Vrai : le module ne peut pas être désactivé maintenant (ex. rôles sécurisés en place : le personnel serait enfermé dehors). */
+    pinned?: (guildId: string) => boolean;
   };
 }
 
@@ -224,6 +227,19 @@ export const MODULES: ModuleDef[] = [
     own: { get: (g) => reportsStorage.getConfig(g).enabled, set: (g, enabled) => void reportsStorage.updateConfig(g, { enabled }) },
   },
   {
+    id: 'secureroles',
+    label: 'Rôles sécurisés',
+    emoji: '🔐',
+    description: 'Permissions sensibles du personnel activées seulement après un code à usage unique.',
+    commands: ['elevate'],
+    // Reste actif tant que des rôles sont sécurisés : le désactiver enfermerait le personnel hors de ses permissions.
+    own: {
+      get: (g) => secureRolesStorage.getConfig(g).enabled,
+      set: (g, enabled) => void secureRolesStorage.updateConfig(g, { enabled }),
+      pinned: (g) => secureRolesStorage.getConfig(g).roles.length > 0,
+    },
+  },
+  {
     id: 'statroles',
     label: 'Statroles',
     emoji: '🏅',
@@ -279,6 +295,7 @@ function persistSwitches(): void {
 export function isModuleEnabled(guildId: string, moduleId: string): boolean {
   const def = BY_ID.get(moduleId);
   if (!def) return true;
+  if (def.own?.pinned?.(guildId)) return true;
   if (disabled[guildId]?.includes(moduleId)) return false;
   if (def.own) {
     try {
@@ -294,6 +311,7 @@ export function isModuleEnabled(guildId: string, moduleId: string): boolean {
 export function setModuleEnabled(guildId: string, moduleId: string, enabled: boolean, source: 'DASHBOARD' | 'DISCORD_COMMAND' = 'DASHBOARD', userId?: string, emit = true): boolean {
   const def = BY_ID.get(moduleId);
   if (!def) return false;
+  if (!enabled && def.own?.pinned?.(guildId)) return true;
 
   const list = new Set(disabled[guildId] ?? []);
   if (enabled) list.delete(moduleId);
@@ -324,7 +342,7 @@ export const CORE_MODULE_IDS: readonly string[] = ['moderation', 'music', 'remin
 export type ModulePresetId = 'minimal' | 'community' | 'security' | 'all';
 
 const COMMUNITY_IDS = ['welcome', 'roles', 'leveling', 'economy', 'suggestions', 'polls', 'giveaways', 'events', 'forms', 'starboard', 'highlights', 'birthdays', 'voice', 'tickets', 'invites', 'afk', 'counting', 'stats', 'statroles', 'reports', 'serverstats', 'sticky', 'commands'];
-const SECURITY_IDS = ['security', 'anti-nuke', 'automod', 'logs', 'welcome', 'tickets', 'backups', 'reports'];
+const SECURITY_IDS = ['security', 'anti-nuke', 'automod', 'logs', 'welcome', 'tickets', 'backups', 'reports', 'secureroles'];
 
 /** Ensembles de modules proposés par la configuration rapide (le socle est toujours inclus). */
 export const MODULE_PRESETS: Record<ModulePresetId, { label: string; emoji: string; description: string; ids: () => string[] }> = {

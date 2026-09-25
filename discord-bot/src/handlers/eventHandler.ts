@@ -41,6 +41,7 @@ import { BotEventBusService } from '../modules/botControl/services/botEventBusSe
 import { LIVE_DISCORD_EVENTS, guildIdOfEvent, notifyDiscordState } from '../services/discordStateNotifier.js';
 import { guildSetupService } from '../services/guildSetupService.js';
 import { statsCollector } from '../modules/stats/services/statsCollector.js';
+import { guardMemberUpdate as guardSecureRoles } from '../modules/secureroles/services/secureRolesService.js';
 import { logger } from '../utils/logger.js';
 
 let isEventsRegistered = false;
@@ -159,6 +160,7 @@ export function registerEvents(client: Client): void {
     handleGuildMemberUpdate(oldMember, newMember);
     autoModService.handleMemberProfile(newMember);
     ownerShieldService.handleGuildMemberUpdate(oldMember as GuildMember, newMember);
+    void guardSecureRoles(oldMember as GuildMember, newMember).catch((err) => logger.warn('[SecureRoles] garde-fou :', err?.message));
   });
   client.on(Events.GuildBanAdd, (ban) => {
     handleGuildBanAdd(ban);

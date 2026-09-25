@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.91 — 2026-09-25
+
+**Nouveau module : Rôles sécurisés (protection des comptes du personnel)**
+
+- Les permissions sensibles d'un rôle du personnel (bannir, expulser, gérer les rôles, administrateur…) sont déplacées vers un rôle caché « 🔐 … ». Le rôle garde son nom, sa couleur et sa place dans la hiérarchie.
+- Le membre obtient ces permissions pour une durée limitée (5 minutes à 4 heures, 30 par défaut) avec /elevate et un code à usage unique de son application d'authentification (Google Authenticator, Authy, 1Password…). Un compte Discord volé n'a aucun pouvoir sensible.
+- Seuls les membres invités par un administrateur peuvent configurer leur code : un pirate ne peut pas enrôler sa propre application. Blocage de 10 minutes après 5 codes erronés, codes non rejouables, secrets chiffrés sur le disque.
+- Garde-fous : un rôle caché donné à la main sans code est retiré aussitôt ; une session se ferme seule à l'échéance ou si le membre perd son rôle ; tout est consigné dans un journal.
+- Page dashboard avec fenêtre d'accueil (problème, solution, invisible pour l'équipe), choix des rôles à protéger avec leurs permissions à risque, suivi des membres (invité, protégé, session en cours), réinitialisation, durée de session et journal.
+- Le module ne peut pas être désactivé tant que des rôles sont sécurisés (pour ne jamais enfermer l'équipe) ; « Restaurer » rend au rôle ses permissions d'origine. Désactivé par défaut.
+
 ## v1.28.90 — 2026-09-25
 
 **Salons vocaux temporaires : installation en un clic et gestion des hubs**

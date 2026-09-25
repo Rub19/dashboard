@@ -35326,6 +35326,67 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_90_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_90_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_90_de);
 
+const v1_28_91_fr: ChangelogEntry = {
+  version: "v1.28.91",
+  date: "2026-09-25",
+  title: "Nouveau module : Rôles sécurisés (protection des comptes du personnel)",
+  items: [
+    "Les permissions sensibles d'un rôle du personnel (bannir, expulser, gérer les rôles, administrateur…) sont déplacées vers un rôle caché « 🔐 … ». Le rôle garde son nom, sa couleur et sa place dans la hiérarchie.",
+    "Le membre obtient ces permissions pour une durée limitée (5 minutes à 4 heures, 30 par défaut) avec /elevate et un code à usage unique de son application d'authentification (Google Authenticator, Authy, 1Password…). Un compte Discord volé n'a aucun pouvoir sensible.",
+    "Seuls les membres invités par un administrateur peuvent configurer leur code : un pirate ne peut pas enrôler sa propre application. Blocage de 10 minutes après 5 codes erronés, codes non rejouables, secrets chiffrés sur le disque.",
+    "Garde-fous : un rôle caché donné à la main sans code est retiré aussitôt ; une session se ferme seule à l'échéance ou si le membre perd son rôle ; tout est consigné dans un journal.",
+    "Page dashboard avec fenêtre d'accueil (problème, solution, invisible pour l'équipe), choix des rôles à protéger avec leurs permissions à risque, suivi des membres (invité, protégé, session en cours), réinitialisation, durée de session et journal.",
+    "Le module ne peut pas être désactivé tant que des rôles sont sécurisés (pour ne jamais enfermer l'équipe) ; « Restaurer » rend au rôle ses permissions d'origine. Désactivé par défaut.",
+  ],
+};
+
+const v1_28_91_en: ChangelogEntry = {
+  version: "v1.28.91",
+  date: "2026-09-25",
+  title: "New module: Secure Roles (protect staff accounts)",
+  items: [
+    "The sensitive permissions of a staff role (ban, kick, manage roles, administrator…) are moved to a hidden \"🔐 …\" role. The role keeps its name, colour and hierarchy position.",
+    "Members get those permissions for a limited time (5 minutes to 4 hours, 30 by default) with /elevate and a one-time code from their authenticator app (Google Authenticator, Authy, 1Password…). A stolen Discord account has no sensitive power.",
+    "Only members invited by an administrator can set up their code: an attacker cannot enrol their own app. 10-minute lockout after 5 wrong codes, codes cannot be replayed, secrets are encrypted on disk.",
+    "Safeguards: a hidden role handed out manually without a code is removed immediately; a session closes by itself at expiry or when the member loses their role; everything is recorded in a log.",
+    "Dashboard page with a welcome window (problem, solution, invisible to the team), role picker showing risky permissions, member tracking (invited, protected, active session), reset, session length and log.",
+    "The module cannot be disabled while roles are secured (so the team is never locked out); \"Restore\" gives the role its original permissions back. Off by default.",
+  ],
+};
+
+const v1_28_91_es: ChangelogEntry = {
+  version: "v1.28.91",
+  date: "2026-09-25",
+  title: "Nuevo módulo: Roles protegidos (protección de cuentas del equipo)",
+  items: [
+    "Los permisos sensibles de un rol del equipo (banear, expulsar, gestionar roles, administrador…) pasan a un rol oculto «🔐 …». El rol conserva su nombre, color y posición en la jerarquía.",
+    "El miembro obtiene esos permisos por un tiempo limitado (de 5 minutos a 4 horas, 30 por defecto) con /elevate y un código de un solo uso de su aplicación de autenticación (Google Authenticator, Authy, 1Password…). Una cuenta de Discord robada no tiene poder sensible.",
+    "Solo los miembros invitados por un administrador pueden configurar su código: un atacante no puede registrar su propia aplicación. Bloqueo de 10 minutos tras 5 códigos erróneos, códigos no reutilizables, secretos cifrados en disco.",
+    "Salvaguardas: un rol oculto entregado a mano sin código se retira al instante; la sesión se cierra sola al vencer o si el miembro pierde su rol; todo queda registrado.",
+    "Página del dashboard con ventana de bienvenida (problema, solución, invisible para el equipo), elección de roles con sus permisos de riesgo, seguimiento de miembros (invitado, protegido, sesión activa), reinicio, duración de sesión y registro.",
+    "El módulo no se puede desactivar mientras haya roles protegidos (para no dejar al equipo sin permisos); «Restaurar» devuelve al rol sus permisos originales. Desactivado por defecto.",
+  ],
+};
+
+const v1_28_91_de: ChangelogEntry = {
+  version: "v1.28.91",
+  date: "2026-09-25",
+  title: "Neues Modul: Gesicherte Rollen (Schutz der Team-Konten)",
+  items: [
+    "Die sensiblen Berechtigungen einer Team-Rolle (bannen, kicken, Rollen verwalten, Administrator …) werden in eine versteckte Rolle „🔐 …“ verschoben. Die Rolle behält Namen, Farbe und Position in der Hierarchie.",
+    "Mitglieder erhalten diese Berechtigungen zeitlich begrenzt (5 Minuten bis 4 Stunden, standardmäßig 30) mit /elevate und einem Einmalcode ihrer Authenticator-App (Google Authenticator, Authy, 1Password …). Ein gestohlenes Discord-Konto hat keine sensible Macht.",
+    "Nur von einem Administrator eingeladene Mitglieder können ihren Code einrichten: Ein Angreifer kann keine eigene App registrieren. 10 Minuten Sperre nach 5 falschen Codes, Codes nicht wiederverwendbar, Geheimnisse verschlüsselt auf der Platte.",
+    "Schutzmaßnahmen: Eine ohne Code von Hand vergebene versteckte Rolle wird sofort entfernt; eine Sitzung endet automatisch bei Ablauf oder wenn das Mitglied seine Rolle verliert; alles wird protokolliert.",
+    "Dashboard-Seite mit Willkommensfenster (Problem, Lösung, unsichtbar für das Team), Rollenauswahl mit riskanten Berechtigungen, Mitgliederübersicht (eingeladen, geschützt, aktive Sitzung), Zurücksetzen, Sitzungsdauer und Protokoll.",
+    "Das Modul lässt sich nicht deaktivieren, solange Rollen gesichert sind (damit das Team nie ausgesperrt wird); „Wiederherstellen“ gibt der Rolle ihre ursprünglichen Berechtigungen zurück. Standardmäßig aus.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_91_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_91_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_91_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_91_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

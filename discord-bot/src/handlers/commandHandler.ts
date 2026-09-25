@@ -78,6 +78,7 @@ import { afkCommand } from '../modules/afk/commands/afkCommand.js';
 import { countingCommand } from '../modules/counting/commands/countingCommand.js';
 import { statsCommand } from '../modules/stats/commands/statsCommand.js';
 import { statrolesCommand } from '../modules/statroles/commands/statrolesCommand.js';
+import { elevateCommand } from '../modules/secureroles/commands/elevateCommand.js';
 import { reportCommand, REPORT_CONTEXT_MENUS } from '../modules/reports/commands/reportCommands.js';
 import { birthdayCommand } from '../modules/birthdays/commands/birthdayCommand.js';
 import { tagCommand } from '../modules/tags/commands/tagCommand.js';
@@ -198,6 +199,7 @@ class CommandRegistry {
     this.register(countingCommand);
     this.register(statsCommand);
     this.register(statrolesCommand);
+    this.register(elevateCommand);
     this.register(reportCommand);
 
     // Birthdays (anniversaires + annonce quotidienne + rôle)

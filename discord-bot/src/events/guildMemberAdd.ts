@@ -12,6 +12,7 @@ import { logService } from '../modules/logs/services/logService.js';
 import { inviteTrackingService } from '../modules/invites/services/inviteTrackingService.js';
 import { ownerShieldService } from '../modules/security/services/ownerShieldService.js';
 import { logger } from '../utils/logger.js';
+import { isModuleEnabled } from '../services/moduleRegistry.js';
 
 // Assigns only the unverified-role gate instead of the member's normal
 // auto-roles when verification is enabled — VerificationService.verifyMember
@@ -49,28 +50,30 @@ export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
     }
 
     const config = guildConfigService.getConfig(member.guild.id);
+    // Un module désactivé ne fait rien d'automatique à l'arrivée d'un membre.
+    const on = (moduleId: string) => isModuleEnabled(member.guild.id, moduleId);
 
     // 0. Invite Tracking & Referral 2.0
-    await inviteTrackingService.handleMemberJoin(member);
+    if (on('invites')) await inviteTrackingService.handleMemberJoin(member);
 
     // 1. Module Security & Anti-Raid 2.0 (Vérification Bot, Âge de compte, Mass Joins, Quarantaine)
     // modules/security's own antiRaidService used to also run here, invisibly:
     // it has no command and no dashboard page, so it acted on hardcoded
     // defaults (kick/ban/timeout/lockdown) that no admin could see or turn
     // off, duplicating this exposed, configurable engine. Removed.
-    await raidDetectionService.handleMemberJoin(member);
+    if (on('security')) await raidDetectionService.handleMemberJoin(member);
 
     // AutoMod 2.0 (Vérification profil, pseudo & nom d'affichage)
-    await autoModService.handleMemberProfile(member);
+    if (on('automod')) await autoModService.handleMemberProfile(member);
 
     // 2. Module Auto-Rôles dédié — retardé si la vérification est active :
     // le membre reçoit uniquement le rôle "non-vérifié" et récupère ses
     // rôles normaux au moment où VerificationService.verifyMember() réussit
     // (bouton "Valider mon entrée"), pas immédiatement à l'arrivée.
     const verificationConfig = welcomeRepository.getVerificationConfig(member.guild.id);
-    if (verificationConfig.enabled) {
+    if (on('welcome') && verificationConfig.enabled) {
       await assignUnverifiedGateRole(member, verificationConfig.unverifiedRoleId);
-    } else {
+    } else if (on('roles')) {
       await autoRoleService.assignOnJoin(member);
     }
 
@@ -79,7 +82,7 @@ export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
 
     // 4. Analytics
     analyticsService.recordJoin(member.guild.id, member.id);
-    statsCollector.recordJoin(member.guild.id, member.guild.memberCount);
+    if (on('stats')) statsCollector.recordJoin(member.guild.id, member.guild.memberCount);
 
     // 5. Audit Center 2.0 Log
     logService.emit({
@@ -108,7 +111,7 @@ export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
     });
 
     // 2. Module Logs d'Arrivée
-    if (config.modules.logging) {
+    if (config.modules.logging && isModuleEnabled(member.guild.id, 'logs')) {
       const logChannel = member.guild.channels.cache.find(
         (c) =>
           c.type === ChannelType.GuildText &&

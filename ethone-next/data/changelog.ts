@@ -36056,6 +36056,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_104_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_104_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_104_de);
 
+const v1_28_105_fr: ChangelogEntry = {
+  version: "v1.28.105",
+  date: "2026-09-25",
+  title: "Un module désactivé ne réagit plus à l'arrivée ni au départ d'un membre",
+  items: [
+    "À l'arrivée d'un membre, le suivi des invitations, l'Anti-Raid, la vérification de profil AutoMod, les rôles automatiques, la vérification d'entrée et les statistiques ne s'exécutent plus si leur module est désactivé.",
+    "Les anciens messages de journal « arrivée », « départ » et « message supprimé » postés dans un salon dont le nom contient « log » ne sont plus envoyés quand le module Journaux est désactivé.",
+  ],
+};
+
+const v1_28_105_en: ChangelogEntry = {
+  version: "v1.28.105",
+  date: "2026-09-25",
+  title: "A disabled module no longer reacts to members joining or leaving",
+  items: [
+    "When a member joins, invite tracking, Anti-Raid, AutoMod profile checks, auto-roles, entry verification and statistics no longer run if their module is disabled.",
+    "The old \"join\", \"leave\" and \"message deleted\" log messages posted in any channel whose name contains \"log\" are no longer sent when the Logs module is disabled.",
+  ],
+};
+
+const v1_28_105_es: ChangelogEntry = {
+  version: "v1.28.105",
+  date: "2026-09-25",
+  title: "Un módulo desactivado ya no reacciona a la llegada ni salida de miembros",
+  items: [
+    "Cuando llega un miembro, el seguimiento de invitaciones, el Anti-Raid, la verificación de perfil de AutoMod, los roles automáticos, la verificación de entrada y las estadísticas ya no se ejecutan si su módulo está desactivado.",
+    "Los antiguos mensajes de registro de «llegada», «salida» y «mensaje eliminado» publicados en un canal cuyo nombre contiene «log» ya no se envían cuando el módulo de Registros está desactivado.",
+  ],
+};
+
+const v1_28_105_de: ChangelogEntry = {
+  version: "v1.28.105",
+  date: "2026-09-25",
+  title: "Ein deaktiviertes Modul reagiert nicht mehr auf Beitritte und Austritte",
+  items: [
+    "Beim Beitritt eines Mitglieds laufen Einladungsverfolgung, Anti-Raid, AutoMod-Profilprüfung, automatische Rollen, Beitrittsverifizierung und Statistiken nicht mehr, wenn ihr Modul deaktiviert ist.",
+    "Die alten Log-Meldungen „Beitritt“, „Austritt“ und „Nachricht gelöscht“ in einem Kanal, dessen Name „log“ enthält, werden nicht mehr gesendet, wenn das Logs-Modul deaktiviert ist.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_105_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_105_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_105_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_105_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

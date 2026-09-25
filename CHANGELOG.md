@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.105 — 2026-09-25
+
+**Un module désactivé ne réagit plus à l'arrivée ni au départ d'un membre**
+
+- À l'arrivée d'un membre, le suivi des invitations, l'Anti-Raid, la vérification de profil AutoMod, les rôles automatiques, la vérification d'entrée et les statistiques ne s'exécutent plus si leur module est désactivé.
+- Les anciens messages de journal « arrivée », « départ » et « message supprimé » postés dans un salon dont le nom contient « log » ne sont plus envoyés quand le module Journaux est désactivé.
+
 ## v1.28.104 — 2026-09-25
 
 **Message « module désactivé » plus lisible**

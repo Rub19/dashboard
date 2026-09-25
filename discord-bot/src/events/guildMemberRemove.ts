@@ -1,4 +1,5 @@
 import { GuildMember, TextChannel, ChannelType, PartialGuildMember, AuditLogEvent } from 'discord.js';
+import { isModuleEnabled } from '../services/moduleRegistry.js';
 import { guildConfigService } from '../services/guildConfigService.js';
 import { baseEmbed } from '../utils/embeds.js';
 import { welcomeService } from '../modules/welcome/services/welcomeService.js';
@@ -65,7 +66,7 @@ export async function onGuildMemberRemove(member: GuildMember | PartialGuildMemb
     }
 
     // 2. Module Logs de Départ
-    if (config.modules.logging) {
+    if (config.modules.logging && isModuleEnabled(member.guild.id, 'logs')) {
       const logChannel = member.guild.channels.cache.find(
         (c) =>
           c.type === ChannelType.GuildText &&

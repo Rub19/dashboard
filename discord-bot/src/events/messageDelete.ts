@@ -1,4 +1,5 @@
 import { Message, PartialMessage, TextChannel, ChannelType } from 'discord.js';
+import { isModuleEnabled } from '../services/moduleRegistry.js';
 import { guildConfigService } from '../services/guildConfigService.js';
 import { baseEmbed } from '../utils/embeds.js';
 import { logger } from '../utils/logger.js';
@@ -10,7 +11,7 @@ export async function onMessageDelete(message: Message | PartialMessage): Promis
     const config = guildConfigService.getConfig(message.guild.id);
 
     // Module Logs (Message supprimé)
-    if (config.modules.logging) {
+    if (config.modules.logging && isModuleEnabled(message.guild.id, 'logs')) {
       const logChannel = message.guild.channels.cache.find(
         (c) =>
           c.type === ChannelType.GuildText &&

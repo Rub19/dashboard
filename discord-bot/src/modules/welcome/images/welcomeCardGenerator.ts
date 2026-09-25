@@ -3,6 +3,7 @@ import { WelcomeImageConfig } from '../types/welcomeConfig.js';
 import { VariableContext } from '../types/variables.js';
 import { VariableParser } from '../variables/variableParser.js';
 import { logger } from '../../../utils/logger.js';
+import { safeText } from '../../../utils/canvasText.js';
 
 export class WelcomeCardGenerator {
   public static async generateCard(
@@ -90,7 +91,7 @@ export class WelcomeCardGenerator {
     const textStartX = 250;
 
     // Titre (ex: "BIENVENUE")
-    const titleText = VariableParser.parse(imageConfig.titleText, ctx).toUpperCase();
+    const titleText = safeText(VariableParser.parse(imageConfig.titleText, ctx), 'BIENVENUE').toUpperCase();
     c.font = 'bold 22px sans-serif';
     c.fillStyle = accent;
     c.fillText(titleText, textStartX, 115);
@@ -102,18 +103,18 @@ export class WelcomeCardGenerator {
     }
     c.font = 'bold 36px sans-serif';
     c.fillStyle = '#FFFFFF';
-    c.fillText(usernameText, textStartX, 160);
+    c.fillText(safeText(usernameText, 'Nouveau membre'), textStartX, 160);
 
     // Tag / Compteur (ex: "Membre #1 245 • Mon Serveur")
     const tagText = VariableParser.parse(imageConfig.tagText, ctx);
     c.font = '16px sans-serif';
     c.fillStyle = '#94A3B8';
-    c.fillText(tagText, textStartX, 195);
+    c.fillText(safeText(tagText), textStartX, 195);
 
     // 6. Signature de marque subtile
     c.font = '12px sans-serif';
     c.fillStyle = 'rgba(255, 255, 255, 0.25)';
-    c.fillText(ctx.guildName, textStartX, 225);
+    c.fillText(safeText(ctx.guildName), textStartX, 225);
 
     return canvas.toBuffer('image/png');
   }

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.96 — 2026-09-25
+
+**Noms décoratifs lisibles dans les images du bot**
+
+- Les images de /stats (graphiques et fiche membre) et la carte d'accueil affichent maintenant correctement les noms en lettres décoratives (𝕷𝖔𝖗𝖉 𝕾𝖚𝖕𝖗𝖆 devient « Lord Supra ») : plus de carrés vides.
+- Émojis et symboles que la police ne sait pas dessiner sont retirés du texte des images ; si rien de lisible ne reste, un texte de repli est utilisé (« Membre », « salon »).
+- Les titres et sous-titres trop longs sont raccourcis avec « … » au lieu d'être coupés.
+
 ## v1.28.95 — 2026-09-25
 
 **Multiplicateurs d'XP bonus et malus, podiums des meilleurs membres**

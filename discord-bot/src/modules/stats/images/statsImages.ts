@@ -6,6 +6,8 @@ import { createCanvas, loadImage, type SKRSContext2D } from '@napi-rs/canvas';
  * pas sans police dédiée sur un serveur Linux.
  */
 
+import { safeText } from '../../../utils/canvasText.js';
+
 const FONT = '"DejaVu Sans", "Segoe UI", Arial, sans-serif';
 const COLORS = {
   bg: '#0d0f14',
@@ -61,7 +63,8 @@ export function formatCompact(n: number): string {
   return Number.isInteger(n) ? String(n) : n.toFixed(1);
 }
 
-function fit(c: SKRSContext2D, text: string, maxWidth: number): string {
+function fit(c: SKRSContext2D, rawText: string, maxWidth: number, fallback = ''): string {
+  const text = safeText(rawText, fallback);
   if (c.measureText(text).width <= maxWidth) return text;
   let t = text;
   while (t.length > 1 && c.measureText(`${t}…`).width > maxWidth) t = t.slice(0, -1);
@@ -95,11 +98,11 @@ export async function renderBarChart(opts: BarChartOptions): Promise<Buffer> {
   c.fillStyle = COLORS.text;
   c.font = `bold 20px ${FONT}`;
   c.textBaseline = 'alphabetic';
-  c.fillText(opts.title, 34, 46);
+  c.fillText(fit(c, opts.title, width - 260, 'Statistiques'), 34, 46);
   if (opts.subtitle) {
     c.fillStyle = COLORS.muted;
     c.font = `13px ${FONT}`;
-    c.fillText(opts.subtitle, 34, 68);
+    c.fillText(fit(c, opts.subtitle, width - 260, ''), 34, 68);
   }
 
   const left = 64;
@@ -277,7 +280,7 @@ export async function renderMemberCard(data: MemberCardData): Promise<Buffer> {
   c.fillStyle = COLORS.text;
   c.font = `bold 28px ${FONT}`;
   c.textBaseline = 'alphabetic';
-  c.fillText(fit(c, data.name, 380), 134, 92);
+  c.fillText(fit(c, data.name, 380, 'Membre'), 134, 92);
 
   let chipRight = width - 34;
   if (data.joinedOn) chipRight = drawChip(c, 'Arrivé le', data.joinedOn, chipRight, 52) - 10;
@@ -351,7 +354,7 @@ export async function renderMemberCard(data: MemberCardData): Promise<Buffer> {
     const y = lowY + 62 + i * 32;
     c.fillStyle = COLORS.text;
     c.font = `14px ${FONT}`;
-    c.fillText(fit(c, ch.label, 230), 50, y);
+    c.fillText(fit(c, ch.label, 230, 'salon'), 50, y);
     c.fillStyle = COLORS.muted;
     c.textAlign = 'right';
     c.fillText(ch.value, 398, y);

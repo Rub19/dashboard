@@ -35635,6 +35635,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_95_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_95_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_95_de);
 
+const v1_28_96_fr: ChangelogEntry = {
+  version: "v1.28.96",
+  date: "2026-09-25",
+  title: "Noms décoratifs lisibles dans les images du bot",
+  items: [
+    "Les images de /stats (graphiques et fiche membre) et la carte d'accueil affichent maintenant correctement les noms en lettres décoratives (𝕷𝖔𝖗𝖉 𝕾𝖚𝖕𝖗𝖆 devient « Lord Supra ») : plus de carrés vides.",
+    "Émojis et symboles que la police ne sait pas dessiner sont retirés du texte des images ; si rien de lisible ne reste, un texte de repli est utilisé (« Membre », « salon »).",
+    "Les titres et sous-titres trop longs sont raccourcis avec « … » au lieu d'être coupés.",
+  ],
+};
+
+const v1_28_96_en: ChangelogEntry = {
+  version: "v1.28.96",
+  date: "2026-09-25",
+  title: "Readable decorative names in bot images",
+  items: [
+    "The /stats images (charts and member card) and the welcome card now display names written in decorative letters correctly (𝕷𝖔𝖗𝖉 𝕾𝖚𝖕𝖗𝖆 becomes \"Lord Supra\"): no more empty boxes.",
+    "Emojis and symbols the font cannot draw are removed from image text; if nothing readable remains, a fallback text is used (\"Member\", \"channel\").",
+    "Titles and subtitles that are too long are shortened with \"…\" instead of being cut off.",
+  ],
+};
+
+const v1_28_96_es: ChangelogEntry = {
+  version: "v1.28.96",
+  date: "2026-09-25",
+  title: "Nombres decorativos legibles en las imágenes del bot",
+  items: [
+    "Las imágenes de /stats (gráficos y ficha de miembro) y la tarjeta de bienvenida muestran ahora correctamente los nombres con letras decorativas (𝕷𝖔𝖗𝖉 𝕾𝖚𝖕𝖗𝖆 pasa a «Lord Supra»): se acabaron los cuadros vacíos.",
+    "Los emojis y símbolos que la fuente no sabe dibujar se eliminan del texto de las imágenes; si no queda nada legible se usa un texto de reserva («Miembro», «canal»).",
+    "Los títulos y subtítulos demasiado largos se acortan con «…» en lugar de cortarse.",
+  ],
+};
+
+const v1_28_96_de: ChangelogEntry = {
+  version: "v1.28.96",
+  date: "2026-09-25",
+  title: "Lesbare dekorative Namen in Bot-Bildern",
+  items: [
+    "Die /stats-Bilder (Diagramme und Mitgliedskarte) und die Willkommenskarte zeigen Namen in dekorativen Buchstaben jetzt korrekt an (𝕷𝖔𝖗𝖉 𝕾𝖚𝖕𝖗𝖆 wird zu „Lord Supra“): keine leeren Kästchen mehr.",
+    "Emojis und Symbole, die die Schrift nicht zeichnen kann, werden aus dem Bildtext entfernt; bleibt nichts Lesbares übrig, wird ein Ersatztext verwendet („Mitglied“, „Kanal“).",
+    "Zu lange Titel und Untertitel werden mit „…“ gekürzt statt abgeschnitten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_96_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_96_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_96_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_96_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

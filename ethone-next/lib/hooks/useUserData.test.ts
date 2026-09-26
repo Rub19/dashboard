@@ -73,4 +73,37 @@ describe("useUserData", () => {
     );
     expect(result.current.items).toHaveLength(0);
   });
+  it("replaces the temporary id with the server id after create, so a following delete targets the real row", async () => {
+    const { result } = renderHook(() => useUserData("macro"));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await act(async () => {
+      await result.current.create("New Macro", "", { action: "navigate", href: "/" });
+    });
+    expect(result.current.items.map((i) => i.id)).toContain("m2");
+
+    await act(async () => {
+      await result.current.remove("m2");
+    });
+    expect(mockedFetchWorker).toHaveBeenCalledWith(
+      "/api/user-data/macros",
+      expect.objectContaining({ method: "DELETE", body: JSON.stringify({ id: "m2" }) })
+    );
+  });
+
+  it("rolls back and throws when the Worker refuses a create or a delete", async () => {
+    const { result } = renderHook(() => useUserData("macro"));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    mockedFetchWorker.mockRejectedValue(new Error("boom"));
+    await act(async () => {
+      await expect(result.current.create("Nope", "", {})).rejects.toThrow("boom");
+    });
+    expect(result.current.items.map((i) => i.label)).toEqual(["Open Home"]);
+
+    await act(async () => {
+      await expect(result.current.remove("m1")).rejects.toThrow("boom");
+    });
+    expect(result.current.items.map((i) => i.id)).toEqual(["m1"]);
+  });
 });

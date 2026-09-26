@@ -4,7 +4,7 @@ import { activityJournal } from "@/lib/activity-journal";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { deepEqual } from "@/lib/equal";
 import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
-import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, migrateSettings, getWriteAt, setWriteAt, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
+import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, migrateSettings, cleanClientId, getWriteAt, setWriteAt, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
 import { applyPreset, type Preset } from "@/lib/preset-engine";
 import { supabase } from "@/lib/supabase";
 import { useSyncStore } from "@/lib/stores/sync";
@@ -388,6 +388,9 @@ export default function SettingsProvider({
   const update = useCallback(
     (partial: Partial<Settings>) => {
       const patch: Partial<Settings> = { ...partial };
+      for (const key of Object.keys(patch)) {
+        if (/ClientId$/.test(key)) (patch as Record<string, unknown>)[key] = cleanClientId((patch as Record<string, unknown>)[key]);
+      }
       if (typeof partial.theme === "string" && partial.theme !== "auto") {
         patch.theme = resolveLegacyTheme(partial.theme) as ThemeMode;
       }

@@ -67,7 +67,7 @@ export default function SharedSpacesTab() {
               inputSize="compact"
               className="min-w-0 flex-1"
             />
-            <Button type="button" variant="primary" size="md" onClick={add} disabled={creating} leftIcon={<Plus className="h-4 w-4" />} />
+            <Button type="button" variant="primary" size="md" onClick={add} disabled={creating} aria-label="Créer l'espace" leftIcon={<Plus className="h-4 w-4" />} />
           </div>
         </div>
       </FlatCard>

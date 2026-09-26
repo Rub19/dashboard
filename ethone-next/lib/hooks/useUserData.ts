@@ -120,13 +120,31 @@ export function useUserData(kind: "space" | "flow" | "interaction" | "macro" | "
         method: "POST",
         body: JSON.stringify(body),
       });
-      return res.data || newRecord;
-    } catch {
-      return newRecord;
+      const saved = (res.data as UserDataRecord | undefined) || newRecord;
+      // L'identifiant temporaire local doit céder la place à celui du serveur : sinon un update/remove fait juste
+      // après la création vise un identifiant inconnu (la ligne réapparaît au rechargement).
+      setItems((prev) => {
+        const next = prev.map((i) => (i.id === tempId ? { ...i, ...saved } : i));
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(next));
+        } catch {}
+        return next;
+      });
+      return saved;
+    } catch (err) {
+      setItems((prev) => {
+        const next = prev.filter((i) => i.id !== tempId);
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(next));
+        } catch {}
+        return next;
+      });
+      throw err;
     }
   }
 
   async function update(id: string, input: { label?: string; data?: Record<string, unknown>; count?: number }) {
+    const before = items.find((i) => i.id === id);
     setItems((prev) => {
       const next = prev.map((i) => (i.id === id ? { ...i, ...input, updated_at: new Date().toISOString() } : i));
       try {
@@ -142,10 +160,22 @@ export function useUserData(kind: "space" | "flow" | "interaction" | "macro" | "
         method: "PATCH",
         body: JSON.stringify(body),
       });
-    } catch {}
+    } catch (err) {
+      if (before) {
+        setItems((prev) => {
+          const next = prev.map((i) => (i.id === id ? before : i));
+          try {
+            localStorage.setItem(cacheKey, JSON.stringify(next));
+          } catch {}
+          return next;
+        });
+      }
+      throw err;
+    }
   }
 
   async function remove(id: string) {
+    const before = items.find((i) => i.id === id);
     setItems((prev) => {
       const next = prev.filter((i) => i.id !== id);
       try {
@@ -159,7 +189,18 @@ export function useUserData(kind: "space" | "flow" | "interaction" | "macro" | "
         method: "DELETE",
         body: JSON.stringify({ id }),
       });
-    } catch {}
+    } catch (err) {
+      if (before) {
+        setItems((prev) => {
+          const next = prev.some((i) => i.id === id) ? prev : [before, ...prev];
+          try {
+            localStorage.setItem(cacheKey, JSON.stringify(next));
+          } catch {}
+          return next;
+        });
+      }
+      throw err;
+    }
   }
 
   return { items, loading, error, reload: load, create, update, remove };

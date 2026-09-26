@@ -36760,6 +36760,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_120_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_120_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_120_de);
 
+const v1_28_121_fr: ChangelogEntry = {
+  version: "v1.28.121",
+  date: "2026-09-26",
+  title: "Flows, Spaces, personas et macros : suppressions et erreurs fiables",
+  items: [
+    "Flows / macros / personas / espaces : supprimer ou modifier un élément juste après l'avoir créé visait un identifiant local temporaire, donc l'élément réapparaissait au rechargement. Il prend maintenant l'identifiant réel dès la création.",
+    "Ces mêmes pages annonçaient un succès même quand le serveur refusait l'action ; l'erreur est désormais affichée et l'affichage revient à l'état réel.",
+    "Flows : la carte « Automatisations déclenchées » recopiait le nombre de runs ; elle affiche maintenant les automatisations réellement actives. Les boutons « Éditer » et « Logs » (qui n'affichaient qu'un message « non disponible / à venir ») sont retirés.",
+    "Menu : « flows » s'écrit « Flows » ; le bouton de création d'espace partagé a un nom accessible.",
+  ],
+};
+
+const v1_28_121_en: ChangelogEntry = {
+  version: "v1.28.121",
+  date: "2026-09-26",
+  title: "Flows, Spaces, personas and macros: reliable deletes and errors",
+  items: [
+    "Flows / macros / personas / spaces: deleting or editing an item right after creating it targeted a temporary local id, so the item came back after a reload. It now takes the real id as soon as it is created.",
+    "These pages also reported success even when the server refused the action; the error is now shown and the display goes back to the real state.",
+    "Flows: the \"Triggered automations\" card just repeated the run count; it now shows the automations that are actually enabled. The \"Edit\" and \"Logs\" buttons (which only showed an \"unavailable / coming soon\" message) were removed.",
+    "Menu: \"flows\" is now written \"Flows\"; the shared-space create button has an accessible name.",
+  ],
+};
+
+const v1_28_121_es: ChangelogEntry = {
+  version: "v1.28.121",
+  date: "2026-09-26",
+  title: "Flows, Spaces, personas y macros: borrados y errores fiables",
+  items: [
+    "Flows / macros / personas / espacios: eliminar o editar un elemento justo después de crearlo apuntaba a un id local temporal, por lo que el elemento reaparecía al recargar. Ahora toma el id real al crearse.",
+    "Estas páginas también anunciaban éxito aunque el servidor rechazara la acción; ahora se muestra el error y la vista vuelve al estado real.",
+    "Flows: la tarjeta «Automatizaciones activadas» repetía el número de ejecuciones; ahora muestra las automatizaciones realmente activas. Se quitaron los botones «Editar» y «Logs» (solo mostraban un mensaje de «no disponible / próximamente»).",
+    "Menú: «flows» pasa a escribirse «Flows»; el botón de crear espacio compartido tiene un nombre accesible.",
+  ],
+};
+
+const v1_28_121_de: ChangelogEntry = {
+  version: "v1.28.121",
+  date: "2026-09-26",
+  title: "Flows, Spaces, Personas und Makros: verlässliches Löschen und Fehler",
+  items: [
+    "Flows / Makros / Personas / Spaces: Wer ein Element direkt nach dem Anlegen löschte oder änderte, traf eine temporäre lokale ID, sodass es nach dem Neuladen wieder auftauchte. Es übernimmt jetzt sofort die echte ID.",
+    "Diese Seiten meldeten auch Erfolg, wenn der Server die Aktion ablehnte; jetzt wird der Fehler angezeigt und die Ansicht springt auf den echten Stand zurück.",
+    "Flows: Die Karte „Ausgelöste Automatisierungen“ wiederholte nur die Anzahl der Läufe; sie zeigt jetzt die tatsächlich aktiven Automatisierungen. Die Schaltflächen „Bearbeiten“ und „Logs“ (zeigten nur „nicht verfügbar / bald“) wurden entfernt.",
+    "Menü: „flows“ heißt jetzt „Flows“; die Schaltfläche zum Anlegen eines gemeinsamen Space hat einen zugänglichen Namen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_121_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_121_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_121_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_121_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

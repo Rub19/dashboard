@@ -187,8 +187,8 @@ export default function FlowsPage() {
     },
     {
       icon: <Workflow className="h-5 w-5 text-amber-400" />,
-      value: executions,
-      label: "Automatisations déclenchées",
+      value: automations.filter((rule) => rule.enabled).length,
+      label: "Automatisations actives",
     },
     {
       icon: <CheckCircle2 className="h-5 w-5 text-purple-400" />,
@@ -306,9 +306,7 @@ export default function FlowsPage() {
                   widgets={template.widgets}
                   widgetIcons={WIDGET_ICONS}
                   onRun={() => runFlow(flow.id, flow.count)}
-                  onEdit={() => showError("Édition non disponible")}
                   onDuplicate={() => duplicateFlow(flow)}
-                  onLogs={() => success("Logs à venir")}
                   onDelete={() => deleteFlow(flow.id)}
                   menuActions={[
                     {

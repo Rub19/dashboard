@@ -15,7 +15,7 @@ export const CATALOG: Record<string, Record<string, string>> = {
     "discordBot": "Bot Discord",
     "plugins": "Plugins",
     "spaces": "Spaces",
-    "flows": "flows",
+    "flows": "Flows",
     "brain": "Brain",
     "team": "Équipe",
     "mail": "Mail",

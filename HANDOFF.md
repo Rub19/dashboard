@@ -1,4 +1,4 @@
-# ETHONE — passation à une autre IA (état au 2026-09-26, version 1.28.120)
+# ETHONE — passation à une autre IA (état au 2026-09-26, version 1.28.121)
 
 ## Prompt à coller à la prochaine IA
 

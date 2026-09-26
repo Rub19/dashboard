@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.121 — 2026-09-26
+
+**Flows, Spaces, personas et macros : suppressions et erreurs fiables**
+
+- Flows / macros / personas / espaces : supprimer ou modifier un élément juste après l'avoir créé visait un identifiant local temporaire, donc l'élément réapparaissait au rechargement. Il prend maintenant l'identifiant réel dès la création.
+- Ces mêmes pages annonçaient un succès même quand le serveur refusait l'action ; l'erreur est désormais affichée et l'affichage revient à l'état réel.
+- Flows : la carte « Automatisations déclenchées » recopiait le nombre de runs ; elle affiche maintenant les automatisations réellement actives. Les boutons « Éditer » et « Logs » (qui n'affichaient qu'un message « non disponible / à venir ») sont retirés.
+- Menu : « flows » s'écrit « Flows » ; le bouton de création d'espace partagé a un nom accessible.
+
 ## v1.28.120 — 2026-09-26
 
 **Fichiers : plus de requête Drive inutile**

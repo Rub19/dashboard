@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.123 — 2026-09-27
+
+**Boutique Valorant et rotation League of Legends**
+
+- Nouvel onglet « Boutique Valorant » dans Matchs : bundles à la une (prix en VP, contenu, remises, temps restant) et catalogue complet des bundles avec recherche.
+- Nouvel onglet « Rotation LoL » : champions gratuits de la semaine et rotation nouveaux joueurs, par région, avec le patch en cours.
+- La boutique quotidienne personnelle de chaque joueur (Valorant) et la boutique LoL ne sont pas affichées : Riot ne fournit pas d'API publique pour elles. Rien n'est simulé.
+
 ## v1.28.122 — 2026-09-27
 
 **Tracker Valorant : score de performance (patch 13.06)**

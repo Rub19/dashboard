@@ -61,7 +61,7 @@ import { redditActivityRoute, redditOAuthDisconnectRoute, redditOAuthExchangeRou
 import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
 import { todoistOAuthDisconnectRoute, todoistOAuthExchangeRoute, todoistTasksRoute } from "./routes/todoist-oauth.js";
-import { trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMatchesRoute, trackerLolMatchesRoute, trackerTftMatchesRoute, trackerApexMatchesRoute, trackerGameProfileRoute, trackerGameMatchesRoute } from "./routes/tracker.js";
+import { trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMatchesRoute, trackerLolMatchesRoute, trackerValorantStoreRoute, trackerLolRotationRoute, trackerTftMatchesRoute, trackerApexMatchesRoute, trackerGameProfileRoute, trackerGameMatchesRoute } from "./routes/tracker.js";
 import {
   friendGameDinoRoute,
   gameDinoOverrideSetRoute,
@@ -173,6 +173,8 @@ export const ROUTES = Object.freeze([
   route("tracker.apex-matches", "/api/stats/apex-matches", trackerApexMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.valorant-matches", "/api/stats/valorant-matches", trackerValorantMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.lol-matches", "/api/stats/lol-matches", trackerLolMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
+  route("tracker.valorant-store", "/api/stats/valorant-store", trackerValorantStoreRoute, { public: true, service: "tracker", rateLimit: "edge" }),
+  route("tracker.lol-rotation", "/api/stats/lol-rotation", trackerLolRotationRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.tft-matches", "/api/stats/tft-matches", trackerTftMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.game-profile", "/api/stats/tracker-profile", trackerGameProfileRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.game-matches", "/api/stats/tracker-matches", trackerGameMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),

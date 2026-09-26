@@ -10,6 +10,8 @@ import ValorantTrackerView from "@/components/tracker/ValorantTrackerView";
 import LolTrackerView from "@/components/tracker/LolTrackerView";
 import TftTrackerView from "@/components/tracker/TftTrackerView";
 import TrackerGgView from "@/components/tracker/TrackerGgView";
+import ValorantStoreView from "@/components/tracker/ValorantStoreView";
+import LolRotationView from "@/components/tracker/LolRotationView";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
@@ -29,6 +31,8 @@ import GameBrandIcon from "@/components/GameBrandIcon";
 const tabs = [
   { id: "valorant", label: "Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
   { id: "lol", label: "League of Legends", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
+  { id: "valorant-store", label: "Boutique Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
+  { id: "lol-rotation", label: "Rotation LoL", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
   { id: "tft", label: "Teamfight Tactics", icon: <GameBrandIcon name="Teamfight Tactics" className="h-4 w-4" /> },
   { id: "apex", label: "Apex Legends", icon: <GameBrandIcon name="Apex Legends" className="h-4 w-4" /> },
   { id: "trackergg", label: "Autres jeux", icon: <GameBrandIcon name="" className="h-4 w-4" /> },
@@ -85,6 +89,10 @@ export default function MatchesPage() {
           <ValorantTrackerView />
         ) : tab === "lol" ? (
           <LolTrackerView />
+        ) : tab === "valorant-store" ? (
+          <ValorantStoreView />
+        ) : tab === "lol-rotation" ? (
+          <LolRotationView />
         ) : tab === "tft" ? (
           <TftTrackerView />
         ) : tab === "trackergg" ? (

@@ -36858,6 +36858,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_122_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_122_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_122_de);
 
+const v1_28_123_fr: ChangelogEntry = {
+  version: "v1.28.123",
+  date: "2026-09-27",
+  title: "Boutique Valorant et rotation League of Legends",
+  items: [
+    "Nouvel onglet « Boutique Valorant » dans Matchs : bundles à la une (prix en VP, contenu, remises, temps restant) et catalogue complet des bundles avec recherche.",
+    "Nouvel onglet « Rotation LoL » : champions gratuits de la semaine et rotation nouveaux joueurs, par région, avec le patch en cours.",
+    "La boutique quotidienne personnelle de chaque joueur (Valorant) et la boutique LoL ne sont pas affichées : Riot ne fournit pas d'API publique pour elles. Rien n'est simulé.",
+  ],
+};
+
+const v1_28_123_en: ChangelogEntry = {
+  version: "v1.28.123",
+  date: "2026-09-27",
+  title: "Valorant store and League of Legends rotation",
+  items: [
+    "New \"Valorant Store\" tab in Matches: featured bundles (VP price, contents, discounts, time left) and the full bundle catalogue with search.",
+    "New \"LoL Rotation\" tab: this week's free champions and the new-player rotation, per region, with the current patch.",
+    "Each player's personal daily Valorant store and the LoL shop are not shown: Riot provides no public API for them. Nothing is simulated.",
+  ],
+};
+
+const v1_28_123_es: ChangelogEntry = {
+  version: "v1.28.123",
+  date: "2026-09-27",
+  title: "Tienda de Valorant y rotación de League of Legends",
+  items: [
+    "Nueva pestaña « Tienda Valorant » en Partidas: bundles destacados (precio en VP, contenido, descuentos, tiempo restante) y catálogo completo de bundles con búsqueda.",
+    "Nueva pestaña « Rotación LoL »: campeones gratuitos de la semana y rotación de jugadores nuevos, por región, con el parche actual.",
+    "La tienda diaria personal de cada jugador (Valorant) y la tienda de LoL no se muestran: Riot no ofrece una API pública para ellas. No se simula nada.",
+  ],
+};
+
+const v1_28_123_de: ChangelogEntry = {
+  version: "v1.28.123",
+  date: "2026-09-27",
+  title: "Valorant-Shop und League-of-Legends-Rotation",
+  items: [
+    "Neuer Tab « Valorant-Shop » unter Matches: aktuelle Bundles (VP-Preis, Inhalt, Rabatte, Restzeit) und der komplette Bundle-Katalog mit Suche.",
+    "Neuer Tab « LoL-Rotation »: kostenlose Champions der Woche und Rotation für neue Spieler, pro Region, mit aktuellem Patch.",
+    "Der persönliche tägliche Valorant-Shop jedes Spielers und der LoL-Shop werden nicht angezeigt: Riot bietet dafür keine öffentliche API. Nichts wird simuliert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_123_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_123_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_123_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_123_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

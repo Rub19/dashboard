@@ -7,6 +7,7 @@ import {
 } from "../services/tracker-client.js";
 import { getValorantProfile, getValorantMatches } from "../services/henrik-client.js";
 import { getLolProfile, getLolMatches, getTftMatches } from "../services/riot-client.js";
+import { getLolRotation, getValorantFeaturedStore } from "../services/game-store-client.js";
 import { getUserProviderCredential } from "../services/supabase-client.js";
 import { cachedLoad } from "../utils/cache.js";
 import { routeResult } from "../utils/response.js";
@@ -119,6 +120,21 @@ export async function trackerLolMatchesRoute({ env, url, auth, request }) {
   const riotId = `${name}#${tag}`;
   const loader = async () => getLolMatches(env, riotId, mode, await ownKeyRiot(env, auth, request));
   const result = await cachedLoad(`tracker:lol:matches:${name.toLowerCase()}:${tag.toLowerCase()}:${mode}`, 600, loader);
+  return routeResult(result.data, { source: "riot", cached: result.cached });
+}
+
+export async function trackerValorantStoreRoute({ env, url, auth, request }) {
+  assertAllowedQuery(url, ["_t", "t", "force"]);
+  const loader = async () => ({ bundles: await getValorantFeaturedStore(env, await ownKeyHenrik(env, auth, request)) });
+  const result = await cachedLoad("tracker:valorant:store:featured", 300, loader);
+  return routeResult(result.data, { source: "henrikdev", cached: result.cached });
+}
+
+export async function trackerLolRotationRoute({ env, url, auth, request }) {
+  assertAllowedQuery(url, ["region", "_t", "t", "force"]);
+  const region = (queryText(url, "region", { max: 8, required: false }) || "euw1").toLowerCase();
+  const loader = async () => getLolRotation(env, region, await ownKeyRiot(env, auth, request));
+  const result = await cachedLoad(`tracker:lol:rotation:${region}`, 1800, loader);
   return routeResult(result.data, { source: "riot", cached: result.cached });
 }
 

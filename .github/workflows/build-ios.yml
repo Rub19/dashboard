@@ -1,4 +1,4 @@
-name: Build iOS IPA (Native SwiftUI, iOS 26)
+name: Build iOS IPA (Native SwiftUI, iOS 26 / 27)
 
 on:
   push:
@@ -22,8 +22,22 @@ concurrency:
 
 jobs:
   build-ios:
-    name: Xcode 26 (stable) — IPA non signé
-    runs-on: macos-26
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+    # La préversion d'Xcode 27 ne doit jamais bloquer l'IPA stable.
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Stable — Xcode 26 (iOS 26)
+            runner: macos-26
+            experimental: false
+            artifact: ETHONE-iOS-IPA
+          - name: Préversion — Xcode 27 (iOS 27)
+            runner: xcode-27
+            experimental: true
+            artifact: ETHONE-iOS27-preview-IPA
 
     steps:
       - name: Checkout
@@ -33,9 +47,10 @@ jobs:
         run: |
           xcodebuild -version
           xcrun --sdk iphoneos --show-sdk-version
+          swift --version
 
       - name: Installer XcodeGen
-        run: brew install xcodegen
+        run: brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
 
       - name: Générer le projet Xcode
         working-directory: ios
@@ -73,7 +88,7 @@ jobs:
         working-directory: ios/build
         run: |
           {
-            echo "### Erreurs de compilation"
+            echo "### Erreurs de compilation (${{ matrix.name }})"
             echo '```'
             grep -E "error:" build.log | sort -u | head -60 || true
             echo '```'
@@ -83,14 +98,14 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: iOS-build-log
+          name: build-log-${{ matrix.artifact }}
           path: ios/build/build.log
           if-no-files-found: ignore
 
       - name: IPA
         uses: actions/upload-artifact@v4
         with:
-          name: ETHONE-iOS-IPA
+          name: ${{ matrix.artifact }}
           path: ios/build/ETHONE.ipa
           retention-days: 14
           if-no-files-found: error

@@ -28,6 +28,32 @@ struct HomeView: View {
                         }
                     }
 
+                    focusCard
+
+                    if !model.habits.activeHabits.isEmpty {
+                        GlassCard {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Habitudes du jour").sectionTitle()
+                                ForEach(model.habits.activeHabits.prefix(5)) { habit in
+                                    HStack(spacing: 12) {
+                                        Button {
+                                            Task { await model.habits.toggleToday(habit) }
+                                        } label: {
+                                            Image(systemName: model.habits.isDone(habit) ? "checkmark.circle.fill" : "circle")
+                                                .font(.title3)
+                                                .foregroundStyle(model.habits.isDone(habit) ? Theme.success : Color.secondary)
+                                        }
+                                        .buttonStyle(.plain)
+                                        Text("\(habit.emoji ?? "🎯") \(habit.name)").lineLimit(1)
+                                        Spacer()
+                                        let streak = model.habits.streak(habit)
+                                        if streak > 0 { GlassPill(text: "\(streak) j", systemImage: "flame.fill", tint: Color(hex: 0xF59E0B).opacity(0.5)) }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     GlassCard {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Ajout rapide").sectionTitle()
@@ -77,6 +103,35 @@ struct HomeView: View {
             .scrollDismissesKeyboard(.interactively)
             .navigationTitle("Accueil")
             .toolbarTitleDisplayMode(.inlineLarge)
+        }
+    }
+
+    @ViewBuilder
+    private var focusCard: some View {
+        let focus = model.focus
+        GlassCard(tint: focus.isActive ? Theme.accent.opacity(0.2) : nil) {
+            HStack(spacing: 14) {
+                Image(systemName: focus.phase == .focus || !focus.isActive ? "timer" : "cup.and.saucer.fill")
+                    .font(.title2)
+                    .foregroundStyle(Theme.accentSoft)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(focus.isActive ? (focus.isPaused ? "Focus en pause" : "Focus en cours") : "Focus").font(.headline)
+                    if focus.isActive {
+                        TimelineView(.periodic(from: .now, by: 1)) { context in
+                            Text(FocusManager.format(focus.remaining(at: context.date))).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
+                        }
+                    } else {
+                        Text("\(focus.sessionsToday) session(s) · \(focus.minutesToday) min aujourd'hui").font(.subheadline).foregroundStyle(.secondary)
+                    }
+                }
+                Spacer()
+                Button {
+                    model.requestedTab = .focus
+                } label: {
+                    Text(focus.isActive ? "Ouvrir" : "Démarrer")
+                }
+                .buttonStyle(.glass)
+            }
         }
     }
 

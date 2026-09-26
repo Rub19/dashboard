@@ -53,7 +53,7 @@ struct BrainView: View {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Picker("Moteur", selection: Binding(get: { chat.engine }, set: { chat.setEngine($0) })) {
-                        ForEach(BrainChat.Engine.allCases) { engine in Text(engine.label).tag(engine) }
+                        ForEach(BrainChat.Engine.supported) { engine in Text(engine.label).tag(engine) }
                     }
                     Divider()
                     Button("Nouvelle conversation", systemImage: "square.and.pencil") { chat.reset() }

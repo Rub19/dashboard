@@ -18,7 +18,34 @@ final class HabitsStore {
         self.api = api
     }
 
-    var activeHabits: [Habit] { habits.filter { !$0.archived } }
+    /// Ordre personnalisé (glisser-déposer, iOS 27), conservé sur l'appareil : la base ne stocke pas d'ordre.
+    private(set) var order: [String] = UserDefaults.standard.stringArray(forKey: "ethone.habits.order") ?? []
+
+    var activeHabits: [Habit] {
+        let active = habits.filter { !$0.archived }
+        guard !order.isEmpty else { return active }
+        let rank = Dictionary(order.enumerated().map { ($1, $0) }, uniquingKeysWith: { first, _ in first })
+        return active.enumerated()
+            .sorted { lhs, rhs in
+                let l = rank[lhs.element.id] ?? Int.max
+                let r = rank[rhs.element.id] ?? Int.max
+                return l == r ? lhs.offset < rhs.offset : l < r
+            }
+            .map(\.element)
+    }
+
+    func move(_ ids: [String], before target: String?) {
+        var current = activeHabits.map(\.id)
+        let moving = current.filter { ids.contains($0) }
+        current.removeAll { ids.contains($0) }
+        if let target, let index = current.firstIndex(of: target) {
+            current.insert(contentsOf: moving, at: index)
+        } else {
+            current.append(contentsOf: moving)
+        }
+        order = current
+        UserDefaults.standard.set(current, forKey: "ethone.habits.order")
+    }
 
     func refresh() async {
         if habits.isEmpty, let cached = DiskCache.read([Habit].self, key: habitsKey) { habits = cached }

@@ -101,6 +101,14 @@ struct SummaryWidget: Widget {
         }
         .configurationDisplayName("Résumé ETHONE")
         .description("Tâches ouvertes, habitudes du jour et prochaines tâches.")
-        .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular, .accessoryRectangular, .accessoryInline])
+        .supportedFamilies(Self.families)
+    }
+
+    private static var families: [WidgetFamily] {
+        var list: [WidgetFamily] = [.systemSmall, .systemMedium, .accessoryCircular, .accessoryRectangular, .accessoryInline]
+        #if compiler(>=6.4)
+        if #available(iOS 27.0, *) { list.append(.systemExtraLargePortrait) }
+        #endif
+        return list
     }
 }

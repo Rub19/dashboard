@@ -20,6 +20,10 @@ struct HabitsView: View {
                             } label: { Label("Supprimer", systemImage: "trash") }
                         }
                 }
+                .ethoneReorderable()
+            }
+            .ethoneReorderContainer(for: Habit.self) { sources, before in
+                model.habits.move(sources, before: before)
             }
             .scrollContentBackground(.hidden)
             .overlay {

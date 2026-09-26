@@ -16,10 +16,27 @@ struct ChatMessage: Identifiable, Hashable {
 @MainActor
 @Observable
 final class BrainChat {
-    enum Engine: String, CaseIterable, Identifiable {
-        case device, cloud
+    enum Engine: String, Identifiable {
+        case device, privateCloud, cloud
         var id: String { rawValue }
-        var label: String { self == .device ? "Sur l'appareil (Apple Intelligence)" : "Cloud ETHONE" }
+
+        var label: String {
+            switch self {
+            case .device: return "Sur l'appareil (Apple Intelligence)"
+            case .privateCloud: return "Private Cloud Compute (iOS 27)"
+            case .cloud: return "Cloud ETHONE"
+            }
+        }
+
+        /// Moteurs proposés sur cette version d'iOS (Private Cloud Compute : iOS 27 et SDK correspondant uniquement).
+        static var supported: [Engine] {
+            var list: [Engine] = [.device]
+            #if compiler(>=6.4) && canImport(FoundationModels)
+            if #available(iOS 27.0, *) { list.append(.privateCloud) }
+            #endif
+            list.append(.cloud)
+            return list
+        }
     }
 
     private(set) var messages: [ChatMessage] = []
@@ -33,7 +50,7 @@ final class BrainChat {
     init(api: APIClient) {
         self.api = api
         let saved = UserDefaults.standard.string(forKey: "ethone.brain.engine").flatMap(Engine.init(rawValue:))
-        self.engine = saved ?? .cloud
+        self.engine = Engine.supported.contains(saved ?? .cloud) ? (saved ?? .cloud) : .cloud
     }
 
     /// Explication lisible quand le modèle local n'est pas utilisable ; `nil` s'il est disponible.
@@ -80,6 +97,7 @@ final class BrainChat {
             let answer: String
             switch engine {
             case .device: answer = try await askDevice(prompt, context: context)
+            case .privateCloud: answer = try await askPrivateCloud(prompt, context: context)
             case .cloud: answer = try await askCloud(context: context)
             }
             messages.append(ChatMessage(role: .assistant, text: answer))
@@ -105,6 +123,33 @@ final class BrainChat {
         #else
         throw APIError.http(status: 503, code: nil, message: "Apple Intelligence n'est pas disponible dans cette version.")
         #endif
+    }
+
+    // MARK: Private Cloud Compute (iOS 27)
+
+    private func askPrivateCloud(_ prompt: String, context: String) async throws -> String {
+        #if compiler(>=6.4) && canImport(FoundationModels)
+        if #available(iOS 27.0, *) {
+            let model = PrivateCloudComputeLanguageModel()
+            switch model.availability {
+            case .available:
+                break
+            case .unavailable(let reason):
+                let message = reason == .deviceNotEligible ? "Cet appareil ne peut pas utiliser Private Cloud Compute." : "Private Cloud Compute n'est pas encore prêt. Réessayez dans un instant."
+                throw APIError.http(status: 503, code: nil, message: message)
+            }
+            let session: LanguageModelSession
+            if let existing = deviceSession as? LanguageModelSession {
+                session = existing
+            } else {
+                let instructions: String = Self.instructions(context: context)
+                session = LanguageModelSession(model: model, instructions: instructions)
+                deviceSession = session
+            }
+            return try await session.respond(to: prompt).content
+        }
+        #endif
+        throw APIError.http(status: 503, code: nil, message: "Private Cloud Compute nécessite iOS 27.")
     }
 
     // MARK: Cloud ETHONE

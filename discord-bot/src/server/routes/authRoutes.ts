@@ -49,8 +49,30 @@ function cookieOptionsFor(req: Request) {
   return { ...TOKEN_COOKIE_OPTIONS, secure: https, sameSite: (https ? 'none' : 'lax') as 'none' | 'lax' };
 }
 
-function safeReturnUrl(raw: unknown): string | null {
+/** Retour vers l'app iOS (session Web système) : jamais le jeton dans l'URL, seulement un code à usage unique. */
+export const MOBILE_RETURN = 'ethone://discord-auth';
+const MOBILE_CODE_TTL_MS = 60_000;
+const mobileCodes = new Map<string, { token: string; expires: number }>();
+
+export function issueMobileCode(token: string, now: number = Date.now()): string {
+  for (const [code, entry] of mobileCodes) if (entry.expires <= now) mobileCodes.delete(code);
+  const code = randomBytes(24).toString('base64url');
+  mobileCodes.set(code, { token, expires: now + MOBILE_CODE_TTL_MS });
+  return code;
+}
+
+/** Échange un code contre le jeton ; le code est détruit dans tous les cas (usage unique). */
+export function consumeMobileCode(code: unknown, now: number = Date.now()): string | null {
+  if (typeof code !== 'string' || !code) return null;
+  const entry = mobileCodes.get(code);
+  mobileCodes.delete(code);
+  if (!entry || entry.expires <= now) return null;
+  return entry.token;
+}
+
+export function safeReturnUrl(raw: unknown): string | null {
   if (typeof raw !== 'string' || !raw) return null;
+  if (raw === MOBILE_RETURN) return raw;
   try {
     const u = new URL(raw);
     return ALLOWED_RETURN_ORIGINS.has(u.origin) ? u.toString() : null;
@@ -195,15 +217,31 @@ authRouter.get('/callback', async (req: Request, res: Response): Promise<void> =
 
     const token = jwt.sign(payload, config.jwtSecret, { expiresIn: '7d' });
 
-    res.cookie('token', token, cookieOptionsFor(req));
-
     const returnTo = safeReturnUrl(req.cookies?.[RETURN_COOKIE]);
     res.clearCookie(RETURN_COOKIE, { path: '/' });
+    if (returnTo === MOBILE_RETURN) {
+      res.redirect(`${MOBILE_RETURN}?code=${encodeURIComponent(issueMobileCode(token))}`);
+      return;
+    }
+    res.cookie('token', token, cookieOptionsFor(req));
     res.redirect(returnTo ?? 'https://ethone.dev/discord');
   } catch (err) {
     logger.error('Erreur lors du callback OAuth2 :', err);
     res.redirect('/?error=server_error');
   }
+});
+
+/**
+ * POST /api/auth/mobile/exchange { code }
+ * Échange le code à usage unique remis à l'app iOS contre le jeton de session (utilisé en `Authorization: Bearer`).
+ */
+authRouter.post('/mobile/exchange', (req: Request, res: Response) => {
+  const token = consumeMobileCode(req.body?.code);
+  if (!token) {
+    res.status(401).json({ error: 'Code invalide ou expiré.' });
+    return;
+  }
+  res.json({ token });
 });
 
 /**

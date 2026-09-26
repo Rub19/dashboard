@@ -66,8 +66,6 @@ final class AuthStore {
     var isBusy = false
 
     @ObservationIgnored private var refreshTask: Task<Session, Error>?
-    @ObservationIgnored private var oauthContext = OAuthPresentationContext()
-    @ObservationIgnored private var oauthSession: ASWebAuthenticationSession?
 
     var user: SessionUser? { session?.user }
 
@@ -276,28 +274,7 @@ final class AuthStore {
     }
 
     private func webAuthenticate(url: URL) async throws -> URL {
-        try await withCheckedThrowingContinuation { continuation in
-            let authSession = ASWebAuthenticationSession(url: url, callbackURLScheme: Config.oauthCallbackScheme) { callbackURL, error in
-                if let error { continuation.resume(throwing: error) }
-                else if let callbackURL { continuation.resume(returning: callbackURL) }
-                else { continuation.resume(throwing: APIError.network("Aucune réponse de la fenêtre de connexion.")) }
-            }
-            authSession.presentationContextProvider = self.oauthContext
-            authSession.prefersEphemeralWebBrowserSession = false
-            self.oauthSession = authSession
-            if !authSession.start() {
-                continuation.resume(throwing: APIError.network("Impossible d'ouvrir la fenêtre de connexion."))
-            }
-        }
-    }
-}
-
-private final class OAuthPresentationContext: NSObject, ASWebAuthenticationPresentationContextProviding {
-    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        let scene = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first
-        if let window = scene?.keyWindow { return window }
-        if let scene { return ASPresentationAnchor(windowScene: scene) }
-        return ASPresentationAnchor()
+        try await WebAuth.shared.authenticate(url: url, callbackScheme: Config.oauthCallbackScheme)
     }
 }
 

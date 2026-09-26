@@ -16,6 +16,7 @@ final class AppModel {
     let lock = AppLock()
     let brain: BrainChat
     let mail: MailStore
+    let discord = DiscordStore()
 
     /// Instance unique : les actions de notification peuvent arriver avant que l'interface n'existe.
     static let shared = AppModel()
@@ -133,6 +134,6 @@ enum AppTab: String, CaseIterable, Identifiable {
 
 /// Sections accessibles depuis l'onglet « Plus ».
 enum MoreDestination: String, Hashable, CaseIterable, Identifiable {
-    case brain, mail, habits, calendar, weather, security
+    case brain, mail, discord, habits, calendar, weather, security
     var id: String { rawValue }
 }

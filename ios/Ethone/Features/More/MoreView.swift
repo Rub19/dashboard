@@ -14,6 +14,7 @@ struct MoreView: View {
                 Section {
                     NavigationLink(value: MoreDestination.brain) { Label("Brain", systemImage: "sparkles") }
                     NavigationLink(value: MoreDestination.mail) { Label("Mail", systemImage: "envelope.fill") }
+                    NavigationLink(value: MoreDestination.discord) { Label("Bot Discord", systemImage: "bubble.left.and.bubble.right.fill") }
                     NavigationLink(value: MoreDestination.habits) { Label("Habitudes", systemImage: "flame.fill") }
                     NavigationLink(value: MoreDestination.calendar) { Label("Calendrier", systemImage: "calendar") }
                     NavigationLink(value: MoreDestination.weather) { Label("Météo", systemImage: "cloud.sun.fill") }
@@ -86,6 +87,7 @@ struct MoreView: View {
                 switch destination {
                 case .brain: BrainView()
                 case .mail: MailView()
+                case .discord: DiscordView()
                 case .habits: HabitsView()
                 case .calendar: CalendarView()
                 case .weather: WeatherView()

@@ -1,0 +1,82 @@
+name: Ethone
+
+options:
+  bundleIdPrefix: dev.ethone
+  minimumXcodeGenVersion: 2.38.0
+  developmentLanguage: fr
+  createIntermediateGroups: true
+  deploymentTarget:
+    iOS: "26.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "26.0"
+    MARKETING_VERSION: "2.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    DEVELOPMENT_TEAM: ""
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+
+targets:
+  Ethone:
+    type: application
+    platform: iOS
+    sources:
+      - path: Ethone
+        excludes:
+          - Info.plist
+          - Ethone.entitlements
+    info:
+      path: Ethone/Info.plist
+      properties:
+        CFBundleDisplayName: ETHONE
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSRequiresIPhoneOS: true
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        CFBundleURLTypes:
+          - CFBundleURLName: dev.ethone.app
+            CFBundleURLSchemes:
+              - ethone
+        NSFaceIDUsageDescription: ETHONE utilise Face ID pour déverrouiller les zones sensibles de l'application.
+        NSSupportsLiveActivities: true
+        NSSupportsLiveActivitiesFrequentUpdates: true
+        UIBackgroundModes:
+          - remote-notification
+        ITSAppUsesNonExemptEncryption: false
+    entitlements:
+      path: Ethone/Ethone.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.dev.ethone.app
+        com.apple.developer.associated-domains:
+          - applinks:ethone.dev
+          - webcredentials:ethone.dev
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.ethone.app
+        PRODUCT_NAME: ETHONE
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_PREVIEWS: YES
+
+schemes:
+  Ethone:
+    build:
+      targets:
+        Ethone: all
+    run:
+      config: Debug
+    archive:
+      config: Release

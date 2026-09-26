@@ -1,4 +1,4 @@
-name: Build iOS IPA (Native SwiftUI)
+name: Build iOS IPA (Native SwiftUI, iOS 26)
 
 on:
   push:
@@ -22,97 +22,75 @@ concurrency:
 
 jobs:
   build-ios:
-    runs-on: macos-14
+    name: Xcode 26 (stable) — IPA non signé
+    runs-on: macos-26
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Inject Supabase config into Info.plist
+      - name: Xcode et SDK disponibles
         run: |
-          plutil -replace SUPABASE_URL -string "${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}" ios/App/App/Info.plist
-          plutil -replace SUPABASE_ANON_KEY -string "${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}" ios/App/App/Info.plist
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
 
-      - name: Install CocoaPods Dependencies
-        run: |
-          cd ios/App
-          pod install
+      - name: Installer XcodeGen
+        run: brew install xcodegen
 
-      - name: Verify Xcode Workspace
-        run: |
-          cd ios/App
-          xcodebuild -workspace App.xcworkspace -list
+      - name: Générer le projet Xcode
+        working-directory: ios
+        run: xcodegen generate
 
-      - name: Archive iOS Project (No Signing)
+      - name: Archiver (sans signature)
+        working-directory: ios
         run: |
-          cd ios/App
           mkdir -p build
           set -o pipefail
-          xcodebuild clean archive \
-            -workspace App.xcworkspace \
-            -scheme App \
+          xcodebuild archive \
+            -project Ethone.xcodeproj \
+            -scheme Ethone \
             -configuration Release \
             -destination 'generic/platform=iOS' \
-            -archivePath build/App.xcarchive \
+            -archivePath build/Ethone.xcarchive \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGN_STYLE=Manual \
-            DEVELOPMENT_TEAM="" \
-            PROVISIONING_PROFILE_SPECIFIER="" \
             ONLY_ACTIVE_ARCH=NO 2>&1 | tee build/build.log
 
-      - name: Package Payload to IPA
+      - name: Empaqueter l'IPA
+        working-directory: ios/build
         run: |
-          cd ios/App/build
           rm -rf Payload
           mkdir -p Payload
-          cp -r App.xcarchive/Products/Applications/App.app Payload/
-          zip -r ETHONE.ipa Payload/
+          cp -R Ethone.xcarchive/Products/Applications/*.app Payload/
+          zip -qry ETHONE.ipa Payload
+          ls -lh ETHONE.ipa
+          echo "--- Extensions dans l'IPA ---"
+          ls Payload/*.app/PlugIns 2>/dev/null || echo "(aucune extension)"
 
-      - name: Verify Widgets Extension in IPA
-        run: |
-          cd ios/App/build
-          echo "--- PlugIns directory ---"
-          ls -R Payload/App.app/PlugIns || true
-          echo "--- EthoneWidgets.appex in IPA ---"
-          unzip -l ETHONE.ipa | grep -i "EthoneWidgets.appex" || true
-
-      - name: Write Build Summary on Failure
+      - name: Résumé des erreurs de compilation
         if: failure()
+        working-directory: ios/build
         run: |
           {
-            echo "### iOS build log"
-            echo "```"
-            if [ -f ios/App/build/build.log ]; then
-              tail -n 120 ios/App/build/build.log
-            else
-              echo "No build.log captured"
-            fi
-            echo "```"
+            echo "### Erreurs de compilation"
+            echo '```'
+            grep -E "error:" build.log | sort -u | head -60 || true
+            echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          if [ -f ios/App/build/build.log ]; then
-            ERRORS=$(grep -i "error:" ios/App/build/build.log | tail -n 30 | sed 's/%/%25/g; s/\r//g; :a; N; $!ba; s/\n/%0A/g')
-            if [ -n "$ERRORS" ]; then
-              echo "::error file=ios/App/App.xcodeproj/project.pbxproj,line=1::$ERRORS"
-            else
-              LAST_LINES=$(tail -n 80 ios/App/build/build.log | sed 's/%/%25/g; s/\r//g; :a; N; $!ba; s/\n/%0A/g')
-              echo "::error file=.github/workflows/build-ios.yml,line=63::$LAST_LINES"
-            fi
-          fi
 
-      - name: Upload Build Logs
+      - name: Journal de compilation
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: iOS-build-logs
-          path: ios/App/build/build.log
+          name: iOS-build-log
+          path: ios/build/build.log
           if-no-files-found: ignore
 
-      - name: Upload IPA Artifact
+      - name: IPA
         uses: actions/upload-artifact@v4
         with:
           name: ETHONE-iOS-IPA
-          path: ios/App/build/ETHONE.ipa
-          retention-days: 7
+          path: ios/build/ETHONE.ipa
+          retention-days: 14
           if-no-files-found: error

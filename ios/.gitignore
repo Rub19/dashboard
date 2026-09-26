@@ -32,3 +32,9 @@ xcuserdata/
 # iOS build products
 build/
 *.app
+
+# Générés par XcodeGen (project.yml)
+*.xcodeproj
+Ethone/Info.plist
+Ethone/Ethone.entitlements
+build/

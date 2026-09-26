@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.114 — 2026-09-26
+
+**Barre latérale plus compacte**
+
+- Les lignes de la barre latérale sont un peu plus serrées et prennent un fond léger au survol, pour que toutes les sections (dont Communauté et Discord) tiennent sans défiler sur un écran standard.
+
 ## v1.28.113 — 2026-09-26
 
 **Barre du haut et barre latérale repensées**

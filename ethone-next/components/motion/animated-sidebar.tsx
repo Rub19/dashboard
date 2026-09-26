@@ -918,11 +918,11 @@ export function AnimatedSidebarMenuButton({
   );
 
   const interactiveClassName = cn(
-    "group relative flex w-full min-w-0 overflow-hidden rounded-[var(--panel-radius)] py-2.5 text-[13px] font-medium outline-none transition-colors duration-150",
+    "group relative flex w-full min-w-0 overflow-hidden rounded-xl py-2 text-[13px] font-medium outline-none transition-colors duration-150",
     panel.collapsed
       ? "items-center justify-center gap-0 px-0 mx-auto"
       : "items-center gap-3 px-3.5 text-left",
-    "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
+    "text-[var(--text-muted)] hover:bg-[var(--menu-hover)] hover:text-[var(--text-primary)]",
     "focus-visible:bg-[var(--text-primary)]/[0.08] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]",
     isActive && "font-semibold text-[var(--accent-primary)]",
     disabled && "cursor-not-allowed opacity-40",

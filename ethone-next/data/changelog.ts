@@ -36453,6 +36453,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_113_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_113_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_113_de);
 
+const v1_28_114_fr: ChangelogEntry = {
+  version: "v1.28.114",
+  date: "2026-09-26",
+  title: "Barre latérale plus compacte",
+  items: [
+    "Les lignes de la barre latérale sont un peu plus serrées et prennent un fond léger au survol, pour que toutes les sections (dont Communauté et Discord) tiennent sans défiler sur un écran standard.",
+  ],
+};
+
+const v1_28_114_en: ChangelogEntry = {
+  version: "v1.28.114",
+  date: "2026-09-26",
+  title: "More compact sidebar",
+  items: [
+    "Sidebar rows are slightly tighter and get a light background on hover, so all sections (including Community and Discord) fit without scrolling on a standard screen.",
+  ],
+};
+
+const v1_28_114_es: ChangelogEntry = {
+  version: "v1.28.114",
+  date: "2026-09-26",
+  title: "Barra lateral más compacta",
+  items: [
+    "Las filas de la barra lateral son algo más ajustadas y toman un fondo suave al pasar el cursor, para que todas las secciones (incluidas Comunidad y Discord) quepan sin desplazarse en una pantalla estándar.",
+  ],
+};
+
+const v1_28_114_de: ChangelogEntry = {
+  version: "v1.28.114",
+  date: "2026-09-26",
+  title: "Kompaktere Seitenleiste",
+  items: [
+    "Die Zeilen der Seitenleiste sind etwas enger und erhalten beim Überfahren einen hellen Hintergrund, damit alle Abschnitte (auch Community und Discord) auf einem Standardbildschirm ohne Scrollen passen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_114_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_114_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_114_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_114_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

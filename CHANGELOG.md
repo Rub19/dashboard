@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.120 — 2026-09-26
+
+**Fichiers : plus de requête Drive inutile**
+
+- Fichiers : le quota Google Drive n'est demandé que si un compte Google Drive est réellement relié ; sans compte relié, plus d'appel inutile ni d'erreur dans la console.
+
 ## v1.28.119 — 2026-09-26
 
 **Fichiers : quota Google Drive réparé**

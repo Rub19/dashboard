@@ -31,6 +31,7 @@ export type Quota = {
   total: number;
 };
 
+import { useConnections } from "@/lib/hooks/useConnections";
 import { supabase } from "@/lib/supabase";
 
 function getLocalFiles(userId?: string): CloudFile[] {
@@ -179,8 +180,12 @@ export function useCloudFiles(clientId?: string) {
 
   useLivePoll(reload, { minGapMs: 10000 });
 
+  const { connected: connectedProviders, loaded: connectionsLoaded } = useConnections();
+  const driveConnected = connectionsLoaded && connectedProviders.has("google-drive");
+
   const fetchQuota = useCallback(async () => {
-    if (!clientId) return;
+    // Sans compte Google Drive relié, le Worker répond 401 : inutile d'interroger.
+    if (!clientId || !driveConnected) return;
     try {
       const res = await fetchWorker(`/api/google-drive/quota?clientId=${encodeURIComponent(clientId)}`);
       const data = res?.data || res;
@@ -193,7 +198,7 @@ export function useCloudFiles(clientId?: string) {
     } catch {
       setQuota(null);
     }
-  }, [clientId]);
+  }, [clientId, driveConnected]);
 
   useEffect(() => {
     fetchQuota();

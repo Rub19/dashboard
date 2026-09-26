@@ -36719,6 +36719,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_119_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_119_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_119_de);
 
+const v1_28_120_fr: ChangelogEntry = {
+  version: "v1.28.120",
+  date: "2026-09-26",
+  title: "Fichiers : plus de requête Drive inutile",
+  items: [
+    "Fichiers : le quota Google Drive n'est demandé que si un compte Google Drive est réellement relié ; sans compte relié, plus d'appel inutile ni d'erreur dans la console.",
+  ],
+};
+
+const v1_28_120_en: ChangelogEntry = {
+  version: "v1.28.120",
+  date: "2026-09-26",
+  title: "Files: no more needless Drive request",
+  items: [
+    "Files: the Google Drive quota is only requested when a Google Drive account is actually linked; with none linked, there is no needless call or console error anymore.",
+  ],
+};
+
+const v1_28_120_es: ChangelogEntry = {
+  version: "v1.28.120",
+  date: "2026-09-26",
+  title: "Archivos: sin solicitudes de Drive innecesarias",
+  items: [
+    "Archivos: la cuota de Google Drive solo se solicita si hay una cuenta de Google Drive realmente vinculada; sin cuenta vinculada, ya no hay llamadas inútiles ni errores en la consola.",
+  ],
+};
+
+const v1_28_120_de: ChangelogEntry = {
+  version: "v1.28.120",
+  date: "2026-09-26",
+  title: "Dateien: keine unnötige Drive-Anfrage mehr",
+  items: [
+    "Dateien: Das Google-Drive-Kontingent wird nur abgefragt, wenn tatsächlich ein Google-Drive-Konto verbunden ist; ohne Verbindung gibt es keinen unnötigen Aufruf und keinen Konsolenfehler mehr.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_120_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_120_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_120_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_120_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

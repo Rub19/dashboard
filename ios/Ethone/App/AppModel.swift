@@ -109,8 +109,7 @@ final class AppModel {
         let recent = notes.items.sorted { $0.updatedAt > $1.updatedAt }.prefix(5).map(\.title)
         lines.append("Notes récentes : " + (recent.isEmpty ? "aucune" : recent.joined(separator: " ; ")))
         lines.append("Concentration aujourd'hui : \(focus.minutesToday) min")
-        return lines.joined(separator: "
-")
+        return lines.joined(separator: "\n")
     }
 
     /// Liens `ethone://<page>` (raccourcis, widgets, notifications).

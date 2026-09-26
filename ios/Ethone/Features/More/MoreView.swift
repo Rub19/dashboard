@@ -12,11 +12,11 @@ struct MoreView: View {
         NavigationStack(path: $model.morePath) {
             List {
                 Section {
-                    NavigationLink(value: MoreDestination.habits) {
-                        Label("Habitudes", systemImage: "flame.fill")
-                    }
-                    .listRowBackground(GlassRowBackground())
+                    NavigationLink(value: MoreDestination.habits) { Label("Habitudes", systemImage: "flame.fill") }
+                    NavigationLink(value: MoreDestination.calendar) { Label("Calendrier", systemImage: "calendar") }
+                    NavigationLink(value: MoreDestination.weather) { Label("Météo", systemImage: "cloud.sun.fill") }
                 } header: { Text("Applications").sectionTitle() }
+                .listRowBackground(GlassRowBackground())
 
                 Section {
                     HStack(spacing: 14) {
@@ -28,7 +28,18 @@ struct MoreView: View {
                     }
                     .padding(.vertical, 4)
                     .listRowBackground(GlassRowBackground())
-                }
+
+                    NavigationLink(value: MoreDestination.security) { Label("Appareils et sécurité", systemImage: "lock.shield.fill") }
+                        .listRowBackground(GlassRowBackground())
+
+                    Toggle(isOn: Binding(
+                        get: { model.lock.isEnabled },
+                        set: { value in Task { await model.lock.setEnabled(value) } }
+                    )) {
+                        Label("Verrouiller avec \(model.lock.biometryLabel)", systemImage: "faceid")
+                    }
+                    .listRowBackground(GlassRowBackground())
+                } header: { Text("Compte").sectionTitle() }
 
                 Section {
                     HStack {
@@ -52,7 +63,7 @@ struct MoreView: View {
                     }
                     .listRowBackground(GlassRowBackground())
                 } header: { Text("Rappels").sectionTitle() } footer: {
-                    Text("Rappels de tâches et d'habitudes, fin de session de concentration. Les notifications envoyées par le serveur nécessitent une version signée de l'app.")
+                    Text("Rappels de tâches, d'habitudes et d'événements, fin de session de concentration. Les notifications envoyées par le serveur nécessitent une version signée de l'app.")
                 }
 
                 Section {
@@ -72,6 +83,9 @@ struct MoreView: View {
             .navigationDestination(for: MoreDestination.self) { destination in
                 switch destination {
                 case .habits: HabitsView()
+                case .calendar: CalendarView()
+                case .weather: WeatherView()
+                case .security: SecurityView()
                 }
             }
             .task { await refreshStatus() }

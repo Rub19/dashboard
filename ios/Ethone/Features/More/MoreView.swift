@@ -17,6 +17,7 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.discord) { Label("Bot Discord", systemImage: "bubble.left.and.bubble.right.fill") }
                     NavigationLink(value: MoreDestination.files) { Label("Fichiers", systemImage: "folder.fill") }
                     NavigationLink(value: MoreDestination.spaces) { Label("Espaces partagés", systemImage: "person.2.fill") }
+                    NavigationLink(value: MoreDestination.team) { Label("Équipe", systemImage: "person.3.fill") }
                     NavigationLink(value: MoreDestination.flows) { Label("Flows", systemImage: "bolt.fill") }
                     NavigationLink(value: MoreDestination.connections) { Label("Connexions", systemImage: "link") }
                     NavigationLink(value: MoreDestination.analytics) { Label("Analytique", systemImage: "chart.bar.xaxis") }
@@ -96,6 +97,7 @@ struct MoreView: View {
             .navigationDestination(for: MoreDestination.self) { destination in
                 switch destination {
                 case .settings: AppearanceView()
+                case .team: TeamView()
                 case .brain: BrainView()
                 case .mail: MailView()
                 case .discord: DiscordView()

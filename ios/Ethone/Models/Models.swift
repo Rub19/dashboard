@@ -23,6 +23,9 @@ struct Item: Identifiable, Codable, Hashable {
 
     var isDone: Bool { done ?? false }
 
+    /// Échéance d'une tâche (`data.dueDate`, colonne `due_date` de la table `tasks`).
+    var dueDate: Date? { data?["dueDate"]?.stringValue.flatMap(ISODate.parse) }
+
     /// Le corps des notes du site est du HTML (éditeur riche) : on en tire du texte lisible pour l'aperçu.
     var plainBody: String { HTMLText.plain(from: body ?? "") }
 }

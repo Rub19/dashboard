@@ -31,6 +31,11 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.activity) { Label("Activité", systemImage: "waveform.path.ecg") }
                     NavigationLink(value: MoreDestination.habits) { Label("Habitudes", systemImage: "flame.fill") }
                     NavigationLink(value: MoreDestination.calendar) { Label("Calendrier", systemImage: "calendar") }
+                    NavigationLink(value: MoreDestination.notifications) { Label("Notifications", systemImage: "bell.badge.fill") }
+                    NavigationLink(value: MoreDestination.scratchpad) { Label("Scratchpad", systemImage: "square.and.pencil") }
+                    NavigationLink(value: MoreDestination.macros) { Label("Macros", systemImage: "wand.and.stars") }
+                    NavigationLink(value: MoreDestination.personas) { Label("Personas", systemImage: "person.crop.circle.badge.checkmark") }
+                    NavigationLink(value: MoreDestination.rss) { Label("RSS", systemImage: "dot.radiowaves.up.forward") }
                     NavigationLink(value: MoreDestination.weather) { Label("Météo", systemImage: "cloud.sun.fill") }
                 } header: { Text("Applications").sectionTitle() }
                 .listRowBackground(GlassRowBackground())
@@ -123,6 +128,11 @@ struct MoreView: View {
                 case .connections: ConnectionsView()
                 case .habits: HabitsView()
                 case .calendar: CalendarView()
+                case .notifications: NotificationSettingsView()
+                case .scratchpad: ScratchpadView()
+                case .macros: MacrosView()
+                case .personas: PersonasView()
+                case .rss: RSSView()
                 case .weather: WeatherView()
                 case .security: SecurityView()
                 }

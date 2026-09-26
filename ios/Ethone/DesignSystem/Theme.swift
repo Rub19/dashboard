@@ -23,6 +23,20 @@ enum ThemePreset: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// Anciens noms de thèmes et alias du site (`LEGACY_THEME_MAP` de `theme-engine.ts`) vers les 13 thèmes actuels.
+    static func resolve(legacy raw: String?) -> ThemePreset {
+        let id = (raw ?? "").lowercased().trimmingCharacters(in: .whitespaces)
+        if let exact = ThemePreset(rawValue: id) { return exact }
+        let aliases: [String: ThemePreset] = [
+            "default": .dynoRose, "dyno": .dynoRose, "dyno-night": .dynoRose, "crimson": .dynoRose, "crimson-night": .dynoRose,
+            "night": .obsidian, "focus": .obsidian, "graphite": .carbon, "oled": .midnight,
+            "cyberpunk": .cyberNeon, "northern-aurora": .aurora, "boreal": .aurora, "emerald": .aurora,
+            "eclipse": .carbon, "solar-eclipse": .carbon, "day": .arctic, "light": .arctic,
+            "monochrome-studio": .minimal, "space": .purpleSpace,
+        ]
+        return aliases[id] ?? .dynoRose
+    }
+
     var label: String {
         switch self {
         case .dynoRose: "Dyno Rose"

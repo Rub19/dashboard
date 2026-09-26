@@ -74,6 +74,7 @@ final class AppModel {
         await focus.refreshSessions()
         SpotlightIndexer.index(notes: notes.items, tasks: tasks.items)
         publishSnapshot()
+        await NotificationPlanner.resync(tasks: tasks.items, events: events.items)
     }
 
     /// Écrit l'instantané lu par les widgets (App Group) puis demande leur rafraîchissement.
@@ -103,7 +104,7 @@ final class AppModel {
         if let item = tasks.items.first(where: { $0.id == id }) {
             await tasks.setDone(item, true)
         } else {
-            let _: Item? = try? await api.patch("ethone_items", id: id, fields: ["done": .bool(true)])
+            let _: CloudTaskRow? = try? await api.patch("tasks", id: id, fields: ["is_completed": .bool(true)])
         }
     }
 
@@ -144,6 +145,40 @@ final class AppModel {
         return lines.joined(separator: "\n")
     }
 
+    /// Pages du site pouvant être ouvertes par une macro, avec l'écran iOS équivalent.
+    static let webPages: [(path: String, title: String)] = [
+        ("/", "Accueil"), ("/notes", "Notes"), ("/tasks", "Tâches"), ("/focus", "Focus"), ("/habits", "Habitudes"),
+        ("/calendar", "Calendrier"), ("/mail", "Mail"), ("/brain", "Brain"), ("/files", "Fichiers"), ("/flows", "Flows"),
+        ("/spaces", "Espaces partagés"), ("/analytics", "Analytique"), ("/activity", "Activité"), ("/connections", "Connexions"),
+        ("/weather", "Météo"), ("/bills", "Factures"), ("/matches", "Valorant"), ("/games", "Jeux"), ("/interactions", "Interactions"),
+        ("/team", "Équipe"), ("/security", "Sécurité"), ("/settings", "Apparence"), ("/scratchpad", "Scratchpad"),
+        ("/macros", "Macros"), ("/personas", "Personas"), ("/rss", "RSS"), ("/discord", "Bot Discord"),
+    ]
+
+    /// Ouvre l'écran iOS correspondant à un chemin du site ; `false` si la page n'a pas d'équivalent.
+    @discardableResult
+    func openWebPage(_ path: String) -> Bool {
+        let key = path.split(separator: "/").first.map(String.init) ?? ""
+        let tabs: [String: AppTab] = ["": .home, "notes": .notes, "tasks": .tasks, "focus": .focus]
+        let more: [String: MoreDestination] = [
+            "habits": .habits, "calendar": .calendar, "mail": .mail, "brain": .brain, "files": .files, "flows": .flows,
+            "spaces": .spaces, "analytics": .analytics, "activity": .activity, "connections": .connections, "weather": .weather,
+            "bills": .bills, "calendar-bills": .bills, "matches": .valorant, "games": .games, "interactions": .interactions,
+            "team": .team, "security": .security, "settings": .settings, "notifications": .notifications, "scratchpad": .scratchpad, "macros": .macros,
+            "personas": .personas, "rss": .rss, "discord": .discord,
+        ]
+        if let tab = tabs[key] {
+            requestedTab = tab
+            return true
+        }
+        if let destination = more[key] {
+            morePath = [destination]
+            requestedTab = .more
+            return true
+        }
+        return false
+    }
+
     /// Liens `ethone://<page>` (raccourcis, widgets, notifications).
     func handle(url: URL) {
         guard url.scheme == Config.oauthCallbackScheme, let host = url.host else { return }
@@ -163,6 +198,6 @@ enum AppTab: String, CaseIterable, Identifiable {
 
 /// Sections accessibles depuis l'onglet « Plus ».
 enum MoreDestination: String, Hashable, CaseIterable, Identifiable {
-    case settings, team, bills, valorant, valorantStore, lolTracker, lolRotation, games, interactions, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security
+    case settings, notifications, team, bills, scratchpad, macros, personas, rss, valorant, valorantStore, lolTracker, lolRotation, games, interactions, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security
     var id: String { rawValue }
 }

@@ -1,7 +1,36 @@
 import Foundation
 import Observation
 
-/// Notes, tâches ou événements : mêmes lignes `ethone_items` que le site, avec cache disque et retour arrière en cas d'échec.
+/// Ligne de la table `tasks` : c'est celle que lit et écrit la page « Tâches » du site (`useTasks`), et non `ethone_items`.
+struct CloudTaskRow: Codable {
+    let id: String
+    var title: String
+    var description: String?
+    var isCompleted: Bool
+    var priority: String?
+    var dueDate: Date?
+    var createdAt: Date
+    var updatedAt: Date
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, description, priority
+        case isCompleted = "is_completed"
+        case dueDate = "due_date"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
+
+    /// Les vues manipulent des `Item` : la priorité et l'échéance sont exposées dans `data`, comme sur le site.
+    var item: Item {
+        var data: [String: JSONValue] = ["priority": .string(priority ?? "medium")]
+        if let dueDate { data["dueDate"] = .string(ISODate.string(dueDate)) }
+        return Item(id: id, kind: "task", title: title, body: description, done: isCompleted, startAt: nil, endAt: nil,
+                    data: .object(data), createdAt: createdAt, updatedAt: updatedAt)
+    }
+}
+
+/// Notes, tâches ou événements avec cache disque et retour arrière en cas d'échec. Notes et événements sont les lignes
+/// `ethone_items` du site ; les tâches sont les lignes de la table `tasks` (celle de la page Tâches du site).
 @MainActor
 @Observable
 final class ItemsStore {
@@ -12,6 +41,9 @@ final class ItemsStore {
     private(set) var isLoading = false
     private(set) var hasLoaded = false
     var errorMessage: String?
+
+    private var isTask: Bool { kind == .task }
+    private var table: String { isTask ? "tasks" : "ethone_items" }
 
     private var cacheKey: String { "items-\(kind.rawValue)-\(api.auth.user?.id ?? "anon")" }
 
@@ -25,10 +57,16 @@ final class ItemsStore {
         isLoading = true
         defer { isLoading = false }
         do {
-            let fetched: [Item] = try await api.list("ethone_items", query: [
-                URLQueryItem(name: "kind", value: "eq.\(kind.rawValue)"),
-                URLQueryItem(name: "order", value: "updated_at.desc"),
-            ])
+            let fetched: [Item]
+            if isTask {
+                let rows: [CloudTaskRow] = try await api.list("tasks", query: [URLQueryItem(name: "order", value: "updated_at.desc")])
+                fetched = rows.map(\.item)
+            } else {
+                fetched = try await api.list("ethone_items", query: [
+                    URLQueryItem(name: "kind", value: "eq.\(kind.rawValue)"),
+                    URLQueryItem(name: "order", value: "updated_at.desc"),
+                ])
+            }
             items = fetched
             hasLoaded = true
             errorMessage = nil
@@ -43,12 +81,27 @@ final class ItemsStore {
     func create(title: String, body: String? = nil, start: Date? = nil, end: Date? = nil, data: JSONValue? = nil) async -> Item? {
         var fields: [String: JSONValue] = ["kind": .string(kind.rawValue), "title": .string(title)]
         if let body { fields["body"] = .string(body) }
-        if kind == .task { fields["done"] = .bool(false) }
         if let start { fields["start_at"] = .string(ISODate.string(start)) }
         if let end { fields["end_at"] = .string(ISODate.string(end)) }
         if let data { fields["data"] = data }
+        if isTask {
+            // Table `tasks` : priorité limitée à low/medium/high (« urgent » du site devient « high »), échéance dans due_date.
+            let requested = data?["priority"]?.stringValue ?? "medium"
+            fields = [
+                "title": .string(title),
+                "is_completed": .bool(false),
+                "priority": .string(requested == "urgent" ? "high" : (["low", "medium", "high"].contains(requested) ? requested : "medium")),
+            ]
+            if let body { fields["description"] = .string(body) }
+            if let due = data?["dueDate"]?.stringValue { fields["due_date"] = .string(due) }
+        }
         do {
-            let created: Item = try await api.insert("ethone_items", fields: fields)
+            let created: Item
+            if isTask {
+                created = try await api.insert("tasks", fields: fields, as: CloudTaskRow.self).item
+            } else {
+                created = try await api.insert("ethone_items", fields: fields)
+            }
             items.insert(created, at: 0)
             persist()
             errorMessage = nil
@@ -61,7 +114,7 @@ final class ItemsStore {
 
     func update(_ item: Item, title: String, body: String?) async {
         var fields: [String: JSONValue] = ["title": .string(title)]
-        if let body { fields["body"] = .string(body) }
+        if let body { fields[isTask ? "description" : "body"] = .string(body) }
         await apply(item, fields: fields) { updated in
             updated.title = title
             if let body { updated.body = body }
@@ -79,7 +132,7 @@ final class ItemsStore {
     }
 
     func setDone(_ item: Item, _ done: Bool) async {
-        await apply(item, fields: ["done": .bool(done)]) { $0.done = done }
+        await apply(item, fields: [isTask ? "is_completed" : "done": .bool(done)]) { $0.done = done }
     }
 
     func delete(_ item: Item) async {
@@ -87,7 +140,7 @@ final class ItemsStore {
         let removed = items.remove(at: index)
         persist()
         do {
-            try await api.remove("ethone_items", id: item.id)
+            try await api.remove(table, id: item.id)
             errorMessage = nil
         } catch {
             items.insert(removed, at: min(index, items.count))
@@ -107,8 +160,14 @@ final class ItemsStore {
         items[index] = after
         persist()
         do {
-            if let saved: Item = try await api.patch("ethone_items", id: item.id, fields: fields),
-               let current = items.firstIndex(where: { $0.id == item.id }) {
+            let saved: Item?
+            if isTask {
+                let row: CloudTaskRow? = try await api.patch("tasks", id: item.id, fields: fields)
+                saved = row?.item
+            } else {
+                saved = try await api.patch("ethone_items", id: item.id, fields: fields)
+            }
+            if let saved, let current = items.firstIndex(where: { $0.id == item.id }) {
                 items[current] = saved
                 persist()
             }

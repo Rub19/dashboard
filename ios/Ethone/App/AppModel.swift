@@ -150,6 +150,6 @@ enum AppTab: String, CaseIterable, Identifiable {
 
 /// Sections accessibles depuis l'onglet « Plus ».
 enum MoreDestination: String, Hashable, CaseIterable, Identifiable {
-    case settings, team, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security
+    case settings, team, games, interactions, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security
     var id: String { rawValue }
 }

@@ -15,6 +15,7 @@ final class AppModel {
     let focus: FocusManager
     let lock = AppLock()
     let brain: BrainChat
+    let mail: MailStore
 
     /// Instance unique : les actions de notification peuvent arriver avant que l'interface n'existe.
     static let shared = AppModel()
@@ -35,6 +36,7 @@ final class AppModel {
         self.habits = HabitsStore(api: api)
         self.focus = FocusManager(api: api)
         self.brain = BrainChat(api: api)
+        self.mail = MailStore(api: api)
     }
 
     func refreshAll() async {
@@ -131,6 +133,6 @@ enum AppTab: String, CaseIterable, Identifiable {
 
 /// Sections accessibles depuis l'onglet « Plus ».
 enum MoreDestination: String, Hashable, CaseIterable, Identifiable {
-    case brain, habits, calendar, weather, security
+    case brain, mail, habits, calendar, weather, security
     var id: String { rawValue }
 }

@@ -52,6 +52,9 @@ function open(guildId: string, stream: Stream) {
     source.close();
     stream.source = null;
     if (stream.handlers.size === 0) return;
+    // Après une douzaine d'échecs de suite (serveur inaccessible, accès refusé, limite de débit), on cesse d'insister :
+    // la connexion sera retentée à la prochaine navigation, pas toutes les 30 s indéfiniment.
+    if (stream.retry >= 12) return;
     const wait = Math.min(1000 * Math.pow(1.6, stream.retry), 30000);
     stream.retry += 1;
     stream.retryTimer = setTimeout(() => {
@@ -73,6 +76,7 @@ export function subscribeGuildLive(guildId: string, handler: Handler): () => voi
     stream.closeTimer = null;
   }
   stream.handlers.add(handler);
+  if (stream.retry >= 12 && !stream.source && !stream.retryTimer) stream.retry = 0;
   open(guildId, stream);
 
   const current = stream;

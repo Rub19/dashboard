@@ -72,6 +72,9 @@ import { BotTelemetryService } from '../modules/botControl/services/botTelemetry
 
 export function startWebServer(client: Client): http.Server {
   const app = express();
+  // Caddy est devant l'API : sans cela, req.ip vaut toujours 127.0.0.1 et TOUS les visiteurs partagent le même compteur de débit
+  // (un client qui insiste bloquait tout le monde). 'loopback' ne fait confiance qu'à Caddy : l'adresse réelle est celle qu'il ajoute.
+  app.set('trust proxy', 'loopback');
 
   // Ne pas annoncer la technologie du serveur, et poser les en-têtes de sécurité de base sur toute réponse.
   app.disable('x-powered-by');

@@ -36494,6 +36494,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_114_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_114_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_114_de);
 
+const v1_28_115_fr: ChangelogEntry = {
+  version: "v1.28.115",
+  date: "2026-09-26",
+  title: "Limite de débit par visiteur et fin des reconnexions sans fin",
+  items: [
+    "API du bot : tous les visiteurs du dashboard partageaient la même adresse aux yeux du limiteur de débit (celle du serveur intermédiaire), donc un seul navigateur qui insistait pouvait bloquer les autres avec des erreurs 429. Chaque visiteur a maintenant son propre compteur, d'après son adresse réelle.",
+    "Dashboard : le flux temps réel d'un serveur cesse de se reconnecter toutes les 30 secondes après une douzaine d'échecs de suite (serveur inaccessible, accès refusé) ; il réessaie à la prochaine navigation.",
+  ],
+};
+
+const v1_28_115_en: ChangelogEntry = {
+  version: "v1.28.115",
+  date: "2026-09-26",
+  title: "Per-visitor rate limit and no more endless reconnects",
+  items: [
+    "Bot API: all dashboard visitors shared the same address in the rate limiter's eyes (the intermediary server's), so a single browser that kept retrying could block the others with 429 errors. Each visitor now has their own counter, based on their real address.",
+    "Dashboard: a server's live stream stops reconnecting every 30 seconds after a dozen failures in a row (unreachable server, access denied); it tries again on the next navigation.",
+  ],
+};
+
+const v1_28_115_es: ChangelogEntry = {
+  version: "v1.28.115",
+  date: "2026-09-26",
+  title: "Límite de tasa por visitante y fin de las reconexiones infinitas",
+  items: [
+    "API del bot: todos los visitantes del panel compartían la misma dirección a ojos del limitador de tasa (la del servidor intermedio), así que un solo navegador insistente podía bloquear a los demás con errores 429. Ahora cada visitante tiene su propio contador, según su dirección real.",
+    "Panel: el flujo en tiempo real de un servidor deja de reconectarse cada 30 segundos tras una docena de fallos seguidos (servidor inaccesible, acceso denegado); lo reintenta en la siguiente navegación.",
+  ],
+};
+
+const v1_28_115_de: ChangelogEntry = {
+  version: "v1.28.115",
+  date: "2026-09-26",
+  title: "Ratenbegrenzung pro Besucher und keine endlosen Wiederverbindungen",
+  items: [
+    "Bot-API: Alle Dashboard-Besucher teilten sich aus Sicht der Ratenbegrenzung dieselbe Adresse (die des Zwischenservers), sodass ein einzelner hartnäckiger Browser die anderen mit 429-Fehlern blockieren konnte. Jeder Besucher hat jetzt seinen eigenen Zähler auf Basis seiner echten Adresse.",
+    "Dashboard: Der Live-Stream eines Servers verbindet sich nach etwa zwölf Fehlversuchen in Folge (Server nicht erreichbar, Zugriff verweigert) nicht mehr alle 30 Sekunden neu; er versucht es bei der nächsten Navigation erneut.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_115_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_115_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_115_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_115_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

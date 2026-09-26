@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.115 — 2026-09-26
+
+**Limite de débit par visiteur et fin des reconnexions sans fin**
+
+- API du bot : tous les visiteurs du dashboard partageaient la même adresse aux yeux du limiteur de débit (celle du serveur intermédiaire), donc un seul navigateur qui insistait pouvait bloquer les autres avec des erreurs 429. Chaque visiteur a maintenant son propre compteur, d'après son adresse réelle.
+- Dashboard : le flux temps réel d'un serveur cesse de se reconnecter toutes les 30 secondes après une douzaine d'échecs de suite (serveur inaccessible, accès refusé) ; il réessaie à la prochaine navigation.
+
 ## v1.28.114 — 2026-09-26
 
 **Barre latérale plus compacte**

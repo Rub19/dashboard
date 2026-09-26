@@ -1,4 +1,4 @@
-name: Build iOS IPA (Native SwiftUI, iOS 26 / 27)
+name: Build iOS IPA (un seul IPA — SwiftUI natif, iOS 26 + iOS 27)
 
 on:
   push:
@@ -20,92 +20,91 @@ concurrency:
   group: ios-build-${{ github.ref }}
   cancel-in-progress: true
 
+# Un seul IPA (« ETHONE-iOS-IPA ») : compilé avec Xcode 27 pour inclure les fonctions iOS 27 (elles ne s'exécutent que sur iOS 27,
+# l'app reste installable dès iOS 26). Si la préversion d'Xcode 27 échoue, le même IPA est produit avec Xcode 26 (sans les extras iOS 27).
 jobs:
-  build-ios:
-    name: ${{ matrix.name }}
-    runs-on: ${{ matrix.runner }}
-    # La préversion d'Xcode 27 ne doit jamais bloquer l'IPA stable.
-    continue-on-error: ${{ matrix.experimental }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: Stable — Xcode 26 (iOS 26)
-            runner: macos-26
-            experimental: false
-            artifact: ETHONE-iOS-IPA
-          - name: Préversion — Xcode 27 (iOS 27)
-            runner: xcode-27
-            experimental: true
-            artifact: ETHONE-iOS27-preview-IPA
-
+  build-xcode27:
+    name: IPA — Xcode 27 (iOS 26 + iOS 27)
+    runs-on: xcode-27
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Xcode et SDK disponibles
+      - uses: actions/checkout@v4
+      - name: Xcode et SDK
         run: |
           xcodebuild -version
           xcrun --sdk iphoneos --show-sdk-version
-          swift --version
-
-      - name: Installer XcodeGen
+      - name: XcodeGen
         run: brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
-
-      - name: Générer le projet Xcode
+      - name: Générer le projet
         working-directory: ios
         run: xcodegen generate
-
       - name: Archiver (sans signature)
         working-directory: ios
         run: |
           mkdir -p build
           set -o pipefail
           xcodebuild archive \
-            -project Ethone.xcodeproj \
-            -scheme Ethone \
-            -configuration Release \
-            -destination 'generic/platform=iOS' \
-            -archivePath build/Ethone.xcarchive \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            ONLY_ACTIVE_ARCH=NO 2>&1 | tee build/build.log
-
+            -project Ethone.xcodeproj -scheme Ethone -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath build/Ethone.xcarchive \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO 2>&1 | tee build/build.log
       - name: Empaqueter l'IPA
         working-directory: ios/build
         run: |
-          rm -rf Payload
-          mkdir -p Payload
+          rm -rf Payload && mkdir -p Payload
           cp -R Ethone.xcarchive/Products/Applications/*.app Payload/
           zip -qry ETHONE.ipa Payload
           ls -lh ETHONE.ipa
-          echo "--- Extensions dans l'IPA ---"
-          ls Payload/*.app/PlugIns 2>/dev/null || echo "(aucune extension)"
-
-      - name: Résumé des erreurs de compilation
+          echo "--- Extensions ---"; ls Payload/*.app/PlugIns
+      - name: Erreurs de compilation
         if: failure()
         working-directory: ios/build
         run: |
-          {
-            echo "### Erreurs de compilation (${{ matrix.name }})"
-            echo '```'
-            grep -E "error:" build.log | sort -u | head -60 || true
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Journal de compilation
+          { echo "### Erreurs (Xcode 27)"; echo '```'; grep -E "error:" build.log | sort -u | head -60 || true; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Journal
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-log-${{ matrix.artifact }}
+          name: build-log-xcode27
           path: ios/build/build.log
           if-no-files-found: ignore
-
       - name: IPA
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact }}
+          name: ETHONE-iOS-IPA
           path: ios/build/ETHONE.ipa
-          retention-days: 14
+          retention-days: 30
+          if-no-files-found: error
+
+  build-xcode26-fallback:
+    name: IPA de repli — Xcode 26 (si Xcode 27 échoue)
+    needs: build-xcode27
+    if: ${{ failure() }}
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: XcodeGen
+        run: brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
+      - name: Générer le projet
+        working-directory: ios
+        run: xcodegen generate
+      - name: Archiver (sans signature)
+        working-directory: ios
+        run: |
+          mkdir -p build
+          set -o pipefail
+          xcodebuild archive \
+            -project Ethone.xcodeproj -scheme Ethone -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath build/Ethone.xcarchive \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO 2>&1 | tee build/build.log
+      - name: Empaqueter l'IPA
+        working-directory: ios/build
+        run: |
+          rm -rf Payload && mkdir -p Payload
+          cp -R Ethone.xcarchive/Products/Applications/*.app Payload/
+          zip -qry ETHONE.ipa Payload
+      - name: IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ETHONE-iOS-IPA
+          path: ios/build/ETHONE.ipa
+          retention-days: 30
           if-no-files-found: error

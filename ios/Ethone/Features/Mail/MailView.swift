@@ -117,6 +117,20 @@ final class MailStore {
         }
     }
 
+    /// Envoie un message via le Worker (depuis l'alias ETHONE de l'utilisateur). Renvoie `true` si le serveur a accepté l'envoi.
+    func send(to: [String], subject: String, text: String) async -> Bool {
+        do {
+            var fields: [String: JSONValue] = ["to": .array(to.map { .string($0) }), "text": .string(text)]
+            fields["subject"] = .string(subject)
+            try await api.workerVoid("api/mail/send", body: APIClient.json(fields))
+            errorMessage = nil
+            return true
+        } catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+            return false
+        }
+    }
+
     func setStarred(_ message: MailMessage, _ starred: Bool) async {
         guard let index = messages.firstIndex(where: { $0.id == message.id }) else { return }
         let before = messages[index]
@@ -134,6 +148,7 @@ struct MailView: View {
     @Environment(AppModel.self) private var model
     @State private var folder: MailFolder = .inbox
     @State private var selected: MailMessage?
+    @State private var composing: ComposeDraft?
 
     var body: some View {
         List {
@@ -170,6 +185,9 @@ struct MailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
+                Button { composing = ComposeDraft(to: "", subject: "", body: "") } label: { Image(systemName: "square.and.pencil") }
+            }
+            ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Picker("Dossier", selection: $folder) {
                         ForEach(MailFolder.allCases) { folder in Label(folder.label, systemImage: folder.symbol).tag(folder) }
@@ -180,6 +198,7 @@ struct MailView: View {
         .refreshable { await model.mail.load(folder: folder) }
         .task(id: folder) { await model.mail.load(folder: folder) }
         .sheet(item: $selected) { message in MailDetailView(message: message) }
+        .sheet(item: $composing) { draft in MailComposeView(draft: draft) }
     }
 
     private func row(_ message: MailMessage) -> some View {
@@ -203,6 +222,7 @@ struct MailView: View {
 struct MailDetailView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
+    @State private var replying = false
     let message: MailMessage
 
     var body: some View {
@@ -231,10 +251,91 @@ struct MailDetailView: View {
             .navigationTitle("Message")
             .ethoneScreen()
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Fermer") { dismiss() } } }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Fermer") { dismiss() } }
+                ToolbarItem(placement: .primaryAction) {
+                    Button { replying = true } label: { Image(systemName: "arrowshape.turn.up.left") }
+                }
+            }
+            .sheet(isPresented: $replying) {
+                MailComposeView(draft: ComposeDraft(
+                    to: message.fromAddress ?? "",
+                    subject: message.title.lowercased().hasPrefix("re:") ? message.title : "Re: \(message.title)",
+                    body: ""
+                ))
+            }
             .task { if !message.isRead { await model.mail.markRead(message, read: true) } }
         }
         .presentationDetents([.large])
         .presentationBackground(.clear)
+    }
+}
+
+struct ComposeDraft: Identifiable {
+    let id = UUID()
+    var to: String
+    var subject: String
+    var body: String
+}
+
+/// Rédaction d'un e-mail : l'envoi n'a lieu qu'après confirmation explicite.
+struct MailComposeView: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
+    @State private var to: String
+    @State private var subject: String
+    @State private var text: String
+    @State private var confirming = false
+    @State private var sending = false
+
+    init(draft: ComposeDraft) {
+        _to = State(initialValue: draft.to)
+        _subject = State(initialValue: draft.subject)
+        _text = State(initialValue: draft.body)
+    }
+
+    private var recipients: [String] {
+        to.split(whereSeparator: { ",; 
+".contains($0) }).map { $0.trimmingCharacters(in: .whitespaces) }.filter { $0.contains("@") }
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    TextField("À (séparez par des virgules)", text: $to)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    TextField("Objet", text: $subject)
+                }
+                Section { TextEditor(text: $text).frame(minHeight: 220) }
+                if let message = model.mail.errorMessage {
+                    Text(message).font(.footnote).foregroundStyle(Theme.danger)
+                }
+            }
+            .scrollContentBackground(.hidden)
+            .navigationTitle("Nouveau message")
+            .ethoneScreen()
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Annuler") { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Envoyer") { confirming = true }
+                        .disabled(sending || recipients.isEmpty || (subject.isEmpty && text.isEmpty))
+                }
+            }
+            .confirmationDialog("Envoyer ce message à \(recipients.count) destinataire(s) ?", isPresented: $confirming, titleVisibility: .visible) {
+                Button("Envoyer") {
+                    sending = true
+                    Task {
+                        let sent = await model.mail.send(to: recipients, subject: subject, text: text)
+                        sending = false
+                        if sent { dismiss() }
+                    }
+                }
+            }
+        }
+        .presentationDetents([.large])
     }
 }

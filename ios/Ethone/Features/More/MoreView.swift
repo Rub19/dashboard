@@ -19,6 +19,8 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.spaces) { Label("Espaces partagés", systemImage: "person.2.fill") }
                     NavigationLink(value: MoreDestination.flows) { Label("Flows", systemImage: "bolt.fill") }
                     NavigationLink(value: MoreDestination.connections) { Label("Connexions", systemImage: "link") }
+                    NavigationLink(value: MoreDestination.analytics) { Label("Analytique", systemImage: "chart.bar.xaxis") }
+                    NavigationLink(value: MoreDestination.activity) { Label("Activité", systemImage: "waveform.path.ecg") }
                     NavigationLink(value: MoreDestination.habits) { Label("Habitudes", systemImage: "flame.fill") }
                     NavigationLink(value: MoreDestination.calendar) { Label("Calendrier", systemImage: "calendar") }
                     NavigationLink(value: MoreDestination.weather) { Label("Météo", systemImage: "cloud.sun.fill") }
@@ -96,6 +98,8 @@ struct MoreView: View {
                 case .spaces: SpacesView()
                 case .flows: FlowsView()
                 case .files: FilesView()
+                case .analytics: AnalyticsView()
+                case .activity: ActivityView()
                 case .connections: ConnectionsView()
                 case .habits: HabitsView()
                 case .calendar: CalendarView()

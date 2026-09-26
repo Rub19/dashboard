@@ -9,6 +9,8 @@ export interface ValorantPlayerStats {
   damageMade?: number;
   damageReceived?: number;
   adr?: number;
+  /** Score de performance (0-500) fourni par le fournisseur de données, absent tant qu'il ne l'expose pas. */
+  performanceScore?: number;
 }
 
 export interface ValorantPlayer {
@@ -45,6 +47,9 @@ export interface ValorantMatch {
       roundsPlayed: number | null;
     };
     timestamp: string;
+    /** Système de notation de la partie : « performance » (patch 13.06+, 0-500) ou « acs » (avant). */
+    scoring?: ScoringSystem;
+    gameVersion?: string;
   };
   scoreboard?: {
     teams?: {
@@ -61,6 +66,7 @@ export interface ValorantMatch {
       assists?: { value: number; displayValue: string };
       score?: { value: number; displayValue: string };
       scorePerRound?: { value: number; displayValue: string };
+      performanceScore?: { value: number; displayValue: string };
       headshotsPercentage?: { value: number; displayValue: string };
       damageDeltaPerRound?: { value: number; displayValue: string };
       adr?: { value: number; displayValue: string };
@@ -81,8 +87,62 @@ export interface ValorantDayGroup {
   avgKda: number;
   avgDamageDelta: number;
   avgHsPercent: number;
+  /** Moyenne d'ACS sur les parties d'avant le patch 13.06 uniquement (0 s'il n'y en a pas). */
   avgAcs: number;
+  /** Moyenne du score de performance (0-500) sur les parties qui le fournissent ; `null` si aucune. */
+  avgPerformanceScore: number | null;
   matches: ValorantMatch[];
+}
+
+export type ScoringSystem = "performance" | "acs";
+
+/**
+ * Patch 13.06 (22 septembre 2026) : le score de combat moyen (ACS) est remplacé par le « score de performance »,
+ * une note de 0 à 500 qui tient compte des dégâts, des éliminations, de l'usage des capacités, des trades et des
+ * poses/désamorçages. Riot n'a pas publié la formule : on ne la recalcule JAMAIS, on n'affiche que la valeur fournie
+ * par l'API (sinon « — »). L'ancien calcul « score / manches » n'a plus de sens sur ces parties.
+ */
+export const PERFORMANCE_SCORE_MAX = 500;
+const PERFORMANCE_PATCH = { major: 13, minor: 6, dateMs: Date.UTC(2026, 8, 22) };
+
+export function scoringSystemFor(gameVersion?: string | null, timestamp?: string | null): ScoringSystem {
+  const match = /(\d+)\.(\d+)/.exec(gameVersion || "");
+  if (match) {
+    const major = Number(match[1]);
+    const minor = Number(match[2]);
+    if (major !== PERFORMANCE_PATCH.major) return major > PERFORMANCE_PATCH.major ? "performance" : "acs";
+    return minor >= PERFORMANCE_PATCH.minor ? "performance" : "acs";
+  }
+  const time = timestamp ? Date.parse(timestamp) : NaN;
+  return Number.isFinite(time) && time >= PERFORMANCE_PATCH.dateMs ? "performance" : "acs";
+}
+
+/** Lit le score de performance d'un joueur brut (plusieurs noms de champ possibles selon le fournisseur). */
+export function readPerformanceScore(player: any): number | null {
+  const candidates = [
+    player?.stats?.performance_score,
+    player?.stats?.performanceScore,
+    player?.performance_score,
+    player?.performanceScore,
+  ];
+  for (const value of candidates) {
+    const n = typeof value === "number" ? value : typeof value === "string" ? Number(value) : NaN;
+    if (Number.isFinite(n) && n >= 0 && n <= PERFORMANCE_SCORE_MAX) return Math.round(n);
+  }
+  return null;
+}
+
+export function matchScoring(match: ValorantMatch): ScoringSystem {
+  return match.metadata.scoring ?? scoringSystemFor(match.metadata.gameVersion, match.metadata.timestamp);
+}
+
+/** Valeur à afficher pour le joueur suivi : performance (0-500) ou ACS selon la partie ; `null` si indisponible. */
+export function matchScoreValue(match: ValorantMatch): { system: ScoringSystem; value: number | null } {
+  const system = matchScoring(match);
+  const stats = match.segments?.[0]?.stats;
+  if (system === "performance") return { system, value: stats?.performanceScore?.value ?? null };
+  const acs = stats?.scorePerRound?.value;
+  return { system, value: typeof acs === "number" ? acs : null };
 }
 
 export const VALORANT_AGENT_ICONS: Record<string, string> = {
@@ -169,8 +229,14 @@ export function calculateMatchRankBadge(match: ValorantMatch): { label: string; 
   const players = match.scoreboard?.players || [];
   if (players.length === 0) return { label: "MVP", tone: "gold" };
 
-  // Sort players by ACS (combat score / rounds) or total score
-  const sorted = [...players].sort((a, b) => (b.stats.score || 0) - (a.stats.score || 0));
+  // Depuis le patch 13.06, le MVP et l'ordre du tableau suivent le score de performance : sans cette valeur pour tous
+  // les joueurs, on n'invente pas de classement à partir de l'ancien score.
+  const performance = matchScoring(match) === "performance";
+  if (performance && !players.every((p) => typeof p.stats.performanceScore === "number")) {
+    return { label: "—", tone: "default" };
+  }
+  const value = (p: ValorantPlayer) => (performance ? p.stats.performanceScore || 0 : p.stats.score || 0);
+  const sorted = [...players].sort((a, b) => value(b) - value(a));
   const myIndex = sorted.findIndex((p) => p.isMe || p.name.toLowerCase() === match.metadata.agentName.toLowerCase());
 
   if (myIndex === 0) return { label: "MVP", tone: "gold" };
@@ -185,7 +251,7 @@ export function getMatchHighlightBadges(match: ValorantMatch): string[] {
   const kills = stats?.kills?.value || 0;
   const deaths = stats?.deaths?.value || 0;
   const hs = stats?.headshotsPercentage?.value || 0;
-  const acs = stats?.scorePerRound?.value || 0;
+  const acs = matchScoring(match) === "acs" ? stats?.scorePerRound?.value || 0 : 0;
   const kd = deaths > 0 ? Number((kills / deaths).toFixed(2)) : kills;
 
   const modeLower = (match.metadata?.modeName || "").toLowerCase();
@@ -254,6 +320,9 @@ export function groupMatchesByDate(matches: ValorantMatch[]): ValorantDayGroup[]
     let sumDamageDelta = 0;
     let sumHsPercent = 0;
     let sumAcs = 0;
+    let acsCount = 0;
+    let sumPerformance = 0;
+    let performanceCount = 0;
 
     dayMatches.forEach((m) => {
       const isWin = m.metadata.result.toLowerCase() === "victory" || (m.metadata.score.team || 0) > (m.metadata.score.opponent || 0);
@@ -265,14 +334,22 @@ export function groupMatchesByDate(matches: ValorantMatch[]): ValorantDayGroup[]
       const a = m.segments?.[0]?.stats?.assists?.value || 0;
       const dd = m.segments?.[0]?.stats?.damageDeltaPerRound?.value || 0;
       const hs = m.segments?.[0]?.stats?.headshotsPercentage?.value || 0;
-      const acs = m.segments?.[0]?.stats?.scorePerRound?.value || 0;
+      const scoreEntry = matchScoreValue(m);
+      if (scoreEntry.value !== null) {
+        if (scoreEntry.system === "performance") {
+          sumPerformance += scoreEntry.value;
+          performanceCount++;
+        } else {
+          sumAcs += scoreEntry.value;
+          acsCount++;
+        }
+      }
 
       totalKills += k;
       totalDeaths += d;
       totalAssists += a;
       sumDamageDelta += dd;
       sumHsPercent += hs;
-      sumAcs += acs;
     });
 
     const count = dayMatches.length;
@@ -280,7 +357,8 @@ export function groupMatchesByDate(matches: ValorantMatch[]): ValorantDayGroup[]
     const avgKda = totalDeaths === 0 ? totalKills + totalAssists : Number(((totalKills + totalAssists) / totalDeaths).toFixed(2));
     const avgDamageDelta = Math.round(sumDamageDelta / Math.max(1, count));
     const avgHsPercent = Math.round(sumHsPercent / Math.max(1, count));
-    const avgAcs = Math.round(sumAcs / Math.max(1, count));
+    const avgAcs = acsCount > 0 ? Math.round(sumAcs / acsCount) : 0;
+    const avgPerformanceScore = performanceCount > 0 ? Math.round(sumPerformance / performanceCount) : null;
 
     groups.push({
       dateLabel,
@@ -296,6 +374,7 @@ export function groupMatchesByDate(matches: ValorantMatch[]): ValorantDayGroup[]
       avgDamageDelta,
       avgHsPercent,
       avgAcs,
+      avgPerformanceScore,
       matches: dayMatches,
     });
   });
@@ -458,7 +537,12 @@ export function convertHenrikMatchToValorantMatch(
     meta.rounds_played ||
     ((myTeamObj?.rounds_won || 0) + (opponentTeamObj?.rounds_won || 0)) ||
     1;
-  const acs = Math.round(myScore / Math.max(1, roundsPlayed));
+  const gameVersion = typeof meta.game_version === "string" ? meta.game_version : undefined;
+  const startedAt = meta.game_start ? new Date(meta.game_start * 1000).toISOString() : undefined;
+  const scoring = scoringSystemFor(gameVersion, startedAt);
+  // Ancienne notation seulement : score total / manches. Le score de performance n'est jamais recalculé.
+  const acs = scoring === "acs" ? Math.round(myScore / Math.max(1, roundsPlayed)) : null;
+  const myPerformance = scoring === "performance" ? readPerformanceScore(myPlayer) : null;
   const hs = myPlayer.stats?.headshots || 0;
   const bs = myPlayer.stats?.bodyshots || 0;
   const ls = myPlayer.stats?.legshots || 0;
@@ -502,6 +586,7 @@ export function convertHenrikMatchToValorantMatch(
         headshots: p.stats?.headshots,
         bodyshots: p.stats?.bodyshots,
         legshots: p.stats?.legshots,
+        performanceScore: scoring === "performance" ? readPerformanceScore(p) ?? undefined : undefined,
         damageMade: p.damage_made,
         damageReceived: p.damage_received,
         adr: Math.round((p.damage_made || 0) / Math.max(1, roundsPlayed)),
@@ -527,6 +612,8 @@ export function convertHenrikMatchToValorantMatch(
       timestamp: meta.game_start
         ? new Date(meta.game_start * 1000).toISOString()
         : new Date().toISOString(),
+      scoring,
+      gameVersion,
     },
     scoreboard: {
       teams: {
@@ -543,7 +630,8 @@ export function convertHenrikMatchToValorantMatch(
           deaths: { value: myDeaths, displayValue: String(myDeaths) },
           assists: { value: myAssists, displayValue: String(myAssists) },
           score: { value: myScore, displayValue: String(myScore) },
-          scorePerRound: { value: acs, displayValue: `${acs} ACS` },
+          ...(acs !== null ? { scorePerRound: { value: acs, displayValue: `${acs} ACS` } } : {}),
+          ...(myPerformance !== null ? { performanceScore: { value: myPerformance, displayValue: `${myPerformance}` } } : {}),
           headshotsPercentage: { value: hsPercent, displayValue: `${hsPercent}%` },
           damageDeltaPerRound: {
             value: damageDelta,

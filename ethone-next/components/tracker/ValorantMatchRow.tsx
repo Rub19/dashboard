@@ -12,8 +12,7 @@ import {
   getAgentIcon,
   formatTimeAgo,
   calculateMatchRankBadge,
-  getMatchHighlightBadges,
-} from "@/lib/valorant-tracker";
+  getMatchHighlightBadges, matchScoreValue } from "@/lib/valorant-tracker";
 import { getValorantRankStyle } from "@/components/RiotGamingCard";
 import { computePartyMap } from "@/lib/party-helper";
 import { cn } from "@/lib/utils";
@@ -48,10 +47,11 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
   const kd = deaths === 0 ? kills : Number((kills / deaths).toFixed(2));
   const hsPercent = Math.round(match.segments?.[0]?.stats?.headshotsPercentage?.value ?? 0);
   const damageDelta = Math.round(match.segments?.[0]?.stats?.damageDeltaPerRound?.value ?? 0);
-  const acs = Math.round(
-    match.segments?.[0]?.stats?.scorePerRound?.value ??
-      (match.segments?.[0]?.stats?.score?.value ?? 0)
-  );
+  // Depuis le patch 13.06 : score de performance (0-500) fourni par l'API, « — » s'il est absent (jamais recalculé).
+  const scoreEntry = matchScoreValue(match);
+  const isPerformance = scoreEntry.system === "performance";
+  const scoreLabel = isPerformance ? "PERF" : "ACS";
+  const scoreText = scoreEntry.value === null ? "—" : String(Math.round(scoreEntry.value));
 
   const rankBadge = calculateMatchRankBadge(match);
   const highlights = getMatchHighlightBadges(match);
@@ -214,10 +214,13 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
             <span className="font-mono text-xs font-bold text-white">{hsPercent}</span>
           </div>
 
-          {/* ACS */}
-          <div className="text-center min-w-[36px]">
-            <span className="block text-[9px] font-bold uppercase text-zinc-500">ACS</span>
-            <span className="font-mono text-xs font-black text-white">{acs}</span>
+          {/* Score de performance (0-500) ou ACS (parties d'avant le patch 13.06) */}
+          <div
+            className="text-center min-w-[36px]"
+            title={isPerformance ? (scoreEntry.value === null ? "Score de performance non fourni par l'API pour cette partie" : "Score de performance (0-500)") : "ACS (score de combat moyen, ancien système)"}
+          >
+            <span className="block text-[9px] font-bold uppercase text-zinc-500">{scoreLabel}</span>
+            <span className="font-mono text-xs font-black text-white">{scoreText}</span>
           </div>
 
           {/* Expand Menu Toggle */}
@@ -340,7 +343,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                             <th className="pb-1.5 pl-2">Joueur / Agent</th>
                             <th className="pb-1.5 text-center">Rang</th>
                             <th className="pb-1.5 text-center">TRS</th>
-                            <th className="pb-1.5 text-center">ACS</th>
+                            <th className="pb-1.5 text-center">{scoreLabel}</th>
                             <th className="pb-1.5 text-center">K</th>
                             <th className="pb-1.5 text-center">D</th>
                             <th className="pb-1.5 text-center">A</th>
@@ -367,8 +370,10 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                             const pDiff = p.stats.kills - p.stats.deaths;
                             const pIcon = getAgentIcon(p.character, p.assets?.agent?.small);
                             const pParty = partyMap.getParty(p, pi + (gi * 5));
-                            const pAcs = p.stats.score ? Math.round(p.stats.score / (meta.score.roundsPlayed || 6)) : 0;
-                            const pTrs = Math.max(100, Math.round(pAcs * 2.2 + p.stats.kills * 12));
+                            const pAcs = isPerformance
+                              ? p.stats.performanceScore ?? null
+                              : p.stats.score ? Math.round(p.stats.score / (meta.score.roundsPlayed || 6)) : 0;
+                            const pTrs = pAcs === null || isPerformance ? null : Math.max(100, Math.round(pAcs * 2.2 + p.stats.kills * 12));
                             const pDda = (p.stats.damageMade || 0) - (p.stats.damageReceived || 0);
 
                             // Account level calculation
@@ -465,12 +470,12 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
 
                                 {/* TRS */}
                                 <td className="py-2 text-center font-mono font-bold text-zinc-300">
-                                  {pTrs}
+                                  {pTrs ?? "—"}
                                 </td>
 
                                 {/* ACS */}
                                 <td className="py-2 text-center font-mono font-black text-white text-xs">
-                                  {pAcs}
+                                  {pAcs ?? "—"}
                                 </td>
 
                                 {/* K */}

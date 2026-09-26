@@ -20,8 +20,7 @@ import {
   type ValorantMatch,
   groupMatchesByDate,
   fetchValorantMatchesDirect,
-  VALORANT_QUEUES,
-} from "@/lib/valorant-tracker";
+  VALORANT_QUEUES, matchScoreValue, PERFORMANCE_SCORE_MAX } from "@/lib/valorant-tracker";
 import ValorantMatchRow from "@/components/tracker/ValorantMatchRow";
 import ValorantDayHeader from "@/components/tracker/ValorantDayHeader";
 import TrackerModeDropdown from "@/components/tracker/TrackerModeDropdown";
@@ -291,11 +290,15 @@ export default function ValorantTrackerView() {
       .slice(0, 3);
   }, [matches]);
 
-  const avgAcs = useMemo(() => {
-    const withAcs = matches.filter((m) => typeof m.segments?.[0]?.stats?.scorePerRound?.value === "number");
-    if (withAcs.length === 0) return 0;
-    const sum = withAcs.reduce((acc, m) => acc + (m.segments?.[0]?.stats?.scorePerRound?.value ?? 0), 0);
-    return Math.round(sum / withAcs.length);
+  // Score de performance moyen (0-500, patch 13.06+) sur les parties qui le fournissent ; ACS seulement pour les anciennes parties.
+  const scoreSummary = useMemo(() => {
+    const entries = matches.map((m) => matchScoreValue(m)).filter((e) => e.value !== null) as Array<{ system: "performance" | "acs"; value: number }>;
+    const performance = entries.filter((e) => e.system === "performance");
+    const legacy = entries.filter((e) => e.system === "acs");
+    const average = (list: Array<{ value: number }>) => Math.round(list.reduce((sum, e) => sum + e.value, 0) / list.length);
+    if (performance.length > 0) return { system: "performance" as const, value: average(performance), count: performance.length };
+    if (legacy.length > 0) return { system: "acs" as const, value: average(legacy), count: legacy.length };
+    return { system: "performance" as const, value: null as number | null, count: 0 };
   }, [matches]);
 
   const [apiKeyModalOpen, setApiKeyModalOpen] = useState(false);
@@ -430,14 +433,25 @@ export default function ValorantTrackerView() {
             </div>
           </div>
 
-          {/* Average Combat Score (ACS) */}
+          {/* Score de performance moyen (0-500) — remplace l'ACS depuis le patch 13.06 */}
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Score de Combat Moyen (ACS)</p>
-              <p className="text-lg font-black text-cyan-400">{avgAcs} <span className="text-xs font-normal text-zinc-400">pts/round</span></p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                {scoreSummary.system === "performance" ? "Score de performance moyen" : "Score de combat moyen (ACS, ancien)"}
+              </p>
+              <p className="text-lg font-black text-cyan-400">
+                {scoreSummary.value === null ? "—" : scoreSummary.value}{" "}
+                <span className="text-xs font-normal text-zinc-400">
+                  {scoreSummary.value === null
+                    ? "non fourni par l'API"
+                    : scoreSummary.system === "performance"
+                      ? `/ ${PERFORMANCE_SCORE_MAX}`
+                      : "pts/round"}
+                </span>
+              </p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] bg-cyan-500/15 text-cyan-400 font-bold border border-cyan-500/20">
-              ACS
+            <div className="flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] bg-cyan-500/15 text-cyan-400 font-bold border border-cyan-500/20 text-[10px]">
+              {scoreSummary.system === "performance" ? "PERF" : "ACS"}
             </div>
           </div>
 

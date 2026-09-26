@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.122 — 2026-09-27
+
+**Tracker Valorant : score de performance (patch 13.06)**
+
+- Valorant : depuis le patch 13.06 (22/09/2026), l'ACS est remplacé par le « score de performance » (note de 0 à 500 tenant compte des dégâts, éliminations, capacités, trades et poses/désamorçages). Le tracker l'affiche pour les parties récentes (colonne PERF, moyenne du jour, rapport quotidien) et garde l'ACS pour les parties plus anciennes.
+- La formule de Riot n'étant pas publique, le score n'est jamais recalculé : s'il n'est pas fourni par l'API, la case affiche « — » ; le MVP et le classement de ces parties ne sont pas devinés non plus.
+
 ## v1.28.121 — 2026-09-26
 
 **Flows, Spaces, personas et macros : suppressions et erreurs fiables**

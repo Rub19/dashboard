@@ -51,8 +51,16 @@ export default function DailyReportModal({
     const prevHs = prevVal?.avgHsPercent != null ? Math.round(prevVal.avgHsPercent) : null;
     const hsDiff = prevHs !== null ? hs - prevHs : null;
 
-    const acs = isVal ? valGroup?.avgAcs || 0 : lolGroup?.avgDpm || 0;
-    const prevAcs = isVal ? prevVal?.avgAcs || null : prevLol?.avgDpm || null;
+    // Valorant : score de performance (0-500) depuis le patch 13.06, ACS pour les anciennes parties ; « — » (0) si absent.
+    const valScore = valGroup?.avgPerformanceScore ?? (valGroup?.avgAcs || 0);
+    const valScoreIsPerformance = valGroup?.avgPerformanceScore != null;
+    // On ne compare jamais un score de performance (0-500) à un ACS : les deux échelles ne sont pas comparables.
+    const prevValScore =
+      prevVal && (prevVal.avgPerformanceScore != null) === valScoreIsPerformance
+        ? prevVal.avgPerformanceScore ?? (prevVal.avgAcs || null)
+        : null;
+    const acs = isVal ? valScore : lolGroup?.avgDpm || 0;
+    const prevAcs = isVal ? prevValScore : prevLol?.avgDpm || null;
     const acsDiff = prevAcs !== null ? acs - prevAcs : null;
 
     // AI Coach Insights based on stats
@@ -98,6 +106,7 @@ export default function DailyReportModal({
       hsDiff,
       acs,
       acsDiff,
+      valScoreIsPerformance,
       totalKills: isVal ? valGroup?.totalKills : undefined,
       totalDeaths: isVal ? valGroup?.totalDeaths : undefined,
       totalAssists: isVal ? valGroup?.totalAssists : undefined,
@@ -195,7 +204,7 @@ export default function DailyReportModal({
             {/* ACS / DPM */}
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-3 backdrop-blur-xl">
               <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
-                {isVal ? "Score ACS" : "Dégâts DPM"}
+                {isVal ? (stats.valScoreIsPerformance ? "Score de performance" : "Score ACS") : "Dégâts DPM"}
               </span>
               <div className="mt-1 flex items-center justify-between">
                 <span className="font-mono text-sm font-black text-white">{stats.acs}</span>

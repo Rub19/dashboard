@@ -36813,6 +36813,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_121_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_121_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_121_de);
 
+const v1_28_122_fr: ChangelogEntry = {
+  version: "v1.28.122",
+  date: "2026-09-27",
+  title: "Tracker Valorant : score de performance (patch 13.06)",
+  items: [
+    "Valorant : depuis le patch 13.06 (22/09/2026), l'ACS est remplacé par le « score de performance » (note de 0 à 500 tenant compte des dégâts, éliminations, capacités, trades et poses/désamorçages). Le tracker l'affiche pour les parties récentes (colonne PERF, moyenne du jour, rapport quotidien) et garde l'ACS pour les parties plus anciennes.",
+    "La formule de Riot n'étant pas publique, le score n'est jamais recalculé : s'il n'est pas fourni par l'API, la case affiche « — » ; le MVP et le classement de ces parties ne sont pas devinés non plus.",
+  ],
+};
+
+const v1_28_122_en: ChangelogEntry = {
+  version: "v1.28.122",
+  date: "2026-09-27",
+  title: "Valorant tracker: Performance Score (patch 13.06)",
+  items: [
+    "Valorant: since patch 13.06 (22 Sep 2026), ACS is replaced by the \"Performance Score\" (a 0-500 rating that accounts for damage, kills, ability usage, trades and plants/defuses). The tracker shows it for recent matches (PERF column, daily average, daily report) and keeps ACS for older matches.",
+    "Since Riot has not published the formula, the score is never recomputed: when the API does not provide it, the cell shows \"—\"; MVP and ranking for those matches are not guessed either.",
+  ],
+};
+
+const v1_28_122_es: ChangelogEntry = {
+  version: "v1.28.122",
+  date: "2026-09-27",
+  title: "Tracker de Valorant: puntuación de rendimiento (parche 13.06)",
+  items: [
+    "Valorant: desde el parche 13.06 (22/09/2026), el ACS se sustituye por la «puntuación de rendimiento» (nota de 0 a 500 que tiene en cuenta daño, bajas, habilidades, trades y plantar/desactivar). El tracker la muestra en las partidas recientes (columna PERF, media del día, informe diario) y conserva el ACS en las antiguas.",
+    "Como Riot no ha publicado la fórmula, la puntuación nunca se recalcula: si la API no la proporciona, la casilla muestra «—»; tampoco se adivinan el MVP ni la clasificación de esas partidas.",
+  ],
+};
+
+const v1_28_122_de: ChangelogEntry = {
+  version: "v1.28.122",
+  date: "2026-09-27",
+  title: "Valorant-Tracker: Performance Score (Patch 13.06)",
+  items: [
+    "Valorant: Seit Patch 13.06 (22.09.2026) ersetzt der „Performance Score“ den ACS (Wertung von 0 bis 500 aus Schaden, Kills, Fähigkeiten, Trades und Spike-Aktionen). Der Tracker zeigt ihn für neuere Spiele (Spalte PERF, Tagesdurchschnitt, Tagesbericht) und behält den ACS für ältere Spiele.",
+    "Da Riot die Formel nicht veröffentlicht hat, wird der Wert nie neu berechnet: liefert die API ihn nicht, zeigt das Feld „—“; auch MVP und Rangfolge dieser Spiele werden nicht geraten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_122_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_122_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_122_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_122_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

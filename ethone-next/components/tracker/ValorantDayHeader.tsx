@@ -79,10 +79,14 @@ export default function ValorantDayHeader({ group, onViewReport }: ValorantDayHe
           <span className="font-mono text-xs font-bold text-white">{Math.round(group.avgHsPercent)}</span>
         </div>
 
-        {/* ACS */}
+        {/* Score de performance moyen (0-500) depuis le patch 13.06, sinon ACS moyen des anciennes parties */}
         <div className="text-right min-w-[32px]">
-          <span className="block text-[8px] font-extrabold uppercase text-zinc-500">ACS</span>
-          <span className="font-mono text-xs font-black text-white">{group.avgAcs}</span>
+          <span className="block text-[8px] font-extrabold uppercase text-zinc-500">
+            {group.avgPerformanceScore !== null ? "PERF" : group.avgAcs > 0 ? "ACS" : "PERF"}
+          </span>
+          <span className="font-mono text-xs font-black text-white">
+            {group.avgPerformanceScore !== null ? group.avgPerformanceScore : group.avgAcs > 0 ? group.avgAcs : "—"}
+          </span>
         </div>
       </div>
     </div>

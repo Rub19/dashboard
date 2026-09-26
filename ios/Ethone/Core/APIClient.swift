@@ -43,8 +43,8 @@ final class APIClient {
 
     // MARK: Worker
 
-    func worker<T: Decodable>(_ path: String, method: String = "GET", query: [URLQueryItem] = [], body: Data? = nil, as type: T.Type = T.self) async throws -> T {
-        let (data, _) = try await authorized { WorkerHTTP.request(path: path, method: method, query: query, body: body, token: $0) }
+    func worker<T: Decodable>(_ path: String, method: String = "GET", query: [URLQueryItem] = [], body: Data? = nil, headers: [String: String] = [:], as type: T.Type = T.self) async throws -> T {
+        let (data, _) = try await authorized { WorkerHTTP.request(path: path, method: method, query: query, body: body, headers: headers, token: $0) }
         let envelope = try decode(data, as: WorkerEnvelope<T>.self)
         guard let value = envelope.data else { throw APIError.decoding("Réponse vide.") }
         return value

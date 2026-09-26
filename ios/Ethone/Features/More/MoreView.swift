@@ -23,6 +23,8 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.interactions) { Label("Interactions", systemImage: "square.grid.3x3.fill") }
                     NavigationLink(value: MoreDestination.bills) { Label("Factures", systemImage: "eurosign.circle.fill") }
                     NavigationLink(value: MoreDestination.valorant) { Label("Valorant", systemImage: "scope") }
+                    NavigationLink(value: MoreDestination.valorantStore) { Label("Boutique Valorant", systemImage: "bag.fill") }
+                    NavigationLink(value: MoreDestination.lolRotation) { Label("Rotation LoL", systemImage: "shield.lefthalf.filled") }
                     NavigationLink(value: MoreDestination.games) { Label("Jeux", systemImage: "gamecontroller.fill") }
                     NavigationLink(value: MoreDestination.analytics) { Label("Analytique", systemImage: "chart.bar.xaxis") }
                     NavigationLink(value: MoreDestination.activity) { Label("Activité", systemImage: "waveform.path.ecg") }
@@ -104,6 +106,8 @@ struct MoreView: View {
                 case .team: TeamView()
                 case .bills: BillsView()
                 case .valorant: ValorantView()
+                case .valorantStore: ValorantStoreView()
+                case .lolRotation: LolRotationView()
                 case .games: GamesView()
                 case .interactions: InteractionsView()
                 case .brain: BrainView()

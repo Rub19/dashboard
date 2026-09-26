@@ -143,7 +143,7 @@ struct WorkerEnvelope<T: Decodable>: Decodable {
 }
 
 enum WorkerHTTP {
-    static func request(path: String, method: String = "GET", query: [URLQueryItem] = [], body: Data? = nil, token: String?) -> URLRequest {
+    static func request(path: String, method: String = "GET", query: [URLQueryItem] = [], body: Data? = nil, headers: [String: String] = [:], token: String?) -> URLRequest {
         var components = URLComponents(url: Config.workerURL.appendingPathComponent(path), resolvingAgainstBaseURL: false)!
         if !query.isEmpty { components.queryItems = query }
         var request = URLRequest(url: components.url!)
@@ -151,6 +151,7 @@ enum WorkerHTTP {
         request.setValue(HTTP.userAgent, forHTTPHeaderField: "User-Agent")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         if let token { request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
+        for (name, value) in headers { request.setValue(value, forHTTPHeaderField: name) }
         if let body {
             request.httpBody = body
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")

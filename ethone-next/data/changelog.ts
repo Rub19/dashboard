@@ -36539,6 +36539,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_115_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_115_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_115_de);
 
+const v1_28_116_fr: ChangelogEntry = {
+  version: "v1.28.116",
+  date: "2026-09-26",
+  title: "Compteurs et panneaux d'un module coupé, purge des serveurs quittés",
+  items: [
+    "Salons compteurs (Stats du serveur) : quand le module est désactivé, ils affichent « (inactif) » au lieu de garder une valeur figée qui semblait vraie ; ils reprennent leur valeur réelle à la réactivation.",
+    "Panneaux déjà publiés (tickets, sondages, tirages) : quand leur module est désactivé, leurs boutons sont grisés ; ils redeviennent utilisables à la réactivation.",
+    "Serveurs quittés ou d'où le bot est expulsé : leurs données sont conservées 30 jours (si le bot revient, tout est retrouvé), puis purgées au démarrage suivant avec une archive restaurable dans data/departed/.",
+    "Message privé de test de bienvenue : si Discord le refuse parce que les messages privés sont fermés, le dashboard l'explique clairement au lieu d'afficher une erreur technique.",
+  ],
+};
+
+const v1_28_116_en: ChangelogEntry = {
+  version: "v1.28.116",
+  date: "2026-09-26",
+  title: "Counters and panels of a disabled module, purge of departed servers",
+  items: [
+    "Counter channels (Server Stats): when the module is disabled, they show \"(inactif)\" instead of keeping a frozen value that looked real; they resume their real value when re-enabled.",
+    "Already published panels (tickets, polls, giveaways): when their module is disabled, their buttons are greyed out; they become usable again on re-enabling.",
+    "Servers left or from which the bot was kicked: their data is kept for 30 days (if the bot returns, everything is found again), then purged at the next start with a restorable archive in data/departed/.",
+    "Welcome test private message: if Discord refuses it because direct messages are closed, the dashboard now explains it clearly instead of showing a technical error.",
+  ],
+};
+
+const v1_28_116_es: ChangelogEntry = {
+  version: "v1.28.116",
+  date: "2026-09-26",
+  title: "Contadores y paneles de un módulo apagado, purga de servidores abandonados",
+  items: [
+    "Canales contador (Estadísticas del servidor): cuando el módulo se desactiva, muestran «(inactif)» en lugar de conservar un valor congelado que parecía real; recuperan su valor real al reactivarlo.",
+    "Paneles ya publicados (tickets, sondeos, sorteos): cuando su módulo se desactiva, sus botones se atenúan; vuelven a ser utilizables al reactivarlo.",
+    "Servidores abandonados o de los que el bot fue expulsado: sus datos se conservan 30 días (si el bot vuelve, todo se recupera) y luego se purgan en el siguiente inicio con un archivo restaurable en data/departed/.",
+    "Mensaje privado de prueba de bienvenida: si Discord lo rechaza porque los mensajes privados están cerrados, el panel lo explica claramente en lugar de mostrar un error técnico.",
+  ],
+};
+
+const v1_28_116_de: ChangelogEntry = {
+  version: "v1.28.116",
+  date: "2026-09-26",
+  title: "Zähler und Panels eines deaktivierten Moduls, Bereinigung verlassener Server",
+  items: [
+    "Zählerkanäle (Serverstatistik): Wenn das Modul deaktiviert ist, zeigen sie „(inactif)“ statt eines eingefrorenen Werts, der echt aussah; bei Reaktivierung zeigen sie wieder den echten Wert.",
+    "Bereits veröffentlichte Panels (Tickets, Umfragen, Verlosungen): Wenn ihr Modul deaktiviert ist, werden ihre Schaltflächen ausgegraut; bei Reaktivierung sind sie wieder nutzbar.",
+    "Verlassene oder mit Rauswurf des Bots beendete Server: Ihre Daten werden 30 Tage aufbewahrt (kehrt der Bot zurück, ist alles wieder da), dann beim nächsten Start bereinigt, mit wiederherstellbarem Archiv in data/departed/.",
+    "Willkommens-Test per Privatnachricht: Lehnt Discord ihn ab, weil Privatnachrichten geschlossen sind, erklärt das Dashboard es jetzt klar statt eines technischen Fehlers.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_116_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_116_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_116_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_116_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

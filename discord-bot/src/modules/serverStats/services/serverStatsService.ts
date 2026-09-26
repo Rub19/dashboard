@@ -169,6 +169,32 @@ class ServerStatsService {
     return { categoryId: category.id, channelIds };
   }
 
+  /**
+   * Interrupteur du module : à la coupure, les salons compteurs affichent « (inactif) » au lieu de garder une valeur figée
+   * qui aurait l'air vraie ; à la réactivation, ils reprennent leur valeur réelle.
+   */
+  async onToggle(guildId: string, enabled: boolean): Promise<void> {
+    const guild = this.client?.guilds.cache.get(guildId);
+    if (!guild) return;
+    const channels = serverStatsStorage.getGuild(guildId);
+    if (channels.length === 0) return;
+    if (enabled) {
+      this.lastRun.delete(guildId);
+      await this.forceRefresh(guild);
+      return;
+    }
+    for (const stat of channels) {
+      const channel = await guild.channels.fetch(stat.channelId).catch(() => null);
+      if (!channel || channel.type === ChannelType.GuildCategory) continue;
+      const base = (stat.lastName || channel.name).replace(/\s*\(inactif\)$/u, '');
+      const inactive = `${base.slice(0, 100 - ' (inactif)'.length)} (inactif)`;
+      if (channel.name === inactive) continue;
+      const ok = await channel.setName(inactive, 'Server Stats désactivé').then(() => true).catch(() => false);
+      // On mémorise le nom « inactif » : la réactivation le verra différent du nom calculé et renommera le salon.
+      if (ok) serverStatsStorage.setLastName(guildId, stat.channelId, inactive, stat.lastValue ?? undefined);
+    }
+  }
+
   /** Rafraîchit immédiatement une guilde (après une modif). */
   async forceRefresh(guild: Guild): Promise<void> {
     await this.refreshGuild(guild, serverStatsStorage.getGuild(guild.id));

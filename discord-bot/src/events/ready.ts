@@ -10,6 +10,8 @@ import { voiceService } from '../modules/voice/services/voiceService.js';
 import { backupService } from '../modules/backup/services/backupService.js';
 import { aiService } from '../modules/ai/services/aiService.js';
 import { runModuleMigrations } from '../services/moduleMigrations.js';
+import { clearDeparture } from '../services/departedGuilds.js';
+import { initializePanelState } from '../services/panelStateService.js';
 import { statsCollector } from '../modules/stats/services/statsCollector.js';
 import { statrolesEngine } from '../modules/statroles/services/statrolesEngine.js';
 import { initialize as initEmergency } from '../modules/health/services/emergencyService.js';
@@ -55,6 +57,9 @@ export async function onReady(client: Client<true>) {
 
   // Migrations uniques de modules (ex. XP désactivé partout), avant tout démarrage de module
   runModuleMigrations(client);
+  initializePanelState(client);
+  // Serveurs revenus pendant que le bot était arrêté : leur purge programmée est annulée.
+  for (const guild of client.guilds.cache.values()) clearDeparture(guild.id);
 
   // Statistiques : reprise des sessions vocales en cours et crédit périodique
   statsCollector.init(client);

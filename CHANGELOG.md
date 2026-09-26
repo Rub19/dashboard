@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.116 — 2026-09-26
+
+**Compteurs et panneaux d'un module coupé, purge des serveurs quittés**
+
+- Salons compteurs (Stats du serveur) : quand le module est désactivé, ils affichent « (inactif) » au lieu de garder une valeur figée qui semblait vraie ; ils reprennent leur valeur réelle à la réactivation.
+- Panneaux déjà publiés (tickets, sondages, tirages) : quand leur module est désactivé, leurs boutons sont grisés ; ils redeviennent utilisables à la réactivation.
+- Serveurs quittés ou d'où le bot est expulsé : leurs données sont conservées 30 jours (si le bot revient, tout est retrouvé), puis purgées au démarrage suivant avec une archive restaurable dans data/departed/.
+- Message privé de test de bienvenue : si Discord le refuse parce que les messages privés sont fermés, le dashboard l'explique clairement au lieu d'afficher une erreur technique.
+
 ## v1.28.115 — 2026-09-26
 
 **Limite de débit par visiteur et fin des reconnexions sans fin**

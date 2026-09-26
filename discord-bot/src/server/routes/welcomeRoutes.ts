@@ -70,7 +70,7 @@ export function createWelcomeRouter(discordClient: Client) {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur lors du test Welcome :', err);
-      res.status(500).json({ error: err.message || 'Échec de l’envoi du test sur Discord' });
+      res.status(Number(err?.status) || 500).json({ error: err.message || 'Échec de l’envoi du test sur Discord' });
     }
   });
 

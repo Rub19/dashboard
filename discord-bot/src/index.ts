@@ -2,6 +2,8 @@
 // reads process.env at import time, so it stays the very first import.
 import { config } from './config.js';
 import './utils/fsActivityCounter.js';
+// Purge des données des serveurs quittés depuis plus de 30 jours : doit s'exécuter AVANT le chargement des dépôts JSON.
+import './bootstrap/purgeDeparted.js';
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
 import { registerEvents } from './handlers/eventHandler.js';
 import { startWebServer } from './server/index.js';

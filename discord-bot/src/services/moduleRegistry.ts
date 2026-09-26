@@ -253,7 +253,16 @@ export const MODULES: ModuleDef[] = [
     emoji: '📊',
     description: 'Salons compteurs (membres, en ligne…).',
     commands: ['serverstats'],
-    own: { get: (g) => serverStatsStorage.getConfig(g).enabled, set: (g, enabled) => void serverStatsStorage.updateConfig(g, { enabled }) },
+    own: {
+      get: (g) => serverStatsStorage.getConfig(g).enabled,
+      set: (g, enabled) => {
+        serverStatsStorage.updateConfig(g, { enabled });
+        // Import différé : évite une dépendance circulaire avec le service (qui dépend lui-même du planificateur du bot).
+        void import('../modules/serverStats/services/serverStatsService.js')
+          .then((m) => m.serverStatsService.onToggle(g, enabled))
+          .catch((err) => logger.warn('[ServerStats] Mise à jour des salons compteurs impossible :', err));
+      },
+    },
   },
   { id: 'ai', label: 'Assistant IA', emoji: '✨', description: 'Questions, résumés et images par IA.', commands: ['ask', 'imagine', 'summarize', 'ai-setup'] },
   { id: 'backups', label: 'Sauvegardes', emoji: '💾', description: 'Snapshots et restauration du serveur.', commands: [] },
@@ -335,6 +344,13 @@ export function setModuleEnabled(guildId: string, moduleId: string, enabled: boo
     } catch (err) {
       logger.error(`[ModuleRegistry] Impossible d'écrire l'interrupteur propre de « ${moduleId} » :`, err);
     }
+  }
+
+  // Panneaux déjà publiés dans les salons : boutons grisés à la coupure, réactivés au retour (import différé : évite un cycle).
+  if (moduleId === 'tickets' || moduleId === 'polls' || moduleId === 'giveaways') {
+    void import('./panelStateService.js')
+      .then((m) => m.syncPanels(guildId, moduleId, enabled))
+      .catch((err) => logger.warn('[Panneaux] Synchronisation impossible :', err));
   }
 
   // Tous les dashboards ouverts sur ce serveur se mettent à jour, quelle que soit l'origine du changement.

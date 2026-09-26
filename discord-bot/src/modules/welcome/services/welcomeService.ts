@@ -242,6 +242,12 @@ class WelcomeService {
         });
         return { success: true, note: 'Message de test envoyé en DM avec succès.' };
       } catch (err: any) {
+        if (err?.code === 50007) {
+          // Discord refuse : messages privés fermés (réglage de confidentialité du compte ou du serveur), rien à voir avec le bot.
+          const closed = new Error("Discord refuse l'envoi : tes messages privés sont fermés pour ce serveur. Active « Autoriser les messages privés des membres du serveur » dans les réglages de confidentialité du serveur, puis réessaie.");
+          (closed as any).status = 409;
+          throw closed;
+        }
         throw new Error(`Impossible d'envoyer le MP de test : ${err.message}`);
       }
     }

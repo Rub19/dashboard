@@ -2,6 +2,16 @@ name: iOS 27 SDK — inventaire des nouvelles API
 
 on:
   workflow_dispatch:
+    inputs:
+      framework:
+        description: "Framework à fouiller (ex. FoundationModels)"
+        default: ""
+      pattern:
+        description: "Expression régulière à chercher dans son swiftinterface"
+        default: ""
+      lines:
+        description: "Lignes de contexte après chaque résultat"
+        default: "25"
 
 permissions:
   contents: read
@@ -34,6 +44,19 @@ jobs:
             [ -z "$FILE" ] && continue
             grep -nE -A2 "@available\(.*iOS 27" "$FILE" | grep -vE "^\-\-$" | cut -c1-240 > "out/$fw.declarations27.txt" || true
           done
+
+      - name: Recherche ciblée (optionnelle)
+        if: ${{ inputs.framework != '' && inputs.pattern != '' }}
+        env:
+          FW: ${{ inputs.framework }}
+          PATTERN: ${{ inputs.pattern }}
+          LINES: ${{ inputs.lines }}
+        run: |
+          SDK="$(xcrun --sdk iphoneos --show-sdk-path)"
+          FILE="$(find "$SDK/System/Library/Frameworks/$FW.framework" -name '*.swiftinterface' | grep -E 'arm64e?-apple-ios\.swiftinterface$' | head -1)"
+          echo "$FILE" > out/targeted.txt
+          grep -nE -A"$LINES" "$PATTERN" "$FILE" | cut -c1-300 >> out/targeted.txt || true
+          wc -l out/targeted.txt
 
       - name: Publier l'inventaire
         uses: actions/upload-artifact@v4

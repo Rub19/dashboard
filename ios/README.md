@@ -10,6 +10,7 @@ Application 100 % Swift/SwiftUI, sans dépendance tierce, qui parle au même bac
 | `EthoneWidgets/` | Widgets, Live Activity + Dynamic Island, Contrôles (Centre de contrôle / bouton Action) |
 | `EthoneNotificationService/` | Enrichissement des push (image) |
 | `EthoneNotificationContent/` | Interface personnalisée des notifications |
+| `EthoneWatch/` | App Apple Watch embarquée dans l'IPA (résumé, tâches, focus piloté depuis la montre via WatchConnectivity) |
 | `Shared/` | Code partagé app ↔ extensions (attributs de Live Activity, instantané des widgets) |
 | `project.yml` | Définition du projet [XcodeGen](https://github.com/yonaskolb/XcodeGen) |
 
@@ -22,7 +23,7 @@ cd ios && xcodegen generate && open Ethone.xcodeproj
 
 ## Obtenir l'IPA
 
-Le workflow `.github/workflows/build-ios.yml` (runner `macos-26`, Xcode 26.x) compile à chaque push touchant `ios/` et publie l'artefact `ETHONE-iOS-IPA` (IPA **non signé**).
+Le workflow `.github/workflows/build-ios.yml` compile à chaque push touchant `ios/` et publie **un seul artefact : `ETHONE-iOS-IPA`** (IPA **non signé**, tout inclus : app, widgets, Live Activity, contrôles, extensions de notification, app Apple Watch). Il est construit avec Xcode 27 (fonctions iOS 27 incluses, l'app reste installable dès iOS 26) ; si la préversion d'Xcode 27 échoue, le même artefact est produit avec Xcode 26.
 Installation : SideStore / AltStore / TrollStore (ils re-signent l'app), ou signature avec votre propre certificat.
 
 ## Fonctions natives utilisées
@@ -34,6 +35,12 @@ Installation : SideStore / AltStore / TrollStore (ils re-signent l'app), ou sign
 - **FoundationModels** : Brain sur l'appareil (Apple Intelligence), repli Cloud ETHONE.
 - **UserNotifications** : actions (Terminer, Reporter, Fait), catégories, rappels locaux ; extensions de service et de contenu.
 - **EventKit** (calendrier iPhone, lecture seule), **CoreSpotlight**, **LocalAuthentication** (Face ID), **AuthenticationServices** (connexion Discord/Google), **Keychain**, **Open-Meteo** (météo).
+
+## Autres plateformes Apple
+
+- **Apple Watch** : app embarquée (`Payload/ETHONE.app/Watch/`), alimentée par l'iPhone (`WatchBridge`).
+- **iPad** : la barre d'onglets devient une barre latérale (`sidebarAdaptable`).
+- **Mac (Apple silicon) et Vision Pro** : l'app iPad s'y exécute en mode « conçue pour iPad » (aucune build dédiée).
 
 ## Limites connues (IPA non signé)
 

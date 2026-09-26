@@ -117,6 +117,25 @@ enum NotificationManager {
         try? await UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "event-\(item.id)", content: content, trigger: trigger))
     }
 
+    /// Rappel de facture : la veille de l'échéance à 9 h (ou immédiatement le jour même si la veille est passée).
+    static func scheduleBill(id: String, label: String, amount: Double, due: Date) async {
+        let calendar = Calendar.current
+        let dayBefore = calendar.date(byAdding: .day, value: -1, to: calendar.startOfDay(for: due)) ?? due
+        var fire = calendar.date(bySettingHour: 9, minute: 0, second: 0, of: dayBefore) ?? dayBefore
+        if fire <= Date() { fire = Date().addingTimeInterval(60) }
+        guard fire < due.addingTimeInterval(86_400) else { return }
+        let content = UNMutableNotificationContent()
+        content.title = label
+        content.body = "Échéance demain : " + amount.formatted(.number.precision(.fractionLength(0...2))) + " €"
+        content.sound = .default
+        content.categoryIdentifier = Category.bill
+        content.threadIdentifier = "bills"
+        content.userInfo = ["kind": "bill", "id": id]
+        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: fire)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+        try? await UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "bill-" + id, content: content, trigger: trigger))
+    }
+
     static func cancelEvent(id: String) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["event-\(id)"])
     }
@@ -168,6 +187,9 @@ enum NotificationManager {
                 model.requestedTab = .more
             case "event":
                 model.morePath = [.calendar]
+                model.requestedTab = .more
+            case "bill":
+                model.morePath = [.bills]
                 model.requestedTab = .more
             default: model.requestedTab = .home
             }

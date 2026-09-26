@@ -27,6 +27,14 @@ final class AppModel {
     /// Pile de navigation de l'onglet « Plus » (ouvre directement une section).
     var morePath: [MoreDestination] = []
 
+    /// Couleur d'accent courante (observée par l'interface pour teinter l'app en direct).
+    private(set) var accentHex: UInt32 = Theme.currentAccentHex
+
+    func setAccent(_ hex: UInt32) {
+        accentHex = hex
+        UserDefaults.standard.set(Int(hex), forKey: Theme.accentKey)
+    }
+
     init() {
         let auth = AuthStore()
         let api = APIClient(auth: auth)
@@ -142,6 +150,6 @@ enum AppTab: String, CaseIterable, Identifiable {
 
 /// Sections accessibles depuis l'onglet « Plus ».
 enum MoreDestination: String, Hashable, CaseIterable, Identifiable {
-    case brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security
+    case settings, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security
     var id: String { rawValue }
 }

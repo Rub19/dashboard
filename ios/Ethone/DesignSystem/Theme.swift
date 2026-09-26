@@ -14,7 +14,16 @@ extension Color {
 
 /// Identité visuelle ETHONE (accent rose du site, fond nuit) pour un rendu Liquid Glass cohérent.
 enum Theme {
-    static let accent = Color(hex: 0xE11D5A)
+    static let accentKey = "ethone.accent"
+    static let defaultAccentHex: UInt32 = 0xE11D5A
+
+    /// Couleur d'accent choisie par l'utilisateur (Réglages > Apparence) ; rose ETHONE par défaut.
+    static var currentAccentHex: UInt32 {
+        let saved = UserDefaults.standard.integer(forKey: accentKey)
+        return saved == 0 ? defaultAccentHex : UInt32(truncatingIfNeeded: saved)
+    }
+
+    static var accent: Color { Color(hex: currentAccentHex) }
     static let accentSoft = Color(hex: 0xFF5C8A)
     static let night = Color(hex: 0x0B0D14)
     static let indigo = Color(hex: 0x2A2F6B)

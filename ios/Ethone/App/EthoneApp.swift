@@ -11,7 +11,7 @@ struct EthoneApp: App {
             RootView()
                 .environment(model)
                 .environment(model.auth)
-                .tint(Theme.accent)
+                .tint(Color(hex: model.accentHex))
                 .onOpenURL { url in model.handle(url: url) }
                 .onContinueUserActivity(CSSearchableItemActionType) { activity in
                     if let id = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String, let tab = SpotlightIndexer.tab(for: id) {

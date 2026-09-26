@@ -38,6 +38,9 @@ struct MoreView: View {
                     .padding(.vertical, 4)
                     .listRowBackground(GlassRowBackground())
 
+                    NavigationLink(value: MoreDestination.settings) { Label("Apparence", systemImage: "paintpalette.fill") }
+                        .listRowBackground(GlassRowBackground())
+
                     NavigationLink(value: MoreDestination.security) { Label("Appareils et sécurité", systemImage: "lock.shield.fill") }
                         .listRowBackground(GlassRowBackground())
 
@@ -92,6 +95,7 @@ struct MoreView: View {
             .ethoneScreen()
             .navigationDestination(for: MoreDestination.self) { destination in
                 switch destination {
+                case .settings: AppearanceView()
                 case .brain: BrainView()
                 case .mail: MailView()
                 case .discord: DiscordView()

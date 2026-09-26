@@ -3,6 +3,8 @@
 import { confirmDialog } from "@/lib/confirmDialog";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useCloudFiles, type CloudFile } from "@/lib/hooks/useCloudFiles";
+import { cleanClientId } from "@/lib/settings";
+import { oauthClientId } from "@/lib/oauth";
 import { useUserState } from "@/lib/hooks/useUserState";
 import { useToast } from "@/components/ToastProvider";
 import { useIsMobile } from "@/lib/hooks/useMediaQuery";
@@ -67,7 +69,7 @@ export default function FilesPage() {
   const { settings } = useSettings();
   const { success, error: toastError } = useToast();
   const [storedClientId] = useUserState<string>("clientId:google-drive", "");
-  const clientId = settings.driveClientId || storedClientId;
+  const clientId = cleanClientId(settings.driveClientId) || cleanClientId(storedClientId) || oauthClientId("google-drive");
 
   const {
     files,

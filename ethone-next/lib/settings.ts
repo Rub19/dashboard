@@ -493,11 +493,25 @@ const SOUND_PACK_LEGACY: Record<string, SoundPack> = {
 
 const SESSION_MODE_VALUES: SessionMode[] = ["default", "focus", "intense", "zen", "night"];
 
+/**
+ * Un identifiant client OAuth vide avait été enregistré sous la forme littérale `""` (deux guillemets) : truthy, donc
+ * envoyé tel quel au Worker (400 « paramètre invalide » sur le quota Drive). On retire guillemets et espaces autour ;
+ * un résultat vide redevient une vraie chaîne vide.
+ */
+export function cleanClientId(value: unknown): string {
+  if (typeof value !== "string") return "";
+  let v = value.trim();
+  while (v.length >= 2 && ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'")))) {
+    v = v.slice(1, -1).trim();
+  }
+  return v.replace(/^["']+|["']+$/g, "");
+}
+
 export function migrateSettings(raw: Partial<Settings>): Partial<Settings> {
   const next: Partial<Settings> = {};
   for (const [key, value] of Object.entries(raw)) {
     if (value !== undefined) {
-      (next as Record<string, unknown>)[key] = value;
+      (next as Record<string, unknown>)[key] = /ClientId$/.test(key) ? cleanClientId(value) : value;
     }
   }
   if (typeof raw.sessionMode === "string" && !SESSION_MODE_VALUES.includes(raw.sessionMode as SessionMode)) {

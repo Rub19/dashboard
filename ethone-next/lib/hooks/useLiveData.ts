@@ -8,6 +8,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useConnections } from "./useConnections";
 import { OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
+import { cleanClientId } from "@/lib/settings";
 import { listBills, getNextDueDate } from "@/lib/bills-manager";
 
 export type NowPlaying = {
@@ -175,9 +176,11 @@ export function useLiveData(pollMs = 60000) {
     liveTrackerRiotTag,
     liveTrackerApexPlatform,
     liveTrackerApexIdentifier,
-    calendarClientId,
-    driveClientId,
+    calendarClientId: rawCalendarClientId,
+    driveClientId: rawDriveClientId,
   } = settings;
+  const calendarClientId = cleanClientId(rawCalendarClientId);
+  const driveClientId = cleanClientId(rawDriveClientId);
 
   const i18n = useI18n();
 

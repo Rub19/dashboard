@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.119 — 2026-09-26
+
+**Fichiers : quota Google Drive réparé**
+
+- Fichiers : le quota de stockage Google Drive n'était jamais affiché (requête invalide à cause d'un identifiant client enregistré sous la forme « "" », et réponse du serveur lue avec de mauvais noms de champs). Les identifiants client vides sont nettoyés au chargement des réglages et le quota s'affiche.
+
 ## v1.28.118 — 2026-09-26
 
 **Habitudes : erreurs enfin visibles**

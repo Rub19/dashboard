@@ -36678,6 +36678,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_118_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_118_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_118_de);
 
+const v1_28_119_fr: ChangelogEntry = {
+  version: "v1.28.119",
+  date: "2026-09-26",
+  title: "Fichiers : quota Google Drive réparé",
+  items: [
+    "Fichiers : le quota de stockage Google Drive n'était jamais affiché (requête invalide à cause d'un identifiant client enregistré sous la forme « \"\" », et réponse du serveur lue avec de mauvais noms de champs). Les identifiants client vides sont nettoyés au chargement des réglages et le quota s'affiche.",
+  ],
+};
+
+const v1_28_119_en: ChangelogEntry = {
+  version: "v1.28.119",
+  date: "2026-09-26",
+  title: "Files: Google Drive quota fixed",
+  items: [
+    "Files: the Google Drive storage quota was never shown (invalid request because a client ID had been saved as a literal \"\" string, and the server reply was read with the wrong field names). Empty client IDs are now cleaned when settings load and the quota is displayed.",
+  ],
+};
+
+const v1_28_119_es: ChangelogEntry = {
+  version: "v1.28.119",
+  date: "2026-09-26",
+  title: "Archivos: cuota de Google Drive reparada",
+  items: [
+    "Archivos: la cuota de almacenamiento de Google Drive nunca se mostraba (solicitud no válida porque un ID de cliente se había guardado como el texto literal \"\", y la respuesta del servidor se leía con nombres de campo incorrectos). Los ID de cliente vacíos se limpian al cargar los ajustes y la cuota se muestra.",
+  ],
+};
+
+const v1_28_119_de: ChangelogEntry = {
+  version: "v1.28.119",
+  date: "2026-09-26",
+  title: "Dateien: Google-Drive-Kontingent repariert",
+  items: [
+    "Dateien: Das Google-Drive-Speicherkontingent wurde nie angezeigt (ungültige Anfrage, weil eine Client-ID als Text \"\" gespeichert war, und die Serverantwort wurde mit falschen Feldnamen gelesen). Leere Client-IDs werden beim Laden der Einstellungen bereinigt, das Kontingent wird angezeigt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_119_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_119_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_119_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_119_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

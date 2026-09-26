@@ -184,8 +184,11 @@ export function useCloudFiles(clientId?: string) {
     try {
       const res = await fetchWorker(`/api/google-drive/quota?clientId=${encodeURIComponent(clientId)}`);
       const data = res?.data || res;
-      if (data && typeof data.used === "number" && typeof data.total === "number") {
-        setQuota({ used: data.used, total: data.total });
+      // Le Worker renvoie { usage, limit } (Google Drive) ; « limit » vaut 0 quand le stockage est illimité.
+      const used = typeof data?.used === "number" ? data.used : data?.usage;
+      const total = typeof data?.total === "number" ? data.total : data?.limit;
+      if (typeof used === "number" && typeof total === "number") {
+        setQuota({ used, total });
       }
     } catch {
       setQuota(null);

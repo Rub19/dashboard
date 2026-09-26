@@ -57,3 +57,15 @@ describe('settings', () => {
     expect(loaded.language).toBe(DEFAULTS.language);
   });
 });
+
+describe('cleanClientId', () => {
+  it('turns the literal two-quote string into an empty value', async () => {
+    const { cleanClientId, migrateSettings } = await import('./settings');
+    expect(cleanClientId('""')).toBe('');
+    expect(cleanClientId(' "abc.apps.googleusercontent.com" ')).toBe('abc.apps.googleusercontent.com');
+    expect(cleanClientId('abc')).toBe('abc');
+    expect(cleanClientId(undefined)).toBe('');
+    expect(migrateSettings({ driveClientId: '""', calendarClientId: 'x' }).driveClientId).toBe('');
+    expect(migrateSettings({ driveClientId: '""', calendarClientId: 'x' }).calendarClientId).toBe('x');
+  });
+});

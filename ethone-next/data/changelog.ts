@@ -36637,6 +36637,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_117_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_117_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_117_de);
 
+const v1_28_118_fr: ChangelogEntry = {
+  version: "v1.28.118",
+  date: "2026-09-26",
+  title: "Habitudes : erreurs enfin visibles",
+  items: [
+    "Habitudes : si l'enregistrement, la coche du jour ou la suppression échoue (session expirée, réseau, base), une notification explique maintenant la cause au lieu de vider le champ sans rien dire.",
+  ],
+};
+
+const v1_28_118_en: ChangelogEntry = {
+  version: "v1.28.118",
+  date: "2026-09-26",
+  title: "Habits: errors are now visible",
+  items: [
+    "Habits: when saving, ticking today or deleting fails (expired session, network, database), a notification now explains why instead of silently clearing the field.",
+  ],
+};
+
+const v1_28_118_es: ChangelogEntry = {
+  version: "v1.28.118",
+  date: "2026-09-26",
+  title: "Hábitos: los errores ahora se ven",
+  items: [
+    "Hábitos: si falla guardar, marcar el día o eliminar (sesión caducada, red, base de datos), una notificación explica ahora el motivo en lugar de vaciar el campo sin avisar.",
+  ],
+};
+
+const v1_28_118_de: ChangelogEntry = {
+  version: "v1.28.118",
+  date: "2026-09-26",
+  title: "Gewohnheiten: Fehler werden angezeigt",
+  items: [
+    "Gewohnheiten: Schlägt Speichern, Tageshaken oder Löschen fehl (abgelaufene Sitzung, Netzwerk, Datenbank), erklärt jetzt eine Meldung den Grund, statt das Feld stillschweigend zu leeren.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_118_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_118_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_118_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_118_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

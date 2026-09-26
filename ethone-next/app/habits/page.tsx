@@ -74,8 +74,8 @@ export default function HabitsPage() {
     try {
       await create({ name: newName.trim(), emoji: newEmoji, description: null, color: null, target_per_week: 7 });
       setNewName("");
-    } catch {
-      showError("Erreur lors de la création de l'habitude");
+    } catch (err) {
+      showError("Erreur lors de la création de l'habitude", err instanceof Error ? err.message : undefined);
     }
   };
 
@@ -83,8 +83,8 @@ export default function HabitsPage() {
     try {
       await remove(id);
       success("Habitude supprimée", name);
-    } catch {
-      showError("Erreur de suppression");
+    } catch (err) {
+      showError("Erreur de suppression", err instanceof Error ? err.message : undefined);
     }
   };
 
@@ -201,7 +201,7 @@ export default function HabitsPage() {
                   >
                     <button
                       type="button"
-                      onClick={() => toggleToday(habit.id)}
+                      onClick={() => toggleToday(habit.id).catch((err) => showError("Impossible de mettre à jour l'habitude", err instanceof Error ? err.message : undefined))}
                       className={cn(
                         "flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors",
                         done ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"

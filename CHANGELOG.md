@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.118 — 2026-09-26
+
+**Habitudes : erreurs enfin visibles**
+
+- Habitudes : si l'enregistrement, la coche du jour ou la suppression échoue (session expirée, réseau, base), une notification explique maintenant la cause au lieu de vider le champ sans rien dire.
+
 ## v1.28.117 — 2026-09-26
 
 **Notes modifiables, bannière de mise à jour fiable**

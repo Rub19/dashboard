@@ -173,7 +173,7 @@ export function useHabits() {
       const userId = await withUserId();
       if (!userId) {
         setStatus("idle");
-        return null;
+        throw new Error("Session expirée : reconnectez-vous pour enregistrer vos habitudes.");
       }
 
       setStatus("syncing");
@@ -191,8 +191,9 @@ export function useHabits() {
         return next;
       } catch (err) {
         setStatus("error");
-        setError(new Error(errorMessage(err)));
-        return null;
+        const failure = new Error(errorMessage(err));
+        setError(failure);
+        throw failure;
       }
     },
     [withUserId],
@@ -239,7 +240,7 @@ export function useHabits() {
       const userId = await withUserId();
       if (!userId) {
         setStatus("idle");
-        return;
+        throw new Error("Session expirée : reconnectez-vous.");
       }
 
       setStatus("syncing");
@@ -252,8 +253,10 @@ export function useHabits() {
         setStatus("idle");
       } catch (err) {
         setStatus("error");
-        setError(new Error(errorMessage(err)));
+        const failure = new Error(errorMessage(err));
+        setError(failure);
         setItems(previous);
+        throw failure;
       }
     },
     [items, withUserId],
@@ -265,7 +268,7 @@ export function useHabits() {
   const toggleToday = useCallback(
     async (habitId: string) => {
       const userId = await withUserId();
-      if (!userId) return;
+      if (!userId) throw new Error("Session expirée : reconnectez-vous.");
 
       const today = todayKey();
       const existing = completions.find((c) => c.habit_id === habitId && c.completed_on === today);
@@ -278,7 +281,9 @@ export function useHabits() {
           if (deleteError) throw deleteError;
         } catch (err) {
           setCompletions(previous);
-          setError(new Error(errorMessage(err)));
+          const failure = new Error(errorMessage(err));
+          setError(failure);
+          throw failure;
         }
         return;
       }
@@ -295,7 +300,9 @@ export function useHabits() {
         setCompletions((prev) => prev.map((c) => (c.id === optimisticId ? (data as HabitCompletion) : c)));
       } catch (err) {
         setCompletions(previous);
-        setError(new Error(errorMessage(err)));
+        const failure = new Error(errorMessage(err));
+        setError(failure);
+        throw failure;
       }
     },
     [completions, withUserId],

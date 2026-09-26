@@ -166,6 +166,7 @@ struct MailView: View {
             }
         }
         .navigationTitle("Mail")
+        .ethoneScreen()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -228,6 +229,7 @@ struct MailDetailView: View {
                 .padding(16)
             }
             .navigationTitle("Message")
+            .ethoneScreen()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Fermer") { dismiss() } } }
             .task { if !message.isRead { await model.mail.markRead(message, read: true) } }

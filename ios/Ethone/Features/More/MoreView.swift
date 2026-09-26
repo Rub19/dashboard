@@ -83,6 +83,7 @@ struct MoreView: View {
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("Plus")
+            .ethoneScreen()
             .navigationDestination(for: MoreDestination.self) { destination in
                 switch destination {
                 case .brain: BrainView()

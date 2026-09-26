@@ -14,6 +14,7 @@ struct DiscordView: View {
             }
         }
         .navigationTitle("Discord")
+        .ethoneScreen()
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: DiscordGuild.self) { guild in GuildDetailView(guild: guild) }
     }
@@ -147,6 +148,7 @@ struct GuildDetailView: View {
         .overlay { if loading && modules.isEmpty { ProgressView() } }
         .searchable(text: $search, prompt: "Rechercher un module")
         .navigationTitle(guild.name)
+        .ethoneScreen()
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await load() }
         .task { await load() }

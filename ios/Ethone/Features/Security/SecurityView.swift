@@ -92,6 +92,7 @@ struct SecurityView: View {
             if loading && devices.isEmpty { ProgressView() }
         }
         .navigationTitle("Sécurité")
+        .ethoneScreen()
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await load() }
         .task { await load() }

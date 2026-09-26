@@ -40,6 +40,7 @@ struct FocusView: View {
             }
             .refreshable { await focus.refreshSessions() }
             .navigationTitle("Focus")
+            .ethoneScreen()
             .task { await focus.refreshSessions() }
             .onChange(of: focus.completedPomodoros) { _, _ in
                 Task { await focus.refreshSessions() }

@@ -33,6 +33,7 @@ struct HabitsView: View {
             }
             .refreshable { await model.habits.refresh() }
             .navigationTitle("Habitudes")
+            .ethoneScreen()
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button { showAdd = true } label: { Image(systemName: "plus") }
@@ -116,6 +117,7 @@ struct AddHabitSheet: View {
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("Nouvelle habitude")
+            .ethoneScreen()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Annuler") { dismiss() } }

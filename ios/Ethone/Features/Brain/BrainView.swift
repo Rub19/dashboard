@@ -48,6 +48,7 @@ struct BrainView: View {
         }
         .safeAreaInset(edge: .bottom) { composer }
         .navigationTitle("Brain")
+        .ethoneScreen()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {

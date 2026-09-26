@@ -102,6 +102,7 @@ struct HomeView: View {
             .refreshable { await model.refreshAll() }
             .scrollDismissesKeyboard(.interactively)
             .navigationTitle("Accueil")
+            .ethoneScreen()
             .toolbarTitleDisplayMode(.inlineLarge)
         }
     }

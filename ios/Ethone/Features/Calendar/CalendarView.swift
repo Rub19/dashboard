@@ -21,6 +21,7 @@ struct CalendarView: View {
             .padding(.bottom, 24)
         }
         .navigationTitle("Calendrier")
+        .ethoneScreen()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -280,6 +281,7 @@ struct EventEditorView: View {
             }
             .scrollContentBackground(.hidden)
             .navigationTitle(draft.item == nil ? "Nouvel événement" : "Modifier")
+            .ethoneScreen()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Annuler") { dismiss() } }

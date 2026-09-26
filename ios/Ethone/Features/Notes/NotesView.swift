@@ -49,6 +49,7 @@ struct NotesView: View {
             .refreshable { await model.notes.refresh() }
             .searchable(text: $query, prompt: "Rechercher une note")
             .navigationTitle("Notes")
+            .ethoneScreen()
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button { editing = NoteDraft(item: nil) } label: { Image(systemName: "square.and.pencil") }
@@ -110,6 +111,7 @@ struct NoteEditorView: View {
             }
             .padding(16)
             .navigationTitle(draft.item == nil ? "Nouvelle note" : "Modifier")
+            .ethoneScreen()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Fermer") { dismiss() } }

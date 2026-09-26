@@ -104,3 +104,10 @@ struct AvatarView: View {
         }
     }
 }
+
+extension View {
+    /// Fond ambiant pour un écran de navigation : le verre a quelque chose à réfracter (sinon le fond reste noir uni).
+    func ethoneScreen() -> some View {
+        containerBackground(for: .navigation) { AmbientBackground() }
+    }
+}

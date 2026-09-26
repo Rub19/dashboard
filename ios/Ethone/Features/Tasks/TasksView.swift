@@ -58,6 +58,7 @@ struct TasksView: View {
             }
             .refreshable { await model.tasks.refresh() }
             .navigationTitle("Tâches")
+            .ethoneScreen()
             .scrollDismissesKeyboard(.interactively)
         }
     }

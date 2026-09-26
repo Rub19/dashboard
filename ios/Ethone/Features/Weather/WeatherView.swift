@@ -33,6 +33,7 @@ struct WeatherView: View {
             .padding(.bottom, 24)
         }
         .navigationTitle("Météo")
+        .ethoneScreen()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {

@@ -13,6 +13,7 @@ final class AppModel {
     let events: ItemsStore
     let habits: HabitsStore
     let focus: FocusManager
+    let lock = AppLock()
 
     /// Instance unique : les actions de notification peuvent arriver avant que l'interface n'existe.
     static let shared = AppModel()
@@ -97,6 +98,6 @@ enum AppTab: String, CaseIterable, Identifiable {
 
 /// Sections accessibles depuis l'onglet « Plus ».
 enum MoreDestination: String, Hashable, CaseIterable, Identifiable {
-    case habits
+    case habits, calendar, weather, security
     var id: String { rawValue }
 }

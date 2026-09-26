@@ -3,6 +3,7 @@ import SwiftUI
 struct RootView: View {
     @Environment(AppModel.self) private var model
     @Environment(AuthStore.self) private var auth
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         ZStack {
@@ -21,6 +22,14 @@ struct RootView: View {
         .animation(.smooth, value: auth.phase)
         .preferredColorScheme(.dark)
         .task { await auth.restore() }
+        .overlay { if model.lock.isLocked && auth.phase == .signedIn { LockScreen() } }
+        .onChange(of: scenePhase) { _, phase in
+            switch phase {
+            case .background: model.lock.lockIfEnabled()
+            case .active: Task { await model.lock.unlock() }
+            default: break
+            }
+        }
     }
 }
 
@@ -66,5 +75,29 @@ private extension View {
         } else {
             self
         }
+    }
+}
+
+/// Écran affiché tant que l'app est verrouillée (le contenu est masqué, y compris dans le sélecteur d'apps).
+struct LockScreen: View {
+    @Environment(AppModel.self) private var model
+
+    var body: some View {
+        ZStack {
+            Rectangle().fill(.ultraThinMaterial).ignoresSafeArea()
+            VStack(spacing: 18) {
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 40))
+                    .padding(26)
+                    .glassEffect(Glass.regular.tint(Theme.accent.opacity(0.35)), in: .circle)
+                Text("ETHONE est verrouillé").font(.title3.weight(.semibold))
+                Button("Déverrouiller") { Task { await model.lock.unlock() } }
+                    .buttonStyle(.glassProminent)
+                if let message = model.lock.errorMessage {
+                    Text(message).font(.footnote).foregroundStyle(Theme.danger)
+                }
+            }
+        }
+        .task { await model.lock.unlock() }
     }
 }

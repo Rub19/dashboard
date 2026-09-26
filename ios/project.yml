@@ -54,6 +54,8 @@ targets:
             CFBundleURLSchemes:
               - ethone
         NSFaceIDUsageDescription: ETHONE utilise Face ID pour déverrouiller les zones sensibles de l'application.
+        NSCalendarsFullAccessUsageDescription: ETHONE affiche vos événements iPhone à côté de ceux d'ETHONE (lecture seule).
+        NSLocationWhenInUseUsageDescription: ETHONE utilise votre position pour afficher la météo locale.
         NSSupportsLiveActivities: true
         NSSupportsLiveActivitiesFrequentUpdates: true
         UIBackgroundModes:

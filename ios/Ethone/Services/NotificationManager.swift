@@ -90,6 +90,30 @@ enum NotificationManager {
         try? await UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "habit-\(habit.id)", content: content, trigger: trigger))
     }
 
+    /// Rappel d'un événement du calendrier, `minutesBefore` minutes avant le début.
+    static func scheduleEvent(_ item: Item, minutesBefore: Int) async {
+        guard let start = item.startAt else { return }
+        let fire = start.addingTimeInterval(TimeInterval(-minutesBefore * 60))
+        guard fire > Date() else { return }
+        let content = UNMutableNotificationContent()
+        content.title = item.title
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        formatter.dateStyle = .none
+        content.body = minutesBefore == 0 ? "Commence maintenant" : "Commence à \(formatter.string(from: start))"
+        content.sound = .default
+        content.categoryIdentifier = Category.bill
+        content.threadIdentifier = "events"
+        content.userInfo = ["kind": "event", "id": item.id]
+        let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: fire)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+        try? await UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "event-\(item.id)", content: content, trigger: trigger))
+    }
+
+    static func cancelEvent(id: String) {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["event-\(id)"])
+    }
+
     static func cancelHabit(id: String) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["habit-\(id)"])
     }
@@ -134,6 +158,9 @@ enum NotificationManager {
             case "task": model.requestedTab = .tasks
             case "habit":
                 model.morePath = [.habits]
+                model.requestedTab = .more
+            case "event":
+                model.morePath = [.calendar]
                 model.requestedTab = .more
             default: model.requestedTab = .home
             }

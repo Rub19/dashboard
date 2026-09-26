@@ -68,6 +68,16 @@ final class ItemsStore {
         }
     }
 
+    func updateEvent(_ item: Item, title: String, start: Date, end: Date?) async {
+        var fields: [String: JSONValue] = ["title": .string(title), "start_at": .string(ISODate.string(start))]
+        fields["end_at"] = end.map { .string(ISODate.string($0)) } ?? .null
+        await apply(item, fields: fields) { updated in
+            updated.title = title
+            updated.startAt = start
+            updated.endAt = end
+        }
+    }
+
     func setDone(_ item: Item, _ done: Bool) async {
         await apply(item, fields: ["done": .bool(done)]) { $0.done = done }
     }

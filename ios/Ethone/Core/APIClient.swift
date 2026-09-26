@@ -96,9 +96,10 @@ final class APIClient {
         return try decode(data, as: [T].self)
     }
 
-    func insert<T: Decodable>(_ table: String, fields: [String: JSONValue], as type: T.Type = T.self) async throws -> T {
+    /// `userColumn` : colonne recevant l'identifiant de l'utilisateur (`user_id` par défaut, `created_by` pour les tâches d'espace) ; `nil` pour ne rien ajouter.
+    func insert<T: Decodable>(_ table: String, fields: [String: JSONValue], userColumn: String? = "user_id", as type: T.Type = T.self) async throws -> T {
         var payload = fields
-        if payload["user_id"] == nil, let userId = auth.user?.id { payload["user_id"] = .string(userId) }
+        if let userColumn, payload[userColumn] == nil, let userId = auth.user?.id { payload[userColumn] = .string(userId) }
         let body = Self.json(payload)
         let (data, _) = try await authorized { restRequest(table: table, method: "POST", query: [], body: body, prefer: "return=representation", token: $0) }
         guard let first = try decode(data, as: [T].self).first else { throw APIError.decoding("Ligne créée introuvable.") }

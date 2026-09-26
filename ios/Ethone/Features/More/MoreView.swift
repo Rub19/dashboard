@@ -15,6 +15,10 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.brain) { Label("Brain", systemImage: "sparkles") }
                     NavigationLink(value: MoreDestination.mail) { Label("Mail", systemImage: "envelope.fill") }
                     NavigationLink(value: MoreDestination.discord) { Label("Bot Discord", systemImage: "bubble.left.and.bubble.right.fill") }
+                    NavigationLink(value: MoreDestination.files) { Label("Fichiers", systemImage: "folder.fill") }
+                    NavigationLink(value: MoreDestination.spaces) { Label("Espaces partagés", systemImage: "person.2.fill") }
+                    NavigationLink(value: MoreDestination.flows) { Label("Flows", systemImage: "bolt.fill") }
+                    NavigationLink(value: MoreDestination.connections) { Label("Connexions", systemImage: "link") }
                     NavigationLink(value: MoreDestination.habits) { Label("Habitudes", systemImage: "flame.fill") }
                     NavigationLink(value: MoreDestination.calendar) { Label("Calendrier", systemImage: "calendar") }
                     NavigationLink(value: MoreDestination.weather) { Label("Météo", systemImage: "cloud.sun.fill") }
@@ -89,6 +93,10 @@ struct MoreView: View {
                 case .brain: BrainView()
                 case .mail: MailView()
                 case .discord: DiscordView()
+                case .spaces: SpacesView()
+                case .flows: FlowsView()
+                case .files: FilesView()
+                case .connections: ConnectionsView()
                 case .habits: HabitsView()
                 case .calendar: CalendarView()
                 case .weather: WeatherView()

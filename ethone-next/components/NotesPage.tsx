@@ -34,13 +34,14 @@ function formatDate(iso?: string) {
 export default function NotesPage() {
   const i18n = useI18n();
   const { error: showError, notify } = useToast();
-  const { items, loading, isOffline, create, remove } = useItems("notes");
+  const { items, loading, isOffline, create, update, remove } = useItems("notes");
   const { settings } = useSettings();
   const osReducedMotion = useReducedMotion();
   const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<"title" | "words" | "created">("created");
 
@@ -80,10 +81,7 @@ export default function NotesPage() {
 
   const { activeIndex, handleKeyDown } = useListKeyboard({
     items: filtered,
-    onSelect: (note) => {
-      setTitle(note.title);
-      setBody(note.body);
-    },
+    onSelect: (note) => openNote(note),
     onDelete: (note) => deleteNote(note.id),
     selectMessage: null,
     deleteMessage: null,
@@ -92,13 +90,29 @@ export default function NotesPage() {
   const currentWords = wordCountFromHtml(body);
   const currentChars = stripHtml(body).length;
 
+  function openNote(note: Note) {
+    setEditingId(note.id);
+    setTitle(note.title);
+    setBody(note.body);
+  }
+
+  function resetEditor() {
+    setEditingId(null);
+    setTitle("");
+    setBody("");
+  }
+
   async function addNote() {
     if (!title.trim()) return;
     try {
-      await create({ title, body });
-      setTitle("");
-      setBody("");
-      notify.noteCreated(title);
+      if (editingId && items.some((n) => n.id === editingId)) {
+        await update(editingId, { title, body });
+        notify.noteCreated(title);
+      } else {
+        await create({ title, body });
+        notify.noteCreated(title);
+      }
+      resetEditor();
     } catch {
       showError(i18n("error"));
     }
@@ -108,6 +122,7 @@ export default function NotesPage() {
     hapticRigidImpact();
     try {
       await remove(id);
+      if (id === editingId) resetEditor();
       hapticSuccess();
       notify.noteDeleted(1);
     } catch {
@@ -242,7 +257,7 @@ export default function NotesPage() {
               data-active={index === activeIndex}
               className={cn(
                 "group rounded-[var(--panel-radius)] v8-panel p-3 transition-colors hover:border-[var(--accent-primary)]/20",
-                index === activeIndex && "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10"
+                (index === activeIndex || note.id === editingId) && "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10"
               )}
             >
               <div className="flex items-start justify-between gap-2">
@@ -250,7 +265,19 @@ export default function NotesPage() {
                   <span className="mt-0.5" onClick={(e) => e.stopPropagation()}>
                     <CustomCheckbox checked={isSelected(note.id)} onChange={() => toggle(note.id)} />
                   </span>
-                  <div className="min-w-0 flex-1">
+                  <div
+                    className="min-w-0 flex-1 cursor-pointer"
+                    role="button"
+                    tabIndex={0}
+                    data-testid="note-open"
+                    onClick={() => openNote(note)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        openNote(note);
+                      }
+                    }}
+                  >
                     <p className="truncate text-sm font-medium text-[var(--text-primary)]">{note.title}</p>
                     <p className="line-clamp-2 text-[11px] text-[var(--text-muted)]" dangerouslySetInnerHTML={{ __html: note.body }} />
                     <div className="mt-1.5 flex gap-2 text-[10px] text-[var(--text-muted)]">
@@ -337,6 +364,16 @@ export default function NotesPage() {
             {currentWords} {i18n("words")} · {currentChars} caractères
           </span>
           <div className="flex items-center gap-2">
+            {editingId && (
+              <button
+                type="button"
+                onClick={resetEditor}
+                className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-semibold text-[var(--text-primary)] transition-all hover:bg-[var(--surface-hover)] active:scale-95"
+              >
+                <Icon name="plus" className="h-3.5 w-3.5" />
+                {i18n("newNote", "Rédiger une note")}
+              </button>
+            )}
             <button
               type="button"
               onClick={() => exportNoteAsFile(title || "Nouvelle Note", body)}

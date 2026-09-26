@@ -55,12 +55,26 @@ function parseBuildAt(value?: string): number {
   return Number.isNaN(ts) ? 0 : ts;
 }
 
-function isNewerBuild(current: VersionData, remote: VersionData): boolean {
+/**
+ * Version et commit du code réellement chargé (embarqués au build). Vide en développement : on retombe alors sur la version
+ * mémorisée. Le moment du build n'est pas comparé (il diffère entre le code et version.json d'un même déploiement).
+ */
+export function builtVersion(): VersionData | null {
+  const version = process.env.NEXT_PUBLIC_BUILD_VERSION;
+  if (!version) return null;
+  return { version, commit: process.env.NEXT_PUBLIC_BUILD_COMMIT || null };
+}
+
+/** Le déploiement en ligne est-il différent du code chargé ? Sans date de build côté courant, seules la version et le commit comptent. */
+export function isNewerBuild(current: VersionData, remote: VersionData): boolean {
   if (current.version !== remote.version) return true;
 
   const currentCommit = current.commit ?? null;
   const remoteCommit = remote.commit ?? null;
   if (currentCommit !== remoteCommit) return true;
+
+  // Identité issue du build (pas de date) : version et commit identiques = même déploiement.
+  if (!current.buildAt) return false;
 
   const currentAt = parseBuildAt(current.buildAt);
   const remoteAt = parseBuildAt(remote.buildAt);
@@ -177,10 +191,13 @@ export function useVersionChecker(): UseVersionChecker {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const stored = loadStored();
+    // Référence = le code réellement chargé ; la version mémorisée ne sert qu'en développement.
+    const built = builtVersion();
+    const stored = built ?? loadStored();
     if (stored) {
       lastDataRef.current = stored;
       setCurrentData(stored);
+      if (built) saveStored(built);
     }
 
     const run = () => check();

@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.117 — 2026-09-26
+
+**Notes modifiables, bannière de mise à jour fiable**
+
+- Notes : cliquer sur une note l'ouvre dans l'éditeur ; « Enregistrer » met alors la note à jour au lieu d'en créer une nouvelle (un bouton permet de repartir d'une note vierge).
+- Bannière « nouvelle version » : elle compare maintenant la version en ligne à celle réellement chargée dans votre navigateur, ce qui supprime les fausses alertes après une mise à jour.
+
 ## v1.28.116 — 2026-09-26
 
 **Compteurs et panneaux d'un module coupé, purge des serveurs quittés**

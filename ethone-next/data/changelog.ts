@@ -36592,6 +36592,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_116_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_116_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_116_de);
 
+const v1_28_117_fr: ChangelogEntry = {
+  version: "v1.28.117",
+  date: "2026-09-26",
+  title: "Notes modifiables, bannière de mise à jour fiable",
+  items: [
+    "Notes : cliquer sur une note l'ouvre dans l'éditeur ; « Enregistrer » met alors la note à jour au lieu d'en créer une nouvelle (un bouton permet de repartir d'une note vierge).",
+    "Bannière « nouvelle version » : elle compare maintenant la version en ligne à celle réellement chargée dans votre navigateur, ce qui supprime les fausses alertes après une mise à jour.",
+  ],
+};
+
+const v1_28_117_en: ChangelogEntry = {
+  version: "v1.28.117",
+  date: "2026-09-26",
+  title: "Editable notes, reliable update banner",
+  items: [
+    "Notes: clicking a note opens it in the editor; \"Save\" then updates that note instead of creating a new one (a button lets you start a blank note).",
+    "\"New version\" banner: it now compares the online version with the one actually loaded in your browser, removing false alerts after an update.",
+  ],
+};
+
+const v1_28_117_es: ChangelogEntry = {
+  version: "v1.28.117",
+  date: "2026-09-26",
+  title: "Notas editables, aviso de actualización fiable",
+  items: [
+    "Notas: al hacer clic en una nota se abre en el editor; «Guardar» actualiza esa nota en lugar de crear otra (un botón permite empezar una nota en blanco).",
+    "Aviso de «nueva versión»: ahora compara la versión en línea con la realmente cargada en tu navegador, lo que elimina las falsas alertas tras una actualización.",
+  ],
+};
+
+const v1_28_117_de: ChangelogEntry = {
+  version: "v1.28.117",
+  date: "2026-09-26",
+  title: "Bearbeitbare Notizen, zuverlässiger Update-Hinweis",
+  items: [
+    "Notizen: Ein Klick öffnet die Notiz im Editor; „Speichern“ aktualisiert sie, statt eine neue anzulegen (eine Schaltfläche startet eine leere Notiz).",
+    "Hinweis „Neue Version“: Er vergleicht jetzt die Online-Version mit der tatsächlich im Browser geladenen und vermeidet so Fehlalarme nach einem Update.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_117_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_117_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_117_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_117_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

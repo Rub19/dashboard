@@ -33,6 +33,12 @@ try {
 } catch {}
 
 const nextConfig: NextConfig = {
+  // Identité du build embarquée dans le code : la bannière « mise à jour disponible » compare la version en ligne à CELLE-CI
+  // (et non à ce que le navigateur a mémorisé), sinon elle réapparaît après un simple rechargement de la page.
+  env: {
+    NEXT_PUBLIC_BUILD_VERSION: version,
+    NEXT_PUBLIC_BUILD_COMMIT: commit ?? "",
+  },
   output: "export",
   distDir: "dist",
   images: {

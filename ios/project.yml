@@ -40,6 +40,12 @@ targets:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSRequiresIPhoneOS: true
+        CFBundleDevelopmentRegion: fr
+        CFBundleLocalizations:
+          - fr
+          - en
+          - es
+          - de
         UILaunchScreen: {}
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false

@@ -17,6 +17,7 @@ final class AppModel {
     let brain: BrainChat
     let mail: MailStore
     let spaces: SpacesStore
+    let valorant: ValorantStore
     let discord = DiscordStore()
 
     /// Instance unique : les actions de notification peuvent arriver avant que l'interface n'existe.
@@ -48,6 +49,7 @@ final class AppModel {
         self.brain = BrainChat(api: api)
         self.mail = MailStore(api: api)
         self.spaces = SpacesStore(api: api)
+        self.valorant = ValorantStore(api: api)
         focus.onChange = { [weak self] in self?.publishSnapshot() }
         WatchBridge.shared.activate()
     }
@@ -150,6 +152,6 @@ enum AppTab: String, CaseIterable, Identifiable {
 
 /// Sections accessibles depuis l'onglet « Plus ».
 enum MoreDestination: String, Hashable, CaseIterable, Identifiable {
-    case settings, team, games, interactions, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security
+    case settings, team, valorant, games, interactions, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security
     var id: String { rawValue }
 }

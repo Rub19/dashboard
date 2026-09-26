@@ -21,6 +21,7 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.flows) { Label("Flows", systemImage: "bolt.fill") }
                     NavigationLink(value: MoreDestination.connections) { Label("Connexions", systemImage: "link") }
                     NavigationLink(value: MoreDestination.interactions) { Label("Interactions", systemImage: "square.grid.3x3.fill") }
+                    NavigationLink(value: MoreDestination.valorant) { Label("Valorant", systemImage: "scope") }
                     NavigationLink(value: MoreDestination.games) { Label("Jeux", systemImage: "gamecontroller.fill") }
                     NavigationLink(value: MoreDestination.analytics) { Label("Analytique", systemImage: "chart.bar.xaxis") }
                     NavigationLink(value: MoreDestination.activity) { Label("Activité", systemImage: "waveform.path.ecg") }
@@ -100,6 +101,7 @@ struct MoreView: View {
                 switch destination {
                 case .settings: AppearanceView()
                 case .team: TeamView()
+                case .valorant: ValorantView()
                 case .games: GamesView()
                 case .interactions: InteractionsView()
                 case .brain: BrainView()

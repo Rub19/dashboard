@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import WidgetKit
 
 /// Racine des données de l'app : authentification, client réseau et stores partagés par tous les écrans.
 @MainActor
@@ -11,12 +12,15 @@ final class AppModel {
     let tasks: ItemsStore
     let events: ItemsStore
     let habits: HabitsStore
+    let focus: FocusManager
 
     /// Instance unique : les actions de notification peuvent arriver avant que l'interface n'existe.
     static let shared = AppModel()
 
     /// Onglet demandé par un lien profond (`ethone://notes`), un raccourci ou une notification.
     var requestedTab: AppTab?
+    /// Pile de navigation de l'onglet « Plus » (ouvre directement une section).
+    var morePath: [MoreDestination] = []
 
     init() {
         let auth = AuthStore()
@@ -27,6 +31,7 @@ final class AppModel {
         self.tasks = ItemsStore(kind: .task, api: api)
         self.events = ItemsStore(kind: .event, api: api)
         self.habits = HabitsStore(api: api)
+        self.focus = FocusManager(api: api)
     }
 
     func refreshAll() async {
@@ -35,6 +40,26 @@ final class AppModel {
         async let c: Void = events.refresh()
         async let d: Void = habits.refresh()
         _ = await (a, b, c, d)
+        await focus.refreshSessions()
+        publishSnapshot()
+    }
+
+    /// Écrit l'instantané lu par les widgets (App Group) puis demande leur rafraîchissement.
+    func publishSnapshot() {
+        let open = tasks.items.filter { !$0.isDone }.sorted { $0.createdAt > $1.createdAt }
+        let snapshot = SharedSnapshot(
+            updatedAt: Date(),
+            userName: auth.user?.displayName ?? "",
+            openTaskCount: open.count,
+            nextTasks: open.prefix(4).map(\.title),
+            habitsDone: habits.activeHabits.filter { habits.isDone($0) }.count,
+            habitsTotal: habits.activeHabits.count,
+            bestStreak: habits.activeHabits.map { habits.streak($0) }.max() ?? 0,
+            noteCount: notes.items.count,
+            focusMinutesToday: focus.minutesToday
+        )
+        snapshot.save()
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     /// Termine une tâche depuis une action de notification (l'app peut être lancée en arrière-plan, sans cache chargé).
@@ -56,11 +81,22 @@ final class AppModel {
     /// Liens `ethone://<page>` (raccourcis, widgets, notifications).
     func handle(url: URL) {
         guard url.scheme == Config.oauthCallbackScheme, let host = url.host else { return }
-        if let tab = AppTab(rawValue: host) { requestedTab = tab }
+        if let tab = AppTab(rawValue: host) {
+            requestedTab = tab
+        } else if let destination = MoreDestination(rawValue: host) {
+            morePath = [destination]
+            requestedTab = .more
+        }
     }
 }
 
 enum AppTab: String, CaseIterable, Identifiable {
-    case home, notes, tasks, habits, more
+    case home, notes, tasks, focus, more
+    var id: String { rawValue }
+}
+
+/// Sections accessibles depuis l'onglet « Plus ».
+enum MoreDestination: String, Hashable, CaseIterable, Identifiable {
+    case habits
     var id: String { rawValue }
 }

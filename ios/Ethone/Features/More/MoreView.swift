@@ -8,8 +8,16 @@ struct MoreView: View {
     @State private var confirmSignOut = false
 
     var body: some View {
-        NavigationStack {
+        @Bindable var model = model
+        NavigationStack(path: $model.morePath) {
             List {
+                Section {
+                    NavigationLink(value: MoreDestination.habits) {
+                        Label("Habitudes", systemImage: "flame.fill")
+                    }
+                    .listRowBackground(GlassRowBackground())
+                } header: { Text("Applications").sectionTitle() }
+
                 Section {
                     HStack(spacing: 14) {
                         AvatarView(url: auth.user?.avatarURL, name: auth.user?.displayName ?? "E", size: 56, status: .online)
@@ -61,6 +69,11 @@ struct MoreView: View {
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("Plus")
+            .navigationDestination(for: MoreDestination.self) { destination in
+                switch destination {
+                case .habits: HabitsView()
+                }
+            }
             .task { await refreshStatus() }
             .confirmationDialog("Se déconnecter d'ETHONE ?", isPresented: $confirmSignOut, titleVisibility: .visible) {
                 Button("Se déconnecter", role: .destructive) { Task { await auth.signOut() } }

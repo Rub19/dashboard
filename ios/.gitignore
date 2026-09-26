@@ -38,3 +38,5 @@ build/
 Ethone/Info.plist
 Ethone/Ethone.entitlements
 build/
+*/Info.plist
+*/*.entitlements

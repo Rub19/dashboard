@@ -94,10 +94,10 @@ enum NotificationManager {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["habit-\(id)"])
     }
 
-    static func scheduleFocusEnd(in seconds: TimeInterval, goal: String?) async {
+    static func scheduleFocusEnd(in seconds: TimeInterval, title: String, body: String) async {
         let content = UNMutableNotificationContent()
-        content.title = "Session terminée"
-        content.body = goal.map { "Bravo ! Objectif : \($0)" } ?? "Bravo, prenez une pause."
+        content.title = title
+        content.body = body
         content.sound = .default
         content.categoryIdentifier = Category.focus
         content.interruptionLevel = .timeSensitive

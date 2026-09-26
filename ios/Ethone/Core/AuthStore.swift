@@ -295,7 +295,9 @@ final class AuthStore {
 private final class OAuthPresentationContext: NSObject, ASWebAuthenticationPresentationContextProviding {
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         let scene = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first
-        return scene?.keyWindow ?? ASPresentationAnchor()
+        if let window = scene?.keyWindow { return window }
+        if let scene { return ASPresentationAnchor(windowScene: scene) }
+        return ASPresentationAnchor()
     }
 }
 

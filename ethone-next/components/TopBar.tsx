@@ -370,12 +370,12 @@ function TopBar() {
         </div>
       </div>
 
-      {/* Desktop Bar */}
-      <div className="relative pointer-events-auto hidden h-14 w-full items-center justify-between gap-3 md:flex">
-        {/* Left: Sidebar toggle + Breadcrumb */}
+      {/* Desktop Bar : navigation à gauche, recherche au centre, outils regroupés à droite */}
+      <div className="relative pointer-events-auto hidden h-14 w-full items-center gap-3 md:flex">
+        {/* Gauche : bouton de barre latérale + fil d'Ariane */}
         <div className="flex min-w-0 shrink-0 items-center gap-2.5">
           <SidebarTopToggle />
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)] max-w-[140px] sm:max-w-[200px] lg:max-w-[280px]">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)] max-w-[140px] sm:max-w-[200px] lg:max-w-[260px]">
             <Link
               href="/"
               className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors shrink-0"
@@ -389,30 +389,31 @@ function TopBar() {
           </nav>
         </div>
 
-        {/* Center: System status pills - only visible on wide viewports (2xl+) to never collide */}
-        <div className="hidden 2xl:flex items-center justify-center shrink-0">
-          <SystemStatusPills />
+        {/* Centre : champ de recherche */}
+        <div className="flex min-w-0 flex-1 justify-center px-2">
+          <CommandBarTrigger variant="field" className="max-w-[480px]" />
         </div>
 
-        {/* Right: Quick Tools & Unified Controls */}
-        <div className="flex items-center justify-end gap-1.5 shrink-0 ml-auto">
-          {/* Quick Tool Icons */}
-          <div className="flex items-center gap-1.5">
+        {/* Droite : état du système (très grands écrans), capsule d'outils, profil */}
+        <div className="flex shrink-0 items-center justify-end gap-2">
+          <div className="hidden 2xl:flex">
+            <SystemStatusPills />
+          </div>
+          <div className="ethone-toolbar">
             <FocusLivePill />
-            <div className="hidden 2xl:flex items-center gap-1.5">
+            <div className="hidden 2xl:contents">
               <FeedbackButton />
               <DynamicIslandToggle />
               <ThemeToggle />
             </div>
-          </div>
-
-          <div className="hidden xl:inline-flex">
-            <SupportModal />
-          </div>
-          <CommandBarTrigger />
-          <NotificationCenter />
-          <div className="hidden lg:inline-flex">
-            <LanguageSwitcher />
+            <span aria-hidden className="ethone-toolbar-sep hidden xl:block" />
+            <div className="hidden xl:inline-flex">
+              <SupportModal />
+            </div>
+            <NotificationCenter />
+            <div className="hidden lg:inline-flex">
+              <LanguageSwitcher />
+            </div>
           </div>
           <UserProfileDropdown dataTestId="user-profile-trigger-desktop" />
         </div>

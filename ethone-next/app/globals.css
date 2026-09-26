@@ -140,6 +140,71 @@ html[data-color-scheme="light"] {
   background: var(--chip-color);
 }
 
+/* Barre du haut : les outils sont regroupés dans une seule capsule, sans bordure individuelle (fond au survol seulement). */
+.ethone-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 14px;
+  border: 1px solid var(--menu-border);
+  background: color-mix(in srgb, var(--surface-raised, #1a1c22) 55%, transparent);
+}
+.ethone-toolbar button,
+.ethone-toolbar a {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 10px !important;
+}
+.ethone-toolbar button:hover,
+.ethone-toolbar a:hover,
+.ethone-toolbar button[aria-expanded="true"] {
+  background: var(--menu-hover) !important;
+}
+.ethone-toolbar-sep {
+  width: 1px;
+  height: 1.125rem;
+  margin: 0 3px;
+  background: var(--menu-border);
+}
+/* Champ de recherche central de la barre du haut */
+.ethone-search-field {
+  display: flex;
+  width: 100%;
+  height: 2.375rem;
+  align-items: center;
+  gap: 0.625rem;
+  border-radius: 12px;
+  border: 1px solid var(--menu-border);
+  background: color-mix(in srgb, var(--surface-raised, #1a1c22) 45%, transparent);
+  padding: 0 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease, color 120ms ease;
+}
+.ethone-search-field:hover {
+  border-color: color-mix(in srgb, var(--accent-primary, #6366f1) 45%, transparent);
+  background: var(--menu-hover);
+  color: var(--text-primary);
+}
+/* Barre latérale : intitulé de section (visible barre ouverte) */
+.ethone-nav-label {
+  padding: 0.875rem 0.75rem 0.3125rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+.ethone-nav-divider {
+  height: 1px;
+  margin: 0.5rem 0.5rem;
+  background: var(--menu-border);
+}
+
 /* Menus déroulants de la barre du haut : fondu rapide avec 4 px de glissement, coupé si « réduire les animations ». */
 @keyframes ethone-popover-in {
   from {

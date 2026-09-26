@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.113 — 2026-09-26
+
+**Barre du haut et barre latérale repensées**
+
+- Barre du haut : la recherche devient un vrai champ au centre, les outils (Focus, Brain, Dynamic Island, thème, soutien, notifications, langue) sont regroupés dans une seule capsule discrète sans bordure individuelle, et le profil reste à droite.
+- Barre latérale : les applications sont rangées en sections (Espace, Assistants, Suivi, Communauté, Système) avec de petits intitulés, l'application active est marquée par un fond léger et un repère à gauche au lieu d'une lueur, la carte de profil est plus sobre avec la pastille de statut à la bonne couleur, et le bouton Réglages en double du pied de page est retiré.
+
 ## v1.28.112 — 2026-09-26
 
 **Menus refaits, pastilles de statut corrigées, jetons IA réels**

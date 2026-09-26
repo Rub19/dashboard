@@ -5,10 +5,27 @@ import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useModKey } from "@/lib/hooks/useModKey";
 import { cn } from "@/lib/utils";
 
-export default function CommandBarTrigger({ className }: { className?: string }) {
+export default function CommandBarTrigger({ className, variant = "button" }: { className?: string; variant?: "button" | "field" }) {
   const { setOpen } = useCommandPalette();
   const mod = useModKey();
   const shortcut = mod === "⌘" ? "⌘K" : "Ctrl K";
+
+  if (variant === "field") {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label={`Recherche et commandes (${shortcut})`}
+        className={cn("ethone-search-field select-none", className)}
+      >
+        <Search className="h-4 w-4 shrink-0 pointer-events-none" />
+        <span className="min-w-0 flex-1 truncate text-left">Rechercher une page, une action, un serveur…</span>
+        <kbd className="hidden shrink-0 items-center rounded-md bg-[var(--menu-kbd-bg)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)] sm:inline-flex">
+          {shortcut}
+        </kbd>
+      </button>
+    );
+  }
 
   return (
     <button

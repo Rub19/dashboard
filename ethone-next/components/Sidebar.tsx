@@ -22,6 +22,7 @@ import { useModKey, applyModKey } from "@/lib/hooks/useModKey";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { useAuth } from "@/components/AuthProvider";
 import { useSettings } from "@/components/SettingsProvider";
+import { USER_STATUS_CONFIG } from "@/lib/settings";
 import { ADMIN_EMAIL } from "@/lib/admin";
 import { useSyncStore } from "@/lib/stores/sync";
 import { cn } from "@/lib/utils";
@@ -138,6 +139,16 @@ const APPS: AppItem[] = [
   { id: "settings", href: "/settings/", icon: SIDEBAR_ICONS.settings },
 ];
 
+/** Sections de la barre latérale : l'ordre est fixe, une application masquée disparaît de sa section, une section vide disparaît. */
+const NAV_GROUPS: { id: string; label?: string; items: string[] }[] = [
+  { id: "main", items: ["home"] },
+  { id: "workspace", label: "Espace", items: ["notes", "tasks", "habits", "calendar", "files", "mail"] },
+  { id: "assist", label: "Assistants", items: ["brain", "focus", "weather"] },
+  { id: "insights", label: "Suivi", items: ["activity", "analytics", "interactions", "connections"] },
+  { id: "community", label: "Communauté", items: ["discord", "plugins", "games", "matches", "spaces", "flows", "team"] },
+  { id: "system", label: "Système", items: ["admin", "settings"] },
+];
+
 import { motion } from "framer-motion";
 
 const SidebarBrand = memo(function SidebarBrand() {
@@ -231,13 +242,14 @@ const SyncBadge = memo(function SyncBadge({ collapsed }: { collapsed: boolean })
 const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: boolean }) {
   const router = useRouter();
   const { displayName, avatarUrl, initials } = useUserIdentity();
+  const { settings } = useSettings();
 
   return (
     <button
       type="button"
       onClick={() => router.push("/settings?category=profile")}
       className={cn(
-        "group mb-2 flex w-full items-center gap-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] cursor-pointer",
+        "group mb-1 flex w-full items-center gap-2.5 rounded-xl border border-transparent transition-colors hover:bg-[var(--menu-hover)] cursor-pointer",
         collapsed ? "justify-center p-1.5" : "p-2"
       )}
       title={`Profil : ${displayName}`}
@@ -261,7 +273,7 @@ const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: 
         ) : (
           <span className="font-bold text-xs">{initials}</span>
         )}
-        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-[var(--accent-primary)]" aria-hidden="true" />
+        <span className={cn("absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)]", USER_STATUS_CONFIG[(settings.status in USER_STATUS_CONFIG ? settings.status : "online") as keyof typeof USER_STATUS_CONFIG].dot)} aria-hidden="true" />
       </div>
       <motion.span
         initial={false}
@@ -332,16 +344,6 @@ const SidebarFooter = memo(function SidebarFooter() {
 
         <button
           type="button"
-          onClick={() => router.push("/settings")}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border-transparent bg-transparent text-[var(--text-muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] cursor-pointer"
-          aria-label={i18n("settings")}
-          title={i18n("settings")}
-        >
-          <Settings className="h-4.5 w-4.5" strokeWidth={1.85} />
-        </button>
-
-        <button
-          type="button"
           onClick={() => setOpen(false)}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border-transparent bg-transparent text-[var(--text-muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] cursor-pointer"
           aria-label={i18n("collapseSidebar", "Réduire")}
@@ -377,49 +379,66 @@ const SidebarNavList = memo(function SidebarNavList({
   // "hide icons" preference only applies while the sidebar is expanded.
   const showIcons = settings.sidebarIcons || collapsed;
 
+  const renderItem = (app: AppItem) => {
+    const IconComponent = app.icon;
+    return (
+      <AnimatedSidebarMenuItem key={app.id} className="group/item" onMouseEnter={() => onPrefetch(app.href)}>
+        <AnimatedSidebarMenuButton
+          isActive={isActive(app)}
+          icon={
+            showIcons ? (
+              <IconComponent
+                className={cn(
+                  "h-[20px] w-[20px] transition-transform duration-200 group-hover:scale-110",
+                  settings.sidebarColoredIcons && APP_ICON_COLORS[app.id]
+                )}
+                strokeWidth={1.9}
+              />
+            ) : undefined
+          }
+          shortcut={SHORTCUTS[app.id] ? applyModKey(SHORTCUTS[app.id], mod) : undefined}
+          onSelect={() => onSelect(app.href)}
+        >
+          {i18n(app.id, app.id === "admin" ? "Admin" : app.id)}
+        </AnimatedSidebarMenuButton>
+        {/* Au survol d'une ligne : icône à droite pour la masquer (réaffichable dans Réglages > Barre latérale) */}
+        {!collapsed && canHide(app.id) && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              hideApp(app.id);
+            }}
+            aria-label={`${i18n("hideFromSidebar", "Masquer de la barre latérale")} : ${i18n(app.id, app.id)}`}
+            title={i18n("hideFromSidebar", "Masquer de la barre latérale")}
+            className="absolute right-2 top-1/2 z-20 grid h-6 w-6 -translate-y-1/2 cursor-pointer place-items-center rounded-md text-[var(--text-muted)] opacity-0 transition-opacity duration-150 hover:bg-[var(--text-primary)]/[0.1] hover:text-[var(--text-primary)] focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] group-hover/item:opacity-100"
+          >
+            <EyeOff className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </AnimatedSidebarMenuItem>
+    );
+  };
+
+  // Applications regroupées par section ; celles qui ne sont dans aucune section (ajouts futurs) vont en fin de liste.
+  const grouped = new Set(NAV_GROUPS.flatMap((g) => g.items));
+  const sections = NAV_GROUPS.map((g) => ({
+    ...g,
+    apps: g.items.map((id) => visibleApps.find((a) => a.id === id)).filter((a): a is AppItem => Boolean(a)),
+  }));
+  const orphans = visibleApps.filter((a) => !grouped.has(a.id));
+  if (orphans.length > 0) sections.push({ id: "other", label: "Autres", items: [], apps: orphans });
+  const shown = sections.filter((g) => g.apps.length > 0);
+
   return (
-    <AnimatedSidebarMenu>
-      {visibleApps.map((app) => {
-        const IconComponent = app.icon;
-        return (
-          <AnimatedSidebarMenuItem key={app.id} className="group/item" onMouseEnter={() => onPrefetch(app.href)}>
-            <AnimatedSidebarMenuButton
-              isActive={isActive(app)}
-              icon={
-                showIcons ? (
-                  <IconComponent
-                    className={cn(
-                      "h-[21px] w-[21px] transition-transform duration-200 group-hover:scale-110",
-                      settings.sidebarColoredIcons && APP_ICON_COLORS[app.id]
-                    )}
-                    strokeWidth={1.9}
-                  />
-                ) : undefined
-              }
-              shortcut={SHORTCUTS[app.id] ? applyModKey(SHORTCUTS[app.id], mod) : undefined}
-              onSelect={() => onSelect(app.href)}
-            >
-              {i18n(app.id, app.id === "admin" ? "Admin" : app.id)}
-            </AnimatedSidebarMenuButton>
-            {/* Au survol d'une ligne : icône à droite pour la masquer (réaffichable dans Réglages > Barre latérale) */}
-            {!collapsed && canHide(app.id) && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  hideApp(app.id);
-                }}
-                aria-label={`${i18n("hideFromSidebar", "Masquer de la barre latérale")} : ${i18n(app.id, app.id)}`}
-                title={i18n("hideFromSidebar", "Masquer de la barre latérale")}
-                className="absolute right-2 top-1/2 z-20 grid h-6 w-6 -translate-y-1/2 cursor-pointer place-items-center rounded-md text-[var(--text-muted)] opacity-0 transition-opacity duration-150 hover:bg-[var(--text-primary)]/[0.1] hover:text-[var(--text-primary)] focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] group-hover/item:opacity-100"
-              >
-                <EyeOff className="h-3.5 w-3.5" />
-              </button>
-            )}
-          </AnimatedSidebarMenuItem>
-        );
-      })}
-    </AnimatedSidebarMenu>
+    <div className="flex flex-col">
+      {shown.map((section, index) => (
+        <div key={section.id}>
+          {index > 0 && (collapsed ? <div className="ethone-nav-divider" /> : section.label ? <p className="ethone-nav-label">{section.label}</p> : null)}
+          <AnimatedSidebarMenu>{section.apps.map(renderItem)}</AnimatedSidebarMenu>
+        </div>
+      ))}
+    </div>
   );
 });
 

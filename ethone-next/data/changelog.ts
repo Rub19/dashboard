@@ -36408,6 +36408,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_112_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_112_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_112_de);
 
+const v1_28_113_fr: ChangelogEntry = {
+  version: "v1.28.113",
+  date: "2026-09-26",
+  title: "Barre du haut et barre latérale repensées",
+  items: [
+    "Barre du haut : la recherche devient un vrai champ au centre, les outils (Focus, Brain, Dynamic Island, thème, soutien, notifications, langue) sont regroupés dans une seule capsule discrète sans bordure individuelle, et le profil reste à droite.",
+    "Barre latérale : les applications sont rangées en sections (Espace, Assistants, Suivi, Communauté, Système) avec de petits intitulés, l'application active est marquée par un fond léger et un repère à gauche au lieu d'une lueur, la carte de profil est plus sobre avec la pastille de statut à la bonne couleur, et le bouton Réglages en double du pied de page est retiré.",
+  ],
+};
+
+const v1_28_113_en: ChangelogEntry = {
+  version: "v1.28.113",
+  date: "2026-09-26",
+  title: "Top bar and sidebar redesigned",
+  items: [
+    "Top bar: search becomes a real field in the center, the tools (Focus, Brain, Dynamic Island, theme, support, notifications, language) are grouped in a single discreet capsule without individual borders, and the profile stays on the right.",
+    "Sidebar: apps are arranged in sections (Workspace, Assistants, Insights, Community, System) with small headings, the active app is marked by a light background and a marker on the left instead of a glow, the profile card is calmer with the status dot in the right color, and the duplicate Settings button in the footer is removed.",
+  ],
+};
+
+const v1_28_113_es: ChangelogEntry = {
+  version: "v1.28.113",
+  date: "2026-09-26",
+  title: "Barra superior y barra lateral rediseñadas",
+  items: [
+    "Barra superior: la búsqueda pasa a ser un campo real en el centro, las herramientas (Focus, Brain, Dynamic Island, tema, apoyo, notificaciones, idioma) se agrupan en una sola cápsula discreta sin bordes individuales, y el perfil se queda a la derecha.",
+    "Barra lateral: las aplicaciones se organizan en secciones (Espacio, Asistentes, Seguimiento, Comunidad, Sistema) con pequeños títulos, la aplicación activa se marca con un fondo suave y una marca a la izquierda en lugar de un resplandor, la tarjeta de perfil es más sobria con el punto de estado del color correcto, y se elimina el botón Ajustes duplicado del pie.",
+  ],
+};
+
+const v1_28_113_de: ChangelogEntry = {
+  version: "v1.28.113",
+  date: "2026-09-26",
+  title: "Obere Leiste und Seitenleiste neu gestaltet",
+  items: [
+    "Obere Leiste: Die Suche wird zu einem echten Feld in der Mitte, die Werkzeuge (Fokus, Brain, Dynamic Island, Thema, Unterstützung, Benachrichtigungen, Sprache) sind in einer einzigen dezenten Kapsel ohne einzelne Rahmen gruppiert, und das Profil bleibt rechts.",
+    "Seitenleiste: Die Apps sind in Abschnitte (Arbeitsbereich, Assistenten, Auswertung, Community, System) mit kleinen Überschriften gegliedert, die aktive App wird durch einen hellen Hintergrund und eine Markierung links statt eines Leuchtens hervorgehoben, die Profilkarte ist ruhiger mit dem Statuspunkt in der richtigen Farbe, und die doppelte Einstellungen-Schaltfläche im Fuß entfällt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_113_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_113_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_113_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_113_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

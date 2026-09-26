@@ -866,8 +866,11 @@ export function AnimatedSidebarMenuButton({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={context.reduce ? { duration: 0 } : { duration: 0.18, ease: EASE_OUT }}
-          className="absolute inset-0 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 shadow-[0_0_15px_color-mix(in_srgb,var(--accent-primary)_25%,transparent)]"
+          className="absolute inset-0 rounded-xl bg-[var(--accent-primary)]/12"
         />
+      ) : null}
+      {isActive ? (
+        <span aria-hidden className="absolute -left-1 top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full bg-[var(--accent-primary)]" />
       ) : null}
       {icon ? (
         <span

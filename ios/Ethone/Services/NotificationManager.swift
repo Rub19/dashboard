@@ -132,7 +132,9 @@ enum NotificationManager {
         default:
             switch kind {
             case "task": model.requestedTab = .tasks
-            case "habit": model.requestedTab = .habits
+            case "habit":
+                model.morePath = [.habits]
+                model.requestedTab = .more
             default: model.requestedTab = .home
             }
         }

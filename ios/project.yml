@@ -100,7 +100,6 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.ethone.app.widgets
         SKIP_INSTALL: YES
-        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
 
 schemes:
   Ethone:

@@ -11,7 +11,7 @@ struct MailMessage: Identifiable, Decodable, Hashable {
     let subject: String?
     let bodyText: String?
     let bodyHtml: String?
-    var isRead: Bool
+    private var readFlag: Bool?
     var isStarred: Bool?
     let receivedAt: Date?
     let sentAt: Date?
@@ -25,11 +25,17 @@ struct MailMessage: Identifiable, Decodable, Hashable {
         case toAddresses = "to_addresses"
         case bodyText = "body_text"
         case bodyHtml = "body_html"
-        case isRead = "is_read"
+        case readFlag = "is_read"
         case isStarred = "is_starred"
         case receivedAt = "received_at"
         case sentAt = "sent_at"
         case brainSummary = "brain_summary"
+    }
+
+    /// Une projection du Worker peut omettre `is_read` : on considère alors le message comme lu.
+    var isRead: Bool {
+        get { readFlag ?? true }
+        set { readFlag = newValue }
     }
 
     var date: Date? { receivedAt ?? sentAt }

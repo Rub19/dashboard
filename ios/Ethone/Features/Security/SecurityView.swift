@@ -6,19 +6,22 @@ struct DeviceRecord: Identifiable, Decodable {
     let type: String?
     let platform: String?
     let browser: String?
-    let trusted: Bool
+    let trustedFlag: Bool?
     let sessionId: String?
     let revokedAt: Date?
     let lastSeenAt: Date?
     let createdAt: Date?
 
     enum CodingKeys: String, CodingKey {
-        case id, name, type, platform, browser, trusted
+        case id, name, type, platform, browser
+        case trustedFlag = "trusted"
         case sessionId = "session_id"
         case revokedAt = "revoked_at"
         case lastSeenAt = "last_seen_at"
         case createdAt = "created_at"
     }
+
+    var trusted: Bool { trustedFlag ?? false }
 
     var symbol: String {
         switch platform?.lowercased() {

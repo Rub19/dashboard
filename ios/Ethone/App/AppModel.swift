@@ -14,6 +14,7 @@ final class AppModel {
     let habits: HabitsStore
     let focus: FocusManager
     let lock = AppLock()
+    let brain: BrainChat
 
     /// Instance unique : les actions de notification peuvent arriver avant que l'interface n'existe.
     static let shared = AppModel()
@@ -33,6 +34,7 @@ final class AppModel {
         self.events = ItemsStore(kind: .event, api: api)
         self.habits = HabitsStore(api: api)
         self.focus = FocusManager(api: api)
+        self.brain = BrainChat(api: api)
     }
 
     func refreshAll() async {
@@ -42,6 +44,7 @@ final class AppModel {
         async let d: Void = habits.refresh()
         _ = await (a, b, c, d)
         await focus.refreshSessions()
+        SpotlightIndexer.index(notes: notes.items, tasks: tasks.items)
         publishSnapshot()
     }
 
@@ -79,6 +82,37 @@ final class AppModel {
         }
     }
 
+    /// Résumé factuel des données de l'utilisateur, injecté dans les instructions de Brain.
+    func brainContext() -> String {
+        var lines: [String] = []
+        let open = tasks.items.filter { !$0.isDone }
+        lines.append("Tâches ouvertes (\(open.count)) : " + (open.isEmpty ? "aucune" : open.prefix(15).map(\.title).joined(separator: " ; ")))
+
+        let now = Date()
+        let horizon = now.addingTimeInterval(7 * 86_400)
+        let upcoming = events.items
+            .filter { ($0.startAt ?? .distantPast) >= now && ($0.startAt ?? .distantFuture) <= horizon }
+            .sorted { ($0.startAt ?? now) < ($1.startAt ?? now) }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE d MMMM HH:mm"
+        formatter.locale = Locale(identifier: "fr_FR")
+        lines.append("Événements des 7 prochains jours : " + (upcoming.isEmpty ? "aucun" : upcoming.prefix(10).map { "\(formatter.string(from: $0.startAt ?? now)) — \($0.title)" }.joined(separator: " ; ")))
+
+        let active = habits.activeHabits
+        if active.isEmpty {
+            lines.append("Habitudes : aucune")
+        } else {
+            let states = active.map { "\($0.name) (\(habits.isDone($0) ? "faite" : "à faire") aujourd'hui, série \(habits.streak($0)) j)" }
+            lines.append("Habitudes : " + states.joined(separator: " ; "))
+        }
+
+        let recent = notes.items.sorted { $0.updatedAt > $1.updatedAt }.prefix(5).map(\.title)
+        lines.append("Notes récentes : " + (recent.isEmpty ? "aucune" : recent.joined(separator: " ; ")))
+        lines.append("Concentration aujourd'hui : \(focus.minutesToday) min")
+        return lines.joined(separator: "
+")
+    }
+
     /// Liens `ethone://<page>` (raccourcis, widgets, notifications).
     func handle(url: URL) {
         guard url.scheme == Config.oauthCallbackScheme, let host = url.host else { return }
@@ -98,6 +132,6 @@ enum AppTab: String, CaseIterable, Identifiable {
 
 /// Sections accessibles depuis l'onglet « Plus ».
 enum MoreDestination: String, Hashable, CaseIterable, Identifiable {
-    case habits, calendar, weather, security
+    case brain, habits, calendar, weather, security
     var id: String { rawValue }
 }

@@ -12,6 +12,7 @@ struct MoreView: View {
         NavigationStack(path: $model.morePath) {
             List {
                 Section {
+                    NavigationLink(value: MoreDestination.brain) { Label("Brain", systemImage: "sparkles") }
                     NavigationLink(value: MoreDestination.habits) { Label("Habitudes", systemImage: "flame.fill") }
                     NavigationLink(value: MoreDestination.calendar) { Label("Calendrier", systemImage: "calendar") }
                     NavigationLink(value: MoreDestination.weather) { Label("Météo", systemImage: "cloud.sun.fill") }
@@ -82,6 +83,7 @@ struct MoreView: View {
             .navigationTitle("Plus")
             .navigationDestination(for: MoreDestination.self) { destination in
                 switch destination {
+                case .brain: BrainView()
                 case .habits: HabitsView()
                 case .calendar: CalendarView()
                 case .weather: WeatherView()

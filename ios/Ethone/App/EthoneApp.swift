@@ -1,3 +1,4 @@
+import CoreSpotlight
 import SwiftUI
 
 @main
@@ -12,6 +13,11 @@ struct EthoneApp: App {
                 .environment(model.auth)
                 .tint(Theme.accent)
                 .onOpenURL { url in model.handle(url: url) }
+                .onContinueUserActivity(CSSearchableItemActionType) { activity in
+                    if let id = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String, let tab = SpotlightIndexer.tab(for: id) {
+                        model.requestedTab = tab
+                    }
+                }
         }
     }
 }

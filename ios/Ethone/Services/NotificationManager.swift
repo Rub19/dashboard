@@ -46,6 +46,13 @@ enum NotificationManager {
         return granted
     }
 
+    /// À la déconnexion : plus aucun rappel personnel ne doit rester planifié sur l'appareil.
+    static func clearAll() {
+        let center = UNUserNotificationCenter.current()
+        center.removeAllPendingNotificationRequests()
+        center.removeAllDeliveredNotifications()
+    }
+
     static func storePushToken(_ token: Data) {
         let hex = token.map { String(format: "%02x", $0) }.joined()
         UserDefaults.standard.set(hex, forKey: pushTokenKey)

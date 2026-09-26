@@ -30,6 +30,8 @@ targets:
       - path: Shared
     dependencies:
       - target: EthoneWidgets
+      - target: EthoneNotificationService
+      - target: EthoneNotificationContent
     info:
       path: Ethone/Info.plist
       properties:
@@ -101,6 +103,56 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.ethone.app.widgets
+        SKIP_INSTALL: YES
+
+  EthoneNotificationService:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: EthoneNotificationService
+        excludes:
+          - Info.plist
+    info:
+      path: EthoneNotificationService/Info.plist
+      properties:
+        CFBundleDisplayName: ETHONE Notifications
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.usernotifications.service
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).NotificationService
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.ethone.app.notification-service
+        SKIP_INSTALL: YES
+
+  EthoneNotificationContent:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: EthoneNotificationContent
+        excludes:
+          - Info.plist
+    info:
+      path: EthoneNotificationContent/Info.plist
+      properties:
+        CFBundleDisplayName: ETHONE Notification UI
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.usernotifications.content-extension
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).NotificationViewController
+          NSExtensionAttributes:
+            UNNotificationExtensionCategory:
+              - ETHONE_TASK
+              - ETHONE_HABIT
+              - ETHONE_FOCUS
+              - ETHONE_BILL
+            UNNotificationExtensionInitialContentSizeRatio: 0.3
+            UNNotificationExtensionDefaultContentHidden: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.ethone.app.notification-content
         SKIP_INSTALL: YES
 
 schemes:

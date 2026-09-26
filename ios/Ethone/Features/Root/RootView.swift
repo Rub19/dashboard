@@ -22,6 +22,13 @@ struct RootView: View {
         .animation(.smooth, value: auth.phase)
         .preferredColorScheme(.dark)
         .task { await auth.restore() }
+        .onChange(of: auth.phase) { _, phase in
+            if phase == .signedOut {
+                SpotlightIndexer.clear()
+                DiskCache.clearAll()
+                NotificationManager.clearAll()
+            }
+        }
         .overlay { if model.lock.isLocked && auth.phase == .signedIn { LockScreen() } }
         .onChange(of: scenePhase) { _, phase in
             switch phase {

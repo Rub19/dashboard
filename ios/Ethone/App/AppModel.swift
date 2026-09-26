@@ -75,6 +75,7 @@ final class AppModel {
         SpotlightIndexer.index(notes: notes.items, tasks: tasks.items)
         publishSnapshot()
         await NotificationPlanner.resync(tasks: tasks.items, events: events.items)
+        await EventActivityManager.sync(events: events.items)
     }
 
     /// Écrit l'instantané lu par les widgets (App Group) puis demande leur rafraîchissement.

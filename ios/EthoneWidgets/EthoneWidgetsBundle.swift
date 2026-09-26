@@ -5,6 +5,7 @@ import WidgetKit
 struct EthoneWidgetsBundle: WidgetBundle {
     var body: some Widget {
         FocusLiveActivity()
+        EventLiveActivity()
         SummaryWidget()
         FocusControl()
         NewTaskControl()

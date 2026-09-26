@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.124 — 2026-09-27
+
+**Thèmes : lisibilité vérifiée et thème clair Arctic corrigé**
+
+- Nouveau test automatique de contraste (WCAG AA) sur les 13 thèmes : texte, texte atténué, accent et texte de bouton d'accent.
+- Les boutons d'accent des thèmes Forest, Sunset, Rose, Cyber Neon et ETHONE Dark utilisent maintenant un texte foncé (le blanc donnait 2,5 à 3,7:1). Le choix blanc/noir d'un accent personnalisé repose désormais sur le vrai contraste WCAG.
+- Thème clair Arctic : texte pastel, gris et blanc écrits pour un fond sombre redéfinis (le texte blanc sur fond blanc, 1,05:1, et les pastilles 1,3 à 2,4:1 sont corrigés), couleurs d'état, bordures, ombres, champs et barres de défilement adaptés ; accent légèrement approfondi (#0369a1).
+- Tous les thèmes sombres : le gris secondaire codé en dur (zinc-500, 3,0 à 4,3:1) suit désormais le texte atténué du thème, dont le contraste est vérifié.
+- iOS : les 13 thèmes du site sont disponibles dans Apparence (fond, ambiance, thème clair Arctic), avec accent « Auto » et boutons pleins assombris automatiquement si l'accent est trop clair.
+
 ## v1.28.123 — 2026-09-27
 
 **Boutique Valorant et rotation League of Legends**

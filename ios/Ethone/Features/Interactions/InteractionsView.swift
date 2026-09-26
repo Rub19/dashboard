@@ -97,7 +97,7 @@ struct InteractionsView: View {
     }
 
     private func color(_ level: Int) -> Color {
-        level == 0 ? Color.white.opacity(0.08) : Theme.accent.opacity(0.25 + 0.18 * Double(level))
+        level == 0 ? Color.primary.opacity(0.08) : Theme.accent.opacity(0.25 + 0.18 * Double(level))
     }
 
     private func tile(_ value: String, _ label: String, _ symbol: String) -> some View {

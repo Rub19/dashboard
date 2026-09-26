@@ -20,7 +20,7 @@ struct RootView: View {
             }
         }
         .animation(.smooth, value: auth.phase)
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(model.themePreset.isLight ? .light : .dark)
         .task { await auth.restore() }
         .onChange(of: auth.phase) { _, phase in
             if phase == .signedOut {

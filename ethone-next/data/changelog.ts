@@ -36907,6 +36907,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_123_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_123_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_123_de);
 
+const v1_28_124_fr: ChangelogEntry = {
+  version: "v1.28.124",
+  date: "2026-09-27",
+  title: "Thèmes : lisibilité vérifiée et thème clair Arctic corrigé",
+  items: [
+    "Nouveau test automatique de contraste (WCAG AA) sur les 13 thèmes : texte, texte atténué, accent et texte de bouton d'accent.",
+    "Les boutons d'accent des thèmes Forest, Sunset, Rose, Cyber Neon et ETHONE Dark utilisent maintenant un texte foncé (le blanc donnait 2,5 à 3,7:1). Le choix blanc/noir d'un accent personnalisé repose désormais sur le vrai contraste WCAG.",
+    "Thème clair Arctic : texte pastel, gris et blanc écrits pour un fond sombre redéfinis (le texte blanc sur fond blanc, 1,05:1, et les pastilles 1,3 à 2,4:1 sont corrigés), couleurs d'état, bordures, ombres, champs et barres de défilement adaptés ; accent légèrement approfondi (#0369a1).",
+    "Tous les thèmes sombres : le gris secondaire codé en dur (zinc-500, 3,0 à 4,3:1) suit désormais le texte atténué du thème, dont le contraste est vérifié.",
+    "iOS : les 13 thèmes du site sont disponibles dans Apparence (fond, ambiance, thème clair Arctic), avec accent « Auto » et boutons pleins assombris automatiquement si l'accent est trop clair.",
+  ],
+};
+
+const v1_28_124_en: ChangelogEntry = {
+  version: "v1.28.124",
+  date: "2026-09-27",
+  title: "Themes: verified legibility and fixed Arctic light theme",
+  items: [
+    "New automated contrast test (WCAG AA) across all 13 themes: text, muted text, accent and accent-button text.",
+    "Accent buttons in Forest, Sunset, Rose, Cyber Neon and ETHONE Dark now use dark text (white gave 2.5 to 3.7:1). The black/white choice for a custom accent is now based on real WCAG contrast.",
+    "Arctic light theme: pastel, grey and white text written for dark backgrounds is redefined (white-on-white at 1.05:1 and chips at 1.3 to 2.4:1 are fixed); status colours, borders, shadows, inputs and scrollbars adapted; accent slightly deepened (#0369a1).",
+    "All dark themes: the hard-coded secondary grey (zinc-500, 3.0 to 4.3:1) now follows each theme's muted text colour, whose contrast is verified.",
+    "iOS: the site's 13 themes are available in Appearance (background, ambience, light Arctic theme), with an \"Auto\" accent and solid buttons that darken automatically when the accent is too light.",
+  ],
+};
+
+const v1_28_124_es: ChangelogEntry = {
+  version: "v1.28.124",
+  date: "2026-09-27",
+  title: "Temas: legibilidad verificada y tema claro Arctic corregido",
+  items: [
+    "Nueva prueba automática de contraste (WCAG AA) en los 13 temas: texto, texto atenuado, acento y texto del botón de acento.",
+    "Los botones de acento de Forest, Sunset, Rose, Cyber Neon y ETHONE Dark usan ahora texto oscuro (el blanco daba 2,5 a 3,7:1). La elección blanco/negro de un acento personalizado se basa ahora en el contraste WCAG real.",
+    "Tema claro Arctic: los textos pastel, grises y blancos pensados para fondo oscuro se redefinen (blanco sobre blanco a 1,05:1 y etiquetas a 1,3-2,4:1 corregidos); colores de estado, bordes, sombras, campos y barras de desplazamiento adaptados; acento algo más profundo (#0369a1).",
+    "Todos los temas oscuros: el gris secundario fijo (zinc-500, 3,0 a 4,3:1) sigue ahora el texto atenuado de cada tema, cuyo contraste se verifica.",
+    "iOS: los 13 temas del sitio están disponibles en Apariencia (fondo, ambiente, tema claro Arctic), con acento « Auto » y botones sólidos que se oscurecen solos si el acento es demasiado claro.",
+  ],
+};
+
+const v1_28_124_de: ChangelogEntry = {
+  version: "v1.28.124",
+  date: "2026-09-27",
+  title: "Themes: geprüfte Lesbarkeit und korrigiertes helles Arctic-Theme",
+  items: [
+    "Neuer automatischer Kontrasttest (WCAG AA) für alle 13 Themes: Text, gedämpfter Text, Akzent und Text auf Akzent-Buttons.",
+    "Akzent-Buttons in Forest, Sunset, Rose, Cyber Neon und ETHONE Dark nutzen jetzt dunklen Text (Weiß ergab 2,5 bis 3,7:1). Die Wahl Schwarz/Weiß bei eigenem Akzent beruht jetzt auf dem echten WCAG-Kontrast.",
+    "Helles Arctic-Theme: für dunkle Hintergründe geschriebene Pastell-, Grau- und Weißtexte neu definiert (Weiß auf Weiß mit 1,05:1 und Chips mit 1,3 bis 2,4:1 behoben); Statusfarben, Rahmen, Schatten, Eingabefelder und Scrollbars angepasst; Akzent leicht vertieft (#0369a1).",
+    "Alle dunklen Themes: das fest codierte Sekundärgrau (zinc-500, 3,0 bis 4,3:1) folgt jetzt dem gedämpften Text des Themes, dessen Kontrast geprüft wird.",
+    "iOS: die 13 Themes der Website sind unter Darstellung verfügbar (Hintergrund, Ambiente, helles Arctic-Theme), mit Akzent « Auto » und Vollflächen-Buttons, die sich bei zu hellem Akzent automatisch abdunkeln.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_124_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_124_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_124_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_124_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

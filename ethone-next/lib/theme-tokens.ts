@@ -116,7 +116,7 @@ export const PRESET_THEMES: Record<PremiumThemeId, ThemeDefinition> = {
     borderFocus: "#8b5cf6",
     accentPrimary: "#8b5cf6",
     accentSecondary: "#a78bfa",
-    accentContrast: "#ffffff",
+    accentContrast: "#000000",
     glowColor: "rgba(139, 92, 246, 0.25)",
     textPrimary: "#ededed",
     textSecondary: "#c4c4cc",
@@ -229,17 +229,17 @@ export const PRESET_THEMES: Record<PremiumThemeId, ThemeDefinition> = {
     bgInput: "rgba(0, 0, 0, 0.04)",
     borderSubtle: "rgba(0, 0, 0, 0.08)",
     borderActive: "rgba(14, 165, 233, 0.5)",
-    borderFocus: "#0284c7",
-    accentPrimary: "#0284c7",
+    borderFocus: "#0369a1",
+    accentPrimary: "#0369a1",
     accentSecondary: "#38bdf8",
     accentContrast: "#ffffff",
-    glowColor: "rgba(2, 132, 199, 0.2)",
+    glowColor: "rgba(3, 105, 161, 0.2)",
     textPrimary: "#0f172a",
     textSecondary: "#334155",
     // Was #64748b (slate-500) -- 4.76:1 against bgSurface but only 4.34:1
     // against the slightly darker bgSidebar, under WCAG AA's 4.5:1. Darkened
     // slightly to clear both (~4.9-5.3:1).
-    textMuted: "#5c6c82",
+    textMuted: "#54637a",
     textDisabled: "#cbd5e1",
     textInverse: "#ffffff",
     glassDefault: "low",
@@ -295,7 +295,7 @@ export const PRESET_THEMES: Record<PremiumThemeId, ThemeDefinition> = {
     borderFocus: "#f43f5e",
     accentPrimary: "#f43f5e",
     accentSecondary: "#00f0ff",
-    accentContrast: "#ffffff",
+    accentContrast: "#000000",
     glowColor: "rgba(244, 63, 94, 0.35)",
     textPrimary: "#fdf2f8",
     textSecondary: "#fbcfe8",
@@ -379,7 +379,7 @@ export const PRESET_THEMES: Record<PremiumThemeId, ThemeDefinition> = {
     borderFocus: "#10b981",
     accentPrimary: "#10b981",
     accentSecondary: "#34d399",
-    accentContrast: "#ffffff",
+    accentContrast: "#000000",
     glowColor: "rgba(16, 185, 129, 0.25)",
     textPrimary: "#ecfdf5",
     textSecondary: "#a7f3d0",
@@ -407,7 +407,7 @@ export const PRESET_THEMES: Record<PremiumThemeId, ThemeDefinition> = {
     borderFocus: "#f97316",
     accentPrimary: "#f97316",
     accentSecondary: "#fb923c",
-    accentContrast: "#ffffff",
+    accentContrast: "#000000",
     glowColor: "rgba(249, 115, 22, 0.25)",
     textPrimary: "#fff7ed",
     textSecondary: "#fed7aa",
@@ -435,7 +435,7 @@ export const PRESET_THEMES: Record<PremiumThemeId, ThemeDefinition> = {
     borderFocus: "#f43f5e",
     accentPrimary: "#f43f5e",
     accentSecondary: "#fb7185",
-    accentContrast: "#ffffff",
+    accentContrast: "#000000",
     glowColor: "rgba(244, 63, 94, 0.25)",
     textPrimary: "#fff1f2",
     textSecondary: "#fecdd3",
@@ -465,20 +465,23 @@ export const UNIVERSAL_ACCENTS = [
 
 export type AccentId = (typeof UNIVERSAL_ACCENTS)[number]["id"] | "custom";
 
-export function getContrastColor(hex: string): "#000000" | "#ffffff" {
+function relativeLuminance(hex: string): number {
   const normalized = hex.replace("#", "").trim();
-  if (normalized.length === 3) {
-    const r = parseInt(normalized[0] + normalized[0], 16) || 0;
-    const g = parseInt(normalized[1] + normalized[1], 16) || 0;
-    const b = parseInt(normalized[2] + normalized[2], 16) || 0;
-    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
-    return yiq >= 140 ? "#000000" : "#ffffff";
-  }
-  const r = parseInt(normalized.substring(0, 2), 16) || 0;
-  const g = parseInt(normalized.substring(2, 4), 16) || 0;
-  const b = parseInt(normalized.substring(4, 6), 16) || 0;
-  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
-  return yiq >= 140 ? "#000000" : "#ffffff";
+  const full = normalized.length === 3 ? normalized.split("").map((c) => c + c).join("") : normalized;
+  const channels = [0, 2, 4].map((i) => (parseInt(full.substring(i, i + 2), 16) || 0) / 255);
+  const [r, g, b] = channels.map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/**
+ * Texte à poser sur un fond d'accent : blanc si son contraste WCAG atteint 4.5:1, sinon le plus lisible des deux.
+ * (L'ancien seuil YIQ donnait du blanc illisible sur émeraude, orange, cyan, ambre… : 1.9 à 2.8:1.)
+ */
+export function getContrastColor(hex: string): "#000000" | "#ffffff" {
+  const lum = relativeLuminance(hex);
+  const white = 1.05 / (lum + 0.05);
+  const black = (lum + 0.05) / 0.05;
+  return white >= 4.5 || white >= black ? "#ffffff" : "#000000";
 }
 
 export function isValidHexColor(color: string): boolean {

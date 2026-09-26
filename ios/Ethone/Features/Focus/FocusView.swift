@@ -55,7 +55,7 @@ struct FocusView: View {
             let remaining = focus.isActive ? focus.remaining(at: context.date) : TimeInterval(selectedPreset.work * 60)
             let progress = focus.isActive ? focus.progress(at: context.date) : 0
             ZStack {
-                Circle().stroke(Color.white.opacity(0.10), lineWidth: 16)
+                Circle().stroke(Color.primary.opacity(0.10), lineWidth: 16)
                 Circle()
                     .trim(from: 0, to: progress)
                     .stroke(ringColor.gradient, style: StrokeStyle(lineWidth: 16, lineCap: .round))

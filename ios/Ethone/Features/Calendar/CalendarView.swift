@@ -120,7 +120,7 @@ struct CalendarView: View {
             .frame(maxWidth: .infinity, minHeight: 44)
             .background {
                 if isSelected {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Theme.accent.gradient)
+                    RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color(hex: Theme.readableTint(Theme.currentAccentHex)).gradient)
                 } else if isToday {
                     RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Theme.accent, lineWidth: 1.5)
                 }

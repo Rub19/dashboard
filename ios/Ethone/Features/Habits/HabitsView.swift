@@ -72,7 +72,7 @@ struct HabitRow: View {
                 HStack(spacing: 3) {
                     ForEach(model.habits.history(habit)) { entry in
                         RoundedRectangle(cornerRadius: 3)
-                            .fill(entry.done ? Theme.accent : Color.white.opacity(0.12))
+                            .fill(entry.done ? Theme.accent : Color.primary.opacity(0.12))
                             .frame(width: 10, height: 10)
                     }
                 }

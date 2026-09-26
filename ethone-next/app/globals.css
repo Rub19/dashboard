@@ -244,6 +244,12 @@ html:not([data-theme="arctic"]) {
   --color-gray-950: var(--bg-main);
   --color-gray-900: var(--bg-surface);
   --color-gray-800: var(--bg-surface-elevated, var(--bg-surface));
+  /* zinc-500 (#71717a) ne dépasse que 3.0 à 4.3:1 sur les fonds sombres (texte secondaire, écrit en dur plus de 1 000 fois) :
+     il suit le texte atténué du thème, dont le contraste AA est vérifié par lib/theme-contrast.test.ts. */
+  --color-zinc-500: var(--text-muted);
+  --color-neutral-500: var(--text-muted);
+  --color-slate-500: var(--text-muted);
+  --color-gray-500: var(--text-muted);
 }
 
 :root {
@@ -539,7 +545,7 @@ html[data-theme="obsidian"] {
   --border-active: rgba(139, 92, 246, 0.35);
   --accent-primary: #8b5cf6;
   --accent-secondary: #a78bfa;
-  --accent-contrast: #ffffff;
+  --accent-contrast: #000000;
   --glow-color: rgba(139, 92, 246, 0.25);
   --text-primary: #ededed;
   --text-muted: #9ca3af;
@@ -637,22 +643,22 @@ html[data-theme="arctic"] {
   --bg-sidebar: #f1f5f9;
   --border-subtle: rgba(0, 0, 0, 0.08);
   --border-active: rgba(14, 165, 233, 0.5);
-  --accent-primary: #0284c7;
+  --accent-primary: #0369a1;
   --accent-secondary: #38bdf8;
   --accent-contrast: #ffffff;
-  --glow-color: rgba(2, 132, 199, 0.2);
+  --glow-color: rgba(3, 105, 161, 0.2);
   --text-primary: #0f172a;
-  --text-muted: #5c6c82;
+  --text-muted: #54637a;
   --background: #f8fafc;
   --foreground: #0f172a;
   --surface: #ffffff;
   --surface-raised: #f1f5f9;
   --border: rgba(0, 0, 0, 0.08);
-  --muted: #5c6c82;
+  --muted: #54637a;
   --v8-canvas: #f8fafc;
   --v8-canvas-raised: #f1f5f9;
   --v8-text: #0f172a;
-  --v8-muted: #5c6c82;
+  --v8-muted: #54637a;
 }
 
 html[data-theme="carbon"] {
@@ -689,7 +695,7 @@ html[data-theme="cyber-neon"] {
   --border-active: rgba(0, 240, 255, 0.5);
   --accent-primary: #f43f5e;
   --accent-secondary: #00f0ff;
-  --accent-contrast: #ffffff;
+  --accent-contrast: #000000;
   --glow-color: rgba(244, 63, 94, 0.35);
   --text-primary: #fdf2f8;
   --text-muted: #f472b6;
@@ -764,7 +770,7 @@ html[data-theme="forest"] {
   --border-active: rgba(16, 185, 129, 0.4);
   --accent-primary: #10b981;
   --accent-secondary: #34d399;
-  --accent-contrast: #ffffff;
+  --accent-contrast: #000000;
   --glow-color: rgba(16, 185, 129, 0.25);
   --text-primary: #ecfdf5;
   --text-muted: #6ee7b7;
@@ -789,7 +795,7 @@ html[data-theme="sunset"] {
   --border-active: rgba(249, 115, 22, 0.45);
   --accent-primary: #f97316;
   --accent-secondary: #fb923c;
-  --accent-contrast: #ffffff;
+  --accent-contrast: #000000;
   --glow-color: rgba(249, 115, 22, 0.25);
   --text-primary: #fff7ed;
   --text-muted: #fdba74;
@@ -814,7 +820,7 @@ html[data-theme="rose"] {
   --border-active: rgba(244, 63, 94, 0.45);
   --accent-primary: #f43f5e;
   --accent-secondary: #fb7185;
-  --accent-contrast: #ffffff;
+  --accent-contrast: #000000;
   --glow-color: rgba(244, 63, 94, 0.25);
   --text-primary: #fff1f2;
   --text-muted: #fda4af;
@@ -3254,4 +3260,341 @@ html[data-hide-chrome="true"] [data-chrome] {
   .refresh-spin svg:first-of-type {
     animation: none;
   }
+}
+
+/* ============================================================
+   Thème clair (Arctic) — complément
+   Les pages contiennent des milliers de couleurs Tailwind écrites pour un fond sombre (pastels 300/400 pour le texte,
+   gris 800-950 pour les fonds, blanc à faible opacité pour les bordures). Sur un fond clair elles devenaient illisibles
+   (1.3 à 2.4:1). Elles sont ici redéfinies pour Arctic uniquement (variables de palette Tailwind v4), sans toucher aux
+   pages : les autres thèmes ne sont pas concernés.
+   ============================================================ */
+html[data-theme="arctic"] {
+  /* Couleurs d'état : les versions claires sont faites pour fond sombre */
+  --success: #047857;
+  --warning: #b45309;
+  --danger: #be123c;
+  --info: #0369a1;
+  --status-online: #15803d;
+  --status-focus: #6d28d9;
+  --status-busy: #b91c1c;
+  --status-away: #b45309;
+  --status-invisible: #52525b;
+
+  /* Surfaces et ombres pensées pour le fond sombre */
+  --panel-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.08);
+  --inset-bg: color-mix(in srgb, #0f172a 4%, transparent);
+  --input-bg: rgba(15, 23, 42, 0.04);
+  --input-bg-hover: rgba(15, 23, 42, 0.06);
+  --input-bg-focus: #ffffff;
+  --input-border: rgba(15, 23, 42, 0.16);
+  --input-border-hover: rgba(15, 23, 42, 0.3);
+
+  /* Le blanc devient l'encre du thème : text-white, text-white/70, bg-white/5, border-white/10… se lisent sur fond clair
+     (le blanc est restauré plus bas à l'intérieur des fonds pleins colorés). Le noir sert de voile bleu nuit. */
+  --color-white: #0f172a;
+  --color-black: #a3aec2;
+
+  /* Fonds « sombres » de Tailwind → surfaces du thème clair */
+  --color-zinc-950: var(--bg-main);
+  --color-zinc-900: var(--bg-surface);
+  --color-zinc-800: var(--bg-surface-elevated, var(--bg-surface));
+  --color-neutral-950: var(--bg-main);
+  --color-neutral-900: var(--bg-surface);
+  --color-neutral-800: var(--bg-surface-elevated, var(--bg-surface));
+  --color-slate-950: var(--bg-main);
+  --color-slate-900: var(--bg-surface);
+  --color-slate-800: var(--bg-surface-elevated, var(--bg-surface));
+  --color-gray-950: var(--bg-main);
+  --color-gray-900: var(--bg-surface);
+  --color-gray-800: var(--bg-surface-elevated, var(--bg-surface));
+  --color-zinc-700: #e2e8f0;
+  --color-neutral-700: #e2e8f0;
+  --color-slate-700: #e2e8f0;
+  --color-gray-700: #e2e8f0;
+  --color-zinc-600: #cbd5e1;
+  --color-neutral-600: #cbd5e1;
+  --color-slate-600: #cbd5e1;
+  --color-gray-600: #cbd5e1;
+
+  /* Gris de texte clairs → gris foncés lisibles (≥ 4.5:1 sur blanc et sur #f1f5f9) */
+  --color-zinc-500: #54637a;
+  --color-neutral-500: #54637a;
+  --color-slate-500: #54637a;
+  --color-gray-500: #54637a;
+  --color-zinc-400: #475569;
+  --color-neutral-400: #475569;
+  --color-slate-400: #475569;
+  --color-gray-400: #475569;
+  --color-zinc-300: #334155;
+  --color-neutral-300: #334155;
+  --color-slate-300: #334155;
+  --color-gray-300: #334155;
+  --color-zinc-200: #1e293b;
+  --color-neutral-200: #1e293b;
+  --color-slate-200: #1e293b;
+  --color-gray-200: #1e293b;
+  --color-zinc-100: #0f172a;
+  --color-neutral-100: #0f172a;
+  --color-slate-100: #0f172a;
+  --color-gray-100: #0f172a;
+
+  /* Pastels 300/400 (texte, pastilles) → teintes profondes lisibles sur clair */
+  --color-red-300: #b91c1c;     --color-red-400: #b91c1c;
+  --color-orange-300: #c2410c;  --color-orange-400: #c2410c;
+  --color-amber-300: #b45309;   --color-amber-400: #b45309;
+  --color-yellow-300: #a16207;  --color-yellow-400: #a16207;
+  --color-lime-300: #4d7c0f;    --color-lime-400: #4d7c0f;
+  --color-green-300: #15803d;   --color-green-400: #15803d;
+  --color-emerald-300: #047857; --color-emerald-400: #047857;
+  --color-teal-300: #0f766e;    --color-teal-400: #0f766e;
+  --color-cyan-300: #0e7490;    --color-cyan-400: #0e7490;
+  --color-sky-300: #0369a1;     --color-sky-400: #0369a1;
+  --color-blue-300: #1d4ed8;    --color-blue-400: #1d4ed8;
+  --color-indigo-300: #4338ca;  --color-indigo-400: #4338ca;
+  --color-violet-300: #6d28d9;  --color-violet-400: #6d28d9;
+  --color-purple-300: #7e22ce;  --color-purple-400: #7e22ce;
+  --color-fuchsia-300: #a21caf; --color-fuchsia-400: #a21caf;
+  --color-pink-300: #be185d;    --color-pink-400: #be185d;
+  --color-rose-300: #be123c;    --color-rose-400: #be123c;
+}
+
+/* Fonds pleins colorés : le texte blanc y reste blanc (la variable est redéfinie pour tous les descendants) */
+html[data-theme="arctic"] [class~="bg-red-500"],
+  html[data-theme="arctic"] [class~="bg-red-600"],
+  html[data-theme="arctic"] [class~="bg-red-700"],
+  html[data-theme="arctic"] [class~="bg-red-800"],
+  html[data-theme="arctic"] [class~="bg-red-900"],
+  html[data-theme="arctic"] [class~="bg-red-950"],
+  html[data-theme="arctic"] [class~="bg-orange-500"],
+  html[data-theme="arctic"] [class~="bg-orange-600"],
+  html[data-theme="arctic"] [class~="bg-orange-700"],
+  html[data-theme="arctic"] [class~="bg-orange-800"],
+  html[data-theme="arctic"] [class~="bg-orange-900"],
+  html[data-theme="arctic"] [class~="bg-orange-950"],
+  html[data-theme="arctic"] [class~="bg-amber-500"],
+  html[data-theme="arctic"] [class~="bg-amber-600"],
+  html[data-theme="arctic"] [class~="bg-amber-700"],
+  html[data-theme="arctic"] [class~="bg-amber-800"],
+  html[data-theme="arctic"] [class~="bg-amber-900"],
+  html[data-theme="arctic"] [class~="bg-amber-950"],
+  html[data-theme="arctic"] [class~="bg-yellow-500"],
+  html[data-theme="arctic"] [class~="bg-yellow-600"],
+  html[data-theme="arctic"] [class~="bg-yellow-700"],
+  html[data-theme="arctic"] [class~="bg-yellow-800"],
+  html[data-theme="arctic"] [class~="bg-yellow-900"],
+  html[data-theme="arctic"] [class~="bg-yellow-950"],
+  html[data-theme="arctic"] [class~="bg-lime-500"],
+  html[data-theme="arctic"] [class~="bg-lime-600"],
+  html[data-theme="arctic"] [class~="bg-lime-700"],
+  html[data-theme="arctic"] [class~="bg-lime-800"],
+  html[data-theme="arctic"] [class~="bg-lime-900"],
+  html[data-theme="arctic"] [class~="bg-lime-950"],
+  html[data-theme="arctic"] [class~="bg-green-500"],
+  html[data-theme="arctic"] [class~="bg-green-600"],
+  html[data-theme="arctic"] [class~="bg-green-700"],
+  html[data-theme="arctic"] [class~="bg-green-800"],
+  html[data-theme="arctic"] [class~="bg-green-900"],
+  html[data-theme="arctic"] [class~="bg-green-950"],
+  html[data-theme="arctic"] [class~="bg-emerald-500"],
+  html[data-theme="arctic"] [class~="bg-emerald-600"],
+  html[data-theme="arctic"] [class~="bg-emerald-700"],
+  html[data-theme="arctic"] [class~="bg-emerald-800"],
+  html[data-theme="arctic"] [class~="bg-emerald-900"],
+  html[data-theme="arctic"] [class~="bg-emerald-950"],
+  html[data-theme="arctic"] [class~="bg-teal-500"],
+  html[data-theme="arctic"] [class~="bg-teal-600"],
+  html[data-theme="arctic"] [class~="bg-teal-700"],
+  html[data-theme="arctic"] [class~="bg-teal-800"],
+  html[data-theme="arctic"] [class~="bg-teal-900"],
+  html[data-theme="arctic"] [class~="bg-teal-950"],
+  html[data-theme="arctic"] [class~="bg-cyan-500"],
+  html[data-theme="arctic"] [class~="bg-cyan-600"],
+  html[data-theme="arctic"] [class~="bg-cyan-700"],
+  html[data-theme="arctic"] [class~="bg-cyan-800"],
+  html[data-theme="arctic"] [class~="bg-cyan-900"],
+  html[data-theme="arctic"] [class~="bg-cyan-950"],
+  html[data-theme="arctic"] [class~="bg-sky-500"],
+  html[data-theme="arctic"] [class~="bg-sky-600"],
+  html[data-theme="arctic"] [class~="bg-sky-700"],
+  html[data-theme="arctic"] [class~="bg-sky-800"],
+  html[data-theme="arctic"] [class~="bg-sky-900"],
+  html[data-theme="arctic"] [class~="bg-sky-950"],
+  html[data-theme="arctic"] [class~="bg-blue-500"],
+  html[data-theme="arctic"] [class~="bg-blue-600"],
+  html[data-theme="arctic"] [class~="bg-blue-700"],
+  html[data-theme="arctic"] [class~="bg-blue-800"],
+  html[data-theme="arctic"] [class~="bg-blue-900"],
+  html[data-theme="arctic"] [class~="bg-blue-950"],
+  html[data-theme="arctic"] [class~="bg-indigo-500"],
+  html[data-theme="arctic"] [class~="bg-indigo-600"],
+  html[data-theme="arctic"] [class~="bg-indigo-700"],
+  html[data-theme="arctic"] [class~="bg-indigo-800"],
+  html[data-theme="arctic"] [class~="bg-indigo-900"],
+  html[data-theme="arctic"] [class~="bg-indigo-950"],
+  html[data-theme="arctic"] [class~="bg-violet-500"],
+  html[data-theme="arctic"] [class~="bg-violet-600"],
+  html[data-theme="arctic"] [class~="bg-violet-700"],
+  html[data-theme="arctic"] [class~="bg-violet-800"],
+  html[data-theme="arctic"] [class~="bg-violet-900"],
+  html[data-theme="arctic"] [class~="bg-violet-950"],
+  html[data-theme="arctic"] [class~="bg-purple-500"],
+  html[data-theme="arctic"] [class~="bg-purple-600"],
+  html[data-theme="arctic"] [class~="bg-purple-700"],
+  html[data-theme="arctic"] [class~="bg-purple-800"],
+  html[data-theme="arctic"] [class~="bg-purple-900"],
+  html[data-theme="arctic"] [class~="bg-purple-950"],
+  html[data-theme="arctic"] [class~="bg-fuchsia-500"],
+  html[data-theme="arctic"] [class~="bg-fuchsia-600"],
+  html[data-theme="arctic"] [class~="bg-fuchsia-700"],
+  html[data-theme="arctic"] [class~="bg-fuchsia-800"],
+  html[data-theme="arctic"] [class~="bg-fuchsia-900"],
+  html[data-theme="arctic"] [class~="bg-fuchsia-950"],
+  html[data-theme="arctic"] [class~="bg-pink-500"],
+  html[data-theme="arctic"] [class~="bg-pink-600"],
+  html[data-theme="arctic"] [class~="bg-pink-700"],
+  html[data-theme="arctic"] [class~="bg-pink-800"],
+  html[data-theme="arctic"] [class~="bg-pink-900"],
+  html[data-theme="arctic"] [class~="bg-pink-950"],
+  html[data-theme="arctic"] [class~="bg-rose-500"],
+  html[data-theme="arctic"] [class~="bg-rose-600"],
+  html[data-theme="arctic"] [class~="bg-rose-700"],
+  html[data-theme="arctic"] [class~="bg-rose-800"],
+  html[data-theme="arctic"] [class~="bg-rose-900"],
+  html[data-theme="arctic"] [class~="bg-rose-950"],
+  html[data-theme="arctic"] [class~="bg-[var(--accent-primary)]"],
+  html[data-theme="arctic"] [class~="bg-[var(--accent)]"],
+  html[data-theme="arctic"] [class~="bg-[var(--accent-color)]"],
+  html[data-theme="arctic"] [class~="bg-[var(--danger)]"],
+  html[data-theme="arctic"] [class~="bg-[var(--success)]"],
+  html[data-theme="arctic"] [class~="bg-[var(--warning)]"],
+  html[data-theme="arctic"] [class~="bg-[var(--info)]"],
+  html[data-theme="arctic"] [class~="bg-[var(--status-online)]"],
+  html[data-theme="arctic"] [class~="bg-[var(--status-busy)]"] {
+  --color-white: #ffffff;
+}
+
+/* Dégradés pleins colorés : même règle */
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-red-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-red-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-red-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-red-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-red-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-orange-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-orange-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-orange-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-orange-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-orange-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-amber-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-amber-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-amber-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-amber-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-amber-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-yellow-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-yellow-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-yellow-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-yellow-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-yellow-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-lime-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-lime-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-lime-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-lime-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-lime-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-green-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-green-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-green-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-green-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-green-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-emerald-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-emerald-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-emerald-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-emerald-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-emerald-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-teal-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-teal-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-teal-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-teal-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-teal-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-cyan-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-cyan-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-cyan-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-cyan-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-cyan-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-sky-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-sky-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-sky-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-sky-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-sky-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-blue-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-blue-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-blue-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-blue-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-blue-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-indigo-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-indigo-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-indigo-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-indigo-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-indigo-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-violet-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-violet-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-violet-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-violet-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-violet-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-purple-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-purple-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-purple-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-purple-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-purple-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-fuchsia-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-fuchsia-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-fuchsia-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-fuchsia-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-fuchsia-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-pink-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-pink-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-pink-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-pink-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-pink-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-rose-500"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-rose-600"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-rose-700"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-rose-800"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-rose-900"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-[var(--accent-primary)]"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-[var(--accent)]"],
+html[data-theme="arctic"] [class*="bg-gradient-to-"][class*="from-[var(--accent-color)]"] {
+  --color-white: #ffffff;
+}
+
+/* Texte noir volontaire (sur fond coloré) : reste noir malgré la teinte de voile du noir */
+html[data-theme="arctic"] .text-black {
+  color: #0f172a;
+}
+
+/* Pastilles / boutons blancs pleins (curseurs d'interrupteur, CTA) : restent blancs */
+html[data-theme="arctic"] [class~="bg-white"] {
+  background-color: #ffffff;
+}
+
+/* Bordures écrites en gris sombre : trop discrètes sur fond clair, on les rattache à la bordure du thème */
+html[data-theme="arctic"] :is([class*="border-zinc-"], [class*="border-slate-"], [class*="border-neutral-"], [class*="border-gray-"]) {
+  border-color: rgba(15, 23, 42, 0.14);
+}
+html[data-theme="arctic"] :is([class*="divide-zinc-"], [class*="divide-slate-"], [class*="divide-neutral-"], [class*="divide-gray-"]) > :not(:last-child) {
+  border-color: rgba(15, 23, 42, 0.12);
+}
+
+/* Texte sombre volontaire sur fond coloré ou blanc : il doit rester sombre malgré le remappage des gris 900/950 */
+html[data-theme="arctic"] :is(.text-zinc-900, .text-zinc-950, .text-slate-900, .text-slate-950, .text-neutral-900, .text-neutral-950, .text-gray-900, .text-gray-950) {
+  color: #0f172a;
+}
+
+html[data-theme="arctic"] * {
+  scrollbar-color: rgba(15, 23, 42, 0.28) transparent;
+}
+html[data-theme="arctic"] ::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.22);
+}
+html[data-theme="arctic"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 23, 42, 0.4);
 }

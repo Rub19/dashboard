@@ -33,9 +33,17 @@ struct GlassPill: View {
     }
 }
 
-/// Fond ambiant : dégradé maillé sombre qui dérive lentement, pour donner de la profondeur au verre.
+/// Fond ambiant : dégradé maillé qui dérive lentement, aux couleurs du thème actif, pour donner de la profondeur au verre.
 struct AmbientBackground: View {
+    @Environment(AppModel.self) private var model
+
     var body: some View {
+        let preset = model.themePreset
+        let base = Color(hex: preset.base)
+        let accent = Color(hex: model.accentHex)
+        let secondary = Color(hex: preset.secondary)
+        let glow = preset.glow
+        let tint = preset.isLight ? 0.16 : 0.34
         TimelineView(.animation(minimumInterval: 1.0 / 20.0)) { context in
             let t = context.date.timeIntervalSinceReferenceDate
             let drift = Float(sin(t / 9) * 0.06)
@@ -49,14 +57,14 @@ struct AmbientBackground: View {
                     SIMD2<Float>(0, 1), SIMD2<Float>(0.5 + drift2, 1), SIMD2<Float>(1, 1),
                 ],
                 colors: [
-                    Theme.night, Theme.indigo.opacity(0.85), Theme.night,
-                    Theme.violet.opacity(0.75), Theme.accent.opacity(0.35), Theme.teal.opacity(0.55),
-                    Theme.night, Theme.indigo.opacity(0.6), Theme.night,
+                    base, base.mix(with: secondary, by: tint * 0.9 * glow), base,
+                    base.mix(with: accent, by: tint * 0.8 * glow), base.mix(with: accent, by: tint * 1.1 * glow), base.mix(with: secondary, by: tint * 0.7 * glow),
+                    base, base.mix(with: accent, by: tint * 0.5 * glow), base,
                 ]
             )
         }
         .ignoresSafeArea()
-        .overlay(Color.black.opacity(0.25).ignoresSafeArea())
+        .overlay((preset.isLight ? Color.white.opacity(0.15) : Color.black.opacity(0.25)).ignoresSafeArea())
     }
 }
 
@@ -92,14 +100,14 @@ struct AvatarView: View {
                 Circle()
                     .fill(status.color)
                     .frame(width: size * 0.28, height: size * 0.28)
-                    .overlay(Circle().stroke(Theme.night, lineWidth: 2))
+                    .overlay(Circle().stroke(Theme.base, lineWidth: 2))
             }
         }
     }
 
     private var initial: some View {
         ZStack {
-            Circle().fill(Theme.accent.gradient)
+            Circle().fill(Color(hex: Theme.readableTint(Theme.currentAccentHex)).gradient)
             Text(String(name.prefix(1)).uppercased()).font(.system(size: size * 0.42, weight: .bold)).foregroundStyle(.white)
         }
     }

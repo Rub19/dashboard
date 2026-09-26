@@ -28,12 +28,23 @@ final class AppModel {
     /// Pile de navigation de l'onglet « Plus » (ouvre directement une section).
     var morePath: [MoreDestination] = []
 
-    /// Couleur d'accent courante (observée par l'interface pour teinter l'app en direct).
-    private(set) var accentHex: UInt32 = Theme.currentAccentHex
+    /// Thème actif (fond, ambiance, clair/sombre), observé par l'interface.
+    private(set) var themePreset: ThemePreset = Theme.preset
+    /// Accent choisi explicitement ; `nil` = « Auto » (suit le thème).
+    private(set) var chosenAccentHex: UInt32? = Theme.chosenAccentHex
 
-    func setAccent(_ hex: UInt32) {
-        accentHex = hex
-        UserDefaults.standard.set(Int(hex), forKey: Theme.accentKey)
+    /// Couleur d'accent courante (observée par l'interface pour teinter l'app en direct).
+    var accentHex: UInt32 { chosenAccentHex ?? themePreset.accent }
+
+    func setTheme(_ preset: ThemePreset) {
+        themePreset = preset
+        UserDefaults.standard.set(preset.rawValue, forKey: Theme.themeKey)
+    }
+
+    /// `nil` rétablit l'accent du thème.
+    func setAccent(_ hex: UInt32?) {
+        chosenAccentHex = hex
+        if let hex { UserDefaults.standard.set(Int(hex), forKey: Theme.accentKey) } else { UserDefaults.standard.removeObject(forKey: Theme.accentKey) }
     }
 
     init() {

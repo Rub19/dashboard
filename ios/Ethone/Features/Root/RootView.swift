@@ -53,6 +53,7 @@ struct MainTabs: View {
             Tab("Focus", systemImage: "timer", value: AppTab.focus) { FocusView() }
             Tab("Plus", systemImage: "ellipsis.circle.fill", value: AppTab.more) { MoreView() }
         }
+        .tabViewStyle(.sidebarAdaptable)
         .tabBarMinimizeBehavior(.onScrollDown)
         .focusAccessory(model: model, selection: $selection)
         .task {

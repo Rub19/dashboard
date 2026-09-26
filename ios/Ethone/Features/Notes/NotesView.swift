@@ -115,6 +115,10 @@ struct NoteEditorView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Fermer") { dismiss() } }
+                ToolbarItem(placement: .primaryAction) {
+                    ShareLink(item: title + "\n\n" + text) { Image(systemName: "square.and.arrow.up") }
+                        .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty && text.isEmpty)
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Enregistrer") { save() }
                         .disabled(saving || title.trimmingCharacters(in: .whitespaces).isEmpty)

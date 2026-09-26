@@ -40,6 +40,8 @@ final class AppModel {
         self.brain = BrainChat(api: api)
         self.mail = MailStore(api: api)
         self.spaces = SpacesStore(api: api)
+        focus.onChange = { [weak self] in self?.publishSnapshot() }
+        WatchBridge.shared.activate()
     }
 
     func refreshAll() async {
@@ -65,9 +67,13 @@ final class AppModel {
             habitsTotal: habits.activeHabits.count,
             bestStreak: habits.activeHabits.map { habits.streak($0) }.max() ?? 0,
             noteCount: notes.items.count,
-            focusMinutesToday: focus.minutesToday
+            focusMinutesToday: focus.minutesToday,
+            focusPhase: focus.isActive ? focus.phase.rawValue : nil,
+            focusEndDate: focus.isActive ? focus.endDate : nil,
+            focusPaused: focus.isActive ? focus.isPaused : nil
         )
         snapshot.save()
+        WatchBridge.shared.push(snapshot)
         WidgetCenter.shared.reloadAllTimelines()
     }
 

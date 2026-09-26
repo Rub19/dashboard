@@ -12,8 +12,12 @@ struct SharedSnapshot: Codable {
     var bestStreak: Int
     var noteCount: Int
     var focusMinutesToday: Int
+    /// Session de focus en cours (pour la Watch et les widgets) : phase, échéance, pause.
+    var focusPhase: String? = nil
+    var focusEndDate: Date? = nil
+    var focusPaused: Bool? = nil
 
-    static let empty = SharedSnapshot(updatedAt: .distantPast, userName: "", openTaskCount: 0, nextTasks: [], habitsDone: 0, habitsTotal: 0, bestStreak: 0, noteCount: 0, focusMinutesToday: 0)
+    static let empty = SharedSnapshot(updatedAt: .distantPast, userName: "", openTaskCount: 0, nextTasks: [], habitsDone: 0, habitsTotal: 0, bestStreak: 0, noteCount: 0, focusMinutesToday: 0, focusPhase: nil, focusEndDate: nil, focusPaused: nil)
 
     static let suite = "group.dev.ethone.app"
     private static let key = "ethone.snapshot.v1"

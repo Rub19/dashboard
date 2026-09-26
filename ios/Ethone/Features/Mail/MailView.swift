@@ -295,8 +295,7 @@ struct MailComposeView: View {
     }
 
     private var recipients: [String] {
-        to.split(whereSeparator: { ",; 
-".contains($0) }).map { $0.trimmingCharacters(in: .whitespaces) }.filter { $0.contains("@") }
+        to.split(whereSeparator: { $0 == "," || $0 == ";" || $0.isWhitespace }).map { $0.trimmingCharacters(in: .whitespaces) }.filter { $0.contains("@") }
     }
 
     var body: some View {

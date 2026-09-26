@@ -88,6 +88,8 @@ final class FocusManager {
     var errorMessage: String?
 
     @ObservationIgnored private let api: APIClient
+    /// Appelé à chaque changement d'état (l'app met alors à jour les widgets et la montre).
+    @ObservationIgnored var onChange: (() -> Void)?
     @ObservationIgnored private var activity: Activity<FocusActivityAttributes>?
     @ObservationIgnored private var completionTask: Task<Void, Never>?
     private static let storageKey = "ethone.focus.state.v1"
@@ -152,6 +154,7 @@ final class FocusManager {
         phase = .idle
         pausedRemaining = nil
         UserDefaults.standard.removeObject(forKey: Self.storageKey)
+        onChange?()
     }
 
     // MARK: Données
@@ -257,6 +260,7 @@ final class FocusManager {
     }
 
     private func persist() {
+        defer { onChange?() }
         let state = Persisted(phase: phase, preset: preset, goal: goal, startDate: startDate, endDate: endDate,
                               totalSeconds: totalSeconds, pausedRemaining: pausedRemaining, completedPomodoros: completedPomodoros)
         if let data = try? JSONEncoder().encode(state) { UserDefaults.standard.set(data, forKey: Self.storageKey) }

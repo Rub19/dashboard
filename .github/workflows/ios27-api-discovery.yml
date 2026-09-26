@@ -1,0 +1,43 @@
+name: iOS 27 SDK — inventaire des nouvelles API
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: xcode-27
+    steps:
+      - name: Version d'Xcode et SDK
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+          swift --version
+
+      - name: Extraire les symboles disponibles à partir d'iOS 27
+        run: |
+          SDK="$(xcrun --sdk iphoneos --show-sdk-path)"
+          echo "SDK=$SDK"
+          mkdir -p out
+          for fw in SwiftUI WidgetKit ActivityKit AppIntents FoundationModels UserNotifications EventKit CoreSpotlight LocalAuthentication Observation Charts MapKit HealthKit CoreLocation StoreKit Speech Translation Vision NaturalLanguage; do
+            FILE="$(find "$SDK/System/Library/Frameworks/$fw.framework" -name '*.swiftinterface' 2>/dev/null | grep -E 'arm64e?-apple-ios\.swiftinterface$' | head -1)"
+            if [ -z "$FILE" ]; then echo "$fw: pas de swiftinterface"; continue; fi
+            echo "$fw: $FILE"
+            grep -nE "@available\(.*iOS 27" "$FILE" | sed 's/^[0-9]*://' | sort -u > "out/$fw.available27.txt" || true
+            wc -l "out/$fw.available27.txt"
+          done
+          # Symboles introduits en iOS 27 avec leur déclaration (ligne suivante)
+          for fw in SwiftUI WidgetKit AppIntents FoundationModels ActivityKit UserNotifications; do
+            FILE="$(find "$SDK/System/Library/Frameworks/$fw.framework" -name '*.swiftinterface' 2>/dev/null | grep -E 'arm64e?-apple-ios\.swiftinterface$' | head -1)"
+            [ -z "$FILE" ] && continue
+            grep -nE -A2 "@available\(.*iOS 27" "$FILE" | grep -vE "^\-\-$" | cut -c1-240 > "out/$fw.declarations27.txt" || true
+          done
+
+      - name: Publier l'inventaire
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios27-api-inventory
+          path: out/
+          retention-days: 14

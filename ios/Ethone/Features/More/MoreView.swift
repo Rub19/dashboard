@@ -24,6 +24,7 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.bills) { Label("Factures", systemImage: "eurosign.circle.fill") }
                     NavigationLink(value: MoreDestination.valorant) { Label("Valorant", systemImage: "scope") }
                     NavigationLink(value: MoreDestination.valorantStore) { Label("Boutique Valorant", systemImage: "bag.fill") }
+                    NavigationLink(value: MoreDestination.lolTracker) { Label("League of Legends", systemImage: "shield.fill") }
                     NavigationLink(value: MoreDestination.lolRotation) { Label("Rotation LoL", systemImage: "shield.lefthalf.filled") }
                     NavigationLink(value: MoreDestination.games) { Label("Jeux", systemImage: "gamecontroller.fill") }
                     NavigationLink(value: MoreDestination.analytics) { Label("Analytique", systemImage: "chart.bar.xaxis") }
@@ -107,6 +108,7 @@ struct MoreView: View {
                 case .bills: BillsView()
                 case .valorant: ValorantView()
                 case .valorantStore: ValorantStoreView()
+                case .lolTracker: LolTrackerView()
                 case .lolRotation: LolRotationView()
                 case .games: GamesView()
                 case .interactions: InteractionsView()

@@ -37536,6 +37536,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_136_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_136_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_136_de);
 
+const v1_28_137_fr: ChangelogEntry = {
+  version: "v1.28.137",
+  date: "2026-09-27",
+  title: "Correction : la barre de recherche (Ctrl K) n'était pas centrée",
+  items: [
+    "Le champ de recherche du haut se centrait dans l'espace restant entre le bouton de barre latérale (à gauche) et les icônes d'outils (à droite) — deux colonnes de largeurs très inégales — au lieu du vrai centre de la page. Il est maintenant positionné indépendamment des colonnes voisines et reste centré quel que soit leur déséquilibre.",
+  ],
+};
+
+const v1_28_137_en: ChangelogEntry = {
+  version: "v1.28.137",
+  date: "2026-09-27",
+  title: "Fix: the search bar (Ctrl K) wasn't centered",
+  items: [
+    "The top search field centered itself in the space left over between the sidebar toggle (left) and the toolbar icons (right) — two columns of very different widths — instead of the page's true center. It's now positioned independently of its neighboring columns and stays centered regardless of their imbalance.",
+  ],
+};
+
+const v1_28_137_es: ChangelogEntry = {
+  version: "v1.28.137",
+  date: "2026-09-27",
+  title: "Corrección: la barra de búsqueda (Ctrl K) no estaba centrada",
+  items: [
+    "El campo de búsqueda superior se centraba en el espacio sobrante entre el botón de la barra lateral (izquierda) y los iconos de herramientas (derecha) — dos columnas de anchos muy distintos — en vez del centro real de la página. Ahora se posiciona de forma independiente y permanece centrado sin importar ese desequilibrio.",
+  ],
+};
+
+const v1_28_137_de: ChangelogEntry = {
+  version: "v1.28.137",
+  date: "2026-09-27",
+  title: "Fix: Die Suchleiste (Strg K) war nicht zentriert",
+  items: [
+    "Das obere Suchfeld zentrierte sich im verbleibenden Platz zwischen dem Sidebar-Toggle (links) und den Werkzeug-Icons (rechts) — zwei sehr unterschiedlich breite Spalten — statt in der echten Seitenmitte. Es ist jetzt unabhängig von den Nachbarspalten positioniert und bleibt unabhängig von deren Ungleichgewicht zentriert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_137_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_137_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_137_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_137_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.137 — 2026-09-27
+
+**Correction : la barre de recherche (Ctrl K) n'était pas centrée**
+
+- Le champ de recherche du haut se centrait dans l'espace restant entre le bouton de barre latérale (à gauche) et les icônes d'outils (à droite) — deux colonnes de largeurs très inégales — au lieu du vrai centre de la page. Il est maintenant positionné indépendamment des colonnes voisines et reste centré quel que soit leur déséquilibre.
+
 ## v1.28.136 — 2026-09-27
 
 **2 nouveaux thèmes : Burgundy et Asphalt**

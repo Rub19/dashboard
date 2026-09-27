@@ -370,8 +370,15 @@ function TopBar() {
         </div>
       </div>
 
-      {/* Desktop Bar : navigation à gauche, recherche au centre, outils regroupés à droite */}
-      <div className="relative pointer-events-auto hidden h-14 w-full items-center gap-3 md:flex">
+      {/* Desktop Bar : navigation à gauche, recherche au centre, outils regroupés à droite.
+          Le champ de recherche était un enfant flex "flex-1 justify-center" entre deux colonnes
+          shrink-0 de largeurs très inégales (gauche : juste le toggle + fil d'Ariane ; droite :
+          pills système + barre d'outils + profil) — il se centrait donc dans l'espace RESTANT
+          entre les deux, pas sur la page, et dérivait vers la gauche à mesure que la colonne de
+          droite s'élargit (Dynamic Island même souci, voir plus bas). Positionné en absolute et
+          centré sur toute la largeur de la barre, il reste au vrai centre quel que soit le
+          déséquilibre des colonnes voisines. */}
+      <div className="relative pointer-events-auto hidden h-14 w-full items-center justify-between gap-3 md:flex">
         {/* Gauche : bouton de barre latérale + fil d'Ariane */}
         <div className="flex min-w-0 shrink-0 items-center gap-2.5">
           <SidebarTopToggle />
@@ -389,9 +396,11 @@ function TopBar() {
           </nav>
         </div>
 
-        {/* Centre : champ de recherche */}
-        <div className="flex min-w-0 flex-1 justify-center px-2">
-          <CommandBarTrigger variant="field" className="max-w-[480px]" />
+        {/* Centre : champ de recherche, vraiment centré sur la barre (indépendant des colonnes voisines) */}
+        <div className="pointer-events-none absolute left-1/2 top-1/2 w-full max-w-[480px] -translate-x-1/2 -translate-y-1/2 px-2">
+          <div className="pointer-events-auto">
+            <CommandBarTrigger variant="field" />
+          </div>
         </div>
 
         {/* Droite : état du système (très grands écrans), capsule d'outils, profil */}

@@ -41,7 +41,7 @@ struct MemberSanctionView: View {
                 }
             }
 
-            Section("Sanction") {
+            Section {
                 Picker("Action", selection: $action) { ForEach(Self.actions, id: \.id) { Text($0.label).tag($0.id) } }
                 if action == "TIMEOUT" {
                     Picker("Durée", selection: $duration) { ForEach(Self.durations, id: \.seconds) { Text($0.label).tag($0.seconds) } }
@@ -53,7 +53,7 @@ struct MemberSanctionView: View {
                     HStack { Text("Appliquer la sanction"); if sending { Spacer(); ProgressView() } }
                 }
                 .disabled(sending || reason.trimmingCharacters(in: .whitespaces).isEmpty)
-            } footer: {
+            } header: { Text("Sanction") } footer: {
                 if isBot { Text("Ce membre est un bot.") }
                 else { Text("Un motif est obligatoire. La sanction est enregistrée dans les cases de modération du serveur.") }
             }

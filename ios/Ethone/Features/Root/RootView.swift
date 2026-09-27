@@ -34,7 +34,9 @@ struct RootView: View {
         .overlay { if model.lock.isLocked && auth.phase == .signedIn { LockScreen() } }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
-            case .background: model.lock.lockIfEnabled()
+            case .background:
+                model.lock.lockIfEnabled()
+                BackgroundSync.schedule()
             case .active:
                 Task { await model.lock.unlock() }
                 if auth.phase == .signedIn { model.startRealtime() }

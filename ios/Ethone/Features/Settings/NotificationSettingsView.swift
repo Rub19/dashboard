@@ -13,6 +13,7 @@ struct NotificationSettingsView: View {
     @AppStorage(NotificationPrefs.briefingMinuteKey) private var minute = 0
     @State private var status: UNAuthorizationStatus = .notDetermined
     @State private var pendingCount = 0
+    @State private var backgroundStatus: UIBackgroundRefreshStatus = .available
 
     private var briefingTime: Binding<Date> {
         Binding(
@@ -45,6 +46,23 @@ struct NotificationSettingsView: View {
                     }
                 }
                 LabeledContent("Rappels programmés", value: "\(pendingCount)")
+            }
+            .listRowBackground(GlassRowBackground())
+
+            Section {
+                switch backgroundStatus {
+                case .available:
+                    Label("Actualisation en arrière-plan activée", systemImage: "arrow.triangle.2.circlepath").foregroundStyle(Theme.success)
+                case .denied:
+                    Label("Actualisation en arrière-plan désactivée", systemImage: "exclamationmark.triangle.fill").foregroundStyle(Theme.warning)
+                    Button("Ouvrir les Réglages iOS") {
+                        if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+                    }
+                default:
+                    Label("Actualisation en arrière-plan restreinte", systemImage: "exclamationmark.triangle.fill").foregroundStyle(Theme.warning)
+                }
+            } header: { Text("Synchronisation").sectionTitle() } footer: {
+                Text("iOS réveille l'app de temps en temps (environ toutes les 15 à 60 min, à sa convenance) pour synchroniser les données et reprogrammer les rappels, même si vous ne l'ouvrez pas. La fréquence n'est pas garantie et baisse en mode économie d'énergie. Activez Réglages iOS → ETHONE → Actualisation en arrière-plan.")
             }
             .listRowBackground(GlassRowBackground())
 
@@ -94,6 +112,7 @@ struct NotificationSettingsView: View {
         let center = UNUserNotificationCenter.current()
         status = await center.notificationSettings().authorizationStatus
         pendingCount = await center.pendingNotificationRequests().count
+        backgroundStatus = UIApplication.shared.backgroundRefreshStatus
     }
 
     private func resync() {

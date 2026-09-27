@@ -121,6 +121,14 @@ final class AppModel {
         }
     }
 
+    /// Réveil en arrière-plan : restaure la session si l'app vient d'être lancée par le système, puis recharge tout.
+    func backgroundSync() async -> Bool {
+        if auth.phase == .launching { await auth.restore() }
+        guard auth.phase == .signedIn else { return false }
+        await refreshAll()
+        return !Task.isCancelled
+    }
+
     func refreshAll() async {
         async let a: Void = notes.refresh()
         async let b: Void = tasks.refresh()

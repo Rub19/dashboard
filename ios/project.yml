@@ -69,6 +69,11 @@ targets:
         NSSupportsLiveActivitiesFrequentUpdates: true
         UIBackgroundModes:
           - remote-notification
+          - fetch
+          - processing
+        BGTaskSchedulerPermittedIdentifiers:
+          - dev.ethone.app.refresh
+          - dev.ethone.app.sync
         ITSAppUsesNonExemptEncryption: false
     entitlements:
       path: Ethone/Ethone.entitlements

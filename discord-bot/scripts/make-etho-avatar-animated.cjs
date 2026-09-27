@@ -13,13 +13,16 @@ const out = process.argv[2] || path.join(__dirname, 'etho-avatar-animated.gif');
 
 const bg = '#14141a';
 const text = '#ffffff';
+// Peu de teintes, transitions franches : un anneau au rouge moyen avec UN seul arc plus sombre qui tourne.
+// (l'ancien dégradé à 6 teintes proches produisait trop de couleurs uniques pour la palette 256 couleurs du
+// GIF, d'où le grain/dithering visible tout autour de l'anneau)
 const ringStops = [
-  [0, '#6b0d24'],
-  [0.15, '#c2304a'],
-  [0.35, '#ff6b81'],
-  [0.55, '#c2304a'],
-  [0.85, '#6b0d24'],
-  [1, '#6b0d24'],
+  [0, '#c2304a'],
+  [0.06, '#8a1530'],
+  [0.16, '#4a0916'],
+  [0.26, '#8a1530'],
+  [0.32, '#c2304a'],
+  [1, '#c2304a'],
 ];
 
 // Même police condensée que la bannière (pas la police arrondie de l'ancien avatar).
@@ -28,32 +31,27 @@ GlobalFonts.registerFromPath('C:\\Windows\\Fonts\\impact.ttf', 'EthoCondensed');
 const canvas = createCanvas(SIZE, SIZE);
 const ctx = canvas.getContext('2d');
 
-const ringWidth = SIZE * 0.036;
-const ringRadius = SIZE / 2 - ringWidth / 2 - SIZE * 0.01;
+// L'anneau va jusqu'au bord du canevas (plus de découpe circulaire à ménager) : son bord extérieur touche
+// exactement le cadre 512x512.
+const ringWidth = SIZE * 0.042;
+const ringRadius = SIZE / 2 - ringWidth / 2;
 
 function drawFrame(rotation) {
-  ctx.clearRect(0, 0, SIZE, SIZE);
-
-  // Cercle découpé (coins transparents, même raison que l'avatar statique)
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(SIZE / 2, SIZE / 2, SIZE / 2, 0, Math.PI * 2);
-  ctx.clip();
-
+  // Pas de découpe circulaire : carré plein et opaque, sans transparence. Discord masque déjà les avatars en
+  // cercle à l'affichage — un canal alpha ici ne servait qu'à créer le grain (le GIF n'a qu'une transparence
+  // binaire on/off, donc le bord anti-aliasé du cercle se retrouvait ditheré). Coins carrés = simplement de
+  // la couleur de fond, invisibles une fois masqués par Discord.
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, SIZE, SIZE);
 
   // "E" condensé, même police que la bannière
-  ctx.font = `${Math.round(SIZE * 0.4)}px EthoCondensed`;
+  ctx.font = `${Math.round(SIZE * 0.52)}px EthoCondensed`;
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'center';
   ctx.fillStyle = text;
-  ctx.fillText('E', SIZE / 2, SIZE / 2 + SIZE * 0.02);
+  ctx.fillText('E', SIZE / 2, SIZE / 2 + SIZE * 0.025);
 
-  ctx.restore();
-
-  // Anneau au dégradé conique tournant, par-dessus (dans son propre clip en forme d'anneau pour ne pas
-  // déborder même si le lineWidth met un pixel de trop à l'extérieur du cadre).
+  // Anneau au dégradé conique tournant, par-dessus
   ctx.save();
   const gradient = ctx.createConicGradient(rotation, SIZE / 2, SIZE / 2);
   for (const [stop, color] of ringStops) gradient.addColorStop(stop, color);
@@ -66,7 +64,8 @@ function drawFrame(rotation) {
 }
 
 (async () => {
-  const encoder = new GifEncoder(SIZE, SIZE, { repeat: 0, quality: 8 });
+  // quality basse = meilleure qualité de quantification NeuQuant (moins de grain/dithering sur le dégradé)
+  const encoder = new GifEncoder(SIZE, SIZE, { repeat: 0, quality: 1 });
   for (let i = 0; i < FRAMES; i++) {
     const rotation = (i / FRAMES) * Math.PI * 2;
     drawFrame(rotation);

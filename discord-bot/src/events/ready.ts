@@ -61,8 +61,17 @@ const BANNER_CANDIDATES = [
 ];
 const BANNER_FILE = BANNER_CANDIDATES.find((candidate) => fs.existsSync(candidate)) ?? BANNER_CANDIDATES[0];
 
+const AVATAR_CANDIDATES = [
+  path.resolve(process.cwd(), 'assets', 'etho-avatar-animated.gif'),
+  path.resolve(process.cwd(), 'discord-bot', 'assets', 'etho-avatar-animated.gif'),
+  path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'assets', 'etho-avatar-animated.gif'),
+  path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'assets', 'etho-avatar-animated.gif'),
+];
+const AVATAR_FILE = AVATAR_CANDIDATES.find((candidate) => fs.existsSync(candidate)) ?? AVATAR_CANDIDATES[0];
+
 interface ProfileSyncState {
   bannerHash?: string;
+  avatarHash?: string;
   usernameAttempted?: string;
 }
 
@@ -101,6 +110,19 @@ async function syncBotProfile(client: Client<true>): Promise<void> {
     }
   } catch (err) {
     logger.warn('[Profil] Impossible de mettre à jour la bannière du bot :', err);
+  }
+
+  try {
+    const image = fs.readFileSync(AVATAR_FILE);
+    const hash = createHash('sha1').update(image).digest('hex');
+    if (state.avatarHash !== hash) {
+      await client.user.setAvatar(image);
+      state.avatarHash = hash;
+      writeProfileState(state);
+      logger.success('[Profil] Avatar du bot mis à jour.');
+    }
+  } catch (err) {
+    logger.warn("[Profil] Impossible de mettre à jour l'avatar du bot :", err);
   }
 
   if (client.user.username !== BOT_DISPLAY_NAME && state.usernameAttempted !== BOT_DISPLAY_NAME) {

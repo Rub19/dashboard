@@ -130,6 +130,9 @@ struct GuildDetailView: View {
                     NavigationLink { TicketsAdminView(guild: guild) } label: { Label("Tickets", systemImage: "ticket.fill") }
                     NavigationLink { ModerationAdminView(guild: guild) } label: { Label("Modération", systemImage: "shield.lefthalf.filled") }
                     NavigationLink { GiveawaysAdminView(guild: guild) } label: { Label("Giveaways", systemImage: "gift.fill") }
+                    NavigationLink { SecurityAdminView(guild: guild) } label: { Label("Sécurité", systemImage: "lock.shield.fill") }
+                    NavigationLink { MembersAdminView(guild: guild) } label: { Label("Membres", systemImage: "person.2.fill") }
+                    NavigationLink { SuggestionsAdminView(guild: guild) } label: { Label("Suggestions", systemImage: "lightbulb.fill") }
                     NavigationLink { AuditLogAdminView(guild: guild) } label: { Label("Journal d'audit", systemImage: "list.bullet.rectangle.fill") }
                 } header: { Text("Outils").sectionTitle() }
                 .listRowBackground(GlassRowBackground())

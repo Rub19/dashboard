@@ -33,6 +33,7 @@ import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import { Checkbox } from "@/components/ui/Checkbox";
 import RolePicker from "@/components/discord/RolePicker";
 import { formatApiError } from "@/lib/format-error";
 
@@ -220,7 +221,7 @@ function OnboardingEditor({
             <p className="text-xs font-bold text-white">Activer le parcours</p>
             <p className="text-[11px] text-zinc-400">Envoyé automatiquement à chaque nouveau membre (les bots sont ignorés).</p>
           </div>
-          <input type="checkbox" checked={onboarding.enabled} onChange={(e) => patchFlow({ enabled: e.target.checked })} className="h-4 w-4 accent-teal-500" />
+          <Checkbox checked={onboarding.enabled} onCheckedChange={(checked) => patchFlow({ enabled: checked })} />
         </label>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -249,10 +250,11 @@ function OnboardingEditor({
         </div>
 
         <div className="space-y-2">
-          <label className="flex cursor-pointer items-center gap-2">
-            <input type="checkbox" checked={onboarding.sendDmOnCompletion} onChange={(e) => patchFlow({ sendDmOnCompletion: e.target.checked })} className="h-4 w-4 accent-teal-500" />
-            <span className="text-xs font-bold text-white">Envoyer un message privé de félicitations à la fin</span>
-          </label>
+          <Checkbox
+            checked={onboarding.sendDmOnCompletion}
+            onCheckedChange={(checked) => patchFlow({ sendDmOnCompletion: checked })}
+            label={<span className="text-xs font-bold text-white">Envoyer un message privé de félicitations à la fin</span>}
+          />
           {onboarding.sendDmOnCompletion && (
             <textarea
               rows={2}
@@ -309,12 +311,18 @@ function OnboardingEditor({
               <textarea rows={2} value={step.description} onChange={(e) => patchStep(idx, { description: e.target.value })} placeholder="Description (variables : {user} {username} {server} {membercount})" className={fieldClass} />
 
               {(step.type === "RULES" || step.type === "ROLE_SELECTION" || step.type === "QUESTION" || step.type === "VERIFICATION") && (
-                <label className="flex cursor-pointer items-center gap-2 text-[11px] text-zinc-300">
-                  <input type="checkbox" checked={step.required} onChange={(e) => patchStep(idx, { required: e.target.checked })} className="h-3.5 w-3.5 accent-teal-500" />
-                  Étape obligatoire
-                  {step.type === "QUESTION" && <span className="text-zinc-500">(sinon un bouton « Passer » est proposé)</span>}
-                  {step.type === "ROLE_SELECTION" && <span className="text-zinc-500">(sinon le membre peut continuer sans choisir)</span>}
-                </label>
+                <Checkbox
+                  checked={step.required}
+                  onCheckedChange={(checked) => patchStep(idx, { required: checked })}
+                  className="text-[11px] text-zinc-300"
+                  label={
+                    <>
+                      Étape obligatoire
+                      {step.type === "QUESTION" && <span className="text-zinc-500"> (sinon un bouton « Passer » est proposé)</span>}
+                      {step.type === "ROLE_SELECTION" && <span className="text-zinc-500"> (sinon le membre peut continuer sans choisir)</span>}
+                    </>
+                  }
+                />
               )}
 
               {step.type === "RULES" && (
@@ -1158,18 +1166,31 @@ export function WelcomeCenterClient() {
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
               <label className="flex items-center justify-between cursor-pointer">
                 <span className="text-xs font-bold text-white">Activer le message de bienvenue</span>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={config.welcome.enabled}
-                  onChange={(e) =>
+                  onCheckedChange={(checked) =>
                     setConfig((p: any) => ({
                       ...p,
-                      welcome: { ...p.welcome, enabled: e.target.checked },
+                      welcome: { ...p.welcome, enabled: checked },
                     }))
                   }
-                  className="h-4 w-4 rounded border-zinc-700 accent-teal-500"
                 />
               </label>
+
+              <div>
+                <label className="text-xs font-semibold text-zinc-300 mb-1 block">Salon de destination</label>
+                <ChannelPicker
+                  value={config.welcome.channelId || ""}
+                  onChange={(id) =>
+                    setConfig((p: any) => ({
+                      ...p,
+                      welcome: { ...p.welcome, channelId: id || null },
+                    }))
+                  }
+                  channels={channels.map((ch) => ({ id: ch.id, name: ch.name }))}
+                  emptyLabel="Sélectionner un salon..."
+                />
+              </div>
 
               <div>
                 <label className="text-xs font-semibold text-zinc-300">Contenu texte (Hors embed)</label>
@@ -1191,23 +1212,19 @@ export function WelcomeCenterClient() {
             {/* Embed Builder */}
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={config.welcome.embed.enabled}
-                    onChange={(e) =>
-                      setConfig((p: any) => ({
-                        ...p,
-                        welcome: {
-                          ...p.welcome,
-                          embed: { ...p.welcome.embed, enabled: e.target.checked },
-                        },
-                      }))
-                    }
-                    className="h-4 w-4 rounded border-zinc-700 accent-teal-500"
-                  />
-                  <span className="text-xs font-bold text-white">Activer l&apos;Embed Discord</span>
-                </label>
+                <Checkbox
+                  checked={config.welcome.embed.enabled}
+                  onCheckedChange={(checked) =>
+                    setConfig((p: any) => ({
+                      ...p,
+                      welcome: {
+                        ...p.welcome,
+                        embed: { ...p.welcome.embed, enabled: checked },
+                      },
+                    }))
+                  }
+                  label={<span className="text-xs font-bold text-white">Activer l&apos;Embed Discord</span>}
+                />
 
                 {/* Color picker */}
                 <div className="flex items-center gap-2">
@@ -1364,21 +1381,19 @@ export function WelcomeCenterClient() {
                           placeholder="Valeur"
                           className="h-7 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-[11px] text-white"
                         />
-                        <label className="flex items-center gap-1 text-[10px] text-zinc-400 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={f.inline}
-                            onChange={(e) => {
-                              const updated = [...config.welcome.embed.fields];
-                              updated[idx].inline = e.target.checked;
-                              setConfig((p: any) => ({
-                                ...p,
-                                welcome: { ...p.welcome, embed: { ...p.welcome.embed, fields: updated } },
-                              }));
-                            }}
-                          />
-                          <span>Inline</span>
-                        </label>
+                        <Checkbox
+                          className="text-[10px] text-zinc-400"
+                          checked={f.inline}
+                          onCheckedChange={(checked) => {
+                            const updated = [...config.welcome.embed.fields];
+                            updated[idx].inline = checked;
+                            setConfig((p: any) => ({
+                              ...p,
+                              welcome: { ...p.welcome, embed: { ...p.welcome.embed, fields: updated } },
+                            }));
+                          }}
+                          label={<span>Inline</span>}
+                        />
                         <button
                           type="button"
                           onClick={() => {
@@ -1631,16 +1646,14 @@ export function WelcomeCenterClient() {
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
               <span className="text-xs font-bold text-white">Activer les messages de départ</span>
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={config.goodbye.enabled}
-                onChange={(e) =>
+                onCheckedChange={(checked) =>
                   setConfig((p: any) => ({
                     ...p,
-                    goodbye: { ...p.goodbye, enabled: e.target.checked },
+                    goodbye: { ...p.goodbye, enabled: checked },
                   }))
                 }
-                className="h-4 w-4 rounded border-zinc-700 accent-teal-500"
               />
             </label>
 
@@ -1702,15 +1715,14 @@ export function WelcomeCenterClient() {
                 <p className="text-xs font-bold text-white">Activer le message privé en DM</p>
                 <p className="text-[11px] text-zinc-400">Si un membre a fermé ses DMs, l&apos;envoi échouera sans bloquer l&apos;arrivée.</p>
               </div>
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={config.welcome.dm?.enabled ?? false}
-                onChange={(e) =>
+                onCheckedChange={(checked) =>
                   setConfig((p: any) => ({
                     ...p,
                     welcome: {
                       ...p.welcome,
-                      dm: { ...p.welcome.dm, enabled: e.target.checked },
+                      dm: { ...p.welcome.dm, enabled: checked },
                     },
                   }))
                 }
@@ -1775,11 +1787,9 @@ export function WelcomeCenterClient() {
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
               <span className="text-xs font-bold text-white">Activer le module de vérification</span>
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={verification.enabled}
-                onChange={(e) => setVerification((p: any) => ({ ...p, enabled: e.target.checked }))}
-                className="h-4 w-4 rounded border-zinc-700 accent-teal-500"
+                onCheckedChange={(checked) => setVerification((p: any) => ({ ...p, enabled: checked }))}
               />
             </label>
 
@@ -1932,15 +1942,14 @@ export function WelcomeCenterClient() {
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
               <span className="text-xs font-bold text-white">Activer le filtrage conditionnel</span>
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={config.welcome.conditions?.enabled ?? false}
-                onChange={(e) =>
+                onCheckedChange={(checked) =>
                   setConfig((p: any) => ({
                     ...p,
                     welcome: {
                       ...p.welcome,
-                      conditions: { ...p.welcome.conditions, enabled: e.target.checked },
+                      conditions: { ...p.welcome.conditions, enabled: checked },
                     },
                   }))
                 }
@@ -2012,31 +2021,27 @@ export function WelcomeCenterClient() {
             <div className="space-y-2 pt-2 border-t border-[var(--panel-border)]">
               <label className="flex items-center justify-between cursor-pointer text-xs">
                 <span className="text-zinc-300">Mentionner le membre lors de l&apos;arrivée</span>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={config.welcome.mentionUser}
-                  onChange={(e) =>
+                  onCheckedChange={(checked) =>
                     setConfig((p: any) => ({
                       ...p,
-                      welcome: { ...p.welcome, mentionUser: e.target.checked },
+                      welcome: { ...p.welcome, mentionUser: checked },
                     }))
                   }
-                  className="h-4 w-4 rounded border-zinc-700 accent-teal-500"
                 />
               </label>
 
               <label className="flex items-center justify-between cursor-pointer text-xs">
                 <span className="text-zinc-300">Ignorer les bots (ne pas envoyer de message de bienvenue)</span>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={!config.welcome.sendForBots}
-                  onChange={(e) =>
+                  onCheckedChange={(checked) =>
                     setConfig((p: any) => ({
                       ...p,
-                      welcome: { ...p.welcome, sendForBots: !e.target.checked },
+                      welcome: { ...p.welcome, sendForBots: !checked },
                     }))
                   }
-                  className="h-4 w-4 rounded border-zinc-700 accent-teal-500"
                 />
               </label>
             </div>

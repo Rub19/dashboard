@@ -37062,6 +37062,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_126_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_126_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_126_de);
 
+const v1_28_127_fr: ChangelogEntry = {
+  version: "v1.28.127",
+  date: "2026-09-27",
+  title: "Boutique Valorant repensée, salon de bienvenue et cases à cocher",
+  items: [
+    "Boutique Valorant : nouvelle présentation (bundle à la une en grand avec compte à rebours, catalogue avec recherche, effets au survol, états de chargement).",
+    "Bienvenue & Onboarding : l'onglet « Welcome Message & Embed » a maintenant son propre sélecteur de salon (il fallait auparavant aller dans « Paramètres & Salons » pour le trouver, contrairement à l'onglet Départ).",
+    "Toutes les cases à cocher de la page Bienvenue & Onboarding utilisent maintenant le composant stylé du thème, à la place des cases par défaut du navigateur.",
+    "Panneau du bot (discord-bot/web) : même correction sur ses propres cases à cocher (confirmation de sanction, commandes personnalisées, panneaux de rôles, suggestions, bienvenue).",
+  ],
+};
+
+const v1_28_127_en: ChangelogEntry = {
+  version: "v1.28.127",
+  date: "2026-09-27",
+  title: "Redesigned Valorant store, welcome channel picker and checkboxes",
+  items: [
+    "Valorant store: new layout (large featured bundle with countdown, catalogue with search, hover effects, loading states).",
+    "Welcome & Onboarding: the \"Welcome Message & Embed\" tab now has its own channel picker (it used to be hidden under \"Settings & Channels\", unlike the Goodbye tab).",
+    "Every checkbox on the Welcome & Onboarding page now uses the themed component instead of the browser's default checkbox.",
+    "Bot panel (discord-bot/web): same fix applied to its own checkboxes (sanction confirmation, custom commands, role panels, suggestions, welcome).",
+  ],
+};
+
+const v1_28_127_es: ChangelogEntry = {
+  version: "v1.28.127",
+  date: "2026-09-27",
+  title: "Tienda de Valorant rediseñada, selector de canal de bienvenida y casillas",
+  items: [
+    "Tienda de Valorant: nuevo diseño (bundle destacado grande con cuenta atrás, catálogo con búsqueda, efectos al pasar el cursor, estados de carga).",
+    "Bienvenida y Onboarding: la pestaña « Welcome Message & Embed » tiene ahora su propio selector de canal (antes había que ir a « Ajustes y Canales » para encontrarlo, a diferencia de la pestaña de Despedida).",
+    "Todas las casillas de la página Bienvenida y Onboarding usan ahora el componente con el estilo del tema, en lugar de la casilla por defecto del navegador.",
+    "Panel del bot (discord-bot/web): misma corrección aplicada a sus propias casillas (confirmación de sanción, comandos personalizados, paneles de roles, sugerencias, bienvenida).",
+  ],
+};
+
+const v1_28_127_de: ChangelogEntry = {
+  version: "v1.28.127",
+  date: "2026-09-27",
+  title: "Neu gestalteter Valorant-Shop, Willkommenskanal-Auswahl und Checkboxen",
+  items: [
+    "Valorant-Shop: neues Layout (großes vorgestelltes Bundle mit Countdown, Katalog mit Suche, Hover-Effekte, Ladezustände).",
+    "Willkommen & Onboarding: der Tab „Welcome Message & Embed“ hat jetzt eine eigene Kanalauswahl (bisher nur unter „Einstellungen & Kanäle“ zu finden, anders als beim Abschieds-Tab).",
+    "Alle Checkboxen auf der Seite Willkommen & Onboarding nutzen jetzt die themenkonforme Komponente statt der Standard-Checkbox des Browsers.",
+    "Bot-Panel (discord-bot/web): gleiche Korrektur für dessen eigene Checkboxen (Sanktionsbestätigung, eigene Befehle, Rollen-Panels, Vorschläge, Willkommen).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_127_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_127_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_127_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_127_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

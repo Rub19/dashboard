@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Checkbox from '../components/Checkbox';
 import { api } from '../services/api';
 import {
   CommandAction,
@@ -539,15 +540,11 @@ export const CustomCommandsPage: React.FC<Props> = ({ guildId, onShowToast }) =>
                   </div>
 
                   <div className="space-y-1 flex items-end">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={editingCmd.enabled ?? true}
-                        onChange={(e) => setEditingCmd({ ...editingCmd, enabled: e.target.checked })}
-                        className="w-4 h-4 accent-indigo-600"
-                      />
-                      <span className="text-xs text-white">Commande activée</span>
-                    </label>
+                    <Checkbox
+                      checked={editingCmd.enabled ?? true}
+                      onChange={(v) => setEditingCmd({ ...editingCmd, enabled: v })}
+                      label={<span className="text-xs text-white">Commande activée</span>}
+                    />
                   </div>
                 </div>
               </div>
@@ -613,19 +610,17 @@ export const CustomCommandsPage: React.FC<Props> = ({ guildId, onShowToast }) =>
                           placeholder="description"
                           className="col-span-4 px-2 py-1.5 rounded bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-indigo-500"
                         />
-                        <label className="col-span-1 flex items-center justify-center">
-                          <input
-                            type="checkbox"
+                        <div className="col-span-1 flex items-center justify-center">
+                          <Checkbox
                             checked={arg.required}
-                            onChange={(e) => {
+                            onChange={(v) => {
                               const args = [...(editingCmd.arguments || [])];
-                              args[i] = { ...args[i], required: e.target.checked };
+                              args[i] = { ...args[i], required: v };
                               setEditingCmd({ ...editingCmd, arguments: args });
                             }}
-                            className="accent-indigo-600"
                             title="Obligatoire"
                           />
-                        </label>
+                        </div>
                         <button
                           onClick={() => {
                             const args = [...(editingCmd.arguments || [])];

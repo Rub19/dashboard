@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Checkbox from '../components/Checkbox';
 import { api } from '../services/api';
 import {
   AutoRoleConfig,
@@ -370,29 +371,17 @@ export const RolePanelsPage: React.FC<RolePanelsPageProps> = ({ guildId, onShowT
 
             {/* Filtres d'application */}
             <div className="pt-2 border-t border-white/[0.04] grid grid-cols-2 gap-3 text-xs">
-              <label className="flex items-center gap-2 text-slate-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={autoRoleConfig.applyToHumans}
-                  onChange={(e) =>
-                    setAutoRoleConfig({ ...autoRoleConfig, applyToHumans: e.target.checked })
-                  }
-                  className="rounded border-white/20 bg-white/5 text-indigo-600 focus:ring-0"
-                />
-                <span>Appliquer aux membres humains</span>
-              </label>
+              <Checkbox
+                checked={autoRoleConfig.applyToHumans}
+                onChange={(v) => setAutoRoleConfig({ ...autoRoleConfig, applyToHumans: v })}
+                label="Appliquer aux membres humains"
+              />
 
-              <label className="flex items-center gap-2 text-slate-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={autoRoleConfig.applyToBots}
-                  onChange={(e) =>
-                    setAutoRoleConfig({ ...autoRoleConfig, applyToBots: e.target.checked })
-                  }
-                  className="rounded border-white/20 bg-white/5 text-indigo-600 focus:ring-0"
-                />
-                <span>Appliquer également aux bots</span>
-              </label>
+              <Checkbox
+                checked={autoRoleConfig.applyToBots}
+                onChange={(v) => setAutoRoleConfig({ ...autoRoleConfig, applyToBots: v })}
+                label="Appliquer également aux bots"
+              />
             </div>
 
             {/* Sélecteur de rôles */}
@@ -856,15 +845,15 @@ export const RolePanelsPage: React.FC<RolePanelsPageProps> = ({ guildId, onShowT
               Vous êtes sur le point de supprimer la configuration du panneau **{panelToDelete.name}**.
             </p>
 
-            <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer pt-1">
-              <input
-                type="checkbox"
+            <div className="pt-1">
+              <Checkbox
                 checked={deleteDiscordMsg}
-                onChange={(e) => setDeleteDiscordMsg(e.target.checked)}
-                className="rounded border-white/20 bg-white/5 text-rose-600 focus:ring-0"
+                onChange={setDeleteDiscordMsg}
+                tone="danger"
+                className="text-xs"
+                label="Supprimer également le message sur Discord s'il existe"
               />
-              <span>Supprimer également le message sur Discord s'il existe</span>
-            </label>
+            </div>
 
             <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/[0.06]">
               <button

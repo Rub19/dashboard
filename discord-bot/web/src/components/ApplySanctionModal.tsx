@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SanctionType } from '../types';
 import { AlertTriangle, Clock, Shield, UserX, X } from 'lucide-react';
+import Checkbox from './Checkbox';
 
 interface ApplySanctionModalProps {
   isOpen: boolean;
@@ -141,15 +142,13 @@ export const ApplySanctionModal: React.FC<ApplySanctionModalProps> = ({
                 <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                 <span>Action irréversible requise</span>
               </div>
-              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={confirmed}
-                  onChange={(e) => setConfirmed(e.target.checked)}
-                  className="rounded border-white/20 bg-white/5 text-rose-600 focus:ring-0"
-                />
-                <span>Je confirme vouloir {type === 'ban' ? 'bannir' : 'expulser'} ce membre.</span>
-              </label>
+              <Checkbox
+                checked={confirmed}
+                onChange={setConfirmed}
+                tone="danger"
+                className="text-xs"
+                label={<>Je confirme vouloir {type === 'ban' ? 'bannir' : 'expulser'} ce membre.</>}
+              />
             </div>
           )}
 

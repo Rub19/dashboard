@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Checkbox from '../components/Checkbox';
 import { api } from '../services/api';
 import {
   ChannelItem,
@@ -578,11 +579,9 @@ export const SuggestionsPage: React.FC<SuggestionsPageProps> = ({ guildId, onSho
                   <div className="font-semibold text-white">Module Activé</div>
                   <div className="text-[11px] text-slate-400">Autoriser les membres à utiliser /suggest</div>
                 </div>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={settingsForm.enabled}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, enabled: e.target.checked })}
-                  className="w-4 h-4 accent-indigo-600"
+                  onChange={(v) => setSettingsForm({ ...settingsForm, enabled: v })}
                 />
               </div>
 
@@ -609,11 +608,9 @@ export const SuggestionsPage: React.FC<SuggestionsPageProps> = ({ guildId, onSho
                     Créer automatiquement un fil sous chaque suggestion pour les échanges
                   </div>
                 </div>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={settingsForm.autoThread}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, autoThread: e.target.checked })}
-                  className="w-4 h-4 accent-indigo-600"
+                  onChange={(v) => setSettingsForm({ ...settingsForm, autoThread: v })}
                 />
               </div>
 
@@ -624,11 +621,9 @@ export const SuggestionsPage: React.FC<SuggestionsPageProps> = ({ guildId, onSho
                     Avertir l'auteur et les followers lors d'une mise à jour de statut
                   </div>
                 </div>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={settingsForm.dmNotifications}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, dmNotifications: e.target.checked })}
-                  className="w-4 h-4 accent-indigo-600"
+                  onChange={(v) => setSettingsForm({ ...settingsForm, dmNotifications: v })}
                 />
               </div>
 

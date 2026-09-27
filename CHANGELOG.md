@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.127 — 2026-09-27
+
+**Boutique Valorant repensée, salon de bienvenue et cases à cocher**
+
+- Boutique Valorant : nouvelle présentation (bundle à la une en grand avec compte à rebours, catalogue avec recherche, effets au survol, états de chargement).
+- Bienvenue & Onboarding : l'onglet « Welcome Message & Embed » a maintenant son propre sélecteur de salon (il fallait auparavant aller dans « Paramètres & Salons » pour le trouver, contrairement à l'onglet Départ).
+- Toutes les cases à cocher de la page Bienvenue & Onboarding utilisent maintenant le composant stylé du thème, à la place des cases par défaut du navigateur.
+- Panneau du bot (discord-bot/web) : même correction sur ses propres cases à cocher (confirmation de sanction, commandes personnalisées, panneaux de rôles, suggestions, bienvenue).
+
 ## v1.28.126 — 2026-09-27
 
 **Le bot s'appelle maintenant Etho**

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Checkbox from '../components/Checkbox';
 import { api } from '../services/api';
 import {
   ChannelItem,
@@ -296,34 +297,24 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({ guildId, onShowToast }
             {/* Options secondaires */}
             <div className="pt-2 border-t border-white/[0.04] grid grid-cols-2 gap-3 text-xs">
               {activeTab === 'welcome' && (
-                <label className="flex items-center gap-2 text-slate-300 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={welcomeConfig.mentionUser}
-                    onChange={(e) =>
-                      setWelcomeConfig({ ...welcomeConfig, mentionUser: e.target.checked })
-                    }
-                    className="rounded border-white/20 bg-white/5 text-indigo-600 focus:ring-0"
-                  />
-                  <span>Mentionner le membre</span>
-                </label>
+                <Checkbox
+                  checked={welcomeConfig.mentionUser}
+                  onChange={(v) => setWelcomeConfig({ ...welcomeConfig, mentionUser: v })}
+                  label="Mentionner le membre"
+                />
               )}
 
-              <label className="flex items-center gap-2 text-slate-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={currentConf.sendForBots}
-                  onChange={(e) => {
-                    if (activeTab === 'welcome') {
-                      setWelcomeConfig({ ...welcomeConfig, sendForBots: e.target.checked });
-                    } else {
-                      setGoodbyeConfig({ ...goodbyeConfig, sendForBots: e.target.checked });
-                    }
-                  }}
-                  className="rounded border-white/20 bg-white/5 text-indigo-600 focus:ring-0"
-                />
-                <span>Envoyer aussi pour les Bots</span>
-              </label>
+              <Checkbox
+                checked={currentConf.sendForBots}
+                onChange={(v) => {
+                  if (activeTab === 'welcome') {
+                    setWelcomeConfig({ ...welcomeConfig, sendForBots: v });
+                  } else {
+                    setGoodbyeConfig({ ...goodbyeConfig, sendForBots: v });
+                  }
+                }}
+                label="Envoyer aussi pour les Bots"
+              />
             </div>
           </div>
 

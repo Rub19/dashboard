@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.133 — 2026-09-27
+
+**Boutique Valorant : refonte complète**
+
+- Nouvelle mise en page façon marketplace premium : cartes plus compactes avec l'image en majorité de la carte, fond légèrement contrasté au lieu du noir plat, hiérarchie image → nom → type → prix, réduction affichée en pastille discrète, léger zoom + élévation au survol.
+- Chaque bundle à la une (ex. Champions 2026) a désormais un en-tête compact (artwork, nom, VP, temps restant, réduction max) suivi d'une grille d'objets dense — le même système pour tous les bundles, plus de gros bloc disproportionné.
+- Catalogue : les cartes utilisent l'artwork promotionnel officiel de Riot (bien plus flatteur que la petite icône affichée avant) avec le nom en surimpression, tri Récents/A-Z ajouté en plus de la recherche instantanée déjà présente.
+- Grille responsive resserrée (jusqu'à 6 colonnes sur grand écran), plus de contenu visible à l'écran, aucun débordement horizontal sur mobile.
+
 ## v1.28.132 — 2026-09-27
 
 **Refonte des menus déroulants — lot 3**

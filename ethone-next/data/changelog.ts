@@ -37352,6 +37352,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_132_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_132_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_132_de);
 
+const v1_28_133_fr: ChangelogEntry = {
+  version: "v1.28.133",
+  date: "2026-09-27",
+  title: "Boutique Valorant : refonte complète",
+  items: [
+    "Nouvelle mise en page façon marketplace premium : cartes plus compactes avec l'image en majorité de la carte, fond légèrement contrasté au lieu du noir plat, hiérarchie image → nom → type → prix, réduction affichée en pastille discrète, léger zoom + élévation au survol.",
+    "Chaque bundle à la une (ex. Champions 2026) a désormais un en-tête compact (artwork, nom, VP, temps restant, réduction max) suivi d'une grille d'objets dense — le même système pour tous les bundles, plus de gros bloc disproportionné.",
+    "Catalogue : les cartes utilisent l'artwork promotionnel officiel de Riot (bien plus flatteur que la petite icône affichée avant) avec le nom en surimpression, tri Récents/A-Z ajouté en plus de la recherche instantanée déjà présente.",
+    "Grille responsive resserrée (jusqu'à 6 colonnes sur grand écran), plus de contenu visible à l'écran, aucun débordement horizontal sur mobile.",
+  ],
+};
+
+const v1_28_133_en: ChangelogEntry = {
+  version: "v1.28.133",
+  date: "2026-09-27",
+  title: "Valorant store: full redesign",
+  items: [
+    "New premium-marketplace layout: more compact cards where the image fills most of the card, a subtly tinted background instead of flat black, image → name → type → price hierarchy, discount shown as a discreet chip, light zoom + lift on hover.",
+    "Every featured bundle (e.g. Champions 2026) now has a compact header (artwork, name, VP, time left, max discount) followed by a dense item grid — the same system for every bundle, no more oversized hero block.",
+    "Catalogue: cards now use Riot's official promotional artwork (far nicer than the small icon shown before) with the name overlaid, plus a Recent/A-Z sort added alongside the existing instant search.",
+    "Tighter responsive grid (up to 6 columns on wide screens), more content visible at once, no horizontal overflow on mobile.",
+  ],
+};
+
+const v1_28_133_es: ChangelogEntry = {
+  version: "v1.28.133",
+  date: "2026-09-27",
+  title: "Tienda de Valorant: rediseño completo",
+  items: [
+    "Nuevo diseño estilo marketplace premium: tarjetas más compactas donde la imagen ocupa la mayor parte, fondo con un ligero contraste en vez de negro plano, jerarquía imagen → nombre → tipo → precio, descuento en una pastilla discreta, ligero zoom y elevación al pasar el cursor.",
+    "Cada bundle destacado (p. ej. Champions 2026) tiene ahora una cabecera compacta (arte, nombre, VP, tiempo restante, descuento máximo) seguida de una cuadrícula densa de objetos — el mismo sistema para todos los bundles.",
+    "Catálogo: las tarjetas usan ahora el arte promocional oficial de Riot (mucho más atractivo que el pequeño icono anterior) con el nombre superpuesto, y se añadió orden Recientes/A-Z junto a la búsqueda instantánea ya existente.",
+    "Cuadrícula responsive más compacta (hasta 6 columnas en pantallas anchas), más contenido visible a la vez, sin desbordamiento horizontal en móvil.",
+  ],
+};
+
+const v1_28_133_de: ChangelogEntry = {
+  version: "v1.28.133",
+  date: "2026-09-27",
+  title: "Valorant-Shop: komplette Neugestaltung",
+  items: [
+    "Neues Premium-Marketplace-Layout: kompaktere Karten, bei denen das Bild den Großteil der Karte einnimmt, dezent getönter Hintergrund statt reinem Schwarz, Hierarchie Bild → Name → Typ → Preis, Rabatt als dezentes Chip, leichter Zoom + Anhebung beim Hover.",
+    "Jedes vorgestellte Bundle (z. B. Champions 2026) hat jetzt einen kompakten Header (Artwork, Name, VP, Restzeit, maximaler Rabatt) gefolgt von einem dichten Objektraster — dasselbe System für alle Bundles.",
+    "Katalog: Karten nutzen jetzt Riots offizielles Promo-Artwork (deutlich ansprechender als das kleine Icon zuvor) mit eingeblendetem Namen, plus eine Sortierung nach Neu/A-Z zusätzlich zur bereits vorhandenen Sofortsuche.",
+    "Engeres responsives Raster (bis zu 6 Spalten auf breiten Bildschirmen), mehr sichtbarer Inhalt, kein horizontales Überlaufen auf Mobilgeräten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_133_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_133_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_133_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_133_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

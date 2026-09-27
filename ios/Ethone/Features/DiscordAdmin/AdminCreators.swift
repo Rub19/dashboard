@@ -19,13 +19,13 @@ struct CreateSpec {
 
     struct Context {
         let values: [String: String]
-        let directory: GuildDirectory
+        let roleNames: [String: String]
 
         func text(_ key: String) -> String { values[key, default: ""].trimmingCharacters(in: .whitespacesAndNewlines) }
         func number(_ key: String) -> Double { Double(text(key).replacingOccurrences(of: ",", with: ".")) ?? 0 }
         func flag(_ key: String) -> Bool { values[key] == "true" }
         func date(_ key: String) -> Date { ISODate.parse(values[key, default: ""]) ?? Date() }
-        func roleName(_ id: String) -> String { directory.roles.first { $0.id == id }?.name ?? "Rôle" }
+        func roleName(_ id: String) -> String { roleNames[id] ?? "Rôle" }
     }
 
     let title: String
@@ -266,7 +266,7 @@ struct CreateFormView: View {
             let raw = values[field.key, default: ""].trimmingCharacters(in: .whitespaces).lowercased()
             path = path.replacingOccurrences(of: "{\(field.key)}", with: raw.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? raw)
         }
-        let context = CreateSpec.Context(values: values, directory: directory)
+        let context = CreateSpec.Context(values: values, roleNames: Dictionary(directory.roles.map { ($0.id, $0.name) }, uniquingKeysWith: { first, _ in first }))
         do {
             let root = moduleBase.replacingOccurrences(of: "{g}", with: guild.id)
             _ = try await model.discord.call("api/" + root + (path == "/" ? "" : path), method: spec.method, body: spec.build(context))

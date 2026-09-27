@@ -26,13 +26,15 @@ import { logger } from '../utils/logger.js';
 const BOT_SITE_URL = 'https://discord.ethone.dev';
 const BOT_DISPLAY_NAME = 'Etho';
 
-/** « À propos de moi » du bot (400 caractères max) : présentation, puis site web et invitation en liens Markdown (courts, en gras). */
-function buildBotBio(clientId: string): string {
-  const invite = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&scope=bot%20applications.commands`;
+/**
+ * « À propos de moi » du bot (400 caractères max), en anglais. Discord n'affiche PAS les liens Markdown `[texte](url)` dans les bios :
+ * les liens sont donc des adresses courtes (le site et une redirection `/invite` vers l'autorisation Discord), avec des libellés en gras.
+ */
+function buildBotBio(_clientId: string): string {
   return [
-    `${BOT_DISPLAY_NAME} : le bot Discord tout-en-un piloté depuis un dashboard en temps réel (modération, musique, tickets, niveaux, sécurité…).`,
-    `🌐 **[Site web](${BOT_SITE_URL})**`,
-    `➕ **[Inviter le bot ici](${invite})**`,
+    `${BOT_DISPLAY_NAME}: the all-in-one Discord bot, run from a real-time dashboard (moderation, music, tickets, levels, security…).`,
+    `🌐 **Website:** ${BOT_SITE_URL}`,
+    `➕ **Invite:** ${BOT_SITE_URL}/invite`,
   ].join('\n').slice(0, 400);
 }
 

@@ -1,3 +1,5 @@
+# Lien d'invitation court du bot Etho (utilisé dans la bio Discord, qui n'affiche pas les liens Markdown).
+/invite https://discord.com/oauth2/authorize?client_id=1545139931154878464&permissions=8&scope=bot%20applications.commands 302
 # Cloudflare Pages SPA Rewrites & Dynamic Route Fallbacks
 #
 # Règles pour les routes dynamiques ([id]) d'un export statique : un identifiant réel n'a pas de fichier, on sert la page « demo »

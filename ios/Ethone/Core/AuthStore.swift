@@ -188,6 +188,44 @@ final class AuthStore {
         return refreshed
     }
 
+    // MARK: Compte (création et récupération)
+
+    /// Envoie l'e-mail de réinitialisation du mot de passe (le lien ouvre la page de réinitialisation du site). Renvoie un message à afficher.
+    func requestPasswordReset(email: String) async -> String {
+        do {
+            var request = URLRequest(url: Config.supabaseURL.appendingPathComponent("auth/v1/recover"))
+            request.httpMethod = "POST"
+            request.httpBody = try JSONSerialization.data(withJSONObject: ["email": email])
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue(Config.supabaseAnonKey, forHTTPHeaderField: "apikey")
+            let (data, http) = try await HTTP.send(request)
+            guard (200..<300).contains(http.statusCode) else { throw HTTP.failure(status: http.statusCode, data: data) }
+            // Même message que l'adresse existe ou non : on ne révèle pas quels comptes existent.
+            return "Si un compte existe avec cette adresse, un e-mail de réinitialisation vient d'être envoyé."
+        } catch {
+            return (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
+    /// Crée un compte e-mail / mot de passe. Si la confirmation par e-mail est activée, la connexion se fait après validation du lien.
+    func signUp(email: String, password: String) async {
+        await run {
+            var request = URLRequest(url: Config.supabaseURL.appendingPathComponent("auth/v1/signup"))
+            request.httpMethod = "POST"
+            request.httpBody = try JSONSerialization.data(withJSONObject: ["email": email, "password": password])
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue(Config.supabaseAnonKey, forHTTPHeaderField: "apikey")
+            let (data, http) = try await HTTP.send(request)
+            guard (200..<300).contains(http.statusCode) else { throw HTTP.failure(status: http.statusCode, data: data) }
+            if let response = try? JSONDecoder().decode(TokenResponse.self, from: data) {
+                self.store(response.session)
+                await self.registerDevice()
+            } else {
+                self.errorMessage = "Compte créé. Vérifiez votre boîte mail et validez le lien avant de vous connecter."
+            }
+        }
+    }
+
     // MARK: Interne
 
     private func run(_ work: @escaping () async throws -> Void) async {

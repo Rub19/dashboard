@@ -4,6 +4,8 @@ struct LoginView: View {
     @Environment(AuthStore.self) private var auth
     @State private var email = ""
     @State private var password = ""
+    @State private var resetMessage: String?
+    @State private var showingRegister = false
     @FocusState private var focus: Field?
 
     private enum Field { case email, password }
@@ -60,6 +62,24 @@ struct LoginView: View {
                         }
                         .buttonStyle(.glassProminent)
                         .disabled(auth.isBusy || email.isEmpty || password.isEmpty)
+
+                        HStack {
+                            Button("Mot de passe oublié ?") {
+                                let address = email.trimmingCharacters(in: .whitespaces)
+                                guard !address.isEmpty else {
+                                    resetMessage = "Saisissez d'abord votre adresse e-mail."
+                                    return
+                                }
+                                Task { resetMessage = await auth.requestPasswordReset(email: address) }
+                            }
+                            Spacer()
+                            Button("Créer un compte") { showingRegister = true }
+                        }
+                        .font(.footnote)
+
+                        if let resetMessage {
+                            Text(resetMessage).font(.footnote).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                        }
                     }
                 }
 
@@ -77,6 +97,7 @@ struct LoginView: View {
             .padding(.bottom, 40)
         }
         .scrollDismissesKeyboard(.interactively)
+        .sheet(isPresented: $showingRegister) { RegisterView(email: email) }
     }
 
     private func providerButton(_ title: String, systemImage: String, provider: String) -> some View {
@@ -95,6 +116,47 @@ struct LoginView: View {
         guard !email.isEmpty, !password.isEmpty else { return }
         focus = nil
         Task { await auth.signIn(email: email.trimmingCharacters(in: .whitespaces), password: password) }
+    }
+}
+
+/// Création de compte par e-mail et mot de passe.
+struct RegisterView: View {
+    @Environment(AuthStore.self) private var auth
+    @Environment(\.dismiss) private var dismiss
+    @State var email: String
+    @State private var password = ""
+    @State private var confirmation = ""
+
+    init(email: String) { self._email = State(initialValue: email) }
+
+    private var valid: Bool { !email.isEmpty && password.count >= 8 && password == confirmation }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    TextField("E-mail", text: $email).keyboardType(.emailAddress).textInputAutocapitalization(.never).autocorrectionDisabled().textContentType(.username)
+                    SecureField("Mot de passe (8 caractères minimum)", text: $password).textContentType(.newPassword)
+                    SecureField("Confirmer le mot de passe", text: $confirmation).textContentType(.newPassword)
+                } footer: {
+                    if !confirmation.isEmpty && password != confirmation { Text("Les mots de passe ne correspondent pas.").foregroundStyle(Theme.danger) }
+                }
+                if let message = auth.errorMessage { Section { Text(message).font(.footnote) } }
+            }
+            .navigationTitle("Créer un compte")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Fermer") { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Créer") {
+                        Task {
+                            await auth.signUp(email: email.trimmingCharacters(in: .whitespaces), password: password)
+                            if auth.phase == .signedIn { dismiss() }
+                        }
+                    }.disabled(!valid || auth.isBusy)
+                }
+            }
+        }
     }
 }
 

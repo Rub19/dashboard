@@ -35,6 +35,8 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.calendar) { Label("Calendrier", systemImage: "calendar") }
                     NavigationLink(value: MoreDestination.notifications) { Label("Notifications", systemImage: "bell.badge.fill") }
                     NavigationLink(value: MoreDestination.profile) { Label("Profil", systemImage: "person.crop.circle") }
+                    NavigationLink(value: MoreDestination.workspaces) { Label("Profils de travail", systemImage: "rectangle.stack.person.crop") }
+                    NavigationLink(value: MoreDestination.leaderboard) { Label("Classement public", systemImage: "trophy") }
                     NavigationLink(value: MoreDestination.system) { Label("Système", systemImage: "cpu") }
                     NavigationLink(value: MoreDestination.sharedLinks) { Label("Liens partagés", systemImage: "link.badge.plus") }
                     NavigationLink(value: MoreDestination.admin) { Label("Administration", systemImage: "lock.shield") }
@@ -123,6 +125,8 @@ struct MoreView: View {
                 case .tftTracker: TftTrackerView()
                 case .otherGames: OtherGamesTrackerView()
                 case .profile: ProfileView()
+                case .workspaces: WorkspacesView()
+                case .leaderboard: PublicLeaderboardView()
                 case .system: SystemView()
                 case .sharedLinks: SharedLinksView()
                 case .admin: AdminView()

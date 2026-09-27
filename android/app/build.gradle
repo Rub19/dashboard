@@ -20,8 +20,9 @@ android {
         applicationId "dev.ethone.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // Version identique à celle du site (ethone-next/package.json) ; le numéro de build est celui de l'exécution GitHub.
+        versionCode (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInteger()
+        versionName new groovy.json.JsonSlurper().parse(rootProject.file("../ethone-next/package.json")).version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'

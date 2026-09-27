@@ -34,6 +34,11 @@ jobs:
           xcrun --sdk iphoneos --show-sdk-version
       - name: XcodeGen
         run: brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
+      - name: Version (identique à celle du site)
+        run: |
+          VERSION=$(/usr/bin/python3 -c "import json;print(json.load(open('ethone-next/package.json'))['version'])")
+          sed -i '' "s/MARKETING_VERSION: \".*\"/MARKETING_VERSION: \"$VERSION\"/; s/CURRENT_PROJECT_VERSION: \".*\"/CURRENT_PROJECT_VERSION: \"$GITHUB_RUN_NUMBER\"/" ios/project.yml
+          echo "Version de l'app : $VERSION (build $GITHUB_RUN_NUMBER)"
       - name: Générer le projet
         working-directory: ios
         run: xcodegen generate
@@ -83,6 +88,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: XcodeGen
         run: brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
+      - name: Version (identique à celle du site)
+        run: |
+          VERSION=$(/usr/bin/python3 -c "import json;print(json.load(open('ethone-next/package.json'))['version'])")
+          sed -i '' "s/MARKETING_VERSION: \".*\"/MARKETING_VERSION: \"$VERSION\"/; s/CURRENT_PROJECT_VERSION: \".*\"/CURRENT_PROJECT_VERSION: \"$GITHUB_RUN_NUMBER\"/" ios/project.yml
+          echo "Version de l'app : $VERSION (build $GITHUB_RUN_NUMBER)"
       - name: Générer le projet
         working-directory: ios
         run: xcodegen generate

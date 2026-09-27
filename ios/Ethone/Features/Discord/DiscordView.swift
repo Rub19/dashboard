@@ -133,6 +133,7 @@ struct GuildDetailView: View {
                     NavigationLink { SecurityAdminView(guild: guild) } label: { Label("Sécurité", systemImage: "lock.shield.fill") }
                     NavigationLink { MembersAdminView(guild: guild) } label: { Label("Membres", systemImage: "person.2.fill") }
                     NavigationLink { SuggestionsAdminView(guild: guild) } label: { Label("Suggestions", systemImage: "lightbulb.fill") }
+                    NavigationLink { DiscordModuleHubView(guild: guild) } label: { Label("Tous les modules", systemImage: "square.grid.2x2.fill") }
                     NavigationLink { AuditLogAdminView(guild: guild) } label: { Label("Journal d'audit", systemImage: "list.bullet.rectangle.fill") }
                 } header: { Text("Outils").sectionTitle() }
                 .listRowBackground(GlassRowBackground())

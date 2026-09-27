@@ -11,6 +11,7 @@ import { subscribeGuildLive } from "@/lib/guildLive";
 import { MemberIdsInput, MultiRolePicker } from "@/components/discord/MultiPickers";
 import { Field, Section, ToggleField, inputCls } from "@/components/discord/SettingsUI";
 import PageHeader from "@/components/discord/PageHeader";
+import Select from "@/components/ui/Select";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -209,35 +210,25 @@ export default function SettingsCenterClient() {
 
         <Section title="Langue et fuseau horaire" text="Langue du bot et fuseau horaire utilisés sur votre serveur (rappels, événements, horaires).">
           <Field label="Langue">
-            <select value={draft.language} onChange={(e) => set({ language: e.target.value as Settings["language"] })} className={inputCls}>
-              {LANGUAGES.map(([k, flag, label]) => (
-                <option key={k} value={k}>
-                  {flag} {label}
-                </option>
-              ))}
-            </select>
+            <Select
+              value={draft.language}
+              onChange={(v) => set({ language: v as Settings["language"] })}
+              options={LANGUAGES.map(([k, flag, label]) => ({ id: k, label: `${flag} ${label}` }))}
+            />
           </Field>
           <Field label="Fuseau horaire">
-            <select value={draft.timezone} onChange={(e) => set({ timezone: e.target.value })} className={inputCls}>
-              {zones.map((z) => (
-                <option key={z.id} value={z.id}>
-                  {z.label}
-                </option>
-              ))}
-            </select>
+            <Select value={draft.timezone} onChange={(v) => set({ timezone: v })} options={zones} />
           </Field>
         </Section>
 
         <Section title="Contacts d'urgence" text="Quand un problème sérieux est détecté (permission manquante, salon supprimé, rôle caché disparu…), un message d'urgence est envoyé et ces contacts sont mentionnés pour que le problème soit traité.">
           <div className="space-y-5 lg:col-span-2">
             <Field label="Qui prévenir">
-              <select value={draft.emergencyContacts.mode} onChange={(e) => set({ emergencyContacts: { ...draft.emergencyContacts, mode: e.target.value as Mode } })} className={inputCls}>
-                {MODES.map(([k, l]) => (
-                  <option key={k} value={k}>
-                    {l}
-                  </option>
-                ))}
-              </select>
+              <Select
+                value={draft.emergencyContacts.mode}
+                onChange={(v) => set({ emergencyContacts: { ...draft.emergencyContacts, mode: v as Mode } })}
+                options={MODES.map(([k, l]) => ({ id: k, label: l }))}
+              />
             </Field>
             {draft.emergencyContacts.mode === "custom" && (
               <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
@@ -260,13 +251,11 @@ export default function SettingsCenterClient() {
 
         <Section title="Aperçu des messages du bot" text="Recevez en message privé un exemplaire des messages du bot (avec des données d'exemple), pour les voir tels que vos membres les voient. Rien n'est modifié sur le serveur.">
           <Field label="Quels messages">
-            <select value={previewCategory} onChange={(e) => setPreviewCategory(e.target.value)} className={inputCls}>
-              {PREVIEW_CATEGORIES.map(([k, l]) => (
-                <option key={k} value={k}>
-                  {l}
-                </option>
-              ))}
-            </select>
+            <Select
+              value={previewCategory}
+              onChange={setPreviewCategory}
+              options={PREVIEW_CATEGORIES.map(([k, l]) => ({ id: k, label: l }))}
+            />
           </Field>
           <div className="flex items-end">
             <button type="button" disabled={previewing} onClick={() => void sendPreview()} className="cursor-pointer rounded-xl bg-[#5865F2] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4752C4] disabled:opacity-50">

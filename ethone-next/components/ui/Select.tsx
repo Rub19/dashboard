@@ -23,8 +23,15 @@ type SelectProps = {
   error?: boolean;
   className?: string;
   id?: string;
+  /** "sm" pour une barre d'outils compacte (tri, filtre inline) ; "md" (défaut) pour un champ de formulaire. */
+  size?: "sm" | "md";
   "aria-label"?: string;
   "aria-describedby"?: string;
+};
+
+const TRIGGER_SIZES = {
+  sm: "h-8 px-2.5 text-xs",
+  md: "h-11 min-h-[44px] px-3.5 text-xs sm:text-sm",
 };
 
 export default function Select({
@@ -37,6 +44,7 @@ export default function Select({
   error = false,
   className = "",
   id: providedId,
+  size = "md",
   "aria-label": ariaLabel,
   "aria-describedby": ariaDescribedBy,
 }: SelectProps) {
@@ -259,7 +267,8 @@ export default function Select({
         aria-describedby={ariaDescribedBy}
         aria-labelledby={label ? labelId : undefined}
         className={cn(
-          "flex h-11 min-h-[44px] w-full items-center justify-between gap-2 rounded-xl px-3.5 text-left text-xs sm:text-sm font-medium transition-all duration-180 select-none",
+          "flex w-full items-center justify-between gap-2 rounded-xl text-left font-medium transition-all duration-180 select-none",
+          TRIGGER_SIZES[size],
           "border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)]",
           "outline-none hover:border-[var(--input-border-hover)] hover:bg-[var(--input-bg-hover)]",
           open

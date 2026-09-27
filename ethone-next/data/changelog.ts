@@ -37225,6 +37225,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_129_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_129_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_129_de);
 
+const v1_28_130_fr: ChangelogEntry = {
+  version: "v1.28.130",
+  date: "2026-09-27",
+  title: "Début de la refonte des menus déroulants",
+  items: [
+    "8 menus déroulants natifs du navigateur remplacés par le composant stylé du thème (tri des fichiers, plugins, habitudes, paramètres du serveur Discord — langue, fuseau horaire, contacts d'urgence, aperçu — tickets, rôles, leveling, bienvenue).",
+    "C'est un chantier de fond qui continue : environ 30 fichiers ont encore des menus natifs, ils seront traités progressivement.",
+  ],
+};
+
+const v1_28_130_en: ChangelogEntry = {
+  version: "v1.28.130",
+  date: "2026-09-27",
+  title: "Dropdown menus restyling — first batch",
+  items: [
+    "8 native browser dropdowns replaced with the app's themed component (file sort, plugins, habits, Discord server settings — language, timezone, emergency contacts, preview —, tickets, roles, leveling, welcome).",
+    "This is an ongoing cleanup: roughly 30 files still use native dropdowns and will be converted progressively.",
+  ],
+};
+
+const v1_28_130_es: ChangelogEntry = {
+  version: "v1.28.130",
+  date: "2026-09-27",
+  title: "Comienza el rediseño de los menús desplegables",
+  items: [
+    "8 menús desplegables nativos del navegador sustituidos por el componente con el estilo del tema (orden de archivos, plugins, hábitos, ajustes del servidor de Discord — idioma, zona horaria, contactos de emergencia, vista previa —, tickets, roles, niveles, bienvenida).",
+    "Es un trabajo continuo: unos 30 archivos siguen usando menús nativos y se irán convirtiendo progresivamente.",
+  ],
+};
+
+const v1_28_130_de: ChangelogEntry = {
+  version: "v1.28.130",
+  date: "2026-09-27",
+  title: "Start der Dropdown-Überarbeitung",
+  items: [
+    "8 native Browser-Dropdowns durch die themenkonforme Komponente ersetzt (Dateisortierung, Plugins, Habits, Discord-Servereinstellungen — Sprache, Zeitzone, Notfallkontakte, Vorschau —, Tickets, Rollen, Leveling, Willkommen).",
+    "Laufende Aufräumarbeit: rund 30 Dateien nutzen noch native Dropdowns und werden nach und nach umgestellt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_130_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_130_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_130_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_130_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

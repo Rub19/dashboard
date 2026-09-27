@@ -10,6 +10,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import Modal from "@/components/ui/Modal";
+import Select from "@/components/ui/Select";
 import { useSelection } from "@/lib/hooks/useSelection";
 import BulkActionBar from "@/components/BulkActionBar";
 import {
@@ -458,16 +459,19 @@ export default function FilesPage() {
             </div>
 
             <div className="flex items-center gap-1.5">
-              <select
+              <Select
                 value={sort}
-                onChange={(e) => setSort(e.target.value as any)}
-                className="h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-2.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] cursor-pointer"
-              >
-                <option value="date">Date</option>
-                <option value="name">Nom</option>
-                <option value="size">Taille</option>
-                <option value="type">Type</option>
-              </select>
+                onChange={(v) => setSort(v as any)}
+                size="sm"
+                className="w-24 shrink-0"
+                aria-label="Trier par"
+                options={[
+                  { id: "date", label: "Date" },
+                  { id: "name", label: "Nom" },
+                  { id: "size", label: "Taille" },
+                  { id: "type", label: "Type" },
+                ]}
+              />
 
               <button
                 type="button"

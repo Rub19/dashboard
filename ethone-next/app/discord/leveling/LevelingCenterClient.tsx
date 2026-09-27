@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import Select from "@/components/ui/Select";
 import {
   Award,
   Zap,
@@ -831,16 +832,17 @@ export default function LevelingCenterClient() {
 
                 <div>
                   <label className="block font-semibold text-neutral-300 mb-1">Salon d'annonce de Level-Up</label>
-                  <select
+                  <Select
                     value={config.levelUpChannelType}
-                    onChange={(e) => saveConfig({ levelUpChannelType: e.target.value as LevelingConfig["levelUpChannelType"] })}
-                    className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white mb-2"
-                  >
-                    <option value="same_channel">Salon du message</option>
-                    <option value="specific_channel">Salon spécifique</option>
-                    <option value="dm">Message privé</option>
-                    <option value="disabled">Désactivé</option>
-                  </select>
+                    onChange={(v) => saveConfig({ levelUpChannelType: v as LevelingConfig["levelUpChannelType"] })}
+                    className="mb-2"
+                    options={[
+                      { id: "same_channel", label: "Salon du message" },
+                      { id: "specific_channel", label: "Salon spécifique" },
+                      { id: "dm", label: "Message privé" },
+                      { id: "disabled", label: "Désactivé" },
+                    ]}
+                  />
                   {config.levelUpChannelType === "specific_channel" && (
                     <div className="mt-2">
                       <ChannelPicker

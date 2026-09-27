@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useSettings } from "@/components/SettingsProvider";
 import { EASE_OUT } from "@/lib/ease";
+import Select from "@/components/ui/Select";
 import {
   Search,
   Sparkles,
@@ -375,17 +376,19 @@ export default function PluginsPage() {
           {/* Sort Dropdown */}
           <div className="flex items-center gap-2">
             <span className="text-[var(--text-muted)] font-medium">Trier par :</span>
-            <select
+            <Select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(v) => setSortBy(v as any)}
               aria-label="Trier par"
-              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-1 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none cursor-pointer"
-            >
-              <option value="recommended">Recommandé (Brain Match)</option>
-              <option value="popular">Plus populaires</option>
-              <option value="rating">Mieux notés</option>
-              <option value="newest">Récents</option>
-            </select>
+              size="sm"
+              className="w-52 shrink-0"
+              options={[
+                { id: "recommended", label: "Recommandé (Brain Match)" },
+                { id: "popular", label: "Plus populaires" },
+                { id: "rating", label: "Mieux notés" },
+                { id: "newest", label: "Récents" },
+              ]}
+            />
           </div>
         </div>
       )}

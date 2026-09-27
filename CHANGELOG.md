@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.130 — 2026-09-27
+
+**Début de la refonte des menus déroulants**
+
+- 8 menus déroulants natifs du navigateur remplacés par le composant stylé du thème (tri des fichiers, plugins, habitudes, paramètres du serveur Discord — langue, fuseau horaire, contacts d'urgence, aperçu — tickets, rôles, leveling, bienvenue).
+- C'est un chantier de fond qui continue : environ 30 fichiers ont encore des menus natifs, ils seront traités progressivement.
+
 ## v1.28.129 — 2026-09-27
 
 **Amélioration ergonomique du hub Discord et corrections de fiabilité**

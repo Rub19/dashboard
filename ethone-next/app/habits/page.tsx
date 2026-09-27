@@ -16,6 +16,7 @@ import { useHabits } from "@/lib/hooks/useHabits";
 import { useToast } from "@/components/ToastProvider";
 import { addDays, dateKey } from "@/components/ActivityHeatmap";
 import { cn } from "@/lib/utils";
+import Select from "@/components/ui/Select";
 
 const HISTORY_DAYS = 14;
 const EMOJI_CHOICES = ["🎯", "💪", "📚", "🧘", "💧", "🏃", "🥗", "😴", "✍️", "🎸"];
@@ -123,17 +124,13 @@ export default function HabitsPage() {
 
       {/* Quick add */}
       <form onSubmit={handleAdd} className="v8-panel flex flex-col gap-2 p-2 sm:flex-row sm:items-center shrink-0">
-        <select
+        <Select
           value={newEmoji}
-          onChange={(e) => setNewEmoji(e.target.value)}
-          className="cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2.5 py-1.5 text-sm outline-none"
-        >
-          {EMOJI_CHOICES.map((emoji) => (
-            <option key={emoji} value={emoji} className="bg-[var(--panel-bg)]">
-              {emoji}
-            </option>
-          ))}
-        </select>
+          onChange={setNewEmoji}
+          options={EMOJI_CHOICES.map((emoji) => ({ id: emoji, label: emoji }))}
+          aria-label="Icône de l'habitude"
+          className="w-20 shrink-0"
+        />
         <input
           type="text"
           value={newName}

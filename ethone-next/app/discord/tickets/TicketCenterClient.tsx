@@ -37,6 +37,7 @@ import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import { CardSkeleton } from "@/components/ui/Skeleton";
+import Select from "@/components/ui/Select";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -930,45 +931,50 @@ export function TicketCenterClient() {
               </div>
 
               {/* Statut Selector */}
-              <select
+              <Select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 px-2.5 text-xs text-zinc-300 outline-none focus:border-emerald-500 cursor-pointer"
-              >
-                <option value="ALL">Tous les statuts</option>
-                <option value="OPEN">🟢 Ouverts</option>
-                <option value="WAITING_STAFF">🟠 Attente Staff</option>
-                <option value="WAITING_USER">🔵 Attente Membre</option>
-                <option value="RESOLVED">🟣 Résolus</option>
-                <option value="CLOSED">⚫ Clôturés</option>
-              </select>
+                onChange={setStatusFilter}
+                size="sm"
+                className="w-44 shrink-0"
+                aria-label="Filtrer par statut"
+                options={[
+                  { id: "ALL", label: "Tous les statuts" },
+                  { id: "OPEN", label: "🟢 Ouverts" },
+                  { id: "WAITING_STAFF", label: "🟠 Attente Staff" },
+                  { id: "WAITING_USER", label: "🔵 Attente Membre" },
+                  { id: "RESOLVED", label: "🟣 Résolus" },
+                  { id: "CLOSED", label: "⚫ Clôturés" },
+                ]}
+              />
 
               {/* Priorité Selector */}
-              <select
+              <Select
                 value={priorityFilter}
-                onChange={(e) => setPriorityFilter(e.target.value)}
-                className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 px-2.5 text-xs text-zinc-300 outline-none focus:border-emerald-500 cursor-pointer"
-              >
-                <option value="ALL">Toutes priorités</option>
-                <option value="URGENT">🔥 Urgent</option>
-                <option value="HIGH">⚡ Élevée</option>
-                <option value="NORMAL">📌 Normale</option>
-                <option value="LOW">💤 Faible</option>
-              </select>
+                onChange={setPriorityFilter}
+                size="sm"
+                className="w-40 shrink-0"
+                aria-label="Filtrer par priorité"
+                options={[
+                  { id: "ALL", label: "Toutes priorités" },
+                  { id: "URGENT", label: "🔥 Urgent" },
+                  { id: "HIGH", label: "⚡ Élevée" },
+                  { id: "NORMAL", label: "📌 Normale" },
+                  { id: "LOW", label: "💤 Faible" },
+                ]}
+              />
 
               {/* Catégorie Selector */}
-              <select
+              <Select
                 value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 px-2.5 text-xs text-zinc-300 outline-none focus:border-emerald-500 cursor-pointer"
-              >
-                <option value="">Toutes catégories</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.emoji} {c.name}
-                  </option>
-                ))}
-              </select>
+                onChange={setCategoryFilter}
+                size="sm"
+                className="w-44 shrink-0"
+                aria-label="Filtrer par catégorie"
+                options={[
+                  { id: "", label: "Toutes catégories" },
+                  ...categories.map((c) => ({ id: c.id, label: `${c.emoji} ${c.name}` })),
+                ]}
+              />
             </div>
 
             <div className="flex items-center gap-2">
@@ -1803,16 +1809,17 @@ export function TicketCenterClient() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-zinc-300">Priorité par défaut</label>
-                  <select
+                  <Select
                     value={editingCategory.defaultPriority || "NORMAL"}
-                    onChange={(e) => setEditingCategory({ ...editingCategory, defaultPriority: e.target.value as TicketPriority })}
-                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-white outline-none focus:border-emerald-500"
-                  >
-                    <option value="LOW">Basse</option>
-                    <option value="NORMAL">Normale</option>
-                    <option value="HIGH">Élevée</option>
-                    <option value="URGENT">Urgente</option>
-                  </select>
+                    onChange={(v) => setEditingCategory({ ...editingCategory, defaultPriority: v as TicketPriority })}
+                    size="sm"
+                    options={[
+                      { id: "LOW", label: "Basse" },
+                      { id: "NORMAL", label: "Normale" },
+                      { id: "HIGH", label: "Élevée" },
+                      { id: "URGENT", label: "Urgente" },
+                    ]}
+                  />
                 </div>
 
                 <div className="space-y-1">

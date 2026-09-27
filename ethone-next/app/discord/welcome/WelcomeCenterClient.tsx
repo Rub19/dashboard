@@ -33,6 +33,7 @@ import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import Select from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
 import RolePicker from "@/components/discord/RolePicker";
 import { formatApiError } from "@/lib/format-error";
@@ -281,17 +282,14 @@ function OnboardingEditor({
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-500/20 text-xs font-bold text-teal-300">{idx + 1}</span>
-                  <select
+                  <Select
                     value={step.type}
-                    onChange={(e) => patchStep(idx, { type: e.target.value as OnboardingStep["type"] })}
-                    className="rounded-lg border border-[var(--panel-border)] bg-zinc-950/70 px-2 py-1 text-[11px] font-bold text-white outline-none"
-                  >
-                    {STEP_TYPES.map((s) => (
-                      <option key={s.type} value={s.type}>
-                        {s.icon} {s.label}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(v) => patchStep(idx, { type: v as OnboardingStep["type"] })}
+                    size="sm"
+                    className="w-44 shrink-0"
+                    aria-label="Type d'étape"
+                    options={STEP_TYPES.map((s) => ({ id: s.type, label: `${s.icon} ${s.label}` }))}
+                  />
                 </div>
                 <div className="flex items-center gap-1">
                   <button type="button" disabled={idx === 0} onClick={() => moveStep(idx, -1)} className="p-1 text-zinc-400 hover:text-white disabled:opacity-30" title="Monter">
@@ -1470,22 +1468,25 @@ export function WelcomeCenterClient() {
                         placeholder="Emoji"
                         className="h-8 w-14 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-xs text-white text-center"
                       />
-                      <select
+                      <Select
                         value={btn.action}
-                        onChange={(e) => {
+                        onChange={(v) => {
                           const updated = [...config.welcome.buttons];
-                          updated[idx].action = e.target.value as any;
+                          updated[idx].action = v as any;
                           setConfig((p: any) => ({ ...p, welcome: { ...p.welcome, buttons: updated } }));
                         }}
-                        className="h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-xs text-zinc-300"
-                      >
-                        <option value="RULES">📜 Règlement</option>
-                        <option value="VERIFY">✅ Vérifier</option>
-                        <option value="TICKET">🎫 Ticket Support</option>
-                        <option value="URL">🔗 Lien Web</option>
-                        <option value="ROLE">🎭 Donner Rôle</option>
-                        <option value="CHANNEL">📍 Salon</option>
-                      </select>
+                        size="sm"
+                        className="w-44 shrink-0"
+                        aria-label="Action du bouton"
+                        options={[
+                          { id: "RULES", label: "📜 Règlement" },
+                          { id: "VERIFY", label: "✅ Vérifier" },
+                          { id: "TICKET", label: "🎫 Ticket Support" },
+                          { id: "URL", label: "🔗 Lien Web" },
+                          { id: "ROLE", label: "🎭 Donner Rôle" },
+                          { id: "CHANNEL", label: "📍 Salon" },
+                        ]}
+                      />
                       <button
                         type="button"
                         onClick={() => {

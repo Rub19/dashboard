@@ -30,6 +30,7 @@ import { GuildSelector } from "@/components/GuildSelector";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
+import Select from "@/components/ui/Select";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -633,11 +634,15 @@ export default function RolesCenterClient() {
                 </div>
                 <div>
                   <label className="block font-semibold text-neutral-300 mb-1">Règle de sélection</label>
-                  <select value={formMode} onChange={(e) => setFormMode(e.target.value as GroupMode)} className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white">
-                    <option value="toggle">Libre (plusieurs rôles)</option>
-                    <option value="single_exclusive">Choix unique (1 seul)</option>
-                    <option value="multi_limit">Multi limité</option>
-                  </select>
+                  <Select
+                    value={formMode}
+                    onChange={(v) => setFormMode(v as GroupMode)}
+                    options={[
+                      { id: "toggle", label: "Libre (plusieurs rôles)" },
+                      { id: "single_exclusive", label: "Choix unique (1 seul)" },
+                      { id: "multi_limit", label: "Multi limité" },
+                    ]}
+                  />
                 </div>
                 <div>
                   <label className="block font-semibold text-neutral-300 mb-1">Couleur</label>
@@ -673,12 +678,19 @@ export default function RolesCenterClient() {
                           size="sm"
                         />
                       </div>
-                      <select value={opt.style} onChange={(e) => setFormItems((p) => p.map((x, i) => (i === idx ? { ...x, style: e.target.value as ItemStyle } : x)))} className="col-span-3 sm:col-span-2 h-9 rounded-lg bg-neutral-900 border border-neutral-700 px-2 text-xs text-white">
-                        <option value="Primary">Bleu</option>
-                        <option value="Secondary">Gris</option>
-                        <option value="Success">Vert</option>
-                        <option value="Danger">Rouge</option>
-                      </select>
+                      <Select
+                        value={opt.style}
+                        onChange={(v) => setFormItems((p) => p.map((x, i) => (i === idx ? { ...x, style: v as ItemStyle } : x)))}
+                        size="sm"
+                        className="col-span-3 sm:col-span-2"
+                        aria-label="Couleur du bouton"
+                        options={[
+                          { id: "Primary", label: "Bleu" },
+                          { id: "Secondary", label: "Gris" },
+                          { id: "Success", label: "Vert" },
+                          { id: "Danger", label: "Rouge" },
+                        ]}
+                      />
                       <button type="button" onClick={() => setFormItems((p) => p.filter((_, i) => i !== idx))} className="col-span-1 text-neutral-500 hover:text-rose-400 p-1 cursor-pointer justify-self-end"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   ))}

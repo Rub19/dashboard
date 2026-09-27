@@ -35,7 +35,7 @@ export default function Screen0Hero({ onNext, onSkip }: Screen0Props) {
 
       {/* Description */}
       <p className="text-sm sm:text-base text-[var(--text-muted)] max-w-xl leading-relaxed mb-8">
-        ETHONE Bot centralise la gestion de votre serveur Discord : modération automatisée, sécurité anti-raid IA, lecteur musique haute fidélité, tickets de support et analytics en temps réel.
+        Etho centralise la gestion de votre serveur Discord : modération automatisée, sécurité anti-raid IA, lecteur musique haute fidélité, tickets de support et analytics en temps réel.
       </p>
 
       {/* Feature Highlights Pills */}
@@ -64,7 +64,7 @@ export default function Screen0Hero({ onNext, onSkip }: Screen0Props) {
           onClick={onNext}
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-medium text-sm transition-[filter] duration-200 hover:brightness-110 cursor-pointer"
         >
-          <span>Découvrir ETHONE Bot</span>
+          <span>Découvrir Etho</span>
           <ArrowRight className="w-4 h-4" />
         </button>
         <button

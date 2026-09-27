@@ -25,6 +25,7 @@ RUN bun install --production
 
 # Copie du code backend et du frontend compilé
 COPY src/ ./src/
+COPY assets/ ./assets/
 COPY --from=web-builder /app/web/dist ./web/dist
 
 # Dossier de données persistant

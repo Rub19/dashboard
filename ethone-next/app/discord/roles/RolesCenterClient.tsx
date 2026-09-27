@@ -750,7 +750,7 @@ export default function RolesCenterClient() {
           <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4 max-w-2xl">
             <h3 className="text-base font-bold text-white flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-emerald-400" /> Hiérarchie des rôles</h3>
             <p className="text-xs text-neutral-400 leading-relaxed">
-              Pour que le bot puisse attribuer un rôle sans erreur Discord (403), son rôle <strong className="text-white">@ETHONE Bot</strong> doit être placé <strong className="text-white">au-dessus</strong> des rôles qu'il gère, avec la permission « Gérer les rôles ».
+              Pour que le bot puisse attribuer un rôle sans erreur Discord (403), son rôle <strong className="text-white">@Etho</strong> doit être placé <strong className="text-white">au-dessus</strong> des rôles qu'il gère, avec la permission « Gérer les rôles ».
             </p>
             <div className="p-4 rounded-xl bg-neutral-950 border border-neutral-800 space-y-2 text-xs">
               <p className="text-neutral-300 font-semibold">Comment vérifier :</p>

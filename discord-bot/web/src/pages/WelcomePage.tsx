@@ -56,7 +56,7 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({ guildId, onShowToast }
   const [roles, setRoles] = useState<RoleItem[]>([]);
   const [serverName, setServerName] = useState('Mon Serveur');
   const [memberCount, setMemberCount] = useState(1245);
-  const [botName, setBotName] = useState('Ethone Bot');
+  const [botName, setBotName] = useState('Etho');
 
   // Configuration locale
   const [welcomeConfig, setWelcomeConfig] = useState<WelcomeMessageConfig | null>(null);
@@ -80,7 +80,7 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({ guildId, onShowToast }
       if (ovRes) {
         setServerName(ovRes.guild.name);
         setMemberCount(ovRes.guild.memberCount || 1245);
-        setBotName(ovRes.config.botName || 'Ethone Bot');
+        setBotName(ovRes.config.botName || 'Etho');
       }
     } catch (err: any) {
       onShowToast(err.message || 'Erreur lors du chargement de la configuration', 'error');

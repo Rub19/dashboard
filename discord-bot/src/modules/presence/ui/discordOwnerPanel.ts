@@ -42,7 +42,7 @@ export class DiscordOwnerPanel {
         : '⚫ Invisible';
 
     return new EmbedBuilder()
-      .setTitle('🤖 ETHONE BOT CONTROL — PRESENCE & IDENTITY')
+      .setTitle('🤖 ETHO CONTROL — PRESENCE & IDENTITY')
       .setDescription(
         'Panneau de contrôle exclusif du **Bot Owner**. Toute modification s\'applique instantanément sur la Gateway Discord globale.'
       )

@@ -745,7 +745,7 @@ export const CustomCommandsPage: React.FC<Props> = ({ guildId, onShowToast }) =>
                     </div>
                     <div className="space-y-1.5 flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-white text-sm font-semibold">Ethone Bot</span>
+                        <span className="text-white text-sm font-semibold">Etho</span>
                         <span className="text-[10px] text-indigo-400 bg-indigo-500/10 px-1 rounded font-mono">APP</span>
                         <span className="text-[10px] text-slate-500 font-mono">Aujourd'hui à {new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
                       </div>

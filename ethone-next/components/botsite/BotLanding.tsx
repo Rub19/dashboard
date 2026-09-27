@@ -241,7 +241,7 @@ function ProductPreview({ c }: { c: BotCopy }) {
               <img src="/icons/ethone-icon-192.png" alt="" width={38} height={38} className="h-9 w-9 shrink-0 rounded-full" />
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-2 text-sm font-semibold text-white">
-                  Ethone Bot <span className="rounded bg-[#5865f2] px-1.5 py-px text-[9px] font-bold uppercase text-white">App</span>
+                  Etho <span className="rounded bg-[#5865f2] px-1.5 py-px text-[9px] font-bold uppercase text-white">App</span>
                 </p>
                 <div className="mt-2 rounded-md border-l-4 border-indigo-400 bg-[#1a1b28] p-3">
                   <p className="text-sm font-semibold text-white">{c.preview.embedTitle}</p>
@@ -339,7 +339,7 @@ export default function BotLanding() {
           <a href="/bot" className="flex items-center gap-2.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/icons/ethone-icon-192.png" alt="" width={34} height={34} className="rounded-[10px]" />
-            <span className="hidden text-[15px] font-bold tracking-[0.18em] text-white min-[420px]:inline">ETHONE</span>
+            <span className="hidden text-[15px] font-bold tracking-[0.18em] text-white min-[420px]:inline">ETHO</span>
           </a>
           <nav className="hidden items-center gap-8 md:flex" aria-label={c.nav.mainNav}>
             <a href="#fonctionnalites" onClick={scrollTo("fonctionnalites")} className={linkClass}>{c.nav.features}</a>
@@ -586,7 +586,7 @@ export default function BotLanding() {
           <div className="flex items-center gap-2.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/icons/ethone-icon-192.png" alt="" width={22} height={22} className="rounded-md opacity-80" />
-            <p>© {new Date().getFullYear()} ETHONE · {c.footer.tagline}</p>
+            <p>© {new Date().getFullYear()} Etho · {c.footer.tagline}</p>
           </div>
           <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2" aria-label={c.nav.footerNav}>
             <a href={DASHBOARD_URL} className="transition-colors hover:text-white">{c.nav.dashboard}</a>

@@ -38,9 +38,9 @@ export class BotIdentityService {
 
     return {
       id: user?.id || config.clientId || '1545139931154878464',
-      username: user?.username || 'Ethone Bot',
+      username: user?.username || 'Etho',
       discriminator: user?.discriminator || '9861',
-      tag: user?.tag || 'Ethone Bot#9861',
+      tag: user?.tag || 'Etho#9861',
       avatarUrl: user?.displayAvatarURL({ size: 512 }) || 'https://ethone.dev/icons/ethone-icon-512.png?v=r2',
       bannerUrl: null, // Discord Bot API ne permet pas de modifier la bannière sans Nitro application
       verified: true,

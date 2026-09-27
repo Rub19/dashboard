@@ -30,7 +30,7 @@ export const DiscordPanelPreview: React.FC<DiscordPanelPreviewProps> = ({
 
         <div className="flex-1 min-w-0 space-y-2">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-white text-[15px]">{botName || 'Ethone Bot'}</span>
+            <span className="font-semibold text-white text-[15px]">{botName || 'Etho'}</span>
             <span className="bg-[#5865F2] text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
               BOT
             </span>

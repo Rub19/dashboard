@@ -1522,7 +1522,7 @@ export function WelcomeCenterClient() {
                 <div className="flex-1 min-w-0 space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-white text-sm hover:underline cursor-pointer">
-                      Ethone Bot
+                      Etho
                     </span>
                     <span className="rounded bg-[#5865F2] px-1 py-0.2 text-[9px] font-bold text-white">
                       BOT

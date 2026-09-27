@@ -54,7 +54,7 @@ async function runReconciliationTests() {
       'role_bot_highest',
       {
         id: 'role_bot_highest',
-        name: 'Ethone Bot Master',
+        name: 'Etho Master',
         color: 0x5865f2,
         position: 50,
         hoist: false,
@@ -175,7 +175,7 @@ async function runReconciliationTests() {
   };
 
   const mockClient = {
-    user: { id: 'bot_ethone_123', username: 'ETHONE Bot' },
+    user: { id: 'bot_ethone_123', username: 'Etho' },
     isReady: () => true,
     guilds: {
       cache: new Collection([[GUILD_ID, mockGuild]]),

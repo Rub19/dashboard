@@ -231,7 +231,7 @@ export default function SetupWizardClient() {
           "Certains réglages n'ont pas pu être enregistrés. Vérifiez la connexion au bot et réessayez depuis les centres de modération/welcome."
         );
       } else {
-        success("Configuration terminée !", "Votre serveur est maintenant prêt à utiliser ETHONE Bot.");
+        success("Configuration terminée !", "Votre serveur est maintenant prêt à utiliser Etho.");
       }
       setCurrentStep(6);
     } catch {
@@ -329,7 +329,7 @@ export default function SetupWizardClient() {
                   1. Sélectionner votre serveur Discord
                 </h3>
                 <p className="text-xs text-zinc-400">
-                  Choisissez le serveur où vous souhaitez activer ETHONE Bot. Seuls les serveurs où vous possédez les droits d'administration sont affichés.
+                  Choisissez le serveur où vous souhaitez activer Etho. Seuls les serveurs où vous possédez les droits d'administration sont affichés.
                 </p>
               </div>
 
@@ -417,7 +417,7 @@ export default function SetupWizardClient() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-indigo-400 hover:text-indigo-300 font-medium"
                 >
-                  <span>Inviter ETHONE Bot</span>
+                  <span>Inviter Etho</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
@@ -658,7 +658,7 @@ export default function SetupWizardClient() {
                   Félicitations ! Votre serveur est prêt.
                 </h3>
                 <p className="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">
-                  ETHONE Bot est désormais actif sur{" "}
+                  Etho est désormais actif sur{" "}
                   <span className="text-white font-semibold">{selectedGuild?.name}</span> avec la modération, la sécurité et le message d'accueil configurés.
                 </p>
               </div>

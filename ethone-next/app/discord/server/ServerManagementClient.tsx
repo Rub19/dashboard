@@ -2066,7 +2066,7 @@ export default function ServerManagementClient({
               <div>
                 <p className="font-bold text-white">Hiérarchie et Plafond du Bot Discord</p>
                 <p className="text-zinc-300 text-[11px] mt-0.5">
-                  Conformément aux règles de sécurité Discord, ETHONE Bot ne peut modifier que les rôles positionnés strictement en dessous de son rôle le plus élevé.
+                  Conformément aux règles de sécurité Discord, Etho ne peut modifier que les rôles positionnés strictement en dessous de son rôle le plus élevé.
                 </p>
               </div>
             </div>

@@ -130,7 +130,7 @@ export const DiscordEmbedPreview: React.FC<DiscordEmbedPreviewProps> = ({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
               <span className="font-semibold text-white hover:underline cursor-pointer text-sm">
-                {botName || 'Ethone Bot'}
+                {botName || 'Etho'}
               </span>
               <span className="bg-[#5865F2] text-white text-[10px] font-bold px-1.5 py-0.5 rounded leading-none">
                 APP
@@ -148,7 +148,7 @@ export const DiscordEmbedPreview: React.FC<DiscordEmbedPreviewProps> = ({
 
               {/* Footer Embed */}
               <div className="mt-3 pt-2 border-t border-[#383A40] flex items-center gap-1.5 text-[11px] text-[#949BA4]">
-                <span>{botName || 'Ethone Bot'}</span>
+                <span>{botName || 'Etho'}</span>
                 <span>•</span>
                 <span>Aujourd'hui à 14:32</span>
               </div>

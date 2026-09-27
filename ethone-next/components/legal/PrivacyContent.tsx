@@ -21,7 +21,7 @@ export default function PrivacyContent() {
               {i18n("privacyIntroPart1", "Cette politique explique quelles données sont collectées lors de l'utilisation du site")}{" "}
               <strong className="text-white">ethone.dev</strong>{" "}
               {i18n("privacyIntroPart2", "et du bot Discord")}{" "}
-              <strong className="text-white">ETHONE Bot</strong>{" "}
+              <strong className="text-white">Etho</strong>{" "}
               {i18n("privacyIntroPart3", "(ensemble, le « Service »), pourquoi, et comment elles sont traitées. ETHONE est un projet personnel indépendant ; nous ne vendons aucune donnée et ne l'utilisons pas à des fins publicitaires.")}
             </p>
           </section>

@@ -57,7 +57,7 @@ async function runTests() {
   };
   const botRole = {
     id: 'role_bot',
-    name: 'ETHONE Bot',
+    name: 'Etho',
     color: 0x5865f2,
     hexColor: '#5865f2',
     position: 8,

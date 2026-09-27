@@ -287,7 +287,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   // Real Bot Core Telemetry
   // Real Bot Core Telemetry — neutral baseline until real API fetch completes
   const [botCore, setBotCore] = useState<any>({
-    name: "Ethone Bot",
+    name: "Etho",
     discriminator: "—",
     avatarUrl: "https://cdn.discordapp.com/embed/avatars/0.png",
     version: "—",
@@ -351,7 +351,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     responseVisibility: "PUBLIC" as "PUBLIC" | "EPHEMERAL",
     botPersonality: "FRIENDLY" as "FRIENDLY" | "PROFESSIONAL" | "HUMOROUS" | "CONCISE" | "CYBER",
     defaultPrefix: "!",
-    customBotName: "ETHONE Bot",
+    customBotName: "Etho",
     enableSlash: true,
     enablePrefix: true,
     autoReconnect: true,

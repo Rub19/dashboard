@@ -41,7 +41,7 @@ export interface BotCopy {
 export const BOT_COPY: Record<BotLang, BotCopy> = {
   fr: {
     meta: {
-      title: "ETHONE — Le bot Discord de modération, sécurité et animation",
+      title: "Etho — Le bot Discord de modération, sécurité et animation",
       description: "Modération, anti-raid, musique, économie, tickets et plus encore. Un bot Discord configurable depuis un dashboard synchronisé en direct.",
     },
     nav: { features: "Fonctionnalités", dashboard: "Dashboard", commands: "Commandes", support: "Support", invite: "Inviter", openMenu: "Ouvrir le menu", closeMenu: "Fermer le menu", mobileMenu: "Menu mobile", mainNav: "Navigation principale", footerNav: "Liens du pied de page", language: "Langue" },
@@ -88,7 +88,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       text: "Connectez-vous avec Discord et gérez chaque serveur dont vous êtes administrateur. Un réglage enregistré s'applique tout de suite, et ce qui change sur Discord apparaît sans recharger.",
       open: "Ouvrir le dashboard",
       steps: [
-        { title: "Invitez le bot", text: "Un clic, et ETHONE rejoint votre serveur avec les permissions nécessaires." },
+        { title: "Invitez le bot", text: "Un clic, et Etho rejoint votre serveur avec les permissions nécessaires." },
         { title: "Choisissez vos modules", text: "Chaque module s'active ou se désactive par serveur, depuis le dashboard ou avec /module." },
         { title: "Réglez tout en ligne", text: "Salons, rôles, messages, seuils : la configuration se fait sur le dashboard, appliquée en direct." },
       ],
@@ -110,7 +110,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
 
   en: {
     meta: {
-      title: "ETHONE — The Discord bot for moderation, security and fun",
+      title: "Etho — The Discord bot for moderation, security and fun",
       description: "Moderation, anti-raid, music, economy, tickets and more. A Discord bot you configure from a dashboard synced live with Discord.",
     },
     nav: { features: "Features", dashboard: "Dashboard", commands: "Commands", support: "Support", invite: "Invite", openMenu: "Open menu", closeMenu: "Close menu", mobileMenu: "Mobile menu", mainNav: "Main navigation", footerNav: "Footer links", language: "Language" },
@@ -157,7 +157,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       text: "Sign in with Discord and manage every server you administer. A saved setting applies right away, and whatever changes on Discord shows up without reloading.",
       open: "Open the dashboard",
       steps: [
-        { title: "Invite the bot", text: "One click and ETHONE joins your server with the permissions it needs." },
+        { title: "Invite the bot", text: "One click and Etho joins your server with the permissions it needs." },
         { title: "Pick your modules", text: "Each module can be turned on or off per server, from the dashboard or with /module." },
         { title: "Set everything up online", text: "Channels, roles, messages, thresholds: configuration is done on the dashboard and applied live." },
       ],
@@ -179,7 +179,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
 
   es: {
     meta: {
-      title: "ETHONE — El bot de Discord de moderación, seguridad y diversión",
+      title: "Etho — El bot de Discord de moderación, seguridad y diversión",
       description: "Moderación, anti-raid, música, economía, tickets y mucho más. Un bot de Discord configurable desde un dashboard sincronizado en directo.",
     },
     nav: { features: "Funciones", dashboard: "Dashboard", commands: "Comandos", support: "Soporte", invite: "Invitar", openMenu: "Abrir el menú", closeMenu: "Cerrar el menú", mobileMenu: "Menú móvil", mainNav: "Navegación principal", footerNav: "Enlaces del pie de página", language: "Idioma" },
@@ -226,7 +226,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       text: "Inicia sesión con Discord y gestiona cada servidor del que seas administrador. Un ajuste guardado se aplica al instante, y lo que cambia en Discord aparece sin recargar.",
       open: "Abrir el dashboard",
       steps: [
-        { title: "Invita al bot", text: "Un clic y ETHONE se une a tu servidor con los permisos necesarios." },
+        { title: "Invita al bot", text: "Un clic y Etho se une a tu servidor con los permisos necesarios." },
         { title: "Elige tus módulos", text: "Cada módulo se activa o desactiva por servidor, desde el dashboard o con /module." },
         { title: "Configura todo en línea", text: "Canales, roles, mensajes, umbrales: la configuración se hace en el dashboard y se aplica en directo." },
       ],
@@ -248,7 +248,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
 
   de: {
     meta: {
-      title: "ETHONE — Der Discord-Bot für Moderation, Sicherheit und Spaß",
+      title: "Etho — Der Discord-Bot für Moderation, Sicherheit und Spaß",
       description: "Moderation, Anti-Raid, Musik, Wirtschaft, Tickets und mehr. Ein Discord-Bot, der über ein live synchronisiertes Dashboard konfiguriert wird.",
     },
     nav: { features: "Funktionen", dashboard: "Dashboard", commands: "Befehle", support: "Support", invite: "Einladen", openMenu: "Menü öffnen", closeMenu: "Menü schließen", mobileMenu: "Mobilmenü", mainNav: "Hauptnavigation", footerNav: "Links im Seitenfuß", language: "Sprache" },
@@ -295,7 +295,7 @@ export const BOT_COPY: Record<BotLang, BotCopy> = {
       text: "Melde dich mit Discord an und verwalte jeden Server, den du administrierst. Eine gespeicherte Einstellung gilt sofort, und Änderungen auf Discord erscheinen ohne Neuladen.",
       open: "Dashboard öffnen",
       steps: [
-        { title: "Bot einladen", text: "Ein Klick, und ETHONE tritt deinem Server mit den nötigen Berechtigungen bei." },
+        { title: "Bot einladen", text: "Ein Klick, und Etho tritt deinem Server mit den nötigen Berechtigungen bei." },
         { title: "Module auswählen", text: "Jedes Modul lässt sich pro Server ein- oder ausschalten, im Dashboard oder mit /module." },
         { title: "Alles online einstellen", text: "Kanäle, Rollen, Nachrichten, Schwellenwerte: Die Konfiguration erfolgt im Dashboard und gilt live." },
       ],

@@ -26,7 +26,7 @@ struct DiscordView: View {
                 .foregroundStyle(Color(hex: 0x5865F2))
                 .padding(24)
                 .glassEffect(Glass.regular.tint(Color(hex: 0x5865F2).opacity(0.3)), in: .circle)
-            Text("Pilotez le bot ETHONE").font(.title3.bold())
+            Text("Pilotez le bot Etho").font(.title3.bold())
             Text("Connectez votre compte Discord pour gérer les modules de vos serveurs.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)

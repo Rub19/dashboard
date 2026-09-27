@@ -99,7 +99,7 @@ export default function Screen6Customization() {
             
             <div className="flex items-center gap-2 mb-2 pl-2">
               <span className="w-2 h-2 rounded-full bg-[var(--success)]" />
-              <span className="text-[11px] font-semibold text-[var(--text-primary)]">ETHONE BOT — Annonce</span>
+              <span className="text-[11px] font-semibold text-[var(--text-primary)]">ETHO — Annonce</span>
             </div>
 
             <div className="pl-2 space-y-1.5">

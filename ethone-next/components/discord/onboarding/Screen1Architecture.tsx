@@ -17,7 +17,7 @@ export default function Screen1Architecture() {
           Votre serveur Discord, sous contrôle.
         </h3>
         <p className="text-sm text-[var(--text-muted)] max-w-lg mx-auto">
-          ETHONE Bot est votre centre de contrôle pour automatiser, sécuriser et développer votre communauté depuis une seule interface haute performance.
+          Etho est votre centre de contrôle pour automatiser, sécuriser et développer votre communauté depuis une seule interface haute performance.
         </p>
       </div>
 
@@ -37,7 +37,7 @@ export default function Screen1Architecture() {
             </div>
           </div>
 
-          {/* Node 2: ETHONE Bot Core (Center) */}
+          {/* Node 2: Etho Core (Center) */}
           <div className="flex flex-col items-center text-center p-4 rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/40 relative">
             <div className="absolute -top-2.5 px-2.5 py-0.5 rounded-full bg-[var(--success)]/15 border border-[var(--success)]/40 text-[var(--success)] text-[10px] font-medium flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--success)]"></span>
@@ -47,7 +47,7 @@ export default function Screen1Architecture() {
             <div className="w-12 h-12 rounded-xl bg-[var(--accent-primary)] flex items-center justify-center text-[var(--accent-contrast)] mb-3">
               <Cpu className="w-6 h-6" />
             </div>
-            <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1">ETHONE Bot Engine</h4>
+            <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1">Etho Engine</h4>
             <p className="text-xs text-[var(--text-muted)]">Microservice WebSocket</p>
             <div className="mt-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] text-[10px]">
               Port 3001 • Fastify/REST

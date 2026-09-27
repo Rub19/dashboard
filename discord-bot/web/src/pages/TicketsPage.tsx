@@ -55,7 +55,7 @@ export const TicketsPage: React.FC<TicketsPageProps> = ({ guildId, onShowToast }
   const [roles, setRoles] = useState<RoleItem[]>([]);
   const [discordCategories, setDiscordCategories] = useState<DiscordCategoryItem[]>([]);
   const [serverName, setServerName] = useState('Mon Serveur');
-  const [botName, setBotName] = useState('Ethone Bot');
+  const [botName, setBotName] = useState('Etho');
 
   // Données Tickets
   const [overview, setOverview] = useState<TicketOverview | null>(null);
@@ -105,7 +105,7 @@ export const TicketsPage: React.FC<TicketsPageProps> = ({ guildId, onShowToast }
 
       if (ovGlobal) {
         setServerName(ovGlobal.guild.name);
-        setBotName(ovGlobal.config.botName || 'Ethone Bot');
+        setBotName(ovGlobal.config.botName || 'Etho');
       }
 
       // Initialiser le panel sélectionné s'il existe

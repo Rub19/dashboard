@@ -677,7 +677,7 @@ export default function CommandsCenterClient() {
                   <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs">ET</div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-bold text-white">ETHONE Bot</span>
+                      <span className="text-xs font-bold text-white">Etho</span>
                       <span className="bg-[#5865F2] text-white text-[9px] font-bold px-1 rounded">BOT</span>
                     </div>
                     <span className="text-[10px] text-neutral-400">À l'instant</span>
@@ -743,7 +743,7 @@ export default function CommandsCenterClient() {
                     <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs">ET</div>
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-white">ETHONE Bot</span>
+                        <span className="text-xs font-bold text-white">Etho</span>
                         <span className="bg-[#5865F2] text-white text-[9px] font-bold px-1 rounded">BOT</span>
                       </div>
                       <span className="text-[10px] text-neutral-400">À l'instant</span>

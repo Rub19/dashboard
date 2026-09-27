@@ -100,9 +100,9 @@ async function runTests() {
     emit: () => true,
     user: {
       id: '1545139931154878464',
-      username: 'Ethone Bot',
+      username: 'Etho',
       discriminator: '9861',
-      tag: 'Ethone Bot#9861',
+      tag: 'Etho#9861',
       displayAvatarURL: () => 'https://cdn.discordapp.com/embed/avatars/0.png',
       setPresence: () => {},
       setUsername: async (u: string) => u,

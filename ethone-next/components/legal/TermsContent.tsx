@@ -21,7 +21,7 @@ export default function TermsContent() {
               {i18n("termsIntroPart1", "Les présentes Conditions d'utilisation (« Conditions ») régissent l'accès et l'utilisation du site")}{" "}
               <strong className="text-white">ethone.dev</strong>{" "}
               {i18n("termsIntroPart2", "(le « Dashboard ») et du bot Discord")}{" "}
-              <strong className="text-white">ETHONE Bot</strong>{" "}
+              <strong className="text-white">Etho</strong>{" "}
               {i18n("termsIntroPart3", "(ensemble, le « Service »), développés et exploités par Rub19, à titre de projet personnel et indépendant. En utilisant le Service, vous acceptez ces Conditions.")}
             </p>
           </section>

@@ -631,7 +631,7 @@ export default function InvitesCenterClient() {
             <div>
               <h3 className="text-base font-bold text-white">Liens d'Invitations Discord</h3>
               <p className="text-xs text-zinc-400">
-                Invitations actives créées sur le serveur Discord et surveillées par ETHONE Bot.
+                Invitations actives créées sur le serveur Discord et surveillées par Etho.
               </p>
             </div>
           </div>

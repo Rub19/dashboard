@@ -1001,7 +1001,7 @@ export default function GiveawaysCenterClient() {
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-bold text-white">ETHONE Bot</span>
+                      <span className="text-xs font-bold text-white">Etho</span>
                       <span className="bg-[#5865F2] text-white text-[9px] font-bold px-1 rounded">BOT</span>
                     </div>
                   </div>

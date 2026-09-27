@@ -19,7 +19,7 @@ export const GuildConfigSchema = z.object({
   guildId: z.string(),
 
   // Apparence
-  botName: z.string().min(1).max(32).default('Ethone Bot'),
+  botName: z.string().min(1).max(32).default('Etho'),
   primaryColor: z.string().regex(HexColorRegex, 'Format HEX invalide (ex: #5865F2)').default('#5865F2'),
   secondaryColor: z.string().regex(HexColorRegex, 'Format HEX invalide (ex: #4752C4)').default('#4752C4'),
   successColor: z.string().regex(HexColorRegex, 'Format HEX invalide (ex: #57F287)').default('#57F287'),
@@ -86,7 +86,7 @@ export type GuildConfigInput = Partial<Omit<GuildConfig, 'guildId' | 'emojis' | 
 };
 
 export const defaultGuildConfig: Omit<GuildConfig, 'guildId'> = {
-  botName: 'Ethone Bot',
+  botName: 'Etho',
   primaryColor: '#5865F2',
   secondaryColor: '#4752C4',
   successColor: '#57F287',

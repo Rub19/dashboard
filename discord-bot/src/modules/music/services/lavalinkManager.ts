@@ -61,7 +61,7 @@ class LavalinkManager {
         moveOnDisconnect: false,
         // Connexion vocale : 8 s par essai au lieu de 15 (deux essais = 30 s d'attente avant une erreur)
         voiceConnectionTimeout: 8,
-        userAgent: 'ETHONE-Bot',
+        userAgent: 'Etho',
       },
     );
     this.shoukaku.on('ready', (name, resumed) => logger.success(`[Lavalink] Nœud "${name}" connecté${resumed ? ' (session reprise)' : ''} — ${host}:${port}`));

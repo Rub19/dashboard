@@ -1,3 +1,7 @@
+import { createHash } from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { ActivityType, Client } from 'discord.js';
 import { commandRegistry } from '../handlers/commandHandler.js';
 import { giveawayScheduler } from '../modules/giveaways/services/giveawayScheduler.js';
@@ -20,14 +24,15 @@ import { initialize as initSecureRoles } from '../modules/secureroles/services/s
 import { logger } from '../utils/logger.js';
 
 const BOT_SITE_URL = 'https://discord.ethone.dev';
+const BOT_DISPLAY_NAME = 'Etho';
 
-/** « À propos de moi » du bot (400 caractères max) : présentation, site web et lien d'invitation. */
+/** « À propos de moi » du bot (400 caractères max) : présentation, puis site web et invitation en liens Markdown (courts, en gras). */
 function buildBotBio(clientId: string): string {
   const invite = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&scope=bot%20applications.commands`;
   return [
-    'ETHONE : le bot Discord tout-en-un piloté depuis un dashboard en temps réel (modération, musique, tickets, niveaux, sécurité…).',
-    `🌐 Site : ${BOT_SITE_URL}`,
-    `➕ Inviter le bot : ${invite}`,
+    `${BOT_DISPLAY_NAME} : le bot Discord tout-en-un piloté depuis un dashboard en temps réel (modération, musique, tickets, niveaux, sécurité…).`,
+    `🌐 **[Site web](${BOT_SITE_URL})**`,
+    `➕ **[Inviter le bot ici](${invite})**`,
   ].join('\n').slice(0, 400);
 }
 
@@ -38,9 +43,74 @@ async function syncBotBio(client: Client<true>): Promise<void> {
     const app = await client.application.fetch();
     if ((app.description || '').trim() === bio) return;
     await client.application.edit({ description: bio });
-    logger.success('[Profil] Bio du bot mise à jour (site web + lien d\'invitation).');
+    logger.success("[Profil] Bio du bot mise à jour (site web + lien d'invitation).");
   } catch (err) {
     logger.warn('[Profil] Impossible de mettre à jour la bio du bot :', err);
+  }
+}
+
+const PROFILE_STATE_FILE = path.resolve(process.cwd(), 'data', 'bot_profile_sync.json');
+/** Le bot peut tourner depuis `src/` (bun, tsx), `dist/` (tsc) ou un bundle : on cherche la bannière depuis le dossier de travail et depuis ce fichier. */
+const BANNER_CANDIDATES = [
+  path.resolve(process.cwd(), 'assets', 'etho-banner.png'),
+  path.resolve(process.cwd(), 'discord-bot', 'assets', 'etho-banner.png'),
+  path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'assets', 'etho-banner.png'),
+  path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'assets', 'etho-banner.png'),
+];
+const BANNER_FILE = BANNER_CANDIDATES.find((candidate) => fs.existsSync(candidate)) ?? BANNER_CANDIDATES[0];
+
+interface ProfileSyncState {
+  bannerHash?: string;
+  usernameAttempted?: string;
+}
+
+function readProfileState(): ProfileSyncState {
+  try {
+    return JSON.parse(fs.readFileSync(PROFILE_STATE_FILE, 'utf8')) as ProfileSyncState;
+  } catch {
+    return {};
+  }
+}
+
+function writeProfileState(state: ProfileSyncState): void {
+  try {
+    fs.mkdirSync(path.dirname(PROFILE_STATE_FILE), { recursive: true });
+    fs.writeFileSync(PROFILE_STATE_FILE, JSON.stringify(state, null, 2));
+  } catch (err) {
+    logger.warn('[Profil] État de synchronisation non enregistré :', err);
+  }
+}
+
+/**
+ * Bannière et nom du bot. Chaque changement n'est envoyé qu'une fois (empreinte de la bannière, tentative de nom mémorisées dans
+ * `data/bot_profile_sync.json`) : Discord limite fortement les changements de profil d'un bot.
+ */
+async function syncBotProfile(client: Client<true>): Promise<void> {
+  const state = readProfileState();
+
+  try {
+    const image = fs.readFileSync(BANNER_FILE);
+    const hash = createHash('sha1').update(image).digest('hex');
+    if (state.bannerHash !== hash) {
+      await client.user.setBanner(image);
+      state.bannerHash = hash;
+      writeProfileState(state);
+      logger.success('[Profil] Bannière du bot mise à jour.');
+    }
+  } catch (err) {
+    logger.warn('[Profil] Impossible de mettre à jour la bannière du bot :', err);
+  }
+
+  if (client.user.username !== BOT_DISPLAY_NAME && state.usernameAttempted !== BOT_DISPLAY_NAME) {
+    // Une seule tentative : si le nom est déjà pris, on ne réessaie pas à chaque démarrage (limite Discord : 2 changements par heure).
+    state.usernameAttempted = BOT_DISPLAY_NAME;
+    writeProfileState(state);
+    try {
+      await client.user.setUsername(BOT_DISPLAY_NAME);
+      logger.success(`[Profil] Nom du bot changé en « ${BOT_DISPLAY_NAME} ».`);
+    } catch (err) {
+      logger.warn(`[Profil] Discord a refusé le nom « ${BOT_DISPLAY_NAME} » (probablement déjà pris) :`, err);
+    }
   }
 }
 
@@ -54,6 +124,7 @@ export async function onReady(client: Client<true>) {
   });
 
   void syncBotBio(client);
+  void syncBotProfile(client);
 
   // Migrations uniques de modules (ex. XP désactivé partout), avant tout démarrage de module
   runModuleMigrations(client);

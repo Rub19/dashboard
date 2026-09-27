@@ -37013,6 +37013,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_125_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_125_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_125_de);
 
+const v1_28_126_fr: ChangelogEntry = {
+  version: "v1.28.126",
+  date: "2026-09-27",
+  title: "Le bot s'appelle maintenant Etho",
+  items: [
+    "« ETHONE Bot » devient « Etho » partout où le bot est nommé : site du bot, panneau Discord, assistant d'installation, aperçus de messages, conditions et confidentialité.",
+    "Nouvelle bannière du bot (mot-symbole Etho et icônes des modules), aussi utilisée comme image de partage de la page du bot.",
+    "La bio du bot présente le site et l'invitation en liens Markdown en gras, à la place des adresses complètes.",
+  ],
+};
+
+const v1_28_126_en: ChangelogEntry = {
+  version: "v1.28.126",
+  date: "2026-09-27",
+  title: "The bot is now called Etho",
+  items: [
+    "\"ETHONE Bot\" becomes \"Etho\" everywhere the bot is named: bot website, Discord panel, setup wizard, message previews, terms and privacy.",
+    "New bot banner (Etho wordmark and module icons), also used as the bot page's share image.",
+    "The bot's bio now shows the website and invite as bold Markdown links instead of full addresses.",
+  ],
+};
+
+const v1_28_126_es: ChangelogEntry = {
+  version: "v1.28.126",
+  date: "2026-09-27",
+  title: "El bot ahora se llama Etho",
+  items: [
+    "« ETHONE Bot » pasa a ser « Etho » en todos los lugares donde se nombra al bot: web del bot, panel de Discord, asistente de instalación, vistas previas de mensajes, términos y privacidad.",
+    "Nuevo banner del bot (logotipo Etho e iconos de los módulos), usado también como imagen para compartir la página del bot.",
+    "La bio del bot muestra ahora el sitio web y la invitación como enlaces Markdown en negrita, en lugar de las direcciones completas.",
+  ],
+};
+
+const v1_28_126_de: ChangelogEntry = {
+  version: "v1.28.126",
+  date: "2026-09-27",
+  title: "Der Bot heißt jetzt Etho",
+  items: [
+    "„ETHONE Bot“ wird überall, wo der Bot genannt wird, zu „Etho“: Bot-Website, Discord-Panel, Einrichtungsassistent, Nachrichtenvorschauen, Nutzungsbedingungen und Datenschutz.",
+    "Neues Bot-Banner (Etho-Schriftzug und Modul-Icons), auch als Vorschaubild der Bot-Seite verwendet.",
+    "Die Bot-Bio zeigt Website und Einladung jetzt als fette Markdown-Links statt als vollständige Adressen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_126_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_126_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_126_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_126_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

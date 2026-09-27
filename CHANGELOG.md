@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.126 — 2026-09-27
+
+**Le bot s'appelle maintenant Etho**
+
+- « ETHONE Bot » devient « Etho » partout où le bot est nommé : site du bot, panneau Discord, assistant d'installation, aperçus de messages, conditions et confidentialité.
+- Nouvelle bannière du bot (mot-symbole Etho et icônes des modules), aussi utilisée comme image de partage de la page du bot.
+- La bio du bot présente le site et l'invitation en liens Markdown en gras, à la place des adresses complètes.
+
 ## v1.28.125 — 2026-09-27
 
 **Synchronisation en temps réel entre le site et l'app iOS**

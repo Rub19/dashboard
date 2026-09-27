@@ -1535,7 +1535,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         type="text"
                         value={editUsername}
                         onChange={(e) => setEditUsername(e.target.value)}
-                        placeholder="Ethone Bot"
+                        placeholder="Etho"
                         maxLength={32}
                         className="w-full px-3.5 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white focus:outline-none focus:border-indigo-500"
                       />

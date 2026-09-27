@@ -936,7 +936,7 @@ export default function EventCreateClient() {
             {/* Discord Embed Mockup */}
             <div className="p-4 rounded-2xl bg-[#1e1f22] border-l-4 border-indigo-500 shadow-2xl font-sans">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-bold text-indigo-400">ETHONE Bot</span>
+                <span className="text-xs font-bold text-indigo-400">Etho</span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#5865F2] text-white font-bold">BOT</span>
               </div>
 

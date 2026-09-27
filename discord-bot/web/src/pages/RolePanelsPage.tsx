@@ -45,7 +45,7 @@ export const RolePanelsPage: React.FC<RolePanelsPageProps> = ({ guildId, onShowT
   const [channels, setChannels] = useState<ChannelItem[]>([]);
   const [roles, setRoles] = useState<RoleItem[]>([]);
   const [serverName, setServerName] = useState('Mon Serveur');
-  const [botName, setBotName] = useState('Ethone Bot');
+  const [botName, setBotName] = useState('Etho');
 
   // Auto Roles
   const [autoRoleConfig, setAutoRoleConfig] = useState<AutoRoleConfig | null>(null);
@@ -80,7 +80,7 @@ export const RolePanelsPage: React.FC<RolePanelsPageProps> = ({ guildId, onShowT
 
       if (ovRes) {
         setServerName(ovRes.guild.name);
-        setBotName(ovRes.config.botName || 'Ethone Bot');
+        setBotName(ovRes.config.botName || 'Etho');
       }
 
       if (pnlRes.panels.length > 0) {

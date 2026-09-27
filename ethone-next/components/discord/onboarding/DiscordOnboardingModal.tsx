@@ -127,7 +127,7 @@ export default function DiscordOnboardingModal({
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
-        aria-label="ETHONE Bot Onboarding"
+        aria-label="Etho Onboarding"
         className="v8-panel relative w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl outline-none"
       >
         {/* Top Header Bar */}
@@ -135,7 +135,7 @@ export default function DiscordOnboardingModal({
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
             <span className="text-xs font-semibold tracking-wider uppercase text-[var(--text-muted)]">
-              ETHONE BOT ONBOARDING
+              ETHO ONBOARDING
             </span>
           </div>
 

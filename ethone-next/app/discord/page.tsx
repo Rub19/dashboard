@@ -1037,7 +1037,7 @@ export default function DiscordDashboardPage() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-lg font-bold text-white">
-                  ETHONE Bot
+                  Etho
                 </h1>
                 <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.2 text-[10px] font-bold text-emerald-400">
                   {botPresenceKnown ? "En ligne" : "Connexion…"}
@@ -1053,7 +1053,7 @@ export default function DiscordDashboardPage() {
             <button
               onClick={() => openOnboarding(0)}
               className="flex h-9 items-center gap-2 rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-3.5 text-xs font-medium text-indigo-300 transition-all hover:bg-indigo-500/20 active:scale-95 cursor-pointer"
-              title="Revoir l'introduction d'ETHONE Bot"
+              title="Revoir l'introduction d'Etho"
             >
               <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
               <span>Découvrir le Bot</span>
@@ -1267,7 +1267,7 @@ export default function DiscordDashboardPage() {
                           {hasBot && (
                             <span
                               className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-[var(--bg-main)] bg-emerald-500 text-white"
-                              title="ETHONE Bot est installé sur ce serveur"
+                              title="Etho est installé sur ce serveur"
                             >
                               <Bot className="h-2.5 w-2.5" />
                             </span>

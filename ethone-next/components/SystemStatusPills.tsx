@@ -39,7 +39,7 @@ function StatusPill({ icon, children, onClick, title }: StatusPillProps) {
       type={onClick ? "button" : undefined}
       onClick={onClick}
       title={title}
-      className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)] transition-[color,background-color,opacity,transform] ${
+      className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] transition-[color,background-color,opacity,transform] ${
         onClick ? "hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer" : ""
       }`}
     >
@@ -64,7 +64,7 @@ function WeatherStatusPill() {
   return (
     <div ref={setButtonEl}>
       <StatusPill
-        icon={<Cloud className="h-3 w-3 text-[var(--accent-primary)]" />}
+        icon={<Cloud className="h-3.5 w-3.5 text-[var(--accent-primary)]" />}
         onClick={() => setOpen((v) => !v)}
         title={i18n("weather", "Météo")}
       >
@@ -86,18 +86,18 @@ function SystemStatusPills() {
   const workspaceLabel = i18n(workspace) || workspace;
 
   const syncIcon = syncing ? (
-    <RefreshCw className="h-3 w-3 animate-spin text-[var(--info)]" />
+    <RefreshCw className="h-3.5 w-3.5 animate-spin text-[var(--info)]" />
   ) : online ? (
-    <Cloud className="h-3 w-3 text-[var(--accent-primary)]" />
+    <Cloud className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
   ) : (
-    <CloudOff className="h-3 w-3 text-[var(--danger)]" />
+    <CloudOff className="h-3.5 w-3.5 text-[var(--danger)]" />
   );
 
   const syncLabel = syncing ? i18n("v8Syncing") || "Sync" : online ? i18n("v8Synced") || "Sync" : i18n("v8Offline") || "Offline";
 
   return (
     <div className="hidden items-center gap-0.5 rounded-full border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/50 p-0.5 md:flex">
-      <StatusPill icon={<Briefcase className="h-3 w-3 text-[var(--text-muted)]" />} title={i18n("workspace")}>
+      <StatusPill icon={<Briefcase className="h-3.5 w-3.5 text-[var(--text-muted)]" />} title={i18n("workspace")}>
         {workspaceLabel}
       </StatusPill>
 

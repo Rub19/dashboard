@@ -41,9 +41,9 @@ export default function LanguageSwitcher() {
           aria-label={i18n("language")}
           aria-haspopup="listbox"
           aria-expanded={open}
-          className="flex h-9 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 px-2.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] transition-all active:scale-95 cursor-pointer select-none shadow-sm"
+          className="flex h-10 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 px-3 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] transition-all active:scale-95 cursor-pointer select-none shadow-sm"
         >
-          <FlagIcon code={current} className="h-4 w-5 rounded-sm overflow-hidden" />
+          <FlagIcon code={current} className="h-[18px] w-6 rounded-sm overflow-hidden" />
           <span className="uppercase text-[11px] text-[var(--text-muted)] font-bold">
             {current}
           </span>

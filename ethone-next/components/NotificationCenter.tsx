@@ -340,7 +340,7 @@ export default function NotificationCenter() {
         <button
           type="button"
           className={cn(
-            "relative flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border transition-all active:scale-95 cursor-pointer shadow-xs",
+            "relative flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] border transition-all active:scale-95 cursor-pointer shadow-xs",
             unreadCount > 0
               ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25"
               : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -348,7 +348,7 @@ export default function NotificationCenter() {
           title={i18n("tbNotifBell", "Centre de notifications")}
           aria-label={i18n("tbNotifBell", "Centre de notifications")}
         >
-          <Bell className="h-4 w-4" />
+          <Bell className="h-[18px] w-[18px]" />
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--accent-primary)] px-1 text-[9px] font-black text-[var(--accent-contrast)] shadow-md">
               {unreadCount > 99 ? "99+" : unreadCount}

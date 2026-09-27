@@ -76,10 +76,10 @@ function SidebarTopToggle() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
         aria-label="Basculer la barre latérale"
       >
-        <Icon name={open ? "sidebar-simple" : "sidebar"} className="h-4 w-4" />
+        <Icon name={open ? "sidebar-simple" : "sidebar"} className="h-[18px] w-[18px]" />
       </button>
     </Tooltip>
   );
@@ -123,14 +123,14 @@ function ThemeToggle() {
           aria-haspopup="menu"
           aria-expanded={open}
           className={cn(
-            "inline-flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border transition-all active:scale-95 cursor-pointer shadow-sm",
+            "inline-flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] border transition-all active:scale-95 cursor-pointer shadow-sm",
             open
               ? "border-[var(--accent-primary)]/50 bg-[var(--surface-hover)] text-[var(--text-primary)]"
               : "border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
           )}
           aria-label="Changer de thème"
         >
-          <Palette className="h-4 w-4" />
+          <Palette className="h-[18px] w-[18px]" />
         </button>
       </Tooltip>
 
@@ -158,10 +158,10 @@ function FocusLivePill({ mobile }: { mobile?: boolean } = {}) {
         <button
           type="button"
           onClick={() => focus.start("pomodoro")}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
           aria-label="Mode Focus"
         >
-          <Timer className="h-4 w-4" />
+          <Timer className="h-[18px] w-[18px]" />
         </button>
       </Tooltip>
     );
@@ -192,7 +192,7 @@ function FocusLivePill({ mobile }: { mobile?: boolean } = {}) {
         <button
           type="button"
           aria-label={`Mode Focus actif : ${phaseLabel} ${focus.format(remaining)}`}
-          className="group relative flex h-9 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-2.5 text-[var(--text-primary)] hover:bg-[var(--accent-primary)]/25 transition-all active:scale-95 cursor-pointer shadow-sm"
+          className="group relative flex h-10 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-3 text-[var(--text-primary)] hover:bg-[var(--accent-primary)]/25 transition-all active:scale-95 cursor-pointer shadow-sm"
         >
           <span className="relative flex h-2 w-2">
             {!paused && (
@@ -317,14 +317,14 @@ function DynamicIslandToggle() {
         type="button"
         onClick={toggle}
         className={cn(
-          "inline-flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border transition-all active:scale-95 cursor-pointer shadow-sm",
+          "inline-flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] border transition-all active:scale-95 cursor-pointer shadow-sm",
           visible
             ? "border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
             : "border-[var(--warning)]/30 bg-[var(--warning)]/10 text-[var(--warning)]"
         )}
         aria-label="Dynamic Island"
       >
-        {visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+        {visible ? <Eye className="h-[18px] w-[18px]" /> : <EyeOff className="h-[18px] w-[18px]" />}
       </button>
     </Tooltip>
   );
@@ -335,10 +335,10 @@ function FeedbackButton() {
     <Tooltip label="Assistant Brain & Échange" position="bottom">
       <Link
         href="/brain"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
         aria-label="Assistant Brain"
       >
-        <MessageSquare className="h-4 w-4" />
+        <MessageSquare className="h-[18px] w-[18px]" />
       </Link>
     </Tooltip>
   );

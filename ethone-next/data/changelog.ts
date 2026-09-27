@@ -37618,6 +37618,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_29_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_29_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_29_0_de);
 
+const v1_29_1_fr: ChangelogEntry = {
+  version: "v1.29.1",
+  date: "2026-09-27",
+  title: "Icônes de la barre du haut agrandies",
+  items: [
+    "Les icônes de la barre du haut (notifications, langue, thème, Dynamic Island, Brain, Soutenir, météo, sync, horloge) étaient plus petites que le reste de l'interface — harmonisées et légèrement agrandies pour rester lisibles et faciles à viser.",
+  ],
+};
+
+const v1_29_1_en: ChangelogEntry = {
+  version: "v1.29.1",
+  date: "2026-09-27",
+  title: "Top bar icons made larger",
+  items: [
+    "Top bar icons (notifications, language, theme, Dynamic Island, Brain, Support, weather, sync, clock) were smaller than the rest of the interface — unified and slightly enlarged for better legibility and easier targeting.",
+  ],
+};
+
+const v1_29_1_es: ChangelogEntry = {
+  version: "v1.29.1",
+  date: "2026-09-27",
+  title: "Iconos de la barra superior más grandes",
+  items: [
+    "Los iconos de la barra superior (notificaciones, idioma, tema, Dynamic Island, Brain, Apoyar, clima, sincronización, reloj) eran más pequeños que el resto de la interfaz — unificados y ligeramente agrandados para mayor legibilidad.",
+  ],
+};
+
+const v1_29_1_de: ChangelogEntry = {
+  version: "v1.29.1",
+  date: "2026-09-27",
+  title: "Symbole der oberen Leiste vergrößert",
+  items: [
+    "Die Symbole der oberen Leiste (Benachrichtigungen, Sprache, Thema, Dynamic Island, Brain, Unterstützen, Wetter, Sync, Uhr) waren kleiner als der Rest der Oberfläche — vereinheitlicht und leicht vergrößert für bessere Lesbarkeit.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_29_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_29_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_29_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_29_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

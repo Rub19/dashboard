@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.29.1 — 2026-09-27
+
+**Icônes de la barre du haut agrandies**
+
+- Les icônes de la barre du haut (notifications, langue, thème, Dynamic Island, Brain, Soutenir, météo, sync, horloge) étaient plus petites que le reste de l'interface — harmonisées et légèrement agrandies pour rester lisibles et faciles à viser.
+
 ## v1.29.0 — 2026-09-27
 
 **Correction du bug de la pastille « nouvelle version » permanente**

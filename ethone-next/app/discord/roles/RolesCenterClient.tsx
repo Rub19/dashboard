@@ -27,6 +27,7 @@ import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGui
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import { CardSkeleton } from "@/components/ui/Skeleton";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 
@@ -161,6 +162,7 @@ export default function RolesCenterClient() {
   const [activeTab, setActiveTab] = useState<"panels" | "builder" | "join_roles" | "hierarchy">("panels");
   const [isDemo, setIsDemo] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [panels, setPanels] = useState<RolePanel[]>(DEMO_PANELS);
   const [autoRole, setAutoRole] = useState<AutoRoleConfig>({ enabled: false, roleIds: [], applyToHumans: true, applyToBots: false });
   const [savingAutoRole, setSavingAutoRole] = useState(false);
@@ -188,10 +190,12 @@ export default function RolesCenterClient() {
       setIsDemo(false);
       setPanels([]);
       setAutoRole({ enabled: false, roleIds: [], applyToHumans: true, applyToBots: false });
+      setHasLoadedOnce(true);
       return;
     }
     if (!isRealGuild) {
       setIsDemo(true);
+      setHasLoadedOnce(true);
       return;
     }
     setLoading(true);
@@ -213,6 +217,7 @@ export default function RolesCenterClient() {
       setIsDemo(true);
     } finally {
       setLoading(false);
+      setHasLoadedOnce(true);
     }
   }, [base, isRealGuild, selectedGuild, botGuildIds]);
 
@@ -509,7 +514,12 @@ export default function RolesCenterClient() {
         {/* Panneaux */}
         {activeTab === "panels" && (
           <div className="space-y-6">
-            {panels.length === 0 ? (
+            {!hasLoadedOnce ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <CardSkeleton className="h-40" />
+                <CardSkeleton className="h-40" />
+              </div>
+            ) : panels.length === 0 ? (
               <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-10 text-center text-xs text-neutral-500">Aucun panneau. Crée-en un pour laisser tes membres choisir leurs rôles.</div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

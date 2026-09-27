@@ -44,7 +44,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
-import { cn } from "@/lib/utils";
+import { cn, fetchJson } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import InfractionsPanel from "./InfractionsPanel";
 
@@ -557,20 +557,14 @@ export default function AutoModCommandCenterPage() {
     }
     setIsSaving(true);
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`, {
-        credentials: "include",
+      await fetchJson(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(config),
       });
-
-      if (res.ok) {
-        success("AutoMod mis à jour", "Les configurations des détecteurs et strikes ont été synchronisées.");
-      } else {
-        showError("Erreur", "Le bot a refusé la configuration : rien n'a été enregistré.");
-      }
-    } catch {
-      showError("Bot injoignable", "Rien n'a été enregistré : la protection n'a pas changé.");
+      success("AutoMod mis à jour", "Les configurations des détecteurs et strikes ont été synchronisées.");
+    } catch (e) {
+      showError("Erreur", e instanceof Error ? e.message : "Rien n'a été enregistré : la protection n'a pas changé.");
     } finally {
       setIsSaving(false);
     }
@@ -586,20 +580,14 @@ export default function AutoModCommandCenterPage() {
     setConfig((prev) => ({ ...prev, enabled: nextState }));
     if (selectedGuild && BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`, {
-          credentials: "include",
+        await fetchJson(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ enabled: nextState }),
         });
-        if (!res.ok) {
-          setConfig((prev) => ({ ...prev, enabled: !nextState }));
-          showError("Erreur", "Impossible de synchroniser l'état AutoMod avec le bot.");
-          return;
-        }
-      } catch {
+      } catch (e) {
         setConfig((prev) => ({ ...prev, enabled: !nextState }));
-        showError("Erreur", "Impossible de synchroniser l'état AutoMod avec le bot.");
+        showError("Erreur", e instanceof Error ? e.message : "Impossible de synchroniser l'état AutoMod avec le bot.");
         return;
       }
     }
@@ -612,20 +600,14 @@ export default function AutoModCommandCenterPage() {
     setConfig((prev) => ({ ...prev, smartMode: nextState }));
     if (selectedGuild && BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`, {
-          credentials: "include",
+        await fetchJson(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ smartMode: nextState }),
         });
-        if (!res.ok) {
-          setConfig((prev) => ({ ...prev, smartMode: !nextState }));
-          showError("Erreur", "Impossible de synchroniser le Smart Mode avec le bot.");
-          return;
-        }
-      } catch {
+      } catch (e) {
         setConfig((prev) => ({ ...prev, smartMode: !nextState }));
-        showError("Erreur", "Impossible de synchroniser le Smart Mode avec le bot.");
+        showError("Erreur", e instanceof Error ? e.message : "Impossible de synchroniser le Smart Mode avec le bot.");
         return;
       }
     }

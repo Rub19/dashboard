@@ -23,6 +23,7 @@ import {
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import { formatApiError } from "@/lib/format-error";
+import { useToast } from "@/components/ToastProvider";
 
 interface WizardFormState {
   title: string;
@@ -117,6 +118,7 @@ export default function EventCreateClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
+  const { error: showError } = useToast();
   const templateParam = searchParams.get("template");
   const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
   const isDemo = !BOT_API_URL || !guildParam;
@@ -275,6 +277,7 @@ export default function EventCreateClient() {
     if (isDemo) {
       setIsSubmitting(false);
       setPublishError("Bot injoignable : l'événement n'a pas été publié.");
+      showError("Publication impossible", "Bot injoignable : l'événement n'a pas été publié.");
       return;
     }
     const result = await persistEvent("SCHEDULED");
@@ -282,13 +285,16 @@ export default function EventCreateClient() {
     if (result.ok) {
       router.push("/discord/events");
     } else {
-      setPublishError(formatApiError(result.error, "Échec de la publication. Vérifiez les champs et réessayez."));
+      const message = formatApiError(result.error, "Échec de la publication. Vérifiez les champs et réessayez.");
+      setPublishError(message);
+      showError("Publication impossible", message);
     }
   };
 
   const handleSaveDraft = async () => {
     if (isDemo) {
       setPublishError("Bot injoignable : le brouillon n'a pas été enregistré.");
+      showError("Enregistrement impossible", "Bot injoignable : le brouillon n'a pas été enregistré.");
       return;
     }
     const result = await persistEvent("DRAFT");
@@ -296,7 +302,9 @@ export default function EventCreateClient() {
       setSaveToast(true);
       setTimeout(() => setSaveToast(false), 2000);
     } else {
-      setPublishError(formatApiError(result.error, "Échec de l'enregistrement du brouillon."));
+      const message = formatApiError(result.error, "Échec de l'enregistrement du brouillon.");
+      setPublishError(message);
+      showError("Enregistrement impossible", message);
     }
   };
 

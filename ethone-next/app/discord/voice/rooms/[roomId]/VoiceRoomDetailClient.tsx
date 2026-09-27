@@ -27,6 +27,7 @@ import {
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
+import { confirmDialog } from "@/lib/confirmDialog";
 
 interface RoomUser {
   id: string;
@@ -170,6 +171,9 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
   // Banlist manipulation
   const handleBanlist = async (userId: string, action: "add" | "remove") => {
+    if (action === "add" && !(await confirmDialog(`Bannir « ${userId} » du salon vocal et l'expulser immédiatement s'il est connecté ?`, { tone: "danger" }))) {
+      return;
+    }
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/rooms/${roomId}/banlist`, {
         credentials: "include",

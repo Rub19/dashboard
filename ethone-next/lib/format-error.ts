@@ -54,3 +54,23 @@ export function formatApiError(err: unknown, fallback = "Une erreur est survenue
 
   return fallback;
 }
+
+/**
+ * `fetch` + parsing JSON qui lève une erreur déjà formatée (via `formatApiError`) sur toute réponse non-2xx,
+ * pour éviter le motif répété `if (!res.ok) showError("Erreur", "message générique")` qui jette la raison
+ * réelle renvoyée par le bot (souvent un message de permission ou de validation utile, voir guildAuth.ts côté bot).
+ * Le call site n'a plus qu'à faire `catch (e) { showError("Titre", e instanceof Error ? e.message : "...") }`.
+ */
+export async function fetchJson<T = any>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(url, { credentials: "include", ...init });
+  let data: any = null;
+  try {
+    data = await res.json();
+  } catch {
+    // Réponse vide ou non-JSON : on continue avec data = null, formatApiError retombe sur le statut HTTP.
+  }
+  if (!res.ok) {
+    throw new Error(formatApiError(data?.error ?? data, `Erreur HTTP ${res.status}`));
+  }
+  return data as T;
+}

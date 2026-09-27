@@ -2,8 +2,13 @@
 
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, Search, Star, X } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
+import Badge from "@/components/ui/Badge";
+import Input from "@/components/ui/Input";
+import AnimatedFilterTabs, { type AnimatedFilterTab } from "@/components/ui/AnimatedFilterTabs";
+import { EASE_OUT } from "@/lib/ease";
 
 export interface NavigatorModule {
   id: string;
@@ -32,9 +37,14 @@ interface ModuleNavigatorProps {
   status?: Record<string, boolean>;
   /** Interrupteur du module : appelé avec le nouvel état souhaité. Sans lui, la pastille reste en lecture seule. */
   onToggle?: (id: string, enabled: boolean) => void;
+  /** Modules mis en avant par le filtre rapide « Recommandés ». Onglet masqué si vide/absent. */
+  recommendedIds?: string[];
+  /** IDs de modules dont le toggle est en cours d'envoi au bot (pulse visuel, toggle désactivé). */
+  pendingIds?: Set<string>;
 }
 
 const FAV_KEY = "ethone.discord.favoriteModules";
+type QuickFilter = "all" | "enabled" | "disabled" | "recommended";
 
 /** Minuscules sans accents, pour une recherche tolérante (« moderation » trouve « Modération »). */
 const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -44,9 +54,20 @@ const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCa
  * en haut et accès direct à la page complète de chaque module. Un clic sur une carte ouvre sa configuration
  * rapide ; la flèche ouvre la page complète.
  */
-export default function ModuleNavigator({ modules, categories, activeId, onSelect, status = {}, onToggle }: ModuleNavigatorProps) {
+export default function ModuleNavigator({
+  modules,
+  categories,
+  activeId,
+  onSelect,
+  status = {},
+  onToggle,
+  recommendedIds,
+  pendingIds,
+}: ModuleNavigatorProps) {
   const [query, setQuery] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [filter, setFilter] = useState<QuickFilter>("all");
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     try {
@@ -72,11 +93,34 @@ export default function ModuleNavigator({ modules, categories, activeId, onSelec
 
   const byId = useMemo(() => new Map(modules.map((m) => [m.id, m])), [modules]);
   const q = fold(query.trim());
-  const matches = (m: NavigatorModule) => !q || fold(`${m.title} ${m.description} ${m.id}`).includes(q);
+  const matchesSearch = (m: NavigatorModule) => !q || fold(`${m.title} ${m.description} ${m.id}`).includes(q);
+  const recommendedSet = useMemo(() => new Set(recommendedIds ?? []), [recommendedIds]);
+  const matchesFilter = (m: NavigatorModule) => {
+    if (filter === "enabled") return status[m.id] === true;
+    if (filter === "disabled") return status[m.id] === false;
+    if (filter === "recommended") return recommendedSet.has(m.id);
+    return true;
+  };
+  const visible = (m: NavigatorModule) => matchesSearch(m) && matchesFilter(m);
 
-  const favoriteModules = favorites.map((id) => byId.get(id)).filter((m): m is NavigatorModule => Boolean(m) && matches(m as NavigatorModule));
+  // Compteurs des filtres rapides : calculés après la recherche texte mais avant le filtre actif,
+  // pour que chaque onglet affiche combien de résultats il donnerait si on le sélectionnait.
+  const searchMatched = useMemo(() => modules.filter(matchesSearch), [modules, q]);
+  const filterTabs: AnimatedFilterTab[] = useMemo(() => {
+    const tabs: AnimatedFilterTab[] = [
+      { id: "all", label: "Tous", count: searchMatched.length },
+      { id: "enabled", label: "Activés", count: searchMatched.filter((m) => status[m.id] === true).length },
+      { id: "disabled", label: "Désactivés", count: searchMatched.filter((m) => status[m.id] === false).length },
+    ];
+    if (recommendedSet.size > 0) {
+      tabs.push({ id: "recommended", label: "Recommandés", count: searchMatched.filter((m) => recommendedSet.has(m.id)).length });
+    }
+    return tabs;
+  }, [searchMatched, status, recommendedSet]);
+
+  const favoriteModules = favorites.map((id) => byId.get(id)).filter((m): m is NavigatorModule => Boolean(m) && visible(m as NavigatorModule));
   const sections = categories
-    .map((c) => ({ ...c, items: c.modules.map((id) => byId.get(id)).filter((m): m is NavigatorModule => Boolean(m) && matches(m as NavigatorModule)) }))
+    .map((c) => ({ ...c, items: c.modules.map((id) => byId.get(id)).filter((m): m is NavigatorModule => Boolean(m) && visible(m as NavigatorModule)) }))
     .filter((c) => c.items.length > 0);
   const total = sections.reduce((n, c) => n + c.items.length, 0);
 
@@ -84,8 +128,11 @@ export default function ModuleNavigator({ modules, categories, activeId, onSelec
     const Icon = m.icon;
     const current = m.id === activeId;
     const fav = favorites.includes(m.id);
+    const hasStatus = typeof status[m.id] === "boolean";
+    const isOn = status[m.id] === true;
+    const isPending = pendingIds?.has(m.id) ?? false;
     return (
-      <div
+      <motion.div
         key={m.id}
         role="button"
         tabIndex={0}
@@ -97,50 +144,53 @@ export default function ModuleNavigator({ modules, categories, activeId, onSelec
           }
         }}
         aria-pressed={current}
+        aria-busy={isPending}
+        animate={isPending && !prefersReducedMotion ? { opacity: [1, 0.55, 1] } : { opacity: 1 }}
+        transition={isPending && !prefersReducedMotion ? { duration: 0.9, repeat: Infinity, ease: EASE_OUT } : { duration: 0.15, ease: EASE_OUT }}
         className={cn(
-          "group flex cursor-pointer items-start gap-3 rounded-[var(--inset-radius)] border p-3 text-left transition-all duration-150",
+          "group relative flex cursor-pointer items-start gap-3 overflow-hidden rounded-[var(--inset-radius)] border p-3 text-left transition-colors duration-150",
           current
             ? "border-emerald-500/40 bg-emerald-500/[0.08] shadow-sm"
+            : isOn
+            ? "border-[var(--panel-border)] bg-emerald-500/[0.035] hover:border-[var(--input-border-hover)] hover:bg-emerald-500/[0.06]"
             : "border-[var(--panel-border)] bg-white/[0.02] hover:border-[var(--input-border-hover)] hover:bg-white/[0.04]"
         )}
       >
+        {isOn && <span className="absolute left-0 top-2.5 bottom-2.5 w-0.5 rounded-full bg-emerald-400/80" />}
         <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/5 bg-white/[0.04]", m.tint)}>
           <Icon className="h-5 w-5" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="flex items-center gap-1.5">
+          <span className="flex flex-wrap items-center gap-1.5">
             <span className={cn("block truncate text-xs font-semibold", current ? "text-white" : "text-zinc-200")}>{m.title}</span>
-            {typeof status[m.id] === "boolean" && (
-              <span
-                className={cn(
-                  "shrink-0 rounded-md px-1.5 py-px text-[9px] font-bold tracking-wide",
-                  status[m.id] ? "bg-emerald-500/15 text-emerald-300" : "bg-white/[0.06] text-zinc-500"
-                )}
-              >
-                {status[m.id] ? "ON" : "OFF"}
-              </span>
+            {hasStatus && (
+              <Badge variant={isOn ? "success" : "offline"} dot size="sm" className="shrink-0">
+                {isOn ? "Activé" : "Désactivé"}
+              </Badge>
             )}
           </span>
           <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-zinc-500">{m.description}</span>
         </span>
         <span className="flex shrink-0 flex-col items-center gap-1">
-          {typeof status[m.id] === "boolean" && onToggle && (
+          {hasStatus && onToggle && (
             <button
               type="button"
               role="switch"
-              aria-checked={status[m.id]}
-              aria-label={`${status[m.id] ? "Désactiver" : "Activer"} ${m.title}`}
-              title={status[m.id] ? "Désactiver ce module sur ce serveur" : "Activer ce module sur ce serveur"}
+              aria-checked={isOn}
+              disabled={isPending}
+              aria-label={`${isOn ? "Désactiver" : "Activer"} ${m.title}`}
+              title={isPending ? "Envoi en cours…" : isOn ? "Désactiver ce module sur ce serveur" : "Activer ce module sur ce serveur"}
               onClick={(e) => {
                 e.stopPropagation();
-                onToggle(m.id, !status[m.id]);
+                onToggle(m.id, !isOn);
               }}
               className={cn(
-                "relative h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors",
-                status[m.id] ? "bg-emerald-500" : "bg-white/15"
+                "relative h-5 w-9 shrink-0 rounded-full transition-colors",
+                isPending ? "cursor-wait opacity-60" : "cursor-pointer",
+                isOn ? "bg-emerald-500" : "bg-white/15"
               )}
             >
-              <span className={cn("absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform", status[m.id] ? "translate-x-4" : "translate-x-0")} />
+              <span className={cn("absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform", isOn ? "translate-x-4" : "translate-x-0")} />
             </button>
           )}
           <button
@@ -169,7 +219,7 @@ export default function ModuleNavigator({ modules, categories, activeId, onSelec
             <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>
         </span>
-      </div>
+      </motion.div>
     );
   };
 
@@ -177,33 +227,27 @@ export default function ModuleNavigator({ modules, categories, activeId, onSelec
     <div className="space-y-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-sm">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-          <input
+          <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Rechercher un module (musique, anti-raid, tickets…)"
             aria-label="Rechercher un module"
-            className="h-10 w-full rounded-xl border border-[var(--panel-border)] bg-white/[0.03] pl-9 pr-9 text-xs text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-[var(--accent-primary)]"
+            icon="search"
+            clearable
+            inputSize="compact"
           />
-          {query && (
-            <button
-              type="button"
-              onClick={() => setQuery("")}
-              aria-label="Effacer la recherche"
-              className="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md text-zinc-500 hover:text-white cursor-pointer"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          )}
         </div>
         <p className="text-[11px] text-zinc-500">
           {total} module{total > 1 ? "s" : ""} · clic = configuration rapide · <ArrowUpRight className="inline h-3 w-3 -translate-y-px" /> = page complète · <Star className="inline h-3 w-3 -translate-y-px" /> = favori
         </p>
       </div>
 
+      <AnimatedFilterTabs tabs={filterTabs} activeId={filter} onChange={(id) => setFilter(id as QuickFilter)} />
+
       {total === 0 && favoriteModules.length === 0 && (
         <div className="rounded-[var(--inset-radius)] border border-dashed border-[var(--panel-border)] p-8 text-center text-xs text-zinc-500">
-          Aucun module ne correspond à « {query} ».
+          Aucun module ne correspond{query ? ` à « ${query} »` : ""}
+          {filter !== "all" ? " pour ce filtre" : ""}.
         </div>
       )}
 
@@ -212,17 +256,17 @@ export default function ModuleNavigator({ modules, categories, activeId, onSelec
           <h3 className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-amber-300/90">
             <Star className="h-3.5 w-3.5" fill="currentColor" /> Favoris
           </h3>
-          <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">{favoriteModules.map(card)}</div>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">{favoriteModules.map(card)}</div>
         </section>
       )}
 
       {sections.map((section) => (
         <section key={section.id}>
-          <div className="mb-2 flex items-baseline gap-2">
+          <div className="mb-2 flex items-baseline gap-2 border-b border-[var(--panel-border)]/60 pb-1.5">
             <h3 className="text-[11px] font-bold uppercase tracking-wider text-zinc-300">{section.label}</h3>
             <span className="text-[11px] text-zinc-600">{section.hint}</span>
           </div>
-          <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">{section.items.map(card)}</div>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">{section.items.map(card)}</div>
         </section>
       ))}
     </div>

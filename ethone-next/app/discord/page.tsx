@@ -61,6 +61,7 @@ import {
   Cake,
   Eye,
   LayoutDashboard,
+  X,
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
@@ -69,7 +70,11 @@ import { cn, formatApiError } from "@/lib/utils";
 import { useDiscordOnboarding } from "@/lib/hooks/useDiscordOnboarding";
 import DiscordOnboardingModal from "@/components/discord/onboarding/DiscordOnboardingModal";
 import { Checkbox } from "@/components/ui/Checkbox";
+import Badge from "@/components/ui/Badge";
+import Input from "@/components/ui/Input";
+import StatusIndicator from "@/components/ui/StatusIndicator";
 import GuildLiveStats from "@/components/discord/GuildLiveStats";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 import { ethoneIcon } from "@/components/EthoneIcon";
 import { useModuleStatus } from "@/lib/hooks/useModuleStatus";
 import ModuleNavigator, { type NavigatorCategory, type NavigatorModule } from "@/components/discord/ModuleNavigator";
@@ -154,6 +159,9 @@ const MODULE_CATEGORIES: NavigatorCategory[] = [
   { id: "tools", label: "Outils du quotidien", hint: "Support et automatisations", modules: ["tickets", "commands", "tags", "reminders", "sticky", "afk", "serverstats"] },
   { id: "manage", label: "Gestion & intelligence", hint: "Vue globale, IA et bot", modules: ["overview", "server", "settings", "analytics", "stats", "ai", "bot"] },
 ];
+
+/** Sélection mise en avant par le filtre rapide « Recommandés » du hub (couvre sécurité, accueil, animation, support). */
+const RECOMMENDED_MODULE_IDS = ["security", "welcome", "moderation", "leveling", "tickets", "music"];
 
 const MODULE_ICONS = {
   overview: ethoneIcon("mod-overview"),
@@ -509,10 +517,6 @@ interface GuildSettings {
   antiSpamEnabled: boolean;
   mentionLimit: number;
   emergencyLockdown: boolean;
-  modLogChannel: string;
-  suggestionChannel: string;
-  xpRate: number;
-  xpCooldown: number;
   customCommands: Array<{ name: string; response: string; enabled: boolean }>;
 }
 
@@ -522,10 +526,6 @@ const DEFAULT_SETTINGS: GuildSettings = {
   antiSpamEnabled: true,
   mentionLimit: 5,
   emergencyLockdown: false,
-  modLogChannel: "mod-logs",
-  suggestionChannel: "suggestions",
-  xpRate: 20,
-  xpCooldown: 60,
   customCommands: [
     { name: "regles", response: "Bienvenue sur le serveur ! Merci de respecter les membres et de ne pas spammer.", enabled: true },
     { name: "site", response: "Découvrez notre plateforme sur https://ethone.dev", enabled: true },
@@ -712,12 +712,41 @@ export default function DiscordDashboardPage() {
     } catch {}
   }, [selectedGuild]);
 
+  const RECENT_GUILDS_STORAGE_KEY = "ethone:discord:recent-guild-ids";
+  const [recentGuildIds, setRecentGuildIds] = useState<string[]>([]);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(RECENT_GUILDS_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      if (Array.isArray(parsed)) setRecentGuildIds(parsed.filter((v): v is string => typeof v === "string"));
+    } catch {}
+  }, []);
+  // Accès rapide « Récents » de la sidebar : les 3 derniers serveurs distincts réellement affichés.
+  useEffect(() => {
+    if (!selectedGuild) return;
+    setRecentGuildIds((prev) => {
+      const next = [selectedGuild.id, ...prev.filter((id) => id !== selectedGuild.id)].slice(0, 3);
+      try {
+        localStorage.setItem(RECENT_GUILDS_STORAGE_KEY, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  }, [selectedGuild]);
+  const recentGuilds = useMemo(
+    () => recentGuildIds.map((id) => allGuilds.find((g) => g.id === id)).filter((g): g is DiscordGuild => g != null && g.id !== selectedGuild?.id),
+    [recentGuildIds, allGuilds, selectedGuild?.id]
+  );
+
   // Paramètres réels du serveur sélectionné avec persistance locale par guildId
   const [guildSettings, setGuildSettings] = useState<GuildSettings>(DEFAULT_SETTINGS);
   const [isSaving, setIsSaving] = useState(false);
+  // Salon de notification des sanctions : géré à part de `guildSettings` car sa vérité est côté bot
+  // (sanctionService.getConfig), pas localStorage — évite de laisser croire qu'il est « sauvegardé »
+  // localement alors qu'aucun backend ne le lisait (l'ancien champ texte libre ne faisait jamais rien).
+  const [modLogChannelId, setModLogChannelId] = useState<string | null>(null);
 
-  // Charger les paramètres du serveur sélectionné : préfixe + anti-raid depuis
-  // le bot quand il est joignable, sinon la copie locale. Avant, TOUT venait du
+  // Charger les paramètres du serveur sélectionné : préfixe + anti-raid + salon de notification des
+  // sanctions depuis le bot quand il est joignable, sinon la copie locale. Avant, TOUT venait du
   // localStorage et « Enregistrer » n'envoyait jamais rien au bot.
   useEffect(() => {
     if (!selectedGuild) return;
@@ -728,6 +757,7 @@ export default function DiscordDashboardPage() {
       if (saved) local = { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
     } catch {}
     setGuildSettings(local);
+    setModLogChannelId(null);
     if (!api) return;
     // Si la présence du bot est connue et qu'il n'est pas sur ce serveur, on n'appelle pas l'API
     if (botPresenceKnown && !botGuildIds.has(selectedGuild.id)) return;
@@ -737,7 +767,8 @@ export default function DiscordDashboardPage() {
     Promise.all([
       fetch(`${base}/settings`, { credentials: "include" }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
       fetch(`${base}/anti-raid/config`, { credentials: "include" }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
-    ]).then(([settingsRes, raidRes]) => {
+      fetch(`${base}/moderation/mod-log-channel`, { credentials: "include" }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+    ]).then(([settingsRes, raidRes, modLogRes]) => {
       if (cancelled) return;
       setGuildSettings((prev) => ({
         ...prev,
@@ -755,6 +786,7 @@ export default function DiscordDashboardPage() {
             }
           : {}),
       }));
+      if (modLogRes && typeof modLogRes.modLogChannelId !== "undefined") setModLogChannelId(modLogRes.modLogChannelId);
     });
     return () => {
       cancelled = true;
@@ -825,8 +857,10 @@ export default function DiscordDashboardPage() {
   );
 
   // Sauvegarder : préfixe → PATCH /settings, anti-raid/anti-spam/mentions →
-  // PUT /anti-raid/config. Les champs sans backend (salons de logs, XP…)
-  // restent en copie locale.
+  // PUT /anti-raid/config, salon de notification des sanctions → PUT
+  // /moderation/mod-log-channel. Tous les champs de ce formulaire ont
+  // désormais un backend réel (les 3 champs fantômes qui n'en avaient
+  // aucun — canal de suggestions, taux et cooldown XP — ont été retirés).
   const handleSaveSettings = useCallback(async () => {
     if (!selectedGuild) return;
     setIsSaving(true);
@@ -855,7 +889,7 @@ export default function DiscordDashboardPage() {
         }
       } catch {}
 
-      const [settingsRes, raidRes] = await Promise.all([
+      const [settingsRes, raidRes, modLogRes] = await Promise.all([
         fetch(`${base}/settings`, {
           method: "PATCH", credentials: "include", headers: { "content-type": "application/json" },
           body: JSON.stringify({ prefix: guildSettings.prefix }),
@@ -876,6 +910,10 @@ export default function DiscordDashboardPage() {
             },
           }),
         }),
+        fetch(`${base}/moderation/mod-log-channel`, {
+          method: "PUT", credentials: "include", headers: { "content-type": "application/json" },
+          body: JSON.stringify({ channelId: modLogChannelId }),
+        }),
       ]);
       const failed: string[] = [];
       const formatError = async (res: Response, label: string) => {
@@ -889,10 +927,11 @@ export default function DiscordDashboardPage() {
       };
       if (!settingsRes.ok) failed.push(await formatError(settingsRes, "préfixe"));
       if (!raidRes.ok) failed.push(await formatError(raidRes, "anti-raid"));
+      if (!modLogRes.ok) failed.push(await formatError(modLogRes, "salon de sanctions"));
       if (failed.length > 0) {
         showError("Enregistrement partiel", `Échec : ${failed.join(", ")}.`);
       } else {
-        success("Configuration enregistrée", `Préfixe et protections appliqués sur "${selectedGuild.name}".`);
+        success("Configuration enregistrée", `Préfixe, protections et salon de sanctions appliqués sur "${selectedGuild.name}".`);
       }
     } catch {
       showError("Erreur de sauvegarde", "Le bot n'a pas répondu — réglages gardés localement.");
@@ -958,15 +997,41 @@ export default function DiscordDashboardPage() {
 
   const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
   const { status: moduleStatus, setModuleEnabled } = useModuleStatus(selectedGuild?.id, !botPresenceKnown || Boolean(selectedGuild && botGuildIds.has(selectedGuild.id)));
+  // Modules dont le toggle est en cours d'envoi au bot : pastille de chargement sur la carte le temps de la réponse
+  // (useModuleStatus fait déjà une mise à jour optimiste + rollback, mais n'expose pas cet état intermédiaire).
+  const [pendingModuleIds, setPendingModuleIds] = useState<Set<string>>(new Set());
+  // En dessous de md la sidebar de serveurs (hidden md:flex) disparaît sans équivalent — cette feuille mobile
+  // réutilise les mêmes listes déjà calculées (filteredGuilds/guildsWithBot/guildsWithoutBot) pour permettre
+  // de changer de serveur sur téléphone/tablette, ce qui n'était possible nulle part avant.
+  const [mobileGuildSheetOpen, setMobileGuildSheetOpen] = useState(false);
   const handleModuleToggle = useCallback(
     async (id: string, enabled: boolean) => {
-      const ok = await setModuleEnabled(id, enabled);
-      const title = NAV_MODULES_BASE.find((m) => m.id === id)?.title ?? id;
-      if (ok) success(enabled ? "Module activé" : "Module désactivé", `${title} : ${enabled ? "ses commandes sont de nouveau disponibles." : "ses commandes répondent maintenant « module désactivé »."}`);
-      else showError("Action refusée", `Impossible de modifier « ${title} » (droits ou bot injoignable).`);
+      setPendingModuleIds((prev) => new Set(prev).add(id));
+      try {
+        const ok = await setModuleEnabled(id, enabled);
+        const title = NAV_MODULES_BASE.find((m) => m.id === id)?.title ?? id;
+        if (ok) success(enabled ? "Module activé" : "Module désactivé", `${title} : ${enabled ? "ses commandes sont de nouveau disponibles." : "ses commandes répondent maintenant « module désactivé »."}`);
+        else showError("Action refusée", `Impossible de modifier « ${title} » (droits ou bot injoignable).`);
+      } finally {
+        setPendingModuleIds((prev) => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
+      }
     },
     [setModuleEnabled, success, showError]
   );
+  const activeModuleCount = useMemo(() => Object.values(moduleStatus).filter(Boolean).length, [moduleStatus]);
+  const totalModuleCount = MODULES.length;
+  const botStripState: "connected" | "error" | "idle" = botAuthRequired ? "error" : botPresenceKnown ? "connected" : "idle";
+  const botStripLabel = botAuthRequired
+    ? "Compte bot non lié"
+    : !botPresenceKnown
+    ? "Statut inconnu"
+    : selectedGuild && botGuildIds.has(selectedGuild.id)
+    ? "Bot actif ici"
+    : "Bot absent de ce serveur";
 
   // --- Live Music Center State ---
   const [liveMusicState, setLiveMusicState] = useState<any>({
@@ -1130,6 +1195,78 @@ export default function DiscordDashboardPage() {
         </div>
       </header>
 
+      {/* Sélecteur de serveur mobile : sous md, l'aside (hidden md:flex) n'a aucun équivalent, ce bandeau + sa
+          feuille comblent ce trou pour pouvoir changer de serveur depuis un téléphone ou une tablette. */}
+      {selectedGuild && (
+        <button
+          type="button"
+          onClick={() => setMobileGuildSheetOpen(true)}
+          className="mb-4 flex w-full items-center gap-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5 text-left md:hidden"
+        >
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--panel-border)] bg-zinc-800 text-[10px] font-bold text-white">
+            {selectedGuild.iconUrl ? (
+              <img src={selectedGuild.iconUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              selectedGuild.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-xs font-semibold text-white">{selectedGuild.name}</p>
+            <p className="text-[10px] text-zinc-500">{filteredGuilds.length} serveur{filteredGuilds.length > 1 ? "s" : ""} · toucher pour changer</p>
+          </div>
+          <ChevronRight className="h-4 w-4 shrink-0 text-zinc-500" />
+        </button>
+      )}
+
+      {mobileGuildSheetOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/60 md:hidden" onClick={() => setMobileGuildSheetOpen(false)}>
+          <div
+            className="max-h-[75vh] overflow-hidden rounded-t-[var(--panel-radius)] border-t border-[var(--panel-border)] bg-[var(--bg-main)] p-4 flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-3 flex shrink-0 items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300">Changer de serveur</h3>
+              <button type="button" onClick={() => setMobileGuildSheetOpen(false)} className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-white/10 hover:text-white" aria-label="Fermer">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="flex-1 space-y-1.5 overflow-y-auto pr-1">
+              {[...guildsWithBot, ...guildsWithoutBot].map((guild) => {
+                const isSelected = selectedGuild?.id === guild.id;
+                const hasBot = botGuildIds.has(guild.id);
+                const initials = guild.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
+                return (
+                  <button
+                    key={guild.id}
+                    type="button"
+                    onClick={() => {
+                      userSelectedRef.current = true;
+                      setSelectedGuild(guild);
+                      setMobileGuildSheetOpen(false);
+                    }}
+                    className={cn(
+                      "flex w-full items-center gap-2.5 rounded-[var(--inset-radius)] border p-2.5 text-left",
+                      isSelected
+                        ? "border-emerald-500/40 bg-emerald-500/10"
+                        : "border-[var(--panel-border)] bg-white/[0.02] hover:bg-white/[0.05]"
+                    )}
+                  >
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--panel-border)] bg-zinc-800 text-[10px] font-bold text-white">
+                      {guild.iconUrl ? <img src={guild.iconUrl} alt="" className="h-full w-full object-cover" /> : initials}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-semibold text-white">{guild.name}</p>
+                      <p className="text-[10px] text-zinc-500">{hasBot ? "Bot actif" : "Bot non installé"}</p>
+                    </div>
+                    {isSelected && <Check className="h-4 w-4 shrink-0 text-emerald-400" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Split View with GPU-isolated smooth independent scrolling */}
       <div className="flex min-h-0 w-full flex-1 gap-5 overflow-hidden">
         
@@ -1185,16 +1322,48 @@ export default function DiscordDashboardPage() {
           </div>
 
           {/* Search server */}
-          <div className="relative mb-3 shrink-0">
-            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
-            <input
+          <div className="mb-3 shrink-0">
+            <Input
               type="text"
               placeholder="Rechercher un serveur..."
+              aria-label="Rechercher un serveur"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] pl-8 pr-3 text-xs text-white placeholder-zinc-500 outline-none transition-colors focus:border-emerald-500/50"
+              icon="search"
+              clearable
+              inputSize="compact"
             />
           </div>
+
+          {/* Accès rapide aux serveurs récemment consultés, en plus du serveur actuellement affiché ci-dessous */}
+          {recentGuilds.length > 0 && !searchQuery && (
+            <div className="mb-3 shrink-0">
+              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500">Récents</p>
+              <div className="flex flex-wrap gap-1.5">
+                {recentGuilds.map((g) => (
+                  <button
+                    key={g.id}
+                    type="button"
+                    onClick={() => {
+                      userSelectedRef.current = true;
+                      setSelectedGuild(g);
+                    }}
+                    title={g.name}
+                    className="flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-white/[0.03] py-1 pl-1 pr-2.5 text-[11px] text-zinc-300 transition-colors hover:border-[var(--input-border-hover)] hover:bg-white/[0.06] hover:text-white cursor-pointer"
+                  >
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-md bg-zinc-800 text-[9px] font-bold text-white">
+                      {g.iconUrl ? (
+                        <img src={g.iconUrl} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        g.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
+                      )}
+                    </span>
+                    <span className="max-w-[7rem] truncate">{g.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Guilds List Scrollable */}
           <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
@@ -1276,7 +1445,7 @@ export default function DiscordDashboardPage() {
                           : "border-[var(--panel-border)] bg-white/[0.03] hover:border-[var(--input-border-hover)] hover:bg-white/[0.05]"
                       )}
                     >
-                      {isSelected && <span className={cn("absolute left-0 top-2 bottom-2 w-0.5 rounded-full", hasBot ? "bg-emerald-400" : "bg-[#5865F2]")} />}
+                      {isSelected && <span className={cn("absolute left-0 top-1.5 bottom-1.5 w-1 rounded-full", hasBot ? "bg-emerald-400" : "bg-[#5865F2]")} />}
                       <button
                         onClick={() => {
                           userSelectedRef.current = true;
@@ -1306,8 +1475,11 @@ export default function DiscordDashboardPage() {
                         </div>
 
                         <div className="min-w-0 flex-1">
-                          <p className={cn("truncate text-xs font-semibold", botAbsent ? "text-zinc-400" : "text-white")}>
-                            {guild.name}
+                          <p className={cn("flex items-center gap-1 truncate text-xs font-semibold", botAbsent ? "text-zinc-400" : "text-white")}>
+                            <span className="truncate">{guild.name}</span>
+                            {isSelected && (
+                              <Check className={cn("h-3 w-3 shrink-0", hasBot ? "text-emerald-400" : "text-[#8791ff]")} aria-label="Serveur sélectionné" />
+                            )}
                           </p>
                           <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                             {isOwner ? (
@@ -1654,8 +1826,32 @@ export default function DiscordDashboardPage() {
                 )}
               </div>
 
+              {/* Résumé rapide : modules actifs, serveur affiché, statut du bot */}
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] px-4 py-3 text-xs">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-mono text-sm font-bold text-white">{activeModuleCount}</span>
+                  <span className="text-zinc-500">/ {totalModuleCount} modules activés</span>
+                </div>
+                <div className="hidden h-4 w-px bg-[var(--panel-border)] sm:block" />
+                <div className="flex min-w-0 items-center gap-1.5 text-zinc-400">
+                  <Server className="h-3.5 w-3.5 shrink-0 text-zinc-500" />
+                  <span className="truncate font-medium text-zinc-200">{selectedGuild?.name ?? "Aucun serveur"}</span>
+                </div>
+                <div className="hidden h-4 w-px bg-[var(--panel-border)] sm:block" />
+                <StatusIndicator state={botStripState} label={botStripLabel} pulse />
+              </div>
+
               {/* Navigation des modules : catégories, recherche, favoris */}
-              <ModuleNavigator modules={navModules} categories={MODULE_CATEGORIES} activeId={activeModule} onSelect={handleSelectModule} status={moduleStatus} onToggle={handleModuleToggle} />
+              <ModuleNavigator
+                modules={navModules}
+                categories={MODULE_CATEGORIES}
+                activeId={activeModule}
+                onSelect={handleSelectModule}
+                status={moduleStatus}
+                onToggle={handleModuleToggle}
+                recommendedIds={RECOMMENDED_MODULE_IDS}
+                pendingIds={pendingModuleIds}
+              />
 
               {/* Functional Module Settings Panel */}
               <div id="module-panel" className="scroll-mt-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-5 sm:p-6 backdrop-blur-xl">
@@ -2364,18 +2560,15 @@ export default function DiscordDashboardPage() {
 
                     <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
                       <p className="font-bold text-white">Salon de notification des sanctions</p>
-                      <div className="relative">
-                        <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
-                        <input
-                          type="text"
-                          value={guildSettings.modLogChannel}
-                          onChange={(e) => setGuildSettings((p) => ({ ...p, modLogChannel: e.target.value }))}
-                          placeholder="mod-logs"
-                          className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 pl-9 pr-3 text-xs text-white outline-none focus:border-orange-500"
-                        />
-                      </div>
+                      <ChannelPicker
+                        value={modLogChannelId}
+                        onChange={(id) => setModLogChannelId(id || null)}
+                        guildId={selectedGuild.id}
+                        emptyLabel="Détection automatique (salon « mod-logs », « logs » ou « audit »)"
+                        allowClear
+                      />
                       <p className="text-[11px] text-zinc-400">
-                        Toutes les sanctions appliquées (<code className="text-orange-300">/warn</code>, <code className="text-orange-300">/mute</code>, <code className="text-orange-300">/kick</code>, <code className="text-orange-300">/ban</code>) y seront journalisées.
+                        Toutes les sanctions appliquées (<code className="text-orange-300">/warn</code>, <code className="text-orange-300">/mute</code>, <code className="text-orange-300">/kick</code>, <code className="text-orange-300">/ban</code>) y seront journalisées. Sans sélection, le bot cherche automatiquement un salon nommé « mod-logs », « logs » ou « audit ».
                       </p>
                     </div>
                   </div>

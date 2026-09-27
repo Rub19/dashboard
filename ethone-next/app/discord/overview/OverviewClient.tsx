@@ -24,6 +24,7 @@ import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGui
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useGuildOverview } from "@/lib/hooks/useGuildOverview";
 import { GuildSelector } from "@/components/GuildSelector";
+import { CardSkeleton } from "@/components/ui/Skeleton";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -79,10 +80,6 @@ function OverviewCard({
       {children}
     </Link>
   );
-}
-
-function CardSkeleton() {
-  return <div className="h-16 animate-pulse rounded-[var(--inset-radius)] bg-white/[0.03]" />;
 }
 
 function CardError({ message = "Indisponible pour le moment." }: { message?: string }) {

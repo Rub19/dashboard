@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.129 — 2026-09-27
+
+**Amélioration ergonomique du hub Discord et corrections de fiabilité**
+
+- Panneau Bot Discord : état activé/désactivé des modules bien plus visible sur chaque carte, filtres rapides Tous/Activés/Désactivés/Recommandés, résumé en haut de page (modules actifs, serveur affiché, statut du bot), grille mieux répartie sur grand écran.
+- Serveur récemment consulté mis en avant dans la barre latérale, avec un accès rapide aux 3 derniers serveurs choisis.
+- Sélection de serveur possible sur mobile/tablette : la liste des serveurs n'était accessible que sur grand écran auparavant.
+- Le champ « Salon de notification des sanctions » enregistre maintenant réellement sa valeur sur le bot (il ne faisait rien auparavant) ; 3 champs qui n'avaient aucun effet (canal de suggestions, taux et cooldown XP) ont été retirés du formulaire.
+- Ajout d'une confirmation avant de bannir un membre d'un salon vocal, comme pour les autres actions destructrices.
+- Messages d'erreur plus précis (raison réelle du bot au lieu d'un message générique) sur la page AutoMod et sur les pages Événements.
+- Page Événements : les actions ratées (présence, promotion, retrait, annulation) affichent maintenant un message d'erreur au lieu d'échouer silencieusement.
+
 ## v1.28.128 — 2026-09-27
 
 **Correction : changement de serveur intempestif sur le panneau Discord**

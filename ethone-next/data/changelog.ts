@@ -37160,6 +37160,71 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_128_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_128_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_128_de);
 
+const v1_28_129_fr: ChangelogEntry = {
+  version: "v1.28.129",
+  date: "2026-09-27",
+  title: "Amélioration ergonomique du hub Discord et corrections de fiabilité",
+  items: [
+    "Panneau Bot Discord : état activé/désactivé des modules bien plus visible sur chaque carte, filtres rapides Tous/Activés/Désactivés/Recommandés, résumé en haut de page (modules actifs, serveur affiché, statut du bot), grille mieux répartie sur grand écran.",
+    "Serveur récemment consulté mis en avant dans la barre latérale, avec un accès rapide aux 3 derniers serveurs choisis.",
+    "Sélection de serveur possible sur mobile/tablette : la liste des serveurs n'était accessible que sur grand écran auparavant.",
+    "Le champ « Salon de notification des sanctions » enregistre maintenant réellement sa valeur sur le bot (il ne faisait rien auparavant) ; 3 champs qui n'avaient aucun effet (canal de suggestions, taux et cooldown XP) ont été retirés du formulaire.",
+    "Ajout d'une confirmation avant de bannir un membre d'un salon vocal, comme pour les autres actions destructrices.",
+    "Messages d'erreur plus précis (raison réelle du bot au lieu d'un message générique) sur la page AutoMod et sur les pages Événements.",
+    "Page Événements : les actions ratées (présence, promotion, retrait, annulation) affichent maintenant un message d'erreur au lieu d'échouer silencieusement.",
+  ],
+};
+
+const v1_28_129_en: ChangelogEntry = {
+  version: "v1.28.129",
+  date: "2026-09-27",
+  title: "Discord hub usability pass and reliability fixes",
+  items: [
+    "Bot Discord panel: module on/off state is far more visible on each card, quick filters (All/Enabled/Disabled/Recommended), a summary strip at the top (active modules, current server, bot status), and a better-filled grid on wide screens.",
+    "Recently viewed servers now show as quick-access chips in the sidebar.",
+    "Server switching now works on mobile/tablet — the server list used to be desktop-only.",
+    "The \"sanction notification channel\" field now actually saves to the bot (it silently did nothing before); 3 fields that had no effect at all (suggestion channel, XP rate/cooldown) were removed from the form.",
+    "Added a confirmation before banning a member from a voice room, matching every other destructive action.",
+    "More accurate error messages (the bot's real reason instead of a generic one) on the AutoMod page and the Events pages.",
+    "Events page: failed actions (check-in, promote, remove, cancel) now show an error message instead of failing silently.",
+  ],
+};
+
+const v1_28_129_es: ChangelogEntry = {
+  version: "v1.28.129",
+  date: "2026-09-27",
+  title: "Mejoras de usabilidad en el panel de Discord y correcciones de fiabilidad",
+  items: [
+    "Panel del bot de Discord: el estado activado/desactivado de cada módulo es mucho más visible, filtros rápidos Todos/Activados/Desactivados/Recomendados, resumen en la parte superior (módulos activos, servidor actual, estado del bot) y una cuadrícula mejor aprovechada en pantallas anchas.",
+    "Los servidores consultados recientemente aparecen como accesos rápidos en la barra lateral.",
+    "Ahora se puede cambiar de servidor desde móvil/tablet — antes la lista de servidores solo era accesible en escritorio.",
+    "El campo «canal de notificación de sanciones» ahora se guarda realmente en el bot (antes no hacía nada); se eliminaron del formulario 3 campos sin ningún efecto (canal de sugerencias, tasa y cooldown de XP).",
+    "Se añadió una confirmación antes de banear a un miembro de una sala de voz, igual que el resto de acciones destructivas.",
+    "Mensajes de error más precisos (la razón real del bot en vez de un mensaje genérico) en la página de AutoMod y en las páginas de Eventos.",
+    "Página de Eventos: las acciones fallidas (asistencia, promoción, retiro, cancelación) ahora muestran un mensaje de error en vez de fallar en silencio.",
+  ],
+};
+
+const v1_28_129_de: ChangelogEntry = {
+  version: "v1.28.129",
+  date: "2026-09-27",
+  title: "Bedienbarkeits-Update für das Discord-Hub und Zuverlässigkeits-Fixes",
+  items: [
+    "Discord-Bot-Panel: Der Ein/Aus-Status jedes Moduls ist jetzt deutlich sichtbarer, Schnellfilter Alle/Aktiviert/Deaktiviert/Empfohlen, eine Übersichtsleiste oben (aktive Module, aktueller Server, Bot-Status) und ein besser gefülltes Raster auf breiten Bildschirmen.",
+    "Zuletzt angesehene Server werden jetzt als Schnellzugriff in der Seitenleiste angezeigt.",
+    "Serverwechsel funktioniert jetzt auch auf Mobilgeräten/Tablets — die Serverliste war zuvor nur auf dem Desktop erreichbar.",
+    "Das Feld „Sanktions-Benachrichtigungskanal“ speichert seinen Wert jetzt tatsächlich am Bot (vorher passierte nichts); 3 wirkungslose Felder (Vorschlagskanal, XP-Rate/Cooldown) wurden aus dem Formular entfernt.",
+    "Vor dem Bannen eines Mitglieds aus einem Sprachraum wird jetzt eine Bestätigung verlangt, wie bei allen anderen destruktiven Aktionen.",
+    "Genauere Fehlermeldungen (die tatsächliche Ursache vom Bot statt einer generischen Meldung) auf der AutoMod-Seite und den Event-Seiten.",
+    "Event-Seite: Fehlgeschlagene Aktionen (Check-in, Befördern, Entfernen, Absagen) zeigen jetzt eine Fehlermeldung statt stillschweigend zu scheitern.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_129_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_129_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_129_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_129_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

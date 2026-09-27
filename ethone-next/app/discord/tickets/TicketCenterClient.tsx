@@ -36,6 +36,7 @@ import { cn, formatApiError } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
+import { CardSkeleton } from "@/components/ui/Skeleton";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -814,6 +815,13 @@ export function TicketCenterClient() {
       )}
 
       {/* KPI Header Cards */}
+      {loading && !overview ? (
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-6">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <CardSkeleton key={i} />
+          ))}
+        </div>
+      ) : (
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-6">
         <div className="rounded-2xl border border-emerald-500/20 bg-white/[0.02] p-4 shadow-sm">
           <div className="flex items-center justify-between text-zinc-400 text-xs">
@@ -860,6 +868,7 @@ export function TicketCenterClient() {
           <p className="text-[10px] text-teal-300/80 mt-1">Satisfaction membre élevée</p>
         </div>
       </div>
+      )}
 
       {/* Tabs Bar */}
       <div className="flex items-center gap-1.5 overflow-x-auto border-b border-[var(--panel-border)] pb-2 mt-8 text-xs scrollbar-none">

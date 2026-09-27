@@ -16,6 +16,8 @@ import {
 } from "@/components/icons/ph";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import { useToast } from "@/components/ToastProvider";
+import { fetchJson, formatApiError } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -53,6 +55,7 @@ interface Participant {
 export default function EventParticipantsClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
+  const { success, error: showError } = useToast();
   const eventId = usePathSegment("events");
   const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
 
@@ -108,6 +111,7 @@ export default function EventParticipantsClient() {
   // Toggle Attendance — the bot only has a check-in action (no un-check-in),
   // so switching back to "registered" stays local.
   const handleToggleAttendance = async (userId: string) => {
+    const snapshot = participants;
     const target = participants.find((p) => p.userId === userId);
     const willAttend = target?.attendance !== "ATTENDED";
     setParticipants((prev) =>
@@ -119,42 +123,54 @@ export default function EventParticipantsClient() {
     );
     if (isDemo || !BOT_API_URL || !willAttend) return;
     try {
-      await fetch(`${base}/participants/${userId}/checkin`, {
+      await fetchJson(`${base}/participants/${userId}/checkin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ attendance: "ATTENDED", username: target?.username, method: "MANUAL_STAFF" }),
       });
-    } catch {}
+      success("Présence enregistrée", `${target?.displayName || target?.username || "Le membre"} est marqué présent.`);
+    } catch (e) {
+      setParticipants(snapshot);
+      showError("Présence non enregistrée", e instanceof Error ? e.message : "Le bot n'a pas répondu.");
+    }
   };
 
   // Promote from waitlist -> re-RSVP as GOING
   const handlePromote = async (userId: string) => {
+    const snapshot = participants;
     const target = participants.find((p) => p.userId === userId);
     setParticipants((prev) =>
       prev.map((p) => (p.userId === userId ? { ...p, rsvp: "GOING", waitlistPosition: undefined } : p))
     );
     if (isDemo || !BOT_API_URL) return;
     try {
-      await fetch(`${base}/participants/rsvp`, {
+      await fetchJson(`${base}/participants/rsvp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ userId, username: target?.username || "Membre", displayName: target?.displayName, status: "GOING" }),
       });
-    } catch {}
+      success("Membre promu", `${target?.displayName || target?.username || "Le membre"} passe de la liste d'attente aux inscrits.`);
+    } catch (e) {
+      setParticipants(snapshot);
+      showError("Promotion échouée", e instanceof Error ? e.message : "Le bot n'a pas répondu.");
+    }
   };
 
   // Delete participant
   const handleRemove = async (userId: string) => {
     const snapshot = participants;
+    const target = participants.find((p) => p.userId === userId);
     setParticipants((prev) => prev.filter((p) => p.userId !== userId));
     if (isDemo || !BOT_API_URL) return;
     try {
       const res = await fetch(`${base}/participants/${userId}`, { method: "DELETE", credentials: "include" });
-      if (!res.ok) setParticipants(snapshot);
-    } catch {
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
+      }
+    } catch (e) {
       setParticipants(snapshot);
+      showError("Retrait impossible", e instanceof Error ? e.message : "Le bot n'a pas répondu.");
     }
   };
 

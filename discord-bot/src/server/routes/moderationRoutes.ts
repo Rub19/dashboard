@@ -13,6 +13,15 @@ import { logger } from '../../utils/logger.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
+/**
+ * Erreur interne (500) : le message réel (souvent une trace DB/driver) part dans les logs serveur,
+ * jamais dans la réponse HTTP — évite qu'un client ne voie autre chose qu'un message sûr et stable.
+ */
+function handleRouteError(err: unknown, res: Response, safeMessage: string): void {
+  logger.error(safeMessage, err);
+  res.status(500).json({ error: safeMessage });
+}
+
 export function createModerationRouter(discordClient: Client) {
   ModerationService.initialize(discordClient);
   const router = express.Router({ mergeParams: true });
@@ -25,7 +34,7 @@ export function createModerationRouter(discordClient: Client) {
       const recentCases = ModerationService.getCases(guildId, { limit: 10 });
       res.json({ success: true, stats, recentCases: recentCases.cases });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération statistiques modération' });
+      handleRouteError(err, res, 'Erreur récupération statistiques modération');
     }
   });
 
@@ -37,7 +46,7 @@ export function createModerationRouter(discordClient: Client) {
       const results = await ModerationService.searchMembers(guildId, q);
       res.json({ success: true, results });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur recherche membres' });
+      handleRouteError(err, res, 'Erreur recherche membres');
     }
   });
 
@@ -66,7 +75,7 @@ export function createModerationRouter(discordClient: Client) {
       });
       res.json({ success: true, ...result });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération des cases' });
+      handleRouteError(err, res, 'Erreur récupération des cases');
     }
   });
 
@@ -99,7 +108,7 @@ export function createModerationRouter(discordClient: Client) {
         relatedCases: userCases.cases.filter((c) => c.caseNumber !== caseNumber),
       });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération détail case' });
+      handleRouteError(err, res, 'Erreur récupération détail case');
     }
   });
 
@@ -149,7 +158,7 @@ export function createModerationRouter(discordClient: Client) {
 
         res.json({ success: true, case: result.case });
       } catch (err: any) {
-        res.status(500).json({ error: err.message || 'Erreur exécution de la sanction' });
+        handleRouteError(err, res, 'Erreur exécution de la sanction');
       }
     }
   );
@@ -188,7 +197,7 @@ export function createModerationRouter(discordClient: Client) {
 
       res.json({ success: true, case: result.case });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur révocation case' });
+      handleRouteError(err, res, 'Erreur révocation case');
     }
   });
 
@@ -201,7 +210,7 @@ export function createModerationRouter(discordClient: Client) {
       const profile = await ModerationService.getUserProfile(guildId, userId);
       res.json({ success: true, profile });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération fiche profil' });
+      handleRouteError(err, res, 'Erreur récupération fiche profil');
     }
   });
 
@@ -214,7 +223,7 @@ export function createModerationRouter(discordClient: Client) {
       const timeline = ModerationService.getUserTimeline(guildId, userId);
       res.json({ success: true, timeline });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération timeline' });
+      handleRouteError(err, res, 'Erreur récupération timeline');
     }
   });
 
@@ -227,7 +236,7 @@ export function createModerationRouter(discordClient: Client) {
       const analytics = ModerationService.getPeriodTrends(guildId, days);
       res.json({ success: true, analytics });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération analytics' });
+      handleRouteError(err, res, 'Erreur récupération analytics');
     }
   });
 
@@ -238,7 +247,7 @@ export function createModerationRouter(discordClient: Client) {
       const performance = ModerationService.getStaffPerformance(guildId);
       res.json({ success: true, performance });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur performance staff' });
+      handleRouteError(err, res, 'Erreur performance staff');
     }
   });
 
@@ -262,7 +271,7 @@ export function createModerationRouter(discordClient: Client) {
       }));
       res.json({ success: true, bans });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération des bans' });
+      handleRouteError(err, res, 'Erreur récupération des bans');
     }
   });
 
@@ -296,7 +305,7 @@ export function createModerationRouter(discordClient: Client) {
 
       res.json({ success: true, case: result.case });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur débannissement' });
+      handleRouteError(err, res, 'Erreur débannissement');
     }
   });
 
@@ -326,7 +335,7 @@ export function createModerationRouter(discordClient: Client) {
       });
       res.json({ success: true, evidence });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur ajout preuve' });
+      handleRouteError(err, res, 'Erreur ajout preuve');
     }
   });
 
@@ -345,7 +354,7 @@ export function createModerationRouter(discordClient: Client) {
       const ok = ModerationService.deleteEvidence(modCase.id, evidenceId);
       res.json({ success: ok });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur suppression preuve' });
+      handleRouteError(err, res, 'Erreur suppression preuve');
     }
   });
 
@@ -380,7 +389,7 @@ export function createModerationRouter(discordClient: Client) {
       });
       res.json({ success: true, note });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur ajout note' });
+      handleRouteError(err, res, 'Erreur ajout note');
     }
   });
 
@@ -391,7 +400,7 @@ export function createModerationRouter(discordClient: Client) {
       const settings = ModerationService.getSettings(guildId);
       res.json({ success: true, settings });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération configuration' });
+      handleRouteError(err, res, 'Erreur récupération configuration');
     }
   });
 
@@ -402,8 +411,25 @@ export function createModerationRouter(discordClient: Client) {
       emitConfigUpdated('moderation', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, settings: updated });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur mise à jour configuration' });
+      handleRouteError(err, res, 'Erreur mise à jour configuration');
     }
+  });
+
+  // 12 ter. SALON DE NOTIFICATION DES SANCTIONS (utilisé par ModLogger, absent des routes existantes)
+  router.get('/mod-log-channel', (req: Request, res: Response): void => {
+    res.json({ success: true, modLogChannelId: sanctionService.getConfig(String(req.params.guildId)).modLogChannelId });
+  });
+
+  router.put('/mod-log-channel', rateLimit('CONFIG', { byGuild: true, actionName: 'moderation_mod_log_channel' }), (req: Request, res: Response): void => {
+    const guildId = String(req.params.guildId);
+    const { channelId } = req.body ?? {};
+    if (channelId !== null && typeof channelId !== 'string') {
+      res.status(400).json({ error: 'channelId doit être une chaîne ou null' });
+      return;
+    }
+    const updated = sanctionService.updateConfig(guildId, { modLogChannelId: channelId });
+    emitConfigUpdated('moderation', guildId, updated, 'DASHBOARD', req.user?.id);
+    res.json({ success: true, modLogChannelId: updated.modLogChannelId });
   });
 
   // 12 bis. ESCALADE DES AVERTISSEMENTS (sanction automatique après N avertissements)
@@ -431,7 +457,7 @@ export function createModerationRouter(discordClient: Client) {
       const logs = ModerationService.getAuditLogs(guildId, limit);
       res.json({ success: true, logs });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur audit logs' });
+      handleRouteError(err, res, 'Erreur audit logs');
     }
   });
 
@@ -500,7 +526,7 @@ export function createModerationRouter(discordClient: Client) {
       const reports = ModerationService.getReports(guildId, { status, reportedUserId, assignedId });
       res.json({ success: true, reports });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération signalements' });
+      handleRouteError(err, res, 'Erreur récupération signalements');
     }
   });
 

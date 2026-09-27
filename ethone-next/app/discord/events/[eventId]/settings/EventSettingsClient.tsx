@@ -16,6 +16,8 @@ import {
 } from "@/components/icons/ph";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import { useToast } from "@/components/ToastProvider";
+import { fetchJson } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -33,6 +35,7 @@ export default function EventSettingsClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
+  const { success, error: showError } = useToast();
   const eventId = usePathSegment("events");
   const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
   const base = `${BOT_API_URL}/api/guilds/${guildParam}/events/${eventId}`;
@@ -91,12 +94,12 @@ export default function EventSettingsClient() {
     setSaveError("");
     if (isDemo) {
       setSaveError("Bot injoignable : rien n'a été enregistré.");
+      showError("Enregistrement impossible", "Bot injoignable : rien n'a été enregistré.");
       return;
     }
     try {
-      const res = await fetch(base, {
+      await fetchJson(base, {
         method: "PUT",
-        credentials: "include",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           title,
@@ -107,11 +110,13 @@ export default function EventSettingsClient() {
           capacity: { ...rawCapacity, maxParticipants: maxCapacity, waitlistEnabled },
         }),
       });
-      if (!res.ok) throw new Error("save failed");
       setSavedToast(true);
       setTimeout(() => setSavedToast(false), 2000);
-    } catch {
-      setSaveError("Échec de l'enregistrement. Réessayez.");
+      success("Modifications enregistrées", `« ${title} » a été mis à jour.`);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Échec de l'enregistrement. Réessayez.";
+      setSaveError(message);
+      showError("Enregistrement impossible", message);
     }
   };
 
@@ -119,20 +124,23 @@ export default function EventSettingsClient() {
     setShowCancelModal(false);
     if (isDemo) {
       setSaveError("Bot injoignable : l'événement n'a pas été annulé.");
+      showError("Annulation impossible", "Bot injoignable : l'événement n'a pas été annulé.");
       return;
     }
-    if (!isDemo) {
-      try {
-        await fetch(base, {
-          method: "DELETE",
-          credentials: "include",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ reason: "Annulé depuis le Dashboard" }),
-        });
-      } catch {
-        // Navigate away regardless — the event list will show the real state on reload.
-      }
+    try {
+      await fetchJson(base, {
+        method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ reason: "Annulé depuis le Dashboard" }),
+      });
+    } catch (e) {
+      // Échec réel de l'annulation : on reste sur la page au lieu de naviguer comme si elle avait réussi.
+      const message = e instanceof Error ? e.message : "L'événement n'a pas pu être annulé.";
+      setSaveError(message);
+      showError("Annulation impossible", message);
+      return;
     }
+    success("Événement annulé", `« ${title} » a été annulé.`);
     router.push("/discord/events");
   };
 

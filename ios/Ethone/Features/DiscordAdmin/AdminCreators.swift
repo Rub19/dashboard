@@ -48,6 +48,7 @@ enum AdminCreators {
         case "invites": [inviteReward]
         case "giveaways": [giveaway]
         case "backups": [backup]
+        case "server": [channel, role]
         default: []
         }
     }
@@ -193,6 +194,37 @@ enum AdminCreators {
             if !c.text("roleId").isEmpty { body["roleId"] = .string(c.text("roleId")); body["roleName"] = .string(c.roleName(c.text("roleId"))) }
             if !c.text("message").isEmpty { body["message"] = .string(c.text("message")) }
             return body
+        }
+    )
+
+    static let channel = CreateSpec(
+        title: "Nouveau salon", path: "/channels",
+        fields: [
+            .init(key: "name", label: "Nom du salon", hint: "Sans espaces : Discord les remplace par des tirets."),
+            .init(key: "type", label: "Type", kind: .choice([("0", "Textuel"), ("2", "Vocal"), ("4", "Catégorie"), ("5", "Annonces"), ("13", "Scène"), ("15", "Forum")]), initial: "0"),
+            .init(key: "topic", label: "Sujet (facultatif)", required: false),
+            .init(key: "isPrivate", label: "Salon privé (invisible pour @everyone)", kind: .toggle, required: false, initial: "false"),
+            .init(key: "nsfw", label: "Contenu sensible (NSFW)", kind: .toggle, required: false, initial: "false"),
+        ],
+        build: { c in
+            [
+                "name": .string(c.text("name").lowercased().replacingOccurrences(of: " ", with: "-")),
+                "type": .number(c.number("type")), "topic": .string(c.text("topic")),
+                "isPrivate": .bool(c.flag("isPrivate")), "nsfw": .bool(c.flag("nsfw")),
+            ]
+        }
+    )
+
+    static let role = CreateSpec(
+        title: "Nouveau rôle", path: "/roles",
+        fields: [
+            .init(key: "name", label: "Nom du rôle"),
+            .init(key: "color", label: "Couleur", kind: .choice([("#99AAB5", "Gris"), ("#EF4444", "Rouge"), ("#F59E0B", "Ambre"), ("#10B981", "Vert"), ("#3B82F6", "Bleu"), ("#8B5CF6", "Violet"), ("#EC4899", "Rose")]), initial: "#99AAB5"),
+            .init(key: "hoist", label: "Afficher séparément dans la liste des membres", kind: .toggle, required: false, initial: "false"),
+            .init(key: "mentionable", label: "Mentionnable par tous", kind: .toggle, required: false, initial: "false"),
+        ],
+        build: { c in
+            ["name": .string(c.text("name")), "color": .string(c.text("color")), "hoist": .bool(c.flag("hoist")), "mentionable": .bool(c.flag("mentionable"))]
         }
     )
 

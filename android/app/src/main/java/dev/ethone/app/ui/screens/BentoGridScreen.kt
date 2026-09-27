@@ -7,21 +7,37 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import dev.ethone.app.data.SupabaseClient
 import dev.ethone.app.service.BiometricPromptManager
 import dev.ethone.app.ui.components.BottomTab
 import dev.ethone.app.ui.components.NativeFloatingDock
+import kotlinx.coroutines.delay
 
 @Composable
 fun BentoGridScreen(
-    supabaseClient: SupabaseClient = remember { SupabaseClient() }
+    supabaseClient: SupabaseClient = LocalContext.current.applicationContext.let { context -> remember { SupabaseClient(context) } }
 ) {
+    if (!supabaseClient.isSignedIn) {
+        LoginScreen(client = supabaseClient)
+        return
+    }
+
+    // Recharge les notes et tâches à l'ouverture puis toutes les minutes (le site peut les avoir modifiées entre-temps).
+    LaunchedEffect(supabaseClient.accessToken) {
+        while (true) {
+            supabaseClient.refreshAll()
+            delay(60_000)
+        }
+    }
+
     var selectedTab by remember { mutableStateOf(BottomTab.Home) }
     var showAuth by remember { mutableStateOf(false) }
 

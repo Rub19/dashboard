@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Oswald, Poppins } from "next/font/google";
 import "./legacy-v8-tokens.css";
 import "./legacy-v8-components-tokens.css";
 import "./legacy-v8-depth-tokens.css";
@@ -37,6 +37,26 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
   subsets: ["latin"],
   preload: true,
+});
+
+// Polices des thèmes "Burgundy" (condensée, façon la palette de référence) et "Asphalt" (grotesque
+// arrondie bold) — chargées ici une seule fois pour toute l'app ; seul le thème actif applique la
+// variable correspondante via --font-theme-override (voir lib/theme-engine.ts), les autres thèmes
+// restent sur Inter sans rien télécharger en plus tant qu'ils ne sont pas sélectionnés.
+const oswald = Oswald({
+  variable: "--font-oswald",
+  display: "swap",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  preload: false,
+});
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  display: "swap",
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -77,7 +97,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full max-h-dvh overflow-hidden antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${oswald.variable} ${poppins.variable} h-full max-h-dvh overflow-hidden antialiased`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >

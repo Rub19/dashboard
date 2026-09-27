@@ -243,6 +243,15 @@ export function applyTheme(themeId: string, options?: ApplyThemeOptions): void {
   // those 9 components kept showing a stale/old accent (or the hardcoded
   // #10b981 emerald fallback) after switching themes, while everything else
   // correctly followed the new theme's color.
+  // Police propre au thème (Burgundy/Asphalt) : suit le corps du texte tant que le réglage "police" de
+  // l'utilisateur reste sur Sans/Inter/Outfit (voir globals.css). removeProperty (pas une chaîne vide) pour
+  // que var(--font-theme-override, fallback) retombe correctement sur Inter quand le thème n'en définit pas.
+  if (def.fontFamily) {
+    root.style.setProperty("--font-theme-override", def.fontFamily);
+  } else {
+    root.style.removeProperty("--font-theme-override");
+  }
+
   root.style.setProperty("--accent", def.accentPrimary);
   root.style.setProperty("--accent-color", def.accentPrimary);
   root.style.setProperty("--accent-primary", def.accentPrimary);

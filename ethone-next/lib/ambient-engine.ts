@@ -165,6 +165,8 @@ function resolveThemeTuning(theme: string) {
     forest: "graphite",
     sunset: "night",
     rose: "night",
+    burgundy: "night",
+    asphalt: "graphite",
   };
   return THEME_TUNING[map[resolved] ?? "night"];
 }

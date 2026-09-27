@@ -21,7 +21,9 @@ export type PremiumThemeId =
   | "glass"           // Liquid Translucent Glass
   | "forest"          // Emerald Forest
   | "sunset"          // Sunset Amber Horizon
-  | "rose";           // Velvet Rose
+  | "rose"            // Velvet Rose
+  | "burgundy"        // Burgundy / Night
+  | "asphalt";        // Asphalt / Paper
 
 export const PRESET_THEME_IDS: PremiumThemeId[] = [
   "dyno-rose",
@@ -37,6 +39,8 @@ export const PRESET_THEME_IDS: PremiumThemeId[] = [
   "forest",
   "sunset",
   "rose",
+  "burgundy",
+  "asphalt",
 ];
 
 export interface ThemeDefinition {
@@ -67,6 +71,10 @@ export interface ThemeDefinition {
   glassDefault: "off" | "low" | "medium" | "high";
   panelBlur?: string;
   isCustom?: boolean;
+  /** Valeur CSS (ex. "var(--font-oswald)") appliquée à --font-theme-override par applyTheme() ;
+   * suit le corps du texte tant que le réglage "police" de l'utilisateur reste sur Sans (défaut).
+   * Absente pour tous les thèmes existants : ils restent sur Inter, rien ne change pour eux. */
+  fontFamily?: string;
 }
 
 export const PRESET_THEMES: Record<PremiumThemeId, ThemeDefinition> = {
@@ -444,6 +452,68 @@ export const PRESET_THEMES: Record<PremiumThemeId, ThemeDefinition> = {
     textInverse: "#12060a",
     glassDefault: "medium",
     panelBlur: "20px",
+  },
+  burgundy: {
+    id: "burgundy",
+    label: "Burgundy",
+    description: "Rouge bordeaux profond sur noir nuit, typographie condensée pour un rendu affiche.",
+    category: "dark",
+    colorScheme: "dark",
+    bgMain: "#151515",
+    bgSurface: "#1c1c1c",
+    bgSurfaceElevated: "#232323",
+    bgSurfaceHover: "#2b2b2b",
+    bgSidebar: "#101010",
+    bgCard: "#191919",
+    bgInput: "rgba(255, 255, 255, 0.04)",
+    borderSubtle: "rgba(255, 255, 255, 0.07)",
+    borderActive: "rgba(147, 3, 46, 0.45)",
+    borderFocus: "#c2304a",
+    // #93032E (couleur brute de la palette) ne passe que 2:1 sur #151515, sous le seuil WCAG 3:1 pour un accent
+    // UI (theme-contrast.test.ts) : éclairci en accent principal, la teinte brute reste en secondaire/décoratif.
+    accentPrimary: "#c2304a",
+    accentSecondary: "#93032E",
+    accentContrast: "#ffffff",
+    glowColor: "rgba(194, 48, 74, 0.28)",
+    textPrimary: "#f5edee",
+    textSecondary: "#d8c4c8",
+    textMuted: "#a98890",
+    textDisabled: "#4a2028",
+    textInverse: "#151515",
+    glassDefault: "medium",
+    panelBlur: "20px",
+    fontFamily: "var(--font-oswald)",
+  },
+  asphalt: {
+    id: "asphalt",
+    label: "Asphalt",
+    description: "Gris asphalte chaud et blanc papier, typographie grotesque arrondie et épaisse.",
+    category: "dark",
+    colorScheme: "dark",
+    bgMain: "#302f2c",
+    bgSurface: "#373630",
+    bgSurfaceElevated: "#423f38",
+    bgSurfaceHover: "#4a473f",
+    bgSidebar: "#2a2925",
+    bgCard: "#363530",
+    bgInput: "rgba(239, 237, 227, 0.06)",
+    borderSubtle: "rgba(239, 237, 227, 0.1)",
+    borderActive: "rgba(239, 237, 227, 0.35)",
+    borderFocus: "#efede3",
+    accentPrimary: "#efede3",
+    accentSecondary: "#d9d6c9",
+    accentContrast: "#302f2c",
+    glowColor: "rgba(239, 237, 227, 0.18)",
+    textPrimary: "#efede3",
+    textSecondary: "#d3d0c4",
+    // #a8a598 ne passe que 4.25:1 sur bgSurface/bgCard, sous le seuil WCAG AA 4.5:1 (theme-contrast.test.ts) ;
+    // éclairci légèrement pour le franchir sur tous les fonds du thème.
+    textMuted: "#b4b1a3",
+    textDisabled: "#5c5a52",
+    textInverse: "#302f2c",
+    glassDefault: "medium",
+    panelBlur: "20px",
+    fontFamily: "var(--font-poppins)",
   },
 };
 

@@ -1090,16 +1090,20 @@ body {
   overflow: hidden;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-theme-override, var(--font-geist-sans)), ui-sans-serif, system-ui, sans-serif;
   transition: background var(--v8-ambient-transition, 150ms) var(--ease-out, ease-out),
               color var(--v8-ambient-transition, 150ms) var(--ease-out, ease-out);
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
-[data-font="sans"] body { font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif; }
-[data-font="inter"] body { font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif; }
-[data-font="outfit"] body { font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif; }
+/* Ces 3 alias suivent la police du thème actif (--font-theme-override, posée par lib/theme-engine.ts pour
+   les thèmes qui en définissent une, ex. Burgundy/Asphalt) : c'est le réglage "police" par défaut, donc rien
+   ici ne doit passer outre le choix du thème. Mono/Serif ci-dessous restent un choix explicite de l'utilisateur
+   et ne sont jamais remplacés par un thème. */
+[data-font="sans"] body { font-family: var(--font-theme-override, var(--font-geist-sans)), ui-sans-serif, system-ui, sans-serif; }
+[data-font="inter"] body { font-family: var(--font-theme-override, var(--font-geist-sans)), ui-sans-serif, system-ui, sans-serif; }
+[data-font="outfit"] body { font-family: var(--font-theme-override, var(--font-geist-sans)), ui-sans-serif, system-ui, sans-serif; }
 [data-font="mono"] body { font-family: var(--font-geist-mono), ui-monospace, monospace; }
 [data-font="jetbrains"] body { font-family: var(--font-geist-mono), ui-monospace, monospace; }
 [data-font="serif"] body { font-family: ui-serif, Georgia, serif; }

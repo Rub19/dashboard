@@ -6,6 +6,7 @@ import { MemberIdsInput, MultiChannelPicker, MultiRolePicker, TagInput } from "@
 import { confirmDialog } from "@/lib/confirmDialog";
 import { Field, NumberField, Switch, ToggleField, inputCls } from "@/components/discord/SettingsUI";
 import { cn } from "@/lib/utils";
+import Select from "@/components/ui/Select";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -321,16 +322,15 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
             ))}
           </ul>
         )}
-        <label className="mt-4 block max-w-xs text-xs text-zinc-400">
-          Durée de vie d&apos;une infraction
-          <select value={strikes.expirationDays} disabled={busy} onChange={(e) => void save({ strikes: { ...strikes, expirationDays: Number(e.target.value) } }, "Durée enregistrée")} className={cn(inputCls, "mt-1")}>
-            {[1, 3, 7, 14, 30, 60, 90].map((d) => (
-              <option key={d} value={d}>
-                {d} jour{d > 1 ? "s" : ""}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="mt-4 max-w-xs">
+          <Select
+            label="Durée de vie d'une infraction"
+            value={String(strikes.expirationDays)}
+            disabled={busy}
+            onChange={(v) => void save({ strikes: { ...strikes, expirationDays: Number(v) } }, "Durée enregistrée")}
+            options={[1, 3, 7, 14, 30, 60, 90].map((d) => ({ id: String(d), label: `${d} jour${d > 1 ? "s" : ""}` }))}
+          />
+        </div>
       </section>
 
       {editing && editingCard && (
@@ -399,23 +399,15 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
         >
           <NumberField label="À partir de combien d'infractions" value={sanction.strikeCount} min={1} max={20} onChange={(n) => setSanction({ ...sanction, strikeCount: n })} />
           <Field label="Sanction">
-            <select value={sanction.action} onChange={(e) => setSanction({ ...sanction, action: e.target.value })} className={inputCls}>
-              {SANCTIONS.map(([k, l]) => (
-                <option key={k} value={k}>
-                  {l}
-                </option>
-              ))}
-            </select>
+            <Select value={sanction.action} onChange={(v) => setSanction({ ...sanction, action: v })} options={SANCTIONS.map(([k, l]) => ({ id: k, label: l }))} />
           </Field>
           {sanction.action === "TIMEOUT" && (
             <Field label="Durée de l'exclusion">
-              <select value={sanction.durationSeconds} onChange={(e) => setSanction({ ...sanction, durationSeconds: Number(e.target.value) })} className={inputCls}>
-                {DURATIONS.map(([v, l]) => (
-                  <option key={v} value={v}>
-                    {l}
-                  </option>
-                ))}
-              </select>
+              <Select
+                value={String(sanction.durationSeconds)}
+                onChange={(v) => setSanction({ ...sanction, durationSeconds: Number(v) })}
+                options={DURATIONS.map(([v, l]) => ({ id: String(v), label: l }))}
+              />
             </Field>
           )}
           <Field label="Motif (visible dans les logs)">

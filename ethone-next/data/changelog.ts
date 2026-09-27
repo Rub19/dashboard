@@ -37487,6 +37487,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_135_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_135_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_135_de);
 
+const v1_28_136_fr: ChangelogEntry = {
+  version: "v1.28.136",
+  date: "2026-09-27",
+  title: "2 nouveaux thèmes : Burgundy et Asphalt",
+  items: [
+    "Nouveau thème « Burgundy » : rouge bordeaux sur noir nuit, typographie condensée — disponible dans Réglages → Apparence → Thèmes.",
+    "Nouveau thème « Asphalt » : gris chaud et blanc papier, typographie grotesque arrondie épaisse — chaque thème applique sa propre police tant que le réglage « Police » reste sur Sans (par défaut).",
+    "Suite de la refonte des menus déroulants : AutoMod (règles, paliers de sanctions, durée de vie des infractions) migre vers le composant Select stylé.",
+  ],
+};
+
+const v1_28_136_en: ChangelogEntry = {
+  version: "v1.28.136",
+  date: "2026-09-27",
+  title: "2 new themes: Burgundy and Asphalt",
+  items: [
+    "New \"Burgundy\" theme: deep red on near-black, condensed typography — available in Settings → Appearance → Themes.",
+    "New \"Asphalt\" theme: warm gray and paper white, bold rounded grotesk typography — each theme applies its own font as long as the \"Font\" setting stays on Sans (default).",
+    "Continuing the dropdown restyling: AutoMod (rules, sanction escalation, infraction lifetime) migrates to the themed Select component.",
+  ],
+};
+
+const v1_28_136_es: ChangelogEntry = {
+  version: "v1.28.136",
+  date: "2026-09-27",
+  title: "2 temas nuevos: Burgundy y Asphalt",
+  items: [
+    "Nuevo tema «Burgundy»: rojo burdeos sobre negro noche, tipografía condensada — disponible en Ajustes → Apariencia → Temas.",
+    "Nuevo tema «Asphalt»: gris cálido y blanco papel, tipografía grotesca redondeada y gruesa — cada tema aplica su propia fuente mientras el ajuste «Fuente» siga en Sans (por defecto).",
+    "Continúa el rediseño de menús desplegables: AutoMod (reglas, escalado de sanciones, vida de las infracciones) migra al componente Select con estilo del tema.",
+  ],
+};
+
+const v1_28_136_de: ChangelogEntry = {
+  version: "v1.28.136",
+  date: "2026-09-27",
+  title: "2 neue Themes: Burgundy und Asphalt",
+  items: [
+    "Neues Theme „Burgundy“: tiefes Rot auf Nachtschwarz, kondensierte Typografie — verfügbar unter Einstellungen → Erscheinungsbild → Themes.",
+    "Neues Theme „Asphalt“: warmes Grau und Papierweiß, fette abgerundete Grotesk-Typografie — jedes Theme nutzt seine eigene Schrift, solange die Schrift-Einstellung auf Sans (Standard) steht.",
+    "Fortsetzung der Dropdown-Überarbeitung: AutoMod (Regeln, Sanktionsstufen, Verstoß-Lebensdauer) wechselt zur themenkonformen Select-Komponente.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_136_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_136_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_136_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_136_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

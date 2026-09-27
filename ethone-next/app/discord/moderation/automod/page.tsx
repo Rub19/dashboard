@@ -45,6 +45,7 @@ import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGui
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn, fetchJson } from "@/lib/utils";
+import Select from "@/components/ui/Select";
 import { GuildSelector } from "@/components/GuildSelector";
 import InfractionsPanel from "./InfractionsPanel";
 
@@ -1373,26 +1374,29 @@ export default function AutoModCommandCenterPage() {
                           className="flex flex-col sm:flex-row items-start sm:items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3"
                         >
                           <span className="text-[10px] font-mono text-zinc-500 w-6">#{index + 1}</span>
-                          <select
+                          <Select
                             value={cond.type}
-                            onChange={(e) => {
+                            onChange={(v) => {
                               const updated = [...editingRule.conditions];
-                              updated[index].type = e.target.value as ConditionType;
+                              updated[index].type = v as ConditionType;
                               setEditingRule({ ...editingRule, conditions: updated });
                             }}
-                            className="h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-800 px-2 text-xs text-white outline-none"
-                          >
-                            <option value="KEYWORD">Mots-clés / Blacklist</option>
-                            <option value="REGEX">Pattern Regex</option>
-                            <option value="LINK">Contient un lien externe</option>
-                            <option value="INVITE">Invitation Discord</option>
-                            <option value="MENTION">Nombre de mentions excessif</option>
-                            <option value="SPAM">Répétition / Spam</option>
-                            <option value="FLOOD">Vitesse / Flood</option>
-                            <option value="CAPS">Majuscules excessives</option>
-                            <option value="PROFILE">Profil suspect (avatar / nom)</option>
-                            <option value="MIN_RISK_SCORE">Score de risque minimum</option>
-                          </select>
+                            size="sm"
+                            className="w-56 shrink-0"
+                            aria-label="Type de condition"
+                            options={[
+                              { id: "KEYWORD", label: "Mots-clés / Blacklist" },
+                              { id: "REGEX", label: "Pattern Regex" },
+                              { id: "LINK", label: "Contient un lien externe" },
+                              { id: "INVITE", label: "Invitation Discord" },
+                              { id: "MENTION", label: "Nombre de mentions excessif" },
+                              { id: "SPAM", label: "Répétition / Spam" },
+                              { id: "FLOOD", label: "Vitesse / Flood" },
+                              { id: "CAPS", label: "Majuscules excessives" },
+                              { id: "PROFILE", label: "Profil suspect (avatar / nom)" },
+                              { id: "MIN_RISK_SCORE", label: "Score de risque minimum" },
+                            ]}
+                          />
 
                           {/* Détail pattern ou seuil */}
                           {cond.type === "MIN_RISK_SCORE" ? (
@@ -1485,18 +1489,18 @@ export default function AutoModCommandCenterPage() {
                     {editingRule.actions.includes("TIMEOUT") && (
                       <div className="space-y-1.5">
                         <label className="text-xs font-medium text-zinc-300">Durée d'exclusion (secondes)</label>
-                        <select
-                          value={editingRule.timeoutDurationSeconds || 300}
-                          onChange={(e) => setEditingRule({ ...editingRule, timeoutDurationSeconds: Number(e.target.value) })}
-                          className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
-                        >
-                          <option value={60}>1 minute</option>
-                          <option value={300}>5 minutes</option>
-                          <option value={600}>10 minutes</option>
-                          <option value={3600}>1 heure</option>
-                          <option value={86400}>24 heures</option>
-                          <option value={604800}>7 jours</option>
-                        </select>
+                        <Select
+                          value={String(editingRule.timeoutDurationSeconds || 300)}
+                          onChange={(v) => setEditingRule({ ...editingRule, timeoutDurationSeconds: Number(v) })}
+                          options={[
+                            { id: "60", label: "1 minute" },
+                            { id: "300", label: "5 minutes" },
+                            { id: "600", label: "10 minutes" },
+                            { id: "3600", label: "1 heure" },
+                            { id: "86400", label: "24 heures" },
+                            { id: "604800", label: "7 jours" },
+                          ]}
+                        />
                       </div>
                     )}
                   </div>
@@ -2305,24 +2309,27 @@ export default function AutoModCommandCenterPage() {
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <select
+                          <Select
                             value={step.action}
-                            onChange={(e) => {
+                            onChange={(v) => {
                               const updated = [...config.strikes.progressiveSteps];
-                              updated[idx].action = e.target.value as AutoModAction;
+                              updated[idx].action = v as AutoModAction;
                               setConfig({
                                 ...config,
                                 strikes: { ...config.strikes, progressiveSteps: updated },
                               });
                             }}
-                            className="h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-800 px-2 text-xs text-white outline-none"
-                          >
-                            <option value="WARN">Avertissement (WARN)</option>
-                            <option value="TIMEOUT">Exclusion (TIMEOUT)</option>
-                            <option value="QUARANTINE">Quarantaine</option>
-                            <option value="KICK">Expulsion (KICK)</option>
-                            <option value="BAN">Bannissement (BAN)</option>
-                          </select>
+                            size="sm"
+                            className="w-52 shrink-0"
+                            aria-label="Sanction du palier"
+                            options={[
+                              { id: "WARN", label: "Avertissement (WARN)" },
+                              { id: "TIMEOUT", label: "Exclusion (TIMEOUT)" },
+                              { id: "QUARANTINE", label: "Quarantaine" },
+                              { id: "KICK", label: "Expulsion (KICK)" },
+                              { id: "BAN", label: "Bannissement (BAN)" },
+                            ]}
+                          />
 
                           <button
                             type="button"

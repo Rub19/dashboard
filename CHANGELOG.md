@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.136 — 2026-09-27
+
+**2 nouveaux thèmes : Burgundy et Asphalt**
+
+- Nouveau thème « Burgundy » : rouge bordeaux sur noir nuit, typographie condensée — disponible dans Réglages → Apparence → Thèmes.
+- Nouveau thème « Asphalt » : gris chaud et blanc papier, typographie grotesque arrondie épaisse — chaque thème applique sa propre police tant que le réglage « Police » reste sur Sans (par défaut).
+- Suite de la refonte des menus déroulants : AutoMod (règles, paliers de sanctions, durée de vie des infractions) migre vers le composant Select stylé.
+
 ## v1.28.135 — 2026-09-27
 
 **Refonte des menus déroulants — lot 4**

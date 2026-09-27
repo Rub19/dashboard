@@ -203,6 +203,17 @@ struct ModuleScreen: View {
                 .listRowBackground(GlassRowBackground())
             }
 
+            if spec.id == "polls" || spec.id == "forms" {
+                Section {
+                    if spec.id == "polls" {
+                        NavigationLink { PollBuilderView(guild: guild) { Task { await load() } } } label: { Label("Nouveau sondage", systemImage: "plus.circle.fill") }
+                    } else {
+                        NavigationLink { FormBuilderView(guild: guild) { Task { await load() } } } label: { Label("Nouveau formulaire", systemImage: "plus.circle.fill") }
+                    }
+                } header: { Text("Créer").sectionTitle() }
+                .listRowBackground(GlassRowBackground())
+            }
+
             if !AdminCreators.creators(for: spec.id).isEmpty {
                 Section {
                     ForEach(AdminCreators.creators(for: spec.id), id: \.title) { creator in

@@ -37,6 +37,8 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.profile) { Label("Profil", systemImage: "person.crop.circle") }
                     NavigationLink(value: MoreDestination.workspaces) { Label("Profils de travail", systemImage: "rectangle.stack.person.crop") }
                     NavigationLink(value: MoreDestination.leaderboard) { Label("Classement public", systemImage: "trophy") }
+                    NavigationLink(value: MoreDestination.boost) { Label("Performance", systemImage: "gauge.with.needle.fill") }
+                    NavigationLink(value: MoreDestination.browser) { Label("Navigateur", systemImage: "safari.fill") }
                     NavigationLink(value: MoreDestination.system) { Label("Système", systemImage: "cpu") }
                     NavigationLink(value: MoreDestination.sharedLinks) { Label("Liens partagés", systemImage: "link.badge.plus") }
                     NavigationLink(value: MoreDestination.admin) { Label("Administration", systemImage: "lock.shield") }
@@ -127,6 +129,8 @@ struct MoreView: View {
                 case .profile: ProfileView()
                 case .workspaces: WorkspacesView()
                 case .leaderboard: PublicLeaderboardView()
+                case .boost: BoostView()
+                case .browser: BrowserView()
                 case .system: SystemView()
                 case .sharedLinks: SharedLinksView()
                 case .admin: AdminView()

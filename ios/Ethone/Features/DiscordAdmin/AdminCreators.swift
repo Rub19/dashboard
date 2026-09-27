@@ -42,10 +42,10 @@ enum AdminCreators {
         case "reminders": [reminder]
         case "tags": [tag]
         case "custom-commands": [command]
-        case "polls": [poll]
         case "events": [event]
         case "economy": [shopItem]
         case "leveling": [levelReward]
+        case "invites": [inviteReward]
         case "giveaways": [giveaway]
         default: []
         }
@@ -76,34 +76,45 @@ enum AdminCreators {
         fields: [
             .init(key: "name", label: "Nom de la commande", hint: "Lettres, chiffres, _ et -"),
             .init(key: "description", label: "Description", required: false, initial: "Commande personnalisée"),
-            .init(key: "response", label: "Réponse du bot", kind: .multiline),
+            .init(key: "response", label: "Message (facultatif si embed)", kind: .multiline, required: false),
+            .init(key: "embedTitle", label: "Embed : titre", required: false),
+            .init(key: "embedDescription", label: "Embed : texte", kind: .multiline, required: false),
+            .init(key: "embedColor", label: "Embed : couleur", kind: .choice([("#6366F1", "Indigo"), ("#EF4444", "Rouge"), ("#F59E0B", "Ambre"), ("#10B981", "Vert"), ("#3B82F6", "Bleu"), ("#EC4899", "Rose"), ("#FFFFFF", "Blanc")]), required: false, initial: "#6366F1"),
+            .init(key: "embedImage", label: "Embed : image (lien)", required: false),
+            .init(key: "embedFooter", label: "Embed : pied de page", required: false),
+            .init(key: "embedFields", label: "Embed : champs (un par ligne : Nom | Valeur)", kind: .multiline, required: false),
+            .init(key: "buttonLabel", label: "Bouton lien : texte", required: false),
+            .init(key: "buttonUrl", label: "Bouton lien : adresse (https://…)", required: false),
         ],
         build: { c in
-            [
+            var response: [String: JSONValue] = [:]
+            if !c.text("response").isEmpty { response["content"] = .string(c.text("response")) }
+            let hasEmbed = !c.text("embedTitle").isEmpty || !c.text("embedDescription").isEmpty || !c.text("embedImage").isEmpty || !c.text("embedFields").isEmpty
+            if hasEmbed {
+                var embed: [String: JSONValue] = ["color": .string(c.text("embedColor").isEmpty ? "#6366F1" : c.text("embedColor"))]
+                if !c.text("embedTitle").isEmpty { embed["title"] = .string(c.text("embedTitle")) }
+                if !c.text("embedDescription").isEmpty { embed["description"] = .string(c.text("embedDescription")) }
+                if !c.text("embedImage").isEmpty { embed["imageUrl"] = .string(c.text("embedImage")) }
+                if !c.text("embedFooter").isEmpty { embed["footerText"] = .string(c.text("embedFooter")) }
+                let lines = c.text("embedFields").components(separatedBy: .newlines)
+                let fields: [JSONValue] = lines.compactMap { line in
+                    let parts = line.split(separator: "|", maxSplits: 1).map { $0.trimmingCharacters(in: .whitespaces) }
+                    guard parts.count == 2, !parts[0].isEmpty, !parts[1].isEmpty else { return nil }
+                    return .object(["name": .string(parts[0]), "value": .string(parts[1]), "inline": .bool(false)])
+                }
+                if !fields.isEmpty { embed["fields"] = .array(fields) }
+                response["embed"] = .object(embed)
+            }
+            if !c.text("buttonLabel").isEmpty, c.text("buttonUrl").lowercased().hasPrefix("http") {
+                response["buttons"] = .array([.object(["label": .string(c.text("buttonLabel")), "url": .string(c.text("buttonUrl")), "style": .string("link")])])
+            }
+            if response.isEmpty { response["content"] = .string("(réponse vide)") }
+            return [
                 "name": .string(c.text("name")),
                 "description": .string(c.text("description").isEmpty ? "Commande personnalisée" : c.text("description")),
                 "triggerType": .string("both"),
                 "enabled": .bool(true),
-                "defaultActions": .array([.object(["type": .string("send_response"), "response": .object(["content": .string(c.text("response"))])])]),
-            ]
-        }
-    )
-
-    static let poll = CreateSpec(
-        title: "Nouveau sondage", path: "/",
-        fields: [
-            .init(key: "title", label: "Titre"),
-            .init(key: "description", label: "Description", kind: .multiline, required: false),
-            .init(key: "question", label: "Question"),
-            .init(key: "options", label: "Options (une par ligne, 2 minimum)", kind: .multiline),
-        ],
-        build: { c in
-            let options = c.text("options").components(separatedBy: .newlines).map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
-            return [
-                "title": .string(c.text("title")),
-                "description": .string(c.text("description")),
-                "type": .string("SINGLE_CHOICE"),
-                "questions": .array([.object(["title": .string(c.text("question")), "options": .array(options.map { .object(["label": .string($0)]) })])]),
+                "defaultActions": .array([.object(["type": .string("send_response"), "response": .object(response)])]),
             ]
         }
     )
@@ -161,6 +172,26 @@ enum AdminCreators {
                 "level": .number(max(1, c.number("level"))), "roleId": .string(c.text("roleId")),
                 "message": c.text("message").isEmpty ? .null : .string(c.text("message")), "enabled": .bool(true),
             ]
+        }
+    )
+
+    static let inviteReward = CreateSpec(
+        title: "Nouvelle récompense d'invitations", path: "/rewards",
+        fields: [
+            .init(key: "name", label: "Nom de la récompense"),
+            .init(key: "requiredValidInvites", label: "Invitations valides requises", kind: .number, initial: "5"),
+            .init(key: "roleId", label: "Rôle attribué (facultatif)", kind: .role, required: false),
+            .init(key: "xpAmount", label: "XP offerts (facultatif)", kind: .number, required: false, initial: "0"),
+            .init(key: "message", label: "Message (facultatif)", kind: .multiline, required: false),
+        ],
+        build: { c in
+            var body: [String: JSONValue] = [
+                "name": .string(c.text("name")), "requiredValidInvites": .number(max(1, c.number("requiredValidInvites"))),
+                "xpAmount": .number(max(0, c.number("xpAmount"))),
+            ]
+            if !c.text("roleId").isEmpty { body["roleId"] = .string(c.text("roleId")); body["roleName"] = .string(c.roleName(c.text("roleId"))) }
+            if !c.text("message").isEmpty { body["message"] = .string(c.text("message")) }
+            return body
         }
     )
 

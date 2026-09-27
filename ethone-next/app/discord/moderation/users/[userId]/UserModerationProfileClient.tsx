@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { usePathSegment } from "@/lib/hooks/usePathSegment";
+import Select from "@/components/ui/Select";
 import {
   Shield,
   ShieldAlert,
@@ -1067,20 +1068,15 @@ export default function UserModerationProfileClient() {
               {/* Catégorie / Motif standard */}
               <div>
                 <label className="text-xs font-semibold text-slate-400 block mb-1">Motif prédéfini</label>
-                <select
+                <Select
                   value={actionStandardCategory}
-                  onChange={(e) => {
-                    setActionStandardCategory(e.target.value);
-                    if (!actionReason) setActionReason(e.target.value);
+                  onChange={(v) => {
+                    setActionStandardCategory(v);
+                    if (!actionReason) setActionReason(v);
                   }}
-                  className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none"
-                >
-                  {STANDARD_REASONS.map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
+                  size="sm"
+                  options={STANDARD_REASONS.map((r) => ({ id: r, label: r }))}
+                />
               </div>
 
               {/* Raison personnalisée */}
@@ -1133,15 +1129,16 @@ export default function UserModerationProfileClient() {
               {activeActionModal === "BAN" && (
                 <div>
                   <label className="text-xs font-semibold text-slate-400 block mb-1">Supprimer l'historique des messages</label>
-                  <select
+                  <Select
                     value={banDeleteDays}
-                    onChange={(e) => setBanDeleteDays(e.target.value)}
-                    className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none"
-                  >
-                    <option value="0">Ne pas supprimer</option>
-                    <option value="1">Dernières 24 heures</option>
-                    <option value="7">Derniers 7 jours</option>
-                  </select>
+                    onChange={setBanDeleteDays}
+                    size="sm"
+                    options={[
+                      { id: "0", label: "Ne pas supprimer" },
+                      { id: "1", label: "Dernières 24 heures" },
+                      { id: "7", label: "Derniers 7 jours" },
+                    ]}
+                  />
                 </div>
               )}
 

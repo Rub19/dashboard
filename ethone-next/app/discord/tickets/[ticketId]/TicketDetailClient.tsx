@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { usePathSegment } from "@/lib/hooks/usePathSegment";
+import Select from "@/components/ui/Select";
 import {
   Ticket,
   ArrowLeft,
@@ -371,32 +372,38 @@ export default function TicketDetailClient() {
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Priorité Selector */}
-          <select
+          <Select
             value={ticket.priority}
-            onChange={(e) => handlePriorityChange(e.target.value)}
+            onChange={handlePriorityChange}
             disabled={actionLoading}
-            className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-zinc-200 outline-none focus:border-emerald-500 cursor-pointer"
-          >
-            <option value="LOW">💤 Priorité Faible</option>
-            <option value="NORMAL">📌 Priorité Normale</option>
-            <option value="HIGH">⚡ Priorité Élevée</option>
-            <option value="URGENT">🔥 Priorité URGENTE</option>
-          </select>
+            size="sm"
+            className="w-48 shrink-0"
+            aria-label="Priorité du ticket"
+            options={[
+              { id: "LOW", label: "💤 Priorité Faible" },
+              { id: "NORMAL", label: "📌 Priorité Normale" },
+              { id: "HIGH", label: "⚡ Priorité Élevée" },
+              { id: "URGENT", label: "🔥 Priorité URGENTE" },
+            ]}
+          />
 
           {/* Statut Selector */}
-          <select
+          <Select
             value={ticket.status}
-            onChange={(e) => handleStatusChange(e.target.value)}
+            onChange={handleStatusChange}
             disabled={actionLoading}
-            className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-zinc-200 outline-none focus:border-emerald-500 cursor-pointer"
-          >
-            <option value="OPEN">🟢 Ouvert</option>
-            <option value="WAITING_USER">🔵 En attente membre</option>
-            <option value="WAITING_STAFF">🟠 En attente staff</option>
-            <option value="PENDING">🟡 En cours</option>
-            <option value="RESOLVED">🟣 Résolu</option>
-            <option value="CLOSED">⚫ Clôturé</option>
-          </select>
+            size="sm"
+            className="w-48 shrink-0"
+            aria-label="Statut du ticket"
+            options={[
+              { id: "OPEN", label: "🟢 Ouvert" },
+              { id: "WAITING_USER", label: "🔵 En attente membre" },
+              { id: "WAITING_STAFF", label: "🟠 En attente staff" },
+              { id: "PENDING", label: "🟡 En cours" },
+              { id: "RESOLVED", label: "🟣 Résolu" },
+              { id: "CLOSED", label: "⚫ Clôturé" },
+            ]}
+          />
 
           {/* Prise en charge */}
           {ticket.claimedBy ? (

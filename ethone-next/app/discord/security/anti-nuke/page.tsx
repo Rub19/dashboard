@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import Select from "@/components/ui/Select";
 import {
   Bomb,
   ShieldCheck,
@@ -334,19 +335,13 @@ export default function AntiNukePage() {
 
             <div className="space-y-1.5">
               <label className="text-xs text-zinc-400">Sanction appliquée à l'auteur détecté</label>
-              <select
+              <Select
                 value={config.action}
-                onChange={(e) => saveConfig({ action: e.target.value as AntiNukeAction })}
-                className="w-full h-10 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-sm text-white outline-none focus:border-red-500 [&>option]:bg-zinc-900"
-              >
-                {(Object.entries(ACTION_LABELS) as [AntiNukeAction, { label: string; icon: string }][]).map(
-                  ([value, { label, icon }]) => (
-                    <option key={value} value={value}>
-                      {icon} {label}
-                    </option>
-                  )
+                onChange={(v) => saveConfig({ action: v as AntiNukeAction })}
+                options={(Object.entries(ACTION_LABELS) as [AntiNukeAction, { label: string; icon: string }][]).map(
+                  ([value, { label, icon }]) => ({ id: value, label: `${icon} ${label}` })
                 )}
-              </select>
+              />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

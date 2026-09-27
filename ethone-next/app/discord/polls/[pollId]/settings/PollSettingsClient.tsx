@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { usePollIdFromPath } from "../usePollData";
+import Select from "@/components/ui/Select";
 import {
   ChevronRight,
   Save,
@@ -309,36 +310,28 @@ export default function PollSettingsClient() {
           <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl">
             <h3 className="text-base font-bold text-white mb-4">Règles & Confidentialité</h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
-                  Niveau d'Anonymat
-                </label>
-                <select
-                  value={anonymity}
-                  onChange={(e) => setAnonymity(e.target.value as any)}
-                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:outline-none"
-                >
-                  <option value="PUBLIC">Vote Public (identifiant enregistré)</option>
-                  <option value="ANONYMOUS">Bulletin Secret (pseudonyme masqué)</option>
-                  <option value="FULLY_ANONYMOUS">Anonymat Total (aucun traçage)</option>
-                </select>
-              </div>
+              <Select
+                label="Niveau d'Anonymat"
+                value={anonymity}
+                onChange={(v) => setAnonymity(v as any)}
+                options={[
+                  { id: "PUBLIC", label: "Vote Public (identifiant enregistré)" },
+                  { id: "ANONYMOUS", label: "Bulletin Secret (pseudonyme masqué)" },
+                  { id: "FULLY_ANONYMOUS", label: "Anonymat Total (aucun traçage)" },
+                ]}
+              />
 
-              <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
-                  Visibilité des Résultats
-                </label>
-                <select
-                  value={resultsVisibility}
-                  onChange={(e) => setResultsVisibility(e.target.value as any)}
-                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:outline-none"
-                >
-                  <option value="LIVE">En direct (visible par tous immédiatement)</option>
-                  <option value="AFTER_VOTE">Après avoir voté</option>
-                  <option value="AT_END">Après la clôture du vote</option>
-                  <option value="STAFF_ONLY">Réservé au Staff uniquement</option>
-                </select>
-              </div>
+              <Select
+                label="Visibilité des Résultats"
+                value={resultsVisibility}
+                onChange={(v) => setResultsVisibility(v as any)}
+                options={[
+                  { id: "LIVE", label: "En direct (visible par tous immédiatement)" },
+                  { id: "AFTER_VOTE", label: "Après avoir voté" },
+                  { id: "AT_END", label: "Après la clôture du vote" },
+                  { id: "STAFF_ONLY", label: "Réservé au Staff uniquement" },
+                ]}
+              />
             </div>
 
             <div className="mt-4 space-y-3 border-t border-zinc-800/80 pt-4">

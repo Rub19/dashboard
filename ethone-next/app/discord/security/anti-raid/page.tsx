@@ -31,6 +31,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn, formatApiError } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import Select from "@/components/ui/Select";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -1489,19 +1490,19 @@ export default function AntiRaidDashboardPage() {
                 {settings.messageRaid.actions.includes("TIMEOUT") && (
                   <div className="max-w-xs">
                     <label className="text-xs font-medium text-white/70 block mb-1.5">Durée du timeout automatique</label>
-                    <select
-                      value={settings.messageRaid.timeoutDurationSeconds}
-                      onChange={(e) =>
-                        setSettings((prev) => ({ ...prev, messageRaid: { ...prev.messageRaid, timeoutDurationSeconds: parseInt(e.target.value) || 600 } }))
+                    <Select
+                      value={String(settings.messageRaid.timeoutDurationSeconds)}
+                      onChange={(v) =>
+                        setSettings((prev) => ({ ...prev, messageRaid: { ...prev.messageRaid, timeoutDurationSeconds: parseInt(v, 10) || 600 } }))
                       }
-                      className="w-full bg-white/[0.04] border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500/50"
-                    >
-                      <option value={60}>1 minute</option>
-                      <option value={300}>5 minutes</option>
-                      <option value={600}>10 minutes</option>
-                      <option value={3600}>1 heure</option>
-                      <option value={86400}>1 jour</option>
-                    </select>
+                      options={[
+                        { id: "60", label: "1 minute" },
+                        { id: "300", label: "5 minutes" },
+                        { id: "600", label: "10 minutes" },
+                        { id: "3600", label: "1 heure" },
+                        { id: "86400", label: "1 jour" },
+                      ]}
+                    />
                   </div>
                 )}
               </div>

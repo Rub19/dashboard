@@ -37446,6 +37446,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_134_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_134_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_134_de);
 
+const v1_28_135_fr: ChangelogEntry = {
+  version: "v1.28.135",
+  date: "2026-09-27",
+  title: "Refonte des menus déroulants — lot 4",
+  items: [
+    "12 fichiers de plus migrés vers le composant Select stylé : Sécurité (anti-raid, anti-nuke), Sondages (création, réglages), Signalements, Modération (fiche membre), Boutique/Économie, Formulaires, Tickets, Salons vocaux, Comparateur de sauvegardes.",
+  ],
+};
+
+const v1_28_135_en: ChangelogEntry = {
+  version: "v1.28.135",
+  date: "2026-09-27",
+  title: "Dropdown menus restyling — batch 4",
+  items: [
+    "12 more files migrated to the themed Select component: Security (anti-raid, anti-nuke), Polls (create, settings), Reports, Moderation (member profile), Economy, Forms, Tickets, Voice rooms, Backup comparator.",
+  ],
+};
+
+const v1_28_135_es: ChangelogEntry = {
+  version: "v1.28.135",
+  date: "2026-09-27",
+  title: "Rediseño de los menús desplegables — lote 4",
+  items: [
+    "12 archivos más migrados al componente Select con el estilo del tema: Seguridad (anti-raid, anti-nuke), Encuestas (crear, ajustes), Informes, Moderación (perfil de miembro), Economía, Formularios, Tickets, Salas de voz, Comparador de copias de seguridad.",
+  ],
+};
+
+const v1_28_135_de: ChangelogEntry = {
+  version: "v1.28.135",
+  date: "2026-09-27",
+  title: "Dropdown-Überarbeitung — Charge 4",
+  items: [
+    "12 weitere Dateien auf die themenkonforme Select-Komponente umgestellt: Sicherheit (Anti-Raid, Anti-Nuke), Umfragen (Erstellen, Einstellungen), Meldungen, Moderation (Mitgliedsprofil), Wirtschaft, Formulare, Tickets, Sprachräume, Backup-Vergleich.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_135_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_135_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_135_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_135_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

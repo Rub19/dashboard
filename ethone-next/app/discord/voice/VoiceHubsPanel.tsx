@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useToast } from "@/components/ToastProvider";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import Select from "@/components/ui/Select";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { cn } from "@/lib/utils";
 
@@ -196,27 +197,25 @@ export default function VoiceHubsPanel({ guildId, hubs, onChanged }: Props) {
                       Limite de membres (0 = illimitée)
                       <input type="number" min={0} max={99} value={draft.userLimit ?? 0} onChange={(e) => setDraft({ ...draft, userLimit: Math.max(0, Math.min(99, Number(e.target.value) || 0)) })} className="mt-1 h-10 w-full rounded-xl border border-zinc-700 bg-zinc-950 px-3 text-sm text-white outline-none focus:border-emerald-500" />
                     </label>
-                    <label className="block text-xs text-zinc-400">
-                      Débit audio
-                      <select value={draft.bitrate ?? 64000} onChange={(e) => setDraft({ ...draft, bitrate: Number(e.target.value) })} className="mt-1 h-10 w-full rounded-xl border border-zinc-700 bg-zinc-950 px-3 text-sm text-white outline-none focus:border-emerald-500">
-                        {Array.from(new Set([32000, 64000, 96000, draft.bitrate ?? 64000])).sort((a, b) => a - b).map((b) => (
-                          <option key={b} value={b}>
-                            {b / 1000} kbps
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                    <div>
+                      <Select
+                        label="Débit audio"
+                        value={String(draft.bitrate ?? 64000)}
+                        onChange={(v) => setDraft({ ...draft, bitrate: Number(v) })}
+                        options={Array.from(new Set([32000, 64000, 96000, draft.bitrate ?? 64000]))
+                          .sort((a, b) => a - b)
+                          .map((b) => ({ id: String(b), label: `${b / 1000} kbps` }))}
+                      />
+                    </div>
                   </div>
-                  <label className="block text-xs text-zinc-400">
-                    Accès par défaut
-                    <select value={draft.accessMode ?? "public"} onChange={(e) => setDraft({ ...draft, accessMode: e.target.value as VoiceHubItem["accessMode"] })} className="mt-1 h-10 w-full rounded-xl border border-zinc-700 bg-zinc-950 px-3 text-sm text-white outline-none focus:border-emerald-500">
-                      {(Object.keys(ACCESS_LABELS) as VoiceHubItem["accessMode"][]).map((k) => (
-                        <option key={k} value={k}>
-                          {ACCESS_LABELS[k]}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                  <div>
+                    <Select
+                      label="Accès par défaut"
+                      value={draft.accessMode ?? "public"}
+                      onChange={(v) => setDraft({ ...draft, accessMode: v as VoiceHubItem["accessMode"] })}
+                      options={(Object.keys(ACCESS_LABELS) as VoiceHubItem["accessMode"][]).map((k) => ({ id: k, label: ACCESS_LABELS[k] }))}
+                    />
+                  </div>
                   <label className="flex cursor-pointer items-center gap-2 text-xs text-zinc-300">
                     <input type="checkbox" checked={draft.autoNumbering ?? true} onChange={(e) => setDraft({ ...draft, autoNumbering: e.target.checked })} />
                     Numéroter automatiquement les salons

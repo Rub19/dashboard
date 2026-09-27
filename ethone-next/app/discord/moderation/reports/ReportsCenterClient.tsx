@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import Select from "@/components/ui/Select";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -483,18 +484,19 @@ export default function ReportsCenterClient() {
 
               <div>
                 <label className="text-xs font-semibold text-slate-400 block mb-1">Catégorie</label>
-                <select
+                <Select
                   value={newReportCategory}
-                  onChange={(e) => setNewReportCategory(e.target.value)}
-                  className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none"
-                >
-                  <option value="Spam">Spam & Flood</option>
-                  <option value="Harassment">Harcèlement</option>
-                  <option value="Toxicity">Toxicitée</option>
-                  <option value="NSFW">Contenu Inapproprié</option>
-                  <option value="Scam">Arnaque / Phishing</option>
-                  <option value="Other">Autre</option>
-                </select>
+                  onChange={setNewReportCategory}
+                  size="sm"
+                  options={[
+                    { id: "Spam", label: "Spam & Flood" },
+                    { id: "Harassment", label: "Harcèlement" },
+                    { id: "Toxicity", label: "Toxicitée" },
+                    { id: "NSFW", label: "Contenu Inapproprié" },
+                    { id: "Scam", label: "Arnaque / Phishing" },
+                    { id: "Other", label: "Autre" },
+                  ]}
+                />
               </div>
 
               <div>

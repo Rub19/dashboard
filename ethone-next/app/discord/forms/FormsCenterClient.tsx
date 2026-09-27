@@ -4,6 +4,7 @@ import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import Select from "@/components/ui/Select";
 import {
   FileText,
   Plus,
@@ -480,19 +481,14 @@ export default function FormsCenterClient() {
         {/* Search & Category dropdown */}
         <div className="flex items-center gap-2">
           {categories.length > 0 && (
-            <select
+            <Select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={setSelectedCategory}
               aria-label="Filtrer par catégorie"
-              className="h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-xs text-zinc-300 outline-none focus:border-indigo-500 cursor-pointer"
-            >
-              <option value="ALL">Toutes catégories</option>
-              {categories.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+              size="sm"
+              className="w-44 shrink-0"
+              options={[{ id: "ALL", label: "Toutes catégories" }, ...categories.map((c) => ({ id: c, label: c }))]}
+            />
           )}
 
           <div className="relative flex-1 sm:w-64">

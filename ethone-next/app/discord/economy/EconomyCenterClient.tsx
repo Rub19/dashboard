@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import Select from "@/components/ui/Select";
 import {
   Coins,
   Trophy,
@@ -579,16 +580,17 @@ export default function EconomyCenterClient() {
               Historique des transactions
               <span className="text-[11px] font-normal text-slate-500">({transactions.length} dernières)</span>
             </h2>
-            <select
+            <Select
               value={txFilter}
-              onChange={(e) => setTxFilter(e.target.value as typeof txFilter)}
-              className="h-8 px-2 rounded-lg bg-black/40 border border-[var(--panel-border)] text-xs text-white"
-            >
-              <option value="ALL">Tous les types</option>
-              {(Object.keys(TX_META) as TransactionType[]).map((t) => (
-                <option key={t} value={t}>{TX_META[t].icon} {TX_META[t].label}</option>
-              ))}
-            </select>
+              onChange={(v) => setTxFilter(v as typeof txFilter)}
+              size="sm"
+              className="w-40 shrink-0"
+              aria-label="Filtrer par type"
+              options={[
+                { id: "ALL", label: "Tous les types" },
+                ...(Object.keys(TX_META) as TransactionType[]).map((t) => ({ id: t, label: `${TX_META[t].icon} ${TX_META[t].label}` })),
+              ]}
+            />
           </div>
           {transactions.length === 0 ? (
             <p className="text-xs text-slate-500 py-6 text-center">Aucune transaction enregistrée pour l'instant — elles apparaissent dès qu'un membre utilise /economy.</p>

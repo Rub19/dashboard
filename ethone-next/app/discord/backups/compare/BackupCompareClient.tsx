@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { ArrowLeft, GitCompare, PlusCircle, AlertCircle, MinusCircle, CheckCircle2, Users, FolderTree, Shield, Sparkles, ArrowRight, RefreshCw, Layers } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import Select from "@/components/ui/Select";
 import { cn } from "@/lib/utils";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
@@ -161,20 +162,29 @@ export default function BackupCompareClient() {
             <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="w-full md:w-5/12 space-y-2">
-                  <label className="text-xs font-semibold uppercase text-neutral-400 tracking-wider">Source A (référence / passé)</label>
-                  <select value={backupA} onChange={(e) => setBackupA(e.target.value)} disabled={loading} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-                    {snapshots.length === 0 && <option value="">Aucune sauvegarde</option>}
-                    {options.filter((o) => o.id !== "LIVE").map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-                  </select>
+                  <Select
+                    label="Source A (référence / passé)"
+                    value={backupA}
+                    onChange={setBackupA}
+                    disabled={loading}
+                    options={
+                      snapshots.length === 0
+                        ? [{ id: "", label: "Aucune sauvegarde" }]
+                        : options.filter((o) => o.id !== "LIVE").map((o) => ({ id: o.id, label: o.label }))
+                    }
+                  />
                 </div>
                 <button onClick={compare} disabled={comparing} className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-neutral-800 border border-neutral-700 text-indigo-400 hover:bg-neutral-700 cursor-pointer disabled:opacity-50" title="Relancer la comparaison">
                   {comparing ? <RefreshCw className="w-5 h-5 animate-spin" /> : <ArrowRight className="w-5 h-5" />}
                 </button>
                 <div className="w-full md:w-5/12 space-y-2">
-                  <label className="text-xs font-semibold uppercase text-neutral-400 tracking-wider">Cible B (comparaison / présent)</label>
-                  <select value={backupB} onChange={(e) => setBackupB(e.target.value)} disabled={loading} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-                    {options.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-                  </select>
+                  <Select
+                    label="Cible B (comparaison / présent)"
+                    value={backupB}
+                    onChange={setBackupB}
+                    disabled={loading}
+                    options={options.map((o) => ({ id: o.id, label: o.label }))}
+                  />
                 </div>
               </div>
 

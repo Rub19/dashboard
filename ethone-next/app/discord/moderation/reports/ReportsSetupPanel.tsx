@@ -5,6 +5,7 @@ import { useToast } from "@/components/ToastProvider";
 import { subscribeGuildLive } from "@/lib/guildLive";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
+import Select from "@/components/ui/Select";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -165,16 +166,18 @@ export default function ReportsSetupPanel({ guildId }: { guildId: string }) {
               <span className={cn("block h-4 w-4 rounded-full bg-white shadow transition-transform", config.pingStaff ? "translate-x-4" : "translate-x-0")} />
             </span>
           </button>
-          <label className="text-xs text-zinc-400">
-            Délai entre deux signalements d&apos;un même membre
-            <select value={config.cooldownSeconds} disabled={busy} onChange={(e) => void call("/config", "PUT", { cooldownSeconds: Number(e.target.value) }, "Réglage enregistré", "")} className="mt-1 h-10 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface)] px-3 text-sm text-white">
-              {[0, 30, 60, 300, 900, 3600].map((s) => (
-                <option key={s} value={s}>
-                  {s === 0 ? "Aucun" : s < 60 ? `${s} secondes` : `${s / 60} minute${s > 60 ? "s" : ""}`}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div>
+            <Select
+              label="Délai entre deux signalements d'un même membre"
+              value={String(config.cooldownSeconds)}
+              disabled={busy}
+              onChange={(v) => void call("/config", "PUT", { cooldownSeconds: Number(v) }, "Réglage enregistré", "")}
+              options={[0, 30, 60, 300, 900, 3600].map((s) => ({
+                id: String(s),
+                label: s === 0 ? "Aucun" : s < 60 ? `${s} secondes` : `${s / 60} minute${s > 60 ? "s" : ""}`,
+              }))}
+            />
+          </div>
           <div className="md:col-span-2">
             <button type="button" disabled={busy} onClick={() => void call("/config", "PUT", { enabled: false }, "Signalements désactivés", "Les membres ne peuvent plus signaler ; l'historique est conservé.")} className="cursor-pointer rounded-xl border border-rose-500/30 px-4 py-2 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/10 disabled:opacity-50">
               Désactiver le système

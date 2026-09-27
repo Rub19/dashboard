@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import Select from "@/components/ui/Select";
 import {
   Vote,
   Plus,
@@ -894,11 +895,11 @@ export default function PollCreateClient() {
 
               {roles.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-zinc-800 flex items-center gap-2">
-                  <select
-                    className="flex-1 rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:outline-none"
-                    defaultValue=""
-                    onChange={(e) => {
-                      const selectedId = e.target.value;
+                  <Select
+                    className="flex-1"
+                    value=""
+                    placeholder="+ Ajouter un rôle du serveur..."
+                    onChange={(selectedId) => {
                       if (!selectedId) return;
                       const roleObj = roles.find((r) => r.id === selectedId);
                       if (roleObj && !roleWeights.some((rw) => rw.roleId === selectedId)) {
@@ -908,18 +909,11 @@ export default function PollCreateClient() {
                         ]);
                         showToast(`Rôle @${roleObj.name} ajouté aux coefficients.`, "info");
                       }
-                      e.target.value = "";
                     }}
-                  >
-                    <option value="">+ Ajouter un rôle du serveur...</option>
-                    {roles
+                    options={roles
                       .filter((r) => !roleWeights.some((rw) => rw.roleId === r.id))
-                      .map((r) => (
-                        <option key={r.id} value={r.id}>
-                          @{r.name}
-                        </option>
-                      ))}
-                  </select>
+                      .map((r) => ({ id: r.id, label: `@${r.name}` }))}
+                  />
                 </div>
               )}
             </div>

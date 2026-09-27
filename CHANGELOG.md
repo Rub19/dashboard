@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.135 — 2026-09-27
+
+**Refonte des menus déroulants — lot 4**
+
+- 12 fichiers de plus migrés vers le composant Select stylé : Sécurité (anti-raid, anti-nuke), Sondages (création, réglages), Signalements, Modération (fiche membre), Boutique/Économie, Formulaires, Tickets, Salons vocaux, Comparateur de sauvegardes.
+
 ## v1.28.134 — 2026-09-27
 
 **Correction : pourcentage de headshot non arrondi dans les badges de match**

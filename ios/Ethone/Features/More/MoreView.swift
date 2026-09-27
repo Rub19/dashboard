@@ -25,6 +25,8 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.valorant) { Label("Valorant", systemImage: "scope") }
                     NavigationLink(value: MoreDestination.valorantStore) { Label("Boutique Valorant", systemImage: "bag.fill") }
                     NavigationLink(value: MoreDestination.lolTracker) { Label("League of Legends", systemImage: "shield.fill") }
+                    NavigationLink(value: MoreDestination.tftTracker) { Label("Teamfight Tactics", systemImage: "square.grid.3x3.fill") }
+                    NavigationLink(value: MoreDestination.otherGames) { Label("Autres jeux", systemImage: "gamecontroller") }
                     NavigationLink(value: MoreDestination.lolRotation) { Label("Rotation LoL", systemImage: "shield.lefthalf.filled") }
                     NavigationLink(value: MoreDestination.games) { Label("Jeux", systemImage: "gamecontroller.fill") }
                     NavigationLink(value: MoreDestination.analytics) { Label("Analytique", systemImage: "chart.bar.xaxis") }
@@ -32,6 +34,10 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.habits) { Label("Habitudes", systemImage: "flame.fill") }
                     NavigationLink(value: MoreDestination.calendar) { Label("Calendrier", systemImage: "calendar") }
                     NavigationLink(value: MoreDestination.notifications) { Label("Notifications", systemImage: "bell.badge.fill") }
+                    NavigationLink(value: MoreDestination.profile) { Label("Profil", systemImage: "person.crop.circle") }
+                    NavigationLink(value: MoreDestination.system) { Label("Système", systemImage: "cpu") }
+                    NavigationLink(value: MoreDestination.sharedLinks) { Label("Liens partagés", systemImage: "link.badge.plus") }
+                    NavigationLink(value: MoreDestination.admin) { Label("Administration", systemImage: "lock.shield") }
                     NavigationLink(value: MoreDestination.scratchpad) { Label("Scratchpad", systemImage: "square.and.pencil") }
                     NavigationLink(value: MoreDestination.macros) { Label("Macros", systemImage: "wand.and.stars") }
                     NavigationLink(value: MoreDestination.personas) { Label("Personas", systemImage: "person.crop.circle.badge.checkmark") }
@@ -114,6 +120,12 @@ struct MoreView: View {
                 case .valorant: ValorantView()
                 case .valorantStore: ValorantStoreView()
                 case .lolTracker: LolTrackerView()
+                case .tftTracker: TftTrackerView()
+                case .otherGames: OtherGamesTrackerView()
+                case .profile: ProfileView()
+                case .system: SystemView()
+                case .sharedLinks: SharedLinksView()
+                case .admin: AdminView()
                 case .lolRotation: LolRotationView()
                 case .games: GamesView()
                 case .interactions: InteractionsView()

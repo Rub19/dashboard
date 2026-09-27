@@ -154,6 +154,7 @@ final class AppModel {
         ("/weather", "Météo"), ("/bills", "Factures"), ("/matches", "Valorant"), ("/games", "Jeux"), ("/interactions", "Interactions"),
         ("/team", "Équipe"), ("/security", "Sécurité"), ("/settings", "Apparence"), ("/scratchpad", "Scratchpad"),
         ("/macros", "Macros"), ("/personas", "Personas"), ("/rss", "RSS"), ("/discord", "Bot Discord"),
+        ("/profile", "Profil"), ("/system", "Système"), ("/share", "Liens partagés"), ("/drop", "Dépôts"), ("/admin", "Administration"),
     ]
 
     /// Ouvre l'écran iOS correspondant à un chemin du site ; `false` si la page n'a pas d'équivalent.
@@ -167,6 +168,7 @@ final class AppModel {
             "bills": .bills, "calendar-bills": .bills, "matches": .valorant, "games": .games, "interactions": .interactions,
             "team": .team, "security": .security, "settings": .settings, "notifications": .notifications, "scratchpad": .scratchpad, "macros": .macros,
             "personas": .personas, "rss": .rss, "discord": .discord,
+            "profile": .profile, "system": .system, "share": .sharedLinks, "drop": .sharedLinks, "admin": .admin,
         ]
         if let tab = tabs[key] {
             requestedTab = tab
@@ -199,6 +201,6 @@ enum AppTab: String, CaseIterable, Identifiable {
 
 /// Sections accessibles depuis l'onglet « Plus ».
 enum MoreDestination: String, Hashable, CaseIterable, Identifiable {
-    case settings, notifications, team, bills, scratchpad, macros, personas, rss, valorant, valorantStore, lolTracker, lolRotation, games, interactions, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security
+    case settings, notifications, team, bills, scratchpad, macros, personas, rss, valorant, valorantStore, lolTracker, lolRotation, tftTracker, otherGames, sharedLinks, profile, system, admin, games, interactions, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security
     var id: String { rawValue }
 }

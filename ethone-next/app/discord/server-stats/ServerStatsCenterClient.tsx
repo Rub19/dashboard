@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, RefreshCw, Plus, Trash2, Volume2 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
+import Select from "@/components/ui/Select";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import { subscribeGuildLive } from "@/lib/guildLive";
@@ -273,16 +274,18 @@ export default function ServerStatsCenterClient() {
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-sm font-semibold">Vos compteurs ({overview.channels.length}/25)</h2>
                 <div className="flex flex-wrap items-center gap-3 text-xs">
-                  <label className="flex items-center gap-2 text-zinc-400">
-                    Rafraîchir toutes les
-                    <select value={overview.updateIntervalMinutes} disabled={busy} onChange={(e) => void setConfig({ updateIntervalMinutes: Number(e.target.value) })} className="rounded-lg border border-[var(--panel-border)] bg-[var(--bg-surface)] px-2 py-1 text-white">
-                      {[10, 15, 30, 60, 180, 360].map((m) => (
-                        <option key={m} value={m}>
-                          {m} min
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                  <div className="flex items-center gap-2 text-zinc-400">
+                    <span>Rafraîchir toutes les</span>
+                    <Select
+                      value={String(overview.updateIntervalMinutes)}
+                      disabled={busy}
+                      onChange={(v) => void setConfig({ updateIntervalMinutes: Number(v) })}
+                      size="sm"
+                      className="w-28 shrink-0"
+                      aria-label="Intervalle de rafraîchissement"
+                      options={[10, 15, 30, 60, 180, 360].map((m) => ({ id: String(m), label: `${m} min` }))}
+                    />
+                  </div>
                   <button type="button" role="switch" aria-checked={overview.enabled} disabled={busy} onClick={() => void setConfig({ enabled: !overview.enabled })} className={cn("cursor-pointer rounded-full px-3 py-1 font-semibold transition", overview.enabled ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-500/15 text-zinc-400")}>
                     {overview.enabled ? "Actif" : "En pause"}
                   </button>

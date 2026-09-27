@@ -37311,6 +37311,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_131_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_131_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_131_de);
 
+const v1_28_132_fr: ChangelogEntry = {
+  version: "v1.28.132",
+  date: "2026-09-27",
+  title: "Refonte des menus déroulants — lot 3",
+  items: [
+    "5 fichiers de plus migrés vers le composant Select stylé : Sondages, Rappels, Rôles sécurisés, Server Stats, Boîte à Suggestions.",
+  ],
+};
+
+const v1_28_132_en: ChangelogEntry = {
+  version: "v1.28.132",
+  date: "2026-09-27",
+  title: "Dropdown menus restyling — batch 3",
+  items: [
+    "5 more files migrated to the themed Select component: Polls, Reminders, Secure Roles, Server Stats, Suggestions.",
+  ],
+};
+
+const v1_28_132_es: ChangelogEntry = {
+  version: "v1.28.132",
+  date: "2026-09-27",
+  title: "Rediseño de los menús desplegables — lote 3",
+  items: [
+    "5 archivos más migrados al componente Select con el estilo del tema: Encuestas, Recordatorios, Roles seguros, Server Stats, Buzón de sugerencias.",
+  ],
+};
+
+const v1_28_132_de: ChangelogEntry = {
+  version: "v1.28.132",
+  date: "2026-09-27",
+  title: "Dropdown-Überarbeitung — Charge 3",
+  items: [
+    "5 weitere Dateien auf die themenkonforme Select-Komponente umgestellt: Umfragen, Erinnerungen, Sichere Rollen, Server-Stats, Vorschlagsbox.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_132_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_132_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_132_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_132_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

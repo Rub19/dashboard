@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.132 — 2026-09-27
+
+**Refonte des menus déroulants — lot 3**
+
+- 5 fichiers de plus migrés vers le composant Select stylé : Sondages, Rappels, Rôles sécurisés, Server Stats, Boîte à Suggestions.
+
 ## v1.28.131 — 2026-09-27
 
 **Refonte des menus déroulants — Centre de Modération**

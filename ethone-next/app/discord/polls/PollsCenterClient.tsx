@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import Select from "@/components/ui/Select";
 import {
   Vote,
   Plus,
@@ -502,31 +503,27 @@ export default function PollsCenterClient() {
             </div>
 
             {/* Type selector dropdown */}
-            <select
+            <Select
               value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-3 py-2 text-xs text-zinc-300 focus:border-indigo-500 focus:outline-none"
-            >
-              <option value="ALL">Tous types de vote</option>
-              {Object.entries(TYPE_CONFIG).map(([key, val]) => (
-                <option key={key} value={key}>
-                  {val.label}
-                </option>
-              ))}
-            </select>
+              onChange={setSelectedType}
+              size="sm"
+              className="w-48 shrink-0"
+              aria-label="Filtrer par type de vote"
+              options={[
+                { id: "ALL", label: "Tous types de vote" },
+                ...Object.entries(TYPE_CONFIG).map(([key, val]) => ({ id: key, label: val.label })),
+              ]}
+            />
 
             {/* Category selector */}
-            <select
+            <Select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-3 py-2 text-xs text-zinc-300 focus:border-indigo-500 focus:outline-none"
-            >
-              {categories.map((c) => (
-                <option key={c} value={c}>
-                  {c === "ALL" ? "Toutes catégories" : c}
-                </option>
-              ))}
-            </select>
+              onChange={setSelectedCategory}
+              size="sm"
+              className="w-44 shrink-0"
+              aria-label="Filtrer par catégorie"
+              options={categories.map((c) => ({ id: c, label: c === "ALL" ? "Toutes catégories" : c }))}
+            />
           </div>
         </div>
 

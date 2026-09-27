@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, RefreshCw, X } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
+import Select from "@/components/ui/Select";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import { subscribeGuildLive } from "@/lib/guildLive";
@@ -404,16 +405,15 @@ export default function SecureRolesCenterClient() {
 
             <section className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
               <h2 className="text-base font-bold">3. Réglages</h2>
-              <label className="mt-3 block max-w-xs text-xs text-zinc-400">
-                Durée d&apos;une session
-                <select value={config.sessionMinutes} disabled={busy === "duration"} onChange={(e) => void call("duration", "/config", "PUT", { sessionMinutes: Number(e.target.value) }, "Durée enregistrée", "Elle s'applique aux prochaines sessions.")} className="mt-1 h-10 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface)] px-3 text-sm text-white">
-                  {DURATIONS.map((d) => (
-                    <option key={d} value={d}>
-                      {d < 60 ? `${d} minutes` : `${d / 60} heure${d > 60 ? "s" : ""}`}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <div className="mt-3 max-w-xs">
+                <Select
+                  label="Durée d'une session"
+                  value={String(config.sessionMinutes)}
+                  disabled={busy === "duration"}
+                  onChange={(v) => void call("duration", "/config", "PUT", { sessionMinutes: Number(v) }, "Durée enregistrée", "Elle s'applique aux prochaines sessions.")}
+                  options={DURATIONS.map((d) => ({ id: String(d), label: d < 60 ? `${d} minutes` : `${d / 60} heure${d > 60 ? "s" : ""}` }))}
+                />
+              </div>
               <p className="mt-3 text-[11px] text-zinc-500">Le module ne peut être désactivé qu&apos;une fois tous les rôles restaurés, pour ne jamais enfermer votre équipe hors de ses permissions. Si quelqu&apos;un se donne à la main un rôle caché sans code, le bot le retire aussitôt et le consigne dans le journal.</p>
             </section>
 

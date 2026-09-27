@@ -4,6 +4,7 @@ import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import Select from "@/components/ui/Select";
 import {
   Lightbulb,
   ThumbsUp,
@@ -677,9 +678,7 @@ export default function SuggestionsCenterClient() {
               </div>
               <div className="md:col-span-2">
                 <label className="text-[11px] text-neutral-400 block mb-1">Catégorie</label>
-                <select value={newCategory} onChange={(e) => setNewCategory(e.target.value)} className="w-full h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-2 text-xs text-white">
-                  {categories.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
+                <Select value={newCategory} onChange={setNewCategory} size="sm" options={categories.map((c) => ({ id: c, label: c }))} />
               </div>
               <button onClick={createSuggestion} disabled={submitting} className="md:col-span-1 h-9 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold flex items-center justify-center gap-1 disabled:opacity-50 cursor-pointer">
                 <Plus className="w-4 h-4" />
@@ -810,9 +809,11 @@ export default function SuggestionsCenterClient() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs font-semibold text-neutral-300 block mb-1.5">Nouveau statut</label>
-                      <select value={newStatus} onChange={(e) => setNewStatus(e.target.value as SuggestionStatus)} className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white">
-                        {(Object.keys(STATUS_META) as SuggestionStatus[]).map((s) => <option key={s} value={s}>{STATUS_META[s].label}</option>)}
-                      </select>
+                      <Select
+                        value={newStatus}
+                        onChange={(v) => setNewStatus(v as SuggestionStatus)}
+                        options={(Object.keys(STATUS_META) as SuggestionStatus[]).map((s) => ({ id: s, label: STATUS_META[s].label }))}
+                      />
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-neutral-300 block mb-1.5">Priorité interne</label>

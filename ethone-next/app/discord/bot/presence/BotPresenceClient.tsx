@@ -42,6 +42,7 @@ import {
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
+import Select from "@/components/ui/Select";
 
 // Même convention que le reste des pages /discord/* (BotControlClient, welcome,
 // moderation, automod...) : NEXT_PUBLIC_DISCORD_BOT_API pointe vers le serveur Express
@@ -1091,20 +1092,22 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <Shuffle className="w-3.5 h-3.5 text-purple-400" />
                     Stratégie d'ordonnancement
                   </label>
-                  <select
+                  <Select
                     value={rotationConfig.order}
-                    onChange={(e) =>
+                    onChange={(v) =>
                       setRotationConfig((prev) => ({
                         ...prev,
-                        order: e.target.value as any,
+                        order: v as any,
                       }))
                     }
-                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-sm text-white focus:outline-none focus:border-indigo-500"
-                  >
-                    <option value="sequential">Séquentiel (Cycle 1, 2, 3...)</option>
-                    <option value="random">Aléatoire Pur (Random)</option>
-                    <option value="weighted">Pondéré selon le Poids</option>
-                  </select>
+                    className="w-full"
+                    aria-label="Stratégie d'ordonnancement"
+                    options={[
+                      { id: "sequential", label: "Séquentiel (Cycle 1, 2, 3...)" },
+                      { id: "random", label: "Aléatoire Pur (Random)" },
+                      { id: "weighted", label: "Pondéré selon le Poids" },
+                    ]}
+                  />
                   <p className="text-[11px] text-zinc-400">Détermine le choix de la prochaine activité</p>
                 </div>
 
@@ -1184,17 +1187,20 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
                   <div className="sm:col-span-3">
-                    <select
+                    <Select
                       value={newRotType}
-                      onChange={(e) => setNewRotType(e.target.value as DiscordActivityType)}
-                      className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white focus:outline-none focus:border-indigo-500"
-                    >
-                      <option value="Playing">Playing</option>
-                      <option value="Streaming">Streaming</option>
-                      <option value="Listening">Listening</option>
-                      <option value="Watching">Watching</option>
-                      <option value="Competing">Competing</option>
-                    </select>
+                      onChange={(v) => setNewRotType(v as DiscordActivityType)}
+                      size="sm"
+                      className="w-full"
+                      aria-label="Type d'activité"
+                      options={[
+                        { id: "Playing", label: "Playing" },
+                        { id: "Streaming", label: "Streaming" },
+                        { id: "Listening", label: "Listening" },
+                        { id: "Watching", label: "Watching" },
+                        { id: "Competing", label: "Competing" },
+                      ]}
+                    />
                   </div>
 
                   <div className="sm:col-span-6">

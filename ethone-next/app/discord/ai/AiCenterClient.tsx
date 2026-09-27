@@ -35,6 +35,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import { cn } from "@/lib/utils";
+import Select from "@/components/ui/Select";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -636,16 +637,22 @@ export default function AiCenterClient() {
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-neutral-300">Ton général</label>
-                  <select value={personality.tone} onChange={(e) => setPersonality({ tone: e.target.value as Tone })} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                    <option value="FRIENDLY">Convivial & chaleureux</option>
-                    <option value="PROFESSIONAL">Professionnel & posé</option>
-                    <option value="CASUAL">Décontracté & gamer</option>
-                    <option value="FUNNY">Humoristique & décalé</option>
-                    <option value="CONCISE">Concis & rapide</option>
-                    <option value="DETAILED">Détaillé</option>
-                    <option value="TECHNICAL">Technique</option>
-                    <option value="CUSTOM">Personnalisé (instructions seules)</option>
-                  </select>
+                  <Select
+                    value={personality.tone}
+                    onChange={(v) => setPersonality({ tone: v as Tone })}
+                    className="w-full"
+                    aria-label="Ton général"
+                    options={[
+                      { id: "FRIENDLY", label: "Convivial & chaleureux" },
+                      { id: "PROFESSIONAL", label: "Professionnel & posé" },
+                      { id: "CASUAL", label: "Décontracté & gamer" },
+                      { id: "FUNNY", label: "Humoristique & décalé" },
+                      { id: "CONCISE", label: "Concis & rapide" },
+                      { id: "DETAILED", label: "Détaillé" },
+                      { id: "TECHNICAL", label: "Technique" },
+                      { id: "CUSTOM", label: "Personnalisé (instructions seules)" },
+                    ]}
+                  />
                 </div>
               </div>
               <div className="space-y-1.5">
@@ -736,19 +743,33 @@ export default function AiCenterClient() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-2">
                 <label className="text-xs font-semibold text-white block">Mode anti-hallucination</label>
-                <select value={settings.hallucinationMode} onChange={(e) => { setSettings((s) => ({ ...s, hallucinationMode: e.target.value as Settings["hallucinationMode"] })); setDirty(true); }} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                  <option value="STRICT">Strict — refuse si l'info est absente des sources</option>
-                  <option value="BALANCED">Équilibré — répond avec prudence</option>
-                  <option value="CREATIVE">Créatif — réponse libre</option>
-                </select>
+                <Select
+                  value={settings.hallucinationMode}
+                  onChange={(v) => { setSettings((s) => ({ ...s, hallucinationMode: v as Settings["hallucinationMode"] })); setDirty(true); }}
+                  size="sm"
+                  className="w-full"
+                  aria-label="Mode anti-hallucination"
+                  options={[
+                    { id: "STRICT", label: "Strict — refuse si l'info est absente des sources" },
+                    { id: "BALANCED", label: "Équilibré — répond avec prudence" },
+                    { id: "CREATIVE", label: "Créatif — réponse libre" },
+                  ]}
+                />
               </div>
               <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-2">
                 <label className="text-xs font-semibold text-white block">Affichage des sources sur Discord</label>
-                <select value={settings.showSources} onChange={(e) => { setSettings((s) => ({ ...s, showSources: e.target.value as Settings["showSources"] })); setDirty(true); }} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                  <option value="WHEN_USED">Seulement si des documents sont cités</option>
-                  <option value="ALWAYS">Toujours</option>
-                  <option value="NEVER">Jamais</option>
-                </select>
+                <Select
+                  value={settings.showSources}
+                  onChange={(v) => { setSettings((s) => ({ ...s, showSources: v as Settings["showSources"] })); setDirty(true); }}
+                  size="sm"
+                  className="w-full"
+                  aria-label="Affichage des sources sur Discord"
+                  options={[
+                    { id: "WHEN_USED", label: "Seulement si des documents sont cités" },
+                    { id: "ALWAYS", label: "Toujours" },
+                    { id: "NEVER", label: "Jamais" },
+                  ]}
+                />
               </div>
             </div>
           </div>
@@ -764,14 +785,21 @@ export default function AiCenterClient() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-neutral-400">Mode global :</span>
-                <select value={settings.defaultMode} onChange={(e) => { setSettings((s) => ({ ...s, defaultMode: e.target.value as ResponseMode })); setDirty(true); }} className="bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-1 text-xs text-white focus:outline-none focus:border-indigo-500">
-                  <option value="MENTION_ONLY">Mention uniquement (@Bot)</option>
-                  <option value="AUTOMATIC">Automatique partout</option>
-                  <option value="COMMAND_ONLY">Commandes uniquement (/ask)</option>
-                  <option value="REPLY">Réponses aux messages du bot</option>
-                  <option value="HYBRID">Hybride (mention + réponse)</option>
-                  <option value="DISABLED">Désactivé</option>
-                </select>
+                <Select
+                  value={settings.defaultMode}
+                  onChange={(v) => { setSettings((s) => ({ ...s, defaultMode: v as ResponseMode })); setDirty(true); }}
+                  size="sm"
+                  className="w-auto"
+                  aria-label="Mode global"
+                  options={[
+                    { id: "MENTION_ONLY", label: "Mention uniquement (@Bot)" },
+                    { id: "AUTOMATIC", label: "Automatique partout" },
+                    { id: "COMMAND_ONLY", label: "Commandes uniquement (/ask)" },
+                    { id: "REPLY", label: "Réponses aux messages du bot" },
+                    { id: "HYBRID", label: "Hybride (mention + réponse)" },
+                    { id: "DISABLED", label: "Désactivé" },
+                  ]}
+                />
               </div>
             </div>
             <div className="divide-y divide-neutral-800 border border-neutral-800 rounded-xl overflow-hidden">
@@ -786,13 +814,20 @@ export default function AiCenterClient() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3 flex-wrap">
-                    <select value={rule.mode} onChange={(e) => saveChannelRule({ ...rule, mode: e.target.value as ResponseMode })} className="bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
-                      <option value="AUTOMATIC">🟢 Automatique</option>
-                      <option value="MENTION_ONLY">🟡 Sur mention</option>
-                      <option value="HYBRID">🔵 Hybride</option>
-                      <option value="COMMAND_ONLY">⚪ /ask seulement</option>
-                      <option value="DISABLED">🔴 Désactivé</option>
-                    </select>
+                    <Select
+                      value={rule.mode}
+                      onChange={(v) => saveChannelRule({ ...rule, mode: v as ResponseMode })}
+                      size="sm"
+                      className="w-auto"
+                      aria-label="Mode de réponse pour ce salon"
+                      options={[
+                        { id: "AUTOMATIC", label: "🟢 Automatique" },
+                        { id: "MENTION_ONLY", label: "🟡 Sur mention" },
+                        { id: "HYBRID", label: "🔵 Hybride" },
+                        { id: "COMMAND_ONLY", label: "⚪ /ask seulement" },
+                        { id: "DISABLED", label: "🔴 Désactivé" },
+                      ]}
+                    />
                     <label className="flex items-center gap-1.5 text-xs text-neutral-300 cursor-pointer">
                       <input type="checkbox" checked={rule.threadModeEnabled} onChange={(e) => saveChannelRule({ ...rule, threadModeEnabled: e.target.checked })} className="rounded text-indigo-600 bg-neutral-900 border-neutral-700" />
                       Thread dédié
@@ -952,11 +987,17 @@ export default function AiCenterClient() {
                 </div>
                 <div className="space-y-1.5">
                   <label className="font-semibold text-neutral-300">Type</label>
-                  <select value={newKnType} onChange={(e) => setNewKnType(e.target.value as KnowledgeType)} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                    <option value="TEXT">Texte brut</option>
-                    <option value="FAQ">Questions & réponses (FAQ)</option>
-                    <option value="DOC">Documentation / guide</option>
-                  </select>
+                  <Select
+                    value={newKnType}
+                    onChange={(v) => setNewKnType(v as KnowledgeType)}
+                    className="w-full"
+                    aria-label="Type de connaissance"
+                    options={[
+                      { id: "TEXT", label: "Texte brut" },
+                      { id: "FAQ", label: "Questions & réponses (FAQ)" },
+                      { id: "DOC", label: "Documentation / guide" },
+                    ]}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <label className="font-semibold text-neutral-300">Contenu</label>

@@ -7,6 +7,7 @@ import RolePicker, { fetchGuildRoles } from "@/components/discord/RolePicker";
 import { Field, Switch, inputCls } from "@/components/discord/SettingsUI";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { cn } from "@/lib/utils";
+import Select from "@/components/ui/Select";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -162,13 +163,13 @@ export default function LevelingBoostsPanel({ guildId, boosts, disabled, onChang
             <input value={name} maxLength={60} onChange={(e) => setName(e.target.value)} placeholder="Ex. Week-end double XP, Membres boosters…" className={inputCls} />
           </Field>
           <Field label="Cible">
-            <select value={targetType} onChange={(e) => { setTargetType(e.target.value as Target); setTargetId(null); }} className={inputCls}>
-              {TARGETS.map(([k, l]) => (
-                <option key={k} value={k}>
-                  {l}
-                </option>
-              ))}
-            </select>
+            <Select
+              value={targetType}
+              onChange={(v) => { setTargetType(v as Target); setTargetId(null); }}
+              className="w-full"
+              aria-label="Cible"
+              options={TARGETS.map(([k, l]) => ({ id: k, label: l }))}
+            />
           </Field>
           {targetType === "role" && (
             <Field label="Rôle">
@@ -201,13 +202,13 @@ export default function LevelingBoostsPanel({ guildId, boosts, disabled, onChang
             </div>
           </Field>
           <Field label="S'applique à">
-            <select value={scope} onChange={(e) => setScope(e.target.value as Scope)} className={inputCls}>
-              {SCOPES.map(([k, l]) => (
-                <option key={k} value={k}>
-                  {l}
-                </option>
-              ))}
-            </select>
+            <Select
+              value={scope}
+              onChange={(v) => setScope(v as Scope)}
+              className="w-full"
+              aria-label="S'applique à"
+              options={SCOPES.map(([k, l]) => ({ id: k, label: l }))}
+            />
           </Field>
           <Field label="Début (optionnel)">
             <input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} className={inputCls} />
@@ -271,10 +272,16 @@ export default function LevelingBoostsPanel({ guildId, boosts, disabled, onChang
             <ChannelPicker value={pvChannel} guildId={guildId} filterTypes={[0, 2, 5, 13, 15]} allowClear onChange={(id) => setPvChannel(id || null)} />
           </Field>
           <Field label="Type de gain">
-            <select value={pvScope} onChange={(e) => setPvScope(e.target.value as "messages" | "voice")} className={inputCls}>
-              <option value="messages">Un message</option>
-              <option value="voice">Une minute de vocal</option>
-            </select>
+            <Select
+              value={pvScope}
+              onChange={(v) => setPvScope(v as "messages" | "voice")}
+              className="w-full"
+              aria-label="Type de gain"
+              options={[
+                { id: "messages", label: "Un message" },
+                { id: "voice", label: "Une minute de vocal" },
+              ]}
+            />
           </Field>
         </div>
         <button type="button" disabled={!/^\d{5,25}$/.test(pvUser.trim()) || disabled} onClick={() => void runPreview()} className="cursor-pointer rounded-xl border border-neutral-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50">

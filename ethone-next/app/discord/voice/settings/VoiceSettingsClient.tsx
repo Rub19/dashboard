@@ -19,6 +19,7 @@ import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import { formatApiError } from "@/lib/format-error";
 import { cn } from "@/lib/utils";
+import Select from "@/components/ui/Select";
 
 interface VoiceSettings {
   enabled: boolean;
@@ -314,18 +315,16 @@ export default function VoiceSettingsClient() {
               </div>
 
               {categories.length > 0 ? (
-                <select
+                <Select
                   value={settings.roomCategory || settings.defaultCategoryId || ""}
-                  onChange={(e) => setSettings({ ...settings, roomCategory: e.target.value, defaultCategoryId: e.target.value })}
-                  className="w-full h-10 px-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-white text-xs focus:outline-none focus:border-indigo-500 cursor-pointer"
-                >
-                  <option value="">⚡ Automatique : Même catégorie que le salon de création (Recommandé)</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      📁 {cat.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(v) => setSettings({ ...settings, roomCategory: v, defaultCategoryId: v })}
+                  className="w-full"
+                  aria-label="Catégorie Discord des salons créés"
+                  options={[
+                    { id: "", label: "⚡ Automatique : Même catégorie que le salon de création (Recommandé)" },
+                    ...categories.map((cat) => ({ id: cat.id, label: `📁 ${cat.name}` })),
+                  ]}
+                />
               ) : (
                 <input
                   type="text"
@@ -390,19 +389,21 @@ export default function VoiceSettingsClient() {
               <label className="block text-zinc-300 font-semibold mb-1">
                 Délai de Grâce avant Suppression si Vide (secondes)
               </label>
-              <select
-                value={settings.emptyDeletionDelaySeconds}
-                onChange={(e) => setSettings({ ...settings, emptyDeletionDelaySeconds: parseInt(e.target.value, 10) })}
-                className="w-full h-10 px-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:border-amber-500 cursor-pointer"
-              >
-                <option value={0}>Immédiat (0s - dès que vide)</option>
-                <option value={15}>15 secondes</option>
-                <option value={30}>30 secondes (standard)</option>
-                <option value={45}>45 secondes</option>
-                <option value={60}>60 secondes (recommandé)</option>
-                <option value={120}>2 minutes</option>
-                <option value={300}>5 minutes</option>
-              </select>
+              <Select
+                value={String(settings.emptyDeletionDelaySeconds)}
+                onChange={(v) => setSettings({ ...settings, emptyDeletionDelaySeconds: parseInt(v, 10) })}
+                className="w-full"
+                aria-label="Délai de grâce avant suppression si vide"
+                options={[
+                  { id: "0", label: "Immédiat (0s - dès que vide)" },
+                  { id: "15", label: "15 secondes" },
+                  { id: "30", label: "30 secondes (standard)" },
+                  { id: "45", label: "45 secondes" },
+                  { id: "60", label: "60 secondes (recommandé)" },
+                  { id: "120", label: "2 minutes" },
+                  { id: "300", label: "5 minutes" },
+                ]}
+              />
               <span className="text-[11px] text-zinc-500 mt-1 block">
                 Si un membre se reconnecte pendant ce délai, la suppression est automatiquement annulée.
               </span>
@@ -429,31 +430,35 @@ export default function VoiceSettingsClient() {
               <label className="block text-zinc-300 font-semibold mb-1">
                 Stratégie en cas de Départ du Propriétaire
               </label>
-              <select
+              <Select
                 value={settings.ownershipTransferStrategy}
-                onChange={(e) => setSettings({ ...settings, ownershipTransferStrategy: e.target.value as any })}
-                className="w-full h-10 px-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:border-amber-500 cursor-pointer"
-              >
-                <option value="FIRST_REMAINING">Transférer au premier membre restant (le plus ancien)</option>
-                <option value="RANDOM_REMAINING">Transférer à un membre restant aléatoire</option>
-                <option value="OWNERLESS">Laisser le salon sans propriétaire jusqu'à ce qu'il soit vide</option>
-                <option value="DELETE_ROOM">Fermer et supprimer le salon immédiatement</option>
-              </select>
+                onChange={(v) => setSettings({ ...settings, ownershipTransferStrategy: v as any })}
+                className="w-full"
+                aria-label="Stratégie en cas de départ du propriétaire"
+                options={[
+                  { id: "FIRST_REMAINING", label: "Transférer au premier membre restant (le plus ancien)" },
+                  { id: "RANDOM_REMAINING", label: "Transférer à un membre restant aléatoire" },
+                  { id: "OWNERLESS", label: "Laisser le salon sans propriétaire jusqu'à ce qu'il soit vide" },
+                  { id: "DELETE_ROOM", label: "Fermer et supprimer le salon immédiatement" },
+                ]}
+              />
             </div>
 
             <div>
               <label className="block text-zinc-300 font-semibold mb-1">
                 Débit Audio par Défaut
               </label>
-              <select
-                value={settings.defaultBitrate}
-                onChange={(e) => setSettings({ ...settings, defaultBitrate: parseInt(e.target.value, 10) })}
-                className="w-full h-10 px-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:border-amber-500 cursor-pointer"
-              >
-                <option value={64000}>64 kbps (Qualité standard, économe)</option>
-                <option value={96000}>96 kbps (Qualité supérieure Discord)</option>
-                <option value={128000}>128 kbps (Qualité studio / Tryhard)</option>
-              </select>
+              <Select
+                value={String(settings.defaultBitrate)}
+                onChange={(v) => setSettings({ ...settings, defaultBitrate: parseInt(v, 10) })}
+                className="w-full"
+                aria-label="Débit audio par défaut"
+                options={[
+                  { id: "64000", label: "64 kbps (Qualité standard, économe)" },
+                  { id: "96000", label: "96 kbps (Qualité supérieure Discord)" },
+                  { id: "128000", label: "128 kbps (Qualité studio / Tryhard)" },
+                ]}
+              />
             </div>
           </div>
         </div>

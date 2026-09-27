@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.29.2 — 2026-09-27
+
+**Menus déroulants restylés sur 11 pages**
+
+- Fin du chantier de restylage des menus déroulants : IA, sauvegardes, présence du bot, gestion serveur, logs & audit, boosts de niveaux, réglages de niveaux, rôles statistiques, formulaires, salons vocaux et création d'événements utilisent désormais le composant de sélection unifié (clavier, focus, accessibilité).
+
 ## v1.29.1 — 2026-09-27
 
 **Icônes de la barre du haut agrandies**

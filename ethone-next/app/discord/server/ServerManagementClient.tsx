@@ -48,6 +48,7 @@ import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import { formatApiError } from "@/lib/format-error";
+import Select from "@/components/ui/Select";
 
 // ==========================================
 // Types
@@ -1707,18 +1708,21 @@ export default function ServerManagementClient({
                   <h3 className="text-sm font-bold text-white">Exclure {selectedMember.displayName}</h3>
                   <div>
                     <label className="text-xs text-zinc-400 block mb-1">Durée :</label>
-                    <select
-                      value={timeoutMinutes}
-                      onChange={(e) => setTimeoutMinutes(Number(e.target.value))}
-                      className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white"
-                    >
-                      <option value={1}>1 minute</option>
-                      <option value={5}>5 minutes</option>
-                      <option value={10}>10 minutes</option>
-                      <option value={60}>1 heure</option>
-                      <option value={1440}>1 jour</option>
-                      <option value={10080}>1 semaine</option>
-                    </select>
+                    <Select
+                      value={String(timeoutMinutes)}
+                      onChange={(v) => setTimeoutMinutes(Number(v))}
+                      size="sm"
+                      className="w-full"
+                      aria-label="Durée du timeout"
+                      options={[
+                        { id: "1", label: "1 minute" },
+                        { id: "5", label: "5 minutes" },
+                        { id: "10", label: "10 minutes" },
+                        { id: "60", label: "1 heure" },
+                        { id: "1440", label: "1 jour" },
+                        { id: "10080", label: "1 semaine" },
+                      ]}
+                    />
                   </div>
                   <div>
                     <label className="text-xs text-zinc-400 block mb-1">Motif :</label>
@@ -1973,18 +1977,17 @@ export default function ServerManagementClient({
                   {newChannelType !== 4 && (
                     <div>
                       <label className="text-xs text-zinc-400 block mb-1">Catégorie :</label>
-                      <select
+                      <Select
                         value={newChannelCategory}
-                        onChange={(e) => setNewChannelCategory(e.target.value)}
-                        className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white"
-                      >
-                        <option value="">(Aucune catégorie)</option>
-                        {channelTree.categories.map((cat) => (
-                          <option key={cat.id} value={cat.id}>
-                            {cat.name}
-                          </option>
-                        ))}
-                      </select>
+                        onChange={(v) => setNewChannelCategory(v)}
+                        size="sm"
+                        className="w-full"
+                        aria-label="Catégorie du salon"
+                        options={[
+                          { id: "", label: "(Aucune catégorie)" },
+                          ...channelTree.categories.map((cat) => ({ id: cat.id, label: cat.name })),
+                        ]}
+                      />
                     </div>
                   )}
 
@@ -2223,18 +2226,17 @@ export default function ServerManagementClient({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                 <div>
                   <label className="text-[11px] font-semibold text-zinc-400 block mb-1">Membre cible :</label>
-                  <select
+                  <Select
                     value={debugUserId}
-                    onChange={(e) => setDebugUserId(e.target.value)}
-                    className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white"
-                  >
-                    <option value="">Sélectionner un membre...</option>
-                    {members.map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {m.displayName} (@{m.username})
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(v) => setDebugUserId(v)}
+                    size="sm"
+                    className="w-full"
+                    aria-label="Membre cible"
+                    options={[
+                      { id: "", label: "Sélectionner un membre..." },
+                      ...members.map((m) => ({ id: m.id, label: `${m.displayName} (@${m.username})` })),
+                    ]}
+                  />
                 </div>
 
                 <div>
@@ -2250,19 +2252,22 @@ export default function ServerManagementClient({
 
                 <div>
                   <label className="text-[11px] font-semibold text-zinc-400 block mb-1">Permission à tester :</label>
-                  <select
+                  <Select
                     value={debugPermKey}
-                    onChange={(e) => setDebugPermKey(e.target.value)}
-                    className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white"
-                  >
-                    <option value="ViewChannel">Voir le salon (ViewChannel)</option>
-                    <option value="SendMessages">Envoyer des messages (SendMessages)</option>
-                    <option value="ManageChannels">Gérer le salon (ManageChannels)</option>
-                    <option value="Connect">Se connecter en vocal (Connect)</option>
-                    <option value="Speak">Parler en vocal (Speak)</option>
-                    <option value="ModerateMembers">Exclusion temporaire (ModerateMembers)</option>
-                    <option value="Administrator">Administrateur (Administrator)</option>
-                  </select>
+                    onChange={(v) => setDebugPermKey(v)}
+                    size="sm"
+                    className="w-full"
+                    aria-label="Permission à tester"
+                    options={[
+                      { id: "ViewChannel", label: "Voir le salon (ViewChannel)" },
+                      { id: "SendMessages", label: "Envoyer des messages (SendMessages)" },
+                      { id: "ManageChannels", label: "Gérer le salon (ManageChannels)" },
+                      { id: "Connect", label: "Se connecter en vocal (Connect)" },
+                      { id: "Speak", label: "Parler en vocal (Speak)" },
+                      { id: "ModerateMembers", label: "Exclusion temporaire (ModerateMembers)" },
+                      { id: "Administrator", label: "Administrateur (Administrator)" },
+                    ]}
+                  />
                 </div>
               </div>
 
@@ -2625,30 +2630,34 @@ export default function ServerManagementClient({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-zinc-400 block mb-1 font-semibold">Niveau de Vérification :</label>
-                    <select
-                      value={settings.verificationLevel}
-                      onChange={(e) => setSettings({ ...settings, verificationLevel: Number(e.target.value) })}
-                      className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-white"
-                    >
-                      <option value={0}>Aucun (Non restreint)</option>
-                      <option value={1}>Faible (Email vérifié)</option>
-                      <option value={2}>Moyen (Inscrit depuis &gt; 5 minutes)</option>
-                      <option value={3}>Élevé (Membre depuis &gt; 10 minutes)</option>
-                      <option value={4}>Maximum (Numéro de téléphone vérifié)</option>
-                    </select>
+                    <Select
+                      value={String(settings.verificationLevel)}
+                      onChange={(v) => setSettings({ ...settings, verificationLevel: Number(v) })}
+                      className="w-full"
+                      aria-label="Niveau de vérification"
+                      options={[
+                        { id: "0", label: "Aucun (Non restreint)" },
+                        { id: "1", label: "Faible (Email vérifié)" },
+                        { id: "2", label: "Moyen (Inscrit depuis > 5 minutes)" },
+                        { id: "3", label: "Élevé (Membre depuis > 10 minutes)" },
+                        { id: "4", label: "Maximum (Numéro de téléphone vérifié)" },
+                      ]}
+                    />
                   </div>
 
                   <div>
                     <label className="text-zinc-400 block mb-1 font-semibold">Filtre Contenu Explicite :</label>
-                    <select
-                      value={settings.explicitContentFilter}
-                      onChange={(e) => setSettings({ ...settings, explicitContentFilter: Number(e.target.value) })}
-                      className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-white"
-                    >
-                      <option value={0}>Désactivé</option>
-                      <option value={1}>Analyser les membres sans rôle</option>
-                      <option value={2}>Analyser tous les messages</option>
-                    </select>
+                    <Select
+                      value={String(settings.explicitContentFilter)}
+                      onChange={(v) => setSettings({ ...settings, explicitContentFilter: Number(v) })}
+                      className="w-full"
+                      aria-label="Filtre de contenu explicite"
+                      options={[
+                        { id: "0", label: "Désactivé" },
+                        { id: "1", label: "Analyser les membres sans rôle" },
+                        { id: "2", label: "Analyser tous les messages" },
+                      ]}
+                    />
                   </div>
                 </div>
 

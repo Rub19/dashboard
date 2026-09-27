@@ -11,6 +11,7 @@ import { subscribeGuildLive } from "@/lib/guildLive";
 import { confirmDialog } from "@/lib/confirmDialog";
 import PageHeader from "@/components/discord/PageHeader";
 import { cn } from "@/lib/utils";
+import Select from "@/components/ui/Select";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -142,13 +143,14 @@ function AddMenu({ onAdd, canGroup }: { onAdd: (kind: string) => void; canGroup:
 
 function OpSelect({ value, onChange }: { value: Op; onChange: (o: Op) => void }) {
   return (
-    <select value={value} onChange={(e) => onChange(e.target.value as Op)} className={inputCls} aria-label="Comparaison">
-      {OPS.map((o) => (
-        <option key={o} value={o}>
-          {OP_LABEL[o]}
-        </option>
-      ))}
-    </select>
+    <Select
+      value={value}
+      onChange={(v) => onChange(v as Op)}
+      size="sm"
+      className="w-auto"
+      aria-label="Comparaison"
+      options={OPS.map((o) => ({ id: o, label: OP_LABEL[o] }))}
+    />
   );
 }
 
@@ -158,13 +160,14 @@ function NumberInput({ value, onChange, min = 0, step = 1, width = "w-20" }: { v
 
 function PeriodSelect({ value, onChange }: { value: number; onChange: (n: number) => void }) {
   return (
-    <select value={value} onChange={(e) => onChange(Number(e.target.value))} className={inputCls} aria-label="Période">
-      {(PERIODS.includes(value) ? PERIODS : [...PERIODS, value].sort((a, b) => a - b)).map((p) => (
-        <option key={p} value={p}>
-          sur {p} j
-        </option>
-      ))}
-    </select>
+    <Select
+      value={String(value)}
+      onChange={(v) => onChange(Number(v))}
+      size="sm"
+      className="w-auto"
+      aria-label="Période"
+      options={(PERIODS.includes(value) ? PERIODS : [...PERIODS, value].sort((a, b) => a - b)).map((p) => ({ id: String(p), label: `sur ${p} j` }))}
+    />
   );
 }
 
@@ -218,18 +221,28 @@ function LeafEditor({ leaf, roles, onChange, onDelete }: { leaf: Leaf; roles: Ro
       title = "Rôle";
       body = (
         <>
-          <select value={leaf.not ? "not" : "has"} onChange={(e) => onChange({ ...leaf, not: e.target.value === "not" })} className={inputCls} aria-label="Possède ou non">
-            <option value="has">possède</option>
-            <option value="not">ne possède pas</option>
-          </select>
-          <select value={leaf.roleId} onChange={(e) => onChange({ ...leaf, roleId: e.target.value })} className={cn(inputCls, "min-w-40")} aria-label="Rôle">
-            <option value="">— choisir un rôle —</option>
-            {roles.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-          </select>
+          <Select
+            value={leaf.not ? "not" : "has"}
+            onChange={(v) => onChange({ ...leaf, not: v === "not" })}
+            size="sm"
+            className="w-auto"
+            aria-label="Possède ou non"
+            options={[
+              { id: "has", label: "possède" },
+              { id: "not", label: "ne possède pas" },
+            ]}
+          />
+          <Select
+            value={leaf.roleId}
+            onChange={(v) => onChange({ ...leaf, roleId: v })}
+            size="sm"
+            className="min-w-40"
+            aria-label="Rôle"
+            options={[
+              { id: "", label: "— choisir un rôle —" },
+              ...roles.map((r) => ({ id: r.id, label: r.name })),
+            ]}
+          />
         </>
       );
   }
@@ -251,10 +264,17 @@ function GroupEditor({ group, roles, depth, onChange, onDelete }: { group: Group
     <div className={cn("space-y-2 rounded-2xl border p-3", depth === 0 ? "border-[var(--panel-border)] bg-white/[0.02]" : "border-indigo-400/20 bg-indigo-400/[0.03]")}>
       <div className="flex items-center gap-2 text-xs">
         <span className="font-semibold text-zinc-300">Correspond si</span>
-        <select value={group.match} onChange={(e) => onChange({ ...group, match: e.target.value as "ALL" | "ANY" })} className={cn(inputCls, "font-semibold")} aria-label="Type de groupe">
-          <option value="ALL">TOUT est vrai (ET)</option>
-          <option value="ANY">AU MOINS UN est vrai (OU)</option>
-        </select>
+        <Select
+          value={group.match}
+          onChange={(v) => onChange({ ...group, match: v as "ALL" | "ANY" })}
+          size="sm"
+          className="w-auto font-semibold"
+          aria-label="Type de groupe"
+          options={[
+            { id: "ALL", label: "TOUT est vrai (ET)" },
+            { id: "ANY", label: "AU MOINS UN est vrai (OU)" },
+          ]}
+        />
         <span className="ml-auto flex items-center gap-1.5">
           <AddMenu canGroup={depth < 3} onAdd={(kind) => onChange({ ...group, children: [...group.children, newLeaf(kind)] })} />
           {onDelete && (
@@ -513,15 +533,20 @@ export default function StatrolesCenterClient() {
               </label>
               <label className="text-xs text-zinc-400">
                 Rôle à attribuer
-                <select value={editing.roleId} onChange={(e) => setEditing({ ...editing, roleId: e.target.value })} className={cn(inputCls, "mt-1 h-10 w-full text-sm")}>
-                  <option value="">— choisir un rôle —</option>
-                  {overview.roles.map((r) => (
-                    <option key={r.id} value={r.id} disabled={!r.assignable}>
-                      {r.name}
-                      {!r.assignable ? " (non attribuable par le bot)" : ""}
-                    </option>
-                  ))}
-                </select>
+                <Select
+                  value={editing.roleId}
+                  onChange={(v) => setEditing({ ...editing, roleId: v })}
+                  className="mt-1 w-full"
+                  aria-label="Rôle à attribuer"
+                  options={[
+                    { id: "", label: "— choisir un rôle —" },
+                    ...overview.roles.map((r) => ({
+                      id: r.id,
+                      label: r.name + (!r.assignable ? " (non attribuable par le bot)" : ""),
+                      disabled: !r.assignable,
+                    })),
+                  ]}
+                />
               </label>
             </div>
             <div className="mt-3 grid gap-2 sm:grid-cols-2">

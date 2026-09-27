@@ -9,6 +9,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import { cn } from "@/lib/utils";
+import Select from "@/components/ui/Select";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -248,17 +249,34 @@ export default function FormSettingsClient() {
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-zinc-300">Style du bouton</label>
-                <select value={panel.buttonStyle} onChange={(e) => patchPanel({ buttonStyle: e.target.value as ButtonStyle })} className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-xs text-white outline-none">
-                  <option value="PRIMARY">Bleu</option><option value="SECONDARY">Gris</option><option value="SUCCESS">Vert</option><option value="DANGER">Rouge</option>
-                </select>
+                <Select
+                  value={panel.buttonStyle}
+                  onChange={(v) => patchPanel({ buttonStyle: v as ButtonStyle })}
+                  size="sm"
+                  className="w-full"
+                  aria-label="Style du bouton"
+                  options={[
+                    { id: "PRIMARY", label: "Bleu" },
+                    { id: "SECONDARY", label: "Gris" },
+                    { id: "SUCCESS", label: "Vert" },
+                    { id: "DANGER", label: "Rouge" },
+                  ]}
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-zinc-300">Mode de soumission</label>
-                <select value={panel.submissionMode} onChange={(e) => patchPanel({ submissionMode: e.target.value as SubmissionMode })} className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-xs text-white outline-none">
-                  <option value="HYBRID">Hybride (modal si ≤ 5 champs texte)</option>
-                  <option value="MODAL">Modal Discord natif</option>
-                  <option value="WEB">Portail web ETHONE</option>
-                </select>
+                <Select
+                  value={panel.submissionMode}
+                  onChange={(v) => patchPanel({ submissionMode: v as SubmissionMode })}
+                  size="sm"
+                  className="w-full"
+                  aria-label="Mode de soumission"
+                  options={[
+                    { id: "HYBRID", label: "Hybride (modal si ≤ 5 champs texte)" },
+                    { id: "MODAL", label: "Modal Discord natif" },
+                    { id: "WEB", label: "Portail web ETHONE" },
+                  ]}
+                />
               </div>
               <div className="space-y-1.5 col-span-2">
                 <label className="text-xs font-semibold text-zinc-300">Couleur & footer</label>
@@ -378,12 +396,22 @@ export default function FormSettingsClient() {
                     <button onClick={() => setAutos((prev) => prev.filter((r) => r.id !== rule.id))} className="h-7 w-7 flex items-center justify-center rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-white/5 cursor-pointer"><Trash2 className="h-3.5 w-3.5" /></button>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                    <select value={rule.trigger} onChange={(e) => update({ trigger: e.target.value as Trigger })} className="h-8 rounded-lg border border-[var(--panel-border)] bg-zinc-900 px-2 text-xs text-white">
-                      {(Object.keys(TRIGGER_LABEL) as Trigger[]).map((t) => <option key={t} value={t}>Quand : {TRIGGER_LABEL[t]}</option>)}
-                    </select>
-                    <select value={action.type} onChange={(e) => setAction({ type: e.target.value as ActionType })} className="h-8 rounded-lg border border-[var(--panel-border)] bg-zinc-900 px-2 text-xs text-white">
-                      {(Object.keys(ACTION_LABEL) as ActionType[]).map((a) => <option key={a} value={a}>Alors : {ACTION_LABEL[a]}</option>)}
-                    </select>
+                    <Select
+                      value={rule.trigger}
+                      onChange={(v) => update({ trigger: v as Trigger })}
+                      size="sm"
+                      className="w-full"
+                      aria-label="Déclencheur de l'automatisation"
+                      options={(Object.keys(TRIGGER_LABEL) as Trigger[]).map((t) => ({ id: t, label: `Quand : ${TRIGGER_LABEL[t]}` }))}
+                    />
+                    <Select
+                      value={action.type}
+                      onChange={(v) => setAction({ type: v as ActionType })}
+                      size="sm"
+                      className="w-full"
+                      aria-label="Action de l'automatisation"
+                      options={(Object.keys(ACTION_LABEL) as ActionType[]).map((a) => ({ id: a, label: `Alors : ${ACTION_LABEL[a]}` }))}
+                    />
                     {rule.trigger === "SCORE_THRESHOLD_MET" && (
                       <input type="number" value={rule.conditions?.minScore ?? scoring.passScore} onChange={(e) => update({ conditions: { ...rule.conditions, minScore: Number(e.target.value) || 0 } })} placeholder="Score minimum" className="h-8 rounded-lg border border-[var(--panel-border)] bg-zinc-900 px-2 text-xs text-white" />
                     )}

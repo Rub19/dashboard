@@ -24,6 +24,7 @@ import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import { formatApiError } from "@/lib/format-error";
 import { useToast } from "@/components/ToastProvider";
+import Select from "@/components/ui/Select";
 
 interface WizardFormState {
   title: string;
@@ -412,19 +413,21 @@ export default function EventCreateClient() {
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                       Catégorie
                     </label>
-                    <select
+                    <Select
                       value={form.category}
-                      onChange={(e) => updateForm("category", e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white focus:outline-none focus:border-indigo-500"
-                    >
-                      <option value="GAMING">Gaming</option>
-                      <option value="TOURNAMENT">Tournoi</option>
-                      <option value="COMMUNITY">Communauté</option>
-                      <option value="STAFF">Staff</option>
-                      <option value="WATCH_PARTY">Watch Party</option>
-                      <option value="GIVEAWAY">Tirage / Concours</option>
-                      <option value="MEETING">Réunion / Conférence</option>
-                    </select>
+                      onChange={(v) => updateForm("category", v)}
+                      className="w-full"
+                      aria-label="Catégorie"
+                      options={[
+                        { id: "GAMING", label: "Gaming" },
+                        { id: "TOURNAMENT", label: "Tournoi" },
+                        { id: "COMMUNITY", label: "Communauté" },
+                        { id: "STAFF", label: "Staff" },
+                        { id: "WATCH_PARTY", label: "Watch Party" },
+                        { id: "GIVEAWAY", label: "Tirage / Concours" },
+                        { id: "MEETING", label: "Réunion / Conférence" },
+                      ]}
+                    />
                   </div>
 
                   <div>
@@ -530,16 +533,18 @@ export default function EventCreateClient() {
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                     Fréquence de Récurrence
                   </label>
-                  <select
+                  <Select
                     value={form.recurrence}
-                    onChange={(e) => updateForm("recurrence", e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
-                  >
-                    <option value="NONE">Événement unique (Pas de récurrence)</option>
-                    <option value="WEEKLY">Chaque semaine (Hebdomadaire)</option>
-                    <option value="BIWEEKLY">Toutes les deux semaines</option>
-                    <option value="MONTHLY">Chaque mois (Mensuel)</option>
-                  </select>
+                    onChange={(v) => updateForm("recurrence", v)}
+                    className="w-full"
+                    aria-label="Fréquence de récurrence"
+                    options={[
+                      { id: "NONE", label: "Événement unique (Pas de récurrence)" },
+                      { id: "WEEKLY", label: "Chaque semaine (Hebdomadaire)" },
+                      { id: "BIWEEKLY", label: "Toutes les deux semaines" },
+                      { id: "MONTHLY", label: "Chaque mois (Mensuel)" },
+                    ]}
+                  />
                 </div>
               </div>
             )}
@@ -679,16 +684,18 @@ export default function EventCreateClient() {
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                     Mention lors de l'annonce
                   </label>
-                  <select
+                  <Select
                     value={form.mentionType}
-                    onChange={(e) => updateForm("mentionType", e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
-                  >
-                    <option value="NONE">Aucune mention</option>
-                    <option value="HERE">@here (Membres connectés)</option>
-                    <option value="EVERYONE">@everyone (Tout le serveur)</option>
-                    <option value="ROLE">Rôle spécifique</option>
-                  </select>
+                    onChange={(v) => updateForm("mentionType", v)}
+                    className="w-full"
+                    aria-label="Mention lors de l'annonce"
+                    options={[
+                      { id: "NONE", label: "Aucune mention" },
+                      { id: "HERE", label: "@here (Membres connectés)" },
+                      { id: "EVERYONE", label: "@everyone (Tout le serveur)" },
+                      { id: "ROLE", label: "Rôle spécifique" },
+                    ]}
+                  />
                 </div>
 
                 {form.mentionType === "ROLE" && (

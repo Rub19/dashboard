@@ -37659,6 +37659,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_29_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_29_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_29_1_de);
 
+const v1_29_2_fr: ChangelogEntry = {
+  version: "v1.29.2",
+  date: "2026-09-27",
+  title: "Menus déroulants restylés sur 11 pages",
+  items: [
+    "Fin du chantier de restylage des menus déroulants : IA, sauvegardes, présence du bot, gestion serveur, logs & audit, boosts de niveaux, réglages de niveaux, rôles statistiques, formulaires, salons vocaux et création d'événements utilisent désormais le composant de sélection unifié (clavier, focus, accessibilité).",
+  ],
+};
+
+const v1_29_2_en: ChangelogEntry = {
+  version: "v1.29.2",
+  date: "2026-09-27",
+  title: "Dropdown restyle finished across 11 pages",
+  items: [
+    "Completed the dropdown restyling sweep: AI, backups, bot presence, server management, logs & audit, leveling boosts, leveling settings, stat roles, forms, voice channels, and event creation now use the unified select component (keyboard nav, focus states, accessibility).",
+  ],
+};
+
+const v1_29_2_es: ChangelogEntry = {
+  version: "v1.29.2",
+  date: "2026-09-27",
+  title: "Menús desplegables rediseñados en 11 páginas",
+  items: [
+    "Finalizado el rediseño de menús desplegables: IA, copias de seguridad, presencia del bot, gestión del servidor, logs y auditoría, boosts de niveles, ajustes de niveles, roles de estadísticas, formularios, canales de voz y creación de eventos usan ahora el componente de selección unificado.",
+  ],
+};
+
+const v1_29_2_de: ChangelogEntry = {
+  version: "v1.29.2",
+  date: "2026-09-27",
+  title: "Dropdown-Menüs auf 11 Seiten neu gestaltet",
+  items: [
+    "Das Dropdown-Redesign ist abgeschlossen: KI, Backups, Bot-Präsenz, Serververwaltung, Logs & Audit, Level-Boosts, Level-Einstellungen, Statistik-Rollen, Formulare, Sprachkanäle und Event-Erstellung nutzen jetzt die einheitliche Auswahlkomponente.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_29_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_29_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_29_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_29_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

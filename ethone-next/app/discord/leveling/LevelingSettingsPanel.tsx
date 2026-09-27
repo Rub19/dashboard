@@ -5,6 +5,7 @@ import ChannelPicker from "@/components/discord/ChannelPicker";
 import { MultiChannelPicker, MultiRolePicker } from "@/components/discord/MultiPickers";
 import { Field, NumberField, Section, Switch, ToggleField, inputCls } from "@/components/discord/SettingsUI";
 import { cn } from "@/lib/utils";
+import Select from "@/components/ui/Select";
 
 export interface LevelingSettings {
   enabled: boolean;
@@ -113,13 +114,13 @@ export default function LevelingSettingsPanel({ guildId, config, saving, disable
       <Section title="Annonce d'un nouveau niveau" text="Message envoyé quand un membre passe un niveau.">
         <div className="space-y-5">
           <Field label="Où annoncer">
-            <select value={draft.levelUpChannelType} onChange={(e) => set({ levelUpChannelType: e.target.value as LevelingSettings["levelUpChannelType"] })} className={inputCls}>
-              {LEVELUP_TYPES.map(([k, l]) => (
-                <option key={k} value={k}>
-                  {l}
-                </option>
-              ))}
-            </select>
+            <Select
+              value={draft.levelUpChannelType}
+              onChange={(v) => set({ levelUpChannelType: v as LevelingSettings["levelUpChannelType"] })}
+              className="w-full"
+              aria-label="Où annoncer"
+              options={LEVELUP_TYPES.map(([k, l]) => ({ id: k, label: l }))}
+            />
           </Field>
           {draft.levelUpChannelType === "specific_channel" && (
             <Field label="Salon">
@@ -196,19 +197,25 @@ export default function LevelingSettingsPanel({ guildId, config, saving, disable
 
       <Section title="Récompenses de niveau" text="Les rôles eux-mêmes se créent dans l'onglet « Rôles Récompenses ».">
         <Field label="Attribution">
-          <select value={draft.rewardType} onChange={(e) => set({ rewardType: e.target.value as LevelingSettings["rewardType"] })} className={inputCls}>
-            <option value="cumulative">Cumulative : on garde tous les rôles débloqués</option>
-            <option value="progressive">Progressive : seul le rôle du palier le plus haut est gardé</option>
-          </select>
+          <Select
+            value={draft.rewardType}
+            onChange={(v) => set({ rewardType: v as LevelingSettings["rewardType"] })}
+            className="w-full"
+            aria-label="Attribution"
+            options={[
+              { id: "cumulative", label: "Cumulative : on garde tous les rôles débloqués" },
+              { id: "progressive", label: "Progressive : seul le rôle du palier le plus haut est gardé" },
+            ]}
+          />
         </Field>
         <Field label="Annonce d'une récompense">
-          <select value={draft.rewardAnnounceType} onChange={(e) => set({ rewardAnnounceType: e.target.value as LevelingSettings["rewardAnnounceType"] })} className={inputCls}>
-            {REWARD_TYPES.map(([k, l]) => (
-              <option key={k} value={k}>
-                {l}
-              </option>
-            ))}
-          </select>
+          <Select
+            value={draft.rewardAnnounceType}
+            onChange={(v) => set({ rewardAnnounceType: v as LevelingSettings["rewardAnnounceType"] })}
+            className="w-full"
+            aria-label="Annonce d'une récompense"
+            options={REWARD_TYPES.map(([k, l]) => ({ id: k, label: l }))}
+          />
         </Field>
         {draft.rewardAnnounceType === "specific_channel" && (
           <Field label="Salon des récompenses">

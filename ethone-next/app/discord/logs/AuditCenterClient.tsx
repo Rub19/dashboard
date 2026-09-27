@@ -33,6 +33,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { formatApiError } from "@/lib/format-error";
+import Select from "@/components/ui/Select";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -865,37 +866,43 @@ export function AuditCenterClient() {
 
               <div className="flex flex-wrap items-center gap-2">
                 {/* Filtre Module */}
-                <select
+                <Select
                   value={selectedModule}
-                  onChange={(e) => setSelectedModule(e.target.value)}
-                  className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-xs text-white outline-none focus:border-indigo-500 cursor-pointer"
-                >
-                  <option value="ALL">Tous les modules</option>
-                  <option value="SECURITY">Sécurité & Raids</option>
-                  <option value="AUTOMOD">AutoMod</option>
-                  <option value="MODERATION">Modération (Cases)</option>
-                  <option value="MEMBERS">Membres</option>
-                  <option value="MESSAGES">Messages</option>
-                  <option value="ROLES">Rôles</option>
-                  <option value="CHANNELS">Salons</option>
-                  <option value="VOICE">Vocal</option>
-                  <option value="SERVER">Serveur</option>
-                  <option value="SYSTEM">Système</option>
-                </select>
+                  onChange={(v) => setSelectedModule(v)}
+                  size="sm"
+                  className="w-auto"
+                  aria-label="Filtrer par module"
+                  options={[
+                    { id: "ALL", label: "Tous les modules" },
+                    { id: "SECURITY", label: "Sécurité & Raids" },
+                    { id: "AUTOMOD", label: "AutoMod" },
+                    { id: "MODERATION", label: "Modération (Cases)" },
+                    { id: "MEMBERS", label: "Membres" },
+                    { id: "MESSAGES", label: "Messages" },
+                    { id: "ROLES", label: "Rôles" },
+                    { id: "CHANNELS", label: "Salons" },
+                    { id: "VOICE", label: "Vocal" },
+                    { id: "SERVER", label: "Serveur" },
+                    { id: "SYSTEM", label: "Système" },
+                  ]}
+                />
 
                 {/* Filtre Sévérité */}
-                <select
+                <Select
                   value={selectedSeverity}
-                  onChange={(e) => setSelectedSeverity(e.target.value)}
-                  className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-xs text-white outline-none focus:border-indigo-500 cursor-pointer"
-                >
-                  <option value="ALL">Toutes sévérités</option>
-                  <option value="CRITICAL">🔥 CRITICAL</option>
-                  <option value="HIGH">🔴 HIGH</option>
-                  <option value="MEDIUM">🟡 MEDIUM</option>
-                  <option value="LOW">🔵 LOW</option>
-                  <option value="INFO">🟢 INFO</option>
-                </select>
+                  onChange={(v) => setSelectedSeverity(v)}
+                  size="sm"
+                  className="w-auto"
+                  aria-label="Filtrer par sévérité"
+                  options={[
+                    { id: "ALL", label: "Toutes sévérités" },
+                    { id: "CRITICAL", label: "🔥 CRITICAL" },
+                    { id: "HIGH", label: "🔴 HIGH" },
+                    { id: "MEDIUM", label: "🟡 MEDIUM" },
+                    { id: "LOW", label: "🔵 LOW" },
+                    { id: "INFO", label: "🟢 INFO" },
+                  ]}
+                />
 
                 {/* Filtre Période */}
                 <div className="flex items-center rounded-xl bg-zinc-950/80 p-0.5 border border-[var(--panel-border)]">
@@ -1219,16 +1226,19 @@ export function AuditCenterClient() {
                   />
                   <div className="flex items-center justify-between text-[11px] text-zinc-400">
                     <span>Seuil de déclenchement :</span>
-                    <select
+                    <Select
                       value={configRouting.generalThreshold}
-                      onChange={(e) => setConfigRouting({ ...configRouting, generalThreshold: e.target.value })}
-                      className="rounded border border-[var(--panel-border)] bg-zinc-900 px-2 py-1 text-white"
-                    >
-                      <option value="OFF">OFF</option>
-                      <option value="ALL">ALL (Tous)</option>
-                      <option value="IMPORTANT">IMPORTANT (Med+)</option>
-                      <option value="CRITICAL_ONLY">CRITICAL ONLY</option>
-                    </select>
+                      onChange={(v) => setConfigRouting({ ...configRouting, generalThreshold: v })}
+                      size="sm"
+                      className="w-auto"
+                      aria-label="Seuil de déclenchement (logs généraux)"
+                      options={[
+                        { id: "OFF", label: "OFF" },
+                        { id: "ALL", label: "ALL (Tous)" },
+                        { id: "IMPORTANT", label: "IMPORTANT (Med+)" },
+                        { id: "CRITICAL_ONLY", label: "CRITICAL ONLY" },
+                      ]}
+                    />
                   </div>
                 </div>
 
@@ -1244,16 +1254,19 @@ export function AuditCenterClient() {
                   />
                   <div className="flex items-center justify-between text-[11px] text-zinc-400">
                     <span>Seuil de déclenchement :</span>
-                    <select
+                    <Select
                       value={configRouting.moderationThreshold}
-                      onChange={(e) => setConfigRouting({ ...configRouting, moderationThreshold: e.target.value })}
-                      className="rounded border border-[var(--panel-border)] bg-zinc-900 px-2 py-1 text-white"
-                    >
-                      <option value="OFF">OFF</option>
-                      <option value="ALL">ALL (Tous)</option>
-                      <option value="IMPORTANT">IMPORTANT (Med+)</option>
-                      <option value="CRITICAL_ONLY">CRITICAL ONLY</option>
-                    </select>
+                      onChange={(v) => setConfigRouting({ ...configRouting, moderationThreshold: v })}
+                      size="sm"
+                      className="w-auto"
+                      aria-label="Seuil de déclenchement (logs de modération)"
+                      options={[
+                        { id: "OFF", label: "OFF" },
+                        { id: "ALL", label: "ALL (Tous)" },
+                        { id: "IMPORTANT", label: "IMPORTANT (Med+)" },
+                        { id: "CRITICAL_ONLY", label: "CRITICAL ONLY" },
+                      ]}
+                    />
                   </div>
                 </div>
 
@@ -1269,16 +1282,19 @@ export function AuditCenterClient() {
                   />
                   <div className="flex items-center justify-between text-[11px] text-zinc-400">
                     <span>Seuil de déclenchement :</span>
-                    <select
+                    <Select
                       value={configRouting.securityThreshold}
-                      onChange={(e) => setConfigRouting({ ...configRouting, securityThreshold: e.target.value })}
-                      className="rounded border border-[var(--panel-border)] bg-zinc-900 px-2 py-1 text-white"
-                    >
-                      <option value="OFF">OFF</option>
-                      <option value="ALL">ALL (Tous)</option>
-                      <option value="IMPORTANT">IMPORTANT (Med+)</option>
-                      <option value="CRITICAL_ONLY">CRITICAL ONLY</option>
-                    </select>
+                      onChange={(v) => setConfigRouting({ ...configRouting, securityThreshold: v })}
+                      size="sm"
+                      className="w-auto"
+                      aria-label="Seuil de déclenchement (logs de sécurité)"
+                      options={[
+                        { id: "OFF", label: "OFF" },
+                        { id: "ALL", label: "ALL (Tous)" },
+                        { id: "IMPORTANT", label: "IMPORTANT (Med+)" },
+                        { id: "CRITICAL_ONLY", label: "CRITICAL ONLY" },
+                      ]}
+                    />
                   </div>
                 </div>
 
@@ -1294,16 +1310,19 @@ export function AuditCenterClient() {
                   />
                   <div className="flex items-center justify-between text-[11px] text-zinc-400">
                     <span>Seuil de déclenchement :</span>
-                    <select
+                    <Select
                       value={configRouting.automodThreshold}
-                      onChange={(e) => setConfigRouting({ ...configRouting, automodThreshold: e.target.value })}
-                      className="rounded border border-[var(--panel-border)] bg-zinc-900 px-2 py-1 text-white"
-                    >
-                      <option value="OFF">OFF</option>
-                      <option value="ALL">ALL (Tous)</option>
-                      <option value="IMPORTANT">IMPORTANT (Med+)</option>
-                      <option value="CRITICAL_ONLY">CRITICAL ONLY</option>
-                    </select>
+                      onChange={(v) => setConfigRouting({ ...configRouting, automodThreshold: v })}
+                      size="sm"
+                      className="w-auto"
+                      aria-label="Seuil de déclenchement (logs AutoMod)"
+                      options={[
+                        { id: "OFF", label: "OFF" },
+                        { id: "ALL", label: "ALL (Tous)" },
+                        { id: "IMPORTANT", label: "IMPORTANT (Med+)" },
+                        { id: "CRITICAL_ONLY", label: "CRITICAL ONLY" },
+                      ]}
+                    />
                   </div>
                 </div>
               </div>

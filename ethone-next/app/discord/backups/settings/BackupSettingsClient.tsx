@@ -10,6 +10,7 @@ import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn, formatApiError } from "@/lib/utils";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import Select from "@/components/ui/Select";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -195,12 +196,18 @@ export default function BackupSettingsClient() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-neutral-800/80">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-neutral-300">Fréquence</label>
-                <select value={settings.frequency} onChange={(e) => patch({ frequency: e.target.value as ScheduleSettings["frequency"] })} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                  <option value="6h">Toutes les 6 heures</option>
-                  <option value="12h">Toutes les 12 heures</option>
-                  <option value="daily">Quotidienne</option>
-                  <option value="weekly">Hebdomadaire</option>
-                </select>
+                <Select
+                  value={settings.frequency}
+                  onChange={(v) => patch({ frequency: v as ScheduleSettings["frequency"] })}
+                  className="w-full"
+                  aria-label="Fréquence"
+                  options={[
+                    { id: "6h", label: "Toutes les 6 heures" },
+                    { id: "12h", label: "Toutes les 12 heures" },
+                    { id: "daily", label: "Quotidienne" },
+                    { id: "weekly", label: "Hebdomadaire" },
+                  ]}
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-neutral-300">Heure préférée</label>
@@ -208,13 +215,19 @@ export default function BackupSettingsClient() {
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-neutral-300">Fuseau horaire</label>
-                <select value={settings.timezone} onChange={(e) => patch({ timezone: e.target.value })} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                  <option value="Europe/Paris">Europe/Paris</option>
-                  <option value="Europe/Brussels">Europe/Bruxelles</option>
-                  <option value="America/Montreal">America/Montréal</option>
-                  <option value="UTC">UTC</option>
-                  <option value="America/New_York">America/New York</option>
-                </select>
+                <Select
+                  value={settings.timezone}
+                  onChange={(v) => patch({ timezone: v })}
+                  className="w-full"
+                  aria-label="Fuseau horaire"
+                  options={[
+                    { id: "Europe/Paris", label: "Europe/Paris" },
+                    { id: "Europe/Brussels", label: "Europe/Bruxelles" },
+                    { id: "America/Montreal", label: "America/Montréal" },
+                    { id: "UTC", label: "UTC" },
+                    { id: "America/New_York", label: "America/New York" },
+                  ]}
+                />
               </div>
             </div>
           )}
@@ -274,11 +287,17 @@ export default function BackupSettingsClient() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-neutral-300">Mode de restauration par défaut</label>
-                <select value={settings.defaultSafetyLevel} onChange={(e) => patch({ defaultSafetyLevel: e.target.value as ScheduleSettings["defaultSafetyLevel"] })} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                  <option value="SAFE">🛡️ Sécurisé — ne supprime jamais rien</option>
-                  <option value="STANDARD">⚖️ Standard — synchronise l'état exact</option>
-                  <option value="DESTRUCTIVE">⚠️ Destructif — supprime l'absent (confirmation)</option>
-                </select>
+                <Select
+                  value={settings.defaultSafetyLevel}
+                  onChange={(v) => patch({ defaultSafetyLevel: v as ScheduleSettings["defaultSafetyLevel"] })}
+                  className="w-full"
+                  aria-label="Mode de restauration par défaut"
+                  options={[
+                    { id: "SAFE", label: "🛡️ Sécurisé — ne supprime jamais rien" },
+                    { id: "STANDARD", label: "⚖️ Standard — synchronise l'état exact" },
+                    { id: "DESTRUCTIVE", label: "⚠️ Destructif — supprime l'absent (confirmation)" },
+                  ]}
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-neutral-300">Salon de notification (optionnel)</label>

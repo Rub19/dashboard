@@ -23,6 +23,12 @@ final class AppModel {
     /// Instance unique : les actions de notification peuvent arriver avant que l'interface n'existe.
     static let shared = AppModel()
 
+    /// Compteur de changements distants par table (rechargement des écrans qui affichent ces tables, voir `reloadOnRemoteChange`).
+    private(set) var remoteChanges: [String: Int] = [:]
+    @ObservationIgnored private var realtime: RealtimeClient?
+    @ObservationIgnored private var pendingTables: Set<String> = []
+    @ObservationIgnored private var flushTask: Task<Void, Never>?
+
     /// Onglet demandé par un lien profond (`ethone://notes`), un raccourci ou une notification.
     var requestedTab: AppTab?
     /// Pile de navigation de l'onglet « Plus » (ouvre directement une section).
@@ -63,6 +69,56 @@ final class AppModel {
         self.valorant = ValorantStore(api: api)
         focus.onChange = { [weak self] in self?.publishSnapshot() }
         WatchBridge.shared.activate()
+    }
+
+    // MARK: Synchronisation temps réel (site <-> app)
+
+    func startRealtime() {
+        if realtime == nil {
+            realtime = RealtimeClient(
+                auth: auth,
+                onChange: { [weak self] table in self?.remoteChanged(table) },
+                onReconnect: { [weak self] in Task { await self?.refreshAll() } }
+            )
+        }
+        realtime?.start()
+    }
+
+    func stopRealtime() {
+        realtime?.stop()
+        flushTask?.cancel()
+        pendingTables = []
+    }
+
+    /// Regroupe les rafales d'événements (une modification en produit souvent plusieurs) avant de recharger.
+    private func remoteChanged(_ table: String) {
+        pendingTables.insert(table)
+        flushTask?.cancel()
+        flushTask = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(400))
+            guard !Task.isCancelled, let self else { return }
+            let tables = self.pendingTables
+            self.pendingTables = []
+            await self.applyRemote(tables)
+        }
+    }
+
+    private func applyRemote(_ tables: Set<String>) async {
+        if tables.contains("tasks") { await self.tasks.refresh() }
+        if tables.contains("ethone_items") {
+            await notes.refresh()
+            await events.refresh()
+        }
+        if tables.contains("ethone_habits") || tables.contains("ethone_habit_completions") { await habits.refresh() }
+        if tables.contains("ethone_focus_sessions") { await focus.refreshSessions() }
+        if !tables.isDisjoint(with: ["ethone_shared_spaces", "ethone_space_tasks", "ethone_space_notes", "ethone_space_events"]) { await spaces.refresh() }
+        for table in tables { remoteChanges[table, default: 0] += 1 }
+        if !tables.isDisjoint(with: ["tasks", "ethone_items", "ethone_habits", "ethone_habit_completions"]) {
+            SpotlightIndexer.index(notes: notes.items, tasks: tasks.items)
+            publishSnapshot()
+            await NotificationPlanner.resync(tasks: tasks.items, events: events.items)
+            await EventActivityManager.sync(events: events.items)
+        }
     }
 
     func refreshAll() async {

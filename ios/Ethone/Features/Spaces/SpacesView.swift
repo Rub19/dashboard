@@ -121,6 +121,7 @@ struct SpaceDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await load() }
         .task { await load() }
+        .reloadOnRemoteChange(["ethone_space_tasks", "ethone_space_notes", "ethone_space_events"]) { await load() }
     }
 
     private func load() async {

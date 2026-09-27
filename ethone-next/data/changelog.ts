@@ -36964,6 +36964,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_124_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_124_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_124_de);
 
+const v1_28_125_fr: ChangelogEntry = {
+  version: "v1.28.125",
+  date: "2026-09-27",
+  title: "Synchronisation en temps réel entre le site et l'app iOS",
+  items: [
+    "Correctif : la publication Realtime de la base ne contenait aucune table, donc les abonnements temps réel du site ne recevaient jamais rien. 13 tables (tâches, notes/événements, habitudes et validations, sessions de focus, réglages, données utilisateur, état utilisateur, espaces partagés…) y sont maintenant ajoutées, avec les règles d'accès existantes.",
+    "Un changement fait sur l'app iOS apparaît sur le site sans recharger, et inversement.",
+    "Site : les validations d'habitudes, les flows / macros / personas / factures et le Scratchpad se mettent maintenant à jour en direct.",
+  ],
+};
+
+const v1_28_125_en: ChangelogEntry = {
+  version: "v1.28.125",
+  date: "2026-09-27",
+  title: "Real-time sync between the website and the iOS app",
+  items: [
+    "Fix: the database's Realtime publication contained no tables, so the website's real-time subscriptions never received anything. 13 tables (tasks, notes/events, habits and check-ins, focus sessions, settings, user data, user state, shared spaces…) are now added, with the existing access rules.",
+    "A change made in the iOS app shows up on the website without reloading, and vice versa.",
+    "Website: habit check-ins, flows / macros / personas / bills and the Scratchpad now update live.",
+  ],
+};
+
+const v1_28_125_es: ChangelogEntry = {
+  version: "v1.28.125",
+  date: "2026-09-27",
+  title: "Sincronización en tiempo real entre la web y la app iOS",
+  items: [
+    "Corrección: la publicación Realtime de la base de datos no contenía ninguna tabla, así que las suscripciones en tiempo real de la web nunca recibían nada. Ahora se añaden 13 tablas (tareas, notas/eventos, hábitos y registros, sesiones de enfoque, ajustes, datos de usuario, estado de usuario, espacios compartidos…) con las reglas de acceso existentes.",
+    "Un cambio hecho en la app iOS aparece en la web sin recargar, y viceversa.",
+    "Web: los registros de hábitos, flows / macros / personas / facturas y el Scratchpad se actualizan ahora en directo.",
+  ],
+};
+
+const v1_28_125_de: ChangelogEntry = {
+  version: "v1.28.125",
+  date: "2026-09-27",
+  title: "Echtzeit-Sync zwischen Website und iOS-App",
+  items: [
+    "Fix: Die Realtime-Publikation der Datenbank enthielt keine Tabellen, daher erhielten die Echtzeit-Abonnements der Website nie etwas. 13 Tabellen (Aufgaben, Notizen/Termine, Gewohnheiten und Check-ins, Fokus-Sitzungen, Einstellungen, Nutzerdaten, Nutzerstatus, geteilte Bereiche…) sind jetzt enthalten, mit den bestehenden Zugriffsregeln.",
+    "Eine Änderung in der iOS-App erscheint auf der Website ohne Neuladen und umgekehrt.",
+    "Website: Gewohnheits-Check-ins, Flows / Makros / Personas / Rechnungen und das Scratchpad aktualisieren sich jetzt live.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_125_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_125_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_125_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_125_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

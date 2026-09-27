@@ -71,6 +71,7 @@ struct BillsView: View {
         }
         .refreshable { await load() }
         .task { await load() }
+        .reloadOnRemoteChange(["ethone_user_data"]) { await load() }
         .sheet(isPresented: $adding) { AddBillSheet { await load() } }
     }
 

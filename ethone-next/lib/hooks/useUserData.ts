@@ -91,6 +91,28 @@ export function useUserData(kind: "space" | "flow" | "interaction" | "macro" | "
     load();
   }, [load]);
 
+  // Synchronisation temps réel : une modification faite ailleurs (app iOS, autre onglet, bot) recharge la liste.
+  // Les rafales d'événements sont regroupées ; `load` remplace la liste par l'état serveur.
+  useEffect(() => {
+    if (typeof window === "undefined" || !currentUserId) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const channel = supabase
+      .channel(`user_data_${kind}_${Math.random().toString(36).slice(2)}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "ethone_user_data", filter: `user_id=eq.${currentUserId}` },
+        () => {
+          if (timer) clearTimeout(timer);
+          timer = setTimeout(() => void load(), 400);
+        },
+      );
+    void Promise.resolve(channel.subscribe()).catch(() => {});
+    return () => {
+      if (timer) clearTimeout(timer);
+      void channel.unsubscribe();
+    };
+  }, [currentUserId, kind, load]);
+
   async function create(label: string, slug?: string, data?: Record<string, unknown>, count?: number) {
     const tempId = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `local-${Date.now()}`;
     const newRecord: UserDataRecord = {

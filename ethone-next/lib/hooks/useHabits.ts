@@ -107,9 +107,8 @@ export function useHabits() {
 
   const realtimeId = useId();
 
-  // Realtime is wired for the habit list only (v1 scope cap) — completions
-  // are refreshed via the optimistic toggleToday() update plus a full
-  // reload() on error, not a second realtime channel.
+  // Realtime : la liste des habitudes est mise à jour ligne à ligne ; les validations (completions) rechargent l'ensemble,
+  // ce qui reflète sur le site une habitude cochée depuis l'app iOS (et inversement).
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!currentUserId) return;
@@ -150,6 +149,13 @@ export function useHabits() {
                 return prev;
               });
             },
+          )
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "ethone_habit_completions", filter: `user_id=eq.${userId}` },
+            () => {
+              void load();
+            },
           );
         await channel.subscribe();
       } catch {
@@ -161,7 +167,7 @@ export function useHabits() {
     return () => {
       channel?.unsubscribe();
     };
-  }, [realtimeId, currentUserId]);
+  }, [realtimeId, currentUserId, load]);
 
   const withUserId = useCallback(async () => {
     const { data: sessionData } = await supabase.auth.getSession();

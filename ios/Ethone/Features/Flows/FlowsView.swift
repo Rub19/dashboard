@@ -73,6 +73,7 @@ struct FlowsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await load() }
         .task { await load() }
+        .reloadOnRemoteChange(["ethone_user_data"]) { await load() }
     }
 
     private func symbol(for flow: FlowRecord) -> String {

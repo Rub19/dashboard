@@ -67,6 +67,7 @@ struct PersonasView: View {
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }
+        .reloadOnRemoteChange(["ethone_user_data"]) { await load() }
     }
 
     private func load() async {

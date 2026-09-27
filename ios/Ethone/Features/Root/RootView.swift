@@ -23,7 +23,9 @@ struct RootView: View {
         .preferredColorScheme(model.themePreset.isLight ? .light : .dark)
         .task { await auth.restore() }
         .onChange(of: auth.phase) { _, phase in
+            if phase == .signedIn { model.startRealtime() }
             if phase == .signedOut {
+                model.stopRealtime()
                 SpotlightIndexer.clear()
                 DiskCache.clearAll()
                 NotificationManager.clearAll()
@@ -33,7 +35,9 @@ struct RootView: View {
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .background: model.lock.lockIfEnabled()
-            case .active: Task { await model.lock.unlock() }
+            case .active:
+                Task { await model.lock.unlock() }
+                if auth.phase == .signedIn { model.startRealtime() }
             default: break
             }
         }

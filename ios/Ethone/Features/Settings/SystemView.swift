@@ -64,6 +64,7 @@ struct SystemView: View {
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }
+        .reloadOnRemoteChange(["ethone_user_data"]) { await load() }
     }
 
     private func tile(_ value: String, _ label: String, _ symbol: String) -> some View {

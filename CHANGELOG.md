@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.125 — 2026-09-27
+
+**Synchronisation en temps réel entre le site et l'app iOS**
+
+- Correctif : la publication Realtime de la base ne contenait aucune table, donc les abonnements temps réel du site ne recevaient jamais rien. 13 tables (tâches, notes/événements, habitudes et validations, sessions de focus, réglages, données utilisateur, état utilisateur, espaces partagés…) y sont maintenant ajoutées, avec les règles d'accès existantes.
+- Un changement fait sur l'app iOS apparaît sur le site sans recharger, et inversement.
+- Site : les validations d'habitudes, les flows / macros / personas / factures et le Scratchpad se mettent maintenant à jour en direct.
+
 ## v1.28.124 — 2026-09-27
 
 **Thèmes : lisibilité vérifiée et thème clair Arctic corrigé**

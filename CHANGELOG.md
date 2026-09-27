@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.128 — 2026-09-27
+
+**Correction : changement de serveur intempestif sur le panneau Discord**
+
+- Corrigé : ouvrir un module puis revenir à la liste de tous les modules réaffichait le premier serveur du bot au lieu de celui qu'on avait choisi. Le dernier serveur affiché est maintenant mémorisé.
+- Corrigé : le petit lien « Ouvrir la page complète » (↗) sur chaque carte de module n'indiquait pas le serveur sélectionné à la page de destination, qui devinait alors un autre serveur. Il pointe maintenant vers le bon serveur.
+
 ## v1.28.127 — 2026-09-27
 
 **Boutique Valorant repensée, salon de bienvenue et cases à cocher**

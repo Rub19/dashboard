@@ -37115,6 +37115,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_127_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_127_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_127_de);
 
+const v1_28_128_fr: ChangelogEntry = {
+  version: "v1.28.128",
+  date: "2026-09-27",
+  title: "Correction : changement de serveur intempestif sur le panneau Discord",
+  items: [
+    "Corrigé : ouvrir un module puis revenir à la liste de tous les modules réaffichait le premier serveur du bot au lieu de celui qu'on avait choisi. Le dernier serveur affiché est maintenant mémorisé.",
+    "Corrigé : le petit lien « Ouvrir la page complète » (↗) sur chaque carte de module n'indiquait pas le serveur sélectionné à la page de destination, qui devinait alors un autre serveur. Il pointe maintenant vers le bon serveur.",
+  ],
+};
+
+const v1_28_128_en: ChangelogEntry = {
+  version: "v1.28.128",
+  date: "2026-09-27",
+  title: "Fix: unwanted server switch in the Discord panel",
+  items: [
+    "Fixed: opening a module then going back to the full module list would show the bot's first server instead of the one you had picked. The last server shown is now remembered.",
+    "Fixed: the small \"Open full page\" link (↗) on each module card didn't tell the destination page which server was selected, so it guessed a different one. It now points to the right server.",
+  ],
+};
+
+const v1_28_128_es: ChangelogEntry = {
+  version: "v1.28.128",
+  date: "2026-09-27",
+  title: "Corrección: cambio de servidor no deseado en el panel de Discord",
+  items: [
+    "Corregido: abrir un módulo y volver a la lista completa de módulos mostraba el primer servidor del bot en lugar del que habías elegido. Ahora se recuerda el último servidor mostrado.",
+    "Corregido: el pequeño enlace «Abrir página completa» (↗) de cada tarjeta de módulo no indicaba el servidor seleccionado a la página de destino, que adivinaba otro distinto. Ahora apunta al servidor correcto.",
+  ],
+};
+
+const v1_28_128_de: ChangelogEntry = {
+  version: "v1.28.128",
+  date: "2026-09-27",
+  title: "Fix: ungewollter Serverwechsel im Discord-Panel",
+  items: [
+    "Behoben: Ein Modul zu öffnen und zur vollständigen Modulliste zurückzukehren zeigte den ersten Server des Bots statt des ausgewählten. Der zuletzt angezeigte Server wird jetzt gemerkt.",
+    "Behoben: Der kleine Link „Vollständige Seite öffnen“ (↗) auf jeder Modulkarte übergab der Zielseite nicht den ausgewählten Server, die dann einen anderen erriet. Er zeigt jetzt auf den richtigen Server.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_128_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_128_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_128_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_128_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

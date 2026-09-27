@@ -478,7 +478,10 @@ const MODULES: BotModule[] = [
 
 /** Modules ayant un panneau de configuration rapide dans cette page ; les autres ouvrent directement leur page. */
 const INLINE_MODULE_IDS = new Set<string>(MODULES.map((m) => m.id));
-const NAV_MODULES: NavigatorModule[] = [
+// Sans `?guildId=`, faute de valeur dynamique à ce niveau (module-scope) : le lien « Ouvrir la page complète » de
+// chaque carte (icône ↗, ModuleNavigator.tsx) atterrissait sur le premier serveur du bot plutôt que celui affiché
+// ici. `useNavModules` ci-dessous complète ces hrefs avec le serveur sélectionné avant de les passer au composant.
+const NAV_MODULES_BASE: NavigatorModule[] = [
   ...MODULES.map((m) => ({ id: m.id, title: m.title, description: m.description, icon: m.icon, tint: MODULE_TINTS[m.id] ?? m.color, href: MODULE_PAGES[m.id] ?? `/discord/${m.id}` })),
   { id: "economy", title: "Économie & Boutique", description: "Monnaie du serveur, récompense quotidienne, boutique de rôles et classement.", icon: ethoneIcon("mod-economy"), tint: "text-yellow-300", href: MODULE_PAGES.economy },
   { id: "calendar", title: "Calendrier", description: "Vue mensuelle des événements, anniversaires et rappels du serveur.", icon: ethoneIcon("calendar"), tint: "text-orange-300", href: MODULE_PAGES.calendar },
@@ -556,6 +559,15 @@ export default function DiscordDashboardPage() {
       }
     },
     [router, selectedGuild?.id]
+  );
+  // Chaque carte a un lien « Ouvrir la page complète » distinct de son clic principal (voir NAV_MODULES_BASE) :
+  // il doit pointer vers le serveur affiché ici, pas vers celui que la page de destination devinerait sans indice.
+  const navModules = useMemo(
+    () =>
+      selectedGuild
+        ? NAV_MODULES_BASE.map((m) => ({ ...m, href: `${m.href}${m.href.includes("?") ? "&" : "?"}guildId=${selectedGuild.id}` }))
+        : NAV_MODULES_BASE,
+    [selectedGuild]
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [onlyManageable, setOnlyManageable] = useState(true);
@@ -658,13 +670,24 @@ export default function DiscordDashboardPage() {
   const guildsWithoutBot = useMemo(() => filteredGuilds.filter((g) => !botGuildIds.has(g.id)), [filteredGuilds, botGuildIds]);
 
   const userSelectedRef = useRef(false);
+  // `userSelectedRef` ne survit pas à un aller-retour (ouvrir un module puis revenir sur /discord remonte
+  // tout le composant, qui perd ce ref et retombait sur "le premier serveur où le bot est présent" au lieu
+  // du serveur qu'on avait choisi). Le dernier choix est donc aussi gardé ici, pour traverser la navigation.
+  const LAST_GUILD_STORAGE_KEY = "ethone:discord:last-guild-id";
 
-  // Sélection automatique intelligente : préfère un serveur où le bot est installé
+  // Sélection automatique intelligente : le dernier serveur choisi, sinon un serveur où le bot est installé
   useEffect(() => {
     if (displayGuilds.length === 0) return;
     if (!userSelectedRef.current) {
       if (!selectedGuild) {
-        if (botGuildIds.size > 0) {
+        let lastId: string | null = null;
+        try {
+          lastId = localStorage.getItem(LAST_GUILD_STORAGE_KEY);
+        } catch {}
+        const lastChosen = lastId ? displayGuilds.find((g) => g.id === lastId) : undefined;
+        if (lastChosen) {
+          setSelectedGuild(lastChosen);
+        } else if (botGuildIds.size > 0) {
           const firstWithBot = displayGuilds.find((g) => botGuildIds.has(g.id));
           setSelectedGuild(firstWithBot || displayGuilds[0]);
         } else {
@@ -680,6 +703,14 @@ export default function DiscordDashboardPage() {
       setSelectedGuild(displayGuilds[0]);
     }
   }, [displayGuilds, selectedGuild, botGuildIds]);
+
+  // Retient le serveur affiché pour la prochaine fois qu'on revient sur cette page (choix manuel ou automatique).
+  useEffect(() => {
+    if (!selectedGuild) return;
+    try {
+      localStorage.setItem(LAST_GUILD_STORAGE_KEY, selectedGuild.id);
+    } catch {}
+  }, [selectedGuild]);
 
   // Paramètres réels du serveur sélectionné avec persistance locale par guildId
   const [guildSettings, setGuildSettings] = useState<GuildSettings>(DEFAULT_SETTINGS);
@@ -930,7 +961,7 @@ export default function DiscordDashboardPage() {
   const handleModuleToggle = useCallback(
     async (id: string, enabled: boolean) => {
       const ok = await setModuleEnabled(id, enabled);
-      const title = NAV_MODULES.find((m) => m.id === id)?.title ?? id;
+      const title = NAV_MODULES_BASE.find((m) => m.id === id)?.title ?? id;
       if (ok) success(enabled ? "Module activé" : "Module désactivé", `${title} : ${enabled ? "ses commandes sont de nouveau disponibles." : "ses commandes répondent maintenant « module désactivé »."}`);
       else showError("Action refusée", `Impossible de modifier « ${title} » (droits ou bot injoignable).`);
     },
@@ -1624,7 +1655,7 @@ export default function DiscordDashboardPage() {
               </div>
 
               {/* Navigation des modules : catégories, recherche, favoris */}
-              <ModuleNavigator modules={NAV_MODULES} categories={MODULE_CATEGORIES} activeId={activeModule} onSelect={handleSelectModule} status={moduleStatus} onToggle={handleModuleToggle} />
+              <ModuleNavigator modules={navModules} categories={MODULE_CATEGORIES} activeId={activeModule} onSelect={handleSelectModule} status={moduleStatus} onToggle={handleModuleToggle} />
 
               {/* Functional Module Settings Panel */}
               <div id="module-panel" className="scroll-mt-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-5 sm:p-6 backdrop-blur-xl">

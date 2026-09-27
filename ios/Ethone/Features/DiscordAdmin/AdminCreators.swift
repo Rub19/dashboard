@@ -47,6 +47,7 @@ enum AdminCreators {
         case "leveling": [levelReward]
         case "invites": [inviteReward]
         case "giveaways": [giveaway]
+        case "backups": [backup]
         default: []
         }
     }
@@ -192,6 +193,21 @@ enum AdminCreators {
             if !c.text("roleId").isEmpty { body["roleId"] = .string(c.text("roleId")); body["roleName"] = .string(c.roleName(c.text("roleId"))) }
             if !c.text("message").isEmpty { body["message"] = .string(c.text("message")) }
             return body
+        }
+    )
+
+    static let backup = CreateSpec(
+        title: "Nouvelle sauvegarde", path: "/",
+        fields: [
+            .init(key: "name", label: "Nom de la sauvegarde"),
+            .init(key: "description", label: "Description", required: false),
+            .init(key: "isProtected", label: "Protéger contre la suppression", kind: .toggle, required: false, initial: "false"),
+        ],
+        build: { c in
+            [
+                "name": .string(c.text("name")), "description": .string(c.text("description")), "type": .string("FULL"),
+                "isProtected": .bool(c.flag("isProtected")), "idempotencyKey": .string(UUID().uuidString),
+            ]
         }
     )
 

@@ -21,6 +21,7 @@ struct AdminModuleSpec: Identifiable {
         var method: String = "POST"
         var destructive = false
         var symbol = "bolt.fill"
+        var body: [String: JSONValue] = [:]
     }
 
     struct ListSpec {
@@ -28,6 +29,8 @@ struct AdminModuleSpec: Identifiable {
         let path: String
         var key: String? = nil
         var idKey = "id"
+        /// Écran dédié à ouvrir au toucher d'une ligne (`formResponses`, `eventParticipants`) ; sinon le détail générique.
+        var drill: String? = nil
         var rowActions: [RowAction] = []
     }
 
@@ -103,12 +106,12 @@ enum AdminCatalog {
                 .init(title: "Supprimer", path: "/{id}", method: "DELETE", destructive: true, symbol: "trash"),
               ])]),
         .init(id: "events", title: "Événements", symbol: "calendar.badge.clock", group: groups[1], overview: "/stats/overview",
-              lists: [.init(title: "Événements", path: "/", key: "events", rowActions: [
+              lists: [.init(title: "Événements", path: "/", key: "events", drill: "eventParticipants", rowActions: [
                 .init(title: "Dupliquer", path: "/{id}/duplicate", symbol: "plus.square.on.square"),
                 .init(title: "Supprimer", path: "/{id}", method: "DELETE", destructive: true, symbol: "trash"),
               ])]),
         .init(id: "forms", title: "Formulaires", symbol: "doc.text.fill", group: groups[1],
-              lists: [.init(title: "Formulaires", path: "/", key: "forms", rowActions: [
+              lists: [.init(title: "Formulaires (toucher pour lire les réponses)", path: "/", key: "forms", drill: "formResponses", rowActions: [
                 .init(title: "Publier", path: "/{id}/publish", symbol: "paperplane.fill"),
                 .init(title: "Dupliquer", path: "/{id}/duplicate", symbol: "plus.square.on.square"),
                 .init(title: "Supprimer", path: "/{id}", method: "DELETE", destructive: true, symbol: "trash"),
@@ -192,6 +195,8 @@ enum AdminCatalog {
               lists: [.init(title: "Sauvegardes", path: "/", key: "backups", idKey: "id", rowActions: [
                 .init(title: "Protéger / déprotéger", path: "/{id}/protect", method: "PATCH", symbol: "lock.fill"),
                 .init(title: "Tester", path: "/{id}/test", symbol: "checkmark.seal.fill"),
+                .init(title: "Restaurer les éléments manquants", path: "/{id}/restore", destructive: true, symbol: "arrow.counterclockwise.circle.fill",
+                      body: ["safetyLevel": .string("SAFE"), "mode": .string("RESTORE_MISSING")]),
                 .init(title: "Supprimer", path: "/{id}", method: "DELETE", destructive: true, symbol: "trash"),
               ])]),
         .init(id: "settings", title: "Réglages généraux du bot", symbol: "gearshape.fill", group: groups[3], base: "guilds/{g}", overview: nil,

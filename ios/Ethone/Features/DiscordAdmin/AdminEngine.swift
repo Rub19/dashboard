@@ -214,6 +214,13 @@ struct ModuleScreen: View {
                 .listRowBackground(GlassRowBackground())
             }
 
+            if spec.id == "music" {
+                Section {
+                    NavigationLink { MusicPlayerView(guild: guild) } label: { Label("Lecteur", systemImage: "play.circle.fill") }
+                } header: { Text("Lecteur").sectionTitle() }
+                .listRowBackground(GlassRowBackground())
+            }
+
             if !AdminCreators.creators(for: spec.id).isEmpty {
                 Section {
                     ForEach(AdminCreators.creators(for: spec.id), id: \.title) { creator in
@@ -323,7 +330,11 @@ struct GenericListView: View {
 
             ForEach(Array(shown.enumerated()), id: \.offset) { _, item in
                 NavigationLink {
-                    JSONDetailView(title: AdminText.title(of: item), value: item)
+                    switch list.drill {
+                    case "formResponses": FormResponsesView(guild: guild, form: item)
+                    case "eventParticipants": EventParticipantsView(guild: guild, event: item)
+                    default: JSONDetailView(title: AdminText.title(of: item), value: item)
+                    }
                 } label: {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(AdminText.title(of: item)).font(.headline).lineLimit(2)
@@ -387,7 +398,7 @@ struct GenericListView: View {
         }
         let encoded = id.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? id
         do {
-            _ = try await model.discord.call(spec.url(action.path.replacingOccurrences(of: "{id}", with: encoded), guildId: guild.id), method: action.method, body: [:])
+            _ = try await model.discord.call(spec.url(action.path.replacingOccurrences(of: "{id}", with: encoded), guildId: guild.id), method: action.method, body: action.body)
             infoMessage = "« \(action.title) » effectué."
             errorMessage = nil
             await load()

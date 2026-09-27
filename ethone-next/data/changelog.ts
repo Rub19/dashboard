@@ -37405,6 +37405,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_133_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_133_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_133_de);
 
+const v1_28_134_fr: ChangelogEntry = {
+  version: "v1.28.134",
+  date: "2026-09-27",
+  title: "Correction : pourcentage de headshot non arrondi dans les badges de match",
+  items: [
+    "Les badges « X% HS » sous un match Valorant (ex. « 9+ Kills · 47.368421052631575% HS ») affichaient parfois la valeur brute de l'API sans arrondi. Ils affichent maintenant 1 décimale (ex. « 47.4% HS »), comme le badge KD juste à côté.",
+  ],
+};
+
+const v1_28_134_en: ChangelogEntry = {
+  version: "v1.28.134",
+  date: "2026-09-27",
+  title: "Fix: unrounded headshot percentage in match badges",
+  items: [
+    "The \"X% HS\" badges under a Valorant match (e.g. \"9+ Kills · 47.368421052631575% HS\") sometimes showed the raw API value with no rounding. They now show 1 decimal place (e.g. \"47.4% HS\"), matching the KD badge right next to it.",
+  ],
+};
+
+const v1_28_134_es: ChangelogEntry = {
+  version: "v1.28.134",
+  date: "2026-09-27",
+  title: "Corrección: porcentaje de headshot sin redondear en las insignias de partida",
+  items: [
+    "Las insignias «X% HS» bajo una partida de Valorant (p. ej. «9+ Kills · 47.368421052631575% HS») a veces mostraban el valor bruto de la API sin redondear. Ahora muestran 1 decimal (p. ej. «47.4% HS»), igual que la insignia de KD justo al lado.",
+  ],
+};
+
+const v1_28_134_de: ChangelogEntry = {
+  version: "v1.28.134",
+  date: "2026-09-27",
+  title: "Fix: ungerundeter Headshot-Prozentsatz in Match-Badges",
+  items: [
+    "Die „X% HS“-Badges unter einem Valorant-Match (z. B. „9+ Kills · 47.368421052631575% HS“) zeigten manchmal den rohen API-Wert ohne Rundung. Sie zeigen jetzt 1 Nachkommastelle (z. B. „47.4% HS“), passend zum KD-Badge direkt daneben.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_134_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_134_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_134_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_134_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

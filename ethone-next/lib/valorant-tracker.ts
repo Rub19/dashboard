@@ -280,9 +280,9 @@ export function getMatchHighlightBadges(match: ValorantMatch): string[] {
 
   // Genuine high headshot percentage (32%+) with actual kills
   if (hs >= 40 && kills >= 3) {
-    badges.push(`${hs}% HS`);
+    badges.push(`${hs.toFixed(1)}% HS`);
   } else if (hs >= 32 && kills >= 3) {
-    badges.push(`${hs}% HS`);
+    badges.push(`${hs.toFixed(1)}% HS`);
   }
 
   // High Combat Score (ACS)

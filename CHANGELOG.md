@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.134 — 2026-09-27
+
+**Correction : pourcentage de headshot non arrondi dans les badges de match**
+
+- Les badges « X% HS » sous un match Valorant (ex. « 9+ Kills · 47.368421052631575% HS ») affichaient parfois la valeur brute de l'API sans arrondi. Ils affichent maintenant 1 décimale (ex. « 47.4% HS »), comme le badge KD juste à côté.
+
 ## v1.28.133 — 2026-09-27
 
 **Boutique Valorant : refonte complète**

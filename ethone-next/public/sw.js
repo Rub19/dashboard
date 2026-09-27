@@ -1,4 +1,4 @@
-const CACHE_NAME = "ethone-next-v419";
+const CACHE_NAME = "ethone-next-v420";
 const PRECACHE = ["/", "/login/", "/dashboard/", "/offline.html"];
 const STATIC_EXTENSIONS = [".js", ".css", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".woff", ".woff2", ".ico"];
 
@@ -296,6 +296,8 @@ self.addEventListener("message", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   if (event.request.url.includes("/api/")) return;
+  // /invite est une redirection serveur vers l'autorisation Discord du bot (bio Discord) : le service worker ne doit pas la traiter.
+  if (new URL(event.request.url).pathname.replace(/\/$/, "") === "/invite") return;
   if (event.request.url.includes("/version.json")) {
     event.respondWith(fetch(event.request, { cache: "no-store" }));
     return;

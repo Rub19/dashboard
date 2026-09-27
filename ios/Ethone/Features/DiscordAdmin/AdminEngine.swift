@@ -203,6 +203,17 @@ struct ModuleScreen: View {
                 .listRowBackground(GlassRowBackground())
             }
 
+            if !AdminCreators.creators(for: spec.id).isEmpty {
+                Section {
+                    ForEach(AdminCreators.creators(for: spec.id), id: \.title) { creator in
+                        NavigationLink {
+                            CreateFormView(guild: guild, moduleBase: spec.base ?? "guilds/{g}/\(spec.id)", spec: creator, directory: directory) { Task { await load() } }
+                        } label: { Label(creator.title, systemImage: "plus.circle.fill") }
+                    }
+                } header: { Text("Créer").sectionTitle() }
+                .listRowBackground(GlassRowBackground())
+            }
+
             if !spec.configs.isEmpty {
                 Section {
                     ForEach(spec.configs, id: \.get) { config in

@@ -9,6 +9,8 @@ struct GiveawaysAdminView: View {
     @State private var errorMessage: String?
     @State private var infoMessage: String?
     @State private var pendingCancel: JSONValue?
+    @State private var directory = GuildDirectory()
+    @State private var creating = false
 
     private var active: [JSONValue] { giveaways.filter { ["active", "scheduled", "paused"].contains($0["status"]?.stringValue ?? "") } }
     private var finished: [JSONValue] { giveaways.filter { !["active", "scheduled", "paused"].contains($0["status"]?.stringValue ?? "") } }
@@ -28,7 +30,7 @@ struct GiveawaysAdminView: View {
             Section {
                 EmptyView()
             } footer: {
-                Text("La création d'un giveaway (salon, conditions, bannière) se fait depuis le panneau du site.")
+                Text("Conditions d'accès et bannière : à régler depuis le panneau du site.")
             }
         }
         .scrollContentBackground(.hidden)
@@ -41,6 +43,14 @@ struct GiveawaysAdminView: View {
         .ethoneScreen()
         .refreshable { await load() }
         .task { await load() }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button("Nouveau", systemImage: "plus") { creating = true }
+            }
+        }
+        .navigationDestination(isPresented: $creating) {
+            CreateFormView(guild: guild, moduleBase: "guilds/{g}/giveaways", spec: AdminCreators.giveaway, directory: directory) { Task { await load() } }
+        }
         .confirmationDialog("Annuler ce giveaway ?", isPresented: Binding(get: { pendingCancel != nil }, set: { if !$0 { pendingCancel = nil } }), titleVisibility: .visible) {
             Button("Annuler le giveaway", role: .destructive) {
                 if let target = pendingCancel { Task { await act(target, "cancel") } }

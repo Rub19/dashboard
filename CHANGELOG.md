@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.29.0 — 2026-09-27
+
+**Correction du bug de la pastille « nouvelle version » permanente**
+
+- La pastille de version en bas à gauche passait en jaune « mise à jour disponible » en permanence, même juste après un rechargement propre, et recharger ne réglait jamais rien. Cause : elle comparait l'horodatage de build de deux sources qui n'en fournissent pas la même (une n'en a jamais, l'autre toujours), ce qui la faisait se déclencher à chaque vérification, sans rapport avec une vraie mise à jour. La bannière de mise à jour, elle, utilisait la bonne logique et ne s'affichait donc jamais — d'où l'incohérence.
+
 ## v1.28.137 — 2026-09-27
 
 **Correction : la barre de recherche (Ctrl K) n'était pas centrée**

@@ -37577,6 +37577,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_137_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_137_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_137_de);
 
+const v1_29_0_fr: ChangelogEntry = {
+  version: "v1.29.0",
+  date: "2026-09-27",
+  title: "Correction du bug de la pastille « nouvelle version » permanente",
+  items: [
+    "La pastille de version en bas à gauche passait en jaune « mise à jour disponible » en permanence, même juste après un rechargement propre, et recharger ne réglait jamais rien. Cause : elle comparait l'horodatage de build de deux sources qui n'en fournissent pas la même (une n'en a jamais, l'autre toujours), ce qui la faisait se déclencher à chaque vérification, sans rapport avec une vraie mise à jour. La bannière de mise à jour, elle, utilisait la bonne logique et ne s'affichait donc jamais — d'où l'incohérence.",
+  ],
+};
+
+const v1_29_0_en: ChangelogEntry = {
+  version: "v1.29.0",
+  date: "2026-09-27",
+  title: "Fixed the permanently-stuck \"new version\" pill",
+  items: [
+    "The version pill (bottom-left) kept showing amber \"update available\" permanently, even right after a clean reload, and reloading never fixed it. Cause: it compared the build timestamp from two sources that don't both provide one (one never has it, the other always does), so it triggered on every single check regardless of whether a real update existed. The update banner used the correct logic and therefore never showed — hence the mismatch.",
+  ],
+};
+
+const v1_29_0_es: ChangelogEntry = {
+  version: "v1.29.0",
+  date: "2026-09-27",
+  title: "Corregido el bug de la pastilla «nueva versión» permanente",
+  items: [
+    "La pastilla de versión (abajo a la izquierda) se quedaba en ámbar «actualización disponible» de forma permanente, incluso justo después de recargar limpiamente, y recargar nunca lo solucionaba. Causa: comparaba la marca de tiempo de compilación de dos fuentes que no la proporcionan igual (una nunca la tiene, la otra siempre), por lo que se activaba en cada comprobación sin relación con una actualización real.",
+  ],
+};
+
+const v1_29_0_de: ChangelogEntry = {
+  version: "v1.29.0",
+  date: "2026-09-27",
+  title: "Fix für die dauerhaft hängende „Neue Version“-Pille",
+  items: [
+    "Die Versions-Pille (unten links) blieb dauerhaft bernsteinfarben auf „Update verfügbar“, selbst direkt nach einem sauberen Neuladen, und Neuladen half nie. Ursache: Sie verglich den Build-Zeitstempel zweier Quellen, die ihn nicht beide liefern (die eine nie, die andere immer), wodurch sie bei jeder Prüfung auslöste, unabhängig von einem echten Update.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_29_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_29_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_29_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_29_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

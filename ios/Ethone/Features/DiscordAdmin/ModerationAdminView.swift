@@ -12,6 +12,7 @@ struct ModerationAdminView: View {
     @State private var loading = true
     @State private var errorMessage: String?
     @State private var pendingUnban: JSONValue?
+    @State private var pendingRevert: JSONValue?
 
     var body: some View {
         List {
@@ -40,6 +41,11 @@ struct ModerationAdminView: View {
                                 .font(.caption2).foregroundStyle(.tertiary)
                         }
                         .listRowBackground(GlassRowBackground())
+                        .swipeActions(edge: .trailing) {
+                            if entry["status"]?.stringValue == "ACTIVE" {
+                                Button { pendingRevert = entry } label: { Label("Révoquer", systemImage: "arrow.uturn.backward") }.tint(Theme.warning)
+                            }
+                        }
                     }
                 } header: { Text("\(total) sanction(s)").sectionTitle() }
             } else {
@@ -68,6 +74,12 @@ struct ModerationAdminView: View {
         .refreshable { await load() }
         .task { await load() }
         .task(id: tab) { if tab == "bans" && bans.isEmpty { await loadBans() } }
+        .confirmationDialog("Révoquer cette sanction ?", isPresented: Binding(get: { pendingRevert != nil }, set: { if !$0 { pendingRevert = nil } }), titleVisibility: .visible) {
+            Button("Révoquer", role: .destructive) {
+                if let target = pendingRevert { Task { await revert(target) } }
+                pendingRevert = nil
+            }
+        } message: { Text("La sanction est levée sur Discord (fin de l'exclusion ou débannissement) et marquée comme révoquée.") }
         .confirmationDialog("Débannir ce membre ?", isPresented: Binding(get: { pendingUnban != nil }, set: { if !$0 { pendingUnban = nil } }), titleVisibility: .visible) {
             Button("Débannir", role: .destructive) {
                 if let target = pendingUnban { Task { await unban(target) } }
@@ -123,6 +135,17 @@ struct ModerationAdminView: View {
             let response = try await model.discord.call("api/guilds/\(guild.id)/moderation/bans")
             bans = response["bans"]?.arrayValue ?? []
             errorMessage = nil
+        } catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
+    private func revert(_ entry: JSONValue) async {
+        guard let number = entry["caseNumber"]?.doubleValue else { return }
+        do {
+            _ = try await model.discord.call("api/guilds/\(guild.id)/moderation/cases/\(Int(number))/revert", method: "POST",
+                                             body: ["reason": .string("Révocation depuis l'app ETHONE"), "idempotencyKey": .string(UUID().uuidString)])
+            await loadCases()
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }

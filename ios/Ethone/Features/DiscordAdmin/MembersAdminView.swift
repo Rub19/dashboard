@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Membres du serveur : recherche et consultation (statut, rôles, ancienneté, mise en sourdine). Lecture seule.
+/// Membres du serveur : recherche, consultation (statut, rôles, ancienneté) et sanctions (fiche du membre).
 struct MembersAdminView: View {
     @Environment(AppModel.self) private var model
     let guild: DiscordGuild
@@ -18,6 +18,7 @@ struct MembersAdminView: View {
 
             Section {
                 ForEach(members, id: \.self) { member in
+                    NavigationLink { MemberSanctionView(guild: guild, member: member) } label: {
                     HStack(spacing: 12) {
                         AvatarView(url: Self.avatarURL(member), name: member["displayName"]?.stringValue ?? "?", size: 40, status: Self.status(member["status"]?.stringValue))
                         VStack(alignment: .leading, spacing: 2) {
@@ -33,6 +34,7 @@ struct MembersAdminView: View {
                                 Text(roles.prefix(3).compactMap { $0["name"]?.stringValue }.joined(separator: " · ")).font(.caption2).foregroundStyle(.tertiary).lineLimit(1)
                             }
                         }
+                    }
                     }
                     .listRowBackground(GlassRowBackground())
                     .onAppear { if member == members.last { Task { await loadMore() } } }

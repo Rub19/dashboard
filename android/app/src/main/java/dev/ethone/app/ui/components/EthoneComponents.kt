@@ -149,7 +149,7 @@ fun EthoneEmptyState(
     description: String,
     modifier: Modifier = Modifier,
     buttonTitle: String? = null,
-    onButtonClick: (() -> Void)? = null
+    onButtonClick: (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier

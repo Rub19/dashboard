@@ -37270,6 +37270,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_28_130_en);
 CHANGELOG_BY_LANG.es.unshift(v1_28_130_es);
 CHANGELOG_BY_LANG.de.unshift(v1_28_130_de);
 
+const v1_28_131_fr: ChangelogEntry = {
+  version: "v1.28.131",
+  date: "2026-09-27",
+  title: "Refonte des menus déroulants — Centre de Modération",
+  items: [
+    "Les 9 menus déroulants du Centre de Modération (filtres du tableau de sanctions, sanction automatique après avertissements, formulaire de sanction manuelle) utilisent maintenant le composant stylé du thème.",
+  ],
+};
+
+const v1_28_131_en: ChangelogEntry = {
+  version: "v1.28.131",
+  date: "2026-09-27",
+  title: "Dropdown menus restyling — Moderation Center",
+  items: [
+    "All 9 dropdowns in the Moderation Center (sanctions table filters, auto-sanction after warnings, manual sanction form) now use the app's themed component.",
+  ],
+};
+
+const v1_28_131_es: ChangelogEntry = {
+  version: "v1.28.131",
+  date: "2026-09-27",
+  title: "Rediseño de los menús desplegables — Centro de Moderación",
+  items: [
+    "Los 9 menús desplegables del Centro de Moderación (filtros de la tabla de sanciones, sanción automática tras avisos, formulario de sanción manual) usan ahora el componente con el estilo del tema.",
+  ],
+};
+
+const v1_28_131_de: ChangelogEntry = {
+  version: "v1.28.131",
+  date: "2026-09-27",
+  title: "Dropdown-Überarbeitung — Moderationszentrum",
+  items: [
+    "Alle 9 Dropdowns im Moderationszentrum (Filter der Sanktionstabelle, automatische Sanktion nach Verwarnungen, manuelles Sanktionsformular) nutzen jetzt die themenkonforme Komponente.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_28_131_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_28_131_en);
+CHANGELOG_BY_LANG.es.unshift(v1_28_131_es);
+CHANGELOG_BY_LANG.de.unshift(v1_28_131_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

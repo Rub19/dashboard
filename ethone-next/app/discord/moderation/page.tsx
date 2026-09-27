@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import Select from "@/components/ui/Select";
 import {
   Shield,
   ShieldAlert,
@@ -815,43 +816,52 @@ export default function ModerationCenterPage() {
 
                 <div className="flex items-center flex-wrap gap-2">
                   {/* Filtre Action */}
-                  <select
+                  <Select
                     value={filterAction}
-                    onChange={(e) => setFilterAction(e.target.value)}
-                    className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-xs text-zinc-300 outline-none hover:border-[var(--input-border-hover)]"
-                  >
-                    <option value="ALL">Toutes les actions</option>
-                    <option value="WARN">Avertissements (WARN)</option>
-                    <option value="TIMEOUT">Timeouts (TIMEOUT)</option>
-                    <option value="KICK">Expulsions (KICK)</option>
-                    <option value="BAN">Bannissements (BAN)</option>
-                    <option value="UNBAN">Débannissements (UNBAN)</option>
-                    <option value="QUARANTINE">Quarantaine</option>
-                  </select>
+                    onChange={setFilterAction}
+                    size="sm"
+                    className="w-48 shrink-0"
+                    aria-label="Filtrer par action"
+                    options={[
+                      { id: "ALL", label: "Toutes les actions" },
+                      { id: "WARN", label: "Avertissements (WARN)" },
+                      { id: "TIMEOUT", label: "Timeouts (TIMEOUT)" },
+                      { id: "KICK", label: "Expulsions (KICK)" },
+                      { id: "BAN", label: "Bannissements (BAN)" },
+                      { id: "UNBAN", label: "Débannissements (UNBAN)" },
+                      { id: "QUARANTINE", label: "Quarantaine" },
+                    ]}
+                  />
 
                   {/* Filtre Statut */}
-                  <select
+                  <Select
                     value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-xs text-zinc-300 outline-none hover:border-[var(--input-border-hover)]"
-                  >
-                    <option value="ALL">Tous les statuts</option>
-                    <option value="ACTIVE">Actives</option>
-                    <option value="EXPIRED">Expirées</option>
-                    <option value="REVOKED">Révoquées / Pardonnées</option>
-                  </select>
+                    onChange={setFilterStatus}
+                    size="sm"
+                    className="w-40 shrink-0"
+                    aria-label="Filtrer par statut"
+                    options={[
+                      { id: "ALL", label: "Tous les statuts" },
+                      { id: "ACTIVE", label: "Actives" },
+                      { id: "EXPIRED", label: "Expirées" },
+                      { id: "REVOKED", label: "Révoquées / Pardonnées" },
+                    ]}
+                  />
 
                   {/* Filtre Source */}
-                  <select
+                  <Select
                     value={filterSource}
-                    onChange={(e) => setFilterSource(e.target.value)}
-                    className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-xs text-zinc-300 outline-none hover:border-[var(--input-border-hover)]"
-                  >
-                    <option value="ALL">Toutes les sources</option>
-                    <option value="MANUAL">Manuelle (Staff)</option>
-                    <option value="AUTOMOD">AutoMod</option>
-                    <option value="ANTI_RAID">Anti-Raid</option>
-                  </select>
+                    onChange={setFilterSource}
+                    size="sm"
+                    className="w-44 shrink-0"
+                    aria-label="Filtrer par source"
+                    options={[
+                      { id: "ALL", label: "Toutes les sources" },
+                      { id: "MANUAL", label: "Manuelle (Staff)" },
+                      { id: "AUTOMOD", label: "AutoMod" },
+                      { id: "ANTI_RAID", label: "Anti-Raid" },
+                    ]}
+                  />
                 </div>
               </div>
 
@@ -1309,44 +1319,37 @@ export default function ModerationCenterPage() {
                 {!escalation && <p className="text-xs text-zinc-500">Réglage indisponible : bot injoignable ou serveur non sélectionné.</p>}
                 {escalation && escalation.enabled && (
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    <label className="text-xs text-zinc-300">
-                      Après
-                      <select
-                        value={escalation.threshold}
-                        onChange={(e) => saveEscalation({ threshold: Number(e.target.value) })}
-                        className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2 text-xs text-white"
-                      >
-                        {[2, 3, 4, 5, 6, 8, 10].map((n) => (
-                          <option key={n} value={n} className="bg-zinc-900">{n} avertissements</option>
-                        ))}
-                      </select>
-                    </label>
-                    <label className="text-xs text-zinc-300">
-                      Sanction
-                      <select
-                        value={escalation.action}
-                        onChange={(e) => saveEscalation({ action: e.target.value as "timeout" | "kick" | "ban" })}
-                        className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2 text-xs text-white"
-                      >
-                        <option value="timeout" className="bg-zinc-900">Timeout</option>
-                        <option value="kick" className="bg-zinc-900">Expulsion</option>
-                        <option value="ban" className="bg-zinc-900">Bannissement</option>
-                      </select>
-                    </label>
+                    <Select
+                      label="Après"
+                      value={String(escalation.threshold)}
+                      onChange={(v) => saveEscalation({ threshold: Number(v) })}
+                      size="sm"
+                      options={[2, 3, 4, 5, 6, 8, 10].map((n) => ({ id: String(n), label: `${n} avertissements` }))}
+                    />
+                    <Select
+                      label="Sanction"
+                      value={escalation.action}
+                      onChange={(v) => saveEscalation({ action: v as "timeout" | "kick" | "ban" })}
+                      size="sm"
+                      options={[
+                        { id: "timeout", label: "Timeout" },
+                        { id: "kick", label: "Expulsion" },
+                        { id: "ban", label: "Bannissement" },
+                      ]}
+                    />
                     {escalation.action === "timeout" && (
-                      <label className="text-xs text-zinc-300">
-                        Durée du timeout
-                        <select
-                          value={escalation.durationSeconds}
-                          onChange={(e) => saveEscalation({ durationSeconds: Number(e.target.value) })}
-                          className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2 text-xs text-white"
-                        >
-                          <option value={600} className="bg-zinc-900">10 minutes</option>
-                          <option value={3600} className="bg-zinc-900">1 heure</option>
-                          <option value={86400} className="bg-zinc-900">1 jour</option>
-                          <option value={604800} className="bg-zinc-900">7 jours</option>
-                        </select>
-                      </label>
+                      <Select
+                        label="Durée du timeout"
+                        value={String(escalation.durationSeconds)}
+                        onChange={(v) => saveEscalation({ durationSeconds: Number(v) })}
+                        size="sm"
+                        options={[
+                          { id: "600", label: "10 minutes" },
+                          { id: "3600", label: "1 heure" },
+                          { id: "86400", label: "1 jour" },
+                          { id: "604800", label: "7 jours" },
+                        ]}
+                      />
                     )}
                   </div>
                 )}
@@ -1390,53 +1393,44 @@ export default function ModerationCenterPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="font-medium text-zinc-300">Action</label>
-                  <select
-                    value={sanctionAction}
-                    onChange={(e) => setSanctionAction(e.target.value as CaseAction)}
-                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none"
-                  >
-                    <option value="WARN">Avertissement (WARN)</option>
-                    <option value="TIMEOUT">Exclusion (TIMEOUT)</option>
-                    <option value="KICK">Expulsion (KICK)</option>
-                    <option value="BAN">Bannissement (BAN)</option>
-                    <option value="SOFTBAN">Softban (Purge 7j)</option>
-                    <option value="QUARANTINE">Mise en Quarantaine</option>
-                  </select>
-                </div>
+                <Select
+                  label="Action"
+                  value={sanctionAction}
+                  onChange={(v) => setSanctionAction(v as CaseAction)}
+                  size="sm"
+                  options={[
+                    { id: "WARN", label: "Avertissement (WARN)" },
+                    { id: "TIMEOUT", label: "Exclusion (TIMEOUT)" },
+                    { id: "KICK", label: "Expulsion (KICK)" },
+                    { id: "BAN", label: "Bannissement (BAN)" },
+                    { id: "SOFTBAN", label: "Softban (Purge 7j)" },
+                    { id: "QUARANTINE", label: "Mise en Quarantaine" },
+                  ]}
+                />
 
-                <div className="space-y-1.5">
-                  <label className="font-medium text-zinc-300">Catégorie standard</label>
-                  <select
-                    value={sanctionCategory}
-                    onChange={(e) => setSanctionCategory(e.target.value)}
-                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none"
-                  >
-                    {STANDARD_REASONS.map((r) => (
-                      <option key={r} value={r}>
-                        {r}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  label="Catégorie standard"
+                  value={sanctionCategory}
+                  onChange={setSanctionCategory}
+                  size="sm"
+                  options={STANDARD_REASONS.map((r) => ({ id: r, label: r }))}
+                />
               </div>
 
               {sanctionAction === "TIMEOUT" && (
-                <div className="space-y-1.5">
-                  <label className="font-medium text-zinc-300">Durée de l'exclusion</label>
-                  <select
-                    value={sanctionDuration}
-                    onChange={(e) => setSanctionDuration(e.target.value)}
-                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none"
-                  >
-                    <option value="300">5 minutes</option>
-                    <option value="600">10 minutes</option>
-                    <option value="3600">1 heure</option>
-                    <option value="86400">24 heures</option>
-                    <option value="604800">7 jours</option>
-                  </select>
-                </div>
+                <Select
+                  label="Durée de l'exclusion"
+                  value={sanctionDuration}
+                  onChange={setSanctionDuration}
+                  size="sm"
+                  options={[
+                    { id: "300", label: "5 minutes" },
+                    { id: "600", label: "10 minutes" },
+                    { id: "3600", label: "1 heure" },
+                    { id: "86400", label: "24 heures" },
+                    { id: "604800", label: "7 jours" },
+                  ]}
+                />
               )}
 
               <div className="space-y-1.5">

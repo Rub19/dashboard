@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.131 — 2026-09-27
+
+**Refonte des menus déroulants — Centre de Modération**
+
+- Les 9 menus déroulants du Centre de Modération (filtres du tableau de sanctions, sanction automatique après avertissements, formulaire de sanction manuelle) utilisent maintenant le composant stylé du thème.
+
 ## v1.28.130 — 2026-09-27
 
 **Début de la refonte des menus déroulants**

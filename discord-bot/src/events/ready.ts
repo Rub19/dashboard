@@ -93,6 +93,16 @@ function writeProfileState(state: ProfileSyncState): void {
 }
 
 /**
+ * discord.js#resolveImage encode un Buffer brut en base64 avec le type MIME générique "image/jpg" (voir
+ * DataResolver.js), quel que soit le format réel — inoffensif pour une image statique, mais ça fait perdre
+ * l'animation d'un GIF (Discord ne le reconnaît plus comme animé). En construisant nous-mêmes la data URI avec
+ * le bon type MIME, resolveImage la retourne telle quelle (il ne réécrit que les Buffers, pas les data URI).
+ */
+function toDataUri(image: Buffer, mimeType: string): string {
+  return `data:${mimeType};base64,${image.toString('base64')}`;
+}
+
+/**
  * Bannière et nom du bot. Chaque changement n'est envoyé qu'une fois (empreinte de la bannière, tentative de nom mémorisées dans
  * `data/bot_profile_sync.json`) : Discord limite fortement les changements de profil d'un bot.
  */
@@ -103,7 +113,7 @@ async function syncBotProfile(client: Client<true>): Promise<void> {
     const image = fs.readFileSync(BANNER_FILE);
     const hash = createHash('sha1').update(image).digest('hex');
     if (state.bannerHash !== hash) {
-      await client.user.setBanner(image);
+      await client.user.setBanner(toDataUri(image, 'image/png'));
       state.bannerHash = hash;
       writeProfileState(state);
       logger.success('[Profil] Bannière du bot mise à jour.');
@@ -116,7 +126,7 @@ async function syncBotProfile(client: Client<true>): Promise<void> {
     const image = fs.readFileSync(AVATAR_FILE);
     const hash = createHash('sha1').update(image).digest('hex');
     if (state.avatarHash !== hash) {
-      await client.user.setAvatar(image);
+      await client.user.setAvatar(toDataUri(image, 'image/gif'));
       state.avatarHash = hash;
       writeProfileState(state);
       logger.success('[Profil] Avatar du bot mis à jour.');

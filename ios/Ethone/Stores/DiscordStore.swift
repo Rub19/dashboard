@@ -158,9 +158,16 @@ final class DiscordStore {
 
     // MARK: Réseau
 
-    private func request<T: Decodable>(_ path: String, method: String = "GET", body: Data? = nil) async throws -> T {
+    /// Appel générique vers l'API du bot (écrans d'administration : tickets, giveaways, modération, journal).
+    func call(_ path: String, method: String = "GET", query: [URLQueryItem] = [], body: [String: JSONValue]? = nil) async throws -> JSONValue {
+        try await request(path, method: method, query: query, body: body.map { APIClient.json($0) })
+    }
+
+    private func request<T: Decodable>(_ path: String, method: String = "GET", query: [URLQueryItem] = [], body: Data? = nil) async throws -> T {
         guard let token else { throw APIError.notSignedIn }
-        var request = URLRequest(url: Config.botURL.appendingPathComponent(path))
+        var components = URLComponents(url: Config.botURL.appendingPathComponent(path), resolvingAgainstBaseURL: false)!
+        if !query.isEmpty { components.queryItems = query }
+        var request = URLRequest(url: components.url!)
         request.httpMethod = method
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")

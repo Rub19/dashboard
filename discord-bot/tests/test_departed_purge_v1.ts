@@ -58,5 +58,16 @@ ok(scrubJson('texte', new Set([OLD])).value === 'texte', 'contenu non JSON-objet
 const { DEPARTED_RETENTION_DAYS } = await import('../src/bootstrap/purgeDeparted.js');
 ok(DEPARTED_RETENTION_DAYS === 0, 'rétention par défaut = 0 jour (reset immédiat au redémarrage suivant)');
 
+// Après un départ, le bot se relance (pm2 le redémarre) pour que la purge s'exécute avant le chargement des dépôts.
+const { scheduleDepartureRestart } = await import('../src/services/departedGuilds.js');
+const realExit = process.exit;
+let exits = 0;
+(process as any).exit = () => { exits++; };
+scheduleDepartureRestart(20);
+scheduleDepartureRestart(20); // un second départ dans la foulée ne programme pas un second redémarrage
+await new Promise((r) => setTimeout(r, 80));
+(process as any).exit = realExit;
+ok(exits === 1, 'un départ programme exactement un redémarrage de purge');
+
 console.log(fail ? `\n${fail} échec(s)` : '\nTout est bon');
 process.exit(fail ? 1 : 0);

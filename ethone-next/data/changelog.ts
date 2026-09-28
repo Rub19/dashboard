@@ -38704,6 +38704,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_0_de);
 
+const v1_37_1_fr: ChangelogEntry = {
+  version: "v1.37.1",
+  date: "2026-09-28",
+  title: "Invitations : bouton de synchronisation",
+  items: [
+    "Le bouton « Synchroniser » des invitations ne reste plus bloqué en rotation quand l'API du bot n'est pas configurée.",
+  ],
+};
+
+const v1_37_1_en: ChangelogEntry = {
+  version: "v1.37.1",
+  date: "2026-09-28",
+  title: "Invites: sync button",
+  items: [
+    "The invites \"Sync\" button no longer stays stuck spinning when the bot API is not configured.",
+  ],
+};
+
+const v1_37_1_es: ChangelogEntry = {
+  version: "v1.37.1",
+  date: "2026-09-28",
+  title: "Invitaciones: botón de sincronización",
+  items: [
+    "El botón «Sincronizar» de invitaciones ya no se queda girando cuando la API del bot no está configurada.",
+  ],
+};
+
+const v1_37_1_de: ChangelogEntry = {
+  version: "v1.37.1",
+  date: "2026-09-28",
+  title: "Einladungen: Sync-Button",
+  items: [
+    "Der „Synchronisieren“-Button der Einladungen bleibt nicht mehr im Drehzustand hängen, wenn die Bot-API nicht konfiguriert ist.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

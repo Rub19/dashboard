@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.1 — 2026-09-28
+
+**Invitations : bouton de synchronisation**
+
+- Le bouton « Synchroniser » des invitations ne reste plus bloqué en rotation quand l'API du bot n'est pas configurée.
+
 ## v1.37.0 — 2026-09-28
 
 **Bot 100 % silencieux à l'arrivée + reset au départ + en-tête du bot**

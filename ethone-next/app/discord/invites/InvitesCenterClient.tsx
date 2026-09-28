@@ -176,11 +176,11 @@ export default function InvitesCenterClient() {
   }, [fetchAllData]);
 
   const handleSyncDiscord = async () => {
-    setSyncing(true);
     if (!API_BASE) {
       showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
+    setSyncing(true);
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/sync`, { credentials: "include", method: "POST" });
       if (res.ok) {

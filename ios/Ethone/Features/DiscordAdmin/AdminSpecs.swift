@@ -86,8 +86,13 @@ enum AdminCatalog {
               ],
               lists: [.init(title: "Modèles", path: "/templates")]),
         .init(id: "report-system", title: "Signalements", symbol: "exclamationmark.bubble.fill", group: groups[0], overview: nil,
-              configs: [.init(title: "Réglages", get: "/config", put: "/config")]),
-        .init(id: "secure-roles", title: "Rôles sécurisés", symbol: "lock.shield.fill", group: groups[0]),
+              configs: [.init(title: "Réglages", get: "/config", put: "/config")],
+              actions: [.init(title: "Configuration automatique (créer salon + rôle)", path: "/setup", symbol: "wand.and.stars")]),
+        .init(id: "secure-roles", title: "Rôles sécurisés", symbol: "lock.shield.fill", group: groups[0],
+              configs: [.init(title: "Réglages", get: "/overview", put: "/config", strict: true)],
+              lists: [.init(title: "Rôles sécurisés", path: "/overview", key: "roles", rowActions: [
+                .init(title: "Restaurer (ne plus sécuriser)", path: "/roles/{id}", method: "DELETE", destructive: true, symbol: "lock.open.fill"),
+              ])]),
         .init(id: "logs", title: "Journaux (réglages)", symbol: "list.bullet.clipboard.fill", group: groups[0],
               configs: [.init(title: "Journaux", get: "/config", put: "/config")]),
     ]

@@ -49,9 +49,18 @@ enum AdminCreators {
         case "giveaways": [giveaway]
         case "backups": [backup]
         case "server": [channel, role]
+        case "secure-roles": [secureRole]
         default: []
         }
     }
+
+    static let secureRole = CreateSpec(
+        title: "Sécuriser un rôle", path: "/roles",
+        fields: [
+            .init(key: "roleId", label: "Rôle à sécuriser", kind: .role),
+        ],
+        build: { c in ["roleId": .string(c.text("roleId"))] }
+    )
 
     static let reminder = CreateSpec(
         title: "Nouveau rappel", path: "/",

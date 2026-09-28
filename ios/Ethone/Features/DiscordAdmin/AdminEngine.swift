@@ -65,7 +65,7 @@ enum AdminText {
     }
 
     static let titleKeys = ["title", "name", "label", "prize", "userTag", "tag", "username", "displayName", "command", "question", "topic", "id"]
-    static let subtitleKeys = ["status", "type", "category", "description", "userTag", "authorTag", "channelName", "action", "level", "xp", "balance", "score", "count", "enabled", "value"]
+    static let subtitleKeys = ["status", "type", "category", "description", "userTag", "authorTag", "channelName", "action", "level", "xp", "balance", "score", "count", "enabled", "secured", "value"]
 
     static func title(of item: JSONValue) -> String {
         guard case .object(let dictionary) = item else { return item.displayText }

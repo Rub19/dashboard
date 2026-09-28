@@ -17,6 +17,7 @@ import { VoiceAutomationService } from './voiceAutomationService.js';
 import { DiscordVoicePanel } from '../ui/discordVoicePanel.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 import { analyticsService } from '../../analytics/services/analyticsService.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
 
@@ -658,7 +659,7 @@ export class TemporaryVoiceService {
     const timer = setTimeout(async () => {
       this.deletionTimers.delete(roomId);
       const fresh = voiceRepository.getRoomById(roomId);
-      if (fresh && fresh.currentUsers.length === 0 && fresh.status !== 'DELETED') {
+      if (fresh && fresh.currentUsers.length === 0 && fresh.status !== 'DELETED' && isModuleEnabled(guild.id, 'voice')) {
         await this.deleteRoomChannel(guild, roomId, `Salon vide depuis ${delaySeconds}s`);
       }
     }, delaySeconds * 1000);

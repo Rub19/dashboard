@@ -12,6 +12,7 @@ import { musicEventBus } from './musicEventBus.js';
 import { musicNotifier } from './musicNotifier.js';
 import { voiceStayService } from './voiceStayService.js';
 import { logger } from '../../../utils/logger.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 
 class MusicService {
   private client: Client | null = null;
@@ -52,6 +53,8 @@ class MusicService {
         if (!hasContent) continue;
         if (state.status !== 'PLAYING' && state.status !== 'PAUSED') continue;
         if (!state.voiceChannelId) continue;
+        // Module Musique désactivé : la file est rechargée en mémoire mais le bot ne rejoint pas le vocal et ne relance rien tout seul.
+        if (!isModuleEnabled(state.guildId, 'music')) continue;
 
         const channel = guild.channels.cache.get(state.voiceChannelId);
         if (!channel || !channel.isVoiceBased()) continue;

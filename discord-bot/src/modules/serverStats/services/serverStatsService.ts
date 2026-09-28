@@ -4,6 +4,7 @@ import { serverStatsStorage } from '../storage/serverStatsStorage.js';
 import { StatChannel, StatType } from '../types/serverStats.js';
 import { logger } from '../../../utils/logger.js';
 import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 
 export function computeStat(guild: Guild, type: StatType, roleId: string | null): number {
   const members = guild.members.cache;
@@ -95,7 +96,7 @@ class ServerStatsService {
       const now = Date.now();
       for (const guild of this.client.guilds.cache.values()) {
         const config = serverStatsStorage.getConfig(guild.id);
-        if (!config.enabled) continue;
+        if (!config.enabled || !isModuleEnabled(guild.id, 'serverstats')) continue;
         const channels = serverStatsStorage.getGuild(guild.id);
         if (channels.length === 0) continue;
         const last = this.lastRun.get(guild.id) ?? 0;

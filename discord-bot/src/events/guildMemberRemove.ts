@@ -16,26 +16,29 @@ export async function onGuildMemberRemove(member: GuildMember | PartialGuildMemb
   try {
     const config = guildConfigService.getConfig(member.guild.id);
 
+    // Un module désactivé ne fait rien d'automatique au départ d'un membre (pas de suivi, pas d'effacement d'XP, pas de journal).
+    const on = (moduleId: string) => isModuleEnabled(member.guild.id, moduleId);
+
     // Invite Tracker : Enregistrement du départ
-    inviteTrackingService.handleMemberLeave(member.guild.id, member.id);
+    if (on('invites')) inviteTrackingService.handleMemberLeave(member.guild.id, member.id);
 
     // Anti-Raid 2.0 (Détection des vagues de départs)
-    if ('guild' in member && member.guild) {
+    if (on('security') && 'guild' in member && member.guild) {
       raidDetectionService.handleMemberRemove(member as GuildMember);
     }
 
     // XP : effacé au départ si le serveur l'a choisi
-    levelingService.handleMemberLeave(member);
+    if (on('leveling')) levelingService.handleMemberLeave(member);
 
     // 1. Module Goodbye (Message, Embed, Image)
-    await welcomeService.handleMemberRemove(member);
+    if (on('welcome')) await welcomeService.handleMemberRemove(member);
 
     // 2. Analytics
     analyticsService.recordLeave(member.guild.id, member.id);
-    statsCollector.recordLeave(member.guild.id, member.guild.memberCount);
+    if (on('stats')) statsCollector.recordLeave(member.guild.id, member.guild.memberCount);
 
     // 3. Audit Center 2.0 Log (Corrélation expulsion vs départ volontaire)
-    if ('guild' in member && member.guild) {
+    if (on('logs') && 'guild' in member && member.guild) {
       const auditRes = await DiscordAuditAdapter.resolveExecutor(
         member.guild,
         AuditLogEvent.MemberKick,

@@ -6,6 +6,7 @@ import { DiscordLogService } from './discordLogService.js';
 import { LogRetentionService } from './logRetentionService.js';
 import { LogEntry } from '../types/logEvent.js';
 import { logStorage } from '../storage/logStorage.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 import { logger } from '../../../utils/logger.js';
 
 export interface EmitEventParams {
@@ -74,6 +75,9 @@ export class LogService {
       correlationId: params.correlationId,
       timestamp,
     };
+
+    // Module « Journal d'audit » désactivé : rien n'est enregistré ni envoyé (l'événement est seulement renvoyé à l'appelant).
+    if (!isModuleEnabled(params.guildId, 'logs')) return event;
 
     // 2. Envoi non-bloquant dans la file asynchrone
     logQueue.enqueue(event);

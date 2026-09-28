@@ -40,6 +40,7 @@ import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
 import { handlePermissionPresetButton } from '../commands/admin/permissionsCommand.js';
 import { baseEmbed, noticeEmbed } from '../utils/embeds.js';
 import { disabledModuleEmbeds, disabledComponentEmbed } from '../services/moduleGate.js';
+import { isModuleEnabled } from '../services/moduleRegistry.js';
 import { HelpPanel } from '../commands/general/helpPanel.js';
 import { syncEngine } from '../services/syncEngine.js';
 import { BotCommandStatsService } from '../modules/botControl/services/botCommandStatsService.js';
@@ -317,7 +318,7 @@ export async function onInteractionCreate(interaction: Interaction) {
     // Try custom commands (slash)
     if (interaction.guildId) {
       const customCmd = customCommandStorage.getByName(interaction.guildId, interaction.commandName);
-      if (customCmd && customCmd.enabled && (customCmd.triggerType === 'slash' || customCmd.triggerType === 'both')) {
+      if (customCmd && customCmd.enabled && isModuleEnabled(interaction.guildId, 'commands') && (customCmd.triggerType === 'slash' || customCmd.triggerType === 'both')) {
         await CustomCommandService.executeSlash(customCmd, interaction as any).catch(() => null);
         return;
       }

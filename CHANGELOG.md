@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.35.3 — 2026-09-28
+
+**Bot passif quand ses modules sont désactivés**
+
+- Audit du bot : un module désactivé ne déclenche plus aucune action automatique. Corrigé : messages de bienvenue et rôles automatiques, effacement de l'XP au départ d'un membre, journaux (Logs), starboard, anti-nuke, détection de raid, salons vocaux temporaires, anniversaires, statistiques du serveur, statroles, fermeture automatique des tickets, XP vocal, musique 24/7, messages épinglés, commandes personnalisées.
+- Le service d'alerte d'urgence (messages et MP de sa propre initiative) reste silencieux tant qu'aucun module hors noyau n'est activé.
+- Nouveau test automatique qui vérifie qu'avec tous les modules éteints le bot ne supprime, n'exclut, ne bannit et n'envoie rien.
+
 ## v1.35.2 — 2026-09-28
 
 **Heatmap : pleine largeur**

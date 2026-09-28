@@ -10,6 +10,7 @@ import {
 import { stickyStorage } from '../storage/stickyStorage.js';
 import { StickyMessage } from '../types/sticky.js';
 import { logger } from '../../../utils/logger.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 
 type StickyTextChannel = TextChannel | NewsChannel | ThreadChannel;
 
@@ -53,6 +54,7 @@ class StickyService {
     const channelId = message.channelId;
     const timer = setTimeout(() => {
       this.pending.delete(key);
+      if (!isModuleEnabled(guild.id, 'sticky')) return; // module coupé entre-temps : plus aucun repositionnement
       void this.repost(guild, channelId).catch((err) => logger.error('[Sticky] repost :', err));
     }, Math.max(2, sticky.cooldownSeconds) * 1000);
 

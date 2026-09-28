@@ -2,6 +2,7 @@ import { Client, TextChannel } from 'discord.js';
 import { ticketRepository } from '../storage/ticketRepository.js';
 import { ticketService } from './ticketService.js';
 import { logger } from '../../../utils/logger.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 export class TicketScheduler {
@@ -22,7 +23,7 @@ export class TicketScheduler {
 
       for (const [guildId, guild] of allGuilds) {
         const config = ticketRepository.getConfig(guildId);
-        if (!config.enabled) continue;
+        if (!config.enabled || !isModuleEnabled(guildId, 'tickets')) continue;
 
         const { tickets } = ticketRepository.getTickets(guildId, { status: 'ALL', limit: 1000 });
         const now = Date.now();

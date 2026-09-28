@@ -2,6 +2,7 @@ import { Client, VoiceState, VoiceChannel } from 'discord.js';
 import { voiceRepository } from '../storage/voiceRepository.js';
 import { TemporaryVoiceService } from './temporaryVoiceService.js';
 import { logger } from '../../../utils/logger.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 
 export class VoiceService {
   private client: Client | null = null;
@@ -16,6 +17,8 @@ export class VoiceService {
     try {
       // Bot restart recovery
       for (const [guildId, guild] of client.guilds.cache) {
+        // Module Salons vocaux désactivé : aucun salon n'est supprimé ni touché au démarrage.
+        if (!isModuleEnabled(guildId, 'voice')) continue;
         const storedRooms = voiceRepository.getRooms(guildId);
 
         for (const room of storedRooms) {
@@ -51,7 +54,7 @@ export class VoiceService {
               voiceRepository.saveRoom(room);
               setTimeout(async () => {
                 const fresh = voiceRepository.getRoomById(room.id);
-                if (fresh && fresh.currentUsers.length === 0 && fresh.status !== 'DELETED') {
+                if (fresh && fresh.currentUsers.length === 0 && fresh.status !== 'DELETED' && isModuleEnabled(guildId, 'voice')) {
                   await TemporaryVoiceService.deleteRoomChannel(guild, room.id, 'Salon vide après redémarrage');
                 }
               }, delay * 1000);

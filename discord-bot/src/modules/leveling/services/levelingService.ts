@@ -18,6 +18,7 @@ import { logger } from '../../../utils/logger.js';
 import { buildLevelUpEmbed, buildRewardEmbed } from './levelMessages.js';
 import type { LevelingConfig } from '../types/levelingConfig.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 
 const VOICE_TICK_MS = 60_000;
 
@@ -293,7 +294,7 @@ class LevelingService {
     let credited = 0;
     for (const guild of client.guilds.cache.values()) {
       const config = levelingStorage.getConfig(guild.id);
-      if (!config.enabled || !config.voiceXpEnabled) continue;
+      if (!config.enabled || !config.voiceXpEnabled || !isModuleEnabled(guild.id, 'leveling')) continue;
       for (const channel of guild.channels.cache.values()) {
         if (!channel.isVoiceBased() || channel.id === guild.afkChannelId) continue;
         if (config.excludedChannelIds.includes(channel.id) || (channel.parentId && config.excludedChannelIds.includes(channel.parentId))) continue;

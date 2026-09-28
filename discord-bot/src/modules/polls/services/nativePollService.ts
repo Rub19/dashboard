@@ -3,6 +3,7 @@ import { DiscordPoll } from '../types/index.js';
 import { pollRepository } from '../storage/pollRepository.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 import { logger } from '../../../utils/logger.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 
 /**
  * Sondages natifs Discord (champ `poll` d'un message). Discord gère le vote, l'affichage et la clôture ;
@@ -251,7 +252,8 @@ export class NativePollService {
   /** Un passage : rafraîchit les sondages natifs actifs (décompte en direct) et clôture ceux dont l'heure est passée. */
   public async tick(client: Client, now = Date.now()): Promise<number> {
     let ended = 0;
-    for (const poll of pollRepository.getAllPolls().filter((p) => p.native && p.status === 'ACTIVE')) {
+    // Module Sondages désactivé sur un serveur : ses sondages ne sont plus consultés (reprise à la réactivation).
+    for (const poll of pollRepository.getAllPolls().filter((p) => p.native && p.status === 'ACTIVE' && isModuleEnabled(p.guildId, 'polls'))) {
       try {
         const next = await this.sync(client, poll, now);
         if (next.status === 'ENDED') ended++;

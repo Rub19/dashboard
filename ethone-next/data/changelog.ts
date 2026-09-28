@@ -38514,6 +38514,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_35_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_35_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_35_2_de);
 
+const v1_35_3_fr: ChangelogEntry = {
+  version: "v1.35.3",
+  date: "2026-09-28",
+  title: "Bot passif quand ses modules sont désactivés",
+  items: [
+    "Audit du bot : un module désactivé ne déclenche plus aucune action automatique. Corrigé : messages de bienvenue et rôles automatiques, effacement de l'XP au départ d'un membre, journaux (Logs), starboard, anti-nuke, détection de raid, salons vocaux temporaires, anniversaires, statistiques du serveur, statroles, fermeture automatique des tickets, XP vocal, musique 24/7, messages épinglés, commandes personnalisées.",
+    "Le service d'alerte d'urgence (messages et MP de sa propre initiative) reste silencieux tant qu'aucun module hors noyau n'est activé.",
+    "Nouveau test automatique qui vérifie qu'avec tous les modules éteints le bot ne supprime, n'exclut, ne bannit et n'envoie rien.",
+  ],
+};
+
+const v1_35_3_en: ChangelogEntry = {
+  version: "v1.35.3",
+  date: "2026-09-28",
+  title: "Bot stays passive when its modules are disabled",
+  items: [
+    "Bot audit: a disabled module no longer triggers any automatic action. Fixed: welcome messages and auto roles, XP wipe when a member leaves, logs, starboard, anti-nuke, raid detection, temporary voice channels, birthdays, server stats, stat roles, ticket auto-close, voice XP, 24/7 music, sticky messages, custom commands.",
+    "The emergency alert service (messages and DMs on its own initiative) stays silent until a non-core module is enabled.",
+    "New automated test checking that with every module off the bot deletes, times out, bans and sends nothing.",
+  ],
+};
+
+const v1_35_3_es: ChangelogEntry = {
+  version: "v1.35.3",
+  date: "2026-09-28",
+  title: "El bot permanece pasivo con los módulos desactivados",
+  items: [
+    "Auditoría del bot: un módulo desactivado ya no dispara ninguna acción automática (bienvenida, roles automáticos, borrado de XP al salir, logs, starboard, anti-nuke, detección de raids, canales de voz temporales, cumpleaños, estadísticas, cierre automático de tickets, música 24/7, mensajes fijos, comandos personalizados).",
+    "El servicio de alertas de emergencia permanece en silencio hasta que se active un módulo no esencial.",
+  ],
+};
+
+const v1_35_3_de: ChangelogEntry = {
+  version: "v1.35.3",
+  date: "2026-09-28",
+  title: "Bot bleibt passiv, wenn seine Module deaktiviert sind",
+  items: [
+    "Bot-Audit: Ein deaktiviertes Modul löst keine automatischen Aktionen mehr aus (Willkommensnachrichten, Auto-Rollen, XP-Löschung beim Verlassen, Logs, Starboard, Anti-Nuke, Raid-Erkennung, temporäre Sprachkanäle, Geburtstage, Serverstatistiken, Ticket-Auto-Schließung, 24/7-Musik, angeheftete Nachrichten, eigene Befehle).",
+    "Der Notfall-Alarmdienst bleibt still, bis ein Nicht-Kernmodul aktiviert ist.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_35_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_35_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_35_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_35_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -48,6 +48,9 @@ import { logger } from '../utils/logger.js';
 
 let isEventsRegistered = false;
 
+/** Un module désactivé sur un serveur ne réagit à aucun événement de ce serveur (le gestionnaire ne fait rien du tout). */
+const moduleOn = (guildId: string | null | undefined, moduleId: string): boolean => Boolean(guildId) && isModuleEnabled(guildId as string, moduleId);
+
 export function registerEvents(client: Client): void {
   if (isEventsRegistered) {
     logger.warn('[EventHandler] Events already registered. Skipping duplicate registration.');
@@ -143,14 +146,18 @@ export function registerEvents(client: Client): void {
   });
 
   // Invite Tracker Events
-  client.on(Events.InviteCreate, (invite) => inviteSnapshotService.handleInviteCreate(invite));
-  client.on(Events.InviteDelete, (invite) => inviteSnapshotService.handleInviteDelete(invite));
+  client.on(Events.InviteCreate, (invite) => {
+    if (moduleOn(invite.guild?.id, 'invites')) inviteSnapshotService.handleInviteCreate(invite);
+  });
+  client.on(Events.InviteDelete, (invite) => {
+    if (moduleOn(invite.guild?.id, 'invites')) inviteSnapshotService.handleInviteDelete(invite);
+  });
 
   // Logs : Messages
   client.on(Events.MessageDelete, (message) => {
     handleMessageDelete(message);
-    autoModService.handleMessageDelete(message);
-    starboardService.handleMessageDelete(message);
+    if (moduleOn(message.guildId, 'automod')) autoModService.handleMessageDelete(message);
+    if (moduleOn(message.guildId, 'starboard')) starboardService.handleMessageDelete(message);
   });
   client.on(Events.MessageBulkDelete, (messages, channel) =>
     handleMessageDeleteBulk(messages, channel)
@@ -160,13 +167,13 @@ export function registerEvents(client: Client): void {
   // Logs & Sécurité : Membres
   client.on(Events.GuildMemberUpdate, (oldMember, newMember) => {
     handleGuildMemberUpdate(oldMember, newMember);
-    autoModService.handleMemberProfile(newMember);
+    if (moduleOn(newMember.guild.id, 'automod')) autoModService.handleMemberProfile(newMember);
     ownerShieldService.handleGuildMemberUpdate(oldMember as GuildMember, newMember);
     void guardSecureRoles(oldMember as GuildMember, newMember).catch((err) => logger.warn('[SecureRoles] garde-fou :', err?.message));
   });
   client.on(Events.GuildBanAdd, (ban) => {
     handleGuildBanAdd(ban);
-    antiNukeService.handleBanAdd(ban.guild);
+    if (moduleOn(ban.guild.id, 'anti-nuke')) antiNukeService.handleBanAdd(ban.guild);
     ownerShieldService.handleGuildBanAdd(ban);
   });
   client.on(Events.GuildBanRemove, (ban) => handleGuildBanRemove(ban));
@@ -174,12 +181,12 @@ export function registerEvents(client: Client): void {
   // Logs & Sécurité : Rôles
   client.on(Events.GuildRoleCreate, (role) => {
     handleRoleCreate(role);
-    raidDetectionService.handleRoleEvent('ROLE_CREATE', role);
+    if (moduleOn(role.guild.id, 'security')) raidDetectionService.handleRoleEvent('ROLE_CREATE', role);
   });
   client.on(Events.GuildRoleDelete, (role) => {
     handleRoleDelete(role);
-    antiNukeService.handleRoleDelete(role.guild);
-    raidDetectionService.handleRoleEvent('ROLE_DELETE', role);
+    if (moduleOn(role.guild.id, 'anti-nuke')) antiNukeService.handleRoleDelete(role.guild);
+    if (moduleOn(role.guild.id, 'security')) raidDetectionService.handleRoleEvent('ROLE_DELETE', role);
   });
   client.on(Events.GuildRoleUpdate, (oldRole, newRole) => {
     handleRoleUpdate(oldRole, newRole);
@@ -189,22 +196,22 @@ export function registerEvents(client: Client): void {
   // Logs & Sécurité : Salons
   client.on(Events.ChannelCreate, (channel) => {
     handleChannelCreate(channel);
-    if ('guild' in channel && channel.guild) {
+    if ('guild' in channel && channel.guild && moduleOn(channel.guild.id, 'security')) {
       raidDetectionService.handleChannelEvent('CHANNEL_CREATE', channel as any);
     }
   });
   client.on(Events.ChannelDelete, (channel) => {
     handleChannelDelete(channel);
     if ('guild' in channel && channel.guild) {
-      antiNukeService.handleChannelDelete(channel.guild);
-      raidDetectionService.handleChannelEvent('CHANNEL_DELETE', channel as any);
+      if (moduleOn(channel.guild.id, 'anti-nuke')) antiNukeService.handleChannelDelete(channel.guild);
+      if (moduleOn(channel.guild.id, 'security')) raidDetectionService.handleChannelEvent('CHANNEL_DELETE', channel as any);
     }
   });
   client.on(Events.ChannelUpdate, (oldChan, newChan) => handleChannelUpdate(oldChan, newChan));
 
   // Audit Logs (Mass ban/kick, webhooks, bots)
   client.on(Events.GuildAuditLogEntryCreate, (entry, guild) => {
-    raidDetectionService.handleAuditLog(guild, entry);
+    if (moduleOn(guild.id, 'security')) raidDetectionService.handleAuditLog(guild, entry);
 
     if (
       entry.action === AuditLogEvent.WebhookCreate ||
@@ -279,15 +286,15 @@ export function registerEvents(client: Client): void {
 
   // Starboard : réactions ⭐
   client.on(Events.MessageReactionAdd, (reaction, user) => {
-    starboardService.handleReactionAdd(reaction, user);
+    if (moduleOn(reaction.message.guildId, 'starboard')) starboardService.handleReactionAdd(reaction, user);
   });
   client.on(Events.MessageReactionRemove, (reaction, user) => {
-    starboardService.handleReactionRemove(reaction, user);
+    if (moduleOn(reaction.message.guildId, 'starboard')) starboardService.handleReactionRemove(reaction, user);
   });
   client.on(Events.MessageReactionRemoveAll, (message) => {
-    starboardService.handleReactionClear(message);
+    if (moduleOn(message.guildId, 'starboard')) starboardService.handleReactionClear(message);
   });
   client.on(Events.MessageReactionRemoveEmoji, (reaction) => {
-    starboardService.handleReactionClear(reaction.message);
+    if (moduleOn(reaction.message.guildId, 'starboard')) starboardService.handleReactionClear(reaction.message);
   });
 }

@@ -5,6 +5,7 @@ import { BirthdayConfig } from '../types/birthday.js';
 import { logger } from '../../../utils/logger.js';
 import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 
 type SendableChannel = TextChannel | NewsChannel | ThreadChannel;
 
@@ -44,7 +45,7 @@ class BirthdayService {
       const key = todayKey(now);
       for (const guild of this.client.guilds.cache.values()) {
         const config = birthdayStorage.getConfig(guild.id);
-        if (!config.enabled || !config.announceChannelId) continue;
+        if (!config.enabled || !isModuleEnabled(guild.id, 'birthdays') || !config.announceChannelId) continue;
         if (config.lastAnnouncedDate === key) continue; // déjà fait aujourd'hui
         if (now.getHours() < config.announceHour) continue; // pas encore l'heure
 

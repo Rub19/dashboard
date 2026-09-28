@@ -14,6 +14,7 @@ import { auditRepository } from '../storage/auditRepository.js';
 import { logger } from '../../../utils/logger.js';
 import { canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 
 const WEBHOOK_NAME = 'ETHONE Logs';
 
@@ -72,7 +73,8 @@ export class DiscordLogService {
 
       const config = auditRepository.getConfig(event.guildId);
       const name = this.webhookNameFor(config, key);
-      if (!config.enabled && !force) return { ok: false, reason: 'disabled', name };
+      // Module « Journal d'audit » coupé (hub / dashboard / /module) : aucun message dans les salons de logs (sauf test manuel).
+      if ((!config.enabled || !isModuleEnabled(event.guildId, 'logs')) && !force) return { ok: false, reason: 'disabled', name };
 
       const targetChannel = this.resolveChannel(guild, event, config, force);
       if (!targetChannel) return { ok: false, reason: 'no_channel', name };

@@ -1,6 +1,7 @@
 import { AuditLogEvent, Guild, PermissionFlagsBits } from 'discord.js';
 import { AuditActor } from '../types/auditEvent.js';
 import { logger } from '../../../utils/logger.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 
 export class DiscordAuditAdapter {
   /**
@@ -11,6 +12,8 @@ export class DiscordAuditAdapter {
     auditType: AuditLogEvent,
     targetId?: string
   ): Promise<{ actor?: AuditActor; reason?: string }> {
+    // Module Journal d'audit désactivé : aucune requête aux Audit Logs Discord (tous les appelants ne servent qu'à journaliser).
+    if (!isModuleEnabled(guild.id, 'logs')) return {};
     try {
       const me = guild.members.me;
       if (!me || !me.permissions.has(PermissionFlagsBits.ViewAuditLog)) {

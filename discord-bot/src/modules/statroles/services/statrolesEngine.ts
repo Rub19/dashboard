@@ -4,6 +4,7 @@ import { statsQueries } from '../../stats/services/statsQueries.js';
 import { statsStorage } from '../../stats/storage/statsStorage.js';
 import { Condition, Operator, RulePreview, RunSummary, StatroleRule } from '../types/statroles.js';
 import { logger } from '../../../utils/logger.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 
 /** Plafond de changements de rôles par passage : évite une rafale (et des limites d'API) si une règle vient d'être créée. */
 const MAX_CHANGES_PER_RUN = 250;
@@ -101,7 +102,7 @@ class StatrolesEngine {
     this.timer = setInterval(() => {
       for (const guildId of statrolesStorage.enabledGuildIds()) {
         const guild = client.guilds.cache.get(guildId);
-        if (guild) void this.run(guild).catch((err) => logger.warn(`[Statroles] Passage en échec sur ${guildId} :`, err));
+        if (guild && isModuleEnabled(guildId, 'statroles')) void this.run(guild).catch((err) => logger.warn(`[Statroles] Passage en échec sur ${guildId} :`, err));
       }
     }, 10 * 60_000);
     this.timer.unref?.();

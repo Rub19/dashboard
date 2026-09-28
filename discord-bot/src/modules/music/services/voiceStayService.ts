@@ -2,6 +2,7 @@ import { PermissionFlagsBits, type Client, type Guild, type VoiceBasedChannel, t
 import { config } from '../../../config.js';
 import { logger } from '../../../utils/logger.js';
 import { musicPersistence } from '../storage/musicPersistence.js';
+import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 import type { IGuildMusicPlayer } from './guildMusicPlayer.js';
 import { lavalinkManager } from './lavalinkManager.js';
 import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
@@ -135,6 +136,8 @@ class VoiceStayService {
 
   /** Remet le bot dans son salon 24h/24 s'il n'y est pas. Renvoie true s'il y est à la fin. */
   public async ensure(guild: Guild, channelId: string): Promise<boolean> {
+    // Module Musique désactivé : le bot ne se reconnecte plus tout seul dans un salon vocal.
+    if (!isModuleEnabled(guild.id, 'music')) return false;
     const channel = guild.channels.cache.get(channelId);
     if (!channel || !channel.isVoiceBased()) {
       this.warnOnce(guild.id, `Salon 24h/24 introuvable (${channelId}) — refais /join pour en choisir un autre.`);

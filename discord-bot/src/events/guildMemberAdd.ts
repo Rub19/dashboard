@@ -78,7 +78,8 @@ export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
     }
 
     // 3. Module Bienvenue (Welcome, Embeds, Image Cards)
-    await welcomeService.handleMemberAdd(member);
+    // (handleMemberAdd attribue ses rôles et lance l'onboarding AVANT son propre contrôle de module : on filtre ici.)
+    if (on('welcome')) await welcomeService.handleMemberAdd(member);
 
     // 4. Analytics
     analyticsService.recordJoin(member.guild.id, member.id);

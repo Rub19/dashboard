@@ -11,6 +11,7 @@ import { autoModRepository } from '../../automod/storage/autoModRepository.js';
 import { logStorage } from '../../logs/storage/logStorage.js';
 import { baseEmbed } from '../../../utils/embeds.js';
 import { logger } from '../../../utils/logger.js';
+import { CORE_MODULE_IDS, MODULES, isModuleEnabled } from '../../../services/moduleRegistry.js';
 
 /**
  * Contacts d'urgence : quand un problème sérieux est détecté (permission manquante, salon configuré supprimé, rôle caché
@@ -175,6 +176,11 @@ export async function sweep(client: Pick<Client, 'guilds'>, now = Date.now()): P
   const state = loadState();
   let sent = 0;
   for (const guild of client.guilds.cache.values()) {
+    // Passif tant qu'aucun module hors « noyau » n'est activé : pas d'alerte, pas de message privé de la propre initiative du bot.
+    if (!MODULES.some((m) => !CORE_MODULE_IDS.includes(m.id) && isModuleEnabled(guild.id, m.id))) {
+      delete state[guild.id];
+      continue;
+    }
     const issues = collectIssues(guild);
     if (issues.length === 0) {
       delete state[guild.id];

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.6 — 2026-09-29
+
+**Nettoyage du Centre de contrôle du bot**
+
+- En-tête du Centre de contrôle : fond 100% opaque (le contenu qui défilait apparaissait encore en surimpression derrière l'en-tête, même après le passage à /80).
+- Bande de statut globale masquée sur les pages du Centre de contrôle : elle faisait doublon avec la télémétrie déjà affichée juste en dessous.
+- Nombre de serveurs retiré de l'en-tête (même pour le propriétaire) et badges d'identité du bot allégés pour une page moins chargée.
+
 ## v1.37.5 — 2026-09-29
 
 **Correction : fuite d'infos sur le Bot Control**

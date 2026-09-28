@@ -1281,7 +1281,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       </div>
 
       {/* Header */}
-      <div className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/80 sticky top-0 z-30">
+      {/* Fond 100% opaque (pas de /NN) : évite le contenu qui défile en surimpression derrière l'en-tête sticky. */}
+      <div className="border-b border-[var(--panel-border)] bg-[var(--bg-main)] sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-5">
             {/* Left: Identity & Status */}
@@ -1295,16 +1296,6 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                     (e.target as any).src = "https://cdn.discordapp.com/embed/avatars/0.png";
                   }}
                 />
-                {isOwner && (
-                  <span
-                    className={cn(
-                      "absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[var(--panel-border)]",
-                      currentCfg.dot,
-                      botCore.status === "online" && "animate-pulse ring-2 ring-emerald-500/30"
-                    )}
-                    title={`Statut : ${currentCfg.label}`}
-                  />
-                )}
               </div>
 
               <div className="min-w-0">
@@ -1312,12 +1303,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap bg-clip-text text-transparent">
                     {botCore.name}
                   </h1>
-                  <span className="px-1.5 py-0.5 rounded text-xs font-extrabold bg-emerald-500 text-white tracking-wide shadow-sm">
-                    BOT
-                  </span>
-                  <span className="text-xs text-[var(--text-muted)] font-mono">#{botCore.discriminator}</span>
-                  <span className="px-2 py-0.5 rounded-full text-xs font-mono bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)]">
-                    v{botCore.version}
+                  <span className="text-xs text-[var(--text-muted)] font-mono">
+                    #{botCore.discriminator} · v{botCore.version}
                   </span>
                 </div>
 
@@ -1350,7 +1337,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
             {/* Right: Bento Telemetry Cards & Quick Actions */}
             <div className="flex flex-wrap items-center gap-3 xl:gap-4">
               {/* Bento Telemetry Cards */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full sm:w-auto">
+              <div className="grid grid-cols-3 gap-2.5 w-full sm:w-auto">
                 {/* Ping */}
                 <div className="px-3.5 py-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--input-border-hover)] transition-all">
                   <div className="flex items-center justify-between gap-1 text-xs text-[var(--text-muted)]">
@@ -1375,19 +1362,6 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                     </span>
                   </div>
                 </div>
-
-                {/* Servers : réservé au propriétaire, ne regarde pas les admins des autres serveurs du bot */}
-                {isOwner && (
-                  <div className="px-3.5 py-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--input-border-hover)] transition-all">
-                    <div className="flex items-center justify-between gap-1 text-xs text-[var(--text-muted)]">
-                      <span>Serveurs</span>
-                      <Server className="w-3 h-3 text-emerald-300" />
-                    </div>
-                    <div className="mt-0.5">
-                      <span className="text-sm font-bold font-mono text-emerald-300">{servers.length}</span>
-                    </div>
-                  </div>
-                )}
 
                 {/* Members */}
                 <div className="px-3.5 py-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--input-border-hover)] transition-all">

@@ -38917,6 +38917,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_5_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_5_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_5_de);
 
+const v1_37_6_fr: ChangelogEntry = {
+  version: "v1.37.6",
+  date: "2026-09-29",
+  title: "Nettoyage du Centre de contrôle du bot",
+  items: [
+    "En-tête du Centre de contrôle : fond 100% opaque (le contenu qui défilait apparaissait encore en surimpression derrière l'en-tête, même après le passage à /80).",
+    "Bande de statut globale masquée sur les pages du Centre de contrôle : elle faisait doublon avec la télémétrie déjà affichée juste en dessous.",
+    "Nombre de serveurs retiré de l'en-tête (même pour le propriétaire) et badges d'identité du bot allégés pour une page moins chargée.",
+  ],
+};
+
+const v1_37_6_en: ChangelogEntry = {
+  version: "v1.37.6",
+  date: "2026-09-29",
+  title: "Bot Control Center cleanup",
+  items: [
+    "Bot Control Center header: fully opaque background (scrolled content was still bleeding through behind the header even after the earlier /80 fix).",
+    "Global status strip now hidden on Bot Control Center pages: it duplicated the telemetry already shown right below it.",
+    "Server count removed from the header (even for the owner) and bot identity badges trimmed for a less cluttered page.",
+  ],
+};
+
+const v1_37_6_es: ChangelogEntry = {
+  version: "v1.37.6",
+  date: "2026-09-29",
+  title: "Limpieza del Centro de control del bot",
+  items: [
+    "Encabezado del Centro de control: fondo 100% opaco (el contenido desplazado seguía apareciendo superpuesto incluso tras el ajuste anterior a /80).",
+    "Barra de estado global ocultada en las páginas del Centro de control: duplicaba la telemetría que ya se mostraba justo debajo.",
+    "Número de servidores eliminado del encabezado (incluso para el propietario) y distintivos de identidad del bot reducidos para una página menos cargada.",
+  ],
+};
+
+const v1_37_6_de: ChangelogEntry = {
+  version: "v1.37.6",
+  date: "2026-09-29",
+  title: "Aufräumen des Bot-Kontrollzentrums",
+  items: [
+    "Kopfzeile des Bot-Kontrollzentrums: vollständig undurchsichtiger Hintergrund (gescrollter Inhalt schien trotz der früheren /80-Korrektur weiterhin durch).",
+    "Globale Statusleiste auf den Seiten des Bot-Kontrollzentrums ausgeblendet: sie duplizierte die direkt darunter angezeigte Telemetrie.",
+    "Serveranzahl aus der Kopfzeile entfernt (auch für den Eigentümer) und Bot-Identitätsabzeichen für eine übersichtlichere Seite reduziert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_6_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_6_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_6_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_6_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

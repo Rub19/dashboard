@@ -47,6 +47,9 @@ export default function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   // Le Bot Discord s'ouvre en plein écran par-dessus le dashboard : ni sidebar, ni barre du haut, ni barre du bas.
   const discordFullscreen = pathname === "/discord" || (pathname?.startsWith("/discord/") ?? false);
+  // Le Centre de contrôle du bot affiche déjà sa propre télémétrie (ping/uptime/serveurs/membres) :
+  // la bande globale ferait doublon avec les mêmes chiffres juste en dessous.
+  const hideStatusStrip = pathname?.startsWith("/discord/bot") ?? false;
 
   if (discordFullscreen) {
     return (
@@ -88,9 +91,11 @@ export default function Shell({ children }: { children: ReactNode }) {
                         <p className="hidden text-xs text-[var(--text-muted)] sm:block">Console du bot</p>
                       </div>
                     </div>
-                    <div className="ml-auto">
-                      <BotStatusStrip />
-                    </div>
+                    {!hideStatusStrip && (
+                      <div className="ml-auto">
+                        <BotStatusStrip />
+                      </div>
+                    )}
                   </header>
                   <PrivacyShield>
                     <main

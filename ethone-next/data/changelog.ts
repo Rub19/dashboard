@@ -38240,6 +38240,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_32_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_32_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_32_1_de);
 
+const v1_33_0_fr: ChangelogEntry = {
+  version: "v1.33.0",
+  date: "2026-09-28",
+  title: "Bot Discord : vraie interface (barre latérale) + salons forum",
+  items: [
+    "La page du Bot Discord devient une vraie interface : barre latérale avec recherche et modules par catégories repliables, page d'accueil avec les pages les plus utilisées, et vue « Tous les modules » en cartes compactes avec interrupteurs. Fini le défilement interminable.",
+    "Le sélecteur de salons gère les forums et salons média Discord : catégories, forums avec leurs posts, badges et tags, recherche.",
+  ],
+};
+
+const v1_33_0_en: ChangelogEntry = {
+  version: "v1.33.0",
+  date: "2026-09-28",
+  title: "Discord bot: real app layout (sidebar) + forum channels",
+  items: [
+    "The Discord bot page is now a real app layout: sidebar with search and modules in collapsible categories, a home page with the most used pages, and an \"All modules\" view with compact cards and switches. No more endless scrolling.",
+    "The channel picker now supports Discord forum and media channels: categories, forums with their posts, badges and tags, search.",
+  ],
+};
+
+const v1_33_0_es: ChangelogEntry = {
+  version: "v1.33.0",
+  date: "2026-09-28",
+  title: "Bot de Discord: interfaz real (barra lateral) + canales de foro",
+  items: [
+    "La página del bot de Discord es ahora una interfaz real: barra lateral con búsqueda y módulos en categorías plegables, página de inicio con las páginas más usadas y vista «Todos los módulos» con tarjetas compactas e interruptores.",
+    "El selector de canales admite foros y canales multimedia de Discord: categorías, foros con sus publicaciones, insignias y etiquetas, búsqueda.",
+  ],
+};
+
+const v1_33_0_de: ChangelogEntry = {
+  version: "v1.33.0",
+  date: "2026-09-28",
+  title: "Discord-Bot: echte App-Oberfläche (Seitenleiste) + Forenkanäle",
+  items: [
+    "Die Discord-Bot-Seite ist jetzt eine echte App-Oberfläche: Seitenleiste mit Suche und Modulen in einklappbaren Kategorien, Startseite mit den meistgenutzten Seiten und Ansicht „Alle Module“ mit kompakten Karten und Schaltern.",
+    "Die Kanalauswahl unterstützt Discord-Forum- und Medienkanäle: Kategorien, Foren mit ihren Beiträgen, Badges und Tags, Suche.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_33_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_33_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_33_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_33_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

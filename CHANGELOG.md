@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.33.0 — 2026-09-28
+
+**Bot Discord : vraie interface (barre latérale) + salons forum**
+
+- La page du Bot Discord devient une vraie interface : barre latérale avec recherche et modules par catégories repliables, page d'accueil avec les pages les plus utilisées, et vue « Tous les modules » en cartes compactes avec interrupteurs. Fini le défilement interminable.
+- Le sélecteur de salons gère les forums et salons média Discord : catégories, forums avec leurs posts, badges et tags, recherche.
+
 ## v1.32.1 — 2026-09-28
 
 **Bot Discord : la page défile de nouveau**

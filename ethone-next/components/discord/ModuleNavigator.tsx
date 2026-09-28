@@ -3,9 +3,8 @@
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, Star } from "@/components/icons/ph";
+import { ArrowUpRight, Settings, Star } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
-import Badge from "@/components/ui/Badge";
 import Input from "@/components/ui/Input";
 import AnimatedFilterTabs, { type AnimatedFilterTab } from "@/components/ui/AnimatedFilterTabs";
 import { EASE_OUT } from "@/lib/ease";
@@ -51,7 +50,7 @@ const FAV_KEY = "ethone.discord.favoriteModules";
 type QuickFilter = "all" | "enabled" | "disabled" | "recommended";
 
 /** Minuscules sans accents, pour une recherche tolérante (« moderation » trouve « Modération »). */
-const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+export const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 /**
  * Navigation des modules du bot, façon Dyno / MEE6 : catégories lisibles, recherche instantanée, favoris épinglés
@@ -144,78 +143,66 @@ export default function ModuleNavigator({
         animate={isPending && !prefersReducedMotion ? { opacity: [1, 0.55, 1] } : { opacity: 1 }}
         transition={isPending && !prefersReducedMotion ? { duration: 0.9, repeat: Infinity, ease: EASE_OUT } : { duration: 0.15, ease: EASE_OUT }}
         className={cn(
-          "group relative flex flex-col gap-3 overflow-hidden rounded-2xl border p-5 text-left transition-colors duration-150",
+          "group relative flex flex-col gap-2 rounded-xl border p-4 text-left transition-colors duration-150",
           current
             ? "border-emerald-500/40 bg-emerald-500/[0.07]"
             : "border-[var(--panel-border)] bg-[var(--surface-raised)]/50 hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/80"
         )}
       >
-        <div className="flex items-start justify-between gap-3">
-          <span className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/5 bg-white/[0.05]", m.tint)}>
-            <Icon className="h-6 w-6" />
-          </span>
-          <span className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
+          <Icon className={cn("h-4 w-4 shrink-0", m.tint)} />
+          <h4 className="min-w-0 flex-1 truncate text-sm font-semibold text-[var(--text-primary)]">{m.title}</h4>
+          <button
+            type="button"
+            onClick={() => toggleFavorite(m.id)}
+            aria-label={fav ? `Retirer ${m.title} des favoris` : `Ajouter ${m.title} aux favoris`}
+            aria-pressed={fav}
+            title={fav ? "Retirer des favoris" : "Épingler en haut"}
+            className={cn(
+              "flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors",
+              fav ? "text-amber-300" : "text-zinc-600 opacity-0 hover:text-amber-300 group-hover:opacity-100 focus:opacity-100"
+            )}
+          >
+            <Star className="h-3.5 w-3.5" fill={fav ? "currentColor" : "none"} />
+          </button>
+          {hasStatus && onToggle && (
             <button
               type="button"
-              onClick={() => toggleFavorite(m.id)}
-              aria-label={fav ? `Retirer ${m.title} des favoris` : `Ajouter ${m.title} aux favoris`}
-              aria-pressed={fav}
-              title={fav ? "Retirer des favoris" : "Épingler en haut"}
+              role="switch"
+              aria-checked={isOn}
+              disabled={isPending}
+              aria-label={`${isOn ? "Désactiver" : "Activer"} ${m.title}`}
+              title={isPending ? "Envoi en cours…" : isOn ? "Désactiver ce module sur ce serveur" : "Activer ce module sur ce serveur"}
+              onClick={() => onToggle(m.id, !isOn)}
               className={cn(
-                "flex h-7 w-7 items-center justify-center rounded-md transition-colors cursor-pointer",
-                fav ? "text-amber-300" : "text-zinc-600 opacity-0 hover:text-amber-300 group-hover:opacity-100 focus:opacity-100"
+                "relative h-5 w-9 shrink-0 rounded-full transition-colors",
+                isPending ? "cursor-wait opacity-60" : "cursor-pointer",
+                isOn ? "bg-emerald-500" : "bg-white/15"
               )}
             >
-              <Star className="h-4 w-4" fill={fav ? "currentColor" : "none"} />
+              <span className={cn("absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white transition-transform", isOn ? "translate-x-4" : "translate-x-0")} />
             </button>
-            {hasStatus && onToggle && (
-              <button
-                type="button"
-                role="switch"
-                aria-checked={isOn}
-                disabled={isPending}
-                aria-label={`${isOn ? "Désactiver" : "Activer"} ${m.title}`}
-                title={isPending ? "Envoi en cours…" : isOn ? "Désactiver ce module sur ce serveur" : "Activer ce module sur ce serveur"}
-                onClick={() => onToggle(m.id, !isOn)}
-                className={cn(
-                  "relative h-6 w-11 shrink-0 rounded-full transition-colors",
-                  isPending ? "cursor-wait opacity-60" : "cursor-pointer",
-                  isOn ? "bg-emerald-500" : "bg-white/15"
-                )}
-              >
-                <span className={cn("absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform", isOn ? "translate-x-5" : "translate-x-0")} />
-              </button>
-            )}
-          </span>
+          )}
         </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h4 className="truncate text-base font-semibold text-white">{m.title}</h4>
-            {hasStatus && (
-              <Badge variant={isOn ? "success" : "offline"} dot size="sm" className="shrink-0">
-                {isOn ? "Activé" : "Désactivé"}
-              </Badge>
-            )}
-          </div>
-          <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-zinc-400">{m.description}</p>
-        </div>
-        <div className="flex items-center gap-2 pt-1">
+        <p className="line-clamp-2 min-h-8 text-xs leading-4 text-[var(--text-muted)]">{m.description}</p>
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => onSelect(m.id)}
             aria-pressed={current}
             className={cn(
-              "inline-flex h-9 cursor-pointer items-center rounded-lg px-4 text-sm font-semibold transition-colors",
+              "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-colors",
               current ? "bg-emerald-500/20 text-emerald-200" : "bg-white/[0.07] text-zinc-100 hover:bg-white/[0.13]"
             )}
           >
-            {current ? "Configuration ouverte" : "Configurer"}
+            <Settings className="h-3.5 w-3.5" />
+            Paramètres
           </button>
           <Link
             href={m.href}
             aria-label={`Ouvrir la page ${m.title}`}
             title="Ouvrir la page complète"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-white/[0.07] hover:text-white"
+            className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-white/[0.07] hover:text-white"
           >
             <ArrowUpRight className="h-4 w-4" />
           </Link>
@@ -225,7 +212,7 @@ export default function ModuleNavigator({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {heading && (
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
           <h2 className="text-lg font-bold text-[var(--text-primary)]">{heading}</h2>
@@ -256,10 +243,10 @@ export default function ModuleNavigator({
 
       {favoriteModules.length > 0 && (
         <section>
-          <h3 className="mb-3 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-amber-300/90">
+          <h3 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-300/90">
             <Star className="h-3.5 w-3.5" fill="currentColor" /> Favoris
           </h3>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{favoriteModules.map(card)}</div>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{favoriteModules.map(card)}</div>
         </section>
       )}
 
@@ -269,7 +256,7 @@ export default function ModuleNavigator({
             <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200">{section.label}</h3>
             <span className="text-xs text-zinc-500">{section.hint}</span>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{section.items.map(card)}</div>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{section.items.map(card)}</div>
         </section>
       ))}
     </div>

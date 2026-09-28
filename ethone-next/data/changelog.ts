@@ -38473,6 +38473,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_35_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_35_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_35_1_de);
 
+const v1_35_2_fr: ChangelogEntry = {
+  version: "v1.35.2",
+  date: "2026-09-28",
+  title: "Heatmap : pleine largeur",
+  items: [
+    "La heatmap des interactions occupe maintenant toute la largeur de la carte, avec des cases de hauteur fixe qui s'étirent selon l'écran.",
+  ],
+};
+
+const v1_35_2_en: ChangelogEntry = {
+  version: "v1.35.2",
+  date: "2026-09-28",
+  title: "Heatmap: full width",
+  items: [
+    "The interactions heatmap now spans the full card width, with fixed-height cells that stretch to fit the screen.",
+  ],
+};
+
+const v1_35_2_es: ChangelogEntry = {
+  version: "v1.35.2",
+  date: "2026-09-28",
+  title: "Mapa de calor: ancho completo",
+  items: [
+    "El mapa de calor de interacciones ocupa ahora todo el ancho de la tarjeta.",
+  ],
+};
+
+const v1_35_2_de: ChangelogEntry = {
+  version: "v1.35.2",
+  date: "2026-09-28",
+  title: "Heatmap: volle Breite",
+  items: [
+    "Die Interaktions-Heatmap füllt jetzt die gesamte Kartenbreite.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_35_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_35_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_35_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_35_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

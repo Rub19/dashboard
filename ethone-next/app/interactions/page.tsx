@@ -488,7 +488,7 @@ export default function InteractionsPage() {
         ) : (
           <div className="overflow-x-auto pb-2 scrollbar-none">
             <div
-              className="grid w-full min-w-[760px] max-w-[1500px] gap-1 sm:gap-1.5"
+              className="grid w-full min-w-[760px] gap-1 sm:gap-1.5"
               style={{ gridTemplateColumns: `36px repeat(${weeks.length}, minmax(0, 1fr))` }}
             >
               {monthLabels.map((m, i) => (
@@ -511,7 +511,7 @@ export default function InteractionsPage() {
               ))}
               {weeks.map((week, wi) =>
                 week.days.map((day, di) => (
-                  <div key={`${wi}-${di}`} className="aspect-square w-full" style={{ gridRow: di + 2, gridColumn: wi + 2 }}>
+                  <div key={`${wi}-${di}`} className="h-3.5 w-full sm:h-5 xl:h-6" style={{ gridRow: di + 2, gridColumn: wi + 2 }}>
                     {day.isOutOfMonth ? null : (
                       <Tooltip label={`${day.count} interactions le ${formatDateLong(day.date, language)}`} position="top">
                         <button

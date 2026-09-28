@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.35.2 — 2026-09-28
+
+**Heatmap : pleine largeur**
+
+- La heatmap des interactions occupe maintenant toute la largeur de la carte, avec des cases de hauteur fixe qui s'étirent selon l'écran.
+
 ## v1.35.1 — 2026-09-28
 
 **Heatmap des interactions corrigée**

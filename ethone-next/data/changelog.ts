@@ -38027,6 +38027,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_31_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_31_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_31_1_de);
 
+const v1_31_2_fr: ChangelogEntry = {
+  version: "v1.31.2",
+  date: "2026-09-28",
+  title: "Choix du serveur : avatar et bannière d'Etho",
+  items: [
+    "La page de choix de serveur du Bot Discord affiche maintenant la bannière et l'avatar animé d'Etho, façon profil Discord.",
+  ],
+};
+
+const v1_31_2_en: ChangelogEntry = {
+  version: "v1.31.2",
+  date: "2026-09-28",
+  title: "Server picker: Etho avatar and banner",
+  items: [
+    "The Discord bot server picker now shows Etho's banner and animated avatar, Discord-profile style.",
+  ],
+};
+
+const v1_31_2_es: ChangelogEntry = {
+  version: "v1.31.2",
+  date: "2026-09-28",
+  title: "Selector de servidor: avatar y banner de Etho",
+  items: [
+    "La página para elegir servidor del bot de Discord muestra ahora el banner y el avatar animado de Etho, al estilo de un perfil de Discord.",
+  ],
+};
+
+const v1_31_2_de: ChangelogEntry = {
+  version: "v1.31.2",
+  date: "2026-09-28",
+  title: "Serverauswahl: Etho-Avatar und Banner",
+  items: [
+    "Die Serverauswahl des Discord-Bots zeigt jetzt Ethos Banner und animierten Avatar im Stil eines Discord-Profils.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_31_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_31_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_31_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_31_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

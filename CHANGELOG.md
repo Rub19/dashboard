@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.31.2 — 2026-09-28
+
+**Choix du serveur : avatar et bannière d'Etho**
+
+- La page de choix de serveur du Bot Discord affiche maintenant la bannière et l'avatar animé d'Etho, façon profil Discord.
+
 ## v1.31.1 — 2026-09-28
 
 **Bot Discord : finitions de style**

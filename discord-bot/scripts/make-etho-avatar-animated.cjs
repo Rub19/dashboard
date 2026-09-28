@@ -7,8 +7,8 @@ const fs = require('fs');
 const path = require('path');
 
 const SIZE = 512;
-const FRAMES = 36; // pas de 10° — rotation complète fluide et bouclée sans à-coup
-const DELAY_MS = 45; // ~1.6s par tour
+const FRAMES = 72; // pas de 5° — rotation complète très fluide et bouclée sans à-coup
+const DELAY_MS = 20; // 2 centièmes de seconde = le minimum fiable des GIF (~50 images/s), ~1.44s par tour
 const out = process.argv[2] || path.join(__dirname, 'etho-avatar-animated.gif');
 
 const bg = '#14141a';

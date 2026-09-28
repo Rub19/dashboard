@@ -232,8 +232,8 @@ export default function ModuleNavigator({
           {summary && <span className="text-sm text-[var(--text-muted)]">{summary}</span>}
         </div>
       )}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative w-full sm:max-w-sm">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+        <div className="relative w-full lg:max-w-sm">
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -244,12 +244,8 @@ export default function ModuleNavigator({
             inputSize="compact"
           />
         </div>
-        <p className="text-[11px] text-[var(--text-muted)]">
-          {total} module{total > 1 ? "s" : ""} · Configurer = configuration rapide · <ArrowUpRight className="inline h-3 w-3 -translate-y-px" /> = page complète · <Star className="inline h-3 w-3 -translate-y-px" /> = favori
-        </p>
+        <AnimatedFilterTabs tabs={filterTabs} activeId={filter} onChange={(id) => setFilter(id as QuickFilter)} />
       </div>
-
-      <AnimatedFilterTabs tabs={filterTabs} activeId={filter} onChange={(id) => setFilter(id as QuickFilter)} />
 
       {total === 0 && favoriteModules.length === 0 && (
         <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-xs text-[var(--text-muted)]">
@@ -271,7 +267,7 @@ export default function ModuleNavigator({
         <section key={section.id}>
           <div className="mb-3 flex items-baseline gap-2 border-b border-[var(--panel-border)]/60 pb-2">
             <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200">{section.label}</h3>
-            <span className="text-[11px] text-zinc-600">{section.hint}</span>
+            <span className="text-xs text-zinc-500">{section.hint}</span>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{section.items.map(card)}</div>
         </section>

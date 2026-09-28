@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.31.1 — 2026-09-28
+
+**Bot Discord : finitions de style**
+
+- Barre de recherche et filtres des modules sur une seule ligne, sans texte d'aide superflu.
+- Textes de l'en-tête, des boutons et des bandeaux plus lisibles.
+- Le panneau de configuration rapide n'est plus ouvert par défaut : il apparaît quand tu cliques sur « Configurer » et se ferme avec « Fermer ».
+
 ## v1.31.0 — 2026-09-28
 
 **Bot Discord : choix du serveur d'abord, page beaucoup plus épurée**

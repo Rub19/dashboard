@@ -546,7 +546,7 @@ export default function DiscordDashboardPage() {
   const [pickedId, setPickedId] = useState<string | null>(null);
   const [lastGuildId, setLastGuildId] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
-  const [activeModule, setActiveModule] = useState<ModuleType>("security");
+  const [activeModule, setActiveModule] = useState<ModuleType | null>(null);
   const [onlyManageable, setOnlyManageable] = useState(true);
   // IDs of the servers the bot is actually in — used to sort those first and
   // show an "invite" affordance on the rest. `botPresenceKnown` stays false when
@@ -1073,9 +1073,9 @@ export default function DiscordDashboardPage() {
   const botAbsent = botPresenceKnown && selectedGuild != null && !botGuildIds.has(selectedGuild.id);
   const botLoginHref = `${BOT_API_URL}/api/auth/login?return_to=${encodeURIComponent(typeof window !== "undefined" ? `${window.location.origin}/discord` : "")}`;
   const secondaryBtn =
-    "inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] transition-colors hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)]";
+    "inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3.5 text-sm font-medium text-[var(--text-muted)] transition-colors hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)]";
   const calloutCls = "flex flex-col gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4 sm:flex-row sm:items-center sm:justify-between";
-  const inviteBtnCls = "inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4]";
+  const inviteBtnCls = "inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#5865F2] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#4752C4]";
 
   const onboardingModal = (
     <DiscordOnboardingModal
@@ -1125,7 +1125,7 @@ export default function DiscordDashboardPage() {
                 selectedGuild.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
               )}
             </span>
-            <h1 className="min-w-0 truncate text-lg font-bold text-[var(--text-primary)]">{selectedGuild.name}</h1>
+            <h1 className="min-w-0 truncate text-xl font-bold text-[var(--text-primary)]">{selectedGuild.name}</h1>
             {selectedGuild.owner ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-[var(--panel-border)] px-2.5 py-0.5 text-[11px] font-semibold text-amber-300">
                 <Crown className="h-3 w-3" />
@@ -1180,7 +1180,7 @@ export default function DiscordDashboardPage() {
               type="button"
               onClick={handleSaveSettings}
               disabled={isSaving}
-              className="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-xl bg-emerald-500 px-4 text-xs font-semibold text-white transition-colors hover:bg-emerald-600 disabled:opacity-50"
+              className="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-xl bg-emerald-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 disabled:opacity-50"
             >
               <Save className="h-3.5 w-3.5" />
               {isSaving ? "Sauvegarde..." : "Enregistrer"}
@@ -1190,7 +1190,7 @@ export default function DiscordDashboardPage() {
 
         {botAuthRequired && (
           <a href={botLoginHref} className={cn(calloutCls, "transition-colors hover:border-[var(--input-border-hover)]")}>
-            <span className="text-xs leading-relaxed text-[var(--text-muted)]">
+            <span className="text-sm leading-relaxed text-[var(--text-muted)]">
               <strong className="font-semibold text-[var(--text-primary)]">Connecte le bot à ton compte Discord.</strong> Sans ça, le site ne voit ni les serveurs où le bot est actif, ni la musique en direct. Clique pour autoriser.
             </span>
           </a>
@@ -1246,7 +1246,7 @@ export default function DiscordDashboardPage() {
         <ModuleNavigator
           modules={navModules}
           categories={MODULE_CATEGORIES}
-          activeId={activeModule}
+          activeId={activeModule ?? ""}
           onSelect={handleSelectModule}
           status={moduleStatus}
           onToggle={handleModuleToggle}
@@ -1257,19 +1257,19 @@ export default function DiscordDashboardPage() {
         />
 
         {/* Panneau de configuration rapide du module ouvert */}
-        <div id="module-panel" className="scroll-mt-6 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-5 sm:p-6">
+        <div id="module-panel" className={cn("scroll-mt-6 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-5 sm:p-6", !activeModule && "hidden")}>
           <div className="mb-5 flex items-center justify-between border-b border-[var(--panel-border)] pb-4">
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <span>Configuration : {MODULES.find((m) => m.id === activeModule)?.title}</span>
               </h3>
               <p className="text-xs text-zinc-400 mt-0.5">
                 {MODULES.find((m) => m.id === activeModule)?.description}
               </p>
             </div>
-            <span className="text-[11px] font-mono text-zinc-500">
-              Serveur : {selectedGuild.name}
-            </span>
+            <button type="button" onClick={() => setActiveModule(null)} className={secondaryBtn}>
+              Fermer
+            </button>
           </div>
 
           {/* MODULE 0: Vue d'ensemble */}

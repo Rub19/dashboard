@@ -37978,6 +37978,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_31_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_31_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_31_0_de);
 
+const v1_31_1_fr: ChangelogEntry = {
+  version: "v1.31.1",
+  date: "2026-09-28",
+  title: "Bot Discord : finitions de style",
+  items: [
+    "Barre de recherche et filtres des modules sur une seule ligne, sans texte d'aide superflu.",
+    "Textes de l'en-tête, des boutons et des bandeaux plus lisibles.",
+    "Le panneau de configuration rapide n'est plus ouvert par défaut : il apparaît quand tu cliques sur « Configurer » et se ferme avec « Fermer ».",
+  ],
+};
+
+const v1_31_1_en: ChangelogEntry = {
+  version: "v1.31.1",
+  date: "2026-09-28",
+  title: "Discord bot: style polish",
+  items: [
+    "Module search and filters now sit on one row, without the extra help text.",
+    "Header, button and banner text is more readable.",
+    "The quick configuration panel is no longer open by default: it appears when you click \"Configure\" and closes with \"Close\".",
+  ],
+};
+
+const v1_31_1_es: ChangelogEntry = {
+  version: "v1.31.1",
+  date: "2026-09-28",
+  title: "Bot de Discord: retoques de estilo",
+  items: [
+    "La búsqueda y los filtros de módulos están en una sola fila, sin texto de ayuda superfluo.",
+    "Los textos de la cabecera, botones y avisos son más legibles.",
+    "El panel de configuración rápida ya no está abierto por defecto: aparece al pulsar «Configurar» y se cierra con «Cerrar».",
+  ],
+};
+
+const v1_31_1_de: ChangelogEntry = {
+  version: "v1.31.1",
+  date: "2026-09-28",
+  title: "Discord-Bot: Stil-Feinschliff",
+  items: [
+    "Modulsuche und Filter stehen in einer Zeile, ohne überflüssigen Hilfetext.",
+    "Texte in Kopfzeile, Buttons und Hinweisen sind besser lesbar.",
+    "Das Schnellkonfigurations-Panel ist nicht mehr standardmäßig offen: Es erscheint bei „Konfigurieren“ und schließt mit „Schließen“.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_31_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_31_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_31_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_31_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

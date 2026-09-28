@@ -38428,6 +38428,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_35_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_35_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_35_0_de);
 
+const v1_35_1_fr: ChangelogEntry = {
+  version: "v1.35.1",
+  date: "2026-09-28",
+  title: "Heatmap des interactions corrigée",
+  items: [
+    "La heatmap des interactions affichait des colonnes entières allumées (les 7 jours d'une semaine avaient la même valeur) et un tooltip décalé d'un jour. Chaque case correspond maintenant à son vrai jour.",
+    "La grille remplit désormais toute la largeur disponible au lieu de rester tassée à gauche.",
+  ],
+};
+
+const v1_35_1_en: ChangelogEntry = {
+  version: "v1.35.1",
+  date: "2026-09-28",
+  title: "Interactions heatmap fixed",
+  items: [
+    "The interactions heatmap lit up whole columns (all 7 days of a week had the same value) and showed tooltips one day off. Each cell now matches its real day.",
+    "The grid now fills the available width instead of staying squeezed to the left.",
+  ],
+};
+
+const v1_35_1_es: ChangelogEntry = {
+  version: "v1.35.1",
+  date: "2026-09-28",
+  title: "Mapa de calor de interacciones corregido",
+  items: [
+    "El mapa de calor encendía columnas enteras (los 7 días de una semana tenían el mismo valor) y el tooltip mostraba un día de diferencia. Ahora cada casilla corresponde a su día real.",
+    "La cuadrícula ocupa ahora todo el ancho disponible.",
+  ],
+};
+
+const v1_35_1_de: ChangelogEntry = {
+  version: "v1.35.1",
+  date: "2026-09-28",
+  title: "Interaktions-Heatmap korrigiert",
+  items: [
+    "Die Interaktions-Heatmap leuchtete in ganzen Spalten (alle 7 Tage einer Woche hatten denselben Wert) und zeigte Tooltips einen Tag versetzt. Jede Zelle entspricht jetzt ihrem echten Tag.",
+    "Das Raster füllt jetzt die gesamte verfügbare Breite.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_35_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_35_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_35_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_35_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

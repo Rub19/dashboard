@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.35.1 — 2026-09-28
+
+**Heatmap des interactions corrigée**
+
+- La heatmap des interactions affichait des colonnes entières allumées (les 7 jours d'une semaine avaient la même valeur) et un tooltip décalé d'un jour. Chaque case correspond maintenant à son vrai jour.
+- La grille remplit désormais toute la largeur disponible au lieu de rester tassée à gauche.
+
 ## v1.35.0 — 2026-09-28
 
 **AutoMod natif Discord + sous-pages au nouveau style**

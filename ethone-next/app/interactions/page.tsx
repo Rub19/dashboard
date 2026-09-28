@@ -190,11 +190,11 @@ function buildYearData(year: number, records: UserDataRecord[]) {
     const days: { date: Date; count: number; level: number; isOutOfMonth: boolean }[] = [];
     for (let i = 0; i < 7; i++) {
       const d = new Date(current);
+      d.setDate(current.getDate() + i);
       const key = dateKey(d);
       const count = byDate[key]?.count || 0;
       const level = count > 0 ? InteractionsHeatmap.intensity(count, 15) : 0;
       days.push({ date: d, count, level, isOutOfMonth: d.getFullYear() !== year });
-      d.setDate(d.getDate() + 1);
     }
     weeks.push({ days });
     current.setDate(current.getDate() + 7);
@@ -487,58 +487,43 @@ export default function InteractionsPage() {
           <div className="h-48 w-full animate-pulse rounded-xl bg-white/[0.03]" />
         ) : (
           <div className="overflow-x-auto pb-2 scrollbar-none">
-            <div className="flex min-w-max gap-1 [--stride:16px] sm:gap-1.5 sm:[--stride:20px]" style={{ minWidth: `calc(${weeks.length} * var(--stride) + 40px)` }}>
-              {/* Day labels */}
-              <div className="flex w-9 shrink-0 flex-col gap-1 pt-5 sm:gap-1.5">
-                {weekdays.map((d, i) => (
-                  <div
-                    key={i}
-                    className="flex h-3 w-full items-center justify-end whitespace-nowrap pr-1 text-[10px] leading-none text-zinc-500 sm:h-3.5"
-                  >
-                    {i % 2 === 0 ? d : ""}
+            <div
+              className="grid w-full min-w-[760px] max-w-[1500px] gap-1 sm:gap-1.5"
+              style={{ gridTemplateColumns: `36px repeat(${weeks.length}, minmax(0, 1fr))` }}
+            >
+              {monthLabels.map((m, i) => (
+                <div
+                  key={`m${i}`}
+                  className="h-4 whitespace-nowrap text-[10px] leading-4 text-zinc-500"
+                  style={{ gridRow: 1, gridColumn: m.index + 2 }}
+                >
+                  {m.label}
+                </div>
+              ))}
+              {weekdays.map((d, i) => (
+                <div
+                  key={`d${i}`}
+                  className="flex items-center justify-end whitespace-nowrap pr-1 text-[10px] leading-none text-zinc-500"
+                  style={{ gridRow: i + 2, gridColumn: 1 }}
+                >
+                  {i % 2 === 0 ? d : ""}
+                </div>
+              ))}
+              {weeks.map((week, wi) =>
+                week.days.map((day, di) => (
+                  <div key={`${wi}-${di}`} className="aspect-square w-full" style={{ gridRow: di + 2, gridColumn: wi + 2 }}>
+                    {day.isOutOfMonth ? null : (
+                      <Tooltip label={`${day.count} interactions le ${formatDateLong(day.date, language)}`} position="top">
+                        <button
+                          type="button"
+                          className={`h-full w-full rounded-sm sm:rounded-md transition-transform hover:z-10 hover:scale-110 ${getHeatmapColor(day.level)}`}
+                          aria-label={`${day.count} interactions le ${formatDateLong(day.date, language)}`}
+                        />
+                      </Tooltip>
+                    )}
                   </div>
-                ))}
-              </div>
-
-              {/* Grid with month labels */}
-              <div className="flex flex-col gap-1 sm:gap-1.5">
-                <div className="relative flex h-4 gap-1 sm:gap-1.5">
-                  {monthLabels.map((m, i) => (
-                    <div
-                      key={i}
-                      className="absolute text-[10px] text-zinc-500"
-                      style={{ left: `calc(${m.index} * var(--stride))` }}
-                    >
-                      {m.label}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex gap-1 sm:gap-1.5">
-                  {weeks.map((week, wi) => (
-                    <div key={wi} className="flex flex-col gap-1 sm:gap-1.5">
-                      {week.days.map((day, di) => (
-                        <div key={di} className="h-3 w-3 sm:h-3.5 sm:w-3.5">
-                          {day.isOutOfMonth ? (
-                            <div className="h-full w-full rounded-sm" />
-                          ) : (
-                            <Tooltip
-                              label={`${day.count} interactions le ${formatDateLong(day.date, language)}`}
-                              position="top"
-                            >
-                              <button
-                                type="button"
-                                className={`h-full w-full rounded-sm sm:rounded-md transition-all hover:z-10 hover:scale-125 ${getHeatmapColor(day.level)}`}
-                                aria-label={`${day.count} interactions le ${formatDateLong(day.date, language)}`}
-                              />
-                            </Tooltip>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
+                ))
+              )}
             </div>
           </div>
         )}

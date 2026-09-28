@@ -144,7 +144,7 @@ export default function ReportsSetupPanel({ guildId }: { guildId: string }) {
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <div>
             <p className="mb-1.5 text-xs font-medium text-[var(--text-muted)]">Salon de l&apos;équipe</p>
-            <ChannelPicker value={config.channelId} guildId={guildId} filterTypes={[0, 5]} disabled={busy} onChange={(id) => void call("/config", "PUT", { channelId: id }, "Salon enregistré", "Les nouveaux signalements arrivent ici.")} />
+            <ChannelPicker value={config.channelId} guildId={guildId} filterTypes={[0, 5, 15, 16]} disabled={busy} onChange={(id) => void call("/config", "PUT", { channelId: id }, "Salon enregistré", "Les nouveaux signalements arrivent ici.")} />
           </div>
           <div>
             <p className="mb-1.5 text-xs font-medium text-[var(--text-muted)]">Rôle de l&apos;équipe (optionnel)</p>

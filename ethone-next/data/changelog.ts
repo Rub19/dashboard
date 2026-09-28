@@ -38831,6 +38831,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_3_de);
 
+const v1_37_4_fr: ChangelogEntry = {
+  version: "v1.37.4",
+  date: "2026-09-28",
+  title: "Signalements : salon forum accepté",
+  items: [
+    "Le salon des signalements accepte maintenant les forums et salons média : chaque membre signalé y reçoit son propre post, comme le fait déjà le bot.",
+  ],
+};
+
+const v1_37_4_en: ChangelogEntry = {
+  version: "v1.37.4",
+  date: "2026-09-28",
+  title: "Reports: forum channel accepted",
+  items: [
+    "The reports channel now accepts forum and media channels: each reported member gets their own post there, matching what the bot already does.",
+  ],
+};
+
+const v1_37_4_es: ChangelogEntry = {
+  version: "v1.37.4",
+  date: "2026-09-28",
+  title: "Informes: canal de foro admitido",
+  items: [
+    "El canal de informes ahora admite foros y canales multimedia: cada miembro reportado recibe su propia publicación.",
+  ],
+};
+
+const v1_37_4_de: ChangelogEntry = {
+  version: "v1.37.4",
+  date: "2026-09-28",
+  title: "Meldungen: Forumkanal akzeptiert",
+  items: [
+    "Der Meldungskanal akzeptiert jetzt Forum- und Medienkanäle: jedes gemeldete Mitglied erhält dort einen eigenen Beitrag.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

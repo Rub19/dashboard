@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.4 — 2026-09-28
+
+**Signalements : salon forum accepté**
+
+- Le salon des signalements accepte maintenant les forums et salons média : chaque membre signalé y reçoit son propre post, comme le fait déjà le bot.
+
 ## v1.37.3 — 2026-09-28
 
 **AutoMod natif Discord : le bouton d'activation marche vraiment**

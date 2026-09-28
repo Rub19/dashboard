@@ -38199,6 +38199,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_32_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_32_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_32_0_de);
 
+const v1_32_1_fr: ChangelogEntry = {
+  version: "v1.32.1",
+  date: "2026-09-28",
+  title: "Bot Discord : la page défile de nouveau",
+  items: [
+    "Correction du défilement dans la vue plein écran du Bot Discord : la page et les sous-pages se font maintenant défiler normalement (le contenu était coupé en bas de l'écran).",
+  ],
+};
+
+const v1_32_1_en: ChangelogEntry = {
+  version: "v1.32.1",
+  date: "2026-09-28",
+  title: "Discord bot: the page scrolls again",
+  items: [
+    "Fixed scrolling in the full-screen Discord bot view: the page and sub-pages now scroll normally (content was cut off at the bottom of the screen).",
+  ],
+};
+
+const v1_32_1_es: ChangelogEntry = {
+  version: "v1.32.1",
+  date: "2026-09-28",
+  title: "Bot de Discord: la página vuelve a desplazarse",
+  items: [
+    "Corregido el desplazamiento en la vista a pantalla completa del bot de Discord: la página y las subpáginas ahora se desplazan con normalidad.",
+  ],
+};
+
+const v1_32_1_de: ChangelogEntry = {
+  version: "v1.32.1",
+  date: "2026-09-28",
+  title: "Discord-Bot: Seite scrollt wieder",
+  items: [
+    "Scrollen in der Vollbildansicht des Discord-Bots repariert: Seite und Unterseiten scrollen wieder normal (Inhalt wurde am unteren Rand abgeschnitten).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_32_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_32_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_32_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_32_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

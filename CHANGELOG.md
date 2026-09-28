@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.32.1 — 2026-09-28
+
+**Bot Discord : la page défile de nouveau**
+
+- Correction du défilement dans la vue plein écran du Bot Discord : la page et les sous-pages se font maintenant défiler normalement (le contenu était coupé en bas de l'écran).
+
 ## v1.32.0 — 2026-09-28
 
 **Bot Discord : réglages des modules épurés + choix du serveur façon Sapphire**

@@ -87,7 +87,9 @@ export default function Shell({ children }: { children: ReactNode }) {
                       tabIndex={-1}
                     >
                       <ActivityJournalProvider>
-                        <PageTransition>{children}</PageTransition>
+                        <PageTransition>
+                          <div className="min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden [overscroll-behavior:contain]">{children}</div>
+                        </PageTransition>
                         <AutomationRuntime />
                       </ActivityJournalProvider>
                     </main>

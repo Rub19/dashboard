@@ -150,7 +150,7 @@ export default function BackupSettingsClient() {
   const protectedBytes = protectedBackups.reduce((a, b) => a + b.sizeBytes, 0);
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] p-4 md:p-8">
+    <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)]">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <Link href={`/discord/backups${guildQuery}`} className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">

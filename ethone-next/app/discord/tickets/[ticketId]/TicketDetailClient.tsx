@@ -319,7 +319,7 @@ export default function TicketDetailClient() {
 
   if (loading) {
     return (
-      <div className="flex min-h-full items-center justify-center bg-[var(--bg-surface-elevated)] text-[var(--text-primary)]">
+      <div className="flex min-h-[50vh] items-center justify-center text-[var(--text-primary)]">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
           <p className="text-xs text-[var(--text-muted)]">Chargement des détails du ticket #{ticketId}...</p>
@@ -330,7 +330,7 @@ export default function TicketDetailClient() {
 
   if (!ticket) {
     return (
-      <div className="flex min-h-full flex-col items-center justify-center bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] p-4">
+      <div className="flex min-h-[50vh] flex-col items-center justify-center text-[var(--text-primary)] p-4">
         <Ticket className="h-12 w-12 text-[var(--text-muted)] mb-3" />
         <h2 className="text-lg font-bold">Ticket introuvable</h2>
         <p className="text-xs text-[var(--text-muted)] mt-1">Le ticket #{ticketId} n&apos;existe pas ou a été purgé.</p>
@@ -345,7 +345,7 @@ export default function TicketDetailClient() {
   }
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] px-4 sm:px-8 py-6 pb-36">
+    <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)]">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-5">
         <div className="flex items-center gap-3">

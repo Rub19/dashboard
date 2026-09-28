@@ -947,7 +947,7 @@ export default function ServerManagementClient({
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-emerald-500 selection:text-white">
+    <div className="pb-8 text-[var(--text-primary)] selection:bg-emerald-500 selection:text-white">
       {/* Top Banner & Header */}
       <header className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/60 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -2211,7 +2211,7 @@ export default function ServerManagementClient({
         {activeTab === "permissions" && (
           <div className="space-y-6">
             {/* Interactive Permission Debugger Section */}
-            <div className="p-6 rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-zinc-950 to-zinc-950 space-y-4">
+            <div className="p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 space-y-4">
               <div className="flex items-center gap-2.5">
                 <Key className="h-5 w-5 text-emerald-400" />
                 <div>

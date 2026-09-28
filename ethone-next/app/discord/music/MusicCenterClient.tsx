@@ -708,7 +708,7 @@ export default function MusicCenterClient() {
   const isFav = currentTrack ? favorites.some((f) => f.id === currentTrack.id || f.url === currentTrack.url) : false;
 
   return (
-    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)] font-sans">
+    <div className="w-full text-[var(--text-primary)] font-sans">
       {/* TOP HEADER */}
       <header className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 sm:px-6 py-3.5 z-20">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -799,7 +799,7 @@ export default function MusicCenterClient() {
       )}
 
       {/* SCROLLABLE MAIN CONTENT */}
-      <main className="flex-1 min-h-0 overflow-y-auto os-scroll [overscroll-behavior:contain] pb-44 md:pb-44 px-4 sm:px-6 py-6 scrollbar-thin scrollbar-thumb-white/10">
+      <main className="px-4 sm:px-6 py-6">
         <div className="max-w-7xl mx-auto space-y-6">
 
           {/* BANNIÈRE BOT NON INSTALLÉ */}
@@ -830,17 +830,6 @@ export default function MusicCenterClient() {
 
           {/* NOW PLAYING HERO BANNER */}
           <div className="relative overflow-hidden rounded-xl border border-[var(--panel-border)] p-6 bg-[var(--surface-raised)]/40">
-            {/* Ambient Background Glow */}
-            {currentTrack?.thumbnail && (
-              <div
-                className="absolute inset-0 -z-10 opacity-20 blur-3xl scale-125 pointer-events-none"
-                style={{
-                  backgroundImage: `url(${currentTrack.thumbnail})`,
-                  backgroundPosition: "center",
-                  backgroundSize: "cover",
-                }}
-              />
-            )}
 
             <div className="flex flex-col lg:flex-row items-center gap-6">
               {/* Cover Art */}

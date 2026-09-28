@@ -333,7 +333,7 @@ export default function UserModerationProfileClient() {
   }, [timeline, timelineFilter]);
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] pb-44 md:pb-44 font-sans">
+    <div className="pb-8 text-[var(--text-primary)] font-sans">
       {/* HEADER NAVIGATION */}
       <div className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 sticky top-0 z-30 px-6 py-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">

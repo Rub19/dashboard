@@ -145,11 +145,7 @@ export default function EventSettingsClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] pb-44">
-      {/* Glow */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-      </div>
-
+    <div className="pb-8 text-[var(--text-primary)]">
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)] mb-8">

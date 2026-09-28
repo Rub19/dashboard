@@ -173,7 +173,7 @@ export default function InviteSettingsClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] flex flex-col p-4 sm:p-8 pb-36 max-w-4xl mx-auto">
+    <div className="w-full px-4 py-6 sm:px-6 text-[var(--text-primary)] flex flex-col max-w-4xl mx-auto">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-[var(--panel-border)]">
         <div>

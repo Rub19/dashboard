@@ -126,11 +126,7 @@ export default function EventAnalyticsClient() {
   const timelineMax = Math.max(stats.maxCapacity || 0, ...stats.registrationTimeline.map((t) => t.count), 1);
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] pb-44">
-      {/* Glow */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-      </div>
-
+    <div className="pb-8 text-[var(--text-primary)]">
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Navigation */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)] mb-8">
@@ -228,7 +224,7 @@ export default function EventAnalyticsClient() {
                       <span className="text-xs font-bold text-[var(--text-primary)]">{item.count}</span>
                       <div className="w-full bg-[var(--surface-raised)]/50 rounded-t-lg h-36 flex items-end p-1">
                         <div
-                          className="w-full bg-gradient-to-t from-indigo-600 to-purple-500 rounded-t-md transition-all duration-500"
+                          className="w-full bg-emerald-500/80 rounded-t-md transition-all duration-500"
                           style={{ height: `${heightPercent}%` }}
                         />
                       </div>

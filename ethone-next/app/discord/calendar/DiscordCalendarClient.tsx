@@ -261,11 +261,7 @@ export default function DiscordCalendarClient() {
   const monthLabel = currentDate.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 
   return (
-    <div className="h-full min-h-0 overflow-y-auto os-scroll bg-[var(--bg-main)] text-[var(--text-primary)] pb-44 [overscroll-behavior:contain]">
-      {/* Glow Effects */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-      </div>
-
+    <div className="pb-8 text-[var(--text-primary)]">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[var(--panel-border)]">

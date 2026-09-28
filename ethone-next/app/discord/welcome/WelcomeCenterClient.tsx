@@ -774,7 +774,7 @@ export function WelcomeCenterClient() {
 
   if (!loading && isBotPresent && (loadFailed || !config?.welcome || !config?.goodbye)) {
     return (
-      <div className="h-full overflow-y-auto os-scroll bg-[var(--bg-main)] px-4 py-10 text-[var(--text-primary)] sm:px-8">
+      <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)]">
         <div className="mx-auto max-w-xl space-y-4 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-6">
           <h1 className="text-lg font-bold">Bienvenue &amp; Onboarding</h1>
           <p className="text-sm text-amber-100/90">
@@ -804,7 +804,7 @@ export function WelcomeCenterClient() {
   }
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] px-4 sm:px-8 py-6 pb-44 md:pb-44">
+    <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)]">
       {/* Top Bar / Guild Selector */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-6">
         <div className="flex items-center gap-3">

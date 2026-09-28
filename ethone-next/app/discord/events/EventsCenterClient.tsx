@@ -105,10 +105,10 @@ interface EventItem {
 }
 
 const TEMPLATES = [
-  { id: "tpl-gaming", name: "Gaming Night", emoji: "🎮", category: "GAMING", desc: "Sessions jeux multijoueurs avec attribution vocale", color: "from-purple-500/20 to-indigo-500/10 border-emerald-500/30" },
-  { id: "tpl-tournament", name: "Tournoi Compétitif", emoji: "🏆", category: "TOURNAMENT", desc: "Tournoi avec jauge stricte et liste d'attente", color: "from-amber-500/20 to-orange-500/10 border-amber-500/30" },
-  { id: "tpl-watchparty", name: "Watch Party Anime/Film", emoji: "🍿", category: "WATCH_PARTY", desc: "Projection live et synchronisation vocale", color: "from-pink-500/20 to-rose-500/10 border-pink-500/30" },
-  { id: "tpl-meeting", name: "Réunion Staff / AMA", emoji: "🎙️", category: "MEETING", desc: "Scène conférence avec questions en direct", color: "from-cyan-500/20 to-blue-500/10 border-cyan-500/30" },
+  { id: "tpl-gaming", name: "Gaming Night", emoji: "🎮", category: "GAMING", desc: "Sessions jeux multijoueurs avec attribution vocale", color: "border-emerald-500/30" },
+  { id: "tpl-tournament", name: "Tournoi Compétitif", emoji: "🏆", category: "TOURNAMENT", desc: "Tournoi avec jauge stricte et liste d'attente", color: "border-amber-500/30" },
+  { id: "tpl-watchparty", name: "Watch Party Anime/Film", emoji: "🍿", category: "WATCH_PARTY", desc: "Projection live et synchronisation vocale", color: "border-pink-500/30" },
+  { id: "tpl-meeting", name: "Réunion Staff / AMA", emoji: "🎙️", category: "MEETING", desc: "Scène conférence avec questions en direct", color: "border-cyan-500/30" },
 ];
 
 /** Taux de présence réel : présents / inscrits sur les événements terminés ("—" sans donnée). */
@@ -320,7 +320,7 @@ export default function EventsCenterClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] pb-44">
+    <div className="pb-8 text-[var(--text-primary)]">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Navigation & Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-[var(--panel-border)]">
@@ -494,7 +494,7 @@ export default function EventsCenterClient() {
               <Link
                 key={tpl.id}
                 href={`/discord/events/create?template=${tpl.id}`}
-                className={`group p-4 rounded-2xl bg-gradient-to-br ${tpl.color} border hover:scale-[1.02] transition-all flex flex-col justify-between`}
+                className={`group p-4 rounded-2xl bg-[var(--surface-raised)]/40 ${tpl.color} border hover:scale-[1.02] transition-all flex flex-col justify-between`}
               >
                 <div>
                   <div className="text-2xl mb-2">{tpl.emoji}</div>
@@ -584,11 +584,11 @@ export default function EventsCenterClient() {
                         <span className="text-5xl">{event.emoji || "📅"}</span>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#090A0F] via-black/40 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-main)] via-[var(--bg-main)]/40 to-transparent" />
 
                     {/* Top Badges */}
                     <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                      <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-black/60 border border-[var(--panel-border)] text-white flex items-center gap-1.5">
+                      <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-[var(--bg-surface)]/80 border border-[var(--panel-border)] text-[var(--text-primary)] flex items-center gap-1.5">
                         {event.emoji && <span>{event.emoji}</span>}
                         {event.category}
                       </span>

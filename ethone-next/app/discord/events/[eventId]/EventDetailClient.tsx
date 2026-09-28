@@ -293,12 +293,12 @@ export default function EventDetailClient() {
   const startDate = new Date(event.startDate);
 
   if (loadState === "loading") {
-    return <div className="flex h-full items-center justify-center bg-[var(--bg-main)] text-sm text-[var(--text-muted)]">Chargement de l&apos;événement…</div>;
+    return <div className="flex min-h-[50vh] items-center justify-center text-sm text-[var(--text-muted)]">Chargement de l&apos;événement…</div>;
   }
 
   if (loadState === "missing") {
     return (
-      <div className="flex h-full items-center justify-center bg-[var(--bg-main)] p-6 text-center">
+      <div className="flex min-h-[50vh] items-center justify-center p-6 text-center">
         <div className="max-w-md">
           <h1 className="text-xl font-bold text-[var(--text-primary)]">Événement introuvable</h1>
           <p className="mt-2 text-sm text-[var(--text-muted)]">
@@ -320,11 +320,7 @@ export default function EventDetailClient() {
     : 100;
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] pb-44">
-      {/* Background glow */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-      </div>
-
+    <div className="pb-8 text-[var(--text-primary)]">
       {/* Hero Banner Image */}
       <div className="relative h-72 sm:h-96 w-full bg-[var(--surface-raised)]/40 overflow-hidden">
         {event.imageUrl ? (
@@ -334,9 +330,9 @@ export default function EventDetailClient() {
             className="w-full h-full object-cover opacity-60 filter brightness-90"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-r from-indigo-900 to-purple-900 opacity-60" />
+          <div className="w-full h-full bg-[var(--surface-raised)]" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#090A0F] via-[#090A0F]/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-main)] via-[var(--bg-main)]/60 to-transparent" />
       </div>
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-36">
@@ -344,7 +340,7 @@ export default function EventDetailClient() {
         <div className="flex items-center justify-between mb-4">
           <Link
             href="/discord/events"
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[var(--bg-surface)]/80 hover:bg-[var(--bg-surface)] border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Retour à la liste
@@ -354,7 +350,7 @@ export default function EventDetailClient() {
           <div className="flex items-center gap-2">
             <Link
               href={`/discord/events/${eventId}/participants`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-surface)]/80 hover:bg-[var(--bg-surface)] border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
             >
               <Users className="w-3.5 h-3.5 text-emerald-400" />
               Participants ({event.stats.goingCount})
@@ -362,7 +358,7 @@ export default function EventDetailClient() {
 
             <Link
               href={`/discord/events/${eventId}/analytics`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-surface)]/80 hover:bg-[var(--bg-surface)] border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
             >
               <BarChart2 className="w-3.5 h-3.5 text-emerald-400" />
               Analytics
@@ -370,7 +366,7 @@ export default function EventDetailClient() {
 
             <Link
               href={`/discord/events/${eventId}/settings`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-surface)]/80 hover:bg-[var(--bg-surface)] border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
             >
               <Settings className="w-3.5 h-3.5 text-[var(--text-muted)]" />
               Paramètres
@@ -421,7 +417,7 @@ export default function EventDetailClient() {
             </div>
 
             {/* Countdown Box */}
-            <div className="p-4 rounded-2xl bg-black/60 border border-[var(--panel-border)] flex items-center gap-3 justify-center sm:justify-start">
+            <div className="p-4 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center gap-3 justify-center sm:justify-start">
               {[
                 { label: "Jours", value: timeLeft.days },
                 { label: "Heures", value: timeLeft.hours },
@@ -581,7 +577,7 @@ export default function EventDetailClient() {
                 Discord Bot Synchronisé
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Les commandes <code className="px-1.5 py-0.5 rounded bg-black/60 text-emerald-300">/event info {event.id}</code> et <code className="px-1.5 py-0.5 rounded bg-black/60 text-emerald-300">/event rsvp</code> sont actives sur votre serveur.
+                Les commandes <code className="px-1.5 py-0.5 rounded bg-[var(--surface-raised)] text-emerald-300">/event info {event.id}</code> et <code className="px-1.5 py-0.5 rounded bg-[var(--surface-raised)] text-emerald-300">/event rsvp</code> sont actives sur votre serveur.
               </p>
             </div>
           </div>

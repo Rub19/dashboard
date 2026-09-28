@@ -310,11 +310,7 @@ export default function EventCreateClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] pb-44">
-      {/* Background glow */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-      </div>
-
+    <div className="pb-8 text-[var(--text-primary)]">
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Navigation & Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)] mb-8">
@@ -365,7 +361,7 @@ export default function EventCreateClient() {
                         ? "bg-emerald-500 text-white shadow-sm"
                         : isCurrent
                         ? "bg-emerald-500 text-white ring-4 ring-emerald-500/20 "
-                        : "bg-black/60 border border-[var(--panel-border)] text-[var(--text-muted)]"
+                        : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)]"
                     }`}
                   >
                     {isCompleted ? <Check className="w-4 h-4" /> : s.id}
@@ -638,7 +634,7 @@ export default function EventCreateClient() {
                         max="500"
                         value={form.maxParticipants}
                         onChange={(e) => updateForm("maxParticipants", parseInt(e.target.value, 10))}
-                        className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-[var(--input-border)] text-sm text-white"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--input-border)] text-sm text-[var(--text-primary)]"
                       />
                     </div>
                   )}

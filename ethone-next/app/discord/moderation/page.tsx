@@ -542,7 +542,7 @@ export default function ModerationCenterPage() {
   };
 
   return (
-    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)] font-sans">
+    <div className="w-full text-[var(--text-primary)] font-sans">
       {/* HEADER FIXE */}
       <header className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 sm:px-6 py-3.5 z-20">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -650,7 +650,7 @@ export default function ModerationCenterPage() {
       </header>
 
       {/* CONTENEUR PRINCIPAL SCROLLABLE */}
-      <main className="flex-1 min-h-0 overflow-y-auto pb-36 px-4 sm:px-6 py-6 scrollbar-thin scrollbar-thumb-white/10">
+      <main className="px-4 sm:px-6 py-6">
         <div className="max-w-7xl mx-auto space-y-6">
 
           {/* BANNIÈRE BOT NON INSTALLÉ */}

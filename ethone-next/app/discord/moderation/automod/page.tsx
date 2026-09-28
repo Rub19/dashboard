@@ -868,7 +868,7 @@ export default function AutoModCommandCenterPage() {
   };
 
   return (
-    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)] font-sans">
+    <div className="w-full text-[var(--text-primary)] font-sans">
       {/* HEADER FIXE */}
       <header className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 sm:px-6 py-3.5 z-20">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -989,7 +989,7 @@ export default function AutoModCommandCenterPage() {
       </header>
 
       {/* CONTENEUR PRINCIPAL SCROLLABLE */}
-      <main className="flex-1 min-h-0 overflow-y-auto pb-36 px-4 sm:px-6 py-6 scrollbar-thin scrollbar-thumb-white/10">
+      <main className="px-4 sm:px-6 py-6">
         <div className="max-w-7xl mx-auto space-y-6">
 
           {/* BANNIÈRE BOT NON INSTALLÉ */}
@@ -1117,7 +1117,7 @@ export default function AutoModCommandCenterPage() {
               </div>
 
               {/* BANNIÈRE PASSERELLE ANTI-RAID */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-blue-500/20 bg-gradient-to-r from-blue-500/10 via-emerald-500/10 to-blue-600/10 p-4 shadow-sm">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-blue-500/20 bg-blue-500/10 p-4">
                 <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400">
                     <Shield className="h-5 w-5" />
@@ -1315,7 +1315,7 @@ export default function AutoModCommandCenterPage() {
                             : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                         )}
                       >
-                        <div className={cn("h-2 w-2 rounded-full", editingRule.enabled ? "bg-emerald-400" : "bg-zinc-500")} />
+                        <div className={cn("h-2 w-2 rounded-full", editingRule.enabled ? "bg-emerald-400" : "bg-[var(--text-muted)]")} />
                         <span>{editingRule.enabled ? "Règle Active" : "Règle Désactivée"}</span>
                       </button>
                     </div>
@@ -2246,7 +2246,7 @@ export default function AutoModCommandCenterPage() {
                       type="checkbox"
                       checked={config.strikes.enabled}
                       onChange={(e) => setConfig({ ...config, strikes: { ...config.strikes, enabled: e.target.checked } })}
-                      className="h-4 w-4 cursor-pointer accent-indigo-500"
+                      className="h-4 w-4 cursor-pointer accent-emerald-500"
                     />
                     Sanctions progressives automatiques
                   </label>
@@ -2389,7 +2389,7 @@ export default function AutoModCommandCenterPage() {
           {/* ======================================================== */}
           {activeTab === "tester" && (
             <div className="space-y-6 animate-in fade-in duration-200">
-              <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-600/10 p-4">
+              <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4">
                 <div className="flex items-start gap-3">
                   <Terminal className="h-5 w-5 text-amber-400 mt-0.5" />
                   <div>

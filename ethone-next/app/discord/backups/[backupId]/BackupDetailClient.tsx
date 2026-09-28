@@ -139,11 +139,11 @@ export default function BackupDetailClient() {
   const orphanChannels = useMemo(() => (snapshot?.data.channels || []).filter((c) => !c.parentId && c.type !== 4), [snapshot]);
 
   if (loading) {
-    return <div className="h-full flex items-center justify-center text-xs text-[var(--text-muted)]"><RefreshCw className="w-4 h-4 animate-spin mr-2" /> Chargement du snapshot...</div>;
+    return <div className="flex min-h-[50vh] items-center justify-center text-xs text-[var(--text-muted)]"><RefreshCw className="w-4 h-4 animate-spin mr-2" /> Chargement du snapshot...</div>;
   }
   if (error || !snapshot) {
     return (
-      <div className="h-full bg-[var(--bg-main)] p-8">
+      <div className="w-full px-4 py-6 sm:px-6">
         <Link href={`/discord/backups${guildQuery}`} className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)]"><ArrowLeft className="w-4 h-4" /> Retour aux sauvegardes</Link>
         <div className="mt-6 bg-[var(--surface-raised)]/40 border border-rose-500/30 rounded-2xl p-6 text-xs text-rose-300 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> {error}</div>
       </div>
@@ -153,7 +153,7 @@ export default function BackupDetailClient() {
   const valid = integrity?.valid ?? snapshot.status === "COMPLETED";
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] p-4 md:p-8">
+    <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)]">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <Link href={`/discord/backups${guildQuery}`} className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"><ArrowLeft className="w-4 h-4" /> Retour aux sauvegardes</Link>

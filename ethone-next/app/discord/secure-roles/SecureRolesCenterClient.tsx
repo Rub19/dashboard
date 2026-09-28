@@ -248,7 +248,7 @@ export default function SecureRolesCenterClient() {
 
   if (state !== "ok" || !data) {
     return (
-      <div className="h-full overflow-y-auto px-4 pb-44 pt-6 text-[var(--text-primary)] sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)]">
         {back}
         <p className="mt-8 text-sm text-[var(--text-muted)]">{state === "offline" ? "Le bot est injoignable ou n'est pas sur ce serveur : impossible de charger les rôles sécurisés." : "Chargement…"}</p>
       </div>
@@ -260,7 +260,7 @@ export default function SecureRolesCenterClient() {
   const others = data.roles.filter((r) => r.sensitive.length === 0 && !r.secured);
 
   return (
-    <div className="h-full overflow-y-auto bg-[var(--bg-main)] px-4 pb-44 pt-6 text-[var(--text-primary)] sm:px-6 lg:px-10">
+    <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)]">
       {welcome && <WelcomeModal onClose={closeWelcome} />}
       <div className="mx-auto max-w-5xl space-y-6">
         <PageHeader

@@ -217,7 +217,7 @@ export default function AntiNukePage() {
   };
 
   return (
-    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)] font-sans">
+    <div className="w-full text-[var(--text-primary)] font-sans">
       <header className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 sm:px-6 py-3.5 z-20">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -275,7 +275,7 @@ export default function AntiNukePage() {
         </div>
       </header>
 
-      <main className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-6 scrollbar-thin scrollbar-thumb-white/10">
+      <main className="px-4 sm:px-6 py-6">
         <div className="max-w-5xl mx-auto space-y-6">
           {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">

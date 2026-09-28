@@ -412,7 +412,7 @@ export default function StatrolesCenterClient() {
   const cfg = overview?.config;
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] p-4 pb-44 text-[var(--text-primary)] sm:p-8">
+    <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)]">
       <div className="mx-auto w-full min-w-0 max-w-4xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] transition hover:text-[var(--text-primary)]">

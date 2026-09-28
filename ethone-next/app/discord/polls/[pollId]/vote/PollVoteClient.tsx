@@ -15,7 +15,7 @@ export default function PollVoteClient() {
   const [done, setDone] = useState(false);
   const guildQuery = guildId ? `?guildId=${guildId}` : "";
 
-  if (loading) return <div className="flex h-full items-center justify-center text-xs text-[var(--text-muted)]">Chargement du sondage…</div>;
+  if (loading) return <div className="flex min-h-[50vh] items-center justify-center text-xs text-[var(--text-muted)]">Chargement du sondage…</div>;
 
   if (error || !poll) {
     return (
@@ -67,7 +67,7 @@ export default function PollVoteClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto bg-[var(--bg-main)] text-[var(--text-primary)]">
+    <div className="text-[var(--text-primary)]">
       <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
         <h1 className="text-2xl font-bold tracking-tight">{poll.title}</h1>
         {poll.description && <p className="mt-2 text-sm text-[var(--text-muted)]">{poll.description}</p>}

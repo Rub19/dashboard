@@ -75,7 +75,7 @@ export default function SecurityHubPage() {
   const queryParam = selectedGuild ? `?guildId=${selectedGuild.id}` : "";
 
   return (
-    <div className="h-full overflow-y-auto os-scroll bg-[var(--bg-main)] text-[var(--text-primary)] p-4 md:p-8 pb-44 md:pb-44">
+    <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)]">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -148,7 +148,7 @@ export default function SecurityHubPage() {
         {/* Modules Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Card Anti-Raid */}
-          <div className="group relative rounded-2xl border border-red-500/20 bg-gradient-to-b from-red-950/20 to-zinc-950/40 p-6 transition-all hover:border-red-500/40 flex flex-col justify-between">
+          <div className="group relative rounded-2xl border border-red-500/20 bg-red-500/10 p-6 transition-all hover:border-red-500/40 flex flex-col justify-between">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -202,7 +202,7 @@ export default function SecurityHubPage() {
           </div>
 
           {/* Card Anti-Nuke */}
-          <div className="group relative rounded-2xl border border-amber-500/20 bg-gradient-to-b from-amber-950/20 to-zinc-950/40 p-6 transition-all hover:border-amber-500/40 flex flex-col justify-between">
+          <div className="group relative rounded-2xl border border-amber-500/20 bg-amber-500/10 p-6 transition-all hover:border-amber-500/40 flex flex-col justify-between">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">

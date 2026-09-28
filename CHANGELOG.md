@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.36.0 — 2026-09-28
+
+**Toutes les sous-pages du Bot Discord au nouveau style**
+
+- Les sous-pages du Bot Discord (statistiques, événements, modération, tickets, serveur, musique, logs, sondages, formulaires…) adoptent le style épuré : cartes unifiées, textes lisibles, boutons cohérents, plus de dégradés ni de halos.
+- Les pages défilent maintenant normalement (une cinquantaine de pages avaient un défilement interne qui coupait le contenu).
+
 ## v1.35.3 — 2026-09-28
 
 **Bot passif quand ses modules sont désactivés**

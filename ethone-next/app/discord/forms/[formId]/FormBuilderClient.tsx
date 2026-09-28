@@ -345,11 +345,11 @@ export default function FormBuilderClient() {
   };
 
   if (loading) {
-    return <div className="min-h-full bg-[var(--bg-main)] text-xs text-[var(--text-muted)] flex items-center justify-center">Chargement du formulaire...</div>;
+    return <div className="min-h-[50vh] text-xs text-[var(--text-muted)] flex items-center justify-center">Chargement du formulaire...</div>;
   }
   if (loadError) {
     return (
-      <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] p-8 pb-44 space-y-4">
+      <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)] space-y-4">
         <Link href={`/discord/forms?guildId=${rawGuildId}`} className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)]"><ArrowLeft className="h-4 w-4" /> Retour aux formulaires</Link>
         <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300">{loadError}</div>
       </div>
@@ -862,7 +862,7 @@ export default function FormBuilderClient() {
           <div
             className={cn(
               "w-full transition-all duration-200",
-              previewMode === "desktop" && "max-w-2xl rounded-xl border border-[var(--panel-border)] bg-black/60 p-6 sm:p-8 ",
+              previewMode === "desktop" && "max-w-2xl rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 sm:p-8 ",
               previewMode === "mobile" && "max-w-sm rounded-[40px] border-4 border-[var(--panel-border)] bg-[var(--bg-main)] p-6 space-y-4",
               previewMode === "discord" && "max-w-md rounded-2xl border border-emerald-500/40 bg-[#313338] p-5 text-white"
             )}

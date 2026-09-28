@@ -595,7 +595,7 @@ export function AuditCenterClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-emerald-500 selection:text-white pb-44 md:pb-44">
+    <div className="pb-8 text-[var(--text-primary)] selection:bg-emerald-500 selection:text-white">
       {/* HEADER TOP BAR */}
       <div className="sticky top-0 z-40 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/80 ">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
@@ -1078,7 +1078,7 @@ export function AuditCenterClient() {
         {/* TAB 2: ZONE ÉVÉNEMENTS CRITIQUES */}
         {activeTab === "critical" && (
           <div className="space-y-4">
-            <div className="rounded-2xl border border-rose-500/30 bg-gradient-to-r from-rose-950/20 via-red-900/10 to-rose-950/30 p-4">
+            <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4">
               <div className="flex items-center gap-2">
                 <AlertOctagon className="h-5 w-5 text-rose-400" />
                 <h3 className="font-bold text-[var(--text-primary)] text-sm">Centre de Commandement des Menaces Critiques</h3>
@@ -1165,11 +1165,11 @@ export function AuditCenterClient() {
               <div className="space-y-2.5">
                 {Object.entries(overview?.bySeverity || {}).map(([sev, count]) => {
                   const pct = Math.round((count / (overview?.totalEvents || 1)) * 100);
-                  let barColor = "from-emerald-500 to-teal-500";
-                  if (sev === "CRITICAL") barColor = "from-rose-500 to-red-600";
-                  if (sev === "HIGH") barColor = "from-orange-500 to-amber-500";
-                  if (sev === "MEDIUM") barColor = "from-amber-400 to-yellow-500";
-                  if (sev === "LOW") barColor = "from-blue-500 to-cyan-500";
+                  let barColor = "bg-emerald-500";
+                  if (sev === "CRITICAL") barColor = "bg-rose-500";
+                  if (sev === "HIGH") barColor = "bg-orange-500";
+                  if (sev === "MEDIUM") barColor = "bg-amber-400";
+                  if (sev === "LOW") barColor = "bg-blue-500";
 
                   return (
                     <div key={sev} className="space-y-1">
@@ -1179,7 +1179,7 @@ export function AuditCenterClient() {
                       </div>
                       <div className="h-2 w-full rounded-full bg-[var(--surface-raised)]/40 overflow-hidden">
                         <div
-                          className={cn("h-full bg-gradient-to-r rounded-full", barColor)}
+                          className={cn("h-full rounded-full", barColor)}
                           style={{ width: `${pct}%` }}
                         />
                       </div>

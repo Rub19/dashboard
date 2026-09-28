@@ -300,7 +300,7 @@ export default function VoiceCenterClient() {
   );
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] space-y-8 px-4 sm:px-6 lg:px-10 pt-6 pb-44 selection:bg-emerald-500/20">
+    <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)] space-y-8 selection:bg-emerald-500/20">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>

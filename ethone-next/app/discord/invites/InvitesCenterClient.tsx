@@ -284,7 +284,7 @@ export default function InvitesCenterClient() {
   const rewardedPct = trackedCount > 0 ? Math.round((funnel.rewardedMembers / trackedCount) * 100) : 0;
 
   return (
-    <div className="h-full w-full min-w-0 overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] flex flex-col p-4 sm:p-8 pb-44 md:pb-44 max-w-7xl mx-auto">
+    <div className="px-4 py-6 sm:px-6 w-full min-w-0 text-[var(--text-primary)] flex flex-col max-w-7xl mx-auto">
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-[var(--panel-border)]">
         <div>

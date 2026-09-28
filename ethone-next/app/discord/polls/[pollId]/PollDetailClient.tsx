@@ -55,7 +55,7 @@ export default function PollDetailClient() {
     }
   };
 
-  if (loading) return <div className="flex h-full items-center justify-center text-xs text-[var(--text-muted)]">Chargement du sondage…</div>;
+  if (loading) return <div className="flex min-h-[50vh] items-center justify-center text-xs text-[var(--text-muted)]">Chargement du sondage…</div>;
 
   if (error || !poll) {
     return (
@@ -73,7 +73,7 @@ export default function PollDetailClient() {
   const byQuestion = new Map((results?.questionsResults ?? []).map((q) => [q.questionId, q]));
 
   return (
-    <div className="h-full overflow-y-auto bg-[var(--bg-main)] text-[var(--text-primary)]">
+    <div className="text-[var(--text-primary)]">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
         <nav className="mb-5 text-xs text-[var(--text-muted)]">
           <Link href={`/discord/polls${guildQuery}`} className="hover:text-[var(--text-primary)]">Sondages &amp; votes</Link>

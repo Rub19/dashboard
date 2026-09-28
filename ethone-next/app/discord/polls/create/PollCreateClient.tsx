@@ -390,11 +390,7 @@ export default function PollCreateClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)]">
-      {/* Top Background Glow */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-30">
-      </div>
-
+    <div className="text-[var(--text-primary)]">
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 pb-44 md:pb-44">
         {/* Navigation Breadcrumbs */}
         <div className="mb-6 flex items-center gap-2 text-xs text-[var(--text-muted)]">

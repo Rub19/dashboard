@@ -38561,6 +38561,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_35_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_35_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_35_3_de);
 
+const v1_36_0_fr: ChangelogEntry = {
+  version: "v1.36.0",
+  date: "2026-09-28",
+  title: "Toutes les sous-pages du Bot Discord au nouveau style",
+  items: [
+    "Les sous-pages du Bot Discord (statistiques, événements, modération, tickets, serveur, musique, logs, sondages, formulaires…) adoptent le style épuré : cartes unifiées, textes lisibles, boutons cohérents, plus de dégradés ni de halos.",
+    "Les pages défilent maintenant normalement (une cinquantaine de pages avaient un défilement interne qui coupait le contenu).",
+  ],
+};
+
+const v1_36_0_en: ChangelogEntry = {
+  version: "v1.36.0",
+  date: "2026-09-28",
+  title: "All Discord bot sub-pages in the new style",
+  items: [
+    "Discord bot sub-pages (stats, events, moderation, tickets, server, music, logs, polls, forms…) now use the clean style: unified cards, readable text, consistent buttons, no gradients or glows.",
+    "Pages now scroll normally (about fifty pages had an internal scroll that clipped content).",
+  ],
+};
+
+const v1_36_0_es: ChangelogEntry = {
+  version: "v1.36.0",
+  date: "2026-09-28",
+  title: "Todas las subpáginas del bot de Discord con el nuevo estilo",
+  items: [
+    "Las subpáginas del bot de Discord adoptan el estilo limpio: tarjetas unificadas, textos legibles, botones coherentes, sin degradados ni halos.",
+    "Las páginas se desplazan con normalidad.",
+  ],
+};
+
+const v1_36_0_de: ChangelogEntry = {
+  version: "v1.36.0",
+  date: "2026-09-28",
+  title: "Alle Unterseiten des Discord-Bots im neuen Stil",
+  items: [
+    "Die Unterseiten des Discord-Bots übernehmen den aufgeräumten Stil: einheitliche Karten, lesbare Texte, konsistente Buttons, keine Verläufe oder Leuchteffekte.",
+    "Seiten scrollen jetzt normal.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_36_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_36_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_36_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_36_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

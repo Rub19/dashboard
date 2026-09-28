@@ -235,7 +235,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
   const banlist = room.blockedUserIds || room.banlist || [];
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] space-y-6 px-4 sm:px-6 lg:px-10 pt-6 pb-44">
+    <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 space-y-6 text-[var(--text-primary)]">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>

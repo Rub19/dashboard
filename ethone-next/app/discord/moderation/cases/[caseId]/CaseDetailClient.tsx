@@ -227,7 +227,7 @@ export default function CaseDetailClient() {
 
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center bg-[var(--bg-main)] text-[var(--text-muted)]">
+      <div className="flex min-h-[50vh] items-center justify-center text-[var(--text-muted)]">
         <RefreshCw className="h-6 w-6 animate-spin text-orange-400" />
       </div>
     );
@@ -235,7 +235,7 @@ export default function CaseDetailClient() {
 
   if (!modCase) {
     return (
-      <div className="h-full flex flex-col items-center justify-center bg-[var(--bg-main)] text-[var(--text-muted)] gap-3">
+      <div className="flex min-h-[50vh] flex-col items-center justify-center text-[var(--text-muted)] gap-3">
         <AlertCircle className="h-8 w-8 text-rose-500" />
         <p>Dossier introuvable ou inexistant.</p>
         <Link
@@ -249,7 +249,7 @@ export default function CaseDetailClient() {
   }
 
   return (
-    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)] font-sans">
+    <div className="w-full text-[var(--text-primary)] font-sans">
       {/* HEADER */}
       <header className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 sm:px-6 py-3.5 z-20">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -298,7 +298,7 @@ export default function CaseDetailClient() {
       </header>
 
       {/* CONTENU SCROLLABLE */}
-      <main className="flex-1 min-h-0 overflow-y-auto pb-36 px-4 sm:px-6 py-6 scrollbar-thin scrollbar-thumb-white/10">
+      <main className="px-4 sm:px-6 py-6">
         <div className="max-w-6xl mx-auto space-y-6">
 
           {/* FICHE RÉCAPITULATIVE */}

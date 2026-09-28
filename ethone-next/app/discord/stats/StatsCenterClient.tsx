@@ -151,7 +151,7 @@ function downloadCsv(name: string, header: string[], rows: Array<Array<string | 
 function RankList({ rows, unit, isMember, onPick }: { rows: Ranked[]; unit: string; isMember?: boolean; onPick?: (id: string) => void }) {
   // Membres et salons sont cliquables dès qu'un gestionnaire est fourni (fiche membre / détail du salon).
   const clickable = Boolean(onPick);
-  if (rows.length === 0) return <p className="py-6 text-center text-xs text-zinc-500">Aucune donnée sur cette période.</p>;
+  if (rows.length === 0) return <p className="py-6 text-center text-xs text-[var(--text-muted)]">Aucune donnée sur cette période.</p>;
   const max = Math.max(...rows.map((r) => r.value), 1);
   return (
     <ol className="space-y-1.5">
@@ -161,17 +161,17 @@ function RankList({ rows, unit, isMember, onPick }: { rows: Ranked[]; unit: stri
           <li key={r.id}>
             <Row
               {...(clickable && onPick ? { type: "button" as const, onClick: () => onPick(r.id) } : {})}
-              className={cn("relative flex w-full items-center gap-3 overflow-hidden rounded-xl bg-white/[0.03] px-3 py-2 text-left text-xs", clickable && "cursor-pointer transition hover:bg-white/[0.07]")}
+              className={cn("relative flex w-full items-center gap-3 overflow-hidden rounded-xl bg-[var(--surface-raised)]/40 px-3 py-2 text-left text-xs", clickable && "cursor-pointer transition hover:bg-[var(--surface-raised)]/70")}
             >
-              <span aria-hidden className="absolute inset-y-0 left-0 bg-indigo-400/10" style={{ width: `${(r.value / max) * 100}%` }} />
-              <span className="relative w-5 shrink-0 text-center font-bold text-zinc-500">{i + 1}</span>
+              <span aria-hidden className="absolute inset-y-0 left-0 bg-sky-400/10" style={{ width: `${(r.value / max) * 100}%` }} />
+              <span className="relative w-5 shrink-0 text-center font-bold text-[var(--text-muted)]">{i + 1}</span>
               {isMember && (
                 // eslint-disable-next-line @next/next/no-img-element
-                r.avatarUrl ? <img src={r.avatarUrl} alt="" className="relative h-6 w-6 shrink-0 rounded-full" /> : <span className="relative h-6 w-6 shrink-0 rounded-full bg-white/10" />
+                r.avatarUrl ? <img src={r.avatarUrl} alt="" className="relative h-6 w-6 shrink-0 rounded-full" /> : <span className="relative h-6 w-6 shrink-0 rounded-full bg-[var(--surface-raised)]" />
               )}
-              <span className="relative min-w-0 flex-1 truncate text-zinc-200">{isMember ? r.name : `# ${r.name}`}</span>
-              <span className="relative shrink-0 tabular-nums font-semibold text-white">
-                {fmt(r.value)} <span className="font-normal text-zinc-500">{unit}</span>
+              <span className="relative min-w-0 flex-1 truncate text-[var(--text-primary)]">{isMember ? r.name : `# ${r.name}`}</span>
+              <span className="relative shrink-0 tabular-nums font-semibold text-[var(--text-primary)]">
+                {fmt(r.value)} <span className="font-normal text-[var(--text-muted)]">{unit}</span>
               </span>
             </Row>
           </li>
@@ -332,17 +332,17 @@ export default function StatsCenterClient() {
   const leavesData = series.map((p) => ({ label: shortDay(p.day), value: p.leaves }));
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] p-4 pb-44 text-white sm:p-8">
+    <div className="w-full px-4 py-6 sm:px-6">
       <div className="mx-auto w-full min-w-0 max-w-6xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex items-center gap-2 text-xs font-medium text-zinc-400 transition hover:text-white">
+          <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] transition hover:text-[var(--text-primary)]">
             <ArrowLeft className="h-4 w-4" />
             Retour au hub Discord
           </Link>
           <div className="flex flex-wrap items-center gap-2">
             <div className="inline-flex rounded-xl border border-[var(--panel-border)] p-0.5">
               {PERIODS.map((p) => (
-                <button key={p} type="button" onClick={() => setDays(p)} className={cn("cursor-pointer rounded-lg px-2.5 py-1 text-xs font-semibold transition", days === p ? "bg-white/10 text-white" : "text-zinc-400 hover:text-white")}>
+                <button key={p} type="button" onClick={() => setDays(p)} className={cn("cursor-pointer rounded-lg px-2.5 py-1 text-xs font-semibold transition", days === p ? "bg-[var(--surface-raised)] text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
                   {p} j
                 </button>
               ))}
@@ -351,11 +351,11 @@ export default function StatsCenterClient() {
               type="button"
               disabled={series.length === 0}
               onClick={() => downloadCsv(`statistiques-${days}j.csv`, ["jour", "messages", "vocal_heures", "arrivees", "departs", "membres", "membres_actifs"], series.map((p) => [p.day, p.messages, p.voiceHours, p.joins, p.leaves, p.members, p.activeUsers]))}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition hover:bg-white/[0.05] disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] transition hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)] disabled:cursor-not-allowed disabled:opacity-40"
             >
               Exporter (CSV)
             </button>
-            <button type="button" onClick={() => void load()} className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition hover:bg-white/[0.05]">
+            <button type="button" onClick={() => void load()} className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] transition hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)]">
               <RefreshCw className="h-3.5 w-3.5" />
               Actualiser
             </button>
@@ -364,9 +364,9 @@ export default function StatsCenterClient() {
 
         <PageHeader hideBack guildId={guildId} icon="mod-stats" tint="sky" title="Statistiques" subtitle="Messages et vocal par jour, évolution des membres, classements, rythme d'activité. Jours en UTC." />
 
-        {state === "loading" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-zinc-500">Chargement…</div>}
+        {state === "loading" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">Chargement…</div>}
         {state === "offline" && (
-          <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-zinc-400">
+          <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">
             Le bot n&apos;a pas répondu pour ce serveur : les statistiques ne peuvent pas être affichées. Vérifiez que le bot est présent, puis actualisez.
           </div>
         )}
@@ -374,11 +374,11 @@ export default function StatsCenterClient() {
         {state === "ok" && ov && (
           <>
             <div className={cn("flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between", enabled ? "border-emerald-500/25 bg-emerald-500/[0.05]" : "border-amber-500/25 bg-amber-500/[0.06]")}>
-              <p className="text-xs leading-relaxed text-zinc-200">
+              <p className="text-xs leading-relaxed text-[var(--text-primary)]">
                 {enabled ? (
                   <>
                     Collecte <strong>active</strong>
-                    {ov.config.startedAt ? <> depuis le {dateFr(ov.config.startedAt)}</> : null}. {ov.voiceSessionsNow} membre(s) en vocal en ce moment. Les commandes Discord : <code className="rounded bg-black/30 px-1">/stats server</code>, <code className="rounded bg-black/30 px-1">/stats member</code>, <code className="rounded bg-black/30 px-1">/stats top</code>.
+                    {ov.config.startedAt ? <> depuis le {dateFr(ov.config.startedAt)}</> : null}. {ov.voiceSessionsNow} membre(s) en vocal en ce moment. Les commandes Discord : <code className="rounded bg-[var(--surface-raised)] px-1">/stats server</code>, <code className="rounded bg-[var(--surface-raised)] px-1">/stats member</code>, <code className="rounded bg-[var(--surface-raised)] px-1">/stats top</code>.
                   </>
                 ) : (
                   <>
@@ -387,7 +387,7 @@ export default function StatsCenterClient() {
                 )}
               </p>
               <div className="flex shrink-0 gap-2">
-                <button type="button" disabled={saving} onClick={() => void setEnabled(!enabled)} className="cursor-pointer rounded-xl bg-[#5865F2] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#4752C4] disabled:opacity-50">
+                <button type="button" disabled={saving} onClick={() => void setEnabled(!enabled)} className="cursor-pointer rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50">
                   {enabled ? "Désactiver" : "Activer la collecte"}
                 </button>
                 <button type="button" disabled={saving} onClick={() => void clearData()} className="cursor-pointer rounded-xl border border-rose-500/30 px-3 py-2 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/10 disabled:opacity-50">
@@ -404,9 +404,9 @@ export default function StatsCenterClient() {
               <Kpi label="Membres" value={ov.memberCount !== null ? fmt(ov.memberCount) : "—"} hint="actuellement" />
             </div>
 
-            <div className="flex gap-1 overflow-x-auto border-b border-white/10 pb-px" role="tablist">
+            <div className="flex gap-1 overflow-x-auto border-b border-[var(--panel-border)] pb-px" role="tablist">
               {TABS.map(([id, label]) => (
-                <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={cn("cursor-pointer whitespace-nowrap rounded-t-lg px-4 py-2 text-xs font-semibold transition", tab === id ? "border-b-2 border-sky-400 bg-white/[0.05] text-white" : "text-zinc-400 hover:text-white")}>
+                <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={cn("cursor-pointer whitespace-nowrap rounded-t-lg px-4 py-2 text-xs font-semibold transition", tab === id ? "border-b-2 border-sky-400 bg-[var(--surface-raised)]/40 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
                   {label}
                 </button>
               ))}
@@ -440,7 +440,7 @@ export default function StatsCenterClient() {
                 <Card title="Top membres" hint="Cliquez sur un membre pour ouvrir sa fiche">
                   <div className="mb-3 inline-flex rounded-xl border border-[var(--panel-border)] p-0.5">
                     {(["messages", "voice"] as const).map((b) => (
-                      <button key={b} type="button" onClick={() => setBoard(b)} className={cn("cursor-pointer rounded-lg px-3 py-1 text-xs font-semibold transition", board === b ? "bg-white/10 text-white" : "text-zinc-400 hover:text-white")}>
+                      <button key={b} type="button" onClick={() => setBoard(b)} className={cn("cursor-pointer rounded-lg px-3 py-1 text-xs font-semibold transition", board === b ? "bg-[var(--surface-raised)] text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
                         {b === "messages" ? "Messages" : "Vocal"}
                       </button>
                     ))}
@@ -471,7 +471,7 @@ export default function StatsCenterClient() {
               <div className="space-y-6">
                 {!insights ? (
                   <Card title="Rythme d'activité">
-                    <p className="py-6 text-center text-xs text-zinc-400">L&apos;analyse approfondie nécessite la dernière version du bot : redéployez-le, puis actualisez.</p>
+                    <p className="py-6 text-center text-xs text-[var(--text-muted)]">L&apos;analyse approfondie nécessite la dernière version du bot : redéployez-le, puis actualisez.</p>
                   </Card>
                 ) : (
                   <>
@@ -483,7 +483,7 @@ export default function StatsCenterClient() {
                     </div>
 
                     <Card title="Carte de chaleur des messages" hint="Jour de la semaine × heure (UTC). Plus la case est claire, plus il y a de messages.">
-                      {insights.hasHourly ? <StatsHeatmap matrix={insights.heatmap} /> : <p className="py-6 text-center text-xs text-zinc-400">Les données horaires se collectent depuis la dernière mise à jour du bot : la carte se remplit au fil des jours.</p>}
+                      {insights.hasHourly ? <StatsHeatmap matrix={insights.heatmap} /> : <p className="py-6 text-center text-xs text-[var(--text-muted)]">Les données horaires se collectent depuis la dernière mise à jour du bot : la carte se remplit au fil des jours.</p>}
                     </Card>
 
                     <div className="grid gap-6 lg:grid-cols-2">
@@ -508,9 +508,9 @@ export default function StatsCenterClient() {
                             ["Créneau le plus actif", (() => { const top = [...insights.hours].sort((x, y) => y.messages - x.messages)[0]; return top && top.messages > 0 ? `${top.hour} h – ${top.hour + 1} h UTC` : "—"; })()],
                             ["Jour de semaine le plus actif", (() => { const top = [...insights.weekday].sort((x, y) => y.messages - x.messages)[0]; return top && top.messages > 0 ? WEEKDAYS[top.weekday] : "—"; })()],
                           ].map(([k, v]) => (
-                            <div key={k} className="flex items-baseline justify-between gap-3 border-b border-white/5 pb-2 last:border-0">
-                              <dt className="text-zinc-400">{k}</dt>
-                              <dd className="text-right font-semibold text-white">{v}</dd>
+                            <div key={k} className="flex items-baseline justify-between gap-3 border-b border-[var(--panel-border)] pb-2 last:border-0">
+                              <dt className="text-[var(--text-muted)]">{k}</dt>
+                              <dd className="text-right font-semibold text-[var(--text-primary)]">{v}</dd>
                             </div>
                           ))}
                         </dl>
@@ -525,39 +525,39 @@ export default function StatsCenterClient() {
       </div>
 
       {(channel || channelLoading) && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={() => setChannel(null)} role="dialog" aria-modal="true" aria-label="Détail du salon">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/60 p-4" onClick={() => setChannel(null)} role="dialog" aria-modal="true" aria-label="Détail du salon">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6" onClick={(e) => e.stopPropagation()}>
-            {channelLoading && !channel && <p className="py-10 text-center text-sm text-zinc-400">Chargement du salon…</p>}
+            {channelLoading && !channel && <p className="py-10 text-center text-sm text-[var(--text-muted)]">Chargement du salon…</p>}
             {channel && (
               <div className="space-y-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <h3 className="text-lg font-bold"># {channel.channel.name}</h3>
-                    <p className="text-[11px] text-zinc-400">
+                    <p className="text-xs text-[var(--text-muted)]">
                       {fmt(channel.totals.messages)} messages · {fmt(channel.totals.voiceHours)} h de vocal sur {channel.days} jours
                     </p>
                   </div>
-                  <button type="button" aria-label="Fermer" onClick={() => setChannel(null)} className="cursor-pointer rounded-lg p-1.5 text-zinc-400 transition hover:bg-white/10 hover:text-white">
+                  <button type="button" aria-label="Fermer" onClick={() => setChannel(null)} className="cursor-pointer rounded-lg p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)]">
                     <X className="h-4 w-4" />
                   </button>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <p className="mb-1 text-[11px] font-semibold text-zinc-400">Messages par jour</p>
+                    <p className="mb-1 text-xs font-semibold text-[var(--text-muted)]">Messages par jour</p>
                     <AnalyticsBarChart data={channel.series.map((p) => ({ label: shortDay(p.day), value: p.messages }))} height={140} color="#5aa9f6" seriesLabel="Messages" />
                   </div>
                   <div>
-                    <p className="mb-1 text-[11px] font-semibold text-zinc-400">Vocal par jour</p>
+                    <p className="mb-1 text-xs font-semibold text-[var(--text-muted)]">Vocal par jour</p>
                     <AnalyticsBarChart data={channel.series.map((p) => ({ label: shortDay(p.day), value: p.voiceHours }))} height={140} color="#f0559a" valueSuffix=" h" seriesLabel="Vocal" decimals />
                   </div>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <p className="mb-2 text-[11px] font-semibold text-zinc-400">Membres les plus actifs (messages)</p>
+                    <p className="mb-2 text-xs font-semibold text-[var(--text-muted)]">Membres les plus actifs (messages)</p>
                     <RankList rows={channel.topMembersMessages} unit="msg" isMember onPick={(id) => { setChannel(null); void openMember(id); }} />
                   </div>
                   <div>
-                    <p className="mb-2 text-[11px] font-semibold text-zinc-400">Membres les plus présents (vocal)</p>
+                    <p className="mb-2 text-xs font-semibold text-[var(--text-muted)]">Membres les plus présents (vocal)</p>
                     <RankList rows={channel.topMembersVoice} unit="h" isMember onPick={(id) => { setChannel(null); void openMember(id); }} />
                   </div>
                 </div>
@@ -568,37 +568,37 @@ export default function StatsCenterClient() {
       )}
 
       {(member || memberLoading) && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={() => setMember(null)} role="dialog" aria-modal="true" aria-label="Fiche membre">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/60 p-4" onClick={() => setMember(null)} role="dialog" aria-modal="true" aria-label="Fiche membre">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6" onClick={(e) => e.stopPropagation()}>
-            {memberLoading && !member && <p className="py-10 text-center text-sm text-zinc-400">Chargement de la fiche…</p>}
+            {memberLoading && !member && <p className="py-10 text-center text-sm text-[var(--text-muted)]">Chargement de la fiche…</p>}
             {member && (
               <div className="space-y-5">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex min-w-0 items-center gap-4">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    {member.member.avatarUrl ? <img src={member.member.avatarUrl} alt="" className="h-16 w-16 shrink-0 rounded-full ring-2 ring-sky-400/60" /> : <span className="h-16 w-16 shrink-0 rounded-full bg-white/10" />}
+                    {member.member.avatarUrl ? <img src={member.member.avatarUrl} alt="" className="h-16 w-16 shrink-0 rounded-full ring-2 ring-sky-400/60" /> : <span className="h-16 w-16 shrink-0 rounded-full bg-[var(--surface-raised)]" />}
                     <div className="min-w-0">
                       <h3 className="truncate text-lg font-bold">{member.member.name}</h3>
-                      <p className="text-[11px] text-zinc-400">Compte créé le {dateFr(member.member.createdAt)} · Arrivé le {dateFr(member.member.joinedAt)}</p>
+                      <p className="text-xs text-[var(--text-muted)]">Compte créé le {dateFr(member.member.createdAt)} · Arrivé le {dateFr(member.member.joinedAt)}</p>
                     </div>
                   </div>
-                  <button type="button" aria-label="Fermer" onClick={() => setMember(null)} className="cursor-pointer rounded-lg p-1.5 text-zinc-400 transition hover:bg-white/10 hover:text-white">
+                  <button type="button" aria-label="Fermer" onClick={() => setMember(null)} className="cursor-pointer rounded-lg p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)]">
                     <X className="h-4 w-4" />
                   </button>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-4">
-                    <p className="text-[11px] font-semibold text-zinc-400">Rangs (60 jours)</p>
-                    <p className="mt-2 text-sm text-zinc-300">Messages <strong className="float-right text-amber-300">{member.rank.messages ? `#${member.rank.messages}` : "—"}</strong></p>
-                    <p className="mt-1 text-sm text-zinc-300">Vocal <strong className="float-right text-amber-300">{member.rank.voice ? `#${member.rank.voice}` : "—"}</strong></p>
+                  <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+                    <p className="text-xs font-semibold text-[var(--text-muted)]">Rangs (60 jours)</p>
+                    <p className="mt-2 text-sm text-[var(--text-muted)]">Messages <strong className="float-right text-amber-300">{member.rank.messages ? `#${member.rank.messages}` : "—"}</strong></p>
+                    <p className="mt-1 text-sm text-[var(--text-muted)]">Vocal <strong className="float-right text-amber-300">{member.rank.voice ? `#${member.rank.voice}` : "—"}</strong></p>
                   </div>
                   {(["messages", "voiceHours"] as const).map((k) => (
-                    <div key={k} className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-4">
-                      <p className="text-[11px] font-semibold text-zinc-400">{k === "messages" ? "Messages" : "Vocal"}</p>
+                    <div key={k} className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+                      <p className="text-xs font-semibold text-[var(--text-muted)]">{k === "messages" ? "Messages" : "Vocal"}</p>
                       {(["1", "7", "60"] as const).map((w) => (
-                        <p key={w} className="mt-1 text-sm text-zinc-300">
-                          {w} j <strong className="float-right text-white">{k === "messages" ? fmt(member.windows[w].messages) : `${fmt(member.windows[w].voiceHours)} h`}</strong>
+                        <p key={w} className="mt-1 text-sm text-[var(--text-muted)]">
+                          {w} j <strong className="float-right text-[var(--text-primary)]">{k === "messages" ? fmt(member.windows[w].messages) : `${fmt(member.windows[w].voiceHours)} h`}</strong>
                         </p>
                       ))}
                     </div>

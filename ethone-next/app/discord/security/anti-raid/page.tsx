@@ -763,7 +763,7 @@ export default function AntiRaidDashboardPage() {
   const threat = THREAT_COLORS[metrics.threatLevel] || THREAT_COLORS.SAFE;
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)]">
+    <div className="w-full text-[var(--text-primary)]">
       {/* 1. TOP HEADER BAR */}
       <div className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--bg-surface-elevated)]/80 px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 z-20">
         <div className="flex items-center gap-3">
@@ -825,7 +825,7 @@ export default function AntiRaidDashboardPage() {
       </div>
 
       {/* 2. SCROLLABLE CONTAINER (pb-36 clears bottom dock) */}
-      <div className="flex-1 overflow-y-auto os-scroll px-4 sm:px-6 py-6 pb-36 space-y-6">
+      <div className="px-4 sm:px-6 py-6 space-y-6">
         {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
             <div className="flex items-start gap-3">
@@ -948,7 +948,7 @@ export default function AntiRaidDashboardPage() {
                     "px-5 py-2.5 rounded-xl font-bold text-sm tracking-wide transition-all flex items-center justify-center gap-2",
                     metrics.raidModeActive
                       ? "bg-amber-500 hover:bg-amber-400 text-black"
-                      : "bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:bg-red-500 text-white"
+                      : "bg-red-600 hover:bg-red-500 text-white"
                   )}
                 >
                   <Flame className="w-4 h-4" />

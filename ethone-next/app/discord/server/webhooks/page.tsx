@@ -9,7 +9,7 @@ export const dynamic = "force-static";
 
 export default function ServerWebhooksPage() {
   return (
-    <Suspense fallback={<div className="min-h-full bg-[var(--bg-main)]" />}>
+    <Suspense fallback={<div className="min-h-[50vh]" />}>
       <ServerManagementClient initialTab="webhooks" />
     </Suspense>
   );

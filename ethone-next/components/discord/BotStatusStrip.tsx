@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/components/AuthProvider";
+import { ADMIN_EMAIL } from "@/lib/admin";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const POLL_MS = 30_000;
@@ -35,13 +37,19 @@ function Pill({ label, value, tone }: { label: string; value: string; tone?: "ok
   );
 }
 
-/** Infos en direct du bot (statut, uptime, latence, serveurs) pour l'en-tête du Bot Discord. Données réelles de /api/health. */
+/**
+ * Infos en direct du bot (uptime, latence) pour l'en-tête du Bot Discord. Données réelles de /api/health.
+ * Réservé au propriétaire : le nombre de serveurs et le statut en ligne/hors ligne ne regardent pas les
+ * admins des autres serveurs qui utilisent le bot (fuite d'info sur l'ampleur du bot).
+ */
 export default function BotStatusStrip() {
+  const { user } = useAuth();
+  const isOwner = Boolean(user && user.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase());
   const [health, setHealth] = useState<Health | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    if (!BOT_API_URL) return;
+    if (!BOT_API_URL || !isOwner) return;
     let cancelled = false;
     const load = async () => {
       const start = performance.now();
@@ -71,9 +79,9 @@ export default function BotStatusStrip() {
       window.clearInterval(poll);
       window.clearInterval(tick);
     };
-  }, []);
+  }, [isOwner]);
 
-  if (!BOT_API_URL || !health) return null;
+  if (!isOwner || !BOT_API_URL || !health) return null;
 
   const uptime = health.online && health.uptimeMs !== null ? formatUptime(health.uptimeMs + Math.max(0, now - health.at)) : null;
 

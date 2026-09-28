@@ -38872,6 +38872,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_4_de);
 
+const v1_37_5_fr: ChangelogEntry = {
+  version: "v1.37.5",
+  date: "2026-09-29",
+  title: "Correction : fuite d'infos sur le Bot Control",
+  items: [
+    "Centre de contrôle du bot : le nombre de serveurs et les indicateurs de statut en ligne sont désormais réservés au propriétaire (ils n'ont pas à être visibles par les admins des autres serveurs).",
+    "Correction du fond translucide de l'en-tête du Centre de contrôle qui laissait le contenu défilant apparaître en surimpression illisible.",
+  ],
+};
+
+const v1_37_5_en: ChangelogEntry = {
+  version: "v1.37.5",
+  date: "2026-09-29",
+  title: "Fix: Bot Control info leak",
+  items: [
+    "Bot Control Center: server count and online-status indicators are now owner-only (they had no reason to be visible to other servers' admins).",
+    "Fixed the Bot Control header's translucent background letting scrolled content bleed through as unreadable overlap.",
+  ],
+};
+
+const v1_37_5_es: ChangelogEntry = {
+  version: "v1.37.5",
+  date: "2026-09-29",
+  title: "Corrección: fuga de datos en el Centro de control del bot",
+  items: [
+    "Centro de control del bot: el número de servidores y los indicadores de estado en línea ahora son solo para el propietario (no debían ser visibles para los administradores de otros servidores).",
+    "Corregido el fondo translúcido del encabezado que dejaba el contenido desplazado superpuesto de forma ilegible.",
+  ],
+};
+
+const v1_37_5_de: ChangelogEntry = {
+  version: "v1.37.5",
+  date: "2026-09-29",
+  title: "Fix: Datenleck im Bot-Kontrollzentrum",
+  items: [
+    "Bot-Kontrollzentrum: Serveranzahl und Online-Status-Anzeigen sind jetzt nur für den Eigentümer sichtbar (sie hatten keinen Grund, für Admins anderer Server sichtbar zu sein).",
+    "Der durchscheinende Hintergrund der Kopfzeile wurde behoben, wodurch gescrollter Inhalt unlesbar durchschien.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_5_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_5_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_5_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_5_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

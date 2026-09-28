@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.5 — 2026-09-29
+
+**Correction : fuite d'infos sur le Bot Control**
+
+- Centre de contrôle du bot : le nombre de serveurs et les indicateurs de statut en ligne sont désormais réservés au propriétaire (ils n'ont pas à être visibles par les admins des autres serveurs).
+- Correction du fond translucide de l'en-tête du Centre de contrôle qui laissait le contenu défilant apparaître en surimpression illisible.
+
 ## v1.37.4 — 2026-09-28
 
 **Signalements : salon forum accepté**

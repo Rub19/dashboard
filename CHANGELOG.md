@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.31.3 — 2026-09-28
+
+**Choix du serveur : bannière non coupée**
+
+- La bannière d'Etho sur la page de choix de serveur garde son vrai ratio et n'est plus recadrée.
+
 ## v1.31.2 — 2026-09-28
 
 **Choix du serveur : avatar et bannière d'Etho**

@@ -38068,6 +38068,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_31_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_31_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_31_2_de);
 
+const v1_31_3_fr: ChangelogEntry = {
+  version: "v1.31.3",
+  date: "2026-09-28",
+  title: "Choix du serveur : bannière non coupée",
+  items: [
+    "La bannière d'Etho sur la page de choix de serveur garde son vrai ratio et n'est plus recadrée.",
+  ],
+};
+
+const v1_31_3_en: ChangelogEntry = {
+  version: "v1.31.3",
+  date: "2026-09-28",
+  title: "Server picker: uncropped banner",
+  items: [
+    "Etho's banner on the server picker keeps its real aspect ratio and is no longer cropped.",
+  ],
+};
+
+const v1_31_3_es: ChangelogEntry = {
+  version: "v1.31.3",
+  date: "2026-09-28",
+  title: "Selector de servidor: banner sin recortar",
+  items: [
+    "El banner de Etho en la página de selección de servidor conserva su proporción real y ya no se recorta.",
+  ],
+};
+
+const v1_31_3_de: ChangelogEntry = {
+  version: "v1.31.3",
+  date: "2026-09-28",
+  title: "Serverauswahl: Banner nicht mehr beschnitten",
+  items: [
+    "Ethos Banner in der Serverauswahl behält sein echtes Seitenverhältnis und wird nicht mehr beschnitten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_31_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_31_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_31_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_31_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

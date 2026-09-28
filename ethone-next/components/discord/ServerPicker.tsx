@@ -76,7 +76,7 @@ export default function ServerPicker({
       <div className="w-full max-w-[440px]">
         <div className="mb-6 flex flex-col items-center text-center">
           <div className="relative w-full">
-            <img src="/branding/etho-discord-banner.png" alt="" className="h-28 w-full rounded-2xl border border-[var(--panel-border)] object-cover" />
+            <img src="/branding/etho-discord-banner.png" alt="" className="aspect-[5/2] w-full rounded-2xl border border-[var(--panel-border)] object-cover" />
             <img
               src="/branding/etho-avatar.gif"
               alt="Etho"

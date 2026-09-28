@@ -26,8 +26,17 @@ struct PollBuilderView: View {
     @State private var questions = [Question()]
     @State private var saving = false
     @State private var errorMessage: String?
+    // Sondage natif Discord : un seul salon, une seule question, pas de quorum ni de vote pondéré (Discord gère tout).
+    @State private var native = false
+    @State private var nativeChannelId = ""
+    @State private var nativeDurationHours: Double = 24
+    @State private var directory = GuildDirectory()
 
-    private var valid: Bool { !title.trimmingCharacters(in: .whitespaces).isEmpty && !questions.isEmpty && questions.allSatisfy(\.isValid) }
+    private var valid: Bool {
+        guard !title.trimmingCharacters(in: .whitespaces).isEmpty, let first = questions.first, first.isValid else { return false }
+        if native { return !nativeChannelId.isEmpty }
+        return questions.allSatisfy(\.isValid)
+    }
 
     var body: some View {
         Form {
@@ -43,25 +52,48 @@ struct PollBuilderView: View {
                     Toggle("Plusieurs réponses possibles", isOn: $question.multiple)
                 } header: { Text("Question \((questions.firstIndex { $0.id == question.id } ?? 0) + 1)") } footer: { if !question.isValid { Text("Une question et au moins deux options sont nécessaires.") } }
             }
-            .onDelete { questions.remove(atOffsets: $0) }
+            .onDelete { if !native { questions.remove(atOffsets: $0) } }
 
-            Section {
-                Button("Ajouter une question", systemImage: "plus.circle.fill") { questions.append(Question()) }
+            if !native {
+                Section {
+                    Button("Ajouter une question", systemImage: "plus.circle.fill") { questions.append(Question()) }
+                }
             }
 
-            Section("Réglages") {
-                Picker("Votes", selection: $anonymity) {
-                    Text("Publics").tag("PUBLIC")
-                    Text("Anonymes").tag("ANONYMOUS")
-                    Text("Totalement anonymes").tag("FULLY_ANONYMOUS")
+            Section {
+                Toggle("Sondage natif Discord", isOn: $native.animation())
+                    .onChange(of: native) { _, isNative in
+                        if isNative, questions.count > 1 { questions = Array(questions.prefix(1)) }
+                    }
+            } footer: {
+                Text("Sondage intégré de Discord : simple et fiable, mais sans quorum, vote pondéré ni éligibilité. Un salon et une seule question, 32 jours maximum.")
+            }
+
+            if native {
+                Section("Diffusion") {
+                    Picker("Salon", selection: $nativeChannelId) {
+                        Text("Choisir…").tag("")
+                        ForEach(directory.channels) { Text("#\($0.name)").tag($0.id) }
+                    }
+                    Stepper(value: $nativeDurationHours, in: 1...768, step: 1) {
+                        Text("Durée : \(Int(nativeDurationHours)) h")
+                    }
                 }
-                Picker("Résultats visibles", selection: $visibility) {
-                    Text("En direct").tag("LIVE")
-                    Text("Après le vote").tag("AFTER_VOTE")
-                    Text("À la fin").tag("AT_END")
-                    Text("Staff seulement").tag("STAFF_ONLY")
+            } else {
+                Section("Réglages") {
+                    Picker("Votes", selection: $anonymity) {
+                        Text("Publics").tag("PUBLIC")
+                        Text("Anonymes").tag("ANONYMOUS")
+                        Text("Totalement anonymes").tag("FULLY_ANONYMOUS")
+                    }
+                    Picker("Résultats visibles", selection: $visibility) {
+                        Text("En direct").tag("LIVE")
+                        Text("Après le vote").tag("AFTER_VOTE")
+                        Text("À la fin").tag("AT_END")
+                        Text("Staff seulement").tag("STAFF_ONLY")
+                    }
+                    Toggle("Autoriser à changer son vote", isOn: $allowChange)
                 }
-                Toggle("Autoriser à changer son vote", isOn: $allowChange)
             }
 
             if let errorMessage { Text(errorMessage).font(.footnote).foregroundStyle(Theme.danger) }
@@ -71,6 +103,7 @@ struct PollBuilderView: View {
         .toolbar {
             ToolbarItem(placement: .confirmationAction) { Button("Créer") { Task { await submit() } }.disabled(!valid || saving) }
         }
+        .task { await directory.load(guildId: guild.id, discord: model.discord) }
     }
 
     private func submit() async {
@@ -86,15 +119,21 @@ struct PollBuilderView: View {
                 "options": .array(question.options.map { .object(["label": .string($0)]) }),
             ])
         }
-        let body: [String: JSONValue] = [
+        var body: [String: JSONValue] = [
             "title": .string(title.trimmingCharacters(in: .whitespaces)),
             "description": .string(summary.trimmingCharacters(in: .whitespacesAndNewlines)),
             "type": .string(questions.first?.multiple == true ? "MULTIPLE_CHOICE" : "SINGLE_CHOICE"),
             "anonymity": .string(anonymity),
             "resultsVisibility": .string(visibility),
             "allowVoteChange": .bool(allowChange),
-            "questions": .array(built),
+            "questions": .array(native ? Array(built.prefix(1)) : built),
         ]
+        if native {
+            body["native"] = .bool(true)
+            body["channelId"] = .string(nativeChannelId)
+            body["durationHours"] = .number(nativeDurationHours)
+            body["allowMultiselect"] = .bool(questions.first?.multiple ?? false)
+        }
         do {
             _ = try await model.discord.call("api/guilds/\(guild.id)/polls", method: "POST", body: body)
             onCreated()

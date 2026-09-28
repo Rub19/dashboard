@@ -28,6 +28,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 import { cn } from "@/lib/utils";
 import { formatApiError } from "@/lib/format-error";
+import { CardSkeleton } from "@/components/ui/Skeleton";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -527,7 +528,14 @@ export default function CommandsCenterClient() {
         {/* Catalogue */}
         {activeTab === "catalog" && (
           <div className="space-y-4">
-            {commands.length === 0 ? (
+            {loading && isDemo ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardSkeleton className="h-40" />
+                <CardSkeleton className="h-40" />
+                <CardSkeleton className="h-40" />
+                <CardSkeleton className="h-40" />
+              </div>
+            ) : commands.length === 0 ? (
               <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-10 text-center text-xs text-neutral-500">
                 Aucune commande personnalisée. Crée-en une dans le Studio ou installe un template.
               </div>

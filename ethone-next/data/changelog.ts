@@ -37700,6 +37700,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_29_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_29_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_29_2_de);
 
+const v1_29_3_fr: ChangelogEntry = {
+  version: "v1.29.3",
+  date: "2026-09-28",
+  title: "Commandes personnalisées : chargement propre",
+  items: [
+    "Le catalogue des commandes personnalisées affiche désormais un squelette de chargement au lieu de flasher des commandes de démonstration avant l'arrivée des vraies données.",
+  ],
+};
+
+const v1_29_3_en: ChangelogEntry = {
+  version: "v1.29.3",
+  date: "2026-09-28",
+  title: "Custom commands: clean loading state",
+  items: [
+    "The custom commands catalog now shows a loading skeleton instead of briefly flashing demo commands before the real data arrives.",
+  ],
+};
+
+const v1_29_3_es: ChangelogEntry = {
+  version: "v1.29.3",
+  date: "2026-09-28",
+  title: "Comandos personalizados: carga limpia",
+  items: [
+    "El catálogo de comandos personalizados muestra ahora un esqueleto de carga en lugar de parpadear con comandos de demostración antes de recibir los datos reales.",
+  ],
+};
+
+const v1_29_3_de: ChangelogEntry = {
+  version: "v1.29.3",
+  date: "2026-09-28",
+  title: "Eigene Befehle: sauberer Ladezustand",
+  items: [
+    "Der Katalog eigener Befehle zeigt jetzt ein Lade-Skelett, statt kurz Demo-Befehle aufblitzen zu lassen, bevor die echten Daten eintreffen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_29_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_29_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_29_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_29_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

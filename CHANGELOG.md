@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.29.3 — 2026-09-28
+
+**Commandes personnalisées : chargement propre**
+
+- Le catalogue des commandes personnalisées affiche désormais un squelette de chargement au lieu de flasher des commandes de démonstration avant l'arrivée des vraies données.
+
 ## v1.29.2 — 2026-09-27
 
 **Menus déroulants restylés sur 11 pages**

@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.29.4 — 2026-09-28
+
+**Présence du bot : le choix de profil est enfin pris en compte**
+
+- Dans le tableau des serveurs de la présence du bot, le menu « Profil » ne faisait rien : le bouton appliquait toujours le profil enregistré. Le profil choisi dans la ligne est maintenant celui qui est appliqué.
+
 ## v1.29.3 — 2026-09-28
 
 **Commandes personnalisées : chargement propre**

@@ -90,6 +90,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   // Loading and action states
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [rowProfileByGuild, setRowProfileByGuild] = useState<Record<string, string>>({});
   const [refreshing, setRefreshing] = useState(false);
 
   // Presence state
@@ -1396,23 +1397,21 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         </td>
                         <td className="py-3.5 px-4 font-mono text-zinc-400">{g.guildId}</td>
                         <td className="py-3.5 px-4">
-                          <select
-                            defaultValue={g.preferredProfileId}
-                            className="px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
-                          >
-                            {profiles.map((p) => (
-                              <option key={p.id} value={p.id}>
-                                {p.name} ({p.activity?.type || "Activité"})
-                              </option>
-                            ))}
-                          </select>
+                          <Select
+                            value={rowProfileByGuild[g.guildId] ?? g.preferredProfileId}
+                            onChange={(v) => setRowProfileByGuild((prev) => ({ ...prev, [g.guildId]: v }))}
+                            size="sm"
+                            className="min-w-48"
+                            aria-label={`Profil à appliquer pour ${g.guildName}`}
+                            options={profiles.map((p) => ({ id: p.id, label: `${p.name} (${p.activity?.type || "Activité"})` }))}
+                          />
                         </td>
                         <td className="py-3.5 px-4 font-mono text-zinc-400">
                           {new Date(g.updatedAt).toLocaleDateString("fr-FR")}
                         </td>
                         <td className="py-3.5 px-4 text-right">
                           <button
-                            onClick={() => handleApplyProfile(g.preferredProfileId)}
+                            onClick={() => handleApplyProfile(rowProfileByGuild[g.guildId] ?? g.preferredProfileId)}
                             className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-colors"
                           >
                             Appliquer Profil

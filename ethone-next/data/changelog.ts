@@ -37741,6 +37741,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_29_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_29_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_29_3_de);
 
+const v1_29_4_fr: ChangelogEntry = {
+  version: "v1.29.4",
+  date: "2026-09-28",
+  title: "Présence du bot : le choix de profil est enfin pris en compte",
+  items: [
+    "Dans le tableau des serveurs de la présence du bot, le menu « Profil » ne faisait rien : le bouton appliquait toujours le profil enregistré. Le profil choisi dans la ligne est maintenant celui qui est appliqué.",
+  ],
+};
+
+const v1_29_4_en: ChangelogEntry = {
+  version: "v1.29.4",
+  date: "2026-09-28",
+  title: "Bot presence: profile choice now actually applies",
+  items: [
+    "In the bot presence server table, the profile dropdown did nothing: the button always applied the stored profile. The profile picked in the row is now the one applied.",
+  ],
+};
+
+const v1_29_4_es: ChangelogEntry = {
+  version: "v1.29.4",
+  date: "2026-09-28",
+  title: "Presencia del bot: la elección de perfil ahora se aplica",
+  items: [
+    "En la tabla de servidores de la presencia del bot, el menú de perfil no hacía nada: el botón aplicaba siempre el perfil guardado. Ahora se aplica el perfil elegido en la fila.",
+  ],
+};
+
+const v1_29_4_de: ChangelogEntry = {
+  version: "v1.29.4",
+  date: "2026-09-28",
+  title: "Bot-Präsenz: Profilauswahl wird jetzt übernommen",
+  items: [
+    "In der Servertabelle der Bot-Präsenz hatte das Profil-Dropdown keine Wirkung: Der Button wendete immer das gespeicherte Profil an. Jetzt wird das in der Zeile gewählte Profil angewendet.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_29_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_29_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_29_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_29_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

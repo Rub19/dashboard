@@ -250,7 +250,7 @@ export const giveawayCommand: Command = {
         )
         .setFooter({ text: t.giveaway_list_footer });
 
-      await ctx.reply({ embeds: [embed], ephemeral: true });
+      await ctx.reply({ embeds: [embed] });
     }
   },
 };

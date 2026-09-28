@@ -8,6 +8,7 @@ import { levelingService } from '../../modules/leveling/services/levelingService
 import { XpBoostScopeSchema, XpBoostTargetTypeSchema } from '../../modules/leveling/types/xpBoost.js';
 import { z } from 'zod';
 import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
+import { handleClientError } from '../utils/routeError.js';
 
 export function createLevelingRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -87,7 +88,7 @@ export function createLevelingRouter(discordClient: Client) {
       emitConfigUpdated('leveling', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Configuration invalide' });
+      handleClientError(err, res, 'Configuration invalide');
     }
   });
 
@@ -104,7 +105,7 @@ export function createLevelingRouter(discordClient: Client) {
       const saved = levelingStorage.saveReward(guildId, req.body);
       res.json({ success: true, reward: saved });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données de récompense invalides' });
+      handleClientError(err, res, 'Données de récompense invalides');
     }
   });
 
@@ -172,7 +173,7 @@ export function createLevelingRouter(discordClient: Client) {
       emitConfigUpdated('leveling', guildId, levelingStorage.getConfig(guildId), 'DASHBOARD', req.user?.id);
       res.json({ success: true, boost: saved });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données de boost invalides' });
+      handleClientError(err, res, 'Données de boost invalides');
     }
   });
 

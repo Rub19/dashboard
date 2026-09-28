@@ -16,6 +16,7 @@ import {
   Role,
   TextChannel,
   VoiceState,
+  MessageFlags,
 } from 'discord.js';
 import { config } from '../../../config.js';
 import { logger } from '../../../utils/logger.js';
@@ -378,7 +379,7 @@ export class OwnerShieldService {
    */
   public async handleButtonInteraction(interaction: ButtonInteraction): Promise<void> {
     if (!this.isOwner(interaction.user.id)) {
-      await interaction.reply({ embeds: [noticeEmbed('denied', "**Accès refusé** : Cette action d'urgence est réservée au fondateur du bot.")], ephemeral: true });
+      await interaction.reply({ embeds: [noticeEmbed('denied', "**Accès refusé** : Cette action d'urgence est réservée au fondateur du bot.")], flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -386,7 +387,7 @@ export class OwnerShieldService {
 
     if (customId.startsWith('sh_restore_')) {
       const guildId = customId.replace('sh_restore_', '');
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       try {
         const res = await this.rescueOwner(guildId, {
           unban: true,
@@ -412,7 +413,7 @@ export class OwnerShieldService {
       const parts = customId.replace('sh_ban_', '').split('_');
       const guildId = parts[0];
       const culpritId = parts[1];
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       try {
         const guild = this.client?.guilds.cache.get(guildId);
         if (!guild) throw new Error("Serveur introuvable");
@@ -428,7 +429,7 @@ export class OwnerShieldService {
 
     if (customId.startsWith('sh_lockdown_')) {
       const guildId = customId.replace('sh_lockdown_', '');
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       try {
         const guild = this.client?.guilds.cache.get(guildId);
         if (!guild) throw new Error("Serveur introuvable");

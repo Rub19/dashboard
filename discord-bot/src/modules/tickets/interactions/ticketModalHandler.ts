@@ -1,4 +1,4 @@
-import { ModalSubmitInteraction } from 'discord.js';
+import { ModalSubmitInteraction, MessageFlags } from 'discord.js';
 import { ticketService } from '../services/ticketService.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
@@ -29,7 +29,7 @@ export async function handleTicketModal(interaction: ModalSubmitInteraction): Pr
       }
     }
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     try {
       const ticket = await ticketService.createTicket(guild, interaction.user, categoryId, answers);
       await interaction.editReply({

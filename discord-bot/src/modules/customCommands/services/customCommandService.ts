@@ -4,6 +4,7 @@ import {
   GuildMember,
   Message,
   PermissionResolvable,
+  MessageFlags,
 } from 'discord.js';
 import { CustomCommand } from '../types/customCommand.js';
 import { customCommandStorage } from '../storage/customCommandStorage.js';
@@ -40,14 +41,14 @@ export class CustomCommandService {
     // Permission check
     const permError = this.checkPermissions(cmd, member);
     if (permError) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(permError)], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(permError)], flags: MessageFlags.Ephemeral });
       return;
     }
 
     // Cooldown check
     const cdError = this.checkCooldown(cmd, interaction.user.id);
     if (cdError) {
-      await interaction.reply({ embeds: [baseEmbed('warning').setDescription(cdError)], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('warning').setDescription(cdError)], flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -70,7 +71,7 @@ export class CustomCommandService {
     let replied = false;
     const replyFn = async (payload: any) => {
       if (!replied) {
-        await interaction.reply({ ...payload, ephemeral: false }).catch(() => null);
+        await interaction.reply({ ...payload}).catch(() => null);
         replied = true;
       } else {
         await interaction.followUp(payload).catch(() => null);
@@ -81,7 +82,7 @@ export class CustomCommandService {
 
     if (!replied) {
       await interaction
-        .reply({ embeds: [baseEmbed('success').setDescription('✅ Commande exécutée.')], ephemeral: true })
+        .reply({ embeds: [baseEmbed('success').setDescription('✅ Commande exécutée.')], flags: MessageFlags.Ephemeral })
         .catch(() => null);
     }
 

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.30.1 — 2026-09-28
+
+**Bot : commandes traduites, réponses privées cohérentes, erreurs sécurisées**
+
+- Une vingtaine de commandes du bot (aide, configuration, permissions, musique, IA, langue…) répondent maintenant dans la langue du serveur (français, anglais, espagnol, allemand) au lieu de rester en français.
+- Règle unique pour les réponses privées : erreurs, refus de permission et données personnelles restent visibles uniquement par toi ; les listes et résultats partagés (sondages, giveaways, tags, statroles, stats serveur) suivent le réglage de visibilité du serveur.
+- L'API du bot ne renvoie plus les messages d'erreur internes au dashboard : l'erreur réelle est journalisée côté serveur et un message clair est renvoyé.
+- Suppression du vide en bas de la page Discord : l'espace réservé à l'ancienne barre du bas est retiré.
+
 ## v1.30.0 — 2026-09-28
 
 **Bot Discord en plein écran + erreurs plus claires**

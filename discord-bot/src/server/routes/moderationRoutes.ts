@@ -10,17 +10,9 @@ import {
   StandardReasonSchema,
 } from '../../modules/moderation/types/case.js';
 import { logger } from '../../utils/logger.js';
+import { handleRouteError } from '../utils/routeError.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
-
-/**
- * Erreur interne (500) : le message réel (souvent une trace DB/driver) part dans les logs serveur,
- * jamais dans la réponse HTTP — évite qu'un client ne voie autre chose qu'un message sûr et stable.
- */
-function handleRouteError(err: unknown, res: Response, safeMessage: string): void {
-  logger.error(safeMessage, err);
-  res.status(500).json({ error: safeMessage });
-}
 
 export function createModerationRouter(discordClient: Client) {
   ModerationService.initialize(discordClient);

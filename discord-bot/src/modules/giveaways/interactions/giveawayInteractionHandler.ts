@@ -1,4 +1,4 @@
-import { ButtonInteraction } from 'discord.js';
+import { ButtonInteraction, MessageFlags } from 'discord.js';
 import { giveawayService } from '../services/giveawayService.js';
 import { giveawayStorage } from '../storage/giveawayStorage.js';
 import { baseEmbed } from '../../../utils/embeds.js';
@@ -19,7 +19,7 @@ export async function handleGiveawayButton(interaction: ButtonInteraction): Prom
     if (!giveaway || giveaway.status !== 'ended') {
       await interaction.reply({
         embeds: [baseEmbed('error').setDescription(t.giveaway_claim_not_eligible)],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -27,7 +27,7 @@ export async function handleGiveawayButton(interaction: ButtonInteraction): Prom
     if (!giveaway.winnerIds.includes(interaction.user.id)) {
       await interaction.reply({
         embeds: [baseEmbed('error').setDescription(t.giveaway_claim_not_winner)],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -35,7 +35,7 @@ export async function handleGiveawayButton(interaction: ButtonInteraction): Prom
     if (giveaway.claimedWinnerIds.includes(interaction.user.id)) {
       await interaction.reply({
         embeds: [baseEmbed('info').setDescription(t.giveaway_claim_already_done)],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -45,7 +45,7 @@ export async function handleGiveawayButton(interaction: ButtonInteraction): Prom
 
     await interaction.reply({
       embeds: [baseEmbed('success').setDescription(t.giveaway_claim_success)],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 }

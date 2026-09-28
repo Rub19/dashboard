@@ -104,7 +104,6 @@ export const tagCommand: Command = {
             .setTitle(`Tags du serveur (${list.length})`)
             .setDescription(list.map((t) => `\`${t.name}\``).join(' · ')),
         ],
-        ephemeral: true,
       });
       return;
     }
@@ -128,7 +127,6 @@ export const tagCommand: Command = {
               { name: 'Contenu', value: tag.content.slice(0, 1000) }
             ),
         ],
-        ephemeral: true,
       });
       return;
     }

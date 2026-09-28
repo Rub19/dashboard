@@ -7,6 +7,7 @@ import { collectIssues, notify } from '../../modules/health/services/emergencySe
 import { PREVIEW_CATEGORIES, sendPreview } from '../../modules/preview/services/messagePreviewService.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { createGuildAuthMiddleware } from '../middleware/guildAuth.js';
+import { handleRouteError } from '../utils/routeError.js';
 
 const PatchSettingsSchema = z.object({
   botName: z.string().min(1).max(32).optional(),
@@ -135,7 +136,7 @@ export function createSettingsRouter(client: Client): express.Router {
     try {
       res.json({ success: true, ...(await sendPreview(client, guild, req.user.id, category, 700)) });
     } catch (err) {
-      res.status(500).json({ error: err instanceof Error ? err.message : 'Envoi impossible' });
+      handleRouteError(err, res, 'Envoi impossible');
     }
   });
 

@@ -13,6 +13,7 @@ import { BotSecurityAuditService } from '../../modules/botControl/services/botSe
 import { BotConfigService } from '../../modules/botControl/services/botConfigService.js';
 import { z } from 'zod';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
+import { handleRouteError, handleClientError } from '../utils/routeError.js';
 
 export function createBotControlRouter(client: Client): Router {
   const router = Router();
@@ -47,7 +48,7 @@ export function createBotControlRouter(client: Client): Router {
         },
       });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -57,7 +58,7 @@ export function createBotControlRouter(client: Client): Router {
       const snapshot = telemetryService.getTelemetrySnapshot(client);
       res.json({ success: true, data: snapshot });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -75,7 +76,7 @@ export function createBotControlRouter(client: Client): Router {
       const commands = commandStats.getAllCommands();
       res.json({ success: true, data: commands });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -85,7 +86,7 @@ export function createBotControlRouter(client: Client): Router {
       const stats = eventBus.getEventBusStats();
       res.json({ success: true, data: stats });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -95,7 +96,7 @@ export function createBotControlRouter(client: Client): Router {
       const jobs = jobScheduler.getAllJobs();
       res.json({ success: true, data: jobs });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -105,7 +106,7 @@ export function createBotControlRouter(client: Client): Router {
       const job = await jobScheduler.runJob(jobId);
       res.json({ success: true, data: job });
     } catch (err: any) {
-      res.status(400).json({ success: false, error: err.message });
+      handleClientError(err, res, 'Requête invalide', { success: false });
     }
   });
 
@@ -116,7 +117,7 @@ export function createBotControlRouter(client: Client): Router {
       const incidents = errorIncidents.getAllIncidents();
       res.json({ success: true, data: { fingerprints, incidents } });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -126,7 +127,7 @@ export function createBotControlRouter(client: Client): Router {
       const success = errorIncidents.resolveFingerprint(fingerprint);
       res.json({ success, data: { fingerprint, resolved: success } });
     } catch (err: any) {
-      res.status(400).json({ success: false, error: err.message });
+      handleClientError(err, res, 'Requête invalide', { success: false });
     }
   });
 
@@ -141,7 +142,7 @@ export function createBotControlRouter(client: Client): Router {
       const points = telemetryService.getPerformanceHistory(windowParam);
       res.json({ success: true, data: { window: windowParam, points } });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -169,7 +170,7 @@ export function createBotControlRouter(client: Client): Router {
         },
       });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -179,7 +180,7 @@ export function createBotControlRouter(client: Client): Router {
       const stats = aiMonitor.getAiStats();
       res.json({ success: true, data: stats });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -189,7 +190,7 @@ export function createBotControlRouter(client: Client): Router {
       const list = await integrationsService.getAllIntegrations(client);
       res.json({ success: true, data: list });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -199,7 +200,7 @@ export function createBotControlRouter(client: Client): Router {
       const tested = await integrationsService.testIntegration(id, client);
       res.json({ success: true, data: tested });
     } catch (err: any) {
-      res.status(400).json({ success: false, error: err.message });
+      handleClientError(err, res, 'Requête invalide', { success: false });
     }
   });
 
@@ -209,7 +210,7 @@ export function createBotControlRouter(client: Client): Router {
       const report = securityAudit.getSecurityAudit(client);
       res.json({ success: true, data: report });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -239,7 +240,7 @@ export function createBotControlRouter(client: Client): Router {
           },
         });
       } catch (err: any) {
-        res.status(500).json({ success: false, error: err.message });
+        handleRouteError(err, res, 'Erreur serveur', { success: false });
       }
     }
   );
@@ -250,7 +251,7 @@ export function createBotControlRouter(client: Client): Router {
       const settings = configService.getSettings();
       res.json({ success: true, data: settings });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -278,7 +279,7 @@ export function createBotControlRouter(client: Client): Router {
         const updated = configService.updateSettings(parsed.data);
         res.json({ success: true, data: updated });
       } catch (err: any) {
-        res.status(400).json({ success: false, error: err.message });
+        handleClientError(err, res, 'Requête invalide', { success: false });
       }
     }
   );

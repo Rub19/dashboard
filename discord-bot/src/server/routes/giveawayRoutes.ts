@@ -3,6 +3,7 @@ import { ChannelType, Client } from 'discord.js';
 import { giveawayStorage } from '../../modules/giveaways/storage/giveawayStorage.js';
 import { giveawayService } from '../../modules/giveaways/services/giveawayService.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleRouteError } from '../utils/routeError.js';
 
 export function createGiveawayRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -90,7 +91,7 @@ export function createGiveawayRouter(discordClient: Client) {
       emitConfigUpdated('giveaways', guildId, giveaway, 'DASHBOARD', (req as any).user?.id);
       res.json({ success: true, giveaway });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur lors de la création du giveaway' });
+      handleRouteError(err, res, 'Erreur lors de la création du giveaway');
     }
   });
 
@@ -101,7 +102,7 @@ export function createGiveawayRouter(discordClient: Client) {
       const winners = await giveawayService.endGiveawayManual(giveawayId, discordClient);
       res.json({ success: true, winners });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur lors de la clôture du giveaway' });
+      handleRouteError(err, res, 'Erreur lors de la clôture du giveaway');
     }
   });
 
@@ -113,7 +114,7 @@ export function createGiveawayRouter(discordClient: Client) {
       const winners = await giveawayService.reroll(giveawayId, discordClient, count);
       res.json({ success: true, winners });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur lors du reroll' });
+      handleRouteError(err, res, 'Erreur lors du reroll');
     }
   });
 
@@ -124,7 +125,7 @@ export function createGiveawayRouter(discordClient: Client) {
       const ok = await giveawayService.cancelGiveaway(giveawayId, discordClient);
       res.json({ success: ok });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur lors de l’annulation du giveaway' });
+      handleRouteError(err, res, 'Erreur lors de l’annulation du giveaway');
     }
   });
 
@@ -136,7 +137,7 @@ export function createGiveawayRouter(discordClient: Client) {
       const ok = await giveawayService.extendGiveaway(giveawayId, minutes, discordClient);
       res.json({ success: ok });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur lors de l’extension du giveaway' });
+      handleRouteError(err, res, 'Erreur lors de l’extension du giveaway');
     }
   });
 

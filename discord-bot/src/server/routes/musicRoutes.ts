@@ -4,6 +4,7 @@ import { musicService } from '../../modules/music/services/musicService.js';
 import { RepeatMode, Track } from '../../modules/music/types/music.js';
 import { musicProviderManager } from '../../modules/music/providers/musicProvider.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleClientError } from '../utils/routeError.js';
 
 export function createMusicRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -309,7 +310,7 @@ export function createMusicRouter(discordClient: Client) {
       emitConfigUpdated('music', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, settings: updated });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données de configuration invalides.' });
+      handleClientError(err, res, 'Données de configuration invalides.');
     }
   });
 

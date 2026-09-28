@@ -92,7 +92,7 @@ export const serverStatsCommand: Command = {
       for (const t of TOKEN_DOCS) groups.set(t.group, [...(groups.get(t.group) ?? []), `\`${t.token}\` — ${t.label} (ex. ${t.example})`]);
       const embed = ctx.createEmbed('info').setTitle('🧩 Jetons des compteurs').setDescription('Mélangez texte, emojis et jetons : « 🕐 {time12:UTC} UTC », « {members_until:next} avant {members_next} ».');
       for (const [group, lines] of groups) embed.addFields({ name: group, value: lines.join(String.fromCharCode(10)).slice(0, 1024) });
-      await ctx.reply({ embeds: [embed], ephemeral: true });
+      await ctx.reply({ embeds: [embed] });
       return;
     }
 
@@ -178,7 +178,7 @@ export const serverStatsCommand: Command = {
           value: `<#${s.channelId}> · format \`${s.template}\`${s.lastValue !== null ? ` · actuel : ${s.lastValue}` : ''}`,
         });
       }
-      await ctx.reply({ embeds: [embed], ephemeral: true });
+      await ctx.reply({ embeds: [embed] });
       return;
     }
 

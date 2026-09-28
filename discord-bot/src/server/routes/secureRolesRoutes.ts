@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { secureRolesStorage as store } from '../../modules/secureroles/storage/secureRolesStorage.js';
 import { inviteMember, resetMember, restoreRole, secureRole, endSession, sensitiveNames } from '../../modules/secureroles/services/secureRolesService.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleClientError } from '../utils/routeError.js';
 
 const snowflake = z.string().regex(/^\d{5,25}$/);
 
@@ -91,7 +92,7 @@ export function createSecureRolesRouter(client: Client) {
       notify(req);
       res.status(201).json({ success: true, ...out });
     } catch (err) {
-      res.status(400).json({ error: err instanceof Error ? err.message : 'Impossible de sécuriser ce rôle' });
+      handleClientError(err, res, 'Impossible de sécuriser ce rôle');
     }
   });
 
@@ -106,7 +107,7 @@ export function createSecureRolesRouter(client: Client) {
       notify(req);
       res.json({ success: true });
     } catch (err) {
-      res.status(400).json({ error: err instanceof Error ? err.message : 'Impossible de restaurer ce rôle' });
+      handleClientError(err, res, 'Impossible de restaurer ce rôle');
     }
   });
 
@@ -120,7 +121,7 @@ export function createSecureRolesRouter(client: Client) {
       notify(req);
       res.json({ success: true });
     } catch (err) {
-      res.status(400).json({ error: err instanceof Error ? err.message : 'Invitation impossible' });
+      handleClientError(err, res, 'Invitation impossible');
     }
   });
 

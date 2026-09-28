@@ -11,6 +11,7 @@ import { startupRecoveryService } from '../../services/resilience/startupRecover
 import { rateLimiterService } from '../../services/resilience/rateLimiterService.js';
 import { guildOperationLockService } from '../../services/resilience/guildOperationLockService.js';
 import { idempotencyService } from '../../services/resilience/idempotencyService.js';
+import { handleRouteError } from '../utils/routeError.js';
 
 export function createResilienceRouter(): Router {
   const router = Router();
@@ -46,7 +47,7 @@ export function createResilienceRouter(): Router {
       const report = await reconciliationEngine.reconcileGuild(guildId);
       res.json({ success: true, data: report });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 

@@ -10,6 +10,7 @@ import {
   ModalSubmitInteraction,
   Client,
   ChatInputCommandInteraction,
+  MessageFlags,
 } from 'discord.js';
 import { DiscordForm, FormField, FormAnswer } from '../types/index.js';
 import { formRepository } from '../storage/formRepository.js';
@@ -129,7 +130,7 @@ export class DiscordFormPanel {
     if (!form) {
       await interaction.reply({
         embeds: [baseEmbed('error').setDescription(t.form_deleted)],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -137,7 +138,7 @@ export class DiscordFormPanel {
     if (form.status !== 'PUBLISHED') {
       await interaction.reply({
         embeds: [baseEmbed('warning').setDescription(t.form_closed)],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -164,7 +165,7 @@ export class DiscordFormPanel {
     await interaction.reply({
       embeds: [baseEmbed('info').setTitle(`📝 ${form.title}`).setDescription(t.form_web_required_desc)],
       components: [row],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 
@@ -177,7 +178,7 @@ export class DiscordFormPanel {
 
     const t = getTranslation(guildConfigService.getConfig(interaction.guildId).language);
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     const form = formRepository.getFormById(interaction.guildId, formId);
     if (!form) {

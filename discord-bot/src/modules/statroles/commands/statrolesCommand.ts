@@ -1,4 +1,4 @@
-import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
+import { PermissionFlagsBits, SlashCommandBuilder, MessageFlags } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { statrolesStorage } from '../storage/statrolesStorage.js';
 import { statrolesEngine } from '../services/statrolesEngine.js';
@@ -39,7 +39,7 @@ export const statrolesCommand: Command = {
         .setTitle(`🏅 Statroles (${conf.rules.length})`)
         .setDescription(conf.enabled ? 'Module actif : les règles sont appliquées toutes les 10 minutes.' : 'Module **désactivé** : rien n’est attribué (`/module nom:statroles activer:True`).');
       for (const r of conf.rules.slice(0, 10)) embed.addFields({ name: `${r.enabled ? '🟢' : '⚪'} ${r.name}`, value: `Rôle <@&${r.roleId}> · ${r.removeWhenNotMatching ? 'retiré si les conditions ne sont plus remplies' : 'conservé une fois obtenu'}` });
-      await ctx.reply({ embeds: [embed], ephemeral: true });
+      await ctx.reply({ embeds: [embed] });
       return;
     }
 
@@ -54,7 +54,7 @@ export const statrolesCommand: Command = {
       const body = results.length
         ? results.map((r) => `${r.matches ? '✅' : '❌'} **${r.rule.name}** → <@&${r.rule.roleId}> ${r.hasRole ? '(possédé)' : '(non possédé)'}`).join('\n')
         : 'Aucune règle.';
-      await ctx.reply({ embeds: [ctx.createEmbed('info').setTitle(`🔎 ${member.displayName}`).setDescription(body)], ephemeral: true, allowedMentions: { parse: [] } });
+      await ctx.reply({ embeds: [ctx.createEmbed('info').setTitle(`🔎 ${member.displayName}`).setDescription(body)], allowedMentions: { parse: [] } });
       return;
     }
 
@@ -66,7 +66,7 @@ export const statrolesCommand: Command = {
       await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription('Le module est désactivé : `/module nom:statroles activer:True`.')], ephemeral: true });
       return;
     }
-    await i.deferReply({ ephemeral: true });
+    await i.deferReply({ flags: MessageFlags.Ephemeral });
     const s = await statrolesEngine.run(guild);
     await i.editReply({
       embeds: [

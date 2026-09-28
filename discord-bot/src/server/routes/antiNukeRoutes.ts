@@ -3,6 +3,7 @@ import { Client } from 'discord.js';
 import { securityStorage } from '../../modules/security/storage/securityStorage.js';
 import { AntiNukeConfigSchema } from '../../modules/security/types/securityConfig.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleRouteError, handleClientError } from '../utils/routeError.js';
 
 const NUKE_INCIDENT_TYPES = ['MASS_BAN', 'MASS_CHANNEL_DELETE', 'MASS_ROLE_DELETE'];
 
@@ -29,7 +30,7 @@ export function createAntiNukeRouter(_discordClient: Client) {
         recentIncidents: incidents.slice(0, 10),
       });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || "Erreur récupération overview Anti-Nuke" });
+      handleRouteError(err, res, 'Erreur récupération overview Anti-Nuke');
     }
   });
 
@@ -38,7 +39,7 @@ export function createAntiNukeRouter(_discordClient: Client) {
     try {
       res.json({ success: true, config: securityStorage.getConfig(guildId).antiNuke });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération configuration Anti-Nuke' });
+      handleRouteError(err, res, 'Erreur récupération configuration Anti-Nuke');
     }
   });
 
@@ -53,7 +54,7 @@ export function createAntiNukeRouter(_discordClient: Client) {
       emitConfigUpdated('antiNuke', guildId, updated.antiNuke, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated.antiNuke });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Configuration Anti-Nuke invalide' });
+      handleClientError(err, res, 'Configuration Anti-Nuke invalide');
     }
   });
 
@@ -63,7 +64,7 @@ export function createAntiNukeRouter(_discordClient: Client) {
       const incidents = securityStorage.getIncidents(guildId).filter((i) => NUKE_INCIDENT_TYPES.includes(i.type));
       res.json({ success: true, incidents });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération incidents Anti-Nuke' });
+      handleRouteError(err, res, 'Erreur récupération incidents Anti-Nuke');
     }
   });
 

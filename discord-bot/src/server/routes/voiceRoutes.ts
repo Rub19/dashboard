@@ -9,6 +9,7 @@ import { CreateHubSchema, UpdateHubSchema, VOICE_TEMPLATE_TOKENS, createHub, qui
 import { logger } from '../../utils/logger.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
+import { handleClientError } from '../utils/routeError.js';
 
 export function createVoiceRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -21,7 +22,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json(data);
     } catch (err: any) {
       logger.error('Erreur voice/overview :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -54,7 +55,7 @@ export function createVoiceRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('Erreur voice/panel/publish :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -66,7 +67,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ hubs });
     } catch (err: any) {
       logger.error('Erreur voice/hubs :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -85,7 +86,7 @@ export function createVoiceRouter(client: Client): Router {
       emitConfigUpdated('voice', guildId, { hub: out.hub }, 'DASHBOARD', req.user?.id);
       res.status(out.created ? 201 : 200).json({ success: true, ...out });
     } catch (err: any) {
-      res.status(400).json({ error: err?.message || 'Installation impossible' });
+      handleClientError(err, res, 'Installation impossible');
     }
   });
 
@@ -125,7 +126,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ success: true });
     } catch (err: any) {
       logger.error('Erreur suppression voice/hubs :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -137,7 +138,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ rooms });
     } catch (err: any) {
       logger.error('Erreur voice/rooms :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -161,7 +162,7 @@ export function createVoiceRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('Erreur voice/rooms/:id/details :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -194,7 +195,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ success: true, whitelist: room.allowedUserIds || room.whitelist || [] });
     } catch (err: any) {
       logger.error('Erreur voice/rooms/:id/whitelist :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -227,7 +228,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ success: true, banlist: room.blockedUserIds || room.banlist || [] });
     } catch (err: any) {
       logger.error('Erreur voice/rooms/:id/banlist :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -399,7 +400,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ success: true, room });
     } catch (err: any) {
       logger.error('Erreur room action :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -411,7 +412,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ sessions });
     } catch (err: any) {
       logger.error('Erreur voice/sessions :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -451,7 +452,7 @@ export function createVoiceRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('Erreur voice/analytics :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -463,7 +464,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ settings });
     } catch (err: any) {
       logger.error('Erreur voice/settings :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -476,7 +477,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ settings: updated });
     } catch (err: any) {
       logger.error('Erreur update voice/settings :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -493,7 +494,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ preferences: prefs || null });
     } catch (err: any) {
       logger.error('Erreur voice/preferences :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -512,7 +513,7 @@ export function createVoiceRouter(client: Client): Router {
       res.json({ preferences: saved });
     } catch (err: any) {
       logger.error('Erreur save voice/preferences :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 

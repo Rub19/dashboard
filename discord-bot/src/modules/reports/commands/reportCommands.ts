@@ -43,7 +43,7 @@ export const reportCommand: Command = {
     const sub = i.options.getSubcommand();
 
     if (sub === 'user') {
-      await i.deferReply({ ephemeral: true });
+      await i.deferReply({ flags: MessageFlags.Ephemeral });
       const target = i.options.getUser('membre', true);
       const res = await reportsService.submit(i.client, guild, i.user, target, i.options.getString('motif', true), { channelId: i.channelId });
       await i.editReply({ embeds: [res.ok ? noticeEmbed('success', 'Merci, ton signalement a été transmis à l’équipe de modération.') : noticeEmbed('error', res.error)] });
@@ -63,7 +63,7 @@ export const reportCommand: Command = {
       });
       return;
     }
-    await i.deferReply({ ephemeral: true });
+    await i.deferReply({ flags: MessageFlags.Ephemeral });
     try {
       const channel = i.options.getChannel('salon');
       const role = i.options.getRole('equipe');

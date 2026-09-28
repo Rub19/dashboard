@@ -6,6 +6,7 @@ import { AutoModConfig } from '../../modules/automod/types/autoMod.js';
 import { config } from '../../config.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
+import { handleRouteError } from '../utils/routeError.js';
 
 /**
  * Applique réellement une mutation générique (module/path/value) sur le module concerné.
@@ -125,7 +126,7 @@ export function createSyncRouter(): Router {
 
       res.json(result);
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -159,7 +160,7 @@ export function createGuildSyncRouter(): Router {
       const report = await reconciliationEngine.reconcileGuild(guildId, force);
       res.json({ success: true, data: report });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -175,7 +176,7 @@ export function createGuildSyncRouter(): Router {
         const report = await reconciliationEngine.reconcileGuild(guildId, true);
         res.json({ success: true, data: report });
       } catch (err: any) {
-        res.status(500).json({ success: false, error: err.message });
+        handleRouteError(err, res, 'Erreur serveur', { success: false });
       }
     }
   );
@@ -203,7 +204,7 @@ export function createGuildSyncRouter(): Router {
         });
         res.json(result);
       } catch (err: any) {
-        res.status(500).json({ success: false, error: err.message });
+        handleRouteError(err, res, 'Erreur serveur', { success: false });
       }
     }
   );
@@ -224,7 +225,7 @@ export function createGuildSyncRouter(): Router {
         },
       });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -270,7 +271,7 @@ export function createGuildSyncRouter(): Router {
 
       res.json(result);
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 

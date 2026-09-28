@@ -108,7 +108,7 @@ export const pollCommand: Command = {
         )
         .setFooter({ text: 'ETHONE Sondages' });
 
-      await ctx.reply({ embeds: [embed], ephemeral: true });
+      await ctx.reply({ embeds: [embed] });
       return;
     }
 
@@ -194,7 +194,7 @@ export const pollCommand: Command = {
         });
       }
 
-      await ctx.reply({ embeds: [embed], ephemeral: true });
+      await ctx.reply({ embeds: [embed] });
     }
   },
 };

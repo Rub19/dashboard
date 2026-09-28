@@ -1,4 +1,4 @@
-import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
+import { PermissionFlagsBits, SlashCommandBuilder, MessageFlags } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { PREVIEW_CATEGORIES, sendPreview } from '../services/messagePreviewService.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
@@ -30,7 +30,7 @@ export const previewMessagesCommand: Command = {
       return;
     }
     const i = ctx.interaction;
-    await i.deferReply({ ephemeral: true });
+    await i.deferReply({ flags: MessageFlags.Ephemeral });
     const res = await sendPreview(i.client, ctx.guild, i.user.id, i.options.getString('categorie'));
     if (res.dmClosed) {
       await i.editReply({ embeds: [noticeEmbed('error', 'Je ne peux pas t’écrire en message privé. Autorise les messages privés des membres de ce serveur (Paramètres de confidentialité), puis réessaie.')] });

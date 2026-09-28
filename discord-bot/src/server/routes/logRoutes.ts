@@ -9,6 +9,7 @@ import { AuditModule, AuditSeverity } from '../../modules/logs/types/auditEvent.
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { DiscordLogService } from '../../modules/logs/services/discordLogService.js';
 import { isLogCategoryKey } from '../../modules/logs/services/logCategories.js';
+import { handleClientError } from '../utils/routeError.js';
 
 export function createLogRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -161,7 +162,7 @@ export function createLogRouter(discordClient: Client) {
       emitConfigUpdated('logs', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données de configuration invalides' });
+      handleClientError(err, res, 'Données de configuration invalides');
     }
   });
 
@@ -195,7 +196,7 @@ export function createLogRouter(discordClient: Client) {
       emitConfigUpdated('logs', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données invalides' });
+      handleClientError(err, res, 'Données invalides');
     }
   });
 

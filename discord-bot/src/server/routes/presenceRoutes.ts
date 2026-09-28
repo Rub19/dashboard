@@ -7,6 +7,7 @@ import { SmartPresenceEngine } from '../../modules/presence/services/smartPresen
 import { BotIdentityService } from '../../modules/presence/services/botIdentityService.js';
 import { config } from '../../config.js';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
+import { handleRouteError, handleClientError } from '../utils/routeError.js';
 
 export function createPresenceRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -40,7 +41,7 @@ export function createPresenceRouter(client: Client): Router {
         },
       });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -79,7 +80,7 @@ export function createPresenceRouter(client: Client): Router {
           : 'Présence mise à jour avec succès.',
       });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -89,7 +90,7 @@ export function createPresenceRouter(client: Client): Router {
       const rotConfig = rotationEngine.getConfig();
       res.json({ success: true, data: rotConfig });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -99,7 +100,7 @@ export function createPresenceRouter(client: Client): Router {
       const updated = rotationEngine.updateConfig(req.body);
       res.json({ success: true, data: updated });
     } catch (err: any) {
-      res.status(400).json({ success: false, error: err.message });
+      handleClientError(err, res, 'Requête invalide', { success: false });
     }
   });
 
@@ -109,7 +110,7 @@ export function createPresenceRouter(client: Client): Router {
       const slots = schedulerService.getSlots();
       res.json({ success: true, data: slots });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -120,7 +121,7 @@ export function createPresenceRouter(client: Client): Router {
       const updated = schedulerService.updateSlots(slots || []);
       res.json({ success: true, data: updated });
     } catch (err: any) {
-      res.status(400).json({ success: false, error: err.message });
+      handleClientError(err, res, 'Requête invalide', { success: false });
     }
   });
 
@@ -130,7 +131,7 @@ export function createPresenceRouter(client: Client): Router {
       const profiles = schedulerService.getProfiles();
       res.json({ success: true, data: profiles });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -146,7 +147,7 @@ export function createPresenceRouter(client: Client): Router {
       }
       res.json({ success: true, message: 'Profil appliqué avec succès.', state: presenceService.getCurrentState() });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -171,7 +172,7 @@ export function createPresenceRouter(client: Client): Router {
 
       res.json({ success: true, data: guilds });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -183,7 +184,7 @@ export function createPresenceRouter(client: Client): Router {
       guildPreferences.set(guildId, profileId || 'prof_community');
       res.json({ success: true, guildId, preferredProfileId: profileId });
     } catch (err: any) {
-      res.status(400).json({ success: false, error: err.message });
+      handleClientError(err, res, 'Requête invalide', { success: false });
     }
   });
 
@@ -193,7 +194,7 @@ export function createPresenceRouter(client: Client): Router {
       const identity = identityService.getIdentity();
       res.json({ success: true, data: identity });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -208,7 +209,7 @@ export function createPresenceRouter(client: Client): Router {
       const result = await identityService.setUsername(username);
       res.json(result);
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -223,7 +224,7 @@ export function createPresenceRouter(client: Client): Router {
       const result = await identityService.setAvatar(avatarUrl);
       res.json(result);
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -233,7 +234,7 @@ export function createPresenceRouter(client: Client): Router {
       const history = presenceService.getAuditHistory();
       res.json({ success: true, data: history });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -244,7 +245,7 @@ export function createPresenceRouter(client: Client): Router {
       smartEngine.setMaintenanceMode(Boolean(enabled), reason);
       res.json({ success: true, state: presenceService.getCurrentState() });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 

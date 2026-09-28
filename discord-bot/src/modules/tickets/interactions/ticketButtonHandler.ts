@@ -8,6 +8,7 @@ import {
   TextChannel,
   TextInputBuilder,
   TextInputStyle,
+  MessageFlags,
 } from 'discord.js';
 import { ticketService } from '../services/ticketService.js';
 import { TranscriptService } from '../services/transcriptService.js';
@@ -30,7 +31,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     const category = ticketService.getCategories(guild.id).find((c) => c.id === categoryId);
 
     if (!category) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.ticket_category_not_found)], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.ticket_category_not_found)], flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -56,7 +57,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     }
 
     // Sinon, création directe du ticket
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     try {
       const ticket = await ticketService.createTicket(guild, interaction.user, categoryId);
       await interaction.editReply({
@@ -106,7 +107,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
 
       await interaction.update({ components: [updatedButtons] });
     } catch (err: any) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(`❌ ${err.message}`)], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(`❌ ${err.message}`)], flags: MessageFlags.Ephemeral });
     }
     return;
   }
@@ -145,7 +146,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
 
       await interaction.update({ components: [updatedButtons] });
     } catch (err: any) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(`❌ ${err.message}`)], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(`❌ ${err.message}`)], flags: MessageFlags.Ephemeral });
     }
     return;
   }
@@ -159,7 +160,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     const isStaff = member && 'permissions' in member && typeof member.permissions !== 'string' && member.permissions.has('ManageChannels');
     const isOwner = channel && 'name' in channel && channel.name === `ticket-${interaction.user.username.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
     if (!channel || (!isStaff && !isOwner)) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription('Seul l’auteur du ticket ou le staff peut le fermer.')], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription('Seul l’auteur du ticket ou le staff peut le fermer.')], flags: MessageFlags.Ephemeral });
       return;
     }
     await interaction.reply({ embeds: [baseEmbed('warning').setDescription(`🔒 Ticket fermé par ${interaction.user}. Suppression du salon dans 5 secondes…`)] }).catch(() => {});
@@ -192,7 +193,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     const ticketId = customId.split(':')[1];
     const ticket = ticketService.getTicketById(guild.id, ticketId);
     if (!ticket) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.ticket_not_found)], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.ticket_not_found)], flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -214,7 +215,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
         embeds: [baseEmbed('info').setDescription(formatString(t.ticket_priority_updated, { old: ticket.priority, new: newPriority }))],
       });
     } catch (err: any) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(`❌ ${err.message}`)], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(`❌ ${err.message}`)], flags: MessageFlags.Ephemeral });
     }
     return;
   }

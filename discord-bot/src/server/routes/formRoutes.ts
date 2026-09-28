@@ -6,6 +6,7 @@ import { discordFormPanel } from '../../modules/forms/ui/discordFormPanel.js';
 import { DiscordFormSchema } from '../../modules/forms/types/index.js';
 import { requireStringParam } from '../utils/params.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleRouteError, handleClientError } from '../utils/routeError.js';
 
 export function createFormRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -102,7 +103,7 @@ export function createFormRouter(client: Client): Router {
       emitConfigUpdated('forms', guildId, saved, 'DASHBOARD', req.user?.id);
       res.json({ success: true, form: saved });
     } catch (err: any) {
-      res.status(400).json({ success: false, error: err?.message || 'Erreur validation formulaire' });
+      handleClientError(err, res, 'Erreur validation formulaire', { success: false });
     }
   });
 
@@ -137,7 +138,7 @@ export function createFormRouter(client: Client): Router {
       emitConfigUpdated('forms', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, form: updated });
     } catch (err: any) {
-      res.status(400).json({ success: false, error: err?.message || 'Erreur mise à jour' });
+      handleClientError(err, res, 'Erreur mise à jour', { success: false });
     }
   });
 
@@ -327,7 +328,7 @@ export function createFormRouter(client: Client): Router {
 
       res.json({ success: true, messageId: sent.id });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err?.message || 'Erreur d\'envoi Discord' });
+      handleRouteError(err, res, 'Erreur d\'envoi Discord', { success: false });
     }
   });
 

@@ -4,6 +4,7 @@ import {
   ButtonStyle,
   EmbedBuilder,
   ButtonInteraction,
+  MessageFlags,
 } from 'discord.js';
 import { AISettings } from '../types/index.js';
 import { aiRepository } from '../storage/aiRepository.js';
@@ -194,7 +195,7 @@ export class DiscordAiPanel {
         }
         await interaction.reply({
           embeds: [baseEmbed('success').setDescription('Merci pour votre retour positif ! 👍')],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       } else if (action === 'ai_unhelpful') {
         if (interaction.guildId) {
@@ -209,10 +210,10 @@ export class DiscordAiPanel {
         }
         await interaction.reply({
           embeds: [baseEmbed('info').setDescription('Merci pour votre retour. Nous améliorons continuellement nos réponses ! 👎')],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       } else if (action === 'ai_ticket') {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         if (interaction.guildId) {
           const result = await AIToolService.executeTicketHandoff({
             guildId: interaction.guildId,
@@ -227,7 +228,7 @@ export class DiscordAiPanel {
           });
         }
       } else if (action === 'ai_summarize') {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         const channel = interaction.channel;
         if (channel && 'messages' in channel) {
           const messages = await channel.messages.fetch({ limit: 15 }).catch(() => null);
@@ -245,7 +246,7 @@ export class DiscordAiPanel {
     } catch (err: any) {
       logger.error('[DiscordAiPanel] Erreur traitement interaction bouton :', err);
       if (!interaction.replied && !interaction.deferred) {
-        await interaction.reply({ embeds: [baseEmbed('error').setDescription('Une erreur est survenue lors de cette action.')], ephemeral: true }).catch(() => {});
+        await interaction.reply({ embeds: [baseEmbed('error').setDescription('Une erreur est survenue lors de cette action.')], flags: MessageFlags.Ephemeral }).catch(() => {});
       }
     }
   }

@@ -17,7 +17,7 @@ export function createAiRouter(client: Client): Router {
       res.json(overview);
     } catch (err: any) {
       logger.error('Erreur GET /ai/overview :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -29,7 +29,7 @@ export function createAiRouter(client: Client): Router {
       res.json(settings.personality);
     } catch (err: any) {
       logger.error('Erreur GET /ai/personality :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -41,7 +41,7 @@ export function createAiRouter(client: Client): Router {
       res.json(updated.personality);
     } catch (err: any) {
       logger.error('Erreur PUT /ai/personality :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -68,7 +68,7 @@ export function createAiRouter(client: Client): Router {
       res.json(BEHAVIOR_FIELDS(aiRepository.getSettings(guildId)));
     } catch (err: any) {
       logger.error('Erreur GET /ai/settings :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -101,7 +101,7 @@ export function createAiRouter(client: Client): Router {
       res.json(BEHAVIOR_FIELDS(updated));
     } catch (err: any) {
       logger.error('Erreur PUT /ai/settings :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -126,7 +126,7 @@ export function createAiRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('Erreur GET /ai/channels :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -142,7 +142,7 @@ export function createAiRouter(client: Client): Router {
       res.json(updated.channelRules);
     } catch (err: any) {
       logger.error('Erreur PUT /ai/channels :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -154,7 +154,7 @@ export function createAiRouter(client: Client): Router {
       res.json({ sources, total: sources.length });
     } catch (err: any) {
       logger.error('Erreur GET /ai/knowledge :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -184,7 +184,7 @@ export function createAiRouter(client: Client): Router {
       res.status(201).json(source);
     } catch (err: any) {
       logger.error('Erreur POST /ai/knowledge :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -199,7 +199,7 @@ export function createAiRouter(client: Client): Router {
       res.json({ success: true, message: 'Source supprimée' });
     } catch (err: any) {
       logger.error('Erreur DELETE /ai/knowledge/:id :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -211,7 +211,7 @@ export function createAiRouter(client: Client): Router {
       res.json(settings.tools);
     } catch (err: any) {
       logger.error('Erreur GET /ai/tools :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -223,7 +223,7 @@ export function createAiRouter(client: Client): Router {
       res.json(updated.tools);
     } catch (err: any) {
       logger.error('Erreur PUT /ai/tools :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -235,7 +235,7 @@ export function createAiRouter(client: Client): Router {
       res.json(settings.memory);
     } catch (err: any) {
       logger.error('Erreur GET /ai/memory :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -247,7 +247,7 @@ export function createAiRouter(client: Client): Router {
       res.json({ success: true, removedCount: removed });
     } catch (err: any) {
       logger.error('Erreur DELETE /ai/memory/user/:userId :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -259,7 +259,7 @@ export function createAiRouter(client: Client): Router {
       res.json(analytics);
     } catch (err: any) {
       logger.error('Erreur GET /ai/analytics :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -275,7 +275,7 @@ export function createAiRouter(client: Client): Router {
       res.json(testResult);
     } catch (err: any) {
       logger.error('Erreur POST /ai/test :', err);
-      res.status(500).json({ error: err.message || 'Erreur lors du test playground' });
+      res.status(500).json({ error: 'Erreur lors du test playground' });
     }
   });
 
@@ -287,7 +287,7 @@ export function createAiRouter(client: Client): Router {
       res.json(published);
     } catch (err: any) {
       logger.error('Erreur POST /ai/publish :', err);
-      res.status(500).json({ error: err.message || 'Erreur lors de la publication' });
+      res.status(500).json({ error: 'Erreur lors de la publication' });
     }
   });
 

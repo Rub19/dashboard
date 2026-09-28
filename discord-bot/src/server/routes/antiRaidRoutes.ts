@@ -8,6 +8,7 @@ import { raidIncidentService } from '../../modules/antiRaid/services/raidInciden
 import { raidCache } from '../../modules/antiRaid/services/raidCache.js';
 import { AntiRaidConfigSchema } from '../../modules/antiRaid/types/antiRaid.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleRouteError, handleClientError, clientErrorMessage } from '../utils/routeError.js';
 
 export function createAntiRaidRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -23,7 +24,7 @@ export function createAntiRaidRouter(discordClient: Client) {
         metrics,
       });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération statut Anti-Raid' });
+      handleRouteError(err, res, 'Erreur récupération statut Anti-Raid');
     }
   });
 
@@ -34,7 +35,7 @@ export function createAntiRaidRouter(discordClient: Client) {
       const config = raidConfigService.getConfig(guildId);
       res.json({ success: true, config });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération configuration' });
+      handleRouteError(err, res, 'Erreur récupération configuration');
     }
   });
 
@@ -50,7 +51,7 @@ export function createAntiRaidRouter(discordClient: Client) {
       const errorMsg =
         err?.errors && Array.isArray(err.errors)
           ? err.errors.map((e: any) => `${e.path?.join('.') || 'paramètre'}: ${e.message}`).join(', ')
-          : err.message || 'Configuration Anti-Raid invalide';
+          : clientErrorMessage(err, 'Configuration Anti-Raid invalide');
       res.status(400).json({ error: errorMsg });
     }
   });
@@ -80,7 +81,7 @@ export function createAntiRaidRouter(discordClient: Client) {
         metrics,
       });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur mise à jour Raid Mode' });
+      handleRouteError(err, res, 'Erreur mise à jour Raid Mode');
     }
   });
 
@@ -109,7 +110,7 @@ export function createAntiRaidRouter(discordClient: Client) {
         affectedChannelsCount: count,
       });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur gestion lockdown' });
+      handleRouteError(err, res, 'Erreur gestion lockdown');
     }
   });
 
@@ -146,7 +147,7 @@ export function createAntiRaidRouter(discordClient: Client) {
         totalChecked: recentMembers.length,
       });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur mise en quarantaine' });
+      handleRouteError(err, res, 'Erreur mise en quarantaine');
     }
   });
 
@@ -158,7 +159,7 @@ export function createAntiRaidRouter(discordClient: Client) {
       const incidents = raidIncidentService.getIncidents(guildId, limit);
       res.json({ success: true, incidents });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur historique incidents' });
+      handleRouteError(err, res, 'Erreur historique incidents');
     }
   });
 
@@ -175,7 +176,7 @@ export function createAntiRaidRouter(discordClient: Client) {
       }
       res.json({ success: true, incident });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur investigation incident' });
+      handleRouteError(err, res, 'Erreur investigation incident');
     }
   });
 
@@ -186,7 +187,7 @@ export function createAntiRaidRouter(discordClient: Client) {
       const updated = raidConfigService.updateWhitelist(guildId, req.body);
       res.json({ success: true, whitelist: updated.whitelist });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Mise à jour whitelist invalide' });
+      handleClientError(err, res, 'Mise à jour whitelist invalide');
     }
   });
 
@@ -197,7 +198,7 @@ export function createAntiRaidRouter(discordClient: Client) {
       const metrics = raidDetectionService.getLiveMetrics(guildId);
       res.json(metrics);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur live metrics' });
+      handleRouteError(err, res, 'Erreur live metrics');
     }
   });
 
@@ -219,7 +220,7 @@ export function createAntiRaidRouter(discordClient: Client) {
         config: updated,
       });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur lors du déblocage des invitations' });
+      handleRouteError(err, res, 'Erreur lors du déblocage des invitations');
     }
   });
 

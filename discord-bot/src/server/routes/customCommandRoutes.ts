@@ -7,6 +7,7 @@ import { CommandVariableEngine } from '../../modules/customCommands/services/com
 import { CommandActionExecutor } from '../../modules/customCommands/services/commandActionExecutor.js';
 import { logger } from '../../utils/logger.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleRouteError, handleClientError } from '../utils/routeError.js';
 
 const MAX_COMMANDS_PER_GUILD = 50;
 
@@ -69,7 +70,7 @@ export function createCustomCommandRouter(client: Client) {
       emitConfigUpdated('customCommands', guildId, cmd, 'DASHBOARD', req.user?.id);
       res.json({ success: true, command: cmd });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données de commande invalides' });
+      handleClientError(err, res, 'Données de commande invalides');
     }
   });
 
@@ -95,7 +96,7 @@ export function createCustomCommandRouter(client: Client) {
       emitConfigUpdated('customCommands', guildId, cmd, 'DASHBOARD', req.user?.id);
       res.json({ success: true, command: cmd });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Erreur création depuis template' });
+      handleClientError(err, res, 'Erreur création depuis template');
     }
   });
 
@@ -115,7 +116,7 @@ export function createCustomCommandRouter(client: Client) {
       emitConfigUpdated('customCommands', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, command: updated });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données invalides' });
+      handleClientError(err, res, 'Données invalides');
     }
   });
 
@@ -223,7 +224,7 @@ export function createCustomCommandRouter(client: Client) {
 
       res.json({ success: true, previews });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur de simulation' });
+      handleRouteError(err, res, 'Erreur de simulation');
     }
   });
 

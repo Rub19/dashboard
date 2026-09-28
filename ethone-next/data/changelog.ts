@@ -37831,6 +37831,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_30_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_30_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_30_0_de);
 
+const v1_30_1_fr: ChangelogEntry = {
+  version: "v1.30.1",
+  date: "2026-09-28",
+  title: "Bot : commandes traduites, réponses privées cohérentes, erreurs sécurisées",
+  items: [
+    "Une vingtaine de commandes du bot (aide, configuration, permissions, musique, IA, langue…) répondent maintenant dans la langue du serveur (français, anglais, espagnol, allemand) au lieu de rester en français.",
+    "Règle unique pour les réponses privées : erreurs, refus de permission et données personnelles restent visibles uniquement par toi ; les listes et résultats partagés (sondages, giveaways, tags, statroles, stats serveur) suivent le réglage de visibilité du serveur.",
+    "L'API du bot ne renvoie plus les messages d'erreur internes au dashboard : l'erreur réelle est journalisée côté serveur et un message clair est renvoyé.",
+    "Suppression du vide en bas de la page Discord : l'espace réservé à l'ancienne barre du bas est retiré.",
+  ],
+};
+
+const v1_30_1_en: ChangelogEntry = {
+  version: "v1.30.1",
+  date: "2026-09-28",
+  title: "Bot: translated commands, consistent private replies, safer errors",
+  items: [
+    "About twenty bot commands (help, setup, permissions, music, AI, language…) now reply in the server's language (French, English, Spanish, German) instead of staying in French.",
+    "One rule for private replies: errors, permission denials and personal data stay visible only to you; shared lists and results (polls, giveaways, tags, stat roles, server stats) follow the server's visibility setting.",
+    "The bot API no longer returns internal error messages to the dashboard: the real error is logged server-side and a clear message is returned instead.",
+    "Removed the empty space reserved at the bottom of the Discord page for the old bottom bar.",
+  ],
+};
+
+const v1_30_1_es: ChangelogEntry = {
+  version: "v1.30.1",
+  date: "2026-09-28",
+  title: "Bot: comandos traducidos, respuestas privadas coherentes, errores seguros",
+  items: [
+    "Unos veinte comandos del bot (ayuda, configuración, permisos, música, IA, idioma…) responden ahora en el idioma del servidor (francés, inglés, español, alemán).",
+    "Una sola regla para las respuestas privadas: errores, denegaciones de permisos y datos personales solo los ves tú; las listas y resultados compartidos siguen el ajuste de visibilidad del servidor.",
+    "La API del bot ya no devuelve mensajes de error internos al dashboard: el error real se registra en el servidor y se devuelve un mensaje claro.",
+    "Se eliminó el espacio vacío reservado al final de la página de Discord para la antigua barra inferior.",
+  ],
+};
+
+const v1_30_1_de: ChangelogEntry = {
+  version: "v1.30.1",
+  date: "2026-09-28",
+  title: "Bot: übersetzte Befehle, einheitliche private Antworten, sicherere Fehler",
+  items: [
+    "Rund zwanzig Bot-Befehle (Hilfe, Einrichtung, Berechtigungen, Musik, KI, Sprache…) antworten jetzt in der Sprache des Servers (Französisch, Englisch, Spanisch, Deutsch).",
+    "Eine Regel für private Antworten: Fehler, Berechtigungsabsagen und persönliche Daten sind nur für dich sichtbar; geteilte Listen und Ergebnisse folgen der Sichtbarkeitseinstellung des Servers.",
+    "Die Bot-API gibt keine internen Fehlermeldungen mehr an das Dashboard zurück: der echte Fehler wird serverseitig protokolliert und eine klare Meldung zurückgegeben.",
+    "Der reservierte Leerraum am Ende der Discord-Seite für die alte untere Leiste wurde entfernt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_30_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_30_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_30_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_30_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

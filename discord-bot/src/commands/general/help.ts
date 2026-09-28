@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageActionRowComponentBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
-import { HelpPanel, HELP_CATEGORIES, getCommandSubcommandNames } from './helpPanel.js';
+import { HelpPanel, HELP_CATEGORIES, getCommandSubcommandNames, localizeCategory } from './helpPanel.js';
+import { formatString, getTranslation } from '../../utils/i18n.js';
 import { container, footer, sectionWithThumbnail, separator, text } from '../../utils/components.js';
 import { BRAND_COLORS } from '../../utils/embeds.js';
 
@@ -34,6 +35,7 @@ export const helpCommand: Command = {
     ),
   execute: async (ctx: CommandContext) => {
     const { commandRegistry } = await import('../../handlers/commandHandler.js');
+    const t = getTranslation(ctx.guildConfig.language);
 
     const specificCmdName =
       (ctx.isSlash && ctx.interaction ? (ctx.interaction as any).options?.getString('commande') : null) ||
@@ -48,9 +50,9 @@ export const helpCommand: Command = {
         const prefix = ctx.guildConfig.prefix;
         const aliasesText = cmd.aliases?.length
           ? cmd.aliases.map((a) => `\`${prefix}${a}\``).join(', ')
-          : '*Aucun alias disponible*';
+          : t.help_no_aliases;
 
-        let permissionsText = '*Accessible à tous les membres*';
+        let permissionsText = t.help_perm_everyone;
         if (cmd.userPermissions && cmd.userPermissions.length > 0) {
           permissionsText = `\`${cmd.userPermissions.join(', ')}\``;
         }
@@ -67,26 +69,26 @@ export const helpCommand: Command = {
                 .map((s) => `• \`/${cmd.name} ${s}\``)
                 .join('\n') +
               (subcommands.length > maxShown
-                ? `\n• *...(+${subcommands.length - maxShown} autres sous-commandes)*`
+                ? formatString(t.help_more_subcommands, { count: subcommands.length - maxShown })
                 : '')
             : `• \`/${cmd.name}\`\n• \`${prefix}${cmd.name}\``;
 
         const cat = HELP_CATEGORIES.find((c) => c.commandNames.includes(cmd.name));
         const card = container(cat?.color ?? BRAND_COLORS.info, [
           sectionWithThumbnail(
-            [`## 📖 /${cmd.name}`, cmd.description || 'Aucune description fournie.', `-# ${cat ? `${cat.emoji} ${cat.name}` : cmd.category || 'Général'}`],
+            [`## 📖 /${cmd.name}`, cmd.description || t.help_no_description, `-# ${cat ? `${cat.emoji} ${localizeCategory(cat, t).name}` : cmd.category || t.help_default_category}`],
             ctx.client.user?.displayAvatarURL() || 'https://ethone.dev/icons/ethone-icon-512.png?v=r2',
             cmd.name,
           ),
           separator(),
-          text(`**🔀 Alias :** ${aliasesText}\n**🔑 Permissions :** ${permissionsText}`),
-          text(`**💡 Exemples**\n${examplesText}`),
+          text(formatString(t.help_card_aliases_perms, { aliases: aliasesText, permissions: permissionsText })),
+          text(formatString(t.help_card_examples, { examples: examplesText })),
           separator(false),
           new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-            new ButtonBuilder().setCustomId('help_btn_home').setLabel('Catalogue complet').setEmoji('📚').setStyle(ButtonStyle.Primary),
-            ...(cat ? [new ButtonBuilder().setCustomId(`help_btn_nav:${cat.id}`).setLabel(cat.name).setEmoji(cat.emoji).setStyle(ButtonStyle.Secondary)] : []),
+            new ButtonBuilder().setCustomId('help_btn_home').setLabel(t.help_btn_catalogue).setEmoji('📚').setStyle(ButtonStyle.Primary),
+            ...(cat ? [new ButtonBuilder().setCustomId(`help_btn_nav:${cat.id}`).setLabel(localizeCategory(cat, t).name).setEmoji(cat.emoji).setStyle(ButtonStyle.Secondary)] : []),
           ),
-          footer(`${ctx.guildConfig.botName} · /help pour explorer tout le catalogue`),
+          footer(`${ctx.guildConfig.botName} · ${t.help_card_footer}`),
         ]);
         await ctx.reply({ components: [card], componentsV2: true });
         return;

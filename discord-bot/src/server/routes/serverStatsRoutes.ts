@@ -5,6 +5,7 @@ import { serverStatsService, COUNTER_PRESETS } from '../../modules/serverStats/s
 import { renderTemplate, needsMemberFetch, TOKEN_DOCS } from '../../modules/serverStats/services/counterTemplate.js';
 import { StatChannelSchema, StatsConfigSchema } from '../../modules/serverStats/types/serverStats.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleClientError } from '../utils/routeError.js';
 
 /**
  * API Dashboard du module Server Stats.
@@ -64,7 +65,7 @@ export function createServerStatsRouter(client: Client) {
       emitConfigUpdated('serverStats', guild.id, serverStatsStorage.getConfig(guild.id), 'DASHBOARD', req.user?.id);
       res.json({ success: true, ...created, overview: serverStatsStorage.getOverview(guild.id) });
     } catch (err) {
-      res.status(400).json({ error: err instanceof Error ? err.message : 'Création impossible' });
+      handleClientError(err, res, 'Création impossible');
     }
   });
 

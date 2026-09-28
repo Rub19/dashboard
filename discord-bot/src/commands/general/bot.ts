@@ -6,15 +6,16 @@ import {
   SlashCommandBuilder,
 } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
+import { formatString, getTranslation } from '../../utils/i18n.js';
 
-function formatUptime(seconds: number): string {
+function formatUptime(seconds: number, dayUnit: string): string {
   const d = Math.floor(seconds / (3600 * 24));
   const h = Math.floor((seconds % (3600 * 24)) / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   const s = Math.floor(seconds % 60);
 
   const parts: string[] = [];
-  if (d > 0) parts.push(`${d}j`);
+  if (d > 0) parts.push(`${d}${dayUnit}`);
   if (h > 0) parts.push(`${h}h`);
   if (m > 0) parts.push(`${m}m`);
   parts.push(`${s}s`);
@@ -63,9 +64,10 @@ export const botCommand: Command = {
       subcommand = ctx.args[0].toLowerCase();
     }
 
+    const t = getTranslation(ctx.guildConfig.language);
     const client = ctx.client;
     const uptimeSec = Math.floor(process.uptime());
-    const formattedUptime = formatUptime(uptimeSec);
+    const formattedUptime = formatUptime(uptimeSec, t.uptime_day_unit);
     const mem = process.memoryUsage();
     const heapUsedMb = (mem.heapUsed / 1024 / 1024).toFixed(1);
     const heapTotalMb = (mem.heapTotal / 1024 / 1024).toFixed(1);
@@ -73,16 +75,16 @@ export const botCommand: Command = {
 
     const guildCount = client.guilds.cache.size;
     const userCount = client.guilds.cache.reduce((acc, g) => acc + (g.memberCount || 0), 0);
-    const wsPing = client.ws.ping >= 0 ? `${client.ws.ping}ms` : 'En calcul...';
+    const wsPing = client.ws.ping >= 0 ? `${client.ws.ping}ms` : t.bot_ws_calculating;
 
     const actionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
-        .setLabel('Dashboard Web ETHONE')
+        .setLabel(t.bot_btn_dashboard)
         .setStyle(ButtonStyle.Link)
         .setURL('https://ethone.dev/discord/bot')
         .setEmoji('🌐'),
       new ButtonBuilder()
-        .setLabel('Support & Discord')
+        .setLabel(t.bot_btn_support)
         .setStyle(ButtonStyle.Link)
         .setURL('https://discord.gg/ethone')
         .setEmoji('💬')
@@ -96,13 +98,8 @@ export const botCommand: Command = {
 
         const embed = ctx
           .createEmbed('info')
-          .setTitle('⚡ Latence & Connexion Gateway')
-          .setDescription(
-            `Les mesures de communication réseau avec Discord sont opérationnelles :\n\n` +
-            `• **WebSocket Gateway :** \`${wsPing}\` *(état du socket)*\n` +
-            `• **Aller-Retour API :** \`${latency}ms\` *(temps de réponse REST)*\n` +
-            `• **Statut Shard :** 🟢 Connecté & Actif`
-          )
+          .setTitle(t.bot_ping_title)
+          .setDescription(formatString(t.bot_ping_desc, { ws: wsPing, latency }))
           .setTimestamp();
 
         await ctx.reply({ embeds: [embed], components: [actionRow] });
@@ -113,35 +110,30 @@ export const botCommand: Command = {
         const embed = ctx
           .createEmbed('default')
           .setTitle(`🤖 ${ctx.guildConfig.botName} • Bot Control Center`)
-          .setDescription(
-            `**${ctx.guildConfig.botName}** est le bot tout-en-un de nouvelle génération propulsant le serveur.\n` +
-            `Conçu pour offrir une expérience fluide, réactive et hautement personnalisable.\n\n` +
-            `> 🌐 **Dashboard en ligne :** Contrôlez tous les modules sur [ethone.dev](https://ethone.dev/discord/bot)\n` +
-            `> 🛡️ **Sécurité :** Anti-Raid automatique, AutoMod intelligent et audit logs\n` +
-            `> 🤖 **Intelligence Artificielle :** Assistant IA intégré (\`/ask\`) et résumés de salons`
-          )
+          .setDescription(formatString(t.bot_info_long_desc, { botName: ctx.guildConfig.botName }))
           .addFields(
             {
-              name: '📦 Version & Moteur',
-              value: `\`v2.4.0\` • Node/Bun + TypeScript\nDiscord.js \`v14.18\``,
+              name: t.bot_field_version,
+              value: t.bot_field_version_value,
               inline: true,
             },
             {
-              name: '📊 Statistiques Globales',
-              value: `**${guildCount}** serveur(s)\n**${userCount}** membres servis`,
+              name: t.bot_field_global_stats,
+              value: formatString(t.bot_global_stats_value, { guilds: guildCount, users: userCount }),
               inline: true,
             },
             {
-              name: '⏱️ Disponibilité',
-              value: `En ligne depuis **${formattedUptime}**\nLatence : \`${wsPing}\``,
+              name: t.bot_field_availability,
+              value: formatString(t.bot_availability_value, { uptime: formattedUptime, ws: wsPing }),
               inline: true,
             },
             {
-              name: '⚙️ Configuration Actuelle',
-              value:
-                `• Préfixe : \`${ctx.guildConfig.prefix}\`\n` +
-                `• Visibilité : \`${ctx.guildConfig.responseVisibility === 'EPHEMERAL' ? 'Privé (Éphémère)' : 'Public'}\`\n` +
-                `• Style IA : \`${ctx.guildConfig.botPersonality || 'FRIENDLY'}\``,
+              name: t.bot_field_config,
+              value: formatString(t.bot_config_value, {
+                prefix: ctx.guildConfig.prefix,
+                visibility: ctx.guildConfig.responseVisibility === 'EPHEMERAL' ? t.bot_visibility_private : t.bot_visibility_public,
+                style: ctx.guildConfig.botPersonality || 'FRIENDLY',
+              }),
               inline: false,
             }
           )
@@ -155,39 +147,27 @@ export const botCommand: Command = {
       default: {
         const embed = ctx
           .createEmbed('success')
-          .setTitle(`📊 Statut Technique & Métriques • ${ctx.guildConfig.botName}`)
-          .setDescription(
-            `Tous les sous-systèmes du bot fonctionnent actuellement de manière optimale.`
-          )
+          .setTitle(`${t.bot_status_title} • ${ctx.guildConfig.botName}`)
+          .setDescription(t.bot_status_desc)
           .addFields(
             {
-              name: '🟢 Sous-Systèmes',
-              value:
-                `• **Gateway WebSocket :** \`${wsPing}\` (Opérationnel)\n` +
-                `• **Moteur Audio :** Opérationnel (Haute Fidélité)\n` +
-                `• **Assistant IA :** Actif (${ctx.guildConfig.botPersonality || 'FRIENDLY'})\n` +
-                `• **Sync Bus SSE :** Connecté temps réel`,
+              name: t.bot_field_subsystems,
+              value: formatString(t.bot_subsystems_value, { ws: wsPing, style: ctx.guildConfig.botPersonality || 'FRIENDLY' }),
               inline: false,
             },
             {
-              name: '🧠 Mémoire & Ressources',
-              value:
-                `• **Heap Utilisé :** \`${heapUsedMb} MB\` / \`${heapTotalMb} MB\`\n` +
-                `• **RSS Total :** \`${rssMb} MB\`\n` +
-                `• **Uptime Continu :** \`${formattedUptime}\``,
+              name: t.bot_field_memory,
+              value: formatString(t.bot_memory_value, { used: heapUsedMb, total: heapTotalMb, rss: rssMb, uptime: formattedUptime }),
               inline: true,
             },
             {
-              name: '📈 Charge & Échelle',
-              value:
-                `• **Serveurs :** \`${guildCount}\`\n` +
-                `• **Utilisateurs :** \`${userCount}\`\n` +
-                `• **Shards :** \`1 / 1\``,
+              name: t.bot_field_load,
+              value: formatString(t.bot_load_value, { guilds: guildCount, users: userCount }),
               inline: true,
             }
           )
           .setFooter({
-            text: `${ctx.guildConfig.botName} • Centre de Contrôle • ethone.dev/discord/bot`,
+            text: `${ctx.guildConfig.botName} • ${t.bot_footer_control} • ethone.dev/discord/bot`,
             iconURL: client.user?.displayAvatarURL(),
           });
 

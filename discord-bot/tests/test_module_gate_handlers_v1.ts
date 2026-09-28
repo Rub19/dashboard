@@ -77,7 +77,7 @@ await check('slash /poll par un membre : un seul embed « Module désactivé »,
   await onInteractionCreate(interaction);
   assert.equal(replies.length, 1, JSON.stringify(replies).slice(0, 300));
   assert.equal(replies[0].embeds.length, 1);
-  assert.ok(replies[0].ephemeral);
+  assert.ok(replies[0].ephemeral || (Number(replies[0].flags ?? 0) & 64), 'réponse éphémère (flags: MessageFlags.Ephemeral)');
   assert.match(descriptions(replies)[0], /Sondages/);
   assert.ok(titles(replies).some((t) => /Module désactivé/.test(t)));
 });

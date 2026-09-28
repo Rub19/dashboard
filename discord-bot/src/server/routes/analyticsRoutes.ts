@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { analyticsService } from '../../modules/analytics/services/analyticsService.js';
 import { TimeRangePeriodSchema } from '../../modules/analytics/types/analytics.js';
+import { handleRouteError } from '../utils/routeError.js';
 
 export function createAnalyticsRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -17,7 +18,7 @@ export function createAnalyticsRouter(discordClient: Client) {
       const data = analyticsService.getOverview(guildId, period, discordClient);
       res.json(data);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur lors du calcul des analytics' });
+      handleRouteError(err, res, 'Erreur lors du calcul des analytics');
     }
   });
 
@@ -35,7 +36,7 @@ export function createAnalyticsRouter(discordClient: Client) {
       res.setHeader('Content-Disposition', `attachment; filename="${exported.filename}"`);
       res.send(exported.content);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur lors de l’export des données' });
+      handleRouteError(err, res, 'Erreur lors de l’export des données');
     }
   });
 

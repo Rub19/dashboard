@@ -106,7 +106,7 @@ export const ticketCommand: Command = {
           [
             `## 🎫 ${formatString(t.ticket_channel_embed_title, { user: ctx.author.username })}`,
             formatString(t.ticket_welcome, { user: ctx.author.toString() }),
-            `-# Ouvert <t:${Math.floor(Date.now() / 1000)}:R>`,
+            formatString(t.ticketcmd_opened_at, { timestamp: Math.floor(Date.now() / 1000) }),
           ],
           ctx.author.displayAvatarURL(),
           ctx.author.username,
@@ -115,9 +115,9 @@ export const ticketCommand: Command = {
         separator(),
         text(t.ticket_detail_prompt),
         new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-          new ButtonBuilder().setCustomId(`ticket_close_simple:${ticketChannel.id}`).setLabel('Fermer le ticket').setEmoji('🔒').setStyle(ButtonStyle.Danger),
+          new ButtonBuilder().setCustomId(`ticket_close_simple:${ticketChannel.id}`).setLabel(t.ticketcmd_btn_close).setEmoji('🔒').setStyle(ButtonStyle.Danger),
         ),
-        footer(`${config.botName} · Support`),
+        footer(`${config.botName} · ${t.ticketcmd_footer_support}`),
       ]);
       // Pas de `content` avec Components V2 (refusé par Discord) : la mention du demandeur est dans la carte, elle le notifie.
       await ticketChannel.send({ components: [welcome], flags: MessageFlags.IsComponentsV2 });
@@ -125,10 +125,10 @@ export const ticketCommand: Command = {
       await ctx.reply({
         components: [
           container(toneToColor('success', config.successColor), [
-            text(`## ✅ Ticket ouvert`),
+            text(`## ${t.ticketcmd_opened_heading}`),
             text(formatString(t.ticket_created, { channel: ticketChannel.toString() })),
             new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-              new ButtonBuilder().setLabel('Ouvrir le ticket').setEmoji('🎫').setStyle(ButtonStyle.Link).setURL(`https://discord.com/channels/${ctx.guild.id}/${ticketChannel.id}`),
+              new ButtonBuilder().setLabel(t.ticketcmd_btn_open).setEmoji('🎫').setStyle(ButtonStyle.Link).setURL(`https://discord.com/channels/${ctx.guild.id}/${ticketChannel.id}`),
             ),
           ]),
         ],

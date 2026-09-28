@@ -5,6 +5,7 @@ import {
   ButtonStyle,
   ContainerBuilder,
   MessageActionRowComponentBuilder,
+  MessageFlags,
 } from 'discord.js';
 import { GuildMusicState, Track } from '../types/music.js';
 import { musicService } from '../services/musicService.js';
@@ -199,12 +200,12 @@ export class DiscordMusicPanel {
 
     const userVoice = member?.voice?.channel;
     if (!userVoice) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.voice_required)], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.voice_required)], flags: MessageFlags.Ephemeral });
       return;
     }
     const botVoice = guild.members.me?.voice?.channel;
     if (botVoice && botVoice.id !== userVoice.id) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(formatString(t.voice_different, { channel: `<#${botVoice.id}>` }))], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(formatString(t.voice_different, { channel: `<#${botVoice.id}>` }))], flags: MessageFlags.Ephemeral });
       return;
     }
 

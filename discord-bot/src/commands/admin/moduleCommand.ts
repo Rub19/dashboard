@@ -2,6 +2,8 @@ import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { MODULES, getModule, isModuleEnabled, setModuleEnabled } from '../../services/moduleRegistry.js';
 import { noticeEmbed } from '../../utils/embeds.js';
+import { formatString, getTranslation } from '../../utils/i18n.js';
+import { guildConfigService } from '../../services/guildConfigService.js';
 
 /**
  * /module — Active ou désactive un module entier du bot sur ce serveur. C'est le même interrupteur que celui du hub du
@@ -29,18 +31,20 @@ export const moduleCommand: Command = {
   async autocomplete(interaction) {
     const focused = interaction.options.getFocused().toLowerCase();
     const guildId = interaction.guildId;
+    const t = getTranslation(guildConfigService.getConfig(guildId).language);
     const choices = MODULES.filter((m) => !focused || m.id.includes(focused) || m.label.toLowerCase().includes(focused))
       .slice(0, 25)
       .map((m) => ({
-        name: `${m.emoji} ${m.label}${guildId ? (isModuleEnabled(guildId, m.id) ? ' · activé' : ' · désactivé') : ''}`.slice(0, 100),
+        name: `${m.emoji} ${m.label}${guildId ? (isModuleEnabled(guildId, m.id) ? t.module_choice_enabled : t.module_choice_disabled) : ''}`.slice(0, 100),
         value: m.id,
       }));
     await interaction.respond(choices);
   },
 
   async execute(ctx: CommandContext): Promise<void> {
+    const t = getTranslation(ctx.guildConfig.language);
     if (!ctx.guild) {
-      await ctx.reply({ embeds: [noticeEmbed('error', 'Cette commande est réservée aux serveurs.')], ephemeral: true });
+      await ctx.reply({ embeds: [noticeEmbed('error', t.guild_only_reserved)], ephemeral: true });
       return;
     }
     const guildId = ctx.guild.id;
@@ -63,19 +67,19 @@ export const moduleCommand: Command = {
       const half = Math.ceil(lines.length / 2);
       const embed = ctx
         .createEmbed('info')
-        .setTitle('🧩 Modules du serveur')
+        .setTitle(t.module_list_title)
         .addFields(
           { name: '​', value: lines.slice(0, half).join('\n'), inline: true },
           { name: '​', value: lines.slice(half).join('\n'), inline: true }
         )
-        .setFooter({ text: 'Activer / désactiver : /module nom:<module> activer:True ou False' });
+        .setFooter({ text: t.module_list_footer });
       await ctx.reply({ embeds: [embed] });
       return;
     }
 
     const info = findModule(moduleKey);
     if (!info) {
-      await ctx.reply({ embeds: [noticeEmbed('error', `Module inconnu : \`${moduleKey}\`. Utilisez \`/module\` pour voir la liste.`)], ephemeral: true });
+      await ctx.reply({ embeds: [noticeEmbed('error', formatString(t.module_unknown, { module: moduleKey }))], ephemeral: true });
       return;
     }
 
@@ -86,10 +90,13 @@ export const moduleCommand: Command = {
       embeds: [
         noticeEmbed(
           active ? 'success' : 'warning',
-          `${def.emoji} **${def.label}** est maintenant **${active ? 'activé' : 'désactivé'}** sur ce serveur.${
-            active ? '' : '\nSes commandes répondront par un message « module désactivé » jusqu\'à sa réactivation.'
-          }`,
-          { title: active ? 'Module activé' : 'Module désactivé' }
+          formatString(t.module_toggled_desc, {
+            emoji: def.emoji,
+            label: def.label,
+            state: active ? t.module_state_on : t.module_state_off,
+            note: active ? '' : t.module_off_note,
+          }),
+          { title: active ? t.module_title_enabled : t.module_title_disabled }
         ),
       ],
     });

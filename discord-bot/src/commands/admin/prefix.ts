@@ -1,6 +1,7 @@
 import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { guildConfigService } from '../../services/guildConfigService.js';
 import { Command, CommandContext } from '../../types/command.js';
+import { formatString, getTranslation } from '../../utils/i18n.js';
 
 export const prefixCommand: Command = {
   name: 'prefix',
@@ -20,26 +21,22 @@ export const prefixCommand: Command = {
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
   execute: async (ctx: CommandContext) => {
+    const conf = ctx.guildConfig;
+    const t = getTranslation(conf.language);
+
     if (!ctx.guild) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Cette commande doit être exécutée dans un serveur.')] });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_must_run)] });
       return;
     }
 
-    const conf = ctx.guildConfig;
     const newPrefix = ctx.getString('nouveau', 0)?.trim();
 
     // Si aucun nouvel argument n'est fourni, on affiche le préfixe actuel
     if (!newPrefix) {
       const embed = ctx
         .createEmbed('info')
-        .setTitle(`${conf.emojis.settings} Préfixe du serveur`)
-        .setDescription(
-          `Le préfixe actuel sur ce serveur est : \`${conf.prefix}\`\n\n` +
-          `Pour le changer, utilisez :\n` +
-          `• En slash : \`/prefix nouveau:[votre_prefixe]\`\n` +
-          `• En préfixe : \`${conf.prefix}prefix [votre_prefixe]\`\n` +
-          `• Ou via le panneau interactif : \`/settings\``
-        );
+        .setTitle(`${conf.emojis.settings} ${t.prefix_title}`)
+        .setDescription(formatString(t.prefix_current_desc, { prefix: conf.prefix }));
       await ctx.reply({ embeds: [embed] });
       return;
     }
@@ -48,7 +45,7 @@ export const prefixCommand: Command = {
     if (!ctx.isSlash && ctx.member) {
       if (!ctx.member.permissions.has(PermissionFlagsBits.ManageGuild)) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription(`${conf.emojis.error} Vous devez avoir la permission \`Gérer le serveur\` pour modifier le préfixe.`)],
+          embeds: [ctx.createEmbed('error').setDescription(`${conf.emojis.error} ${t.prefix_need_permission}`)],
         });
         return;
       }
@@ -56,7 +53,7 @@ export const prefixCommand: Command = {
 
     if (newPrefix.length > 5 || /\s/.test(newPrefix)) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription(`${conf.emojis.error} Le préfixe ne doit pas comporter d'espaces et faire maximum 5 caractères.`)],
+        embeds: [ctx.createEmbed('error').setDescription(`${conf.emojis.error} ${t.prefix_invalid}`)],
       });
       return;
     }
@@ -66,11 +63,8 @@ export const prefixCommand: Command = {
 
     const embed = ctx
       .createEmbed('success')
-      .setTitle(`${conf.emojis.success} Préfixe mis à jour !`)
-      .setDescription(
-        `Le préfixe pour ce serveur est désormais : \`${newPrefix}\`\n\n` +
-        `Exemple : \`${newPrefix}ping\` ou \`${newPrefix}help\``
-      );
+      .setTitle(`${conf.emojis.success} ${t.prefix_updated_title}`)
+      .setDescription(formatString(t.prefix_updated_desc, { prefix: newPrefix }));
 
     await ctx.reply({ embeds: [embed] });
   },

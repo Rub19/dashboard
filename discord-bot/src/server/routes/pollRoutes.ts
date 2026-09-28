@@ -8,6 +8,7 @@ import { discordPollPanel } from '../../modules/polls/ui/discordPollPanel.js';
 import { DiscordPoll, DiscordPollSchema } from '../../modules/polls/types/index.js';
 import { requireStringParam } from '../utils/params.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleRouteError } from '../utils/routeError.js';
 
 export function createPollRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -138,7 +139,7 @@ export function createPollRouter(client: Client): Router {
       emitConfigUpdated('polls', guildId, saved, 'DASHBOARD', req.user?.id);
       res.json({ success: true, poll: saved });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -431,7 +432,7 @@ export function createPollRouter(client: Client): Router {
         messageId: msg.id,
       });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 

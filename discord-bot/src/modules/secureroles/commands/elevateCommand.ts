@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder, MessageFlags } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { endMemberSession, elevate } from '../services/secureRolesService.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
@@ -25,7 +25,7 @@ export const elevateCommand: Command = {
       return;
     }
     const i = ctx.interaction;
-    await i.deferReply({ ephemeral: true });
+    await i.deferReply({ flags: MessageFlags.Ephemeral });
     const member = await ctx.guild.members.fetch(i.user.id);
 
     if (i.options.getBoolean('terminer')) {

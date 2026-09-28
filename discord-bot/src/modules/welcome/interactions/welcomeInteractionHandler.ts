@@ -4,6 +4,7 @@ import {
   ButtonInteraction,
   ButtonStyle,
   GuildMember,
+  MessageFlags,
 } from 'discord.js';
 import { VerificationService } from '../services/verificationService.js';
 import { OnboardingService } from '../services/onboardingService.js';
@@ -19,7 +20,7 @@ export class WelcomeInteractionHandler {
 
     // 1. Vérification
     if (customId.startsWith('welcome_verify:')) {
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       const res = await VerificationService.verifyMember(member);
       const verifyEmbed = res.success
         ? successEmbed({ footerText: interaction.guild?.name || 'ETHONE Guard' })
@@ -65,7 +66,7 @@ export class WelcomeInteractionHandler {
       await interaction.reply({
         embeds: [embed],
         components: [row],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -83,7 +84,7 @@ export class WelcomeInteractionHandler {
       // Différer immédiatement : la vérification automatique ci-dessous peut modifier les rôles
       // du membre via l'API Discord et dépasser la fenêtre de 3s de l'interaction
       // ("Unknown interaction" / 10062) si on ne le fait pas.
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
       // Si vérification active, on vérifie automatiquement
       const verifRes = await VerificationService.verifyMember(member);
@@ -108,7 +109,7 @@ export class WelcomeInteractionHandler {
       if (!roleId) return;
 
       try {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         const res = await OnboardingService.handleRoleSelection(member, roleId);
         await interaction.editReply({
           embeds: [
@@ -134,7 +135,7 @@ export class WelcomeInteractionHandler {
       const channelId = customId.split(':')[1];
       await interaction.reply({
         embeds: [baseEmbed('info').setDescription(`📍 Rendez-vous dans le salon <#${channelId}> !`)],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }

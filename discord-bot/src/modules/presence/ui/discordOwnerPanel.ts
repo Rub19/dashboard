@@ -7,6 +7,7 @@ import {
   Message,
   StringSelectMenuBuilder,
   StringSelectMenuInteraction,
+  MessageFlags,
 } from 'discord.js';
 import { config } from '../../../config.js';
 import { PresenceService } from '../services/presenceService.js';
@@ -138,7 +139,7 @@ export class DiscordOwnerPanel {
     if (interaction.user.id !== config.botOwnerId) {
       await interaction.reply({
         embeds: [baseEmbed('error').setDescription('⛔ Accès refusé : Cette action est réservée au Bot Owner autorisé.')],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }

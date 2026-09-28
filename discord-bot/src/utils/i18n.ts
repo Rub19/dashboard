@@ -630,6 +630,292 @@ export interface TranslationDictionary {
   antiraid_lockdown_on_success: string;
   antiraid_lockdown_off_success: string;
   antiraid_usage_fallback: string;
+
+  // Admin/general commands (module, prefix, setup, summarize, ping)
+  guild_only_reserved: string;
+  guild_only_must_run: string;
+  uptime_day_unit: string;
+  module_choice_enabled: string;
+  module_choice_disabled: string;
+  module_list_title: string;
+  module_list_footer: string;
+  module_unknown: string;
+  module_toggled_desc: string;
+  module_state_on: string;
+  module_state_off: string;
+  module_off_note: string;
+  module_title_enabled: string;
+  module_title_disabled: string;
+  prefix_title: string;
+  prefix_current_desc: string;
+  prefix_need_permission: string;
+  prefix_invalid: string;
+  prefix_updated_title: string;
+  prefix_updated_desc: string;
+  summarize_channel_unsupported: string;
+  summarize_no_messages: string;
+  summarize_title: string;
+  summarize_error: string;
+  summarize_unexpected_error: string;
+  ping_status_excellent: string;
+  ping_status_good: string;
+  ping_status_high: string;
+  ping_api_fast: string;
+  ping_api_stable: string;
+  ping_api_slow: string;
+  ping_footer: string;
+  ping_title: string;
+  ping_desc: string;
+  ping_field_ws: string;
+  ping_field_api: string;
+  ping_field_uptime: string;
+  ping_field_memory: string;
+  ping_field_shards: string;
+  ping_shards_value: string;
+  ping_field_servers: string;
+  ping_servers_value: string;
+  ping_retest_label: string;
+
+  // General commands (bot, imagine, ask)
+  bot_ws_calculating: string;
+  bot_btn_dashboard: string;
+  bot_btn_support: string;
+  bot_ping_title: string;
+  bot_ping_desc: string;
+  bot_info_long_desc: string;
+  bot_field_version: string;
+  bot_field_version_value: string;
+  bot_field_global_stats: string;
+  bot_global_stats_value: string;
+  bot_field_availability: string;
+  bot_availability_value: string;
+  bot_field_config: string;
+  bot_config_value: string;
+  bot_visibility_private: string;
+  bot_visibility_public: string;
+  bot_field_subsystems: string;
+  bot_subsystems_value: string;
+  bot_field_memory: string;
+  bot_memory_value: string;
+  bot_field_load: string;
+  bot_load_value: string;
+  bot_footer_control: string;
+  imagine_invalid_prompt: string;
+  imagine_cooldown: string;
+  imagine_disabled: string;
+  imagine_error_fallback: string;
+  ask_missing_question: string;
+  ask_cooldown: string;
+  ask_unsafe: string;
+  ask_error: string;
+
+  // Admin commands (ai-setup, permissions)
+  guild_only_plain: string;
+  aisetup_banned_none: string;
+  aisetup_banned_more: string;
+  aisetup_mood_sage: string;
+  aisetup_mood_gamer: string;
+  aisetup_mood_protector: string;
+  aisetup_mood_cyberpunk: string;
+  aisetup_mood_custom: string;
+  aisetup_footer: string;
+  aisetup_title: string;
+  aisetup_desc_updated: string;
+  aisetup_desc_current: string;
+  aisetup_field_channel: string;
+  aisetup_channel_value: string;
+  aisetup_channel_none: string;
+  aisetup_field_mood: string;
+  aisetup_field_images: string;
+  aisetup_images_on: string;
+  aisetup_images_off: string;
+  aisetup_field_security: string;
+  aisetup_security_value: string;
+  aisetup_field_banned: string;
+  aisetup_slash_only: string;
+  perms_footer_configured: string;
+  perms_applied_title: string;
+  perms_applied_desc_cmd: string;
+  perms_applied_desc_btn: string;
+  perms_field_admins: string;
+  perms_field_mods: string;
+  perms_field_vip: string;
+  perms_no_role_detected: string;
+  perms_no_role: string;
+  perms_confidence: string;
+  perms_panel_footer: string;
+  perms_panel_title: string;
+  perms_panel_desc: string;
+  perms_no_roles_to_analyze: string;
+  perms_field_strict: string;
+  perms_field_strict_value: string;
+  perms_field_balanced: string;
+  perms_field_balanced_value: string;
+  perms_field_community: string;
+  perms_field_community_value: string;
+  perms_btn_strict: string;
+  perms_btn_balanced: string;
+  perms_btn_community: string;
+  perms_admin_only: string;
+
+  // Help center (/help, help panel)
+  help_or: string;
+  help_more_others: string;
+  help_more_subcommands: string;
+  help_no_aliases: string;
+  help_perm_everyone: string;
+  help_no_description: string;
+  help_default_category: string;
+  help_card_aliases_perms: string;
+  help_card_examples: string;
+  help_btn_catalogue: string;
+  help_card_footer: string;
+  help_home_heading: string;
+  help_home_counts: string;
+  help_home_hint: string;
+  help_cmd_count_one: string;
+  help_cmd_count_other: string;
+  help_home_shortcuts: string;
+  help_module_subtitle: string;
+  help_module_empty: string;
+  help_alias_suffix: string;
+  help_select_placeholder: string;
+  help_select_home_label: string;
+  help_select_home_desc: string;
+  help_btn_home: string;
+  help_footer_requested_by: string;
+  help_cat_ai_name: string;
+  help_cat_ai_desc: string;
+  help_cat_moderation_name: string;
+  help_cat_moderation_desc: string;
+  help_cat_security_name: string;
+  help_cat_security_desc: string;
+  help_cat_leveling_name: string;
+  help_cat_leveling_desc: string;
+  help_cat_community_name: string;
+  help_cat_community_desc: string;
+  help_cat_voice_music_name: string;
+  help_cat_voice_music_desc: string;
+  help_cat_support_name: string;
+  help_cat_support_desc: string;
+  help_cat_admin_name: string;
+  help_cat_admin_desc: string;
+  help_cat_general_name: string;
+  help_cat_general_desc: string;
+
+  // Music commands (playlist browser, join/disconnect/voice-status)
+  plb_default_title: string;
+  plb_no_tracks: string;
+  plb_footer: string;
+  plb_pick_placeholder: string;
+  plb_btn_all: string;
+  plb_btn_shuffle: string;
+  plb_need_link: string;
+  plb_unreadable: string;
+  plb_expired: string;
+  plb_not_owner: string;
+  plb_join_voice: string;
+  plb_track_not_found: string;
+  plb_track_playing: string;
+  plb_track_queued: string;
+  plb_play_impossible: string;
+  plb_added_count: string;
+  plb_added: string;
+  plb_shuffle_suffix: string;
+  vc_source_direct: string;
+  vc_source_custom: string;
+  vc_live_stream: string;
+  vc_unit_mb: string;
+  vc_na: string;
+  vc_track_one: string;
+  vc_track_other: string;
+  vc_queue_empty: string;
+  vc_need_permission: string;
+  vc_join_first: string;
+  vc_perm_connect: string;
+  vc_perm_speak: string;
+  vc_and: string;
+  vc_missing_permission: string;
+  vc_player_unavailable: string;
+  vc_cannot_join: string;
+  vc_connected_title: string;
+  vc_connected_desc_permanent: string;
+  vc_connected_desc_temporary: string;
+  vc_field_channel: string;
+  vc_field_mode: string;
+  vc_mode_enabled: string;
+  vc_mode_paused: string;
+  vc_mode_disabled: string;
+  vc_field_listeners: string;
+  vc_field_voice_latency: string;
+  vc_not_in_voice: string;
+  vc_disconnected_title: string;
+  vc_left_channel: string;
+  vc_left_voice: string;
+  vc_field_presence: string;
+  vc_field_queue_cleared: string;
+  vc_status_title: string;
+  vc_status_connected: string;
+  vc_status_offline: string;
+  vc_status_not_connected: string;
+  vc_mode_active: string;
+  vc_mode_inactive: string;
+  vc_field_connected_since: string;
+  vc_field_playing: string;
+  vc_requested_by: string;
+  vc_nothing_playing: string;
+  vc_field_volume: string;
+  vc_muted: string;
+  vc_field_repeat: string;
+  vc_repeat_off: string;
+  vc_repeat_song: string;
+  vc_repeat_queue: string;
+  vc_field_queue: string;
+  vc_field_latency: string;
+  vc_latency_value: string;
+  vc_field_audio_server: string;
+  vc_lavalink_line: string;
+  vc_players_one: string;
+  vc_players_other: string;
+  vc_lavalink_down: string;
+  vc_field_bot: string;
+  vc_servers_one: string;
+  vc_servers_other: string;
+
+  // Remaining hardcoded strings (clear, ticket, language, music shortcuts)
+  clear_need_permission: string;
+  clear_bad_channel: string;
+  clear_no_user_messages: string;
+  clear_user_success: string;
+  clear_bulk_failed: string;
+  ticketcmd_opened_at: string;
+  ticketcmd_btn_close: string;
+  ticketcmd_footer_support: string;
+  ticketcmd_opened_heading: string;
+  ticketcmd_btn_open: string;
+  lang_current_title: string;
+  lang_current_desc: string;
+  lang_footer_multilingual: string;
+  lang_invalid: string;
+  ms_nothing_playing_long: string;
+  ms_nothing_playing: string;
+  ms_volume_current: string;
+  ms_volume_set: string;
+  ms_volume_failed: string;
+  ms_loop_off: string;
+  ms_loop_song: string;
+  ms_loop_queue: string;
+  ms_loop_set: string;
+  ms_loop_failed: string;
+  ms_shuffle_need_two: string;
+  ms_shuffled: string;
+  ms_shuffle_failed: string;
+  ms_previous_back: string;
+  ms_no_previous: string;
+  ms_previous_failed: string;
+  ms_queue_already_empty: string;
+  ms_queue_cleared: string;
+  ms_clear_failed: string;
 }
 
 const translations: Record<SupportedLanguage, TranslationDictionary> = {
@@ -1250,6 +1536,286 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     antiraid_lockdown_on_success: '🔒 **Lockdown ACTIVÉ !** {count} salon(s) textuel(s) verrouillé(s).',
     antiraid_lockdown_off_success: '🔓 **Lockdown LEVÉ !** {count} salon(s) déverrouillé(s).',
     antiraid_usage_fallback: 'Usage : `/antiraid status`, `/antiraid raidmode <activer>`, `/antiraid lockdown <activer>`',
+    // Admin/general commands (module, prefix, setup, summarize, ping)
+    guild_only_reserved: 'Cette commande est réservée aux serveurs.',
+    guild_only_must_run: '❌ Cette commande doit être exécutée dans un serveur.',
+    uptime_day_unit: 'j',
+    module_choice_enabled: ' · activé',
+    module_choice_disabled: ' · désactivé',
+    module_list_title: '🧩 Modules du serveur',
+    module_list_footer: 'Activer / désactiver : /module nom:<module> activer:True ou False',
+    module_unknown: 'Module inconnu : `{module}`. Utilisez `/module` pour voir la liste.',
+    module_toggled_desc: '{emoji} **{label}** est maintenant **{state}** sur ce serveur.{note}',
+    module_state_on: 'activé',
+    module_state_off: 'désactivé',
+    module_off_note: '\nSes commandes répondront par un message « module désactivé » jusqu\'à sa réactivation.',
+    module_title_enabled: 'Module activé',
+    module_title_disabled: 'Module désactivé',
+    prefix_title: 'Préfixe du serveur',
+    prefix_current_desc: 'Le préfixe actuel sur ce serveur est : `{prefix}`\n\nPour le changer, utilisez :\n• En slash : `/prefix nouveau:[votre_prefixe]`\n• En préfixe : `{prefix}prefix [votre_prefixe]`\n• Ou via le panneau interactif : `/settings`',
+    prefix_need_permission: 'Vous devez avoir la permission `Gérer le serveur` pour modifier le préfixe.',
+    prefix_invalid: 'Le préfixe ne doit pas comporter d\'espaces et faire maximum 5 caractères.',
+    prefix_updated_title: 'Préfixe mis à jour !',
+    prefix_updated_desc: 'Le préfixe pour ce serveur est désormais : `{prefix}`\n\nExemple : `{prefix}ping` ou `{prefix}help`',
+    summarize_channel_unsupported: 'Ce salon ne supporte pas la récupération de messages.',
+    summarize_no_messages: 'Aucun message récent trouvé dans ce salon.',
+    summarize_title: '📝 Résumé du salon',
+    summarize_error: '❌ Erreur lors du résumé : {error}',
+    summarize_unexpected_error: 'Erreur inattendue',
+    ping_status_excellent: '🟢 Excellent',
+    ping_status_good: '🟡 Bon',
+    ping_status_high: '🔴 Élevé',
+    ping_api_fast: '🟢 Ultra-rapide',
+    ping_api_stable: '🟡 Stable',
+    ping_api_slow: '🔴 Ralenti',
+    ping_footer: 'Diagnostic temps réel',
+    ping_title: '🏓 Télémétrie Réseau & Diagnostic',
+    ping_desc: 'Connexion active avec les serveurs Discord Gateway.\n*Cliquez sur le bouton ci-dessous pour rafraîchir instantanément les mesures.*',
+    ping_field_ws: '⚡ Passerelle WebSocket',
+    ping_field_api: '🌐 API REST Discord',
+    ping_field_uptime: '⏱️ Disponibilité (Uptime)',
+    ping_field_memory: '🧠 Mémoire Dédiée',
+    ping_field_shards: '🖥️ Shards Connectés',
+    ping_shards_value: '`Shard 0 / 1` (Nominal)',
+    ping_field_servers: '📡 Serveurs & Membres',
+    ping_servers_value: '`{guilds}` serv. / `{users}` users',
+    ping_retest_label: 'Re-tester la latence',
+    // General commands (bot, imagine, ask)
+    bot_ws_calculating: 'En calcul...',
+    bot_btn_dashboard: 'Dashboard Web ETHONE',
+    bot_btn_support: 'Support & Discord',
+    bot_ping_title: '⚡ Latence & Connexion Gateway',
+    bot_ping_desc: 'Les mesures de communication réseau avec Discord sont opérationnelles :\n\n• **WebSocket Gateway :** `{ws}` *(état du socket)*\n• **Aller-Retour API :** `{latency}ms` *(temps de réponse REST)*\n• **Statut Shard :** 🟢 Connecté & Actif',
+    bot_info_long_desc: '**{botName}** est le bot tout-en-un de nouvelle génération propulsant le serveur.\nConçu pour offrir une expérience fluide, réactive et hautement personnalisable.\n\n> 🌐 **Dashboard en ligne :** Contrôlez tous les modules sur [ethone.dev](https://ethone.dev/discord/bot)\n> 🛡️ **Sécurité :** Anti-Raid automatique, AutoMod intelligent et audit logs\n> 🤖 **Intelligence Artificielle :** Assistant IA intégré (`/ask`) et résumés de salons',
+    bot_field_version: '📦 Version & Moteur',
+    bot_field_version_value: '`v2.4.0` • Node/Bun + TypeScript\nDiscord.js `v14.18`',
+    bot_field_global_stats: '📊 Statistiques Globales',
+    bot_global_stats_value: '**{guilds}** serveur(s)\n**{users}** membres servis',
+    bot_field_availability: '⏱️ Disponibilité',
+    bot_availability_value: 'En ligne depuis **{uptime}**\nLatence : `{ws}`',
+    bot_field_config: '⚙️ Configuration Actuelle',
+    bot_config_value: '• Préfixe : `{prefix}`\n• Visibilité : `{visibility}`\n• Style IA : `{style}`',
+    bot_visibility_private: 'Privé (Éphémère)',
+    bot_visibility_public: 'Public',
+    bot_field_subsystems: '🟢 Sous-Systèmes',
+    bot_subsystems_value: '• **Gateway WebSocket :** `{ws}` (Opérationnel)\n• **Moteur Audio :** Opérationnel (Haute Fidélité)\n• **Assistant IA :** Actif ({style})\n• **Sync Bus SSE :** Connecté temps réel',
+    bot_field_memory: '🧠 Mémoire & Ressources',
+    bot_memory_value: '• **Heap Utilisé :** `{used} MB` / `{total} MB`\n• **RSS Total :** `{rss} MB`\n• **Uptime Continu :** `{uptime}`',
+    bot_field_load: '📈 Charge & Échelle',
+    bot_load_value: '• **Serveurs :** `{guilds}`\n• **Utilisateurs :** `{users}`\n• **Shards :** `1 / 1`',
+    bot_footer_control: 'Centre de Contrôle',
+    imagine_invalid_prompt: '❌ Veuillez fournir une description d\'image valide (au moins 3 caractères).\n*Exemple : `/imagine un astronaute explorant une forêt de néon cyberpunk`*',
+    imagine_cooldown: '⏳ Merci de patienter encore {seconds}s avant de générer une nouvelle image.',
+    imagine_disabled: '⚠️ La génération d\'images par IA a été désactivée par les administrateurs de ce serveur.',
+    imagine_error_fallback: 'Une erreur est survenue lors de la génération de l\'image.',
+    ask_missing_question: '❌ Veuillez préciser votre question. Exemple : `/ask question:Comment obtenir le rôle VIP ?`',
+    ask_cooldown: '⏳ Merci de patienter encore {seconds}s avant de reposer une question à l\'assistant IA.',
+    ask_unsafe: '⚠️ Cette question ne respecte pas les consignes de sécurité de l\'assistant.',
+    ask_error: '❌ Une erreur est survenue lors du traitement par l\'assistant IA.',
+    // Admin commands (ai-setup, permissions)
+    guild_only_plain: 'Cette commande ne peut être exécutée que sur un serveur.',
+    aisetup_banned_none: '*Aucun mot banni spécifique configuré*',
+    aisetup_banned_more: ' *(+{count} autres)*',
+    aisetup_mood_sage: '🐟 Sage & Bienveillant',
+    aisetup_mood_gamer: '🦈 Gamer Sarcastique',
+    aisetup_mood_protector: '🛡️ Protecteur & Sérieux',
+    aisetup_mood_cyberpunk: '⚡ Cyberpunk Futuriste',
+    aisetup_mood_custom: '🎨 Personnalisé',
+    aisetup_footer: 'Configuration par {tag} • Conforme ToS Discord',
+    aisetup_title: '⚙️ Configuration ETHONE AI & Salon Dédié',
+    aisetup_desc_updated: '✅ Les paramètres du salon IA et de sécurité ont été mis à jour avec succès !',
+    aisetup_desc_current: 'Voici la configuration actuelle de l\'intelligence artificielle sur ce serveur :',
+    aisetup_field_channel: '💬 Salon IA Public Dédié',
+    aisetup_channel_value: '<#{channelId}> *(Tous les membres peuvent discuter librement ici sans préfixe !)*',
+    aisetup_channel_none: '❌ *Aucun salon dédié configuré* (Utilisez `/ai-setup salon:#salon`)',
+    aisetup_field_mood: '🎭 Humeur du Thon',
+    aisetup_field_images: '🎨 Génération d\'images (/imagine)',
+    aisetup_images_on: '🟢 **Activée** (Modèle Flux)',
+    aisetup_images_off: '🔴 **Désactivée**',
+    aisetup_field_security: '🛡️ Sécurité & Protection DLP',
+    aisetup_security_value: '🔒 **Filtre Anti-Leak actif** (Tokens bot, clés API, email propriétaire strictement bloqués)',
+    aisetup_field_banned: '🚫 Mots Bannis AutoMod ({count})',
+    aisetup_slash_only: 'Utilisez la commande Slash `/ai-setup` pour configurer le salon dédié, l\'humeur et les mots bannis.',
+    perms_footer_configured: 'Configuré par {tag} • ETHONE Permissions',
+    perms_applied_title: '✅ Préset de Permissions Appliqué : {name}',
+    perms_applied_desc_cmd: '{description}\n\nTous les contrôles de modération et d\'administration ont été mis à jour instantanément.',
+    perms_applied_desc_btn: '{description}\n\nConfiguration sauvegardée avec succès.',
+    perms_field_admins: '👑 Rôles Administrateurs',
+    perms_field_mods: '⚔️ Rôles Modérateurs',
+    perms_field_vip: '💎 Rôles VIP',
+    perms_no_role_detected: '*Aucun rôle détecté*',
+    perms_no_role: '*Aucun rôle*',
+    perms_confidence: '*(Confiance: {confidence})*',
+    perms_panel_footer: 'Cliquez sur un bouton ci-dessous pour appliquer un préset en 1 clic.',
+    perms_panel_title: '🛡️ Gestionnaire de Rôles & Recommandations Automatiques',
+    perms_panel_desc: 'L\'intelligence de détection multilingue (FR, EN, ES, DE) a analysé les **{count} rôles** du serveur.\n\n**Rôles analysés et recommandations :**\n{roles}\n\n**Préset actif actuellement :** `{preset}`',
+    perms_no_roles_to_analyze: '*Aucun rôle à analyser*',
+    perms_field_strict: '🛡️ Sécurité Maximale',
+    perms_field_strict_value: 'Owner & Admins stricts uniquement.',
+    perms_field_balanced: '⚖️ Équilibré (Recommandé)',
+    perms_field_balanced_value: 'Admins (config) + Modérateurs (sanctions).',
+    perms_field_community: '🎉 Communauté Dynamique',
+    perms_field_community_value: 'Staff élargi et privilèges VIP.',
+    perms_btn_strict: 'Sécurité Maximale',
+    perms_btn_balanced: 'Équilibré (Recommandé)',
+    perms_btn_community: 'Communauté',
+    perms_admin_only: '⛔ Seuls les administrateurs du serveur peuvent modifier les présets de permissions.',
+    // Help center (/help, help panel)
+    help_or: 'ou',
+    help_more_others: ' *(+{count} autres)*',
+    help_more_subcommands: '\n• *...(+{count} autres sous-commandes)*',
+    help_no_aliases: '*Aucun alias disponible*',
+    help_perm_everyone: '*Accessible à tous les membres*',
+    help_no_description: 'Aucune description fournie.',
+    help_default_category: 'Général',
+    help_card_aliases_perms: '**🔀 Alias :** {aliases}\n**🔑 Permissions :** {permissions}',
+    help_card_examples: '**💡 Exemples**\n{examples}',
+    help_btn_catalogue: 'Catalogue complet',
+    help_card_footer: '/help pour explorer tout le catalogue',
+    help_home_heading: 'Centre d\'aide',
+    help_home_counts: '**{commands}** commandes · **{modules}** modules',
+    help_home_hint: '-# Préfixe `{prefix}` ou commandes slash `/` · choisis un module ci-dessous',
+    help_cmd_count_one: '{count} cmd',
+    help_cmd_count_other: '{count} cmds',
+    help_home_shortcuts: '**Raccourcis :** `/ask` assistant IA · `/rank` carte de niveau · `/play` musique · `/ticket` support · `/settings` configuration',
+    help_module_subtitle: '-# Module {index}/{total} · {count} commande(s)',
+    help_module_empty: '*Aucune commande n\'est actuellement assignée à ce module.*',
+    help_alias_suffix: ' · alias {aliases}',
+    help_select_placeholder: '🔍 Explorer un module…',
+    help_select_home_label: '🏠 Accueil (vue d\'ensemble)',
+    help_select_home_desc: 'Sommaire de tous les modules',
+    help_btn_home: 'Accueil',
+    help_footer_requested_by: 'Demandé par {tag}',
+    help_cat_ai_name: 'Intelligence Artificielle',
+    help_cat_ai_desc: 'Assistant IA du serveur : réponses et résumés de salon',
+    help_cat_moderation_name: 'Modération & Sanctions',
+    help_cat_moderation_desc: 'Outils de modération pour le staff : sanctions, gestion des salons et membres',
+    help_cat_security_name: 'Sécurité & Anti-Raid',
+    help_cat_security_desc: 'Anti-raid, anti-nuke, AutoMod, vérification des nouveaux membres et journaux d\'audit',
+    help_cat_leveling_name: 'Niveaux & Économie',
+    help_cat_leveling_desc: 'XP, cartes de rang, classement et Crédits ETHONE',
+    help_cat_community_name: 'Communauté & Loisirs',
+    help_cat_community_desc: 'Giveaways, suggestions, sondages, événements, anniversaires, starboard et messages épinglés',
+    help_cat_voice_music_name: 'Musique & Salons Vocaux',
+    help_cat_voice_music_desc: 'Lecteur musical (file, boucle, volume) et salons vocaux temporaires',
+    help_cat_support_name: 'Support & Formulaires',
+    help_cat_support_desc: 'Tickets d\'assistance privés et formulaires dynamiques de candidature',
+    help_cat_admin_name: 'Administration & Système',
+    help_cat_admin_desc: 'Configuration globale du serveur, gestion des préfixes et activation des modules',
+    help_cat_general_name: 'Général & Utilitaires',
+    help_cat_general_desc: 'Commandes générales, vérification de latence et aide du serveur',
+    // Music commands (playlist browser, join/disconnect/voice-status)
+    plb_default_title: 'Playlist',
+    plb_no_tracks: '*Aucun titre.*',
+    plb_footer: '{count} titres · {minutes} min · page {page}/{pages}',
+    plb_pick_placeholder: 'Choisir un titre à jouer…',
+    plb_btn_all: 'Tout jouer',
+    plb_btn_shuffle: 'Tout mélanger',
+    plb_need_link: 'Donne un lien de playlist ou d\'album (Spotify, YouTube).',
+    plb_unreadable: 'Impossible de lire cette playlist (privée, vide ou inaccessible).',
+    plb_expired: 'Cette liste a expiré — relance `/playlist`.',
+    plb_not_owner: 'Seule la personne qui a lancé `/playlist` peut utiliser ce menu.',
+    plb_join_voice: 'Rejoins d\'abord un salon vocal.',
+    plb_track_not_found: 'Titre introuvable.',
+    plb_track_playing: '✅ **{title}** — {artist} est en lecture.',
+    plb_track_queued: '✅ **{title}** — {artist} ajouté à la file (#{position}).',
+    plb_play_impossible: 'Lecture impossible.',
+    plb_added_count: '**{count}** titres ajoutés',
+    plb_added: 'Ajouté',
+    plb_shuffle_suffix: ' (dans un ordre aléatoire)',
+    vc_source_direct: '🔗 Flux direct',
+    vc_source_custom: '🎼 Personnalisé',
+    vc_live_stream: '🔴 flux en direct',
+    vc_unit_mb: 'Mo',
+    vc_na: 'n/d',
+    vc_track_one: '{count} titre',
+    vc_track_other: '{count} titres',
+    vc_queue_empty: 'vide',
+    vc_need_permission: 'Il te faut la permission **Déplacer des membres** ou **Gérer le serveur** pour utiliser cette commande.',
+    vc_join_first: 'Rejoins d\'abord un salon vocal, ou précise-en un avec l\'option `salon`.',
+    vc_perm_connect: 'Connexion',
+    vc_perm_speak: 'Parler',
+    vc_and: 'et',
+    vc_missing_permission: 'Il me manque la permission **{permissions}** dans <#{channel}>.',
+    vc_player_unavailable: 'Le lecteur audio est indisponible pour le moment.',
+    vc_cannot_join: 'Impossible de rejoindre <#{channel}>. Le serveur audio est peut-être indisponible, réessaie dans un instant.',
+    vc_connected_title: '🎧 Connecté au vocal',
+    vc_connected_desc_permanent: 'Je suis dans <#{channel}> et j\'y reste **24h/24**. Si je suis déconnecté, je reviens tout seul.',
+    vc_connected_desc_temporary: 'Je suis dans <#{channel}>. Je repartirai après un moment d\'inactivité.',
+    vc_field_channel: '📍 Salon',
+    vc_field_mode: '♾️ Mode 24h/24',
+    vc_mode_enabled: '✅ Activé',
+    vc_mode_paused: '⏸️ Désactivé',
+    vc_mode_disabled: '❌ Désactivé',
+    vc_field_listeners: '👥 Auditeurs',
+    vc_field_voice_latency: '📶 Latence vocale',
+    vc_not_in_voice: 'Je ne suis dans aucun salon vocal.',
+    vc_disconnected_title: '👋 Déconnecté',
+    vc_left_channel: 'J\'ai quitté <#{channel}>.',
+    vc_left_voice: 'J\'ai quitté le salon vocal.',
+    vc_field_presence: '⏱️ Présence',
+    vc_field_queue_cleared: '🎵 File vidée',
+    vc_status_title: '📡 Statut vocal',
+    vc_status_connected: '🟢 **Connecté** à <#{channel}>',
+    vc_status_offline: '🟠 **Hors ligne** — je dois être dans <#{channel}> et j\'y retourne dès que possible.',
+    vc_status_not_connected: '🔴 **Non connecté** — utilise `/join` pour me faire venir.',
+    vc_mode_active: '✅ Actif · <#{channel}>',
+    vc_mode_inactive: '❌ Inactif',
+    vc_field_connected_since: '⏱️ Connecté depuis',
+    vc_field_playing: '{icon} En lecture',
+    vc_requested_by: '{source} · demandé par {tag}',
+    vc_nothing_playing: 'Rien pour le moment.',
+    vc_field_volume: '🔊 Volume',
+    vc_muted: '🔇 Coupé',
+    vc_field_repeat: '🔁 Répétition',
+    vc_repeat_off: 'Désactivée',
+    vc_repeat_song: 'Titre',
+    vc_repeat_queue: 'File',
+    vc_field_queue: '📜 File d\'attente',
+    vc_field_latency: '📶 Latence',
+    vc_latency_value: 'Discord **{discord} ms**\nVocal **{voice}**',
+    vc_field_audio_server: '🎛️ Serveur audio',
+    vc_lavalink_line: '{icon} Lavalink · en ligne depuis {uptime}',
+    vc_players_one: '🎧 {playing} lecteur actif sur {players}',
+    vc_players_other: '🎧 {playing} lecteurs actifs sur {players}',
+    vc_lavalink_down: '🔴 Lavalink injoignable',
+    vc_field_bot: '🤖 Bot',
+    vc_servers_one: '🌐 {count} serveur',
+    vc_servers_other: '🌐 {count} serveurs',
+    // Remaining hardcoded strings (clear, ticket, language, music shortcuts)
+    clear_need_permission: 'Vous devez avoir la permission **Gérer les messages** pour utiliser cette commande.',
+    clear_bad_channel: 'Impossible de supprimer les messages dans ce type de salon.',
+    clear_no_user_messages: 'ℹ️ Aucun message récent trouvé pour **{user}** dans ce salon.',
+    clear_user_success: '**{count}** message(s) de **{user}** supprimé(s) avec succès.',
+    clear_bulk_failed: 'Impossible de supprimer les messages (les messages de plus de 14 jours ne peuvent pas être supprimés en masse par l\'API Discord).',
+    ticketcmd_opened_at: '-# Ouvert <t:{timestamp}:R>',
+    ticketcmd_btn_close: 'Fermer le ticket',
+    ticketcmd_footer_support: 'Support',
+    ticketcmd_opened_heading: '✅ Ticket ouvert',
+    ticketcmd_btn_open: 'Ouvrir le ticket',
+    lang_current_title: 'Langue Actuelle',
+    lang_current_desc: 'La langue actuellement configurée sur **{guild}** est : **{flag} {name}**.\n\nPour changer la langue, utilisez :\n• `/language langue:[fr | en | es | de]`\n• Ou cliquez sur l\'un des boutons de sélection rapide ci-dessous :',
+    lang_footer_multilingual: 'Multilingue',
+    lang_invalid: '❌ Langue invalide : `{lang}`. Choisissez parmi : `fr` (Français), `en` (English), `es` (Español), `de` (Deutsch).',
+    ms_nothing_playing_long: 'Aucune musique n\'est actuellement en cours de lecture.',
+    ms_nothing_playing: 'Aucune musique n\'est en cours de lecture.',
+    ms_volume_current: '🔊 Volume actuel : **{volume}%**',
+    ms_volume_set: '{icon} Volume réglé sur **{volume}%**.',
+    ms_volume_failed: 'Impossible de régler le volume.',
+    ms_loop_off: 'désactivée',
+    ms_loop_song: 'sur le titre en cours',
+    ms_loop_queue: 'sur toute la file',
+    ms_loop_set: '{icon} Répétition **{mode}**.',
+    ms_loop_failed: 'Impossible de changer le mode de répétition.',
+    ms_shuffle_need_two: 'Il faut au moins 2 titres dans la file pour la mélanger.',
+    ms_shuffled: '🔀 File mélangée — **{count}** titres réordonnés.',
+    ms_shuffle_failed: 'Impossible de mélanger la file.',
+    ms_previous_back: '⏮️ Retour à **{title}**.',
+    ms_no_previous: 'Aucun titre précédent dans l\'historique.',
+    ms_previous_failed: 'Impossible de revenir en arrière.',
+    ms_queue_already_empty: 'La file d\'attente est déjà vide.',
+    ms_queue_cleared: '🗑️ File vidée — **{count}** titre(s) retiré(s).',
+    ms_clear_failed: 'Impossible de vider la file.',
   },
   en: {
     lang_name: 'English',
@@ -1868,6 +2434,286 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     antiraid_lockdown_on_success: '🔒 **Lockdown ACTIVATED!** {count} text channel(s) locked.',
     antiraid_lockdown_off_success: '🔓 **Lockdown LIFTED!** {count} channel(s) unlocked.',
     antiraid_usage_fallback: 'Usage: `/antiraid status`, `/antiraid raidmode <activer>`, `/antiraid lockdown <activer>`',
+    // Admin/general commands (module, prefix, setup, summarize, ping)
+    guild_only_reserved: 'This command can only be used in a server.',
+    guild_only_must_run: '❌ This command must be run in a server.',
+    uptime_day_unit: 'd',
+    module_choice_enabled: ' · enabled',
+    module_choice_disabled: ' · disabled',
+    module_list_title: '🧩 Server modules',
+    module_list_footer: 'Enable / disable: /module nom:<module> activer:True or False',
+    module_unknown: 'Unknown module: `{module}`. Use `/module` to see the list.',
+    module_toggled_desc: '{emoji} **{label}** is now **{state}** on this server.{note}',
+    module_state_on: 'enabled',
+    module_state_off: 'disabled',
+    module_off_note: '\nIts commands will reply with a “module disabled” message until it is re-enabled.',
+    module_title_enabled: 'Module enabled',
+    module_title_disabled: 'Module disabled',
+    prefix_title: 'Server prefix',
+    prefix_current_desc: 'The current prefix on this server is: `{prefix}`\n\nTo change it, use:\n• As a slash command: `/prefix nouveau:[your_prefix]`\n• As a prefix command: `{prefix}prefix [your_prefix]`\n• Or via the interactive panel: `/settings`',
+    prefix_need_permission: 'You need the `Manage Server` permission to change the prefix.',
+    prefix_invalid: 'The prefix must not contain spaces and must be at most 5 characters long.',
+    prefix_updated_title: 'Prefix updated!',
+    prefix_updated_desc: 'The prefix for this server is now: `{prefix}`\n\nExample: `{prefix}ping` or `{prefix}help`',
+    summarize_channel_unsupported: 'This channel does not support fetching messages.',
+    summarize_no_messages: 'No recent messages found in this channel.',
+    summarize_title: '📝 Channel summary',
+    summarize_error: '❌ Error while summarizing: {error}',
+    summarize_unexpected_error: 'Unexpected error',
+    ping_status_excellent: '🟢 Excellent',
+    ping_status_good: '🟡 Good',
+    ping_status_high: '🔴 High',
+    ping_api_fast: '🟢 Ultra-fast',
+    ping_api_stable: '🟡 Stable',
+    ping_api_slow: '🔴 Slowed',
+    ping_footer: 'Real-time diagnostics',
+    ping_title: '🏓 Network Telemetry & Diagnostics',
+    ping_desc: 'Active connection with the Discord Gateway servers.\n*Click the button below to instantly refresh the measurements.*',
+    ping_field_ws: '⚡ WebSocket Gateway',
+    ping_field_api: '🌐 Discord REST API',
+    ping_field_uptime: '⏱️ Availability (Uptime)',
+    ping_field_memory: '🧠 Dedicated Memory',
+    ping_field_shards: '🖥️ Connected Shards',
+    ping_shards_value: '`Shard 0 / 1` (Nominal)',
+    ping_field_servers: '📡 Servers & Members',
+    ping_servers_value: '`{guilds}` servers / `{users}` users',
+    ping_retest_label: 'Re-test latency',
+    // General commands (bot, imagine, ask)
+    bot_ws_calculating: 'Calculating...',
+    bot_btn_dashboard: 'ETHONE Web Dashboard',
+    bot_btn_support: 'Support & Discord',
+    bot_ping_title: '⚡ Latency & Gateway Connection',
+    bot_ping_desc: 'Network communication measurements with Discord are operational:\n\n• **WebSocket Gateway:** `{ws}` *(socket state)*\n• **API Round-Trip:** `{latency}ms` *(REST response time)*\n• **Shard Status:** 🟢 Connected & Active',
+    bot_info_long_desc: '**{botName}** is the next-generation all-in-one bot powering the server.\nDesigned to deliver a smooth, responsive and highly customizable experience.\n\n> 🌐 **Online Dashboard:** Control all modules at [ethone.dev](https://ethone.dev/discord/bot)\n> 🛡️ **Security:** Automatic Anti-Raid, smart AutoMod and audit logs\n> 🤖 **Artificial Intelligence:** Built-in AI assistant (`/ask`) and channel summaries',
+    bot_field_version: '📦 Version & Engine',
+    bot_field_version_value: '`v2.4.0` • Node/Bun + TypeScript\nDiscord.js `v14.18`',
+    bot_field_global_stats: '📊 Global Statistics',
+    bot_global_stats_value: '**{guilds}** server(s)\n**{users}** members served',
+    bot_field_availability: '⏱️ Availability',
+    bot_availability_value: 'Online for **{uptime}**\nLatency: `{ws}`',
+    bot_field_config: '⚙️ Current Configuration',
+    bot_config_value: '• Prefix: `{prefix}`\n• Visibility: `{visibility}`\n• AI style: `{style}`',
+    bot_visibility_private: 'Private (Ephemeral)',
+    bot_visibility_public: 'Public',
+    bot_field_subsystems: '🟢 Subsystems',
+    bot_subsystems_value: '• **WebSocket Gateway:** `{ws}` (Operational)\n• **Audio Engine:** Operational (High Fidelity)\n• **AI Assistant:** Active ({style})\n• **SSE Sync Bus:** Connected in real time',
+    bot_field_memory: '🧠 Memory & Resources',
+    bot_memory_value: '• **Heap Used:** `{used} MB` / `{total} MB`\n• **Total RSS:** `{rss} MB`\n• **Continuous Uptime:** `{uptime}`',
+    bot_field_load: '📈 Load & Scale',
+    bot_load_value: '• **Servers:** `{guilds}`\n• **Users:** `{users}`\n• **Shards:** `1 / 1`',
+    bot_footer_control: 'Control Center',
+    imagine_invalid_prompt: '❌ Please provide a valid image description (at least 3 characters).\n*Example: `/imagine an astronaut exploring a cyberpunk neon forest`*',
+    imagine_cooldown: '⏳ Please wait another {seconds}s before generating a new image.',
+    imagine_disabled: '⚠️ AI image generation has been disabled by the administrators of this server.',
+    imagine_error_fallback: 'An error occurred while generating the image.',
+    ask_missing_question: '❌ Please specify your question. Example: `/ask question:How do I get the VIP role?`',
+    ask_cooldown: '⏳ Please wait another {seconds}s before asking the AI assistant another question.',
+    ask_unsafe: '⚠️ This question does not comply with the assistant\'s safety guidelines.',
+    ask_error: '❌ An error occurred while the AI assistant was processing your request.',
+    // Admin commands (ai-setup, permissions)
+    guild_only_plain: 'This command can only be run in a server.',
+    aisetup_banned_none: '*No specific banned word configured*',
+    aisetup_banned_more: ' *(+{count} more)*',
+    aisetup_mood_sage: '🐟 Wise & Kind',
+    aisetup_mood_gamer: '🦈 Sarcastic Gamer',
+    aisetup_mood_protector: '🛡️ Protective & Serious',
+    aisetup_mood_cyberpunk: '⚡ Futuristic Cyberpunk',
+    aisetup_mood_custom: '🎨 Custom',
+    aisetup_footer: 'Configured by {tag} • Discord ToS compliant',
+    aisetup_title: '⚙️ ETHONE AI Configuration & Dedicated Channel',
+    aisetup_desc_updated: '✅ The AI channel and security settings have been updated successfully!',
+    aisetup_desc_current: 'Here is the current artificial intelligence configuration on this server:',
+    aisetup_field_channel: '💬 Dedicated Public AI Channel',
+    aisetup_channel_value: '<#{channelId}> *(All members can chat freely here without a prefix!)*',
+    aisetup_channel_none: '❌ *No dedicated channel configured* (Use `/ai-setup salon:#channel`)',
+    aisetup_field_mood: '🎭 Tuna\'s Mood',
+    aisetup_field_images: '🎨 Image generation (/imagine)',
+    aisetup_images_on: '🟢 **Enabled** (Flux model)',
+    aisetup_images_off: '🔴 **Disabled**',
+    aisetup_field_security: '🛡️ Security & DLP Protection',
+    aisetup_security_value: '🔒 **Anti-Leak filter active** (Bot tokens, API keys and owner email strictly blocked)',
+    aisetup_field_banned: '🚫 AutoMod Banned Words ({count})',
+    aisetup_slash_only: 'Use the `/ai-setup` slash command to configure the dedicated channel, the mood and the banned words.',
+    perms_footer_configured: 'Configured by {tag} • ETHONE Permissions',
+    perms_applied_title: '✅ Permissions Preset Applied: {name}',
+    perms_applied_desc_cmd: '{description}\n\nAll moderation and administration controls have been updated instantly.',
+    perms_applied_desc_btn: '{description}\n\nConfiguration saved successfully.',
+    perms_field_admins: '👑 Administrator Roles',
+    perms_field_mods: '⚔️ Moderator Roles',
+    perms_field_vip: '💎 VIP Roles',
+    perms_no_role_detected: '*No role detected*',
+    perms_no_role: '*No role*',
+    perms_confidence: '*(Confidence: {confidence})*',
+    perms_panel_footer: 'Click a button below to apply a preset in 1 click.',
+    perms_panel_title: '🛡️ Role Manager & Automatic Recommendations',
+    perms_panel_desc: 'The multilingual detection engine (FR, EN, ES, DE) analyzed the server\'s **{count} roles**.\n\n**Analyzed roles and recommendations:**\n{roles}\n\n**Currently active preset:** `{preset}`',
+    perms_no_roles_to_analyze: '*No role to analyze*',
+    perms_field_strict: '🛡️ Maximum Security',
+    perms_field_strict_value: 'Strictly Owner & Admins only.',
+    perms_field_balanced: '⚖️ Balanced (Recommended)',
+    perms_field_balanced_value: 'Admins (config) + Moderators (sanctions).',
+    perms_field_community: '🎉 Dynamic Community',
+    perms_field_community_value: 'Extended staff and VIP privileges.',
+    perms_btn_strict: 'Maximum Security',
+    perms_btn_balanced: 'Balanced (Recommended)',
+    perms_btn_community: 'Community',
+    perms_admin_only: '⛔ Only server administrators can change the permission presets.',
+    // Help center (/help, help panel)
+    help_or: 'or',
+    help_more_others: ' *(+{count} more)*',
+    help_more_subcommands: '\n• *...(+{count} more subcommands)*',
+    help_no_aliases: '*No aliases available*',
+    help_perm_everyone: '*Available to all members*',
+    help_no_description: 'No description provided.',
+    help_default_category: 'General',
+    help_card_aliases_perms: '**🔀 Aliases:** {aliases}\n**🔑 Permissions:** {permissions}',
+    help_card_examples: '**💡 Examples**\n{examples}',
+    help_btn_catalogue: 'Full catalog',
+    help_card_footer: '/help to explore the whole catalog',
+    help_home_heading: 'Help center',
+    help_home_counts: '**{commands}** commands · **{modules}** modules',
+    help_home_hint: '-# Prefix `{prefix}` or slash commands `/` · pick a module below',
+    help_cmd_count_one: '{count} cmd',
+    help_cmd_count_other: '{count} cmds',
+    help_home_shortcuts: '**Shortcuts:** `/ask` AI assistant · `/rank` level card · `/play` music · `/ticket` support · `/settings` configuration',
+    help_module_subtitle: '-# Module {index}/{total} · {count} command(s)',
+    help_module_empty: '*No command is currently assigned to this module.*',
+    help_alias_suffix: ' · aliases {aliases}',
+    help_select_placeholder: '🔍 Explore a module…',
+    help_select_home_label: '🏠 Home (overview)',
+    help_select_home_desc: 'Summary of all modules',
+    help_btn_home: 'Home',
+    help_footer_requested_by: 'Requested by {tag}',
+    help_cat_ai_name: 'Artificial Intelligence',
+    help_cat_ai_desc: 'Server AI assistant: answers and channel summaries',
+    help_cat_moderation_name: 'Moderation & Sanctions',
+    help_cat_moderation_desc: 'Moderation tools for staff: sanctions, channel and member management',
+    help_cat_security_name: 'Security & Anti-Raid',
+    help_cat_security_desc: 'Anti-raid, anti-nuke, AutoMod, new member verification and audit logs',
+    help_cat_leveling_name: 'Levels & Economy',
+    help_cat_leveling_desc: 'XP, rank cards, leaderboard and ETHONE Credits',
+    help_cat_community_name: 'Community & Fun',
+    help_cat_community_desc: 'Giveaways, suggestions, polls, events, birthdays, starboard and pinned messages',
+    help_cat_voice_music_name: 'Music & Voice Channels',
+    help_cat_voice_music_desc: 'Music player (queue, loop, volume) and temporary voice channels',
+    help_cat_support_name: 'Support & Forms',
+    help_cat_support_desc: 'Private support tickets and dynamic application forms',
+    help_cat_admin_name: 'Administration & System',
+    help_cat_admin_desc: 'Global server configuration, prefix management and module activation',
+    help_cat_general_name: 'General & Utilities',
+    help_cat_general_desc: 'General commands, latency check and server help',
+    // Music commands (playlist browser, join/disconnect/voice-status)
+    plb_default_title: 'Playlist',
+    plb_no_tracks: '*No tracks.*',
+    plb_footer: '{count} tracks · {minutes} min · page {page}/{pages}',
+    plb_pick_placeholder: 'Pick a track to play…',
+    plb_btn_all: 'Play all',
+    plb_btn_shuffle: 'Shuffle all',
+    plb_need_link: 'Provide a playlist or album link (Spotify, YouTube).',
+    plb_unreadable: 'Unable to read this playlist (private, empty or inaccessible).',
+    plb_expired: 'This list has expired — run `/playlist` again.',
+    plb_not_owner: 'Only the person who ran `/playlist` can use this menu.',
+    plb_join_voice: 'Join a voice channel first.',
+    plb_track_not_found: 'Track not found.',
+    plb_track_playing: '✅ **{title}** — {artist} is now playing.',
+    plb_track_queued: '✅ **{title}** — {artist} added to the queue (#{position}).',
+    plb_play_impossible: 'Playback failed.',
+    plb_added_count: '**{count}** tracks added',
+    plb_added: 'Added',
+    plb_shuffle_suffix: ' (in random order)',
+    vc_source_direct: '🔗 Direct stream',
+    vc_source_custom: '🎼 Custom',
+    vc_live_stream: '🔴 live stream',
+    vc_unit_mb: 'MB',
+    vc_na: 'n/a',
+    vc_track_one: '{count} track',
+    vc_track_other: '{count} tracks',
+    vc_queue_empty: 'empty',
+    vc_need_permission: 'You need the **Move Members** or **Manage Server** permission to use this command.',
+    vc_join_first: 'Join a voice channel first, or specify one with the `salon` option.',
+    vc_perm_connect: 'Connect',
+    vc_perm_speak: 'Speak',
+    vc_and: 'and',
+    vc_missing_permission: 'I am missing the **{permissions}** permission in <#{channel}>.',
+    vc_player_unavailable: 'The audio player is currently unavailable.',
+    vc_cannot_join: 'Unable to join <#{channel}>. The audio server may be unavailable, try again in a moment.',
+    vc_connected_title: '🎧 Connected to voice',
+    vc_connected_desc_permanent: 'I\'m in <#{channel}> and I\'ll stay there **24/7**. If I get disconnected, I come back on my own.',
+    vc_connected_desc_temporary: 'I\'m in <#{channel}>. I\'ll leave after a period of inactivity.',
+    vc_field_channel: '📍 Channel',
+    vc_field_mode: '♾️ 24/7 mode',
+    vc_mode_enabled: '✅ Enabled',
+    vc_mode_paused: '⏸️ Disabled',
+    vc_mode_disabled: '❌ Disabled',
+    vc_field_listeners: '👥 Listeners',
+    vc_field_voice_latency: '📶 Voice latency',
+    vc_not_in_voice: 'I\'m not in any voice channel.',
+    vc_disconnected_title: '👋 Disconnected',
+    vc_left_channel: 'I left <#{channel}>.',
+    vc_left_voice: 'I left the voice channel.',
+    vc_field_presence: '⏱️ Time connected',
+    vc_field_queue_cleared: '🎵 Queue cleared',
+    vc_status_title: '📡 Voice status',
+    vc_status_connected: '🟢 **Connected** to <#{channel}>',
+    vc_status_offline: '🟠 **Offline** — I\'m supposed to be in <#{channel}> and I\'ll return as soon as possible.',
+    vc_status_not_connected: '🔴 **Not connected** — use `/join` to bring me in.',
+    vc_mode_active: '✅ Active · <#{channel}>',
+    vc_mode_inactive: '❌ Inactive',
+    vc_field_connected_since: '⏱️ Connected since',
+    vc_field_playing: '{icon} Now playing',
+    vc_requested_by: '{source} · requested by {tag}',
+    vc_nothing_playing: 'Nothing right now.',
+    vc_field_volume: '🔊 Volume',
+    vc_muted: '🔇 Muted',
+    vc_field_repeat: '🔁 Repeat',
+    vc_repeat_off: 'Off',
+    vc_repeat_song: 'Track',
+    vc_repeat_queue: 'Queue',
+    vc_field_queue: '📜 Queue',
+    vc_field_latency: '📶 Latency',
+    vc_latency_value: 'Discord **{discord} ms**\nVoice **{voice}**',
+    vc_field_audio_server: '🎛️ Audio server',
+    vc_lavalink_line: '{icon} Lavalink · online for {uptime}',
+    vc_players_one: '🎧 {playing} active player out of {players}',
+    vc_players_other: '🎧 {playing} active players out of {players}',
+    vc_lavalink_down: '🔴 Lavalink unreachable',
+    vc_field_bot: '🤖 Bot',
+    vc_servers_one: '🌐 {count} server',
+    vc_servers_other: '🌐 {count} servers',
+    // Remaining hardcoded strings (clear, ticket, language, music shortcuts)
+    clear_need_permission: 'You need the **Manage Messages** permission to use this command.',
+    clear_bad_channel: 'Unable to delete messages in this type of channel.',
+    clear_no_user_messages: 'ℹ️ No recent messages found for **{user}** in this channel.',
+    clear_user_success: '**{count}** message(s) from **{user}** deleted successfully.',
+    clear_bulk_failed: 'Unable to delete the messages (messages older than 14 days cannot be bulk-deleted by the Discord API).',
+    ticketcmd_opened_at: '-# Opened <t:{timestamp}:R>',
+    ticketcmd_btn_close: 'Close ticket',
+    ticketcmd_footer_support: 'Support',
+    ticketcmd_opened_heading: '✅ Ticket opened',
+    ticketcmd_btn_open: 'Open ticket',
+    lang_current_title: 'Current Language',
+    lang_current_desc: 'The language currently configured on **{guild}** is: **{flag} {name}**.\n\nTo change the language, use:\n• `/language langue:[fr | en | es | de]`\n• Or click one of the quick-select buttons below:',
+    lang_footer_multilingual: 'Multilingual',
+    lang_invalid: '❌ Invalid language: `{lang}`. Choose from: `fr` (Français), `en` (English), `es` (Español), `de` (Deutsch).',
+    ms_nothing_playing_long: 'No music is currently playing.',
+    ms_nothing_playing: 'No music is playing.',
+    ms_volume_current: '🔊 Current volume: **{volume}%**',
+    ms_volume_set: '{icon} Volume set to **{volume}%**.',
+    ms_volume_failed: 'Unable to set the volume.',
+    ms_loop_off: 'off',
+    ms_loop_song: 'on the current track',
+    ms_loop_queue: 'on the whole queue',
+    ms_loop_set: '{icon} Repeat **{mode}**.',
+    ms_loop_failed: 'Unable to change the repeat mode.',
+    ms_shuffle_need_two: 'You need at least 2 tracks in the queue to shuffle it.',
+    ms_shuffled: '🔀 Queue shuffled — **{count}** tracks reordered.',
+    ms_shuffle_failed: 'Unable to shuffle the queue.',
+    ms_previous_back: '⏮️ Back to **{title}**.',
+    ms_no_previous: 'No previous track in the history.',
+    ms_previous_failed: 'Unable to go back.',
+    ms_queue_already_empty: 'The queue is already empty.',
+    ms_queue_cleared: '🗑️ Queue cleared — **{count}** track(s) removed.',
+    ms_clear_failed: 'Unable to clear the queue.',
   },
   es: {
     lang_name: 'Español',
@@ -2486,6 +3332,286 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     antiraid_lockdown_on_success: '🔒 **¡Bloqueo ACTIVADO!** {count} canal(es) de texto bloqueado(s).',
     antiraid_lockdown_off_success: '🔓 **¡Bloqueo LEVANTADO!** {count} canal(es) desbloqueado(s).',
     antiraid_usage_fallback: 'Uso: `/antiraid status`, `/antiraid raidmode <activer>`, `/antiraid lockdown <activer>`',
+    // Admin/general commands (module, prefix, setup, summarize, ping)
+    guild_only_reserved: 'Este comando solo se puede usar en un servidor.',
+    guild_only_must_run: '❌ Este comando debe ejecutarse en un servidor.',
+    uptime_day_unit: 'd',
+    module_choice_enabled: ' · activado',
+    module_choice_disabled: ' · desactivado',
+    module_list_title: '🧩 Módulos del servidor',
+    module_list_footer: 'Activar / desactivar: /module nom:<módulo> activer:True o False',
+    module_unknown: 'Módulo desconocido: `{module}`. Usa `/module` para ver la lista.',
+    module_toggled_desc: '{emoji} **{label}** ahora está **{state}** en este servidor.{note}',
+    module_state_on: 'activado',
+    module_state_off: 'desactivado',
+    module_off_note: '\nSus comandos responderán con un mensaje de «módulo desactivado» hasta que se reactive.',
+    module_title_enabled: 'Módulo activado',
+    module_title_disabled: 'Módulo desactivado',
+    prefix_title: 'Prefijo del servidor',
+    prefix_current_desc: 'El prefijo actual en este servidor es: `{prefix}`\n\nPara cambiarlo, usa:\n• Con slash: `/prefix nouveau:[tu_prefijo]`\n• Con prefijo: `{prefix}prefix [tu_prefijo]`\n• O desde el panel interactivo: `/settings`',
+    prefix_need_permission: 'Necesitas el permiso `Gestionar servidor` para cambiar el prefijo.',
+    prefix_invalid: 'El prefijo no debe contener espacios y debe tener un máximo de 5 caracteres.',
+    prefix_updated_title: '¡Prefijo actualizado!',
+    prefix_updated_desc: 'El prefijo de este servidor es ahora: `{prefix}`\n\nEjemplo: `{prefix}ping` o `{prefix}help`',
+    summarize_channel_unsupported: 'Este canal no permite recuperar mensajes.',
+    summarize_no_messages: 'No se encontraron mensajes recientes en este canal.',
+    summarize_title: '📝 Resumen del canal',
+    summarize_error: '❌ Error al resumir: {error}',
+    summarize_unexpected_error: 'Error inesperado',
+    ping_status_excellent: '🟢 Excelente',
+    ping_status_good: '🟡 Bueno',
+    ping_status_high: '🔴 Alto',
+    ping_api_fast: '🟢 Ultrarrápido',
+    ping_api_stable: '🟡 Estable',
+    ping_api_slow: '🔴 Ralentizado',
+    ping_footer: 'Diagnóstico en tiempo real',
+    ping_title: '🏓 Telemetría de red y diagnóstico',
+    ping_desc: 'Conexión activa con los servidores de Discord Gateway.\n*Haz clic en el botón de abajo para actualizar las mediciones al instante.*',
+    ping_field_ws: '⚡ Pasarela WebSocket',
+    ping_field_api: '🌐 API REST de Discord',
+    ping_field_uptime: '⏱️ Disponibilidad (Uptime)',
+    ping_field_memory: '🧠 Memoria dedicada',
+    ping_field_shards: '🖥️ Shards conectados',
+    ping_shards_value: '`Shard 0 / 1` (Nominal)',
+    ping_field_servers: '📡 Servidores y miembros',
+    ping_servers_value: '`{guilds}` serv. / `{users}` usuarios',
+    ping_retest_label: 'Volver a medir la latencia',
+    // General commands (bot, imagine, ask)
+    bot_ws_calculating: 'Calculando...',
+    bot_btn_dashboard: 'Panel web de ETHONE',
+    bot_btn_support: 'Soporte y Discord',
+    bot_ping_title: '⚡ Latencia y conexión Gateway',
+    bot_ping_desc: 'Las mediciones de comunicación de red con Discord están operativas:\n\n• **WebSocket Gateway:** `{ws}` *(estado del socket)*\n• **Ida y vuelta de la API:** `{latency}ms` *(tiempo de respuesta REST)*\n• **Estado del shard:** 🟢 Conectado y activo',
+    bot_info_long_desc: '**{botName}** es el bot todo en uno de nueva generación que impulsa el servidor.\nDiseñado para ofrecer una experiencia fluida, reactiva y altamente personalizable.\n\n> 🌐 **Panel en línea:** Controla todos los módulos en [ethone.dev](https://ethone.dev/discord/bot)\n> 🛡️ **Seguridad:** Anti-Raid automático, AutoMod inteligente y registros de auditoría\n> 🤖 **Inteligencia artificial:** Asistente de IA integrado (`/ask`) y resúmenes de canales',
+    bot_field_version: '📦 Versión y motor',
+    bot_field_version_value: '`v2.4.0` • Node/Bun + TypeScript\nDiscord.js `v14.18`',
+    bot_field_global_stats: '📊 Estadísticas globales',
+    bot_global_stats_value: '**{guilds}** servidor(es)\n**{users}** miembros atendidos',
+    bot_field_availability: '⏱️ Disponibilidad',
+    bot_availability_value: 'En línea desde hace **{uptime}**\nLatencia: `{ws}`',
+    bot_field_config: '⚙️ Configuración actual',
+    bot_config_value: '• Prefijo: `{prefix}`\n• Visibilidad: `{visibility}`\n• Estilo de IA: `{style}`',
+    bot_visibility_private: 'Privado (Efímero)',
+    bot_visibility_public: 'Público',
+    bot_field_subsystems: '🟢 Subsistemas',
+    bot_subsystems_value: '• **Gateway WebSocket:** `{ws}` (Operativo)\n• **Motor de audio:** Operativo (Alta fidelidad)\n• **Asistente de IA:** Activo ({style})\n• **Bus de sincronización SSE:** Conectado en tiempo real',
+    bot_field_memory: '🧠 Memoria y recursos',
+    bot_memory_value: '• **Heap usado:** `{used} MB` / `{total} MB`\n• **RSS total:** `{rss} MB`\n• **Uptime continuo:** `{uptime}`',
+    bot_field_load: '📈 Carga y escala',
+    bot_load_value: '• **Servidores:** `{guilds}`\n• **Usuarios:** `{users}`\n• **Shards:** `1 / 1`',
+    bot_footer_control: 'Centro de control',
+    imagine_invalid_prompt: '❌ Proporciona una descripción de imagen válida (al menos 3 caracteres).\n*Ejemplo: `/imagine un astronauta explorando un bosque de neón cyberpunk`*',
+    imagine_cooldown: '⏳ Espera {seconds}s más antes de generar una nueva imagen.',
+    imagine_disabled: '⚠️ La generación de imágenes con IA ha sido desactivada por los administradores de este servidor.',
+    imagine_error_fallback: 'Se produjo un error al generar la imagen.',
+    ask_missing_question: '❌ Indica tu pregunta. Ejemplo: `/ask question:¿Cómo obtengo el rol VIP?`',
+    ask_cooldown: '⏳ Espera {seconds}s más antes de volver a hacer una pregunta al asistente de IA.',
+    ask_unsafe: '⚠️ Esta pregunta no cumple las normas de seguridad del asistente.',
+    ask_error: '❌ Se produjo un error durante el procesamiento por el asistente de IA.',
+    // Admin commands (ai-setup, permissions)
+    guild_only_plain: 'Este comando solo se puede ejecutar en un servidor.',
+    aisetup_banned_none: '*No hay palabras prohibidas específicas configuradas*',
+    aisetup_banned_more: ' *(+{count} más)*',
+    aisetup_mood_sage: '🐟 Sabio y amable',
+    aisetup_mood_gamer: '🦈 Gamer sarcástico',
+    aisetup_mood_protector: '🛡️ Protector y serio',
+    aisetup_mood_cyberpunk: '⚡ Cyberpunk futurista',
+    aisetup_mood_custom: '🎨 Personalizado',
+    aisetup_footer: 'Configurado por {tag} • Conforme a los ToS de Discord',
+    aisetup_title: '⚙️ Configuración de ETHONE AI y canal dedicado',
+    aisetup_desc_updated: '✅ ¡Los ajustes del canal de IA y de seguridad se han actualizado correctamente!',
+    aisetup_desc_current: 'Esta es la configuración actual de la inteligencia artificial en este servidor:',
+    aisetup_field_channel: '💬 Canal de IA público dedicado',
+    aisetup_channel_value: '<#{channelId}> *(¡Todos los miembros pueden chatear libremente aquí sin prefijo!)*',
+    aisetup_channel_none: '❌ *Ningún canal dedicado configurado* (Usa `/ai-setup salon:#canal`)',
+    aisetup_field_mood: '🎭 Humor del Atún',
+    aisetup_field_images: '🎨 Generación de imágenes (/imagine)',
+    aisetup_images_on: '🟢 **Activada** (Modelo Flux)',
+    aisetup_images_off: '🔴 **Desactivada**',
+    aisetup_field_security: '🛡️ Seguridad y protección DLP',
+    aisetup_security_value: '🔒 **Filtro Anti-Leak activo** (Tokens del bot, claves de API y correo del propietario bloqueados estrictamente)',
+    aisetup_field_banned: '🚫 Palabras prohibidas de AutoMod ({count})',
+    aisetup_slash_only: 'Usa el comando slash `/ai-setup` para configurar el canal dedicado, el humor y las palabras prohibidas.',
+    perms_footer_configured: 'Configurado por {tag} • ETHONE Permissions',
+    perms_applied_title: '✅ Preset de permisos aplicado: {name}',
+    perms_applied_desc_cmd: '{description}\n\nTodos los controles de moderación y administración se han actualizado al instante.',
+    perms_applied_desc_btn: '{description}\n\nConfiguración guardada correctamente.',
+    perms_field_admins: '👑 Roles de administrador',
+    perms_field_mods: '⚔️ Roles de moderador',
+    perms_field_vip: '💎 Roles VIP',
+    perms_no_role_detected: '*Ningún rol detectado*',
+    perms_no_role: '*Ningún rol*',
+    perms_confidence: '*(Confianza: {confidence})*',
+    perms_panel_footer: 'Haz clic en un botón de abajo para aplicar un preset con 1 clic.',
+    perms_panel_title: '🛡️ Gestor de roles y recomendaciones automáticas',
+    perms_panel_desc: 'El motor de detección multilingüe (FR, EN, ES, DE) ha analizado los **{count} roles** del servidor.\n\n**Roles analizados y recomendaciones:**\n{roles}\n\n**Preset activo actualmente:** `{preset}`',
+    perms_no_roles_to_analyze: '*Ningún rol para analizar*',
+    perms_field_strict: '🛡️ Seguridad máxima',
+    perms_field_strict_value: 'Solo propietario y administradores, de forma estricta.',
+    perms_field_balanced: '⚖️ Equilibrado (Recomendado)',
+    perms_field_balanced_value: 'Administradores (configuración) + moderadores (sanciones).',
+    perms_field_community: '🎉 Comunidad dinámica',
+    perms_field_community_value: 'Staff ampliado y privilegios VIP.',
+    perms_btn_strict: 'Seguridad máxima',
+    perms_btn_balanced: 'Equilibrado (Recomendado)',
+    perms_btn_community: 'Comunidad',
+    perms_admin_only: '⛔ Solo los administradores del servidor pueden modificar los presets de permisos.',
+    // Help center (/help, help panel)
+    help_or: 'o',
+    help_more_others: ' *(+{count} más)*',
+    help_more_subcommands: '\n• *...(+{count} subcomandos más)*',
+    help_no_aliases: '*Sin alias disponibles*',
+    help_perm_everyone: '*Accesible para todos los miembros*',
+    help_no_description: 'No se proporcionó ninguna descripción.',
+    help_default_category: 'General',
+    help_card_aliases_perms: '**🔀 Alias:** {aliases}\n**🔑 Permisos:** {permissions}',
+    help_card_examples: '**💡 Ejemplos**\n{examples}',
+    help_btn_catalogue: 'Catálogo completo',
+    help_card_footer: '/help para explorar todo el catálogo',
+    help_home_heading: 'Centro de ayuda',
+    help_home_counts: '**{commands}** comandos · **{modules}** módulos',
+    help_home_hint: '-# Prefijo `{prefix}` o comandos slash `/` · elige un módulo abajo',
+    help_cmd_count_one: '{count} cmd',
+    help_cmd_count_other: '{count} cmds',
+    help_home_shortcuts: '**Atajos:** `/ask` asistente de IA · `/rank` tarjeta de nivel · `/play` música · `/ticket` soporte · `/settings` configuración',
+    help_module_subtitle: '-# Módulo {index}/{total} · {count} comando(s)',
+    help_module_empty: '*Actualmente no hay ningún comando asignado a este módulo.*',
+    help_alias_suffix: ' · alias {aliases}',
+    help_select_placeholder: '🔍 Explorar un módulo…',
+    help_select_home_label: '🏠 Inicio (vista general)',
+    help_select_home_desc: 'Resumen de todos los módulos',
+    help_btn_home: 'Inicio',
+    help_footer_requested_by: 'Solicitado por {tag}',
+    help_cat_ai_name: 'Inteligencia artificial',
+    help_cat_ai_desc: 'Asistente de IA del servidor: respuestas y resúmenes de canales',
+    help_cat_moderation_name: 'Moderación y sanciones',
+    help_cat_moderation_desc: 'Herramientas de moderación para el staff: sanciones, gestión de canales y miembros',
+    help_cat_security_name: 'Seguridad y Anti-Raid',
+    help_cat_security_desc: 'Anti-raid, anti-nuke, AutoMod, verificación de nuevos miembros y registros de auditoría',
+    help_cat_leveling_name: 'Niveles y economía',
+    help_cat_leveling_desc: 'XP, tarjetas de rango, clasificación y Créditos ETHONE',
+    help_cat_community_name: 'Comunidad y ocio',
+    help_cat_community_desc: 'Sorteos, sugerencias, encuestas, eventos, cumpleaños, starboard y mensajes fijados',
+    help_cat_voice_music_name: 'Música y canales de voz',
+    help_cat_voice_music_desc: 'Reproductor de música (cola, bucle, volumen) y canales de voz temporales',
+    help_cat_support_name: 'Soporte y formularios',
+    help_cat_support_desc: 'Tickets de asistencia privados y formularios de solicitud dinámicos',
+    help_cat_admin_name: 'Administración y sistema',
+    help_cat_admin_desc: 'Configuración global del servidor, gestión de prefijos y activación de módulos',
+    help_cat_general_name: 'General y utilidades',
+    help_cat_general_desc: 'Comandos generales, comprobación de latencia y ayuda del servidor',
+    // Music commands (playlist browser, join/disconnect/voice-status)
+    plb_default_title: 'Lista de reproducción',
+    plb_no_tracks: '*Ninguna canción.*',
+    plb_footer: '{count} canciones · {minutes} min · página {page}/{pages}',
+    plb_pick_placeholder: 'Elige una canción para reproducir…',
+    plb_btn_all: 'Reproducir todo',
+    plb_btn_shuffle: 'Mezclar todo',
+    plb_need_link: 'Proporciona un enlace de lista de reproducción o álbum (Spotify, YouTube).',
+    plb_unreadable: 'No se puede leer esta lista de reproducción (privada, vacía o inaccesible).',
+    plb_expired: 'Esta lista ha caducado — vuelve a ejecutar `/playlist`.',
+    plb_not_owner: 'Solo la persona que ejecutó `/playlist` puede usar este menú.',
+    plb_join_voice: 'Únete primero a un canal de voz.',
+    plb_track_not_found: 'Canción no encontrada.',
+    plb_track_playing: '✅ **{title}** — {artist} se está reproduciendo.',
+    plb_track_queued: '✅ **{title}** — {artist} añadido a la cola (#{position}).',
+    plb_play_impossible: 'No se puede reproducir.',
+    plb_added_count: '**{count}** canciones añadidas',
+    plb_added: 'Añadido',
+    plb_shuffle_suffix: ' (en orden aleatorio)',
+    vc_source_direct: '🔗 Flujo directo',
+    vc_source_custom: '🎼 Personalizado',
+    vc_live_stream: '🔴 transmisión en directo',
+    vc_unit_mb: 'MB',
+    vc_na: 'n/d',
+    vc_track_one: '{count} canción',
+    vc_track_other: '{count} canciones',
+    vc_queue_empty: 'vacía',
+    vc_need_permission: 'Necesitas el permiso **Mover miembros** o **Gestionar servidor** para usar este comando.',
+    vc_join_first: 'Únete primero a un canal de voz, o indica uno con la opción `salon`.',
+    vc_perm_connect: 'Conectar',
+    vc_perm_speak: 'Hablar',
+    vc_and: 'y',
+    vc_missing_permission: 'Me falta el permiso **{permissions}** en <#{channel}>.',
+    vc_player_unavailable: 'El reproductor de audio no está disponible por el momento.',
+    vc_cannot_join: 'No se puede unir a <#{channel}>. Puede que el servidor de audio no esté disponible, inténtalo de nuevo en un momento.',
+    vc_connected_title: '🎧 Conectado al canal de voz',
+    vc_connected_desc_permanent: 'Estoy en <#{channel}> y me quedo allí **24/7**. Si me desconectan, vuelvo yo solo.',
+    vc_connected_desc_temporary: 'Estoy en <#{channel}>. Me iré tras un periodo de inactividad.',
+    vc_field_channel: '📍 Canal',
+    vc_field_mode: '♾️ Modo 24/7',
+    vc_mode_enabled: '✅ Activado',
+    vc_mode_paused: '⏸️ Desactivado',
+    vc_mode_disabled: '❌ Desactivado',
+    vc_field_listeners: '👥 Oyentes',
+    vc_field_voice_latency: '📶 Latencia de voz',
+    vc_not_in_voice: 'No estoy en ningún canal de voz.',
+    vc_disconnected_title: '👋 Desconectado',
+    vc_left_channel: 'He salido de <#{channel}>.',
+    vc_left_voice: 'He salido del canal de voz.',
+    vc_field_presence: '⏱️ Tiempo conectado',
+    vc_field_queue_cleared: '🎵 Cola vaciada',
+    vc_status_title: '📡 Estado de voz',
+    vc_status_connected: '🟢 **Conectado** a <#{channel}>',
+    vc_status_offline: '🟠 **Sin conexión** — debo estar en <#{channel}> y volveré en cuanto pueda.',
+    vc_status_not_connected: '🔴 **No conectado** — usa `/join` para que me una.',
+    vc_mode_active: '✅ Activo · <#{channel}>',
+    vc_mode_inactive: '❌ Inactivo',
+    vc_field_connected_since: '⏱️ Conectado desde',
+    vc_field_playing: '{icon} En reproducción',
+    vc_requested_by: '{source} · solicitado por {tag}',
+    vc_nothing_playing: 'Nada por el momento.',
+    vc_field_volume: '🔊 Volumen',
+    vc_muted: '🔇 Silenciado',
+    vc_field_repeat: '🔁 Repetición',
+    vc_repeat_off: 'Desactivada',
+    vc_repeat_song: 'Canción',
+    vc_repeat_queue: 'Cola',
+    vc_field_queue: '📜 Cola de reproducción',
+    vc_field_latency: '📶 Latencia',
+    vc_latency_value: 'Discord **{discord} ms**\nVoz **{voice}**',
+    vc_field_audio_server: '🎛️ Servidor de audio',
+    vc_lavalink_line: '{icon} Lavalink · en línea desde hace {uptime}',
+    vc_players_one: '🎧 {playing} reproductor activo de {players}',
+    vc_players_other: '🎧 {playing} reproductores activos de {players}',
+    vc_lavalink_down: '🔴 Lavalink inaccesible',
+    vc_field_bot: '🤖 Bot',
+    vc_servers_one: '🌐 {count} servidor',
+    vc_servers_other: '🌐 {count} servidores',
+    // Remaining hardcoded strings (clear, ticket, language, music shortcuts)
+    clear_need_permission: 'Necesitas el permiso **Gestionar mensajes** para usar este comando.',
+    clear_bad_channel: 'No se pueden eliminar mensajes en este tipo de canal.',
+    clear_no_user_messages: 'ℹ️ No se encontraron mensajes recientes de **{user}** en este canal.',
+    clear_user_success: '**{count}** mensaje(s) de **{user}** eliminado(s) correctamente.',
+    clear_bulk_failed: 'No se pueden eliminar los mensajes (la API de Discord no permite eliminar en masa mensajes de más de 14 días).',
+    ticketcmd_opened_at: '-# Abierto <t:{timestamp}:R>',
+    ticketcmd_btn_close: 'Cerrar ticket',
+    ticketcmd_footer_support: 'Soporte',
+    ticketcmd_opened_heading: '✅ Ticket abierto',
+    ticketcmd_btn_open: 'Abrir ticket',
+    lang_current_title: 'Idioma actual',
+    lang_current_desc: 'El idioma configurado actualmente en **{guild}** es: **{flag} {name}**.\n\nPara cambiar el idioma, usa:\n• `/language langue:[fr | en | es | de]`\n• O haz clic en uno de los botones de selección rápida de abajo:',
+    lang_footer_multilingual: 'Multilingüe',
+    lang_invalid: '❌ Idioma no válido: `{lang}`. Elige entre: `fr` (Français), `en` (English), `es` (Español), `de` (Deutsch).',
+    ms_nothing_playing_long: 'No hay ninguna música reproduciéndose actualmente.',
+    ms_nothing_playing: 'No hay ninguna música en reproducción.',
+    ms_volume_current: '🔊 Volumen actual: **{volume}%**',
+    ms_volume_set: '{icon} Volumen ajustado a **{volume}%**.',
+    ms_volume_failed: 'No se puede ajustar el volumen.',
+    ms_loop_off: 'desactivada',
+    ms_loop_song: 'en la canción actual',
+    ms_loop_queue: 'en toda la cola',
+    ms_loop_set: '{icon} Repetición **{mode}**.',
+    ms_loop_failed: 'No se puede cambiar el modo de repetición.',
+    ms_shuffle_need_two: 'Se necesitan al menos 2 canciones en la cola para mezclarla.',
+    ms_shuffled: '🔀 Cola mezclada — **{count}** canciones reordenadas.',
+    ms_shuffle_failed: 'No se puede mezclar la cola.',
+    ms_previous_back: '⏮️ Volviendo a **{title}**.',
+    ms_no_previous: 'No hay ninguna canción anterior en el historial.',
+    ms_previous_failed: 'No se puede volver atrás.',
+    ms_queue_already_empty: 'La cola ya está vacía.',
+    ms_queue_cleared: '🗑️ Cola vaciada — **{count}** canción(es) eliminada(s).',
+    ms_clear_failed: 'No se puede vaciar la cola.',
   },
   de: {
     lang_name: 'Deutsch',
@@ -3104,6 +4230,286 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     antiraid_lockdown_on_success: '🔒 **Lockdown AKTIVIERT!** {count} Textkanal/Textkanäle gesperrt.',
     antiraid_lockdown_off_success: '🔓 **Lockdown AUFGEHOBEN!** {count} Kanal/Kanäle entsperrt.',
     antiraid_usage_fallback: 'Verwendung: `/antiraid status`, `/antiraid raidmode <activer>`, `/antiraid lockdown <activer>`',
+    // Admin/general commands (module, prefix, setup, summarize, ping)
+    guild_only_reserved: 'Dieser Befehl kann nur auf einem Server verwendet werden.',
+    guild_only_must_run: '❌ Dieser Befehl muss auf einem Server ausgeführt werden.',
+    uptime_day_unit: 'T',
+    module_choice_enabled: ' · aktiviert',
+    module_choice_disabled: ' · deaktiviert',
+    module_list_title: '🧩 Server-Module',
+    module_list_footer: 'Aktivieren / deaktivieren: /module nom:<Modul> activer:True oder False',
+    module_unknown: 'Unbekanntes Modul: `{module}`. Verwende `/module`, um die Liste zu sehen.',
+    module_toggled_desc: '{emoji} **{label}** ist jetzt **{state}** auf diesem Server.{note}',
+    module_state_on: 'aktiviert',
+    module_state_off: 'deaktiviert',
+    module_off_note: '\nSeine Befehle antworten mit der Meldung „Modul deaktiviert“, bis es wieder aktiviert wird.',
+    module_title_enabled: 'Modul aktiviert',
+    module_title_disabled: 'Modul deaktiviert',
+    prefix_title: 'Server-Präfix',
+    prefix_current_desc: 'Das aktuelle Präfix auf diesem Server ist: `{prefix}`\n\nZum Ändern verwende:\n• Als Slash-Befehl: `/prefix nouveau:[dein_präfix]`\n• Als Präfix-Befehl: `{prefix}prefix [dein_präfix]`\n• Oder über das interaktive Panel: `/settings`',
+    prefix_need_permission: 'Du benötigst die Berechtigung `Server verwalten`, um das Präfix zu ändern.',
+    prefix_invalid: 'Das Präfix darf keine Leerzeichen enthalten und höchstens 5 Zeichen lang sein.',
+    prefix_updated_title: 'Präfix aktualisiert!',
+    prefix_updated_desc: 'Das Präfix für diesen Server ist jetzt: `{prefix}`\n\nBeispiel: `{prefix}ping` oder `{prefix}help`',
+    summarize_channel_unsupported: 'Dieser Kanal unterstützt das Abrufen von Nachrichten nicht.',
+    summarize_no_messages: 'Keine aktuellen Nachrichten in diesem Kanal gefunden.',
+    summarize_title: '📝 Kanalzusammenfassung',
+    summarize_error: '❌ Fehler bei der Zusammenfassung: {error}',
+    summarize_unexpected_error: 'Unerwarteter Fehler',
+    ping_status_excellent: '🟢 Ausgezeichnet',
+    ping_status_good: '🟡 Gut',
+    ping_status_high: '🔴 Hoch',
+    ping_api_fast: '🟢 Ultraschnell',
+    ping_api_stable: '🟡 Stabil',
+    ping_api_slow: '🔴 Verlangsamt',
+    ping_footer: 'Echtzeit-Diagnose',
+    ping_title: '🏓 Netzwerk-Telemetrie & Diagnose',
+    ping_desc: 'Aktive Verbindung zu den Discord-Gateway-Servern.\n*Klicke auf die Schaltfläche unten, um die Messwerte sofort zu aktualisieren.*',
+    ping_field_ws: '⚡ WebSocket-Gateway',
+    ping_field_api: '🌐 Discord-REST-API',
+    ping_field_uptime: '⏱️ Verfügbarkeit (Uptime)',
+    ping_field_memory: '🧠 Dedizierter Speicher',
+    ping_field_shards: '🖥️ Verbundene Shards',
+    ping_shards_value: '`Shard 0 / 1` (Nominal)',
+    ping_field_servers: '📡 Server & Mitglieder',
+    ping_servers_value: '`{guilds}` Server / `{users}` Nutzer',
+    ping_retest_label: 'Latenz erneut testen',
+    // General commands (bot, imagine, ask)
+    bot_ws_calculating: 'Wird berechnet...',
+    bot_btn_dashboard: 'ETHONE Web-Dashboard',
+    bot_btn_support: 'Support & Discord',
+    bot_ping_title: '⚡ Latenz & Gateway-Verbindung',
+    bot_ping_desc: 'Die Netzwerk-Messungen zur Kommunikation mit Discord sind betriebsbereit:\n\n• **WebSocket-Gateway:** `{ws}` *(Socket-Status)*\n• **API-Roundtrip:** `{latency}ms` *(REST-Antwortzeit)*\n• **Shard-Status:** 🟢 Verbunden & aktiv',
+    bot_info_long_desc: '**{botName}** ist der All-in-One-Bot der neuen Generation, der den Server antreibt.\nEntwickelt für ein flüssiges, reaktionsschnelles und hochgradig anpassbares Erlebnis.\n\n> 🌐 **Online-Dashboard:** Steuere alle Module auf [ethone.dev](https://ethone.dev/discord/bot)\n> 🛡️ **Sicherheit:** Automatischer Anti-Raid, intelligenter AutoMod und Audit-Logs\n> 🤖 **Künstliche Intelligenz:** Integrierter KI-Assistent (`/ask`) und Kanalzusammenfassungen',
+    bot_field_version: '📦 Version & Engine',
+    bot_field_version_value: '`v2.4.0` • Node/Bun + TypeScript\nDiscord.js `v14.18`',
+    bot_field_global_stats: '📊 Globale Statistiken',
+    bot_global_stats_value: '**{guilds}** Server\n**{users}** betreute Mitglieder',
+    bot_field_availability: '⏱️ Verfügbarkeit',
+    bot_availability_value: 'Online seit **{uptime}**\nLatenz: `{ws}`',
+    bot_field_config: '⚙️ Aktuelle Konfiguration',
+    bot_config_value: '• Präfix: `{prefix}`\n• Sichtbarkeit: `{visibility}`\n• KI-Stil: `{style}`',
+    bot_visibility_private: 'Privat (Ephemer)',
+    bot_visibility_public: 'Öffentlich',
+    bot_field_subsystems: '🟢 Subsysteme',
+    bot_subsystems_value: '• **WebSocket-Gateway:** `{ws}` (Betriebsbereit)\n• **Audio-Engine:** Betriebsbereit (High Fidelity)\n• **KI-Assistent:** Aktiv ({style})\n• **SSE-Sync-Bus:** In Echtzeit verbunden',
+    bot_field_memory: '🧠 Speicher & Ressourcen',
+    bot_memory_value: '• **Heap genutzt:** `{used} MB` / `{total} MB`\n• **RSS gesamt:** `{rss} MB`\n• **Durchgehende Uptime:** `{uptime}`',
+    bot_field_load: '📈 Auslastung & Skalierung',
+    bot_load_value: '• **Server:** `{guilds}`\n• **Nutzer:** `{users}`\n• **Shards:** `1 / 1`',
+    bot_footer_control: 'Kontrollzentrum',
+    imagine_invalid_prompt: '❌ Bitte gib eine gültige Bildbeschreibung an (mindestens 3 Zeichen).\n*Beispiel: `/imagine ein Astronaut erkundet einen Cyberpunk-Neonwald`*',
+    imagine_cooldown: '⏳ Bitte warte noch {seconds}s, bevor du ein neues Bild generierst.',
+    imagine_disabled: '⚠️ Die KI-Bildgenerierung wurde von den Administratoren dieses Servers deaktiviert.',
+    imagine_error_fallback: 'Beim Generieren des Bildes ist ein Fehler aufgetreten.',
+    ask_missing_question: '❌ Bitte gib deine Frage an. Beispiel: `/ask question:Wie bekomme ich die VIP-Rolle?`',
+    ask_cooldown: '⏳ Bitte warte noch {seconds}s, bevor du dem KI-Assistenten erneut eine Frage stellst.',
+    ask_unsafe: '⚠️ Diese Frage entspricht nicht den Sicherheitsrichtlinien des Assistenten.',
+    ask_error: '❌ Bei der Verarbeitung durch den KI-Assistenten ist ein Fehler aufgetreten.',
+    // Admin commands (ai-setup, permissions)
+    guild_only_plain: 'Dieser Befehl kann nur auf einem Server ausgeführt werden.',
+    aisetup_banned_none: '*Keine spezifischen verbotenen Wörter konfiguriert*',
+    aisetup_banned_more: ' *(+{count} weitere)*',
+    aisetup_mood_sage: '🐟 Weise & Wohlwollend',
+    aisetup_mood_gamer: '🦈 Sarkastischer Gamer',
+    aisetup_mood_protector: '🛡️ Beschützend & Ernst',
+    aisetup_mood_cyberpunk: '⚡ Futuristischer Cyberpunk',
+    aisetup_mood_custom: '🎨 Benutzerdefiniert',
+    aisetup_footer: 'Konfiguriert von {tag} • Konform mit den Discord-ToS',
+    aisetup_title: '⚙️ ETHONE-AI-Konfiguration & dedizierter Kanal',
+    aisetup_desc_updated: '✅ Die Einstellungen für den KI-Kanal und die Sicherheit wurden erfolgreich aktualisiert!',
+    aisetup_desc_current: 'Dies ist die aktuelle Konfiguration der künstlichen Intelligenz auf diesem Server:',
+    aisetup_field_channel: '💬 Dedizierter öffentlicher KI-Kanal',
+    aisetup_channel_value: '<#{channelId}> *(Alle Mitglieder können hier frei und ohne Präfix chatten!)*',
+    aisetup_channel_none: '❌ *Kein dedizierter Kanal konfiguriert* (Verwende `/ai-setup salon:#kanal`)',
+    aisetup_field_mood: '🎭 Stimmung des Thons',
+    aisetup_field_images: '🎨 Bildgenerierung (/imagine)',
+    aisetup_images_on: '🟢 **Aktiviert** (Flux-Modell)',
+    aisetup_images_off: '🔴 **Deaktiviert**',
+    aisetup_field_security: '🛡️ Sicherheit & DLP-Schutz',
+    aisetup_security_value: '🔒 **Anti-Leak-Filter aktiv** (Bot-Tokens, API-Schlüssel und E-Mail des Eigentümers strikt blockiert)',
+    aisetup_field_banned: '🚫 AutoMod-Verbotene Wörter ({count})',
+    aisetup_slash_only: 'Verwende den Slash-Befehl `/ai-setup`, um den dedizierten Kanal, die Stimmung und die verbotenen Wörter zu konfigurieren.',
+    perms_footer_configured: 'Konfiguriert von {tag} • ETHONE Permissions',
+    perms_applied_title: '✅ Berechtigungs-Preset angewendet: {name}',
+    perms_applied_desc_cmd: '{description}\n\nAlle Moderations- und Administrationskontrollen wurden sofort aktualisiert.',
+    perms_applied_desc_btn: '{description}\n\nKonfiguration erfolgreich gespeichert.',
+    perms_field_admins: '👑 Administrator-Rollen',
+    perms_field_mods: '⚔️ Moderator-Rollen',
+    perms_field_vip: '💎 VIP-Rollen',
+    perms_no_role_detected: '*Keine Rolle erkannt*',
+    perms_no_role: '*Keine Rolle*',
+    perms_confidence: '*(Konfidenz: {confidence})*',
+    perms_panel_footer: 'Klicke auf eine Schaltfläche unten, um ein Preset mit 1 Klick anzuwenden.',
+    perms_panel_title: '🛡️ Rollenverwaltung & automatische Empfehlungen',
+    perms_panel_desc: 'Die mehrsprachige Erkennung (FR, EN, ES, DE) hat die **{count} Rollen** des Servers analysiert.\n\n**Analysierte Rollen und Empfehlungen:**\n{roles}\n\n**Aktuell aktives Preset:** `{preset}`',
+    perms_no_roles_to_analyze: '*Keine Rolle zum Analysieren*',
+    perms_field_strict: '🛡️ Maximale Sicherheit',
+    perms_field_strict_value: 'Ausschließlich Owner & Admins.',
+    perms_field_balanced: '⚖️ Ausgewogen (Empfohlen)',
+    perms_field_balanced_value: 'Admins (Konfiguration) + Moderatoren (Sanktionen).',
+    perms_field_community: '🎉 Dynamische Community',
+    perms_field_community_value: 'Erweitertes Team und VIP-Privilegien.',
+    perms_btn_strict: 'Maximale Sicherheit',
+    perms_btn_balanced: 'Ausgewogen (Empfohlen)',
+    perms_btn_community: 'Community',
+    perms_admin_only: '⛔ Nur Server-Administratoren können die Berechtigungs-Presets ändern.',
+    // Help center (/help, help panel)
+    help_or: 'oder',
+    help_more_others: ' *(+{count} weitere)*',
+    help_more_subcommands: '\n• *...(+{count} weitere Unterbefehle)*',
+    help_no_aliases: '*Keine Aliasse verfügbar*',
+    help_perm_everyone: '*Für alle Mitglieder verfügbar*',
+    help_no_description: 'Keine Beschreibung vorhanden.',
+    help_default_category: 'Allgemein',
+    help_card_aliases_perms: '**🔀 Aliasse:** {aliases}\n**🔑 Berechtigungen:** {permissions}',
+    help_card_examples: '**💡 Beispiele**\n{examples}',
+    help_btn_catalogue: 'Vollständiger Katalog',
+    help_card_footer: '/help, um den gesamten Katalog zu erkunden',
+    help_home_heading: 'Hilfezentrum',
+    help_home_counts: '**{commands}** Befehle · **{modules}** Module',
+    help_home_hint: '-# Präfix `{prefix}` oder Slash-Befehle `/` · wähle unten ein Modul',
+    help_cmd_count_one: '{count} Bef.',
+    help_cmd_count_other: '{count} Bef.',
+    help_home_shortcuts: '**Shortcuts:** `/ask` KI-Assistent · `/rank` Levelkarte · `/play` Musik · `/ticket` Support · `/settings` Konfiguration',
+    help_module_subtitle: '-# Modul {index}/{total} · {count} Befehl(e)',
+    help_module_empty: '*Diesem Modul ist derzeit kein Befehl zugewiesen.*',
+    help_alias_suffix: ' · Aliasse {aliases}',
+    help_select_placeholder: '🔍 Ein Modul erkunden…',
+    help_select_home_label: '🏠 Startseite (Übersicht)',
+    help_select_home_desc: 'Übersicht aller Module',
+    help_btn_home: 'Startseite',
+    help_footer_requested_by: 'Angefordert von {tag}',
+    help_cat_ai_name: 'Künstliche Intelligenz',
+    help_cat_ai_desc: 'KI-Assistent des Servers: Antworten und Kanalzusammenfassungen',
+    help_cat_moderation_name: 'Moderation & Sanktionen',
+    help_cat_moderation_desc: 'Moderationswerkzeuge für das Team: Sanktionen, Kanal- und Mitgliederverwaltung',
+    help_cat_security_name: 'Sicherheit & Anti-Raid',
+    help_cat_security_desc: 'Anti-Raid, Anti-Nuke, AutoMod, Verifizierung neuer Mitglieder und Audit-Logs',
+    help_cat_leveling_name: 'Level & Wirtschaft',
+    help_cat_leveling_desc: 'XP, Rangkarten, Bestenliste und ETHONE-Credits',
+    help_cat_community_name: 'Community & Freizeit',
+    help_cat_community_desc: 'Gewinnspiele, Vorschläge, Umfragen, Events, Geburtstage, Starboard und angeheftete Nachrichten',
+    help_cat_voice_music_name: 'Musik & Sprachkanäle',
+    help_cat_voice_music_desc: 'Musikplayer (Warteschlange, Wiederholung, Lautstärke) und temporäre Sprachkanäle',
+    help_cat_support_name: 'Support & Formulare',
+    help_cat_support_desc: 'Private Support-Tickets und dynamische Bewerbungsformulare',
+    help_cat_admin_name: 'Administration & System',
+    help_cat_admin_desc: 'Globale Serverkonfiguration, Präfixverwaltung und Modulaktivierung',
+    help_cat_general_name: 'Allgemein & Werkzeuge',
+    help_cat_general_desc: 'Allgemeine Befehle, Latenzprüfung und Serverhilfe',
+    // Music commands (playlist browser, join/disconnect/voice-status)
+    plb_default_title: 'Playlist',
+    plb_no_tracks: '*Keine Titel.*',
+    plb_footer: '{count} Titel · {minutes} Min. · Seite {page}/{pages}',
+    plb_pick_placeholder: 'Wähle einen Titel zum Abspielen…',
+    plb_btn_all: 'Alle abspielen',
+    plb_btn_shuffle: 'Alle mischen',
+    plb_need_link: 'Gib einen Link zu einer Playlist oder einem Album an (Spotify, YouTube).',
+    plb_unreadable: 'Diese Playlist kann nicht gelesen werden (privat, leer oder nicht erreichbar).',
+    plb_expired: 'Diese Liste ist abgelaufen — starte `/playlist` erneut.',
+    plb_not_owner: 'Nur die Person, die `/playlist` gestartet hat, kann dieses Menü verwenden.',
+    plb_join_voice: 'Tritt zuerst einem Sprachkanal bei.',
+    plb_track_not_found: 'Titel nicht gefunden.',
+    plb_track_playing: '✅ **{title}** — {artist} wird jetzt abgespielt.',
+    plb_track_queued: '✅ **{title}** — {artist} zur Warteschlange hinzugefügt (#{position}).',
+    plb_play_impossible: 'Wiedergabe nicht möglich.',
+    plb_added_count: '**{count}** Titel hinzugefügt',
+    plb_added: 'Hinzugefügt',
+    plb_shuffle_suffix: ' (in zufälliger Reihenfolge)',
+    vc_source_direct: '🔗 Direkter Stream',
+    vc_source_custom: '🎼 Benutzerdefiniert',
+    vc_live_stream: '🔴 Live-Stream',
+    vc_unit_mb: 'MB',
+    vc_na: 'k. A.',
+    vc_track_one: '{count} Titel',
+    vc_track_other: '{count} Titel',
+    vc_queue_empty: 'leer',
+    vc_need_permission: 'Du benötigst die Berechtigung **Mitglieder verschieben** oder **Server verwalten**, um diesen Befehl zu verwenden.',
+    vc_join_first: 'Tritt zuerst einem Sprachkanal bei oder gib mit der Option `salon` einen an.',
+    vc_perm_connect: 'Verbinden',
+    vc_perm_speak: 'Sprechen',
+    vc_and: 'und',
+    vc_missing_permission: 'Mir fehlt die Berechtigung **{permissions}** in <#{channel}>.',
+    vc_player_unavailable: 'Der Audioplayer ist derzeit nicht verfügbar.',
+    vc_cannot_join: 'Beitritt zu <#{channel}> nicht möglich. Der Audioserver ist möglicherweise nicht verfügbar, versuche es gleich noch einmal.',
+    vc_connected_title: '🎧 Mit dem Sprachkanal verbunden',
+    vc_connected_desc_permanent: 'Ich bin in <#{channel}> und bleibe dort **rund um die Uhr**. Wenn ich getrennt werde, komme ich von allein zurück.',
+    vc_connected_desc_temporary: 'Ich bin in <#{channel}>. Ich verlasse den Kanal nach einer Weile der Inaktivität.',
+    vc_field_channel: '📍 Kanal',
+    vc_field_mode: '♾️ 24/7-Modus',
+    vc_mode_enabled: '✅ Aktiviert',
+    vc_mode_paused: '⏸️ Deaktiviert',
+    vc_mode_disabled: '❌ Deaktiviert',
+    vc_field_listeners: '👥 Zuhörer',
+    vc_field_voice_latency: '📶 Sprach-Latenz',
+    vc_not_in_voice: 'Ich bin in keinem Sprachkanal.',
+    vc_disconnected_title: '👋 Getrennt',
+    vc_left_channel: 'Ich habe <#{channel}> verlassen.',
+    vc_left_voice: 'Ich habe den Sprachkanal verlassen.',
+    vc_field_presence: '⏱️ Verbindungsdauer',
+    vc_field_queue_cleared: '🎵 Warteschlange geleert',
+    vc_status_title: '📡 Sprachstatus',
+    vc_status_connected: '🟢 **Verbunden** mit <#{channel}>',
+    vc_status_offline: '🟠 **Offline** — ich soll in <#{channel}> sein und kehre so schnell wie möglich zurück.',
+    vc_status_not_connected: '🔴 **Nicht verbunden** — verwende `/join`, damit ich beitrete.',
+    vc_mode_active: '✅ Aktiv · <#{channel}>',
+    vc_mode_inactive: '❌ Inaktiv',
+    vc_field_connected_since: '⏱️ Verbunden seit',
+    vc_field_playing: '{icon} Wiedergabe',
+    vc_requested_by: '{source} · angefordert von {tag}',
+    vc_nothing_playing: 'Im Moment nichts.',
+    vc_field_volume: '🔊 Lautstärke',
+    vc_muted: '🔇 Stummgeschaltet',
+    vc_field_repeat: '🔁 Wiederholung',
+    vc_repeat_off: 'Aus',
+    vc_repeat_song: 'Titel',
+    vc_repeat_queue: 'Warteschlange',
+    vc_field_queue: '📜 Warteschlange',
+    vc_field_latency: '📶 Latenz',
+    vc_latency_value: 'Discord **{discord} ms**\nSprache **{voice}**',
+    vc_field_audio_server: '🎛️ Audioserver',
+    vc_lavalink_line: '{icon} Lavalink · online seit {uptime}',
+    vc_players_one: '🎧 {playing} aktiver Player von {players}',
+    vc_players_other: '🎧 {playing} aktive Player von {players}',
+    vc_lavalink_down: '🔴 Lavalink nicht erreichbar',
+    vc_field_bot: '🤖 Bot',
+    vc_servers_one: '🌐 {count} Server',
+    vc_servers_other: '🌐 {count} Server',
+    // Remaining hardcoded strings (clear, ticket, language, music shortcuts)
+    clear_need_permission: 'Du benötigst die Berechtigung **Nachrichten verwalten**, um diesen Befehl zu verwenden.',
+    clear_bad_channel: 'In diesem Kanaltyp können keine Nachrichten gelöscht werden.',
+    clear_no_user_messages: 'ℹ️ Keine aktuellen Nachrichten von **{user}** in diesem Kanal gefunden.',
+    clear_user_success: '**{count}** Nachricht(en) von **{user}** erfolgreich gelöscht.',
+    clear_bulk_failed: 'Die Nachrichten können nicht gelöscht werden (Nachrichten, die älter als 14 Tage sind, können über die Discord-API nicht gesammelt gelöscht werden).',
+    ticketcmd_opened_at: '-# Geöffnet <t:{timestamp}:R>',
+    ticketcmd_btn_close: 'Ticket schließen',
+    ticketcmd_footer_support: 'Support',
+    ticketcmd_opened_heading: '✅ Ticket geöffnet',
+    ticketcmd_btn_open: 'Ticket öffnen',
+    lang_current_title: 'Aktuelle Sprache',
+    lang_current_desc: 'Die aktuell auf **{guild}** eingestellte Sprache ist: **{flag} {name}**.\n\nUm die Sprache zu ändern, verwende:\n• `/language langue:[fr | en | es | de]`\n• Oder klicke auf eine der Schnellauswahl-Schaltflächen unten:',
+    lang_footer_multilingual: 'Mehrsprachig',
+    lang_invalid: '❌ Ungültige Sprache: `{lang}`. Wähle aus: `fr` (Français), `en` (English), `es` (Español), `de` (Deutsch).',
+    ms_nothing_playing_long: 'Derzeit wird keine Musik abgespielt.',
+    ms_nothing_playing: 'Es wird keine Musik abgespielt.',
+    ms_volume_current: '🔊 Aktuelle Lautstärke: **{volume}%**',
+    ms_volume_set: '{icon} Lautstärke auf **{volume}%** gesetzt.',
+    ms_volume_failed: 'Die Lautstärke kann nicht eingestellt werden.',
+    ms_loop_off: 'aus',
+    ms_loop_song: 'beim aktuellen Titel',
+    ms_loop_queue: 'für die gesamte Warteschlange',
+    ms_loop_set: '{icon} Wiederholung **{mode}**.',
+    ms_loop_failed: 'Der Wiederholungsmodus kann nicht geändert werden.',
+    ms_shuffle_need_two: 'Zum Mischen sind mindestens 2 Titel in der Warteschlange nötig.',
+    ms_shuffled: '🔀 Warteschlange gemischt — **{count}** Titel neu angeordnet.',
+    ms_shuffle_failed: 'Die Warteschlange kann nicht gemischt werden.',
+    ms_previous_back: '⏮️ Zurück zu **{title}**.',
+    ms_no_previous: 'Kein vorheriger Titel im Verlauf.',
+    ms_previous_failed: 'Zurückspringen ist nicht möglich.',
+    ms_queue_already_empty: 'Die Warteschlange ist bereits leer.',
+    ms_queue_cleared: '🗑️ Warteschlange geleert — **{count}** Titel entfernt.',
+    ms_clear_failed: 'Die Warteschlange kann nicht geleert werden.',
   },
 };
 

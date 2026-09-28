@@ -31,7 +31,7 @@ export function createOwnerShieldRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur GET /status:', err);
-      res.status(500).json({ success: false, error: err.message });
+      res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
   });
 
@@ -60,7 +60,7 @@ export function createOwnerShieldRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur POST /config:', err);
-      res.status(500).json({ success: false, error: err.message });
+      res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
   });
 
@@ -78,7 +78,7 @@ export function createOwnerShieldRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur POST /disable-all:', err);
-      res.status(500).json({ success: false, error: err.message });
+      res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
   });
 
@@ -96,7 +96,7 @@ export function createOwnerShieldRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur POST /enable-all:', err);
-      res.status(500).json({ success: false, error: err.message });
+      res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
   });
 
@@ -119,7 +119,7 @@ export function createOwnerShieldRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur POST /guilds/:guildId/toggle:', err);
-      res.status(500).json({ success: false, error: err.message });
+      res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
   });
 
@@ -139,7 +139,8 @@ export function createOwnerShieldRouter(client: Client): Router {
             const res = await ownerShieldService.rescueOwner(gId, actions || {});
             allResults[gId] = { guildName: g.name, ...res };
           } catch (gErr: any) {
-            allResults[gId] = { guildName: g.name, success: false, error: gErr.message };
+            logger.error('Erreur sauvetage owner sur le serveur ' + gId + ' :', gErr);
+            allResults[gId] = { guildName: g.name, success: false, error: 'Erreur lors du sauvetage' };
           }
         }
 
@@ -158,7 +159,7 @@ export function createOwnerShieldRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur POST /rescue:', err);
-      res.status(500).json({ success: false, error: err.message });
+      res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
   });
 
@@ -180,7 +181,7 @@ export function createOwnerShieldRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur POST /toggle:', err);
-      res.status(500).json({ success: false, error: err.message });
+      res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
   });
 
@@ -195,7 +196,7 @@ export function createOwnerShieldRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('[OwnerShieldRoute] Erreur POST /simulate-attack:', err);
-      res.status(500).json({ success: false, error: err.message });
+      res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
   });
 

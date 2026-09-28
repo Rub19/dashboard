@@ -16,6 +16,7 @@ import { guildConfigService } from '../../services/guildConfigService.js';
 import { config } from '../../config.js';
 import { BRAND_COLORS } from '../../utils/embeds.js';
 import { container, footer, sectionWithThumbnail, separator, text, V2_FLAGS } from '../../utils/components.js';
+import { formatString, getTranslation, type TranslationDictionary } from '../../utils/i18n.js';
 
 export interface HelpCategoryMeta {
   id: string;
@@ -101,6 +102,24 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
   },
 ];
 
+const CATEGORY_TEXT_KEYS: Record<string, { name: keyof TranslationDictionary; description: keyof TranslationDictionary }> = {
+  ai: { name: 'help_cat_ai_name', description: 'help_cat_ai_desc' },
+  moderation: { name: 'help_cat_moderation_name', description: 'help_cat_moderation_desc' },
+  security: { name: 'help_cat_security_name', description: 'help_cat_security_desc' },
+  leveling: { name: 'help_cat_leveling_name', description: 'help_cat_leveling_desc' },
+  community: { name: 'help_cat_community_name', description: 'help_cat_community_desc' },
+  voice_music: { name: 'help_cat_voice_music_name', description: 'help_cat_voice_music_desc' },
+  support: { name: 'help_cat_support_name', description: 'help_cat_support_desc' },
+  admin: { name: 'help_cat_admin_name', description: 'help_cat_admin_desc' },
+  general: { name: 'help_cat_general_name', description: 'help_cat_general_desc' },
+};
+
+/** Nom et description d'une catégorie d'aide dans la langue du serveur (repli : texte FR de HELP_CATEGORIES). */
+export function localizeCategory(cat: HelpCategoryMeta, t: TranslationDictionary): { name: string; description: string } {
+  const keys = CATEGORY_TEXT_KEYS[cat.id];
+  return keys ? { name: t[keys.name], description: t[keys.description] } : { name: cat.name, description: cat.description };
+}
+
 /**
  * Retourne les noms de sous-commandes réellement déclarées dans le SlashData
  * d'une commande (source de vérité = la définition slash elle-même).
@@ -116,15 +135,15 @@ export function getCommandSubcommandNames(cmd: Command): string[] {
   return (json.options || []).filter((opt) => opt.type === ApplicationCommandOptionType.Subcommand).map((opt) => opt.name);
 }
 
-export function buildCommandSyntax(cmd: Command, prefix: string, includePrefixAlias: boolean): string {
+export function buildCommandSyntax(cmd: Command, prefix: string, includePrefixAlias: boolean, t: TranslationDictionary = getTranslation('fr')): string {
   const subcommands = getCommandSubcommandNames(cmd);
   if (subcommands.length === 0) {
-    return includePrefixAlias ? `\`/${cmd.name}\` ou \`${prefix}${cmd.name}\`` : `\`/${cmd.name}\``;
+    return includePrefixAlias ? `\`/${cmd.name}\` ${t.help_or} \`${prefix}${cmd.name}\`` : `\`/${cmd.name}\``;
   }
   const maxShown = 4;
   const shown = subcommands.slice(0, maxShown).map((s) => `\`/${cmd.name} ${s}\``);
   const remaining = subcommands.length - maxShown;
-  return remaining > 0 ? `${shown.join(', ')} *(+${remaining} autres)*` : shown.join(', ');
+  return remaining > 0 ? `${shown.join(', ')}${formatString(t.help_more_others, { count: remaining })}` : shown.join(', ');
 }
 
 export function resolveCategoryCommands(cat: HelpCategoryMeta, allCommands: Command[]): Command[] {
@@ -154,6 +173,7 @@ export class HelpPanel {
     commands?: Command[];
   }): HelpView {
     const { categoryKey = 'home', guildConfig, requesterTag, botAvatarUrl = 'https://ethone.dev/icons/ethone-icon-512.png?v=r2', commands = [] } = params;
+    const t = getTranslation(guildConfig.language);
     const prefix = guildConfig.prefix || '!';
     const isHome = categoryKey === 'home';
     const parts: Parameters<typeof container>[1] = [];
@@ -163,9 +183,9 @@ export class HelpPanel {
       parts.push(
         sectionWithThumbnail(
           [
-            `## 📚 ${guildConfig.botName} — Centre d'aide`,
-            `**${commands.length}** commandes · **${HELP_CATEGORIES.length}** modules`,
-            `-# Préfixe \`${prefix}\` ou commandes slash \`/\` · choisis un module ci-dessous`,
+            `## 📚 ${guildConfig.botName} — ${t.help_home_heading}`,
+            formatString(t.help_home_counts, { commands: commands.length, modules: HELP_CATEGORIES.length }),
+            formatString(t.help_home_hint, { prefix }),
           ],
           botAvatarUrl,
           guildConfig.botName,
@@ -174,34 +194,39 @@ export class HelpPanel {
         text(
           HELP_CATEGORIES.map((cat) => {
             const n = resolveCategoryCommands(cat, commands).length;
-            return `${cat.emoji} **${cat.name}** — ${n} cmd${n > 1 ? 's' : ''}`;
+            return `${cat.emoji} **${localizeCategory(cat, t).name}** — ${formatString(n > 1 ? t.help_cmd_count_other : t.help_cmd_count_one, { count: n })}`;
           }).join('\n'),
         ),
         separator(false),
-        text('**Raccourcis :** `/ask` assistant IA · `/rank` carte de niveau · `/play` musique · `/ticket` support · `/settings` configuration'),
+        text(t.help_home_shortcuts),
       );
     } else {
       const idx = HELP_CATEGORIES.findIndex((c) => c.id === categoryKey);
       const cat = idx >= 0 ? HELP_CATEGORIES[idx] : HELP_CATEGORIES[0];
       color = cat.color;
+      const localizedCat = localizeCategory(cat, t);
       const categoryCommands = resolveCategoryCommands(cat, commands);
       parts.push(
         sectionWithThumbnail(
-          [`## ${cat.emoji} ${cat.name}`, `*${cat.description}*`, `-# Module ${(idx >= 0 ? idx : 0) + 1}/${HELP_CATEGORIES.length} · ${categoryCommands.length} commande(s)`],
+          [
+            `## ${cat.emoji} ${localizedCat.name}`,
+            `*${localizedCat.description}*`,
+            formatString(t.help_module_subtitle, { index: (idx >= 0 ? idx : 0) + 1, total: HELP_CATEGORIES.length, count: categoryCommands.length }),
+          ],
           botAvatarUrl,
-          cat.name,
+          localizedCat.name,
         ),
         separator(),
       );
       if (categoryCommands.length === 0) {
-        parts.push(text("*Aucune commande n'est actuellement assignée à ce module.*"));
+        parts.push(text(t.help_module_empty));
       } else {
         // 4000 caractères max par message : on groupe en blocs de 6 commandes.
         const blocks: string[] = [];
         for (const cmd of categoryCommands) {
           const isStaff = cmd.userPermissions && cmd.userPermissions.length > 0;
-          const aliases = cmd.aliases?.length ? ` · alias ${cmd.aliases.map((a) => `\`${a}\``).join(', ')}` : '';
-          blocks.push(`**/${cmd.name}**${isStaff ? ' 🔒' : ''} — ${cmd.description}\n${buildCommandSyntax(cmd, prefix, guildConfig.prefixCommandsEnabled)}${aliases}`);
+          const aliases = cmd.aliases?.length ? formatString(t.help_alias_suffix, { aliases: cmd.aliases.map((a) => `\`${a}\``).join(', ') }) : '';
+          blocks.push(`**/${cmd.name}**${isStaff ? ' 🔒' : ''} — ${cmd.description}\n${buildCommandSyntax(cmd, prefix, guildConfig.prefixCommandsEnabled, t)}${aliases}`);
         }
         for (let i = 0; i < blocks.length; i += 6) {
           parts.push(text(blocks.slice(i, i + 6).join('\n\n')));
@@ -213,15 +238,15 @@ export class HelpPanel {
     const selectRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       new StringSelectMenuBuilder()
         .setCustomId('help_select_category')
-        .setPlaceholder('🔍 Explorer un module…')
+        .setPlaceholder(t.help_select_placeholder)
         .addOptions(
-          new StringSelectMenuOptionBuilder().setLabel("🏠 Accueil (vue d'ensemble)").setValue('home').setDescription('Sommaire de tous les modules').setDefault(isHome),
+          new StringSelectMenuOptionBuilder().setLabel(t.help_select_home_label).setValue('home').setDescription(t.help_select_home_desc).setDefault(isHome),
           ...HELP_CATEGORIES.map((c) =>
             new StringSelectMenuOptionBuilder()
-              .setLabel(`${c.name} (${resolveCategoryCommands(c, commands).length})`)
+              .setLabel(`${localizeCategory(c, t).name} (${resolveCategoryCommands(c, commands).length})`)
               .setEmoji(c.emoji)
               .setValue(c.id)
-              .setDescription(c.description.slice(0, 95))
+              .setDescription(localizeCategory(c, t).description.slice(0, 95))
               .setDefault(categoryKey === c.id),
           ),
         ),
@@ -240,14 +265,14 @@ export class HelpPanel {
     }
     const navRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       new ButtonBuilder().setCustomId(`help_btn_nav:${prevCatId}`).setEmoji('◀️').setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder().setCustomId('help_btn_home').setLabel('Accueil').setEmoji('🏠').setStyle(isHome ? ButtonStyle.Primary : ButtonStyle.Secondary),
+      new ButtonBuilder().setCustomId('help_btn_home').setLabel(t.help_btn_home).setEmoji('🏠').setStyle(isHome ? ButtonStyle.Primary : ButtonStyle.Secondary),
       new ButtonBuilder().setCustomId(`help_btn_nav:${nextCatId}`).setEmoji('▶️').setStyle(ButtonStyle.Secondary),
     );
     if (config.dashboardUrl) {
       navRow.addComponents(new ButtonBuilder().setLabel('Dashboard').setEmoji('🌐').setStyle(ButtonStyle.Link).setURL(config.dashboardUrl));
     }
 
-    parts.push(separator(false), selectRow, navRow, footer(`Demandé par ${requesterTag}`));
+    parts.push(separator(false), selectRow, navRow, footer(formatString(t.help_footer_requested_by, { tag: requesterTag })));
     return { components: [container(color, parts)] };
   }
 

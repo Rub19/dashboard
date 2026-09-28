@@ -11,6 +11,7 @@ import {
   AnySelectMenuInteraction,
   VoiceChannel,
   TextChannel,
+  MessageFlags,
 } from 'discord.js';
 import { TemporaryVoiceRoom, VoiceTrackerSettings } from '../types/index.js';
 import { voiceRepository } from '../storage/voiceRepository.js';
@@ -185,7 +186,7 @@ export class DiscordVoicePanel {
     if (customId === 'voice_create_room') {
       const member = await guild.members.fetch(interaction.user.id).catch(() => null);
       if (!member) {
-        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Impossible de récupérer vos informations de membre.')], ephemeral: true });
+        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Impossible de récupérer vos informations de membre.')], flags: MessageFlags.Ephemeral });
         return;
       }
 
@@ -204,12 +205,12 @@ export class DiscordVoicePanel {
         await interaction.reply({
           embeds: [baseEmbed('warning').setDescription(`⚠️ Vous possédez déjà un salon vocal actif : <#${existingRoom.id}> (${existingRoom.name}) !\nVous ne pouvez posséder qu'un seul salon actif à la fois.`)],
           components: [row],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         return;
       }
 
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       const result = await TemporaryVoiceService.createPersonalVoiceRoom(member, {
         creationChannelId: interaction.channelId,
       });
@@ -288,7 +289,7 @@ export class DiscordVoicePanel {
           'Dès que le salon est vide, un compte à rebours de sécurité se déclenche. Si personne ne revient, le salon est automatiquement supprimé.'
         );
 
-      await interaction.reply({ embeds: [helpEmbed], ephemeral: true });
+      await interaction.reply({ embeds: [helpEmbed], flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -299,7 +300,7 @@ export class DiscordVoicePanel {
 
     const room = voiceRepository.getRoomById(roomId);
     if (!room || room.status === 'DELETED') {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription("❌ Ce salon temporaire n'existe plus ou a été supprimé.")], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription("❌ Ce salon temporaire n'existe plus ou a été supprimé.")], flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -307,7 +308,7 @@ export class DiscordVoicePanel {
     if (!VoiceOwnershipService.canManageRoom(room, member)) {
       await interaction.reply({
         embeds: [baseEmbed('error').setDescription('🔒 Vous devez être le **propriétaire** de ce salon ou administrateur pour utiliser ce panneau.')],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -400,7 +401,7 @@ export class DiscordVoicePanel {
     }
 
     if (action === 'voice_delete') {
-      await interaction.reply({ embeds: [baseEmbed('warning').setDescription('🗑️ Suppression immédiate de votre salon vocal...')], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('warning').setDescription('🗑️ Suppression immédiate de votre salon vocal...')], flags: MessageFlags.Ephemeral });
       await TemporaryVoiceService.deleteRoomChannel(guild, room.id, `Supprimé par ${interaction.user.tag}`);
       return;
     }
@@ -417,7 +418,7 @@ export class DiscordVoicePanel {
       await interaction.reply({
         embeds: [baseEmbed('info').setDescription('🛡️ **Gestion de la Whitelist** : Sélectionnez le membre à autoriser même si le salon est verrouillé.')],
         components: [row],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -433,7 +434,7 @@ export class DiscordVoicePanel {
       await interaction.reply({
         embeds: [baseEmbed('info').setDescription('⛔ **Gestion de la Banlist** : Sélectionnez le membre à interdire (il sera également expulsé immédiatement).')],
         components: [row],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -449,7 +450,7 @@ export class DiscordVoicePanel {
       await interaction.reply({
         embeds: [baseEmbed('info').setDescription('🔇 **Gestion Audio** : Sélectionnez un membre connecté pour couper son micro.')],
         components: [row],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -465,7 +466,7 @@ export class DiscordVoicePanel {
       await interaction.reply({
         embeds: [baseEmbed('info').setDescription('🚫 **Expulsion** : Sélectionnez un membre connecté pour le déconnecter du salon.')],
         components: [row],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -481,7 +482,7 @@ export class DiscordVoicePanel {
       await interaction.reply({
         embeds: [baseEmbed('info').setDescription('👑 **Transfert de Propriété** : Sélectionnez le membre à qui léguer le contrôle total du salon.')],
         components: [row],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -501,7 +502,7 @@ export class DiscordVoicePanel {
 
     const room = voiceRepository.getRoomById(roomId);
     if (!room || room.status === 'DELETED') {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Ce salon temporaire n\'existe plus.')], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Ce salon temporaire n\'existe plus.')], flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -509,7 +510,7 @@ export class DiscordVoicePanel {
     if (!VoiceOwnershipService.canManageRoom(room, member)) {
       await interaction.reply({
         embeds: [baseEmbed('error').setDescription('🔒 Vous devez être le propriétaire de ce salon pour effectuer cette action.')],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -517,7 +518,7 @@ export class DiscordVoicePanel {
     const channel = guild.channels.cache.get(room.id) as VoiceChannel | undefined;
     const targetUserId = interaction.values[0];
     if (!targetUserId) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Aucun membre sélectionné.')], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Aucun membre sélectionné.')], flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -528,14 +529,14 @@ export class DiscordVoicePanel {
       }
       await interaction.reply({
         embeds: [baseEmbed('success').setDescription(`✅ <@${targetUserId}> a été ajouté à la **Whitelist** de votre salon vocal.`)],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
 
     if (action === 'voice_banlist_select') {
       if (targetUserId === room.ownerId) {
-        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Vous ne pouvez pas vous bannir vous-même !')], ephemeral: true });
+        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Vous ne pouvez pas vous bannir vous-même !')], flags: MessageFlags.Ephemeral });
         return;
       }
       voiceRepository.addToBanlist(room.id, targetUserId, interaction.user.id, interaction.user.tag);
@@ -544,7 +545,7 @@ export class DiscordVoicePanel {
       }
       await interaction.reply({
         embeds: [baseEmbed('error').setDescription(`⛔ <@${targetUserId}> a été **banni** de votre salon vocal et expulsé s'il était présent.`)],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -553,24 +554,24 @@ export class DiscordVoicePanel {
       if (channel) {
         const targetMember = channel.members.get(targetUserId);
         if (!targetMember) {
-          await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Ce membre n\'est pas connecté dans votre salon vocal.')], ephemeral: true });
+          await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Ce membre n\'est pas connecté dans votre salon vocal.')], flags: MessageFlags.Ephemeral });
           return;
         }
         const isMuted = targetMember.voice.serverMute;
         await VoicePermissionService.muteMember(channel, targetUserId, !isMuted);
         await interaction.reply({
           embeds: [baseEmbed('info').setDescription(`🔊 <@${targetUserId}> a été **${!isMuted ? 'rendu muet' : 'démuté'}**.`)],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       } else {
-        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Salon vocal introuvable sur Discord.')], ephemeral: true });
+        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Salon vocal introuvable sur Discord.')], flags: MessageFlags.Ephemeral });
       }
       return;
     }
 
     if (action === 'voice_kick_select') {
       if (targetUserId === room.ownerId) {
-        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Vous ne pouvez pas vous expulser vous-même !')], ephemeral: true });
+        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Vous ne pouvez pas vous expulser vous-même !')], flags: MessageFlags.Ephemeral });
         return;
       }
       if (channel) {
@@ -584,24 +585,24 @@ export class DiscordVoicePanel {
             actorTag: interaction.user.tag,
             targetId: targetUserId,
           });
-          await interaction.reply({ embeds: [baseEmbed('warning').setDescription(`🚫 <@${targetUserId}> a été expulsé du salon vocal.`)], ephemeral: true });
+          await interaction.reply({ embeds: [baseEmbed('warning').setDescription(`🚫 <@${targetUserId}> a été expulsé du salon vocal.`)], flags: MessageFlags.Ephemeral });
         } else {
-          await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Ce membre n\'est pas connecté dans votre salon vocal.')], ephemeral: true });
+          await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Ce membre n\'est pas connecté dans votre salon vocal.')], flags: MessageFlags.Ephemeral });
         }
       } else {
-        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Salon vocal introuvable.')], ephemeral: true });
+        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Salon vocal introuvable.')], flags: MessageFlags.Ephemeral });
       }
       return;
     }
 
     if (action === 'voice_transfer_select') {
       if (targetUserId === room.ownerId) {
-        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Vous êtes déjà le propriétaire de ce salon.')], ephemeral: true });
+        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Vous êtes déjà le propriétaire de ce salon.')], flags: MessageFlags.Ephemeral });
         return;
       }
       // Différer immédiatement : le fetch du nouveau propriétaire ci-dessous peut dépasser la
       // fenêtre de 3s de l'interaction ("Unknown interaction" / 10062) si on ne le fait pas.
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       const targetUser = await guild.members.fetch(targetUserId).catch(() => null);
       const targetTag = targetUser?.user.tag || `User_${targetUserId}`;
 
@@ -667,7 +668,7 @@ export class DiscordVoicePanel {
 
       await interaction.reply({
         embeds: [baseEmbed('success').setDescription('✅ Vos préférences de salon vocal ont été enregistrées avec succès ! Elles seront appliquées lors de votre prochaine création.')],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -678,7 +679,7 @@ export class DiscordVoicePanel {
 
     const room = voiceRepository.getRoomById(roomId);
     if (!room || room.status === 'DELETED') {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Salon introuvable ou supprimé.')], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Salon introuvable ou supprimé.')], flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -687,13 +688,13 @@ export class DiscordVoicePanel {
     if (action === 'modal_voice_rename') {
       const newName = interaction.fields.getTextInputValue('new_name').trim();
       if (!newName) {
-        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Nom invalide.')], ephemeral: true });
+        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Nom invalide.')], flags: MessageFlags.Ephemeral });
         return;
       }
 
       // Différer immédiatement : le renommage du salon sur Discord ci-dessous peut dépasser la
       // fenêtre de 3s de l'interaction ("Unknown interaction" / 10062) si on ne le fait pas.
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
       room.name = newName;
       voiceRepository.saveRoom(room);
@@ -721,13 +722,13 @@ export class DiscordVoicePanel {
       const raw = interaction.fields.getTextInputValue('new_limit').trim();
       const limit = parseInt(raw, 10);
       if (isNaN(limit) || limit < 0 || limit > 99) {
-        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Limite invalide (doit être un nombre entre 0 et 99).')], ephemeral: true });
+        await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Limite invalide (doit être un nombre entre 0 et 99).')], flags: MessageFlags.Ephemeral });
         return;
       }
 
       // Différer immédiatement : la mise à jour de la limite sur Discord ci-dessous peut dépasser
       // la fenêtre de 3s de l'interaction ("Unknown interaction" / 10062) si on ne le fait pas.
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
       room.userLimit = limit;
       voiceRepository.saveRoom(room);

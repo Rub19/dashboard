@@ -3,7 +3,7 @@ import { Command, CommandContext } from '../../types/command.js';
 import { musicService } from '../../modules/music/services/musicService.js';
 import { DiscordMusicPanel } from '../../modules/music/ui/discordMusicPanel.js';
 import type { RepeatMode } from '../../modules/music/types/music.js';
-import { formatString, getTranslation } from '../../utils/i18n.js';
+import { formatString, getTranslation, type TranslationDictionary } from '../../utils/i18n.js';
 import { errorEmbed } from '../../utils/embeds.js';
 
 const replyError = (ctx: CommandContext, msg: string) =>
@@ -46,8 +46,8 @@ async function checkVoicePermissions(ctx: CommandContext, channel: VoiceBasedCha
 
   const perms = channel.permissionsFor(botMember);
   const missing: string[] = [];
-  if (!perms?.has(PermissionFlagsBits.Connect)) missing.push('Connexion');
-  if (!perms?.has(PermissionFlagsBits.Speak)) missing.push('Parler');
+  if (!perms?.has(PermissionFlagsBits.Connect)) missing.push(t.vc_perm_connect);
+  if (!perms?.has(PermissionFlagsBits.Speak)) missing.push(t.vc_perm_speak);
 
   if (missing.length === 0) return true;
 
@@ -241,7 +241,7 @@ export const queueCommand: Command = {
     if (!ctx.guild) return;
     const q = musicService.getPlayer(ctx.guild.id, false)?.getState();
     if (!q || !q.currentTrack) {
-      await replyInfo(ctx, 'Aucune musique n\'est actuellement en cours de lecture.');
+      await replyInfo(ctx, getTranslation(ctx.guildConfig.language).ms_nothing_playing_long);
       return;
     }
 
@@ -261,7 +261,7 @@ export const nowPlayingCommand: Command = {
     if (!ctx.guild) return;
     const q = musicService.getPlayer(ctx.guild.id, false)?.getState();
     if (!q || !q.currentTrack) {
-      await replyInfo(ctx, 'Aucune musique n\'est actuellement en cours de lecture.');
+      await replyInfo(ctx, getTranslation(ctx.guildConfig.language).ms_nothing_playing_long);
       return;
     }
 
@@ -287,9 +287,10 @@ export const volumeCommand: Command = {
     ),
   execute: async (ctx: CommandContext) => {
     if (!ctx.guild) return;
+    const t = getTranslation(ctx.guildConfig.language);
     const state = musicService.getPlayer(ctx.guild.id, false)?.getState();
     if (!state || !state.currentTrack) {
-      await replyInfo(ctx, "Aucune musique n'est en cours de lecture.");
+      await replyInfo(ctx, t.ms_nothing_playing);
       return;
     }
 
@@ -301,7 +302,7 @@ export const volumeCommand: Command = {
           : null;
 
     if (level == null || Number.isNaN(level)) {
-      await replyInfo(ctx, `🔊 Volume actuel : **${state.volume}%**`);
+      await replyInfo(ctx, formatString(t.ms_volume_current, { volume: state.volume }));
       return;
     }
 
@@ -310,18 +311,18 @@ export const volumeCommand: Command = {
     const res = musicService.setVolume(ctx.guild.id, clamped, ctx.member!);
     if (res.success) {
       const icon = clamped === 0 ? '🔇' : clamped < 40 ? '🔉' : '🔊';
-      await replySuccess(ctx, `${icon} Volume réglé sur **${clamped}%**.`);
+      await replySuccess(ctx, formatString(t.ms_volume_set, { icon, volume: clamped }));
     } else {
-      await replyError(ctx, res.error || "Impossible de régler le volume.");
+      await replyError(ctx, res.error || t.ms_volume_failed);
     }
   },
 };
 
-const LOOP_LABELS: Record<RepeatMode, string> = {
-  OFF: 'désactivée',
-  SONG: 'sur le titre en cours',
-  QUEUE: 'sur toute la file',
-};
+const loopLabels = (t: TranslationDictionary): Record<RepeatMode, string> => ({
+  OFF: t.ms_loop_off,
+  SONG: t.ms_loop_song,
+  QUEUE: t.ms_loop_queue,
+});
 
 export const loopCommand: Command = {
   name: 'loop',
@@ -344,9 +345,10 @@ export const loopCommand: Command = {
     ),
   execute: async (ctx: CommandContext) => {
     if (!checkVoice(ctx)) return;
+    const t = getTranslation(ctx.guildConfig.language);
     const state = musicService.getPlayer(ctx.guild!.id, false)?.getState();
     if (!state || !state.currentTrack) {
-      await replyInfo(ctx, "Aucune musique n'est en cours de lecture.");
+      await replyInfo(ctx, t.ms_nothing_playing);
       return;
     }
 
@@ -362,9 +364,9 @@ export const loopCommand: Command = {
     const res = musicService.setRepeatMode(ctx.guild!.id, mode, ctx.member!);
     if (res.success) {
       const icon = mode === 'OFF' ? '➡️' : mode === 'SONG' ? '🔂' : '🔁';
-      await replySuccess(ctx, `${icon} Répétition **${LOOP_LABELS[mode]}**.`);
+      await replySuccess(ctx, formatString(t.ms_loop_set, { icon, mode: loopLabels(t)[mode] }));
     } else {
-      await replyError(ctx, res.error || "Impossible de changer le mode de répétition.");
+      await replyError(ctx, res.error || t.ms_loop_failed);
     }
   },
 };
@@ -379,16 +381,17 @@ export const shuffleCommand: Command = {
     .setDescription("Mélange aléatoirement la file d'attente"),
   execute: async (ctx: CommandContext) => {
     if (!checkVoice(ctx)) return;
+    const t = getTranslation(ctx.guildConfig.language);
     const state = musicService.getPlayer(ctx.guild!.id, false)?.getState();
     if (!state || state.queue.length < 2) {
-      await replyInfo(ctx, "Il faut au moins 2 titres dans la file pour la mélanger.");
+      await replyInfo(ctx, t.ms_shuffle_need_two);
       return;
     }
     const res = musicService.shuffle(ctx.guild!.id, ctx.member!);
     if (res.success) {
-      await replySuccess(ctx, `🔀 File mélangée — **${state.queue.length}** titres réordonnés.`);
+      await replySuccess(ctx, formatString(t.ms_shuffled, { count: state.queue.length }));
     } else {
-      await replyError(ctx, res.error || "Impossible de mélanger la file.");
+      await replyError(ctx, res.error || t.ms_shuffle_failed);
     }
   },
 };
@@ -403,16 +406,17 @@ export const previousCommand: Command = {
     .setDescription('Revient au titre précédent'),
   execute: async (ctx: CommandContext) => {
     if (!checkVoice(ctx)) return;
+    const t = getTranslation(ctx.guildConfig.language);
     await ctx.deferReply();
     const res = await musicService.previous(ctx.guild!.id, ctx.member!);
     if (res.success) {
       if (res.prevTrack) {
-        await replySuccess(ctx, `⏮️ Retour à **${res.prevTrack.title}**.`);
+        await replySuccess(ctx, formatString(t.ms_previous_back, { title: res.prevTrack.title }));
       } else {
-        await replyInfo(ctx, "Aucun titre précédent dans l'historique.");
+        await replyInfo(ctx, t.ms_no_previous);
       }
     } else {
-      await replyError(ctx, res.error || "Impossible de revenir en arrière.");
+      await replyError(ctx, res.error || t.ms_previous_failed);
     }
   },
 };
@@ -427,17 +431,18 @@ export const clearQueueCommand: Command = {
     .setDescription("Vide la file d'attente (le titre en cours continue)"),
   execute: async (ctx: CommandContext) => {
     if (!checkVoice(ctx)) return;
+    const t = getTranslation(ctx.guildConfig.language);
     const state = musicService.getPlayer(ctx.guild!.id, false)?.getState();
     const count = state?.queue.length ?? 0;
     if (count === 0) {
-      await replyInfo(ctx, "La file d'attente est déjà vide.");
+      await replyInfo(ctx, t.ms_queue_already_empty);
       return;
     }
     const res = musicService.clearQueue(ctx.guild!.id, ctx.member!);
     if (res.success) {
-      await replySuccess(ctx, `🗑️ File vidée — **${count}** titre(s) retiré(s).`);
+      await replySuccess(ctx, formatString(t.ms_queue_cleared, { count }));
     } else {
-      await replyError(ctx, res.error || "Impossible de vider la file.");
+      await replyError(ctx, res.error || t.ms_clear_failed);
     }
   },
 };

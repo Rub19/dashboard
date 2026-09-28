@@ -7,6 +7,7 @@ import { guildConfigService } from '../../services/guildConfigService.js';
 import { logger } from '../../utils/logger.js';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleRouteError, handleClientError } from '../utils/routeError.js';
 
 export function createRoleRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -29,7 +30,7 @@ export function createRoleRouter(discordClient: Client) {
         emitConfigUpdated('autorole', guildId, updated, 'DASHBOARD', req.user?.id);
         res.json({ success: true, config: updated });
       } catch (err: any) {
-        res.status(400).json({ error: err.message || 'Données invalides' });
+        handleClientError(err, res, 'Données invalides');
       }
     }
   );
@@ -53,7 +54,7 @@ export function createRoleRouter(discordClient: Client) {
         emitConfigUpdated('rolePanels', guildId, saved, 'DASHBOARD', req.user?.id);
         res.json({ success: true, panel: saved });
       } catch (err: any) {
-        res.status(400).json({ error: err.message || 'Données de panel invalides' });
+        handleClientError(err, res, 'Données de panel invalides');
       }
     }
   );
@@ -91,7 +92,7 @@ export function createRoleRouter(discordClient: Client) {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur publication Role Panel :', err);
-      res.status(500).json({ error: err.message || 'Échec de la publication sur Discord.' });
+      res.status(500).json({ error: 'Échec de la publication sur Discord.' });
     }
   });
 
@@ -110,7 +111,7 @@ export function createRoleRouter(discordClient: Client) {
       const result = await rolePanelService.syncPanel(guild, panelId);
       res.json(result);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur lors de la synchronisation.' });
+      handleRouteError(err, res, 'Erreur lors de la synchronisation.');
     }
   });
 
@@ -127,7 +128,7 @@ export function createRoleRouter(discordClient: Client) {
       }
       res.json({ success: true, panel: duplicated });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur duplication.' });
+      handleRouteError(err, res, 'Erreur duplication.');
     }
   });
 
@@ -141,7 +142,7 @@ export function createRoleRouter(discordClient: Client) {
       const deleted = await rolePanelService.deletePanel(guildId, panelId, deleteMessage, discordClient);
       res.json({ success: deleted });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur suppression.' });
+      handleRouteError(err, res, 'Erreur suppression.');
     }
   });
 
@@ -161,7 +162,7 @@ export function createRoleRouter(discordClient: Client) {
       const activePreset = guildConfigService.getConfig(guildId).activePreset || 'PRESET_BALANCED';
       res.json({ detectedRoles, presets, activePreset });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || "Erreur d'analyse des rôles." });
+      handleRouteError(err, res, "Erreur d'analyse des rôles.");
     }
   });
 
@@ -194,7 +195,7 @@ export function createRoleRouter(discordClient: Client) {
       );
       res.json({ success: true, preset: selected });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || "Erreur lors de l'application du préset." });
+      handleRouteError(err, res, "Erreur lors de l'application du préset.");
     }
   });
 

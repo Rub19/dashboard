@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { eventRepository } from '../../modules/events/eventsRepository.js';
+import { handleRouteError } from '../utils/routeError.js';
 
 export function createCalendarRouter(client?: Client): Router {
   const router = Router({ mergeParams: true });
@@ -54,7 +55,7 @@ export function createCalendarRouter(client?: Client): Router {
 
       res.json({ success: true, events: calendarEntries });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -107,7 +108,7 @@ export function createCalendarRouter(client?: Client): Router {
       res.setHeader('Content-Disposition', `attachment; filename="ethone-calendar-${guildId}.ics"`);
       res.send(fileContent);
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 

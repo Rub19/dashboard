@@ -3,6 +3,7 @@ import { Client } from 'discord.js';
 import { securityStorage } from '../../modules/security/storage/securityStorage.js';
 import { securityEngine } from '../../modules/security/services/securityEngine.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleRouteError, handleClientError } from '../utils/routeError.js';
 
 export function createSecurityRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -37,7 +38,7 @@ export function createSecurityRouter(discordClient: Client) {
       emitConfigUpdated('security', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Configuration de sécurité invalide.' });
+      handleClientError(err, res, 'Configuration de sécurité invalide.');
     }
   });
 
@@ -56,7 +57,7 @@ export function createSecurityRouter(discordClient: Client) {
       const result = await securityEngine.triggerLockdown(guild, durationMinutes, reason);
       res.json(result);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Échec du verrouillage.' });
+      handleRouteError(err, res, 'Échec du verrouillage.');
     }
   });
 
@@ -73,7 +74,7 @@ export function createSecurityRouter(discordClient: Client) {
       const result = await securityEngine.releaseLockdown(guild);
       res.json(result);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Échec du déverrouillage.' });
+      handleRouteError(err, res, 'Échec du déverrouillage.');
     }
   });
 

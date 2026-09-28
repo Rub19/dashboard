@@ -7,12 +7,15 @@ import {
   SlashCommandBuilder,
   StringSelectMenuBuilder,
   StringSelectMenuInteraction,
+  MessageFlags,
 } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { musicService } from '../../modules/music/services/musicService.js';
 import { musicProviderManager } from '../../modules/music/providers/musicProvider.js';
 import type { Track } from '../../modules/music/types/music.js';
 import { baseEmbed, noticeEmbed } from '../../utils/embeds.js';
+import { formatString, getTranslation } from '../../utils/i18n.js';
+import { guildConfigService } from '../../services/guildConfigService.js';
 
 /**
  * /playlist <lien> : affiche TOUS les titres d'une playlist / album Spotify
@@ -44,28 +47,29 @@ const fmt = (s: number): string => (s > 0 ? `${Math.floor(s / 60)}:${String(s % 
 const clip = (t: string, n: number): string => (t.length > n ? `${t.slice(0, n - 1)}…` : t);
 
 function render(sid: string, s: Session) {
+  const t = getTranslation(guildConfigService.getConfig(s.guildId).language);
   const pages = Math.max(1, Math.ceil(s.tracks.length / PAGE_SIZE));
   const start = s.page * PAGE_SIZE;
   const slice = s.tracks.slice(start, start + PAGE_SIZE);
-  const total = s.tracks.reduce((a, t) => a + (t.duration || 0), 0);
+  const total = s.tracks.reduce((a, tr) => a + (tr.duration || 0), 0);
 
   const embed = baseEmbed('primary')
-    .setTitle(`🎶 ${clip(s.tracks[0]?.album || 'Playlist', 200)}`)
+    .setTitle(`🎶 ${clip(s.tracks[0]?.album || t.plb_default_title, 200)}`)
     .setDescription(
       slice
-        .map((t, i) => `\`${String(start + i + 1).padStart(3, ' ')}\` **${clip(t.title, 60)}** — ${clip(t.artist, 40)} \`${fmt(t.duration)}\``)
-        .join('\n') || '*Aucun titre.*'
+        .map((tr, i) => `\`${String(start + i + 1).padStart(3, ' ')}\` **${clip(tr.title, 60)}** — ${clip(tr.artist, 40)} \`${fmt(tr.duration)}\``)
+        .join('\n') || t.plb_no_tracks
     )
-    .setFooter({ text: `${s.tracks.length} titres · ${Math.round(total / 60)} min · page ${s.page + 1}/${pages}` });
+    .setFooter({ text: formatString(t.plb_footer, { count: s.tracks.length, minutes: Math.round(total / 60), page: s.page + 1, pages }) });
   if (s.tracks[0]?.thumbnail) embed.setThumbnail(s.tracks[0].thumbnail);
 
   const menu = new StringSelectMenuBuilder()
     .setCustomId(`plbrowse:${sid}:pick`)
-    .setPlaceholder('Choisir un titre à jouer…')
+    .setPlaceholder(t.plb_pick_placeholder)
     .addOptions(
-      slice.map((t, i) => ({
-        label: clip(`${start + i + 1}. ${t.title}`, 100),
-        description: clip(t.artist, 100),
+      slice.map((tr, i) => ({
+        label: clip(`${start + i + 1}. ${tr.title}`, 100),
+        description: clip(tr.artist, 100),
         value: String(start + i),
       }))
     );
@@ -73,8 +77,8 @@ function render(sid: string, s: Session) {
   const nav = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder().setCustomId(`plbrowse:${sid}:prev`).setEmoji('◀️').setStyle(ButtonStyle.Secondary).setDisabled(s.page === 0),
     new ButtonBuilder().setCustomId(`plbrowse:${sid}:next`).setEmoji('▶️').setStyle(ButtonStyle.Secondary).setDisabled(s.page >= pages - 1),
-    new ButtonBuilder().setCustomId(`plbrowse:${sid}:all`).setLabel('Tout jouer').setEmoji('🎵').setStyle(ButtonStyle.Success),
-    new ButtonBuilder().setCustomId(`plbrowse:${sid}:shuffle`).setLabel('Tout mélanger').setEmoji('🔀').setStyle(ButtonStyle.Primary)
+    new ButtonBuilder().setCustomId(`plbrowse:${sid}:all`).setLabel(t.plb_btn_all).setEmoji('🎵').setStyle(ButtonStyle.Success),
+    new ButtonBuilder().setCustomId(`plbrowse:${sid}:shuffle`).setLabel(t.plb_btn_shuffle).setEmoji('🔀').setStyle(ButtonStyle.Primary)
   );
 
   return {
@@ -95,9 +99,10 @@ export const playlistCommand: Command = {
     ),
   execute: async (ctx: CommandContext) => {
     if (!ctx.guild) return;
+    const t = getTranslation(ctx.guildConfig.language);
     const url = String(((ctx.interaction as any)?.options?.getString('lien') as string | undefined) ?? ctx.args[0] ?? '').trim();
     if (!/^https?:\/\//i.test(url)) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Donne un lien de playlist ou d\'album (Spotify, YouTube).')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.plb_need_link)], ephemeral: true });
       return;
     }
     await ctx.deferReply();
@@ -107,7 +112,7 @@ export const playlistCommand: Command = {
       avatar: ctx.author.displayAvatarURL?.() ?? null,
     });
     if (tracks.length === 0) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Impossible de lire cette playlist (privée, vide ou inaccessible).')] });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.plb_unreadable)] });
       return;
     }
     cleanup();
@@ -119,12 +124,13 @@ export const playlistCommand: Command = {
 };
 
 async function ownerCheck(interaction: ButtonInteraction | StringSelectMenuInteraction, s: Session | undefined): Promise<Session | null> {
+  const t = getTranslation(guildConfigService.getConfig(interaction.guildId).language);
   if (!s) {
-    await interaction.reply({ embeds: [noticeEmbed('error', 'Cette liste a expiré — relance `/playlist`.')], ephemeral: true });
+    await interaction.reply({ embeds: [noticeEmbed('error', t.plb_expired)], flags: MessageFlags.Ephemeral });
     return null;
   }
   if (interaction.user.id !== s.userId) {
-    await interaction.reply({ embeds: [noticeEmbed('error', 'Seule la personne qui a lancé `/playlist` peut utiliser ce menu.')], ephemeral: true });
+    await interaction.reply({ embeds: [noticeEmbed('error', t.plb_not_owner)], flags: MessageFlags.Ephemeral });
     return null;
   }
   return s;
@@ -132,6 +138,7 @@ async function ownerCheck(interaction: ButtonInteraction | StringSelectMenuInter
 
 export async function handlePlaylistBrowser(interaction: ButtonInteraction | StringSelectMenuInteraction): Promise<void> {
   const [, sid, action] = interaction.customId.split(':');
+  const t = getTranslation(guildConfigService.getConfig(interaction.guildId).language);
   const s = await ownerCheck(interaction, sessions.get(sid));
   if (!s || !interaction.guild) return;
 
@@ -143,19 +150,23 @@ export async function handlePlaylistBrowser(interaction: ButtonInteraction | Str
 
   const member = interaction.member as GuildMember;
   if (!member?.voice?.channel) {
-    await interaction.reply({ embeds: [noticeEmbed('warning', 'Rejoins d\'abord un salon vocal.')], ephemeral: true });
+    await interaction.reply({ embeds: [noticeEmbed('warning', t.plb_join_voice)], flags: MessageFlags.Ephemeral });
     return;
   }
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
   if (action === 'pick' && interaction.isStringSelectMenu()) {
     const track = s.tracks[Number(interaction.values[0])];
     if (!track) {
-      await interaction.editReply('Titre introuvable.');
+      await interaction.editReply(t.plb_track_not_found);
       return;
     }
     const res = await musicService.play(interaction.guild, member, `${track.title} ${track.artist}`, { textChannelId: interaction.channelId });
-    await interaction.editReply(res.success ? `✅ **${track.title}** — ${track.artist} ${res.queuePosition === 0 ? 'est en lecture.' : `ajouté à la file (#${res.queuePosition}).`}` : `❌ ${res.error || 'Lecture impossible.'}`);
+    await interaction.editReply(
+      res.success
+        ? formatString(res.queuePosition === 0 ? t.plb_track_playing : t.plb_track_queued, { title: track.title, artist: track.artist, position: res.queuePosition ?? 0 })
+        : `❌ ${res.error || t.plb_play_impossible}`
+    );
     return;
   }
 
@@ -163,8 +174,8 @@ export async function handlePlaylistBrowser(interaction: ButtonInteraction | Str
     const res = await musicService.play(interaction.guild, member, s.url, { textChannelId: interaction.channelId, shuffle: action === 'shuffle' });
     await interaction.editReply(
       res.success
-        ? `✅ ${res.playlistCount ? `**${res.playlistCount}** titres ajoutés` : 'Ajouté'}${action === 'shuffle' ? ' (dans un ordre aléatoire)' : ''}.`
-        : `❌ ${res.error || 'Lecture impossible.'}`
+        ? `✅ ${res.playlistCount ? formatString(t.plb_added_count, { count: res.playlistCount }) : t.plb_added}${action === 'shuffle' ? t.plb_shuffle_suffix : ''}.`
+        : `❌ ${res.error || t.plb_play_impossible}`
     );
   }
 }

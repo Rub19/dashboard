@@ -6,6 +6,7 @@ import { SuggestionCommentService } from '../../modules/suggestions/services/sug
 import { SuggestionPriority, SuggestionStatus } from '../../modules/suggestions/types/suggestion.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
+import { handleRouteError } from '../utils/routeError.js';
 
 export function createSuggestionRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -61,7 +62,7 @@ export function createSuggestionRouter(discordClient: Client) {
 
       res.json({ success: true, suggestion });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur lors de la création de la suggestion' });
+      handleRouteError(err, res, 'Erreur lors de la création de la suggestion');
     }
   });
 
@@ -88,7 +89,7 @@ export function createSuggestionRouter(discordClient: Client) {
 
       res.json({ success: true, suggestion: updated });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur lors de la mise à jour du statut' });
+      handleRouteError(err, res, 'Erreur lors de la mise à jour du statut');
     }
   });
 
@@ -122,7 +123,7 @@ export function createSuggestionRouter(discordClient: Client) {
       await SuggestionService.updateDiscordMessage(discordClient, id);
       res.json({ success: true, suggestion: updated });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur lors de l’ajout du commentaire' });
+      handleRouteError(err, res, 'Erreur lors de l’ajout du commentaire');
     }
   });
 

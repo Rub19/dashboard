@@ -1119,7 +1119,7 @@ export default function DiscordDashboardPage() {
   );
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 pb-20 sm:p-6 sm:pb-24">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 sm:p-6">
       {/* Top Header Banner */}
       <header className="mb-4 shrink-0">
         <div className="flex flex-col gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-5 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
@@ -1575,7 +1575,7 @@ export default function DiscordDashboardPage() {
         </aside>
 
         {/* Right Column: Server Management (Main Content with Smooth Scroll) */}
-        <main className="min-h-0 w-full flex-1 overflow-y-auto space-y-5 pr-1 pb-36 overscroll-contain will-change-scroll">
+        <main className="min-h-0 w-full flex-1 overflow-y-auto space-y-5 pr-1 pb-10 overscroll-contain will-change-scroll">
           {selectedGuild ? (
             <>
               {/* Selected Server Banner (REAL SERVER INFO ONLY) */}

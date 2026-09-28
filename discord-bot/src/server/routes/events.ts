@@ -6,6 +6,7 @@ import { EventRSVPService } from '../../modules/events/eventsRsvpService.js';
 import { EventsCheckinService } from '../../modules/events/eventsCheckinService.js';
 import { RSVPStatus, AttendanceStatus } from '../../modules/events/eventsTypes.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleRouteError } from '../utils/routeError.js';
 
 export function createEventRouter(client?: Client): Router {
   const router = Router({ mergeParams: true });
@@ -30,7 +31,7 @@ export function createEventRouter(client?: Client): Router {
 
       res.json({ success: true, events, count: events.length });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -41,7 +42,7 @@ export function createEventRouter(client?: Client): Router {
       const stats = eventRepository.getOverviewStats(guildId);
       res.json({ success: true, stats });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -51,7 +52,7 @@ export function createEventRouter(client?: Client): Router {
       const templates = eventRepository.getTemplates();
       res.json({ success: true, templates });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -68,7 +69,7 @@ export function createEventRouter(client?: Client): Router {
 
       res.json({ success: true, event });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -94,7 +95,7 @@ export function createEventRouter(client?: Client): Router {
       emitConfigUpdated('events', guildId, created, 'DASHBOARD', req.user?.id);
       res.status(201).json({ success: true, event: created });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -113,7 +114,7 @@ export function createEventRouter(client?: Client): Router {
       emitConfigUpdated('events', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, event: updated });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -131,7 +132,7 @@ export function createEventRouter(client?: Client): Router {
 
       res.json(result);
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -153,7 +154,7 @@ export function createEventRouter(client?: Client): Router {
 
       res.json(result);
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -170,7 +171,7 @@ export function createEventRouter(client?: Client): Router {
 
       res.status(201).json({ success: true, event: duplicated });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -193,7 +194,7 @@ export function createEventRouter(client?: Client): Router {
 
       res.json({ success: true, participants, count: participants.length });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -217,7 +218,7 @@ export function createEventRouter(client?: Client): Router {
 
       res.json(result);
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -245,7 +246,7 @@ export function createEventRouter(client?: Client): Router {
       const result = EventsCheckinService.manualCheckIn(guildId, eventId, userId, attendance.toUpperCase() as AttendanceStatus);
       res.json(result);
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -263,7 +264,7 @@ export function createEventRouter(client?: Client): Router {
       const removed = eventRepository.removeParticipant(eventId, userId);
       res.json({ success: removed });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 
@@ -310,7 +311,7 @@ export function createEventRouter(client?: Client): Router {
         },
       });
     } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      handleRouteError(err, res, 'Erreur serveur', { success: false });
     }
   });
 

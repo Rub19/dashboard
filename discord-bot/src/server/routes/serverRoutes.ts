@@ -26,7 +26,7 @@ export function createServerRouter(client: Client): Router {
       res.json(data);
     } catch (err: any) {
       logger.error('Erreur server/overview :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -37,7 +37,7 @@ export function createServerRouter(client: Client): Router {
       res.json(health);
     } catch (err: any) {
       logger.error('Erreur server/health :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -50,7 +50,7 @@ export function createServerRouter(client: Client): Router {
       res.json(results);
     } catch (err: any) {
       logger.error('Erreur server/search :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -72,7 +72,7 @@ export function createServerRouter(client: Client): Router {
       res.json(data);
     } catch (err: any) {
       logger.error('Erreur server/members :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -88,7 +88,7 @@ export function createServerRouter(client: Client): Router {
       res.json({ profile });
     } catch (err: any) {
       logger.error('Erreur server/members/:userId :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -107,7 +107,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur server/members/:userId/action :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -119,7 +119,7 @@ export function createServerRouter(client: Client): Router {
       res.json(tree);
     } catch (err: any) {
       logger.error('Erreur server/channels :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -134,7 +134,7 @@ export function createServerRouter(client: Client): Router {
       res.status(201).json(result);
     } catch (err: any) {
       logger.error('Erreur creation server/channels :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -150,7 +150,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur modification server/channels/:id :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -167,7 +167,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur suppression server/channels/:id :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -180,7 +180,7 @@ export function createServerRouter(client: Client): Router {
       res.json({ overwrites });
     } catch (err: any) {
       logger.error('Erreur server/channels/:id/permissions :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -204,7 +204,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur modification permissions salon :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -216,7 +216,7 @@ export function createServerRouter(client: Client): Router {
       res.json({ roles });
     } catch (err: any) {
       logger.error('Erreur server/roles :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -231,7 +231,7 @@ export function createServerRouter(client: Client): Router {
       res.status(201).json(result);
     } catch (err: any) {
       logger.error('Erreur creation server/roles :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -247,7 +247,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur modification server/roles/:id :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -264,7 +264,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur suppression server/roles/:id :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -277,7 +277,7 @@ export function createServerRouter(client: Client): Router {
       res.json({ members });
     } catch (err: any) {
       logger.error('Erreur server/roles/:id/members :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -289,7 +289,7 @@ export function createServerRouter(client: Client): Router {
       res.json({ matrix });
     } catch (err: any) {
       logger.error('Erreur server/permissions/matrix :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -309,7 +309,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur server/permissions/debug :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -321,7 +321,7 @@ export function createServerRouter(client: Client): Router {
       res.json(data);
     } catch (err: any) {
       logger.error('Erreur server/emojis :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -336,7 +336,7 @@ export function createServerRouter(client: Client): Router {
       res.status(201).json(result);
     } catch (err: any) {
       logger.error('Erreur creation emoji :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -352,7 +352,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur suppression emoji :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -364,7 +364,7 @@ export function createServerRouter(client: Client): Router {
       res.json({ webhooks });
     } catch (err: any) {
       logger.error('Erreur server/webhooks :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -379,7 +379,7 @@ export function createServerRouter(client: Client): Router {
       res.status(201).json(result);
     } catch (err: any) {
       logger.error('Erreur creation webhook :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -395,7 +395,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur suppression webhook :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -408,7 +408,7 @@ export function createServerRouter(client: Client): Router {
       res.json({ settings });
     } catch (err: any) {
       logger.error('Erreur server/settings :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -424,7 +424,7 @@ export function createServerRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur mise à jour server/settings :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -436,7 +436,7 @@ export function createServerRouter(client: Client): Router {
       res.json({ logs: result.entries, total: result.total });
     } catch (err: any) {
       logger.error('Erreur server/audit :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 

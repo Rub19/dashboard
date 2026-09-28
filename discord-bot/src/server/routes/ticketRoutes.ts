@@ -15,6 +15,7 @@ import { TicketPriority, TicketStatus } from '../../modules/tickets/types/ticket
 import { logger } from '../../utils/logger.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
+import { handleRouteError, handleClientError } from '../utils/routeError.js';
 
 export function createTicketRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -36,7 +37,7 @@ export function createTicketRouter(discordClient: Client) {
       const overview = ticketService.getOverview(guildId);
       res.json(overview);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur lors de la récupération des stats' });
+      handleRouteError(err, res, 'Erreur lors de la récupération des stats');
     }
   });
 
@@ -74,7 +75,7 @@ export function createTicketRouter(discordClient: Client) {
 
       res.json(result);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur lors de la récupération des tickets' });
+      handleRouteError(err, res, 'Erreur lors de la récupération des tickets');
     }
   };
 
@@ -93,7 +94,7 @@ export function createTicketRouter(discordClient: Client) {
       }
       res.json({ ticket });
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      handleRouteError(err, res, 'Erreur serveur');
     }
   });
 
@@ -115,7 +116,7 @@ export function createTicketRouter(discordClient: Client) {
       });
       res.json({ success: true, ticket });
     } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      handleClientError(err, res, 'Requête invalide');
     }
   });
 
@@ -131,7 +132,7 @@ export function createTicketRouter(discordClient: Client) {
       });
       res.json({ success: true, ticket });
     } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      handleClientError(err, res, 'Requête invalide');
     }
   });
 
@@ -149,7 +150,7 @@ export function createTicketRouter(discordClient: Client) {
       );
       res.json({ success: true, ticket });
     } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      handleClientError(err, res, 'Requête invalide');
     }
   });
 
@@ -167,7 +168,7 @@ export function createTicketRouter(discordClient: Client) {
       );
       res.json({ success: true, ticket });
     } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      handleClientError(err, res, 'Requête invalide');
     }
   });
 
@@ -185,7 +186,7 @@ export function createTicketRouter(discordClient: Client) {
       );
       res.json({ success: true, ticket });
     } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      handleClientError(err, res, 'Requête invalide');
     }
   });
 
@@ -203,7 +204,7 @@ export function createTicketRouter(discordClient: Client) {
       );
       res.json({ success: true, ticket });
     } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      handleClientError(err, res, 'Requête invalide');
     }
   });
 
@@ -225,7 +226,7 @@ export function createTicketRouter(discordClient: Client) {
       );
       res.json({ success: true, ticket });
     } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      handleClientError(err, res, 'Requête invalide');
     }
   });
 
@@ -250,7 +251,7 @@ export function createTicketRouter(discordClient: Client) {
       );
       res.json({ success: true, ticket });
     } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      handleClientError(err, res, 'Requête invalide');
     }
   });
 
@@ -274,7 +275,7 @@ export function createTicketRouter(discordClient: Client) {
       );
       res.json({ success: true, ticket });
     } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      handleClientError(err, res, 'Requête invalide');
     }
   });
 
@@ -292,7 +293,7 @@ export function createTicketRouter(discordClient: Client) {
       );
       res.json({ success: true, ticket });
     } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      handleClientError(err, res, 'Requête invalide');
     }
   });
 
@@ -305,7 +306,7 @@ export function createTicketRouter(discordClient: Client) {
       const ticket = ticketService.submitRating(guildId, ticketId, Number(score) || 5, comment);
       res.json({ success: true, ticket });
     } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      handleClientError(err, res, 'Requête invalide');
     }
   });
 
@@ -323,7 +324,7 @@ export function createTicketRouter(discordClient: Client) {
       ticketService.saveCategory(categoryData);
       res.json({ success: true, category: categoryData });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données invalides' });
+      handleClientError(err, res, 'Données invalides');
     }
   });
 
@@ -348,7 +349,7 @@ export function createTicketRouter(discordClient: Client) {
       ticketService.savePanel(panelData);
       res.json({ success: true, panel: panelData });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données invalides' });
+      handleClientError(err, res, 'Données invalides');
     }
   });
 
@@ -443,7 +444,7 @@ export function createTicketRouter(discordClient: Client) {
       res.json({ success: true, messageId: sent.id, channelName: channel.name });
     } catch (err: any) {
       logger.error('Erreur publication panel tickets :', err);
-      res.status(500).json({ error: err.message || 'Impossible de publier le panel sur Discord' });
+      res.status(500).json({ error: 'Impossible de publier le panel sur Discord' });
     }
   });
 
@@ -461,7 +462,7 @@ export function createTicketRouter(discordClient: Client) {
       ticketService.saveTeam(teamData);
       res.json({ success: true, team: teamData });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données invalides' });
+      handleClientError(err, res, 'Données invalides');
     }
   });
 
@@ -486,7 +487,7 @@ export function createTicketRouter(discordClient: Client) {
       ticketService.saveAutomation(ruleData);
       res.json({ success: true, automation: ruleData });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données invalides' });
+      handleClientError(err, res, 'Données invalides');
     }
   });
 
@@ -504,7 +505,7 @@ export function createTicketRouter(discordClient: Client) {
       const analytics = ticketService.getStaffAnalytics(guildId);
       res.json({ analytics });
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      handleRouteError(err, res, 'Erreur serveur');
     }
   });
 
@@ -524,7 +525,7 @@ export function createTicketRouter(discordClient: Client) {
       emitConfigUpdated('tickets', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données invalides' });
+      handleClientError(err, res, 'Données invalides');
     }
   };
 

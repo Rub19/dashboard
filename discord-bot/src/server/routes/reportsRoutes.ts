@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { reportsStorage } from '../../modules/reports/storage/reportsStorage.js';
 import { reportsService } from '../../modules/reports/services/reportsService.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleClientError } from '../utils/routeError.js';
 
 const snowflake = z.string().regex(/^\d{5,25}$/);
 
@@ -64,7 +65,7 @@ export function createReportSystemRouter(client: Client) {
       emitConfigUpdated('reports', guildId, config, 'DASHBOARD', req.user?.id);
       res.json({ success: true, ...out, config });
     } catch (err) {
-      res.status(400).json({ error: err instanceof Error ? err.message : 'Installation impossible' });
+      handleClientError(err, res, 'Installation impossible');
     }
   });
 

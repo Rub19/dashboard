@@ -11,6 +11,7 @@ import { Request, Response, NextFunction } from 'express';
 import { rateLimiterService, RateLimitCategory } from '../../services/resilience/rateLimiterService.js';
 import { idempotencyService } from '../../services/resilience/idempotencyService.js';
 import { guildOperationLockService } from '../../services/resilience/guildOperationLockService.js';
+import { handleRouteError } from '../utils/routeError.js';
 
 /**
  * Express Middleware for multi-tier rate limiting
@@ -110,7 +111,7 @@ export function idempotent(options: { scopePrefix?: string; ttlMs?: number; ttlS
         res.status(leaderResult.statusCode || 200).json(leaderResult.payload);
         return;
       } catch (err: any) {
-        res.status(500).json({ success: false, error: err.message || 'Erreur requête initiale' });
+        handleRouteError(err, res, 'Erreur requête initiale', { success: false });
         return;
       }
     }

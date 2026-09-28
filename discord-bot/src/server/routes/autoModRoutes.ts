@@ -8,6 +8,7 @@ import { AutoModIncidentService } from '../../modules/automod/services/autoModIn
 import { AutoModRiskEngine } from '../../modules/automod/services/autoModRiskEngine.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleRouteError, handleClientError } from '../utils/routeError.js';
 
 export function createAutoModRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -46,7 +47,7 @@ export function createAutoModRouter(discordClient: Client) {
         strikesCount,
       });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération overview AutoMod' });
+      handleRouteError(err, res, 'Erreur récupération overview AutoMod');
     }
   });
 
@@ -57,7 +58,7 @@ export function createAutoModRouter(discordClient: Client) {
       const config = autoModRepository.getConfig(guildId);
       res.json({ success: true, config });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération config AutoMod' });
+      handleRouteError(err, res, 'Erreur récupération config AutoMod');
     }
   });
 
@@ -73,7 +74,7 @@ export function createAutoModRouter(discordClient: Client) {
         emitConfigUpdated('automod', guildId, updated, 'DASHBOARD', req.user?.id);
         res.json({ success: true, config: updated });
       } catch (err: any) {
-        res.status(400).json({ error: err.message || 'Configuration AutoMod invalide' });
+        handleClientError(err, res, 'Configuration AutoMod invalide');
       }
     }
   );
@@ -85,7 +86,7 @@ export function createAutoModRouter(discordClient: Client) {
       const rules = autoModRepository.getRules(guildId);
       res.json({ success: true, rules });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération des règles' });
+      handleRouteError(err, res, 'Erreur récupération des règles');
     }
   });
 
@@ -101,7 +102,7 @@ export function createAutoModRouter(discordClient: Client) {
         const created = autoModRepository.addRule(guildId, rule);
         res.json({ success: true, rule: created });
       } catch (err: any) {
-        res.status(400).json({ error: err.message || 'Données de règle invalides' });
+        handleClientError(err, res, 'Données de règle invalides');
       }
     }
   );
@@ -121,7 +122,7 @@ export function createAutoModRouter(discordClient: Client) {
         }
         res.json({ success: true, rule: updated });
       } catch (err: any) {
-        res.status(400).json({ error: err.message || 'Mise à jour de la règle invalide' });
+        handleClientError(err, res, 'Mise à jour de la règle invalide');
       }
     }
   );
@@ -137,7 +138,7 @@ export function createAutoModRouter(discordClient: Client) {
         const deleted = autoModRepository.deleteRule(guildId, ruleId);
         res.json({ success: deleted });
       } catch (err: any) {
-        res.status(500).json({ error: err.message || 'Erreur suppression de la règle' });
+        handleRouteError(err, res, 'Erreur suppression de la règle');
       }
     }
   );
@@ -165,7 +166,7 @@ export function createAutoModRouter(discordClient: Client) {
       });
       res.json({ success: true, result });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur exécution du test' });
+      handleRouteError(err, res, 'Erreur exécution du test');
     }
   });
 
@@ -177,7 +178,7 @@ export function createAutoModRouter(discordClient: Client) {
       const strikes = StrikeService.getActiveStrikes(guildId, userId);
       res.json({ success: true, strikes });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur récupération des strikes' });
+      handleRouteError(err, res, 'Erreur récupération des strikes');
     }
   });
 
@@ -192,7 +193,7 @@ export function createAutoModRouter(discordClient: Client) {
       const cleared = StrikeService.clearStrikes(guildId, userId);
       res.json({ success: true, clearedCount: cleared });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur réinitialisation des strikes' });
+      handleRouteError(err, res, 'Erreur réinitialisation des strikes');
     }
   });
 
@@ -219,7 +220,7 @@ export function createAutoModRouter(discordClient: Client) {
       const profile = AutoModIncidentService.getUserProfile(guildId, member || user);
       res.json({ success: true, profile });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur profil de modération' });
+      handleRouteError(err, res, 'Erreur profil de modération');
     }
   });
 
@@ -231,7 +232,7 @@ export function createAutoModRouter(discordClient: Client) {
       const incidents = AutoModIncidentService.getIncidents(guildId, limit);
       res.json({ success: true, incidents });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur historique des détections' });
+      handleRouteError(err, res, 'Erreur historique des détections');
     }
   });
 

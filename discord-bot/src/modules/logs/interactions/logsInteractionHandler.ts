@@ -10,6 +10,7 @@ import {
   type AnySelectMenuInteraction,
   type BaseMessageOptions,
   type ButtonInteraction,
+  MessageFlags,
 } from 'discord.js';
 import { auditRepository } from '../storage/auditRepository.js';
 import type { AuditChannelRouting, AuditSettings, ChannelLogThreshold } from '../types/auditEvent.js';
@@ -179,7 +180,7 @@ export async function handleLogsInteraction(
   const perms =
     member && typeof member.permissions !== 'string' ? member.permissions : interaction.memberPermissions;
   if (!perms?.has('ManageGuild')) {
-    await interaction.reply({ embeds: [noticeEmbed('error', "Il te faut la permission « Gérer le serveur ».")], ephemeral: true });
+    await interaction.reply({ embeds: [noticeEmbed('error', "Il te faut la permission « Gérer le serveur ».")], flags: MessageFlags.Ephemeral });
     return;
   }
 
@@ -238,7 +239,7 @@ export async function handleLogsInteraction(
     logger.error('[Logs] Échec du traitement de l\'interaction du panneau :', err);
     if (!interaction.replied && !interaction.deferred) {
       await interaction
-        .reply({ embeds: [noticeEmbed('error', "Une erreur est survenue. Réessaie.")], ephemeral: true })
+        .reply({ embeds: [noticeEmbed('error', "Une erreur est survenue. Réessaie.")], flags: MessageFlags.Ephemeral })
         .catch(() => {});
     }
   }

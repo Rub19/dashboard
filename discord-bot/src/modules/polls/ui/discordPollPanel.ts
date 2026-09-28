@@ -5,6 +5,7 @@ import {
   ButtonStyle,
   ButtonInteraction,
   Client,
+  MessageFlags,
 } from 'discord.js';
 import { DiscordPoll } from '../types/index.js';
 import { pollRepository } from '../storage/pollRepository.js';
@@ -123,7 +124,7 @@ export class DiscordPollPanel {
 
     const poll = pollRepository.getPollById(interaction.guildId, pollId);
     if (!poll) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.poll_deleted)], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.poll_deleted)], flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -142,7 +143,7 @@ export class DiscordPollPanel {
         .setTitle(formatString(t.poll_live_results_title, { title: poll.title }))
         .setDescription(lines || t.poll_no_votes_recorded);
 
-      await interaction.reply({ embeds: [resultsEmbed], ephemeral: true });
+      await interaction.reply({ embeds: [resultsEmbed], flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -169,7 +170,7 @@ export class DiscordPollPanel {
       if (!result.success) {
         await interaction.reply({
           embeds: [baseEmbed('error').setDescription(formatString(t.poll_vote_error, { error: result.error || '' }))],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         return;
       }
@@ -185,7 +186,7 @@ export class DiscordPollPanel {
           })
         );
 
-      await interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
+      await interaction.reply({ embeds: [confirmEmbed], flags: MessageFlags.Ephemeral });
     }
   }
 }

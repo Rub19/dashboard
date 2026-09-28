@@ -5,6 +5,7 @@ import {
   ModalSubmitInteraction,
   TextInputBuilder,
   TextInputStyle,
+  MessageFlags,
 } from 'discord.js';
 import { SuggestionVoteService } from '../services/suggestionVoteService.js';
 import { SuggestionCommentService } from '../services/suggestionCommentService.js';
@@ -21,13 +22,13 @@ export async function handleSuggestionButton(interaction: ButtonInteraction): Pr
     const id = customId.split(':')[1];
     const { suggestion, action } = SuggestionVoteService.handleVote(id, interaction.user.id, 'up');
     if (!suggestion) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.suggest_not_found)], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.suggest_not_found)], flags: MessageFlags.Ephemeral });
       return;
     }
     // Différer immédiatement : la mise à jour du message de suggestion ci-dessous édite un
     // message via l'API Discord et peut dépasser la fenêtre de 3s de l'interaction
     // ("Unknown interaction" / 10062) si on ne le fait pas.
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     await SuggestionService.updateDiscordMessage(interaction.client, id);
     await interaction.editReply({
       embeds: [baseEmbed(action === 'removed' ? 'info' : 'success').setDescription(
@@ -40,10 +41,10 @@ export async function handleSuggestionButton(interaction: ButtonInteraction): Pr
     const id = customId.split(':')[1];
     const { suggestion, action } = SuggestionVoteService.handleVote(id, interaction.user.id, 'down');
     if (!suggestion) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.suggest_not_found)], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.suggest_not_found)], flags: MessageFlags.Ephemeral });
       return;
     }
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     await SuggestionService.updateDiscordMessage(interaction.client, id);
     await interaction.editReply({
       embeds: [baseEmbed(action === 'removed' ? 'info' : 'success').setDescription(
@@ -54,7 +55,7 @@ export async function handleSuggestionButton(interaction: ButtonInteraction): Pr
     });
   } else if (customId.startsWith('sugg_follow:')) {
     const id = customId.split(':')[1];
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     const { isFollowing } = SuggestionCommentService.toggleFollow(id, interaction.user.id);
     await SuggestionService.updateDiscordMessage(interaction.client, id);
     await interaction.editReply({
@@ -96,7 +97,7 @@ export async function handleSuggestionModal(interaction: ModalSubmitInteraction)
     // Différer immédiatement : l'enregistrement du commentaire + la mise à jour du message de
     // suggestion ci-dessous peuvent dépasser la fenêtre de 3s de l'interaction
     // ("Unknown interaction" / 10062) si on ne le fait pas.
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     SuggestionCommentService.addComment(id, {
       userId: interaction.user.id,
@@ -120,7 +121,7 @@ export async function handleSuggestionModal(interaction: ModalSubmitInteraction)
 
     // Différer immédiatement : la création + publication de la suggestion ci-dessous peut
     // dépasser la fenêtre de 3s de l'interaction ("Unknown interaction" / 10062).
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     try {
       const suggestion = await SuggestionService.createSuggestion(interaction.client, {

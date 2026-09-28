@@ -10,6 +10,7 @@ import { VariableContext } from '../../modules/welcome/types/variables.js';
 import { logger } from '../../utils/logger.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleRouteError, handleClientError, clientErrorMessage } from '../utils/routeError.js';
 
 export function createWelcomeRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -28,7 +29,7 @@ export function createWelcomeRouter(discordClient: Client) {
       const updated = welcomeService.updateConfig(guildId, req.body);
       res.json({ success: true, config: updated });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données invalides' });
+      handleClientError(err, res, 'Données invalides');
     }
   };
 
@@ -42,7 +43,7 @@ export function createWelcomeRouter(discordClient: Client) {
       const overview = welcomeRepository.getOverview(guildId);
       res.json(overview);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur overview' });
+      handleRouteError(err, res, 'Erreur overview');
     }
   });
 
@@ -70,7 +71,7 @@ export function createWelcomeRouter(discordClient: Client) {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur lors du test Welcome :', err);
-      res.status(Number(err?.status) || 500).json({ error: err.message || 'Échec de l’envoi du test sur Discord' });
+      res.status(Number(err?.status) || 500).json({ error: clientErrorMessage(err, 'Échec de l’envoi du test sur Discord') });
     }
   });
 
@@ -94,7 +95,7 @@ export function createWelcomeRouter(discordClient: Client) {
       res.json({ success: true, flow });
     } catch (err: any) {
       const issues = Array.isArray(err?.issues) ? err.issues.map((i: { path: unknown[]; message: string }) => `${i.path.join('.')} : ${i.message}`).join(' ; ') : '';
-      res.status(400).json({ error: issues || err.message || 'Données onboarding invalides' });
+      res.status(400).json({ error: issues || clientErrorMessage(err, 'Données onboarding invalides') });
     }
   });
 
@@ -128,7 +129,7 @@ export function createWelcomeRouter(discordClient: Client) {
       res.json({ success: true, via });
     } catch (err: any) {
       logger.error('Erreur welcome/onboarding/preview :', err);
-      res.status(500).json({ error: err.message || 'Aperçu impossible.' });
+      res.status(500).json({ error: 'Aperçu impossible.' });
     }
   });
 
@@ -146,7 +147,7 @@ export function createWelcomeRouter(discordClient: Client) {
       emitConfigUpdated('welcomeVerification', guildId, req.body, 'DASHBOARD', req.user?.id);
       res.json({ success: true, verification: req.body });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données de vérification invalides' });
+      handleClientError(err, res, 'Données de vérification invalides');
     }
   });
 
@@ -169,7 +170,7 @@ export function createWelcomeRouter(discordClient: Client) {
       const updated = welcomeService.updateConfig(guildId, tpl.config);
       res.json({ success: true, config: updated, templateName: tpl.name });
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      handleRouteError(err, res, 'Erreur serveur');
     }
   });
 

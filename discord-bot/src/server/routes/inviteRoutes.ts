@@ -5,6 +5,7 @@ import { inviteSnapshotService } from '../../modules/invites/services/inviteSnap
 import { logger } from '../../utils/logger.js';
 import { requireStringParam } from '../utils/params.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { handleRouteError } from '../utils/routeError.js';
 
 export function createInviteRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -63,7 +64,7 @@ export function createInviteRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('Erreur invites/overview :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -84,7 +85,7 @@ export function createInviteRouter(client: Client): Router {
       res.json({ leaderboard });
     } catch (err: any) {
       logger.error('Erreur invites/leaderboard :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -113,7 +114,7 @@ export function createInviteRouter(client: Client): Router {
       });
     } catch (err: any) {
       logger.error('Erreur invites/users/:userId :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -142,7 +143,7 @@ export function createInviteRouter(client: Client): Router {
       res.json({ links });
     } catch (err: any) {
       logger.error('Erreur invites/links :', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -153,7 +154,7 @@ export function createInviteRouter(client: Client): Router {
       const rewards = inviteRepository.getRewards(guildId);
       res.json({ rewards });
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      handleRouteError(err, res, 'Erreur serveur');
     }
   });
 
@@ -178,7 +179,7 @@ export function createInviteRouter(client: Client): Router {
 
       res.json({ success: true, reward });
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      handleRouteError(err, res, 'Erreur serveur');
     }
   });
 
@@ -190,7 +191,7 @@ export function createInviteRouter(client: Client): Router {
       const deleted = inviteRepository.deleteReward(guildId, rewardId);
       res.json({ success: deleted });
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      handleRouteError(err, res, 'Erreur serveur');
     }
   });
 
@@ -201,7 +202,7 @@ export function createInviteRouter(client: Client): Router {
       const campaigns = inviteRepository.getCampaigns(guildId);
       res.json({ campaigns });
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      handleRouteError(err, res, 'Erreur serveur');
     }
   });
 
@@ -228,7 +229,7 @@ export function createInviteRouter(client: Client): Router {
 
       res.json({ success: true, campaign });
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      handleRouteError(err, res, 'Erreur serveur');
     }
   });
 
@@ -239,7 +240,7 @@ export function createInviteRouter(client: Client): Router {
       const settings = inviteRepository.getSettings(guildId);
       res.json({ settings });
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      handleRouteError(err, res, 'Erreur serveur');
     }
   });
 
@@ -251,7 +252,7 @@ export function createInviteRouter(client: Client): Router {
       emitConfigUpdated('invites', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, settings: updated });
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      handleRouteError(err, res, 'Erreur serveur');
     }
   });
 
@@ -265,7 +266,7 @@ export function createInviteRouter(client: Client): Router {
       }
       res.json({ success: true, syncedAt: new Date().toISOString() });
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      handleRouteError(err, res, 'Erreur serveur');
     }
   });
 
@@ -291,7 +292,7 @@ export function createInviteRouter(client: Client): Router {
 
       res.json({ referrals });
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      handleRouteError(err, res, 'Erreur serveur');
     }
   });
 

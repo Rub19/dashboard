@@ -1,4 +1,4 @@
-import { ButtonInteraction, GuildMember, StringSelectMenuInteraction } from 'discord.js';
+import { ButtonInteraction, GuildMember, StringSelectMenuInteraction, MessageFlags } from 'discord.js';
 import { rolePanelService } from '../services/rolePanelService.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
@@ -12,11 +12,11 @@ export async function handleRoleButton(interaction: ButtonInteraction): Promise<
   const member = interaction.member as GuildMember | null;
 
   if (!member) {
-    await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Erreur de récupération du membre.')], ephemeral: true });
+    await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Erreur de récupération du membre.')], flags: MessageFlags.Ephemeral });
     return;
   }
 
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
   try {
     const res = await rolePanelService.handleRoleAction(member, panelId, itemId);
     await interaction.editReply({ embeds: [baseEmbed('info').setDescription(res.message)] });
@@ -34,11 +34,11 @@ export async function handleRoleSelect(interaction: StringSelectMenuInteraction)
   const member = interaction.member as GuildMember | null;
 
   if (!member) {
-    await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Erreur de récupération du membre.')], ephemeral: true });
+    await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Erreur de récupération du membre.')], flags: MessageFlags.Ephemeral });
     return;
   }
 
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
   try {
     const selectedItemIds = interaction.values;
     const panel = rolePanelService.getPanel(interaction.guildId!, panelId);

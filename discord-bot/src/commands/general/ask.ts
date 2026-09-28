@@ -6,7 +6,7 @@ import { AIKnowledgeService } from '../../modules/ai/services/aiKnowledgeService
 import { AIProviderService } from '../../modules/ai/services/aiProviderService.js';
 import { DiscordAiPanel } from '../../modules/ai/ui/discordAiPanel.js';
 import { logger } from '../../utils/logger.js';
-import { getTranslation } from '../../utils/i18n.js';
+import { formatString, getTranslation } from '../../utils/i18n.js';
 import { baseEmbed } from '../../utils/embeds.js';
 import { cooldownService } from '../../services/cooldownService.js';
 import { BotAiMonitorService } from '../../modules/botControl/services/botAiMonitorService.js';
@@ -42,6 +42,7 @@ export const askCommand: Command = {
         .setRequired(false)
     ),
   execute: async (ctx: CommandContext) => {
+    const t = getTranslation(ctx.guildConfig.language);
     let settings: any = null;
     let aiCallStartedAt = 0;
     try {
@@ -52,7 +53,7 @@ export const askCommand: Command = {
 
       if (!question || !question.trim()) {
         await ctx.reply({
-          embeds: [baseEmbed('error').setDescription('❌ Veuillez préciser votre question. Exemple : `/ask question:Comment obtenir le rôle VIP ?`')],
+          embeds: [baseEmbed('error').setDescription(t.ask_missing_question)],
           ephemeral: true,
         });
         return;
@@ -71,7 +72,7 @@ export const askCommand: Command = {
       );
       if (onCooldown) {
         await ctx.reply({
-          embeds: [baseEmbed('warning').setDescription(`⏳ Merci de patienter encore ${remainingSeconds}s avant de reposer une question à l'assistant IA.`)],
+          embeds: [baseEmbed('warning').setDescription(formatString(t.ask_cooldown, { seconds: remainingSeconds }))],
           ephemeral: true,
         });
         return;
@@ -91,7 +92,6 @@ export const askCommand: Command = {
       aiCallStartedAt = Date.now();
 
       if (!settings.enabled) {
-        const t = getTranslation(ctx.guildConfig.language);
         await ctx.editReply({
           embeds: [baseEmbed('error').setDescription(t.ask_disabled)],
         });
@@ -101,7 +101,7 @@ export const askCommand: Command = {
       const safetyCheck = AISafetyService.inspectPrompt(question.trim());
       if (safetyCheck.flagged) {
         await ctx.editReply({
-          embeds: [baseEmbed('warning').setDescription('⚠️ Cette question ne respecte pas les consignes de sécurité de l\'assistant.')],
+          embeds: [baseEmbed('warning').setDescription(t.ask_unsafe)],
         });
         return;
       }
@@ -164,9 +164,9 @@ export const askCommand: Command = {
         logger.warn('[askCommand] Impossible de mettre à jour les statistiques IA :', analyticsErr);
       }
     } catch (error: any) {
-      botAiMonitorService.recordAiUsage(0, Date.now() - aiCallStartedAt, false, undefined, settings.provider);
+      botAiMonitorService.recordAiUsage(0, Date.now() - aiCallStartedAt, false, undefined, settings?.provider);
       logger.error('[askCommand] Erreur lors de l\'exécution de /ask :', error);
-      const errorMsg = `❌ Une erreur est survenue lors du traitement par l'assistant IA.`;
+      const errorMsg = t.ask_error;
       if (ctx.interaction?.deferred || ctx.interaction?.replied) {
         await ctx.editReply({ embeds: [baseEmbed('error').setDescription(errorMsg)] }).catch(() => {});
       } else {

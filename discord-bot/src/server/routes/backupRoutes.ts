@@ -6,6 +6,7 @@ import { logger } from '../../utils/logger.js';
 import { requireStringParam } from '../utils/params.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { clientErrorMessage } from '../utils/routeError.js';
 
 export function createBackupRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -18,7 +19,7 @@ export function createBackupRouter(client: Client): Router {
       res.json(overview);
     } catch (err: any) {
       logger.error('Erreur GET /backups/overview :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -37,7 +38,7 @@ export function createBackupRouter(client: Client): Router {
       res.json({ backups, total: backups.length });
     } catch (err: any) {
       logger.error('Erreur GET /backups :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -74,7 +75,7 @@ export function createBackupRouter(client: Client): Router {
       res.status(201).json(snapshot);
     } catch (err: any) {
       logger.error('Erreur POST /backups :', err);
-      res.status(500).json({ error: err.message || 'Erreur lors de la création de la sauvegarde' });
+      res.status(500).json({ error: 'Erreur lors de la création de la sauvegarde' });
     }
   });
 
@@ -107,7 +108,7 @@ export function createBackupRouter(client: Client): Router {
         res.status(201).json(snapshot);
       } catch (err: any) {
         logger.error('Erreur POST /backups/import :', err);
-        res.status(400).json({ error: err.message || 'Erreur lors de l\'importation' });
+        res.status(400).json({ error: clientErrorMessage(err, 'Erreur lors de l\'importation') });
       }
     }
   );
@@ -120,7 +121,7 @@ export function createBackupRouter(client: Client): Router {
       res.json(settings);
     } catch (err: any) {
       logger.error('Erreur GET /backups/settings :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -132,7 +133,7 @@ export function createBackupRouter(client: Client): Router {
       res.json(updated);
     } catch (err: any) {
       logger.error('Erreur PUT /backups/settings :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -150,7 +151,7 @@ export function createBackupRouter(client: Client): Router {
       res.json(diff);
     } catch (err: any) {
       logger.error('Erreur POST /backups/compare :', err);
-      res.status(500).json({ error: err.message || 'Erreur lors de la comparaison' });
+      res.status(500).json({ error: 'Erreur lors de la comparaison' });
     }
   });
 
@@ -166,7 +167,7 @@ export function createBackupRouter(client: Client): Router {
       res.json(job);
     } catch (err: any) {
       logger.error('Erreur GET /backups/jobs/:jobId :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -182,7 +183,7 @@ export function createBackupRouter(client: Client): Router {
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur GET /backups/:backupId :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -195,7 +196,7 @@ export function createBackupRouter(client: Client): Router {
       res.json(testResult);
     } catch (err: any) {
       logger.error('Erreur POST /backups/:backupId/test :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -215,7 +216,7 @@ export function createBackupRouter(client: Client): Router {
       res.send(JSON.stringify(result.snapshot, null, 2));
     } catch (err: any) {
       logger.error('Erreur GET /backups/:backupId/download :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -239,7 +240,7 @@ export function createBackupRouter(client: Client): Router {
       res.json({ success: true, isProtected: Boolean(isProtected) });
     } catch (err: any) {
       logger.error('Erreur PATCH /backups/:backupId/protect :', err);
-      res.status(500).json({ error: err.message || 'Erreur serveur' });
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 
@@ -262,7 +263,7 @@ export function createBackupRouter(client: Client): Router {
       res.json({ success: true, message: 'Sauvegarde supprimée avec succès' });
     } catch (err: any) {
       logger.error('Erreur DELETE /backups/:backupId :', err);
-      res.status(400).json({ error: err.message || 'Erreur lors de la suppression' });
+      res.status(400).json({ error: clientErrorMessage(err, 'Erreur lors de la suppression') });
     }
   });
 
@@ -284,7 +285,7 @@ export function createBackupRouter(client: Client): Router {
       res.json(plan);
     } catch (err: any) {
       logger.error('Erreur POST /backups/:backupId/preview-restore :', err);
-      res.status(500).json({ error: err.message || 'Erreur lors de la prévisualisation' });
+      res.status(500).json({ error: 'Erreur lors de la prévisualisation' });
     }
   });
 
@@ -324,7 +325,7 @@ export function createBackupRouter(client: Client): Router {
       res.json(job);
     } catch (err: any) {
       logger.error('Erreur POST /backups/:backupId/restore :', err);
-      res.status(500).json({ error: err.message || 'Erreur lors du lancement de la restauration' });
+      res.status(500).json({ error: 'Erreur lors du lancement de la restauration' });
     }
   });
 

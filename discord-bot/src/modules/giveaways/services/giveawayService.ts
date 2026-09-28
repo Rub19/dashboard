@@ -10,6 +10,7 @@ import {
   GuildMember,
   PermissionFlagsBits,
   TextChannel,
+  MessageFlags,
 } from 'discord.js';
 import { Giveaway, GiveawayRequirements } from '../types/giveaway.js';
 import { giveawayStorage } from '../storage/giveawayStorage.js';
@@ -289,7 +290,7 @@ class GiveawayService {
     if (!giveaway || giveaway.status !== 'active') {
       await interaction.reply({
         embeds: [baseEmbed('error').setDescription(t.giveaway_not_active)],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -304,7 +305,7 @@ class GiveawayService {
       // Différer immédiatement : la mise à jour du message du giveaway ci-dessous édite un
       // message via l'API Discord et peut dépasser la fenêtre de 3s de l'interaction
       // ("Unknown interaction" / 10062) si on ne le fait pas.
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       await this.updateMessage(interaction.client, giveawayId);
       await interaction.editReply({
         embeds: [baseEmbed('info').setDescription(t.giveaway_left)],
@@ -317,14 +318,14 @@ class GiveawayService {
     if (!eligibility.eligible) {
       await interaction.reply({
         embeds: [baseEmbed('error').setDescription(formatString(t.giveaway_participation_denied, { reason: eligibility.reason || '' }))],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
 
     // Différer immédiatement : l'enregistrement + la mise à jour du message du giveaway ci-dessous
     // peuvent dépasser la fenêtre de 3s de l'interaction ("Unknown interaction" / 10062).
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     // Enregistrement
     giveawayStorage.addParticipant(giveawayId, {

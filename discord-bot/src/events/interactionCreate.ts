@@ -1,4 +1,4 @@
-import { Interaction } from 'discord.js';
+import { Interaction, MessageFlags } from 'discord.js';
 import { config } from '../config.js';
 import { commandRegistry } from '../handlers/commandHandler.js';
 import {
@@ -76,9 +76,9 @@ async function safeHandleComponent(
         if (interaction.deferred || interaction.replied) {
           // followUp posts a new ephemeral message instead of overwriting
           // whatever the original reply already showed.
-          await interaction.followUp({ embeds: [noticeEmbed('error', errorMessage)], ephemeral: true });
+          await interaction.followUp({ embeds: [noticeEmbed('error', errorMessage)], flags: MessageFlags.Ephemeral });
         } else {
-          await interaction.reply({ embeds: [noticeEmbed('error', errorMessage)], ephemeral: true });
+          await interaction.reply({ embeds: [noticeEmbed('error', errorMessage)], flags: MessageFlags.Ephemeral });
         }
       }
     } catch (replyError) {
@@ -105,7 +105,7 @@ export async function onInteractionCreate(interaction: Interaction) {
   if (interaction.guildId && (interaction.isButton() || interaction.isAnySelectMenu() || interaction.isModalSubmit())) {
     const notice = disabledComponentEmbed(interaction.guildId, interaction.customId);
     if (notice) {
-      await interaction.reply({ embeds: [notice], ephemeral: true }).catch(() => null);
+      await interaction.reply({ embeds: [notice], flags: MessageFlags.Ephemeral }).catch(() => null);
       return;
     }
   }
@@ -296,7 +296,7 @@ export async function onInteractionCreate(interaction: Interaction) {
           .setTitle('🛠️ Bot en maintenance')
           .setDescription(botGlobalSettings.maintenanceReason || 'Le bot est actuellement en maintenance. Veuillez réessayer plus tard.')
       ],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -307,7 +307,7 @@ export async function onInteractionCreate(interaction: Interaction) {
   if (!guildConfig.slashCommandsEnabled && interaction.commandName !== 'settings') {
     await interaction.reply({
       embeds: [baseEmbed('error').setDescription(`${guildConfig.emojis.error} Les commandes Slash sont actuellement **désactivées** sur ce serveur par les administrateurs.`)],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -325,7 +325,7 @@ export async function onInteractionCreate(interaction: Interaction) {
     logger.warn(`Commande Slash introuvable : ${interaction.commandName}`);
     await interaction.reply({
       embeds: [baseEmbed('error').setDescription('❌ Cette commande n\'est plus disponible.')],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -350,7 +350,7 @@ export async function onInteractionCreate(interaction: Interaction) {
     prefix: null,
   });
   if (disabledEmbeds) {
-    await interaction.reply({ embeds: disabledEmbeds, ephemeral: true });
+    await interaction.reply({ embeds: disabledEmbeds, flags: MessageFlags.Ephemeral });
     return;
   }
   const cooldownDuration = guildConfig.commandCooldown || 0;
@@ -367,7 +367,7 @@ export async function onInteractionCreate(interaction: Interaction) {
     await interaction.reply({ embeds: [noticeEmbed('warning', formatString(tCooldown.cooldown_wait, {
         seconds: remainingSeconds,
         command: `/${command.name}`,
-      }))], ephemeral: true });
+      }))], flags: MessageFlags.Ephemeral });
     return;
   }
 
@@ -390,7 +390,7 @@ export async function onInteractionCreate(interaction: Interaction) {
       if (!hasConfiguredAdminRole) {
         await interaction.reply({
           embeds: [baseEmbed('error').setDescription(`${guildConfig.emojis.error} ${tAccess.access_denied_admin}`)],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         return;
       }
@@ -402,7 +402,7 @@ export async function onInteractionCreate(interaction: Interaction) {
       if (!hasConfiguredAdminRole && !hasConfiguredModRole && !hasPermissionFlags) {
         await interaction.reply({
           embeds: [baseEmbed('error').setDescription(`${guildConfig.emojis.error} ${tAccess.access_denied_mod}`)],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         return;
       }
@@ -439,7 +439,7 @@ export async function onInteractionCreate(interaction: Interaction) {
     if (interaction.deferred || interaction.replied) {
       await interaction.editReply({ embeds: [baseEmbed('error').setDescription(errorMessage)] });
     } else {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(errorMessage)], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(errorMessage)], flags: MessageFlags.Ephemeral });
     }
   }
 }

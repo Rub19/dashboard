@@ -8,7 +8,7 @@ import {
 import { Command, CommandContext } from '../../types/command.js';
 import { guildConfigService } from '../../services/guildConfigService.js';
 import { aiRepository } from '../../modules/ai/storage/aiRepository.js';
-import { getTranslation, SupportedLanguage } from '../../utils/i18n.js';
+import { formatString, getTranslation, SupportedLanguage } from '../../utils/i18n.js';
 import { logger } from '../../utils/logger.js';
 
 export const languageCommand: Command = {
@@ -36,7 +36,7 @@ export const languageCommand: Command = {
 
   execute: async (ctx: CommandContext) => {
     if (!ctx.guild) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Cette commande doit être exécutée dans un serveur.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(getTranslation(ctx.guildConfig.language).guild_only_must_run)], ephemeral: true });
       return;
     }
 
@@ -56,14 +56,15 @@ export const languageCommand: Command = {
     if (!targetLang) {
       const embed = ctx
         .createEmbed('info')
-        .setTitle(`${tCurrent.lang_flag} ${tCurrent.lang_name} • Langue Actuelle`)
+        .setTitle(`${tCurrent.lang_flag} ${tCurrent.lang_name} • ${tCurrent.lang_current_title}`)
         .setDescription(
-          `La langue actuellement configurée sur **${ctx.guild.name}** est : **${tCurrent.lang_flag} ${tCurrent.lang_name}**.\n\n` +
-          `Pour changer la langue, utilisez :\n` +
-          `• \`/language langue:[fr | en | es | de]\`\n` +
-          `• Ou cliquez sur l'un des boutons de sélection rapide ci-dessous :`
+          formatString(tCurrent.lang_current_desc, {
+            guild: ctx.guild.name,
+            flag: tCurrent.lang_flag,
+            name: tCurrent.lang_name,
+          })
         )
-        .setFooter({ text: `${ctx.guildConfig.botName} • Multilingue` });
+        .setFooter({ text: `${ctx.guildConfig.botName} • ${tCurrent.lang_footer_multilingual}` });
 
       const buttonsRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
@@ -102,7 +103,7 @@ export const languageCommand: Command = {
     const validLangs: SupportedLanguage[] = ['fr', 'en', 'es', 'de'];
     if (!validLangs.includes(targetLang as any)) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription(`❌ Langue invalide : \`${targetLang}\`. Choisissez parmi : \`fr\` (Français), \`en\` (English), \`es\` (Español), \`de\` (Deutsch).`)],
+        embeds: [ctx.createEmbed('error').setDescription(formatString(tCurrent.lang_invalid, { lang: targetLang }))],
         ephemeral: true,
       });
       return;

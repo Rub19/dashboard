@@ -4,6 +4,7 @@ import { economyStorage } from '../../modules/economy/storage/economyStorage.js'
 import { economyService } from '../../modules/economy/services/economyService.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
+import { handleClientError } from '../utils/routeError.js';
 
 export function createEconomyRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -63,7 +64,7 @@ export function createEconomyRouter(discordClient: Client) {
       emitConfigUpdated('economy', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Configuration invalide' });
+      handleClientError(err, res, 'Configuration invalide');
     }
   });
 
@@ -79,7 +80,7 @@ export function createEconomyRouter(discordClient: Client) {
       const saved = economyStorage.saveShopItem(guildId, req.body);
       res.json({ success: true, item: saved });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Article invalide' });
+      handleClientError(err, res, 'Article invalide');
     }
   });
 

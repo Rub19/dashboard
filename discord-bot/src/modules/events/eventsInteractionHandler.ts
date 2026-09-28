@@ -1,4 +1,4 @@
-import { ButtonInteraction } from 'discord.js';
+import { ButtonInteraction, MessageFlags } from 'discord.js';
 import { eventRepository } from './eventsRepository.js';
 import { EventRSVPService } from './eventsRsvpService.js';
 import { EventsCheckinService } from './eventsCheckinService.js';
@@ -15,7 +15,7 @@ export async function handleEventButton(interaction: ButtonInteraction): Promise
   }
 
   if (!interaction.guildId) {
-    await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Cette action ne peut être effectuée que sur un serveur.')], ephemeral: true });
+    await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Cette action ne peut être effectuée que sur un serveur.')], flags: MessageFlags.Ephemeral });
     return true;
   }
 
@@ -41,7 +41,7 @@ export async function handleEventButton(interaction: ButtonInteraction): Promise
     );
 
     if (!res.success) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(formatString(t.events_generic_error_prefix, { error: res.error || t.events_rsvp_error_fallback }))], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(formatString(t.events_generic_error_prefix, { error: res.error || t.events_rsvp_error_fallback }))], flags: MessageFlags.Ephemeral });
       return true;
     }
 
@@ -54,7 +54,7 @@ export async function handleEventButton(interaction: ButtonInteraction): Promise
 
     await interaction.reply({
       embeds: [baseEmbed('success').setDescription(formatString(t.events_rsvp_button_success, { message: res.message || '', statusLabel: statusLabels[res.status || ''] || res.status || '' }))],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     // Update message panel
@@ -90,13 +90,13 @@ export async function handleEventButton(interaction: ButtonInteraction): Promise
     });
 
     if (!res.success) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(formatString(t.events_generic_error_prefix, { error: res.message }))], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(formatString(t.events_generic_error_prefix, { error: res.message }))], flags: MessageFlags.Ephemeral });
       return true;
     }
 
     await interaction.reply({
       embeds: [baseEmbed('success').setDescription(formatString(t.events_checkin_button_success, { message: res.message }))],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     return true;

@@ -6,15 +6,16 @@ import {
 import { Command, CommandContext } from '../../types/command.js';
 import { aiRepository } from '../../modules/ai/storage/aiRepository.js';
 import { successEmbed, errorEmbed, infoEmbed } from '../../utils/embeds.js';
+import { formatString, getTranslation, type TranslationDictionary } from '../../utils/i18n.js';
 
 // La valeur d'un champ d'embed Discord est plafonnée à 1024 caractères. La liste des
 // mots bannis s'accumule au fil des appels successifs de `/ai-setup mots_bannis:...`
 // (fusion sans limite dans `currentSettings.bannedWords`) : sans troncature ici, une
 // liste devenue longue dépasse la limite et fait échouer silencieusement tout l'envoi
 // de la commande (aucun message d'erreur visible, juste "l'interaction n'a pas répondu").
-function formatBannedWordsFieldValue(words: string[] | undefined): string {
+function formatBannedWordsFieldValue(words: string[] | undefined, t: TranslationDictionary): string {
   if (!words || words.length === 0) {
-    return '*Aucun mot banni spécifique configuré*';
+    return t.aisetup_banned_none;
   }
 
   const maxLength = 1024;
@@ -28,7 +29,7 @@ function formatBannedWordsFieldValue(words: string[] | undefined): string {
   }
 
   if (shown < words.length) {
-    value += ` *(+${words.length - shown} autres)*`;
+    value += formatString(t.aisetup_banned_more, { count: words.length - shown });
   }
 
   return value;
@@ -83,8 +84,9 @@ export const aiSetupCommand: Command = {
     ),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const t = getTranslation(ctx.guildConfig.language);
     if (!ctx.guildId || !ctx.guild) {
-      await ctx.reply({ embeds: [errorEmbed().setDescription('Cette commande ne peut être exécutée que sur un serveur.')] });
+      await ctx.reply({ embeds: [errorEmbed().setDescription(t.guild_only_plain)] });
       return;
     }
 
@@ -144,48 +146,44 @@ export const aiSetupCommand: Command = {
       }
 
       const moodLabels: Record<string, string> = {
-        SAGE: '🐟 Sage & Bienveillant',
-        GAMER_SARCASTIQUE: '🦈 Gamer Sarcastique',
-        PROTECTEUR: '🛡️ Protecteur & Sérieux',
-        CYBERPUNK: '⚡ Cyberpunk Futuriste',
-        CUSTOM: '🎨 Personnalisé',
+        SAGE: t.aisetup_mood_sage,
+        GAMER_SARCASTIQUE: t.aisetup_mood_gamer,
+        PROTECTEUR: t.aisetup_mood_protector,
+        CYBERPUNK: t.aisetup_mood_cyberpunk,
+        CUSTOM: t.aisetup_mood_custom,
       };
 
       const embed = successEmbed({
-        footerText: `Configuration par ${ctx.author.tag} • Conforme ToS Discord`,
+        footerText: formatString(t.aisetup_footer, { tag: ctx.author.tag }),
       })
-        .setTitle('⚙️ Configuration ETHONE AI & Salon Dédié')
-        .setDescription(
-          updated
-            ? '✅ Les paramètres du salon IA et de sécurité ont été mis à jour avec succès !'
-            : 'Voici la configuration actuelle de l\'intelligence artificielle sur ce serveur :'
-        )
+        .setTitle(t.aisetup_title)
+        .setDescription(updated ? t.aisetup_desc_updated : t.aisetup_desc_current)
         .addFields(
           {
-            name: '💬 Salon IA Public Dédié',
+            name: t.aisetup_field_channel,
             value: currentSettings.dedicatedChannelId
-              ? `<#${currentSettings.dedicatedChannelId}> *(Tous les membres peuvent discuter librement ici sans préfixe !)*`
-              : '❌ *Aucun salon dédié configuré* (Utilisez `/ai-setup salon:#salon`)',
+              ? formatString(t.aisetup_channel_value, { channelId: currentSettings.dedicatedChannelId })
+              : t.aisetup_channel_none,
             inline: false,
           },
           {
-            name: '🎭 Humeur du Thon',
-            value: `**${moodLabels[currentSettings.thonMood || 'SAGE'] || '🐟 Sage & Bienveillant'}**`,
+            name: t.aisetup_field_mood,
+            value: `**${moodLabels[currentSettings.thonMood || 'SAGE'] || t.aisetup_mood_sage}**`,
             inline: true,
           },
           {
-            name: '🎨 Génération d\'images (/imagine)',
-            value: currentSettings.allowImageGeneration !== false ? '🟢 **Activée** (Modèle Flux)' : '🔴 **Désactivée**',
+            name: t.aisetup_field_images,
+            value: currentSettings.allowImageGeneration !== false ? t.aisetup_images_on : t.aisetup_images_off,
             inline: true,
           },
           {
-            name: '🛡️ Sécurité & Protection DLP',
-            value: '🔒 **Filtre Anti-Leak actif** (Tokens bot, clés API, email propriétaire strictement bloqués)',
+            name: t.aisetup_field_security,
+            value: t.aisetup_security_value,
             inline: false,
           },
           {
-            name: `🚫 Mots Bannis AutoMod (${(currentSettings.bannedWords || []).length})`,
-            value: formatBannedWordsFieldValue(currentSettings.bannedWords),
+            name: formatString(t.aisetup_field_banned, { count: (currentSettings.bannedWords || []).length }),
+            value: formatBannedWordsFieldValue(currentSettings.bannedWords, t),
             inline: false,
           }
         );
@@ -193,7 +191,7 @@ export const aiSetupCommand: Command = {
       await ctx.reply({ embeds: [embed] });
     } else {
       await ctx.reply({
-        embeds: [infoEmbed().setDescription('Utilisez la commande Slash `/ai-setup` pour configurer le salon dédié, l\'humeur et les mots bannis.')],
+        embeds: [infoEmbed().setDescription(t.aisetup_slash_only)],
       });
     }
   },

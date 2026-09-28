@@ -54,7 +54,7 @@ export const clearCommand: Command = {
     // Vérifier les permissions du membre
     if (!ctx.isSlash && ctx.member && !ctx.member.permissions.has(PermissionFlagsBits.ManageMessages)) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription(`${config.emojis.error || '❌'} Vous devez avoir la permission **Gérer les messages** pour utiliser cette commande.`)],
+        embeds: [ctx.createEmbed('error').setDescription(`${config.emojis.error || '❌'} ${t.clear_need_permission}`)],
         ephemeral: true,
       });
       return;
@@ -79,7 +79,7 @@ export const clearCommand: Command = {
 
     const channel = ctx.channel as TextChannel;
     if (!channel || !('bulkDelete' in channel)) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Impossible de supprimer les messages dans ce type de salon.')] });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.clear_bad_channel)] });
       return;
     }
 
@@ -98,7 +98,7 @@ export const clearCommand: Command = {
 
         if (userMessages.length === 0) {
           await ctx.reply({
-            embeds: [ctx.createEmbed('info').setDescription(`ℹ️ Aucun message récent trouvé pour **${targetUser.tag}** dans ce salon.`)],
+            embeds: [ctx.createEmbed('info').setDescription(formatString(t.clear_no_user_messages, { user: targetUser.tag }))],
             ephemeral: true,
           });
           return;
@@ -108,7 +108,7 @@ export const clearCommand: Command = {
         const embed = ctx
           .createEmbed('success')
           .setDescription(
-            `${config.emojis.success || '✅'} **${deleted.size}** message(s) de **${targetUser.tag}** supprimé(s) avec succès.`
+            `${config.emojis.success || '✅'} ${formatString(t.clear_user_success, { count: deleted.size, user: targetUser.tag })}`
           );
         await ctx.reply({ embeds: [embed], ephemeral: true });
       } else {
@@ -121,7 +121,7 @@ export const clearCommand: Command = {
       }
     } catch {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription(`${config.emojis.error || '❌'} Impossible de supprimer les messages (les messages de plus de 14 jours ne peuvent pas être supprimés en masse par l'API Discord).`)],
+        embeds: [ctx.createEmbed('error').setDescription(`${config.emojis.error || '❌'} ${t.clear_bulk_failed}`)],
         ephemeral: true,
       });
     }

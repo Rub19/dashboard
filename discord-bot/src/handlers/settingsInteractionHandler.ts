@@ -10,6 +10,7 @@ import {
   StringSelectMenuInteraction,
   TextInputBuilder,
   TextInputStyle,
+  MessageFlags,
 } from 'discord.js';
 import { buildSettingsMessage } from '../commands/admin/settings.js';
 import { guildConfigService } from '../services/guildConfigService.js';
@@ -235,7 +236,7 @@ export async function handleSettingsSelectMenu(interaction: StringSelectMenuInte
     const t = getTranslation(confForPerm?.language);
     await interaction.reply({
       embeds: [baseEmbed('error').setDescription(t.settings_perm_denied_modify)],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -438,7 +439,7 @@ export async function handleSettingsButton(interaction: ButtonInteraction): Prom
     const t = getTranslation(confForPerm?.language);
     await interaction.reply({
       embeds: [baseEmbed('error').setDescription(t.settings_perm_denied_interact)],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -607,7 +608,7 @@ export async function handleSettingsModal(interaction: ModalSubmitInteraction): 
     const t = getTranslation(confForPerm?.language);
     await interaction.reply({
       embeds: [baseEmbed('error').setDescription(t.settings_action_unauthorized)],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -631,7 +632,7 @@ export async function handleSettingsModal(interaction: ModalSubmitInteraction): 
         if (!HexColorRegex.test(val)) {
           await interaction.reply({
             embeds: [baseEmbed('error').setDescription(formatString(t.settings_invalid_hex, { name, val }))],
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
           return;
         }
@@ -650,7 +651,7 @@ export async function handleSettingsModal(interaction: ModalSubmitInteraction): 
       if (name.length < 1 || name.length > 32) {
         await interaction.reply({
           embeds: [baseEmbed('error').setDescription(t.settings_invalid_name_length)],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         return;
       }
@@ -662,7 +663,7 @@ export async function handleSettingsModal(interaction: ModalSubmitInteraction): 
       if (prefix.length < 1 || prefix.length > 5 || /\s/.test(prefix)) {
         await interaction.reply({
           embeds: [baseEmbed('error').setDescription(t.settings_invalid_prefix)],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         return;
       }
@@ -723,7 +724,7 @@ export async function handleSettingsModal(interaction: ModalSubmitInteraction): 
     if (!interaction.replied && !interaction.deferred) {
       await interaction.reply({
         embeds: [baseEmbed('error').setDescription(t.settings_update_error)],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   }
@@ -736,12 +737,12 @@ async function updateSettingsView(interaction: ModalSubmitInteraction, updatedCo
     await interaction.message.edit(messagePayload);
     await interaction.reply({
       embeds: [baseEmbed('success').setDescription(formatString(t.settings_updated_success, { emoji: updatedConfig.emojis.success }))],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   } else {
     await interaction.reply({
       ...messagePayload,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 }

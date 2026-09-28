@@ -75,15 +75,8 @@ export default function ServerPicker({
     <div className="flex min-h-[calc(100dvh-3rem)] w-full items-center justify-center px-4 py-10">
       <div className="w-full max-w-[440px]">
         <div className="mb-6 flex flex-col items-center text-center">
-          <div className="relative w-full">
-            <img src="/branding/etho-discord-banner.png" alt="" className="aspect-[5/2] w-full rounded-2xl border border-[var(--panel-border)] object-cover" />
-            <img
-              src="/branding/etho-avatar.gif"
-              alt="Etho"
-              className="absolute -bottom-10 left-1/2 h-20 w-20 -translate-x-1/2 rounded-full border-4 border-[var(--background)] object-cover"
-            />
-          </div>
-          <h1 className="mt-12 text-2xl font-bold text-[var(--text-primary)]">Etho</h1>
+          <img src="/branding/etho-avatar.gif" alt="Etho" className="h-24 w-24 rounded-full object-cover" />
+          <h1 className="mt-4 text-2xl font-bold text-[var(--text-primary)]">Etho</h1>
           <p className="mt-1 text-sm text-[var(--text-muted)]">
             {userName ? (
               <>

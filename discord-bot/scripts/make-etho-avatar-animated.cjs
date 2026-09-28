@@ -52,8 +52,13 @@ function drawFrame(rotation) {
   ctx.fillText('E', SIZE / 2, SIZE / 2 + SIZE * 0.025);
 
   // Anneau au dégradé conique tournant, par-dessus
+  // On fait tourner le canevas : l'angle de départ de createConicGradient est ignoré par @napi-rs/canvas
+  // (toutes les images étaient identiques, donc le GIF ne tournait pas).
   ctx.save();
-  const gradient = ctx.createConicGradient(rotation, SIZE / 2, SIZE / 2);
+  ctx.translate(SIZE / 2, SIZE / 2);
+  ctx.rotate(rotation);
+  ctx.translate(-SIZE / 2, -SIZE / 2);
+  const gradient = ctx.createConicGradient(0, SIZE / 2, SIZE / 2);
   for (const [stop, color] of ringStops) gradient.addColorStop(stop, color);
   ctx.strokeStyle = gradient;
   ctx.lineWidth = ringWidth;

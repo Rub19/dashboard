@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.31.4 — 2026-09-28
+
+**Avatar d'Etho enfin animé + choix du serveur simplifié**
+
+- L'avatar animé d'Etho tourne vraiment : toutes les images du GIF étaient identiques, elles sont maintenant différentes et l'anneau rouge tourne.
+- Page de choix de serveur : seulement l'avatar d'Etho, sans la bannière.
+
 ## v1.31.3 — 2026-09-28
 
 **Choix du serveur : bannière non coupée**

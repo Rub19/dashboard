@@ -38109,6 +38109,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_31_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_31_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_31_3_de);
 
+const v1_31_4_fr: ChangelogEntry = {
+  version: "v1.31.4",
+  date: "2026-09-28",
+  title: "Avatar d'Etho enfin animé + choix du serveur simplifié",
+  items: [
+    "L'avatar animé d'Etho tourne vraiment : toutes les images du GIF étaient identiques, elles sont maintenant différentes et l'anneau rouge tourne.",
+    "Page de choix de serveur : seulement l'avatar d'Etho, sans la bannière.",
+  ],
+};
+
+const v1_31_4_en: ChangelogEntry = {
+  version: "v1.31.4",
+  date: "2026-09-28",
+  title: "Etho's avatar finally animated + simpler server picker",
+  items: [
+    "Etho's animated avatar now actually spins: all GIF frames were identical, they now differ and the red ring rotates.",
+    "Server picker: only Etho's avatar, without the banner.",
+  ],
+};
+
+const v1_31_4_es: ChangelogEntry = {
+  version: "v1.31.4",
+  date: "2026-09-28",
+  title: "El avatar de Etho por fin animado + selector más simple",
+  items: [
+    "El avatar animado de Etho ahora gira de verdad: todos los fotogramas del GIF eran idénticos, ahora son distintos y el anillo rojo gira.",
+    "Selector de servidor: solo el avatar de Etho, sin el banner.",
+  ],
+};
+
+const v1_31_4_de: ChangelogEntry = {
+  version: "v1.31.4",
+  date: "2026-09-28",
+  title: "Ethos Avatar endlich animiert + einfachere Serverauswahl",
+  items: [
+    "Ethos animierter Avatar dreht sich jetzt wirklich: alle GIF-Bilder waren identisch, jetzt unterscheiden sie sich und der rote Ring rotiert.",
+    "Serverauswahl: nur Ethos Avatar, ohne Banner.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_31_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_31_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_31_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_31_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

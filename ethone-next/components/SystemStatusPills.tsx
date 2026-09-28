@@ -75,7 +75,7 @@ function WeatherStatusPill() {
   );
 }
 
-function SystemStatusPills() {
+function SystemStatusPills({ compact = false }: { compact?: boolean } = {}) {
   const i18n = useI18n();
   const { activeProfile } = useActiveProfile();
   const { syncing, sync } = useActivityJournal();
@@ -97,23 +97,27 @@ function SystemStatusPills() {
 
   return (
     <div className="hidden items-center gap-0.5 rounded-full border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/50 p-0.5 md:flex">
-      <StatusPill icon={<Briefcase className="h-3.5 w-3.5 text-[var(--text-muted)]" />} title={i18n("workspace")}>
-        {workspaceLabel}
-      </StatusPill>
+      {!compact && (
+        <>
+          <StatusPill icon={<Briefcase className="h-3.5 w-3.5 text-[var(--text-muted)]" />} title={i18n("workspace")}>
+            {workspaceLabel}
+          </StatusPill>
 
-      <Separator />
+          <Separator />
 
-      <StatusPill
-        icon={syncIcon}
-        onClick={() => {
-          if (!syncing) sync().catch(() => {});
-        }}
-        title={i18n("sync")}
-      >
-        <span className={syncing ? "text-[var(--info)]" : online ? "text-[var(--text-primary)]" : "text-[var(--danger)]"}>{syncLabel}</span>
-      </StatusPill>
+          <StatusPill
+            icon={syncIcon}
+            onClick={() => {
+              if (!syncing) sync().catch(() => {});
+            }}
+            title={i18n("sync")}
+          >
+            <span className={syncing ? "text-[var(--info)]" : online ? "text-[var(--text-primary)]" : "text-[var(--danger)]"}>{syncLabel}</span>
+          </StatusPill>
 
-      <Separator />
+          <Separator />
+        </>
+      )}
 
       <WeatherStatusPill />
 

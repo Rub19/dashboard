@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.30.2 — 2026-09-28
+
+**Barre du haut sans chevauchement + pages fréquentes du bot en cartes**
+
+- Barre du haut : les pastilles (espace, synchro, météo, heure) ne chevauchent plus la recherche centrée. Elles s'affichent selon la largeur réelle de la barre : version compacte puis complète sur très grand écran.
+- Page du bot Discord : les raccourcis deviennent 8 cartes « Pages fréquentes » (sécurité, modération, tickets, musique, serveur, logs, niveaux, IA) avec description et bouton d'action.
+
 ## v1.30.1 — 2026-09-28
 
 **Bot : commandes traduites, réponses privées cohérentes, erreurs sécurisées**

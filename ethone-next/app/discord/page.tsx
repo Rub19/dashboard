@@ -1663,37 +1663,32 @@ export default function DiscordDashboardPage() {
                   </div>
                 </div>
 
-                {/* Direct module shortcuts row */}
-                <div className="mt-4 pt-3 border-t border-[var(--panel-border)] flex flex-wrap items-center gap-2">
-                  <span className="text-[11px] font-semibold text-zinc-400 mr-1">Raccourcis :</span>
-                  <Link
-                    href={`/discord/security?guildId=${selectedGuild.id}`}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/20 bg-red-500/10 px-2.5 py-1 text-xs font-medium text-red-300 hover:bg-red-500/20 transition-colors"
-                  >
-                    <ShieldAlert className="h-3.5 w-3.5 text-red-400" />
-                    <span>Sécurité & Anti-Raid</span>
-                  </Link>
-                  <Link
-                    href={`/discord/tickets?guildId=${selectedGuild.id}`}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-500/20 bg-indigo-500/10 px-2.5 py-1 text-xs font-medium text-indigo-300 hover:bg-indigo-500/20 transition-colors"
-                  >
-                    <Ticket className="h-3.5 w-3.5 text-indigo-400" />
-                    <span>Tickets</span>
-                  </Link>
-                  <Link
-                    href={`/discord/music?guildId=${selectedGuild.id}`}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-violet-500/20 bg-violet-500/10 px-2.5 py-1 text-xs font-medium text-violet-300 hover:bg-violet-500/20 transition-colors"
-                  >
-                    <Music2 className="h-3.5 w-3.5 text-violet-400" />
-                    <span>Musique</span>
-                  </Link>
-                  <Link
-                    href={`/discord/server?guildId=${selectedGuild.id}`}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-300 hover:bg-emerald-500/20 transition-colors"
-                  >
-                    <Server className="h-3.5 w-3.5 text-emerald-400" />
-                    <span>Gestion Serveur</span>
-                  </Link>
+                {/* Pages fréquentes, en cartes (façon Sapphire) */}
+                <div className="mt-4 border-t border-[var(--panel-border)] pt-4">
+                  <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-zinc-400">Pages fréquentes</h3>
+                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    {[
+                      { href: "security", icon: ShieldAlert, tint: "text-red-400", title: "Sécurité & Anti-Raid", desc: "Protège le serveur contre les raids, le spam et les comptes suspects.", cta: "Ouvrir la sécurité" },
+                      { href: "moderation", icon: Hammer, tint: "text-rose-400", title: "Modération", desc: "Cas, sanctions et outils de modération, directement depuis le dashboard.", cta: "Voir les cas" },
+                      { href: "tickets", icon: Ticket, tint: "text-indigo-400", title: "Tickets", desc: "Panneaux, catégories et suivi des demandes de ton équipe.", cta: "Configurer les tickets" },
+                      { href: "music", icon: Music2, tint: "text-violet-400", title: "Musique", desc: "Lecteur, file d'attente et réglages musicaux du serveur.", cta: "Ouvrir la musique" },
+                      { href: "server", icon: Server, tint: "text-emerald-400", title: "Gestion du serveur", desc: "Salons, rôles, niveau de vérification et réglages généraux.", cta: "Gérer le serveur" },
+                      { href: "logs", icon: FileText, tint: "text-sky-400", title: "Logs & Audit", desc: "Journal des événements et alertes du serveur.", cta: "Voir les logs" },
+                      { href: "leveling", icon: Award, tint: "text-amber-400", title: "Niveaux", desc: "XP, récompenses de rôles et boosts pour ta communauté.", cta: "Configurer les niveaux" },
+                      { href: "ai", icon: Sparkles, tint: "text-fuchsia-400", title: "Assistant IA", desc: "Personnalité, connaissances et règles par salon.", cta: "Configurer l'IA" },
+                    ].map((c) => (
+                      <Link
+                        key={c.href}
+                        href={`/discord/${c.href}?guildId=${selectedGuild.id}`}
+                        className="group flex flex-col gap-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4 transition-colors hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/80"
+                      >
+                        <c.icon className={cn("h-6 w-6", c.tint)} />
+                        <p className="text-sm font-semibold text-white">{c.title}</p>
+                        <p className="line-clamp-2 flex-1 text-xs leading-relaxed text-zinc-400">{c.desc}</p>
+                        <span className="mt-1 inline-flex h-8 w-fit items-center rounded-lg bg-white/[0.07] px-3 text-xs font-semibold text-zinc-100 transition-colors group-hover:bg-white/[0.13]">{c.cta}</span>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
 

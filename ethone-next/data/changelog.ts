@@ -37884,6 +37884,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_30_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_30_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_30_1_de);
 
+const v1_30_2_fr: ChangelogEntry = {
+  version: "v1.30.2",
+  date: "2026-09-28",
+  title: "Barre du haut sans chevauchement + pages fréquentes du bot en cartes",
+  items: [
+    "Barre du haut : les pastilles (espace, synchro, météo, heure) ne chevauchent plus la recherche centrée. Elles s'affichent selon la largeur réelle de la barre : version compacte puis complète sur très grand écran.",
+    "Page du bot Discord : les raccourcis deviennent 8 cartes « Pages fréquentes » (sécurité, modération, tickets, musique, serveur, logs, niveaux, IA) avec description et bouton d'action.",
+  ],
+};
+
+const v1_30_2_en: ChangelogEntry = {
+  version: "v1.30.2",
+  date: "2026-09-28",
+  title: "Top bar without overlap + bot frequent pages as cards",
+  items: [
+    "Top bar: the pills (workspace, sync, weather, clock) no longer overlap the centered search. They appear based on the bar's real width: compact first, then full on very wide screens.",
+    "Discord bot page: shortcuts become 8 \"Frequent pages\" cards (security, moderation, tickets, music, server, logs, levels, AI) with a description and an action button.",
+  ],
+};
+
+const v1_30_2_es: ChangelogEntry = {
+  version: "v1.30.2",
+  date: "2026-09-28",
+  title: "Barra superior sin solapamientos + páginas frecuentes del bot en tarjetas",
+  items: [
+    "Barra superior: las pastillas (espacio, sincronización, clima, hora) ya no se solapan con la búsqueda centrada; se muestran según el ancho real de la barra.",
+    "Página del bot de Discord: los accesos directos pasan a 8 tarjetas «Páginas frecuentes» con descripción y botón de acción.",
+  ],
+};
+
+const v1_30_2_de: ChangelogEntry = {
+  version: "v1.30.2",
+  date: "2026-09-28",
+  title: "Obere Leiste ohne Überlappung + häufige Bot-Seiten als Karten",
+  items: [
+    "Obere Leiste: Die Status-Pillen (Workspace, Sync, Wetter, Uhr) überlappen die zentrierte Suche nicht mehr; sie erscheinen abhängig von der tatsächlichen Breite der Leiste.",
+    "Discord-Bot-Seite: Die Shortcuts werden zu 8 Karten „Häufige Seiten“ mit Beschreibung und Aktionsbutton.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_30_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_30_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_30_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_30_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

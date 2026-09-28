@@ -378,7 +378,7 @@ function TopBar() {
           droite s'élargit (Dynamic Island même souci, voir plus bas). Positionné en absolute et
           centré sur toute la largeur de la barre, il reste au vrai centre quel que soit le
           déséquilibre des colonnes voisines. */}
-      <div className="relative pointer-events-auto hidden h-14 w-full items-center justify-between gap-3 md:flex">
+      <div className="@container relative pointer-events-auto hidden h-14 w-full items-center justify-between gap-3 md:flex">
         {/* Gauche : bouton de barre latérale + fil d'Ariane */}
         <div className="flex min-w-0 shrink-0 items-center gap-2.5">
           <SidebarTopToggle />
@@ -405,7 +405,11 @@ function TopBar() {
 
         {/* Droite : état du système (très grands écrans), capsule d'outils, profil */}
         <div className="flex shrink-0 items-center justify-end gap-2">
-          <div className="hidden 2xl:flex">
+          {/* Les pastilles ne s'affichent que si la barre est assez large pour ne jamais chevaucher la recherche centrée. */}
+          <div className="hidden @min-[1750px]:flex @min-[2250px]:hidden">
+            <SystemStatusPills compact />
+          </div>
+          <div className="hidden @min-[2250px]:flex">
             <SystemStatusPills />
           </div>
           <div className="ethone-toolbar">

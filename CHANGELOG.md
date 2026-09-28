@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.7 — 2026-09-29
+
+**Nom du bot invisible dans le Centre de contrôle**
+
+- Corrigé : le nom du bot dans l'en-tête du Centre de contrôle était littéralement invisible (bg-clip-text sans dégradé associé rendait le texte transparent), laissant un vide au-dessus du tag #discriminant/version.
+
 ## v1.37.6 — 2026-09-29
 
 **Nettoyage du Centre de contrôle du bot**

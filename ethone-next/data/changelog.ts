@@ -38966,6 +38966,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_6_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_6_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_6_de);
 
+const v1_37_7_fr: ChangelogEntry = {
+  version: "v1.37.7",
+  date: "2026-09-29",
+  title: "Nom du bot invisible dans le Centre de contrôle",
+  items: [
+    "Corrigé : le nom du bot dans l'en-tête du Centre de contrôle était littéralement invisible (bg-clip-text sans dégradé associé rendait le texte transparent), laissant un vide au-dessus du tag #discriminant/version.",
+  ],
+};
+
+const v1_37_7_en: ChangelogEntry = {
+  version: "v1.37.7",
+  date: "2026-09-29",
+  title: "Invisible bot name in Bot Control Center",
+  items: [
+    "Fixed: the bot's name in the Bot Control Center header was literally invisible (bg-clip-text with no attached gradient made the text transparent), leaving a blank gap above the #discriminator/version tag.",
+  ],
+};
+
+const v1_37_7_es: ChangelogEntry = {
+  version: "v1.37.7",
+  date: "2026-09-29",
+  title: "Nombre del bot invisible en el Centro de control",
+  items: [
+    "Corregido: el nombre del bot en el encabezado del Centro de control era literalmente invisible (bg-clip-text sin degradado asociado dejaba el texto transparente), dejando un hueco vacío sobre la etiqueta #discriminador/versión.",
+  ],
+};
+
+const v1_37_7_de: ChangelogEntry = {
+  version: "v1.37.7",
+  date: "2026-09-29",
+  title: "Unsichtbarer Bot-Name im Bot-Kontrollzentrum",
+  items: [
+    "Behoben: Der Bot-Name in der Kopfzeile des Bot-Kontrollzentrums war buchstäblich unsichtbar (bg-clip-text ohne zugehörigen Farbverlauf machte den Text transparent) und hinterließ eine Lücke über dem #Diskriminator/Versions-Tag.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_7_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_7_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_7_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_7_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

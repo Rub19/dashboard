@@ -1300,7 +1300,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap bg-clip-text text-transparent">
+                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap">
                     {botCore.name}
                   </h1>
                   <span className="text-xs text-[var(--text-muted)] font-mono">

@@ -71,6 +71,13 @@ enum AdminCatalog {
     static let moderation: [AdminModuleSpec] = [
         .init(id: "automod", title: "AutoMod", symbol: "shield.checkered", group: groups[0],
               lists: [.init(title: "Règles", path: "/rules"), .init(title: "Historique", path: "/history")]),
+        // Règles d'auto-modération natives de Discord : exécutées par Discord lui-même, même si le bot est hors ligne.
+        .init(id: "automod-native", title: "AutoMod natif Discord", symbol: "checkmark.shield.fill", group: groups[0], overview: nil,
+              lists: [.init(title: "Règles", path: "/", key: "rules", rowActions: [
+                .init(title: "Activer / désactiver", path: "/{id}/toggle", method: "PATCH", symbol: "power"),
+                .init(title: "Supprimer", path: "/{id}", method: "DELETE", destructive: true, symbol: "trash"),
+              ])],
+              actions: [.init(title: "Créer les règles recommandées", path: "/recommended", symbol: "wand.and.stars")]),
         .init(id: "welcome", title: "Accueil et vérification", symbol: "hand.wave.fill", group: groups[0],
               configs: [
                 .init(title: "Accueil", get: "/", put: "/", method: "PATCH"),

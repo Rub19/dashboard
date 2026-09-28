@@ -139,7 +139,11 @@ enum AdminCatalog {
         .init(id: "starboard", title: "Starboard", symbol: "star.fill", group: groups[1],
               configs: [.init(title: "Réglages", get: "/config", put: "/config")],
               lists: [.init(title: "Messages épinglés", path: "/entries")]),
-        .init(id: "sticky", title: "Messages épinglés (sticky)", symbol: "pin.fill", group: groups[1]),
+        .init(id: "sticky", title: "Messages épinglés (sticky)", symbol: "pin.fill", group: groups[1],
+              lists: [.init(title: "Salons épinglés", path: "/overview", key: "channels", idKey: "channelId", rowActions: [
+                .init(title: "Republier maintenant", path: "/config/{id}/repost", symbol: "arrow.triangle.2.circlepath"),
+                .init(title: "Supprimer", path: "/config/{id}", method: "DELETE", destructive: true, symbol: "trash"),
+              ])]),
         .init(id: "highlights", title: "Highlights", symbol: "highlighter", group: groups[1]),
         .init(id: "suggestions", title: "Suggestions (réglages)", symbol: "lightbulb.fill", group: groups[1],
               configs: [.init(title: "Réglages", get: "/config/settings", put: "/config/settings")]),
@@ -175,7 +179,9 @@ enum AdminCatalog {
         .init(id: "server-stats", title: "Salons de statistiques", symbol: "gauge.with.dots.needle.67percent", group: groups[2],
               configs: [.init(title: "Réglages", get: "/config", put: "/config")],
               actions: [.init(title: "Rafraîchir les salons", path: "/refresh", symbol: "arrow.triangle.2.circlepath")]),
+        // Les règles (arbre de conditions imbriquées) restent éditables sur le site uniquement : pas de constructeur générique ici.
         .init(id: "statroles", title: "Rôles automatiques par statistiques", symbol: "person.crop.circle.badge.checkmark", group: groups[2],
+              configs: [.init(title: "Réglages", get: "/overview", put: "/config", strict: true)],
               actions: [.init(title: "Lancer maintenant", path: "/run", symbol: "play.fill")]),
         .init(id: "analytics", title: "Analytique du serveur", symbol: "chart.pie.fill", group: groups[2]),
         .init(id: "calendar", title: "Calendrier du serveur", symbol: "calendar", group: groups[2], overview: nil,

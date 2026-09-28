@@ -64,7 +64,7 @@ enum AdminText {
         return result.prefix(1).uppercased() + result.dropFirst()
     }
 
-    static let titleKeys = ["title", "name", "label", "prize", "userTag", "tag", "username", "displayName", "command", "question", "topic", "id"]
+    static let titleKeys = ["title", "name", "label", "prize", "userTag", "tag", "username", "displayName", "command", "question", "topic", "preview", "id"]
     static let subtitleKeys = ["status", "type", "category", "description", "userTag", "authorTag", "channelName", "action", "level", "xp", "balance", "score", "count", "enabled", "secured", "value"]
 
     static func title(of item: JSONValue) -> String {

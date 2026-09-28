@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.31.0 — 2026-09-28
+
+**Bot Discord : choix du serveur d'abord, page beaucoup plus épurée**
+
+- Un clic sur « Bot Discord » ouvre d'abord une page de choix de serveur : liste centrée avec avatars, chevron pour les serveurs où le bot est installé, « + » pour inviter le bot sur les autres.
+- Le tableau de bord du serveur est refait en une seule colonne centrée : en-tête compact avec « Changer de serveur », marges régulières, moins d'encadrés imbriqués, colonne des serveurs et blocs redondants supprimés.
+- Le bouton « Retour à ETHONE » réinitialise le choix : la prochaine ouverture du Bot Discord repart de la liste des serveurs.
+
 ## v1.30.2 — 2026-09-28
 
 **Barre du haut sans chevauchement + pages fréquentes du bot en cartes**

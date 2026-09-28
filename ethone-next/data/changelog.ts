@@ -37929,6 +37929,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_30_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_30_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_30_2_de);
 
+const v1_31_0_fr: ChangelogEntry = {
+  version: "v1.31.0",
+  date: "2026-09-28",
+  title: "Bot Discord : choix du serveur d'abord, page beaucoup plus épurée",
+  items: [
+    "Un clic sur « Bot Discord » ouvre d'abord une page de choix de serveur : liste centrée avec avatars, chevron pour les serveurs où le bot est installé, « + » pour inviter le bot sur les autres.",
+    "Le tableau de bord du serveur est refait en une seule colonne centrée : en-tête compact avec « Changer de serveur », marges régulières, moins d'encadrés imbriqués, colonne des serveurs et blocs redondants supprimés.",
+    "Le bouton « Retour à ETHONE » réinitialise le choix : la prochaine ouverture du Bot Discord repart de la liste des serveurs.",
+  ],
+};
+
+const v1_31_0_en: ChangelogEntry = {
+  version: "v1.31.0",
+  date: "2026-09-28",
+  title: "Discord bot: server picker first, much cleaner page",
+  items: [
+    "Clicking \"Bot Discord\" now opens a server picker first: a centered list with avatars, a chevron for servers where the bot is installed and a \"+\" to invite the bot to the others.",
+    "The server dashboard is rebuilt as a single centered column: compact header with \"Change server\", even spacing, fewer nested boxes, server sidebar and redundant blocks removed.",
+    "\"Back to ETHONE\" resets the choice: the next time you open the Discord bot you start from the server list.",
+  ],
+};
+
+const v1_31_0_es: ChangelogEntry = {
+  version: "v1.31.0",
+  date: "2026-09-28",
+  title: "Bot de Discord: primero elegir servidor, página mucho más limpia",
+  items: [
+    "Al hacer clic en «Bot Discord» se abre primero una página para elegir servidor: lista centrada con avatares, una flecha para los servidores con el bot y un «+» para invitarlo a los demás.",
+    "El panel del servidor se rehace en una sola columna centrada: cabecera compacta con «Cambiar de servidor», márgenes uniformes y menos cajas anidadas.",
+    "«Volver a ETHONE» reinicia la elección: la próxima vez empiezas por la lista de servidores.",
+  ],
+};
+
+const v1_31_0_de: ChangelogEntry = {
+  version: "v1.31.0",
+  date: "2026-09-28",
+  title: "Discord-Bot: zuerst Serverauswahl, deutlich aufgeräumtere Seite",
+  items: [
+    "Ein Klick auf „Bot Discord“ öffnet zuerst eine Serverauswahl: zentrierte Liste mit Avataren, Pfeil für Server mit Bot und „+“ zum Einladen auf den anderen.",
+    "Das Server-Dashboard ist jetzt eine einzelne zentrierte Spalte: kompakte Kopfzeile mit „Server wechseln“, gleichmäßige Abstände, weniger verschachtelte Kästen.",
+    "„Zurück zu ETHONE“ setzt die Auswahl zurück: beim nächsten Öffnen startest du wieder bei der Serverliste.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_31_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_31_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_31_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_31_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

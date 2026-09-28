@@ -17,13 +17,11 @@ import {
   Gift,
   Hammer,
   FileText,
-  Search,
   ExternalLink,
   ChevronRight,
   Server,
   Users,
   AlertTriangle,
-  ArrowRight,
   Sparkles,
   Copy,
   Check,
@@ -61,7 +59,6 @@ import {
   Cake,
   Eye,
   LayoutDashboard,
-  X,
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
@@ -70,16 +67,16 @@ import { cn, formatApiError } from "@/lib/utils";
 import { useDiscordOnboarding } from "@/lib/hooks/useDiscordOnboarding";
 import DiscordOnboardingModal from "@/components/discord/onboarding/DiscordOnboardingModal";
 import { Checkbox } from "@/components/ui/Checkbox";
-import Badge from "@/components/ui/Badge";
-import Input from "@/components/ui/Input";
-import StatusIndicator from "@/components/ui/StatusIndicator";
 import GuildLiveStats from "@/components/discord/GuildLiveStats";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import { ethoneIcon } from "@/components/EthoneIcon";
 import { useModuleStatus } from "@/lib/hooks/useModuleStatus";
+import ServerPicker from "@/components/discord/ServerPicker";
 import ModuleNavigator, { type NavigatorCategory, type NavigatorModule } from "@/components/discord/ModuleNavigator";
 
 const BOT_CLIENT_ID = "1545139931154878464";
+const PICKED_STORAGE_KEY = "ethone:discord:picked";
+const LAST_GUILD_STORAGE_KEY = "ethone:discord:last-guild-id";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 
 type ModuleType =
@@ -545,31 +542,11 @@ export default function DiscordDashboardPage() {
     prefersReducedMotion,
   } = useDiscordOnboarding();
 
-  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+  // Serveur choisi dans le sélecteur (id). Le tableau de bord ne s'affiche qu'une fois un serveur choisi.
+  const [pickedId, setPickedId] = useState<string | null>(null);
+  const [lastGuildId, setLastGuildId] = useState<string | null>(null);
+  const [hydrated, setHydrated] = useState(false);
   const [activeModule, setActiveModule] = useState<ModuleType>("security");
-  const router = useRouter();
-  /** Carte cliquée : configuration rapide sur place si le module en a une, sinon ouverture de sa page. */
-  const handleSelectModule = useCallback(
-    (id: string) => {
-      if (INLINE_MODULE_IDS.has(id)) {
-        setActiveModule(id as ModuleType);
-        requestAnimationFrame(() => document.getElementById("module-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }));
-      } else {
-        router.push(`${MODULE_PAGES[id] ?? `/discord/${id}`}?guildId=${selectedGuild?.id ?? ""}`);
-      }
-    },
-    [router, selectedGuild?.id]
-  );
-  // Chaque carte a un lien « Ouvrir la page complète » distinct de son clic principal (voir NAV_MODULES_BASE) :
-  // il doit pointer vers le serveur affiché ici, pas vers celui que la page de destination devinerait sans indice.
-  const navModules = useMemo(
-    () =>
-      selectedGuild
-        ? NAV_MODULES_BASE.map((m) => ({ ...m, href: `${m.href}${m.href.includes("?") ? "&" : "?"}guildId=${selectedGuild.id}` }))
-        : NAV_MODULES_BASE,
-    [selectedGuild]
-  );
-  const [searchQuery, setSearchQuery] = useState("");
   const [onlyManageable, setOnlyManageable] = useState(true);
   // IDs of the servers the bot is actually in — used to sort those first and
   // show an "invite" affordance on the rest. `botPresenceKnown` stays false when
@@ -589,7 +566,6 @@ export default function DiscordDashboardPage() {
   const [botPresenceKnown, setBotPresenceKnown] = useState(false);
   // 401 du bot : la session Discord du BOT (cookie) est absente, distincte de la session du site.
   const [botAuthRequired, setBotAuthRequired] = useState(false);
-  const [botGuildMeta, setBotGuildMeta] = useState<Record<string, { memberCount: number | null }>>({});
   // Preview toggles shown on the Logs module gateway card (informational —
   // the real per-event routing lives in the Audit Center at /discord/logs).
   const [logsPreview, setLogsPreview] = useState({ messages: true, roles: true, members: true });
@@ -627,11 +603,6 @@ export default function DiscordDashboardPage() {
         try {
           localStorage.setItem("ethone:discord:bot_guild_ids", JSON.stringify(present));
         } catch {}
-        const meta: Record<string, { memberCount: number | null }> = {};
-        for (const d of Array.isArray(res?.details) ? res.details : []) {
-          meta[String(d.id)] = { memberCount: typeof d.memberCount === "number" ? d.memberCount : null };
-        }
-        setBotGuildMeta(meta);
         setBotPresenceKnown(true);
         setBotAuthRequired(false);
       })
@@ -653,89 +624,83 @@ export default function DiscordDashboardPage() {
     return manageable.length > 0 ? manageable : allGuilds;
   }, [allGuilds, onlyManageable]);
 
+  // Bot installé d'abord, puis le dernier serveur utilisé, ordre d'origine sinon.
   const filteredGuilds = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    const base = q ? displayGuilds.filter((g) => g.name.toLowerCase().includes(q)) : displayGuilds;
-    if (botGuildIds.size === 0) return base;
-    // Servers where the bot is already installed come first, order otherwise kept.
-    return [...base].sort((a, b) => {
-      const ai = botGuildIds.has(a.id) ? 0 : 1;
-      const bi = botGuildIds.has(b.id) ? 0 : 1;
-      return ai - bi;
-    });
-  }, [displayGuilds, searchQuery, botGuildIds]);
+    const rank = (g: DiscordGuild) => (botGuildIds.has(g.id) ? 0 : 2) + (g.id === lastGuildId ? 0 : 1);
+    return [...displayGuilds].sort((a, b) => rank(a) - rank(b));
+  }, [displayGuilds, botGuildIds, lastGuildId]);
 
-  // Two visual groups in the sidebar once presence is known.
-  const guildsWithBot = useMemo(() => filteredGuilds.filter((g) => botGuildIds.has(g.id)), [filteredGuilds, botGuildIds]);
-  const guildsWithoutBot = useMemo(() => filteredGuilds.filter((g) => !botGuildIds.has(g.id)), [filteredGuilds, botGuildIds]);
+  const selectedGuild = useMemo(() => (pickedId ? allGuilds.find((g) => g.id === pickedId) ?? null : null), [allGuilds, pickedId]);
 
-  const userSelectedRef = useRef(false);
-  // `userSelectedRef` ne survit pas à un aller-retour (ouvrir un module puis revenir sur /discord remonte
-  // tout le composant, qui perd ce ref et retombait sur "le premier serveur où le bot est présent" au lieu
-  // du serveur qu'on avait choisi). Le dernier choix est donc aussi gardé ici, pour traverser la navigation.
-  const LAST_GUILD_STORAGE_KEY = "ethone:discord:last-guild-id";
-
-  // Sélection automatique intelligente : le dernier serveur choisi, sinon un serveur où le bot est installé
-  useEffect(() => {
-    if (displayGuilds.length === 0) return;
-    if (!userSelectedRef.current) {
-      if (!selectedGuild) {
-        let lastId: string | null = null;
-        try {
-          lastId = localStorage.getItem(LAST_GUILD_STORAGE_KEY);
-        } catch {}
-        const lastChosen = lastId ? displayGuilds.find((g) => g.id === lastId) : undefined;
-        if (lastChosen) {
-          setSelectedGuild(lastChosen);
-        } else if (botGuildIds.size > 0) {
-          const firstWithBot = displayGuilds.find((g) => botGuildIds.has(g.id));
-          setSelectedGuild(firstWithBot || displayGuilds[0]);
-        } else {
-          setSelectedGuild(displayGuilds[0]);
-        }
-      } else if (botGuildIds.size > 0 && !botGuildIds.has(selectedGuild.id)) {
-        const firstWithBot = displayGuilds.find((g) => botGuildIds.has(g.id));
-        if (firstWithBot) {
-          setSelectedGuild(firstWithBot);
-        }
+  const router = useRouter();
+  /** Carte cliquée : configuration rapide sur place si le module en a une, sinon ouverture de sa page. */
+  const handleSelectModule = useCallback(
+    (id: string) => {
+      if (INLINE_MODULE_IDS.has(id)) {
+        setActiveModule(id as ModuleType);
+        requestAnimationFrame(() => document.getElementById("module-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+      } else {
+        router.push(`${MODULE_PAGES[id] ?? `/discord/${id}`}?guildId=${selectedGuild?.id ?? ""}`);
       }
-    } else if (selectedGuild && !displayGuilds.some((g) => g.id === selectedGuild.id)) {
-      setSelectedGuild(displayGuilds[0]);
-    }
-  }, [displayGuilds, selectedGuild, botGuildIds]);
-
-  // Retient le serveur affiché pour la prochaine fois qu'on revient sur cette page (choix manuel ou automatique).
+    },
+    [router, selectedGuild?.id]
+  );
+  // Chaque carte a un lien « Ouvrir la page complète » distinct de son clic principal (voir NAV_MODULES_BASE) :
+  // il doit pointer vers le serveur affiché ici, pas vers celui que la page de destination devinerait sans indice.
+  const navModules = useMemo(
+    () =>
+      selectedGuild
+        ? NAV_MODULES_BASE.map((m) => ({ ...m, href: `${m.href}${m.href.includes("?") ? "&" : "?"}guildId=${selectedGuild.id}` }))
+        : NAV_MODULES_BASE,
+    [selectedGuild]
+  );
+  // Au chargement : `?guildId=` (lien depuis une sous-page) ou serveur choisi plus tôt dans cette visite.
+  // Lu dans un effet (export statique : pas de useSearchParams sans Suspense).
   useEffect(() => {
-    if (!selectedGuild) return;
+    let id: string | null = null;
     try {
-      localStorage.setItem(LAST_GUILD_STORAGE_KEY, selectedGuild.id);
+      id = new URLSearchParams(window.location.search).get("guildId");
     } catch {}
-  }, [selectedGuild]);
-
-  const RECENT_GUILDS_STORAGE_KEY = "ethone:discord:recent-guild-ids";
-  const [recentGuildIds, setRecentGuildIds] = useState<string[]>([]);
-  useEffect(() => {
     try {
-      const raw = localStorage.getItem(RECENT_GUILDS_STORAGE_KEY);
-      const parsed = raw ? JSON.parse(raw) : [];
-      if (Array.isArray(parsed)) setRecentGuildIds(parsed.filter((v): v is string => typeof v === "string"));
+      if (!id) id = sessionStorage.getItem(PICKED_STORAGE_KEY);
+      setLastGuildId(localStorage.getItem(LAST_GUILD_STORAGE_KEY));
+    } catch {}
+    if (id) {
+      setPickedId(id);
+      try {
+        sessionStorage.setItem(PICKED_STORAGE_KEY, id);
+      } catch {}
+    }
+    setHydrated(true);
+  }, []);
+
+  // Serveur choisi introuvable dans la liste (compte différent, serveur quitté) : retour au sélecteur.
+  useEffect(() => {
+    if (!hydrated || !pickedId || selectedGuild || discordLoading) return;
+    setPickedId(null);
+    try {
+      sessionStorage.removeItem(PICKED_STORAGE_KEY);
+    } catch {}
+  }, [hydrated, pickedId, selectedGuild, discordLoading]);
+
+  const pickGuild = useCallback((guild: DiscordGuild) => {
+    setPickedId(guild.id);
+    try {
+      sessionStorage.setItem(PICKED_STORAGE_KEY, guild.id);
+      localStorage.setItem(LAST_GUILD_STORAGE_KEY, guild.id);
+    } catch {}
+    setLastGuildId(guild.id);
+  }, []);
+
+  const changeGuild = useCallback(() => {
+    setPickedId(null);
+    try {
+      sessionStorage.removeItem(PICKED_STORAGE_KEY);
     } catch {}
   }, []);
-  // Accès rapide « Récents » de la sidebar : les 3 derniers serveurs distincts réellement affichés.
-  useEffect(() => {
-    if (!selectedGuild) return;
-    setRecentGuildIds((prev) => {
-      const next = [selectedGuild.id, ...prev.filter((id) => id !== selectedGuild.id)].slice(0, 3);
-      try {
-        localStorage.setItem(RECENT_GUILDS_STORAGE_KEY, JSON.stringify(next));
-      } catch {}
-      return next;
-    });
-  }, [selectedGuild]);
-  const recentGuilds = useMemo(
-    () => recentGuildIds.map((id) => allGuilds.find((g) => g.id === id)).filter((g): g is DiscordGuild => g != null && g.id !== selectedGuild?.id),
-    [recentGuildIds, allGuilds, selectedGuild?.id]
-  );
+
+  // Rien à afficher tant qu'on ignore quel serveur était choisi (évite un flash du sélecteur).
+  const pageReady = hydrated && !(pickedId && !selectedGuild && discordLoading);
 
   // Paramètres réels du serveur sélectionné avec persistance locale par guildId
   const [guildSettings, setGuildSettings] = useState<GuildSettings>(DEFAULT_SETTINGS);
@@ -938,7 +903,7 @@ export default function DiscordDashboardPage() {
     } finally {
       setIsSaving(false);
     }
-  }, [selectedGuild, guildSettings, success, showError]);
+  }, [selectedGuild, guildSettings, modLogChannelId, botPresenceKnown, botGuildIds, success, info, showError]);
 
   // Lockdown d'urgence : action immédiate côté bot (verrouille les salons),
   // pas un simple flag local.
@@ -1000,10 +965,6 @@ export default function DiscordDashboardPage() {
   // Modules dont le toggle est en cours d'envoi au bot : pastille de chargement sur la carte le temps de la réponse
   // (useModuleStatus fait déjà une mise à jour optimiste + rollback, mais n'expose pas cet état intermédiaire).
   const [pendingModuleIds, setPendingModuleIds] = useState<Set<string>>(new Set());
-  // En dessous de md la sidebar de serveurs (hidden md:flex) disparaît sans équivalent — cette feuille mobile
-  // réutilise les mêmes listes déjà calculées (filteredGuilds/guildsWithBot/guildsWithoutBot) pour permettre
-  // de changer de serveur sur téléphone/tablette, ce qui n'était possible nulle part avant.
-  const [mobileGuildSheetOpen, setMobileGuildSheetOpen] = useState(false);
   const handleModuleToggle = useCallback(
     async (id: string, enabled: boolean) => {
       setPendingModuleIds((prev) => new Set(prev).add(id));
@@ -1024,15 +985,6 @@ export default function DiscordDashboardPage() {
   );
   const activeModuleCount = useMemo(() => Object.values(moduleStatus).filter(Boolean).length, [moduleStatus]);
   const totalModuleCount = MODULES.length;
-  const botStripState: "connected" | "error" | "idle" = botAuthRequired ? "error" : botPresenceKnown ? "connected" : "idle";
-  const botStripLabel = botAuthRequired
-    ? "Compte bot non lié"
-    : !botPresenceKnown
-    ? "Statut inconnu"
-    : selectedGuild && botGuildIds.has(selectedGuild.id)
-    ? "Bot actif ici"
-    : "Bot absent de ce serveur";
-
   // --- Live Music Center State ---
   const [liveMusicState, setLiveMusicState] = useState<any>({
     status: "IDLE",
@@ -1118,2612 +1070,2036 @@ export default function DiscordDashboardPage() {
         localStorage.getItem("ethone:token:discord")))
   );
 
+  const botAbsent = botPresenceKnown && selectedGuild != null && !botGuildIds.has(selectedGuild.id);
+  const botLoginHref = `${BOT_API_URL}/api/auth/login?return_to=${encodeURIComponent(typeof window !== "undefined" ? `${window.location.origin}/discord` : "")}`;
+  const secondaryBtn =
+    "inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] transition-colors hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)]";
+  const calloutCls = "flex flex-col gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4 sm:flex-row sm:items-center sm:justify-between";
+  const inviteBtnCls = "inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4]";
+
+  const onboardingModal = (
+    <DiscordOnboardingModal
+      isOpen={isOnboardingOpen}
+      currentStep={onboardingStep}
+      onStepChange={setOnboardingStep}
+      onClose={closeOnboarding}
+      onComplete={completeOnboarding}
+      prefersReducedMotion={prefersReducedMotion}
+    />
+  );
+
+  if (!pageReady) return <div className="min-h-[calc(100dvh-3rem)]" aria-busy="true" />;
+
+  if (!selectedGuild) {
+    return (
+      <>
+        <ServerPicker
+          guilds={filteredGuilds}
+          totalCount={allGuilds.length}
+          botGuildIds={botGuildIds}
+          botPresenceKnown={botPresenceKnown}
+          inviteUrl={BOT_INVITE_URL}
+          userName={isDiscordConnected ? profile?.user?.displayName || profile?.user?.username : undefined}
+          isConnected={isDiscordConnected}
+          connecting={discordLoading}
+          onConnect={connect}
+          onlyManageable={onlyManageable}
+          onToggleManageable={() => setOnlyManageable((v) => !v)}
+          botAuthHref={botAuthRequired ? botLoginHref : null}
+          onPick={pickGuild}
+        />
+        {onboardingModal}
+      </>
+    );
+  }
+
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 sm:p-6">
-      {/* Top Header Banner */}
-      <header className="mb-4 shrink-0">
-        <div className="flex flex-col gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-5 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3.5">
-            <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#5865F2]/30 bg-[#5865F2]/15 text-[#5865F2] shadow-sm">
-              <DiscordIcon className="h-6 w-6" />
-              <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border-2 border-[var(--bg-main)] bg-emerald-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-white" />
-              </span>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold text-white">
-                  Etho
-                </h1>
-                <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.2 text-[10px] font-bold text-emerald-400">
-                  {botPresenceKnown ? "En ligne" : "Connexion…"}
-                </span>
-              </div>
-              <p className="text-xs text-zinc-400">
-                Gestion et configuration de vos serveurs Discord en direct
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5">
-            <button
-              onClick={() => openOnboarding(0)}
-              className="flex h-9 items-center gap-2 rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-3.5 text-xs font-medium text-indigo-300 transition-all hover:bg-indigo-500/20 active:scale-95 cursor-pointer"
-              title="Revoir l'introduction d'Etho"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
-              <span>Découvrir le Bot</span>
-            </button>
-
-            <Link
-              href="/discord/setup"
-              className="flex h-9 items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 text-xs font-medium text-emerald-300 transition-all hover:bg-emerald-500/20 active:scale-95"
-              title="Lancer le setup assisté du serveur"
-            >
-              <Sliders className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Setup Assisté</span>
-            </Link>
-
-            <a
-              href={BOT_INVITE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-9 items-center gap-2 rounded-xl bg-[#5865F2] px-3.5 text-xs font-semibold text-white shadow-md shadow-[#5865F2]/20 transition-all hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-            >
-              <DiscordIcon className="h-3.5 w-3.5" />
-              <span>Inviter sur un serveur</span>
-              <ExternalLink className="h-3 w-3 opacity-70" />
-            </a>
-
-            {isDiscordConnected ? (
-              <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-xs text-emerald-300">
-                <div className="h-2 w-2 rounded-full bg-emerald-400" />
-                <span className="font-semibold">{profile?.user?.username || profile?.user?.displayName || "Discord Connecté"}</span>
-              </div>
-            ) : (
-              <button
-                onClick={connect}
-                disabled={discordLoading}
-                className="flex h-9 items-center gap-2 rounded-xl border border-[#5865F2]/40 bg-[#5865F2]/20 px-3.5 text-xs font-semibold text-white transition-all hover:bg-[#5865F2]/30 active:scale-95 cursor-pointer shadow-sm"
-              >
-                <DiscordIcon className="h-3.5 w-3.5" />
-                <span>Lier mon compte Discord</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {/* Sélecteur de serveur mobile : sous md, l'aside (hidden md:flex) n'a aucun équivalent, ce bandeau + sa
-          feuille comblent ce trou pour pouvoir changer de serveur depuis un téléphone ou une tablette. */}
-      {selectedGuild && (
-        <button
-          type="button"
-          onClick={() => setMobileGuildSheetOpen(true)}
-          className="mb-4 flex w-full items-center gap-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5 text-left md:hidden"
-        >
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--panel-border)] bg-zinc-800 text-[10px] font-bold text-white">
-            {selectedGuild.iconUrl ? (
-              <img src={selectedGuild.iconUrl} alt="" className="h-full w-full object-cover" />
-            ) : (
-              selectedGuild.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
-            )}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-semibold text-white">{selectedGuild.name}</p>
-            <p className="text-[10px] text-zinc-500">{filteredGuilds.length} serveur{filteredGuilds.length > 1 ? "s" : ""} · toucher pour changer</p>
-          </div>
-          <ChevronRight className="h-4 w-4 shrink-0 text-zinc-500" />
-        </button>
-      )}
-
-      {mobileGuildSheetOpen && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/60 md:hidden" onClick={() => setMobileGuildSheetOpen(false)}>
-          <div
-            className="max-h-[75vh] overflow-hidden rounded-t-[var(--panel-radius)] border-t border-[var(--panel-border)] bg-[var(--bg-main)] p-4 flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="mb-3 flex shrink-0 items-center justify-between">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300">Changer de serveur</h3>
-              <button type="button" onClick={() => setMobileGuildSheetOpen(false)} className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-white/10 hover:text-white" aria-label="Fermer">
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="flex-1 space-y-1.5 overflow-y-auto pr-1">
-              {[...guildsWithBot, ...guildsWithoutBot].map((guild) => {
-                const isSelected = selectedGuild?.id === guild.id;
-                const hasBot = botGuildIds.has(guild.id);
-                const initials = guild.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
-                return (
-                  <button
-                    key={guild.id}
-                    type="button"
-                    onClick={() => {
-                      userSelectedRef.current = true;
-                      setSelectedGuild(guild);
-                      setMobileGuildSheetOpen(false);
-                    }}
-                    className={cn(
-                      "flex w-full items-center gap-2.5 rounded-[var(--inset-radius)] border p-2.5 text-left",
-                      isSelected
-                        ? "border-emerald-500/40 bg-emerald-500/10"
-                        : "border-[var(--panel-border)] bg-white/[0.02] hover:bg-white/[0.05]"
-                    )}
-                  >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--panel-border)] bg-zinc-800 text-[10px] font-bold text-white">
-                      {guild.iconUrl ? <img src={guild.iconUrl} alt="" className="h-full w-full object-cover" /> : initials}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs font-semibold text-white">{guild.name}</p>
-                      <p className="text-[10px] text-zinc-500">{hasBot ? "Bot actif" : "Bot non installé"}</p>
-                    </div>
-                    {isSelected && <Check className="h-4 w-4 shrink-0 text-emerald-400" />}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Split View with GPU-isolated smooth independent scrolling */}
-      <div className="flex min-h-0 w-full flex-1 gap-5 overflow-hidden">
-        
-        {/* Left Column: Server Selector (Independent Scroll) */}
-        <aside className="hidden h-full w-72 shrink-0 flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-xl md:flex lg:w-80">
-          <div className="mb-3 flex items-center justify-between shrink-0">
-            <div>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-300">
-                Vos Serveurs
-              </h2>
-              <p className="text-[10px] text-zinc-500">
-                {onlyManageable ? "Gérables (Admin / Owner)" : "Tous les serveurs"}
-              </p>
-            </div>
-            <span className="rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[11px] font-semibold text-emerald-400">
-              {filteredGuilds.length}
+    <>
+      <div className="mx-auto w-full max-w-[1400px] space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+        <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex min-w-0 flex-wrap items-center gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[var(--surface-raised)] text-sm font-bold text-[var(--text-primary)]">
+              {selectedGuild.iconUrl ? (
+                <img src={selectedGuild.iconUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                selectedGuild.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
+              )}
             </span>
-          </div>
-
-          {botAuthRequired && (
-            <a
-              href={`${process.env.NEXT_PUBLIC_DISCORD_BOT_API || ""}/api/auth/login?return_to=${encodeURIComponent(typeof window !== "undefined" ? `${window.location.origin}/discord` : "")}`}
-              className="mb-3 flex shrink-0 items-start gap-2 rounded-xl border border-[#5865F2]/40 bg-[#5865F2]/10 px-3 py-2 text-[11px] leading-snug text-[#c7ccff] transition-colors hover:bg-[#5865F2]/20"
-            >
-              <span aria-hidden>🔗</span>
-              <span>
-                <strong className="font-semibold text-white">Connecte le bot à ton compte Discord</strong>
-                <br />
-                Sans ça, le site ne voit ni les serveurs où le bot est actif, ni la musique en direct. Clique pour autoriser.
+            <h1 className="min-w-0 truncate text-lg font-bold text-[var(--text-primary)]">{selectedGuild.name}</h1>
+            {selectedGuild.owner ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-[var(--panel-border)] px-2.5 py-0.5 text-[11px] font-semibold text-amber-300">
+                <Crown className="h-3 w-3" />
+                Propriétaire
               </span>
-            </a>
-          )}
-
-          {/* Filter Toggle */}
-          <div className="mb-3 flex items-center justify-between rounded-xl bg-white/[0.03] px-3 py-1.5 text-xs border border-[var(--panel-border)] shrink-0">
-            <span className="text-[11px] text-zinc-300 font-medium">Uniquement gérables</span>
+            ) : canManageGuild(selectedGuild) ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-[var(--panel-border)] px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300">
+                <ShieldCheck className="h-3 w-3" />
+                Gérer
+              </span>
+            ) : null}
             <button
               type="button"
-              onClick={() => setOnlyManageable((v) => !v)}
-              className={cn(
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
-                onlyManageable ? "bg-emerald-500" : "bg-zinc-700"
-              )}
-              title={onlyManageable ? "Afficher uniquement les serveurs gérables" : "Afficher tous les serveurs"}
+              onClick={handleCopyId}
+              className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-[var(--panel-border)] text-[var(--text-muted)] transition-colors hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)]"
+              title={copiedId ? "Identifiant copié" : `Copier l'identifiant du serveur (${selectedGuild.id})`}
+              aria-label="Copier l'identifiant du serveur"
             >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                  onlyManageable ? "translate-x-4" : "translate-x-0"
-                )}
-              />
+              {copiedId ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+            </button>
+            <button type="button" onClick={changeGuild} className={secondaryBtn}>
+              <Server className="h-3.5 w-3.5" />
+              Changer de serveur
             </button>
           </div>
 
-          {/* Search server */}
-          <div className="mb-3 shrink-0">
-            <Input
-              type="text"
-              placeholder="Rechercher un serveur..."
-              aria-label="Rechercher un serveur"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              icon="search"
-              clearable
-              inputSize="compact"
-            />
+          <div className="flex flex-wrap items-center gap-2">
+            <button type="button" onClick={() => openOnboarding(0)} className={secondaryBtn} title="Revoir l'introduction d'Etho">
+              <Sparkles className="h-3.5 w-3.5" />
+              Découvrir le Bot
+            </button>
+            <Link href="/discord/setup" className={secondaryBtn} title="Lancer le setup assisté du serveur">
+              <Sliders className="h-3.5 w-3.5" />
+              Setup Assisté
+            </Link>
+            <input type="file" ref={fileInputRef} onChange={handleImportConfig} accept=".json" className="hidden" />
+            <button type="button" onClick={handleExportConfig} className={secondaryBtn} title="Télécharger la configuration actuelle en JSON">
+              <Download className="h-3.5 w-3.5" />
+              Exporter
+            </button>
+            <button type="button" onClick={() => fileInputRef.current?.click()} className={secondaryBtn} title="Restaurer ou charger un fichier de configuration JSON">
+              <Upload className="h-3.5 w-3.5" />
+              Importer
+            </button>
+            {botAbsent && (
+              <a href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`} target="_blank" rel="noopener noreferrer" className={inviteBtnCls}>
+                <DiscordIcon className="h-3.5 w-3.5" />
+                Inviter le bot
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={handleSaveSettings}
+              disabled={isSaving}
+              className="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-xl bg-emerald-500 px-4 text-xs font-semibold text-white transition-colors hover:bg-emerald-600 disabled:opacity-50"
+            >
+              <Save className="h-3.5 w-3.5" />
+              {isSaving ? "Sauvegarde..." : "Enregistrer"}
+            </button>
           </div>
+        </header>
 
-          {/* Accès rapide aux serveurs récemment consultés, en plus du serveur actuellement affiché ci-dessous */}
-          {recentGuilds.length > 0 && !searchQuery && (
-            <div className="mb-3 shrink-0">
-              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500">Récents</p>
-              <div className="flex flex-wrap gap-1.5">
-                {recentGuilds.map((g) => (
-                  <button
-                    key={g.id}
-                    type="button"
-                    onClick={() => {
-                      userSelectedRef.current = true;
-                      setSelectedGuild(g);
-                    }}
-                    title={g.name}
-                    className="flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-white/[0.03] py-1 pl-1 pr-2.5 text-[11px] text-zinc-300 transition-colors hover:border-[var(--input-border-hover)] hover:bg-white/[0.06] hover:text-white cursor-pointer"
-                  >
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-md bg-zinc-800 text-[9px] font-bold text-white">
-                      {g.iconUrl ? (
-                        <img src={g.iconUrl} alt="" className="h-full w-full object-cover" />
-                      ) : (
-                        g.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
-                      )}
-                    </span>
-                    <span className="max-w-[7rem] truncate">{g.name}</span>
-                  </button>
-                ))}
+        {botAuthRequired && (
+          <a href={botLoginHref} className={cn(calloutCls, "transition-colors hover:border-[var(--input-border-hover)]")}>
+            <span className="text-xs leading-relaxed text-[var(--text-muted)]">
+              <strong className="font-semibold text-[var(--text-primary)]">Connecte le bot à ton compte Discord.</strong> Sans ça, le site ne voit ni les serveurs où le bot est actif, ni la musique en direct. Clique pour autoriser.
+            </span>
+          </a>
+        )}
+
+        {botAbsent && (
+          <div className={calloutCls}>
+            <div className="flex items-start gap-3">
+              <Bot className="mt-0.5 h-5 w-5 shrink-0 text-indigo-300" />
+              <div>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-0.5 text-xs text-[var(--text-muted)]">
+                  Invitez le bot sur « {selectedGuild.name} » pour activer la modération en temps réel, la musique, les tickets et les commandes personnalisées.
+                </p>
               </div>
             </div>
-          )}
-
-          {/* Guilds List Scrollable */}
-          <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
-            {filteredGuilds.length === 0 ? (
-              <div className="py-8 text-center text-xs text-zinc-400">
-                <p className="font-semibold text-zinc-300">
-                  {allGuilds.length === 0 && !isDiscordConnected
-                    ? "Compte non connecté"
-                    : allGuilds.length === 0
-                    ? "Aucun serveur trouvé"
-                    : "Aucun serveur gérable"}
-                </p>
-                <p className="mt-1 text-zinc-500 text-[11px]">
-                  {allGuilds.length === 0 && !isDiscordConnected
-                    ? "Connectez votre compte Discord pour charger vos serveurs."
-                    : onlyManageable
-                    ? "Vous devez posséder les droits Propriétaire ou Administrateur sur Discord."
-                    : "Aucun serveur Discord associé."}
-                </p>
-                {!isDiscordConnected ? (
-                  <button
-                    onClick={connect}
-                    disabled={discordLoading}
-                    className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-[#5865F2] px-3 py-1.5 text-xs font-semibold text-white transition-all hover:bg-[#4752C4] cursor-pointer shadow-md shadow-[#5865F2]/20 active:scale-95"
-                  >
-                    <DiscordIcon className="h-3.5 w-3.5" />
-                    <span>Lier mon compte</span>
-                  </button>
-                ) : allGuilds.length > 0 && onlyManageable ? (
-                  <button
-                    onClick={() => setOnlyManageable(false)}
-                    className="mt-3 text-xs text-emerald-400 underline cursor-pointer"
-                  >
-                    Afficher tous les serveurs ({allGuilds.length})
-                  </button>
-                ) : (
-                  <a
-                    href={BOT_INVITE_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-[#5865F2] px-3 py-1.5 text-xs font-semibold text-white transition-all hover:bg-[#4752C4] cursor-pointer"
-                  >
-                    <DiscordIcon className="h-3.5 w-3.5" />
-                    <span>Inviter le bot</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                )}
-              </div>
-            ) : (
-              (() => {
-                const renderGuild = (guild: DiscordGuild) => {
-                  const isSelected = selectedGuild?.id === guild.id;
-                  const isOwner = guild.owner;
-                  const isManager = canManageGuild(guild);
-                  const hasBot = botGuildIds.has(guild.id);
-                  // Only dim / flag rows once we actually know where the bot is.
-                  const botAbsent = botPresenceKnown && !hasBot;
-                  const memberCount = botGuildMeta[guild.id]?.memberCount ?? null;
-                  const initials = guild.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase();
-
-                  return (
-                    <div
-                      key={guild.id}
-                      className={cn(
-                        "group/guild relative flex w-full items-stretch gap-1 rounded-xl border transition-all duration-150",
-                        isSelected
-                          ? hasBot
-                            ? "border-emerald-500/40 bg-white/[0.08] shadow-sm"
-                            : "border-[#5865F2]/50 bg-[#5865F2]/15"
-                          : botAbsent
-                          ? "border-transparent bg-transparent opacity-70 hover:opacity-100 hover:bg-white/[0.04]"
-                          : "border-transparent bg-white/[0.03] hover:bg-white/[0.07]"
-                      )}
-                    >
-                      {isSelected && <span className={cn("absolute left-0 top-1.5 bottom-1.5 w-1 rounded-full", hasBot ? "bg-emerald-400" : "bg-[#5865F2]")} />}
-                      <button
-                        onClick={() => {
-                          userSelectedRef.current = true;
-                          setSelectedGuild(guild);
-                        }}
-                        className="flex min-w-0 flex-1 items-center gap-3 p-2.5 text-left cursor-pointer"
-                      >
-                        <div className="relative shrink-0">
-                          <div className={cn(
-                            "flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border bg-zinc-800 font-bold text-sm text-white shadow-inner",
-                            hasBot ? "border-emerald-500/50" : botAbsent ? "border-[var(--panel-border)] opacity-60 grayscale-[35%]" : "border-[var(--panel-border)]"
-                          )}>
-                            {guild.iconUrl ? (
-                              <img src={guild.iconUrl} alt={guild.name} className="h-full w-full object-cover rounded-full" />
-                            ) : (
-                              <span>{initials}</span>
-                            )}
-                          </div>
-                          {hasBot && (
-                            <span
-                              className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-[var(--bg-main)] bg-emerald-500 text-white"
-                              title="Etho est installé sur ce serveur"
-                            >
-                              <Bot className="h-2.5 w-2.5" />
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="min-w-0 flex-1">
-                          <p className={cn("flex items-center gap-1 truncate text-sm font-semibold", botAbsent ? "text-zinc-400" : "text-white")}>
-                            <span className="truncate">{guild.name}</span>
-                            {isSelected && (
-                              <Check className={cn("h-3 w-3 shrink-0", hasBot ? "text-emerald-400" : "text-[#8791ff]")} aria-label="Serveur sélectionné" />
-                            )}
-                          </p>
-                          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                            {isOwner ? (
-                              <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.2 text-[9px] font-semibold text-amber-300">
-                                <Crown className="h-2.5 w-2.5" />
-                                Propriétaire
-                              </span>
-                            ) : isManager ? (
-                              <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-300">
-                                <ShieldCheck className="h-2.5 w-2.5" />
-                                Gérer
-                              </span>
-                            ) : (
-                              <span className="text-[10px] text-zinc-500">Membre</span>
-                            )}
-                            {hasBot && memberCount !== null && (
-                              <span className="inline-flex items-center gap-1 text-[9px] text-zinc-400">
-                                <Users className="h-2.5 w-2.5" />
-                                {memberCount.toLocaleString("fr-FR")}
-                              </span>
-                            )}
-                            {botAbsent && (
-                              <span className="text-[9px] text-zinc-500">Bot non installé</span>
-                            )}
-                          </div>
-                        </div>
-                      </button>
-
-                      <div className="flex shrink-0 items-center pr-2">
-                        {hasBot ? (
-                          <ChevronRight className={cn("h-4 w-4 transition-transform group-hover/guild:translate-x-0.5", isSelected ? "text-emerald-300" : "text-zinc-500")} aria-label="Bot actif" />
-                        ) : botPresenceKnown ? (
-                          <a
-                            href={`${BOT_INVITE_URL}&guild_id=${guild.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            title="Inviter le bot sur ce serveur"
-                            className="inline-flex h-7 items-center gap-1 rounded-lg px-2 text-[11px] font-semibold text-zinc-400 transition-colors hover:bg-[#5865F2] hover:text-white"
-                          >
-                            <Plus className="h-4 w-4" />
-                            Ajouter
-                          </a>
-                        ) : null}
-                      </div>
-                    </div>
-                  );
-                };
-
-                if (!botPresenceKnown) return filteredGuilds.map(renderGuild);
-
-                return (
-                  <>
-                    <div className="flex items-center justify-between px-1 pt-0.5 pb-1">
-                      <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400">
-                        <Bot className="h-3 w-3" />
-                        Bot installé
-                      </span>
-                      <span className="rounded bg-emerald-500/15 px-1.5 text-[10px] font-semibold text-emerald-300">{guildsWithBot.length}</span>
-                    </div>
-                    {guildsWithBot.length === 0 ? (
-                      <p className="px-2 pb-2 text-[11px] text-zinc-500">Le bot n&apos;est encore sur aucun de ces serveurs — ajoute-le ci-dessous.</p>
-                    ) : (
-                      guildsWithBot.map(renderGuild)
-                    )}
-                    {guildsWithoutBot.length > 0 && (
-                      <>
-                        <div className="flex items-center justify-between px-1 pt-3 pb-1">
-                          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-                            <Plus className="h-3 w-3" />
-                            Sans le bot
-                          </span>
-                          <span className="rounded bg-white/[0.06] px-1.5 text-[10px] font-semibold text-zinc-400">{guildsWithoutBot.length}</span>
-                        </div>
-                        {guildsWithoutBot.map(renderGuild)}
-                      </>
-                    )}
-                  </>
-                );
-              })()
-            )}
-          </div>
-
-          <div className="mt-2 shrink-0 border-t border-[var(--panel-border)] pt-2 text-center">
-            <a
-              href={BOT_INVITE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#7983F5] hover:underline"
-            >
-              <span>+ Inviter le bot</span>
+            <a href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`} target="_blank" rel="noopener noreferrer" className={inviteBtnCls}>
+              <span>Inviter le bot</span>
               <ExternalLink className="h-3 w-3" />
             </a>
           </div>
-        </aside>
-
-        {/* Right Column: Server Management (Main Content with Smooth Scroll) */}
-        <main className="min-h-0 w-full flex-1 overflow-y-auto space-y-5 pr-1 pb-10 overscroll-contain will-change-scroll">
-          {selectedGuild ? (
-            <>
-              {/* Selected Server Banner (REAL SERVER INFO ONLY) */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-gradient-to-r from-white/[0.03] to-white/[0.01] p-5 backdrop-blur-xl">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex items-center gap-3.5">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-800 font-bold text-sm text-white shadow-md">
-                      {selectedGuild.iconUrl ? (
-                        <img
-                          src={selectedGuild.iconUrl}
-                          alt={selectedGuild.name}
-                          className="h-full w-full rounded-2xl object-cover"
-                        />
-                      ) : (
-                        <span>
-                          {selectedGuild.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .slice(0, 2)
-                            .toUpperCase()}
-                        </span>
-                      )}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h2 className="text-base font-bold text-white">
-                          {selectedGuild.name}
-                        </h2>
-                        {selectedGuild.owner && (
-                          <span className="flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
-                            <Crown className="h-3 w-3" />
-                            Propriétaire
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                        <p className="text-xs text-zinc-400">
-                          ID : <code className="text-zinc-300 font-mono">{selectedGuild.id}</code>
-                        </p>
-                        <button
-                          onClick={handleCopyId}
-                          className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] text-zinc-300 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
-                          title="Copier l'identifiant du serveur"
-                        >
-                          {copiedId ? <Check className="h-2.5 w-2.5 text-emerald-400" /> : <Copy className="h-2.5 w-2.5 text-zinc-400" />}
-                          <span>{copiedId ? "Copié !" : "Copier"}</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleImportConfig}
-                      accept=".json"
-                      className="hidden"
-                    />
-                    <button
-                      onClick={handleExportConfig}
-                      className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-white/5 px-3 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all active:scale-95 cursor-pointer shadow-sm"
-                      title="Télécharger la configuration actuelle en JSON"
-                    >
-                      <Download className="h-3.5 w-3.5 text-zinc-400" />
-                      <span className="hidden sm:inline">Exporter</span>
-                    </button>
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-white/5 px-3 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all active:scale-95 cursor-pointer shadow-sm"
-                      title="Restaurer ou charger un fichier de configuration JSON"
-                    >
-                      <Upload className="h-3.5 w-3.5 text-zinc-400" />
-                      <span className="hidden sm:inline">Importer</span>
-                    </button>
-                    <button
-                      onClick={handleSaveSettings}
-                      disabled={isSaving}
-                      className="flex h-9 items-center gap-2 rounded-xl bg-emerald-500 px-4 text-xs font-semibold text-white shadow-sm transition-all hover:bg-emerald-600 active:scale-95 disabled:opacity-50 cursor-pointer"
-                    >
-                      <Save className="h-3.5 w-3.5" />
-                      <span>{isSaving ? "Sauvegarde..." : "Enregistrer"}</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Pages fréquentes, en cartes (façon Sapphire) */}
-                <div className="mt-4 border-t border-[var(--panel-border)] pt-4">
-                  <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-zinc-400">Pages fréquentes</h3>
-                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                    {[
-                      { href: "security", icon: ShieldAlert, tint: "text-red-400", title: "Sécurité & Anti-Raid", desc: "Protège le serveur contre les raids, le spam et les comptes suspects.", cta: "Ouvrir la sécurité" },
-                      { href: "moderation", icon: Hammer, tint: "text-rose-400", title: "Modération", desc: "Cas, sanctions et outils de modération, directement depuis le dashboard.", cta: "Voir les cas" },
-                      { href: "tickets", icon: Ticket, tint: "text-indigo-400", title: "Tickets", desc: "Panneaux, catégories et suivi des demandes de ton équipe.", cta: "Configurer les tickets" },
-                      { href: "music", icon: Music2, tint: "text-violet-400", title: "Musique", desc: "Lecteur, file d'attente et réglages musicaux du serveur.", cta: "Ouvrir la musique" },
-                      { href: "server", icon: Server, tint: "text-emerald-400", title: "Gestion du serveur", desc: "Salons, rôles, niveau de vérification et réglages généraux.", cta: "Gérer le serveur" },
-                      { href: "logs", icon: FileText, tint: "text-sky-400", title: "Logs & Audit", desc: "Journal des événements et alertes du serveur.", cta: "Voir les logs" },
-                      { href: "leveling", icon: Award, tint: "text-amber-400", title: "Niveaux", desc: "XP, récompenses de rôles et boosts pour ta communauté.", cta: "Configurer les niveaux" },
-                      { href: "ai", icon: Sparkles, tint: "text-fuchsia-400", title: "Assistant IA", desc: "Personnalité, connaissances et règles par salon.", cta: "Configurer l'IA" },
-                    ].map((c) => (
-                      <Link
-                        key={c.href}
-                        href={`/discord/${c.href}?guildId=${selectedGuild.id}`}
-                        className="group flex flex-col gap-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4 transition-colors hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/80"
-                      >
-                        <c.icon className={cn("h-6 w-6", c.tint)} />
-                        <p className="text-sm font-semibold text-white">{c.title}</p>
-                        <p className="line-clamp-2 flex-1 text-xs leading-relaxed text-zinc-400">{c.desc}</p>
-                        <span className="mt-1 inline-flex h-8 w-fit items-center rounded-lg bg-white/[0.07] px-3 text-xs font-semibold text-zinc-100 transition-colors group-hover:bg-white/[0.13]">{c.cta}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Bot Invitation Banner if absent */}
-              {botPresenceKnown && !botGuildIds.has(selectedGuild.id) && (
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[var(--panel-radius)] border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
-                      <Bot className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
-                      <p className="mt-0.5 text-zinc-300">
-                        Invitez le bot sur « {selectedGuild.name} » pour activer la modération en temps réel, la musique, les tickets et les commandes personnalisées.
-                      </p>
-                    </div>
-                  </div>
-                  <a
-                    href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-colors shrink-0"
-                  >
-                    <span>Inviter le bot</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                </div>
-              )}
-
-              {/* DISCORD HOME NOW PLAYING LIVE CARD */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-gradient-to-r from-violet-500/[0.08] via-indigo-500/[0.05] to-black/40 p-4 sm:p-5 backdrop-blur-xl shadow-xl">
-                {liveMusicState?.currentTrack ? (
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="relative h-14 w-14 shrink-0 rounded-2xl overflow-hidden border border-[var(--panel-border)] bg-zinc-900 shadow-md">
-                        <img
-                          src={liveMusicState.currentTrack.thumbnail}
-                          alt={liveMusicState.currentTrack.title}
-                          className="h-full w-full object-cover"
-                        />
-                        {liveMusicState.status === "PLAYING" && (
-                          <span className="absolute bottom-1 right-1 flex h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-black/40" />
-                        )}
-                      </div>
-                      <div className="min-w-0 space-y-0.5">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 border border-violet-500/30">
-                            Now Playing
-                          </span>
-                          {liveMusicState.voiceChannel && (
-                            <span className="text-[10px] text-zinc-400 truncate">
-                              🔊 {liveMusicState.voiceChannel.name}
-                            </span>
-                          )}
-                        </div>
-                        <h4 className="text-sm font-bold text-white truncate">
-                          {liveMusicState.currentTrack.title}
-                        </h4>
-                        <p className="text-xs text-zinc-400 truncate">
-                          {liveMusicState.currentTrack.artist} • Demandé par {liveMusicState.currentTrack.requestedBy.tag}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
-                      {/* Quick Mini Controls */}
-                      <div className="flex items-center gap-1.5 bg-black/40 border border-[var(--panel-border)] p-1 rounded-xl">
-                        <button
-                          onClick={handleMusicPrev}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
-                          title="Précédent"
-                        >
-                          <SkipBack className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          onClick={handleMusicPlayPause}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-600 text-white hover:bg-violet-500 transition-all cursor-pointer"
-                          title={liveMusicState.status === "PLAYING" ? "Pause" : "Play"}
-                        >
-                          {liveMusicState.status === "PLAYING" ? <Pause className="h-3.5 w-3.5 fill-white" /> : <Play className="h-3.5 w-3.5 fill-white ml-0.5" />}
-                        </button>
-                        <button
-                          onClick={handleMusicSkip}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
-                          title="Suivant"
-                        >
-                          <SkipForward className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-
-                      <span className="text-[11px] font-mono text-zinc-400 hidden md:inline">
-                        Queue: {liveMusicState.queueLength}
-                      </span>
-
-                      <Link
-                        href={`/discord/music?guildId=${selectedGuild.id}`}
-                        className="flex h-9 items-center gap-1.5 rounded-xl bg-violet-600 px-3.5 text-xs font-bold text-white shadow-sm hover:bg-violet-500 transition-all active:scale-95 cursor-pointer"
-                      >
-                        <Music2 className="h-3.5 w-3.5" />
-                        <span>Ouvrir Music Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/5 text-violet-400">
-                        <Music2 className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-white">Lecteur Musique Discord</p>
-                        <p className="text-[11px] text-zinc-400">Aucune musique en cours • Lancez la musique dans vos salons vocaux.</p>
-                      </div>
-                    </div>
-                    <Link
-                      href={`/discord/music?guildId=${selectedGuild.id}`}
-                      className="flex h-8 items-center gap-1.5 rounded-xl border border-violet-500/30 bg-violet-500/10 px-3 text-xs font-semibold text-violet-300 hover:bg-violet-500/20 transition-all cursor-pointer"
-                    >
-                      <Music2 className="h-3.5 w-3.5" />
-                      <span>Ouvrir Music Center</span>
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* Résumé rapide : modules actifs, serveur affiché, statut du bot */}
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] px-4 py-3 text-xs">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-mono text-sm font-bold text-white">{activeModuleCount}</span>
-                  <span className="text-zinc-500">/ {totalModuleCount} modules activés</span>
-                </div>
-                <div className="hidden h-4 w-px bg-[var(--panel-border)] sm:block" />
-                <div className="flex min-w-0 items-center gap-1.5 text-zinc-400">
-                  <Server className="h-3.5 w-3.5 shrink-0 text-zinc-500" />
-                  <span className="truncate font-medium text-zinc-200">{selectedGuild?.name ?? "Aucun serveur"}</span>
-                </div>
-                <div className="hidden h-4 w-px bg-[var(--panel-border)] sm:block" />
-                <StatusIndicator state={botStripState} label={botStripLabel} pulse />
-              </div>
-
-              {/* Navigation des modules : catégories, recherche, favoris */}
-              <ModuleNavigator
-                modules={navModules}
-                categories={MODULE_CATEGORIES}
-                activeId={activeModule}
-                onSelect={handleSelectModule}
-                status={moduleStatus}
-                onToggle={handleModuleToggle}
-                recommendedIds={RECOMMENDED_MODULE_IDS}
-                pendingIds={pendingModuleIds}
-              />
-
-              {/* Functional Module Settings Panel */}
-              <div id="module-panel" className="scroll-mt-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-5 sm:p-6 backdrop-blur-xl">
-                <div className="mb-5 flex items-center justify-between border-b border-[var(--panel-border)] pb-4">
-                  <div>
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                      <span>Configuration : {MODULES.find((m) => m.id === activeModule)?.title}</span>
-                    </h3>
-                    <p className="text-xs text-zinc-400 mt-0.5">
-                      {MODULES.find((m) => m.id === activeModule)?.description}
-                    </p>
-                  </div>
-                  <span className="text-[11px] font-mono text-zinc-500">
-                    Serveur : {selectedGuild.name}
-                  </span>
-                </div>
-
-                {/* MODULE 0: Vue d'ensemble */}
-                {activeModule === "overview" && (
-                  <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Mission Control</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Statut du bot, modération, sécurité, musique, tickets, giveaways, backups et activité récente réunis en un coup d'œil — données réelles, pas de tuile fictive.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/overview?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 text-xs font-semibold text-white transition-colors hover:bg-indigo-500 active:scale-95 cursor-pointer"
-                      >
-                        <LayoutDashboard className="h-4 w-4" />
-                        <span>Ouvrir la Vue d'ensemble</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <GuildLiveStats guildId={selectedGuild.id} />
-                  </div>
-                )}
-
-                {/* MODULE 1: Sécurité & Anti-Raid */}
-                {activeModule === "security" && (
-                  <div className="space-y-4">
-                    {/* Anti-Raid Command Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Centre de Sécurité Anti-Raid</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Calcul dynamique du Risk Score (0-100), Live Monitor, activation du Raid Mode d'urgence et dossiers d'investigation.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/security/anti-raid?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
-                      >
-                        <ShieldAlert className="h-4 w-4" />
-                        <span>Ouvrir Anti-Raid</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    {/* Anti-Nuke Command Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Centre Anti-Nuke</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Détection des bannissements massifs et suppressions de salons/rôles, sanction automatique configurable sur l'auteur.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/security/anti-nuke?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-red-600 px-4 text-xs font-semibold text-white transition-colors hover:bg-red-500 active:scale-95"
-                      >
-                        <Bomb className="h-4 w-4" />
-                        <span>Ouvrir Anti-Nuke</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
-                      <div>
-                        <p className="text-xs font-bold text-white">Protection Anti-Raid automatique</p>
-                        <p className="text-[11px] text-zinc-400">Détecte et bloque les arrivées massives de bots ou comptes suspects.</p>
-                      </div>
-                      <button
-                        type="button"
-                        role="switch"
-                        aria-checked={guildSettings.antiRaidEnabled}
-                        onClick={() => {
-                          const next = !guildSettings.antiRaidEnabled;
-                          setGuildSettings((p) => ({ ...p, antiRaidEnabled: next }));
-                          toggle(
-                            "Protection Anti-Raid",
-                            next,
-                            next ? "Activée sur ce serveur." : "Désactivée sur ce serveur."
-                          );
-                        }}
-                        className={cn(
-                          "flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 cursor-pointer",
-                          guildSettings.antiRaidEnabled ? "bg-emerald-500" : "bg-zinc-700"
-                        )}
-                      >
-                        <span className={cn("inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200", guildSettings.antiRaidEnabled ? "translate-x-5" : "translate-x-0")} />
-                      </button>
-                    </div>
-
-                    <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
-                      <div>
-                        <p className="text-xs font-bold text-white">Filtre Anti-Spam & Flooding</p>
-                        <p className="text-[11px] text-zinc-400">Supprime automatiquement les répétitions excessives de messages.</p>
-                      </div>
-                      <button
-                        type="button"
-                        role="switch"
-                        aria-checked={guildSettings.antiSpamEnabled}
-                        onClick={() => {
-                          const next = !guildSettings.antiSpamEnabled;
-                          setGuildSettings((p) => ({ ...p, antiSpamEnabled: next }));
-                          toggle(
-                            "Filtre Anti-Spam",
-                            next,
-                            next ? "Activé sur ce serveur." : "Désactivé sur ce serveur."
-                          );
-                        }}
-                        className={cn(
-                          "flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 cursor-pointer",
-                          guildSettings.antiSpamEnabled ? "bg-emerald-500" : "bg-zinc-700"
-                        )}
-                      >
-                        <span className={cn("inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200", guildSettings.antiSpamEnabled ? "translate-x-5" : "translate-x-0")} />
-                      </button>
-                    </div>
-
-                    {/* Mentions Limit (MODERN PILL SELECTOR - NO UGLY HTML SELECT) */}
-                    <div className="flex flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Limite de mentions par message</p>
-                          {guildSettings.mentionLimit === 0 ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
-                              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
-                              Désactivée (Spam libre)
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
-                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                              Actif ({guildSettings.mentionLimit}/msg)
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[11px] text-zinc-400">
-                          {guildSettings.mentionLimit === 0
-                            ? "Désactivée : aucune limite de mentions, les membres peuvent mentionner librement sans sanction (spam autorisé)."
-                            : "Nombre maximum d'utilisateurs ou rôles mentionnables avant sanction."}
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-1.5 rounded-xl bg-white/[0.04] p-1 border border-[var(--panel-border)]">
-                        {[
-                          { val: 3, label: "3 mentions" },
-                          { val: 5, label: "5 (Recommandé)" },
-                          { val: 10, label: "10 mentions" },
-                          { val: 0, label: "Désactivé (Spam)" },
-                        ].map(({ val, label }) => {
-                          const isActive = guildSettings.mentionLimit === val;
-                          return (
-                            <button
-                              key={val}
-                              type="button"
-                              onClick={() => {
-                                setGuildSettings((p) => ({ ...p, mentionLimit: val }));
-                                if (val === 0) {
-                                  toggle(
-                                    "Limite de mentions",
-                                    false,
-                                    "Désactivée — Les membres peuvent mentionner sans limite (spam libre)."
-                                  );
-                                } else {
-                                  toggle(
-                                    "Limite de mentions",
-                                    true,
-                                    `Activée à ${val} mentions maximum par message.`
-                                  );
-                                }
-                              }}
-                              className={cn(
-                                "rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
-                                isActive
-                                  ? val === 0
-                                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
-                                    : "bg-emerald-500 text-white shadow-sm"
-                                  : "text-zinc-400 hover:text-white hover:bg-white/5"
-                              )}
-                            >
-                              {label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between rounded-[var(--inset-radius)] border border-rose-500/20 bg-rose-500/[0.05] p-4">
-                      <div>
-                        <p className="text-xs font-bold text-rose-300 flex items-center gap-1.5">
-                          <AlertTriangle className="h-3.5 w-3.5" />
-                          Verrouillage d'urgence (Lockdown)
-                        </p>
-                        <p className="text-[11px] text-zinc-400">Empêche tout nouveau membre d'écrire dans les salons en cas d'attaque.</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={handleToggleLockdown}
-                        className={cn(
-                          "rounded-xl px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
-                          guildSettings.emergencyLockdown
-                            ? "bg-rose-500 text-white shadow-sm"
-                            : "border border-rose-500/30 text-rose-300 hover:bg-rose-500/10"
-                        )}
-                      >
-                        {guildSettings.emergencyLockdown ? "Actif (Déverrouiller)" : "Déclencher"}
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE 2: Command Builder */}
-                {activeModule === "commands" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Command Studio Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Command Studio & Builder</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Créez des commandes Slash (/) et Préfixe (!) sur-mesure, générez des embeds Discord riches, intégrez des variables dynamiques ({'{user}'}, {'{server}'}) et testez en direct dans le simulateur.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/commands?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Code2 className="h-4 w-4" />
-                        <span>Ouvrir Command Studio</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Catalogue</p>
-                        <p className="text-lg font-bold text-indigo-400 mt-1">Slash & Préfixe</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Activation / désactivation en 1 clic</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Embed Studio</p>
-                        <p className="text-lg font-bold text-purple-400 mt-1">Live Discord Render</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Bordures, footers & boutons</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Dynamique</p>
-                        <p className="text-lg font-bold text-cyan-400 mt-1">Variables Live</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">{'{user}'}, {'{server}'}, {'{time}'}</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Testing</p>
-                        <p className="text-lg font-bold text-emerald-400 mt-1">Simulateur Terminal</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Test immédiat sans bot</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <Link
-                        href={`/discord/commands?guildId=${selectedGuild.id}&tab=catalog`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Sliders className="h-3.5 w-3.5 text-indigo-400" />
-                        <span>Catalogue des Commandes</span>
-                      </Link>
-                      <Link
-                        href={`/discord/commands?guildId=${selectedGuild.id}&tab=builder`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Plus className="h-3.5 w-3.5 text-purple-400" />
-                        <span>Créer une Commande No-Code</span>
-                      </Link>
-                      <Link
-                        href={`/discord/commands?guildId=${selectedGuild.id}&tab=simulator`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
-                        <span>Simulateur Discord Live</span>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE 3: Suggestions & Feedback */}
-                {activeModule === "suggestions" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Suggestions Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Boîte à Suggestions & Feedback</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Collectez les idées des membres, organisez les votes communautaires (👍 / 👎), traitez les propositions sur un tableau Kanban et publiez les décisions officielles du Staff.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/suggestions?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Lightbulb className="h-4 w-4" />
-                        <span>Ouvrir Suggestions Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Traitement</p>
-                        <p className="text-lg font-bold text-amber-400 mt-1">Kanban Staff</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">En Attente / Approuvée / Rejetée</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Communauté</p>
-                        <p className="text-lg font-bold text-emerald-400 mt-1">Votes Discord</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Boutons interactifs 👍 👎</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Réponses</p>
-                        <p className="text-lg font-bold text-cyan-400 mt-1">Avis Officiel</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Mise à jour directe de l'embed</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Protection</p>
-                        <p className="text-lg font-bold text-purple-400 mt-1">Anti-Doublon</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Filtres et cooldown par membre</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <Link
-                        href={`/discord/suggestions?guildId=${selectedGuild.id}&tab=kanban`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Sliders className="h-3.5 w-3.5 text-amber-400" />
-                        <span>Tableau Kanban des Idées</span>
-                      </Link>
-                      <Link
-                        href={`/discord/suggestions?guildId=${selectedGuild.id}&tab=response_studio`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Send className="h-3.5 w-3.5 text-orange-400" />
-                        <span>Modération & Réponses Staff</span>
-                      </Link>
-                      <Link
-                        href={`/discord/suggestions?guildId=${selectedGuild.id}&tab=hall_of_fame`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Crown className="h-3.5 w-3.5 text-yellow-400" />
-                        <span>Top Idées (Hall of Fame)</span>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE 4: Leveling & XP */}
-                {activeModule === "leveling" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Leveling Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Leveling & Rôles XP Center</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Stimulez l'activité de votre serveur : classement interactif, designer de cartes de profil Discord (/rank), attribution automatique de rôles par paliers et bonus pour Nitro Boosters.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/leveling?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Award className="h-4 w-4" />
-                        <span>Ouvrir Leveling Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Leaderboard</p>
-                        <p className="text-lg font-bold text-fuchsia-400 mt-1">Top 100 Live</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Trophées, barres d'XP & ranks</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Rank Card</p>
-                        <p className="text-lg font-bold text-purple-400 mt-1">Card Studio Live</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Bannières, couleurs & thèmes</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Paliers</p>
-                        <p className="text-lg font-bold text-amber-400 mt-1">Rôles Récompenses</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Déblocage auto par niveau</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Multiplicateurs</p>
-                        <p className="text-lg font-bold text-cyan-400 mt-1">Vocal & Boosters</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Gains en vocal et bonus x1.5</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <Link
-                        href={`/discord/leveling?guildId=${selectedGuild.id}&tab=leaderboard`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Crown className="h-3.5 w-3.5 text-fuchsia-400" />
-                        <span>Classement & Leaderboard</span>
-                      </Link>
-                      <Link
-                        href={`/discord/leveling?guildId=${selectedGuild.id}&tab=card_designer`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Sparkles className="h-3.5 w-3.5 text-purple-400" />
-                        <span>Rank Card Designer</span>
-                      </Link>
-                      <Link
-                        href={`/discord/leveling?guildId=${selectedGuild.id}&tab=rewards`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Award className="h-3.5 w-3.5 text-amber-400" />
-                        <span>Gérer les Rôles Récompenses</span>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE 5: Giveaways & Concours */}
-                {activeModule === "giveaways" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Giveaways Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Giveaways & Tirages au Sort</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Pilotez vos concours Discord : création assistée, restrictions de rôles et d'ancienneté, tirage cryptographique impartial (SHA-256 CSPRNG) et système de Reroll en un clic.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/giveaways?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Gift className="h-4 w-4" />
-                        <span>Ouvrir Giveaways Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Concours</p>
-                        <p className="text-lg font-bold text-rose-400 mt-1">Live Discord</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Comptes à rebours & embeds</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Impartialité</p>
-                        <p className="text-lg font-bold text-cyan-400 mt-1">SHA-256 CSPRNG</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Graines vérifiables sans triche</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Conditions</p>
-                        <p className="text-lg font-bold text-amber-400 mt-1">Rôles & Bonus</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Chances + pour Boosters</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Gestion</p>
-                        <p className="text-lg font-bold text-emerald-400 mt-1">Reroll 1-Clic</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Redistribution immédiate</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <Link
-                        href={`/discord/giveaways?guildId=${selectedGuild.id}&tab=create`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Plus className="h-3.5 w-3.5 text-rose-400" />
-                        <span>Lancer un Nouveau Concours</span>
-                      </Link>
-                      <Link
-                        href={`/discord/giveaways?guildId=${selectedGuild.id}&tab=active`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Gift className="h-3.5 w-3.5 text-amber-400" />
-                        <span>Concours en Cours</span>
-                      </Link>
-                      <Link
-                        href={`/discord/giveaways?guildId=${selectedGuild.id}&tab=history`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <RefreshCw className="h-3.5 w-3.5 text-emerald-400" />
-                        <span>Historique des Gagnants & Reroll</span>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE: Tickets Center */}
-                {activeModule === "tickets" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Tickets Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Tickets Center & Helpdesk</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Helpdesk complet multi-catégories, formulaires avec questions dynamiques, équipes de staff, assignation/transfert, transcripts HTML/TXT/JSON et liaisons avec les Dossiers de Modération.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/tickets?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Ticket className="h-4 w-4" />
-                        <span>Ouvrir Tickets Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Helpdesk</p>
-                        <p className="text-lg font-bold text-emerald-400 mt-1">Multi-Équipes</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Support, Mod & Facturation</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Formulaires</p>
-                        <p className="text-lg font-bold text-teal-400 mt-1">Modals Discord</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Champs configurables</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Archivage</p>
-                        <p className="text-lg font-bold text-indigo-400 mt-1">Transcripts</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">HTML, TXT & JSON</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Audit & Qualité</p>
-                        <p className="text-lg font-bold text-amber-400 mt-1">Notes & CSAT</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Avis membres (1-5★)</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <Link
-                        href={`/discord/tickets?guildId=${selectedGuild.id}&tab=panels`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Sliders className="h-3.5 w-3.5 text-emerald-400" />
-                        <span>Créer un Panneau Discord</span>
-                      </Link>
-                      <Link
-                        href={`/discord/tickets?guildId=${selectedGuild.id}&tab=categories`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Settings2 className="h-3.5 w-3.5 text-teal-400" />
-                        <span>Gérer les Catégories</span>
-                      </Link>
-                      <Link
-                        href={`/discord/tickets?guildId=${selectedGuild.id}&tab=transcripts`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <FileText className="h-3.5 w-3.5 text-indigo-400" />
-                        <span>Historique des Transcripts</span>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE: Welcome & Onboarding */}
-                {activeModule === "welcome" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Welcome Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Bienvenue & Onboarding Center</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Personnalisation complète sans coder : Message & Embed Builder avec Live Preview, boutons interactifs, cartes de bienvenue, DM Welcome, onboarding multi-étapes et entonnoir de conversion.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/welcome?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Sparkles className="h-4 w-4" />
-                        <span>Ouvrir Welcome Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Welcome & Embed</p>
-                        <p className="text-lg font-bold text-teal-400 mt-1">Live Preview</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Rendu Discord instantané</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Parcours</p>
-                        <p className="text-lg font-bold text-emerald-400 mt-1">Onboarding Flow</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Règles, rôles & questions</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Sécurité</p>
-                        <p className="text-lg font-bold text-blue-400 mt-1">Vérification</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Boutons & déblocage rôles</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Conversion</p>
-                        <p className="text-lg font-bold text-amber-400 mt-1">Funnel Analytics</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Taux de complétion en direct</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <Link
-                        href={`/discord/welcome?guildId=${selectedGuild.id}&tab=builder`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Sliders className="h-3.5 w-3.5 text-teal-400" />
-                        <span>Message & Embed Builder</span>
-                      </Link>
-                      <Link
-                        href={`/discord/welcome?guildId=${selectedGuild.id}&tab=onboarding`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Users className="h-3.5 w-3.5 text-emerald-400" />
-                        <span>Configurer l&apos;Onboarding</span>
-                      </Link>
-                      <Link
-                        href={`/discord/welcome?guildId=${selectedGuild.id}&tab=templates`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Sparkles className="h-3.5 w-3.5 text-purple-400" />
-                        <span>Templates Prêts à l&apos;Emploi</span>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE 6: Modération & Sanctions */}
-                {activeModule === "moderation" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Moderation Center / Case System Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Centre de Modération & Case System</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Suivi centralisé des sanctions (Cases #1, #2...), annulation avec audit trail, scheduler d&apos;expiration, notes staff privées et protection anti-abus.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/moderation?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
-                      >
-                        <Hammer className="h-4 w-4" />
-                        <span>Ouvrir Moderation</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    {/* AutoMod Command Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Centre de Modération Intelligente AutoMod</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Moteur multi-détecteurs (Spam, Flood, Liens, Invites, Mentions, Caps, Regex, Profils), Rule Builder dynamique, Sanctions progressives (Strikes) et Sandbox de test.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/moderation/automod?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
-                      >
-                        <Zap className="h-4 w-4" />
-                        <span>Ouvrir AutoMod</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
-                      <p className="font-bold text-white">Salon de notification des sanctions</p>
-                      <ChannelPicker
-                        value={modLogChannelId}
-                        onChange={(id) => setModLogChannelId(id || null)}
-                        guildId={selectedGuild.id}
-                        emptyLabel="Détection automatique (salon « mod-logs », « logs » ou « audit »)"
-                        allowClear
-                      />
-                      <p className="text-[11px] text-zinc-400">
-                        Toutes les sanctions appliquées (<code className="text-orange-300">/warn</code>, <code className="text-orange-300">/mute</code>, <code className="text-orange-300">/kick</code>, <code className="text-orange-300">/ban</code>) y seront journalisées. Sans sélection, le bot cherche automatiquement un salon nommé « mod-logs », « logs » ou « audit ».
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE 7: Audit & Logs */}
-                {activeModule === "logs" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Audit Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Audit Center & Traçabilité Temps Réel</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Moteur de traçabilité temps réel, mode enquête (&plusmn;15 min), diffs avant/après, corrélation des sanctions (Cases &amp; Raids), routage multi-salons Discord et exports CSV/JSON.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/logs?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
-                      >
-                        <FileText className="h-4 w-4" />
-                        <span>Ouvrir Audit Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
-                      <p className="font-bold text-white">Surveillance des événements serveur</p>
-                      <div className="space-y-2.5 pt-1 text-[11px]">
-                        <Checkbox
-                          checked={logsPreview.messages}
-                          onCheckedChange={(v) => setLogsPreview((p) => ({ ...p, messages: v }))}
-                          label="Journaliser la suppression et modification de messages"
-                          className="text-zinc-300 [&_span]:text-[11px] [&_span]:text-zinc-300"
-                        />
-                        <Checkbox
-                          checked={logsPreview.roles}
-                          onCheckedChange={(v) => setLogsPreview((p) => ({ ...p, roles: v }))}
-                          label="Journaliser les modifications de rôles, permissions et salons"
-                          className="text-zinc-300 [&_span]:text-[11px] [&_span]:text-zinc-300"
-                        />
-                        <Checkbox
-                          checked={logsPreview.members}
-                          onCheckedChange={(v) => setLogsPreview((p) => ({ ...p, members: v }))}
-                          label="Journaliser les arrivées, départs, bans et timeouts"
-                          className="text-zinc-300 [&_span]:text-[11px] [&_span]:text-zinc-300"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE: Lecteur Musique */}
-                {activeModule === "music" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Music Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Centre de Contrôle Musical ETHONE</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Lecteur audio synchronisé en direct, file d&apos;attente drag & drop, recherche multi-sources, playlists, favoris et mode DJ.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/music?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Music2 className="h-4 w-4" />
-                        <span>Ouvrir Music Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
-                      <p className="font-bold text-white">État du lecteur audio</p>
-                      <div className="flex items-center justify-between text-xs pt-1">
-                        <div className="space-y-0.5">
-                          <p className="font-semibold text-white">
-                            {liveMusicState?.currentTrack ? liveMusicState.currentTrack.title : "Aucune musique en cours"}
-                          </p>
-                          <p className="text-[11px] text-zinc-400">
-                            {liveMusicState?.currentTrack
-                              ? `${liveMusicState.currentTrack.artist} • File: ${liveMusicState.queueLength} titres`
-                              : "Utilisez la commande /music play ou le Music Center pour écouter."}
-                          </p>
-                        </div>
-                        {liveMusicState?.currentTrack && (
-                          <div className="flex items-center gap-1 bg-black/40 border border-[var(--panel-border)] p-1 rounded-xl">
-                            <button
-                              onClick={handleMusicPlayPause}
-                              className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-600 text-white hover:bg-violet-500 cursor-pointer"
-                            >
-                              {liveMusicState.status === "PLAYING" ? <Pause className="h-3.5 w-3.5 fill-white" /> : <Play className="h-3.5 w-3.5 fill-white ml-0.5" />}
-                            </button>
-                            <button
-                              onClick={handleMusicSkip}
-                              className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 cursor-pointer"
-                            >
-                              <SkipForward className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE: Invites & Parrainages */}
-                {activeModule === "invites" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Invites & Referrals Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Invite Tracker &amp; Referral Center</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Tracking précis des invitations Discord, calcul de diff par snapshot, détection des faux joins (Risk Score 0-100), campagnes avec objectifs et distribution sécurisée de rôles récompenses.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/invites?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <UserPlus className="h-4 w-4" />
-                        <span>Ouvrir Invites Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
-                      <p className="font-bold text-white">Fonctionnalités actives du tracker</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
-                          <span>Snapshot en temps réel de toutes les invitations de la guilde</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
-                          <span>Algorithme heuristique anti-triche (âge du compte, burst, churn)</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-blue-400 shrink-0" />
-                          <span>Suivi de la rétention des membres (24h, 3j, 7j, 30j)</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-purple-400 shrink-0" />
-                          <span>Attribution de rôles par paliers avec vérification de hiérarchie</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE: Salons Vocaux */}
-                {activeModule === "voice" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Voice Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Voice Channels &amp; Hubs Temporaires</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Salons vocaux temporaires automatiques, hubs multiples (Gaming, Chill, Ranked, VIP), panneaux de contrôle Discord, transfert d&apos;ownership et règles d&apos;automatisation.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/voice?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Radio className="h-4 w-4" />
-                        <span>Ouvrir Voice Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
-                      <p className="font-bold text-white">Fonctionnalités vocales actives</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
-                          <span>Création instantanée dès la connexion à un salon Hub</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-cyan-400 shrink-0" />
-                          <span>Suppression automatique avec délai de grâce anti-accidents</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-purple-400 shrink-0" />
-                          <span>Panneau de contrôle intégré dans Discord (Renommer, Lock, Limite)</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
-                          <span>Stratégies intelligentes de transfert de propriété</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE: Server Backup & Disaster Recovery */}
-                {activeModule === "backups" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Backup Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Server Backup &amp; Disaster Recovery</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Sauvegardez l&apos;intégralité de la structure Discord et des modules ETHONE, comparez les versions et restaurez sélectivement avec rollback automatique.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/backups?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Archive className="h-4 w-4" />
-                        <span>Ouvrir Backup Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
-                      <p className="font-bold text-white">Garanties &amp; Protections de Secours</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
-                          <span>Snapshots immuables certifiés SHA-256</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-indigo-400 shrink-0" />
-                          <span>Rollback automatique capturé avant toute restauration</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
-                          <span>Comparateur visuel de diffs (Ajouté, Modifié, Supprimé)</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-rose-400 shrink-0" />
-                          <span>Sauvegardes protégées inviolables contre la purge</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE: AI Assistant */}
-                {activeModule === "ai" && (
-                  <div className="space-y-4 text-xs">
-                    {/* AI Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">ETHONE AI Assistant &amp; Knowledge Hub</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Assistant IA Discord intelligent, base de connaissances RAG sémantique, builder de personnalités à 5 curseurs, permissions de salons et handoff de tickets de support.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/ai?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Bot className="h-4 w-4" />
-                        <span>Ouvrir AI Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
-                      <p className="font-bold text-white">Fonctionnalités IA Disponibles</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-violet-400 shrink-0" />
-                          <span>RAG sémantique (sources globales, par salon ou restreintes aux rôles)</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
-                          <span>Bouclier de sécurité anti-jailbreak &amp; prompt injection strict</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-cyan-400 shrink-0" />
-                          <span>Commandes slash /ask et /summarize natives avec boutons d&apos;action</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
-                          <span>Intégration Helpdesk &amp; escalade en ticket privé pour le staff</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE: Forms & Applications */}
-                {activeModule === "forms" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Forms Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Forms &amp; Applications — No-Code Builder</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Créez des formulaires glisser-déposer sur-mesure (candidatures staff, whitelist, partenariats, feedbacks), publiez-les sur Discord et traitez les candidatures avec review privée et scoring.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/forms?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <FileText className="h-4 w-4" />
-                        <span>Ouvrir Forms Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
-                      <p className="font-bold text-white">Fonctionnalités Clés du Form Builder</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-indigo-400 shrink-0" />
-                          <span>Builder drag &amp; drop 20 types de champs (Texte, Rôles, Fichiers, Étoiles)</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-cyan-400 shrink-0" />
-                          <span>Moteur de logique conditionnelle dynamique et étapes multi-steps</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
-                          <span>Panneau Discord interactif (Bouton d&apos;application + Modal natif)</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
-                          <span>Review staff privée, attribution de rôles automatique et scoring pondéré</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE: Polls & Voting */}
-                {activeModule === "polls" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Polls Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Polls &amp; Voting Center</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Sondages démocratiques, consultations privées du staff, pondération des voix selon les rôles Discord, votes à bulletin secret et quorums d&apos;approbation.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/polls?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Vote className="h-4 w-4" />
-                        <span>Ouvrir Polls Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
-                      <p className="font-bold text-white">Garanties &amp; Fonctionnalités de Vote</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-indigo-400 shrink-0" />
-                          <span>9 modes de scrutin (Choix unique, multiple, préférentiel, pondéré, etc.)</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
-                          <span>Calcul automatique de quorum et majorité qualifiée</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-purple-400 shrink-0" />
-                          <span>Pondération des voix paramétrable selon les rôles du serveur</span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
-                          <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
-                          <span>Bulletins secrets avec anonymisation intégrale garantie</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE: Reaction Roles & Auto-Roles */}
-                {activeModule === "roles" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Roles Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Reaction Roles & Auto-Roles</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Panneaux de sélection de rôles par boutons cliquables et menus déroulants Discord, attribution automatique à l'arrivée (Join-Roles), rôles temporaires avec expiration et audit de hiérarchie.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/roles?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Tag className="h-4 w-4" />
-                        <span>Ouvrir Roles Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Panneaux</p>
-                        <p className="text-lg font-bold text-pink-400 mt-1">Boutons & Menus</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Composants natifs Discord</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Sélection</p>
-                        <p className="text-lg font-bold text-purple-400 mt-1">Unique ou Multiple</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Règles d'exclusivité de groupe</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Accueil</p>
-                        <p className="text-lg font-bold text-amber-400 mt-1">Join-Roles Auto</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Immédiat ou différé X minutes</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Sécurité</p>
-                        <p className="text-lg font-bold text-emerald-400 mt-1">Hiérarchie Bot</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Prévention anti-escalade 403</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <Link
-                        href={`/discord/roles?guildId=${selectedGuild.id}&tab=panels`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Sliders className="h-3.5 w-3.5 text-pink-400" />
-                        <span>Panneaux de Rôles Actifs</span>
-                      </Link>
-                      <Link
-                        href={`/discord/roles?guildId=${selectedGuild.id}&tab=builder`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Plus className="h-3.5 w-3.5 text-purple-400" />
-                        <span>Créer un Panneau Discord</span>
-                      </Link>
-                      <Link
-                        href={`/discord/roles?guildId=${selectedGuild.id}&tab=join_roles`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Users className="h-3.5 w-3.5 text-amber-400" />
-                        <span>Configurer les Join-Roles</span>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE 8: Analytics & Insights */}
-                {activeModule === "analytics" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Analytics Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Analytics & Server Insights</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Surveillez la santé de votre serveur en temps réel : volume de messages, flux d'arrivées et départs, heatmaps horaires d'affluence, rétention et classement des membres les plus actifs.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/analytics?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <BarChart3 className="h-4 w-4" />
-                        <span>Ouvrir Analytics Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Activité</p>
-                        <p className="text-lg font-bold text-cyan-400 mt-1">Messages 14j</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Graphiques & répartitions médias</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Croissance</p>
-                        <p className="text-lg font-bold text-emerald-400 mt-1">Flux Membres</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Arrivées nettes & taux de rétention</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Créneaux</p>
-                        <p className="text-lg font-bold text-amber-400 mt-1">Heatmap 24h/7j</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Pics d'affluence pour annonces</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Salons</p>
-                        <p className="text-lg font-bold text-purple-400 mt-1">Part de Voix</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Salons textuels & heures vocales</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <Link
-                        href={`/discord/analytics?guildId=${selectedGuild.id}&tab=messages`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <BarChart3 className="h-3.5 w-3.5 text-cyan-400" />
-                        <span>Activité des Messages</span>
-                      </Link>
-                      <Link
-                        href={`/discord/analytics?guildId=${selectedGuild.id}&tab=growth`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Users className="h-3.5 w-3.5 text-emerald-400" />
-                        <span>Croissance & Rétention</span>
-                      </Link>
-                      <Link
-                        href={`/discord/analytics?guildId=${selectedGuild.id}&tab=heatmap`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Clock className="h-3.5 w-3.5 text-amber-400" />
-                        <span>Heatmap d'Affluence</span>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE: Events & Calendar */}
-                {activeModule === "events" && (
-                  <div className="space-y-4 text-xs">
-                    {/* Events Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Events &amp; Calendar</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Planifiez vos soirées gaming, tournois et réunions avec calendrier interactif (Mois, Semaine, Agenda), gestion des inscriptions (Going, Maybe, Waitlist), pointages et rappels automatiques.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/events?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Calendar className="h-4 w-4" />
-                        <span>Ouvrir Events Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Affichage</p>
-                        <p className="text-lg font-bold text-indigo-400 mt-1">Calendrier Interactif</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Vues Mois, Semaine, Jour &amp; Agenda</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Inscriptions</p>
-                        <p className="text-lg font-bold text-purple-400 mt-1">RSVP &amp; Waitlist</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Jauges &amp; promotion automatique</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Discord</p>
-                        <p className="text-lg font-bold text-cyan-400 mt-1">Embeds &amp; Boutons</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Pointage vocal &amp; slash /event</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Export</p>
-                        <p className="text-lg font-bold text-emerald-400 mt-1">iCal (.ics)</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Synchro Google / Apple Calendar</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <Link
-                        href={`/discord/events?guildId=${selectedGuild.id}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Calendar className="h-3.5 w-3.5 text-indigo-400" />
-                        <span>Tous les Événements</span>
-                      </Link>
-                      <Link
-                        href={`/discord/calendar?guildId=${selectedGuild.id}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Calendar className="h-3.5 w-3.5 text-cyan-400" />
-                        <span>Vue Calendrier</span>
-                      </Link>
-                      <Link
-                        href={`/discord/events/create?guildId=${selectedGuild.id}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Plus className="h-3.5 w-3.5 text-purple-400" />
-                        <span>Créer un Événement</span>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE 20: Server Management Center */}
-                {activeModule === "server" && (
-                  <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 p-4 shadow-sm">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Server Management Center</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Contrôle intégral : diagnostic santé, score de sécurité, membres, salons, rôles, permission debugger et emojis.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/server?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
-                      >
-                        <Server className="h-4 w-4" />
-                        <span>Ouvrir Server Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Sécurité</p>
-                        <p className="text-lg font-bold text-emerald-400 mt-1">Score 0-100</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Évaluation transparente</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Membres</p>
-                        <p className="text-lg font-bold text-indigo-400 mt-1">Profil &amp; Risk</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Timeout, Kick &amp; Ban</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Salons &amp; Rôles</p>
-                        <p className="text-lg font-bold text-purple-400 mt-1">Arborescence</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Hiérarchie &amp; Plafond Bot</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Permissions</p>
-                        <p className="text-lg font-bold text-amber-400 mt-1">Debugger</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Résolution pas à pas</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <Link
-                        href={`/discord/server/members?guildId=${selectedGuild.id}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Users className="h-3.5 w-3.5 text-indigo-400" />
-                        <span>Membres</span>
-                      </Link>
-                      <Link
-                        href={`/discord/server/channels?guildId=${selectedGuild.id}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Hash className="h-3.5 w-3.5 text-cyan-400" />
-                        <span>Salons</span>
-                      </Link>
-                      <Link
-                        href={`/discord/server/roles?guildId=${selectedGuild.id}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Shield className="h-3.5 w-3.5 text-purple-400" />
-                        <span>Rôles</span>
-                      </Link>
-                      <Link
-                        href={`/discord/server/permissions?guildId=${selectedGuild.id}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Key className="h-3.5 w-3.5 text-amber-400" />
-                        <span>Permissions &amp; Debugger</span>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE: Starboard */}
-                {activeModule === "starboard" && (
-                  <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Starboard — Hall of Fame</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Quand un message atteint un seuil de réactions ⭐, le bot le republie dans un salon dédié avec un embed maintenu à jour. Salon, emoji, seuil et options se règlent ici.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/starboard?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Star className="h-4 w-4" />
-                        <span>Ouvrir le Starboard</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
-                      <p className="font-bold text-white">Mise en route</p>
-                      <ol className="list-decimal space-y-1 pl-4 text-[11px] text-zinc-300">
-                        <li>Ouvrez le Starboard et choisissez le salon de publication.</li>
-                        <li>Réglez l&apos;emoji (⭐ par défaut) et le seuil de réactions.</li>
-                        <li>Activez — ou lancez <code className="rounded bg-black/30 px-1">/starboard setup</code> directement sur Discord.</li>
-                      </ol>
-                    </div>
-                  </div>
-                )}
-
-                {activeModule === "sticky" && (
-                  <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Sticky Messages</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Épingle un message en bas d&apos;un salon (règles, format d&apos;une candidature, lien utile…). Dès qu&apos;un membre écrit, le bot supprime l&apos;ancien et le republie tout en bas, avec un anti-rebond réglable.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/sticky?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Pin className="h-4 w-4" />
-                        <span>Ouvrir Sticky Messages</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
-                      <p className="font-bold text-white">Mise en route</p>
-                      <ol className="list-decimal space-y-1 pl-4 text-[11px] text-zinc-300">
-                        <li>Ouvrez Sticky Messages et choisissez un salon.</li>
-                        <li>Écrivez le contenu, choisissez texte ou embed, et le délai anti-rebond.</li>
-                        <li>Enregistrez — ou lancez <code className="rounded bg-black/30 px-1">/sticky set</code> directement sur Discord.</li>
-                      </ol>
-                      <p className="text-[11px] text-zinc-400">Le bot a besoin des permissions <strong>Envoyer des messages</strong> et <strong>Gérer les messages</strong> dans le salon.</p>
-                    </div>
-                  </div>
-                )}
-
-                {activeModule === "reminders" && (
-                  <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Reminders</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Programme un rappel (<code className="rounded bg-black/30 px-1">/reminder add 2h révise le TP</code>). À l&apos;échéance, le bot te mentionne dans le salon avec ton message. Récurrence quotidienne / hebdomadaire possible.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/reminders?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Clock className="h-4 w-4" />
-                        <span>Ouvrir Reminders</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
-                      <p className="font-bold text-white">Commandes</p>
-                      <ul className="space-y-1 text-[11px] text-zinc-300">
-                        <li><code className="rounded bg-black/30 px-1">/reminder add</code> — délai (<code className="rounded bg-black/30 px-1">10m</code>, <code className="rounded bg-black/30 px-1">2h</code>, <code className="rounded bg-black/30 px-1">1d</code>, <code className="rounded bg-black/30 px-1">1h30m</code>) + message + récurrence</li>
-                        <li><code className="rounded bg-black/30 px-1">/reminder list</code> — tes rappels en attente</li>
-                        <li><code className="rounded bg-black/30 px-1">/reminder cancel &lt;id&gt;</code> — annuler</li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-                {activeModule === "statroles" && (
-                  <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <p className="text-xs font-bold text-white">Statroles</p>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Donne et retire un rôle selon l&apos;activité dans la durée (ex. « Actif » : 100 messages sur 30 jours ET 30 jours d&apos;ancienneté). Ce qu&apos;un rôle de niveau ne sait pas faire : le rôle se retire tout seul. Désactivé par défaut ; s&apos;appuie sur le module Statistiques.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/statroles?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <span>Ouvrir Statroles</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {activeModule === "settings" && (
-                  <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <p className="text-xs font-bold text-white">Paramètres</p>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Langue et fuseau horaire du bot, contacts d&apos;urgence (prévenus par mention et message privé quand une permission manque ou qu&apos;un salon configuré est supprimé), préfixe et types de commandes.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/settings?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <span>Ouvrir les Paramètres</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {activeModule === "secureroles" && (
-                  <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <p className="text-xs font-bold text-white">Rôles sécurisés</p>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Les permissions sensibles d&apos;un rôle du personnel sont déplacées vers un rôle caché que le membre n&apos;obtient que pour quelques minutes, après un code de son application d&apos;authentification (<code className="rounded bg-black/30 px-1">/elevate</code>). Le rôle garde son nom, sa couleur et sa place dans la hiérarchie. Désactivé par défaut.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/secure-roles?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <span>Ouvrir Rôles sécurisés</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {activeModule === "stats" && (
-                  <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <p className="text-xs font-bold text-white">Statistiques</p>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Messages et vocal par jour, arrivées / départs, top membres et salons, fiche par membre. Sur Discord : <code className="rounded bg-black/30 px-1">/stats server</code>, <code className="rounded bg-black/30 px-1">/stats member</code>, <code className="rounded bg-black/30 px-1">/stats top</code>. Désactivé par défaut : les données se collectent à partir de l&apos;activation.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/stats?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <span>Ouvrir Statistiques</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {activeModule === "counting" && (
-                  <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <p className="text-xs font-bold text-white">Comptage</p>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Les membres comptent <code className="rounded bg-black/30 px-1">1, 2, 3…</code> à tour de rôle dans un salon dédié. Une erreur remet le compteur à zéro ; le record et le classement sont conservés. Désactivé par défaut : lancez-le avec <code className="rounded bg-black/30 px-1">/counting setup</code> ou depuis la page du module.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/counting?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <span>Ouvrir Comptage</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {activeModule === "afk" && (
-                  <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">AFK</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          <code className="rounded bg-black/30 px-1">/afk déjeuner</code> te marque absent. Le bot répond « X est AFK : déjeuner » à ceux qui te mentionnent, et retire ton statut dès que tu reparles (avec le décompte des mentions manquées).
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/afk?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Moon className="h-4 w-4" />
-                        <span>Ouvrir AFK</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
-                      <p className="font-bold text-white">Réglages</p>
-                      <ul className="space-y-1 text-[11px] text-zinc-300">
-                        <li>Retirer le statut au premier message (on/off)</li>
-                        <li>Prévenir sur mention (on/off)</li>
-                        <li>Préfixer le pseudo avec <code className="rounded bg-black/30 px-1">[AFK]</code> (nécessite Gérer les pseudos)</li>
-                        <li>Auto-suppression des réponses du bot (0–60 s)</li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-                {activeModule === "birthdays" && (
-                  <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Birthdays</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          <code className="rounded bg-black/30 px-1">/birthday set 14 07</code> enregistre ta date. Chaque jour à l&apos;heure configurée, le bot annonce les anniversaires du jour dans un salon (message personnalisable, âge affiché si l&apos;année est donnée) et attribue un rôle « Anniversaire » retiré le lendemain.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/birthdays?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Cake className="h-4 w-4" />
-                        <span>Ouvrir Birthdays</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
-                      <p className="font-bold text-white">Commandes</p>
-                      <ul className="space-y-1 text-[11px] text-zinc-300">
-                        <li><code className="rounded bg-black/30 px-1">/birthday set &lt;jour&gt; &lt;mois&gt; [année]</code></li>
-                        <li><code className="rounded bg-black/30 px-1">/birthday list</code> — anniversaires à venir</li>
-                        <li><code className="rounded bg-black/30 px-1">/birthday remove</code></li>
-                        <li><code className="rounded bg-black/30 px-1">/birthday config</code> — [Admin] salon, heure, rôle, message</li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-                {activeModule === "tags" && (
-                  <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Tags</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          <code className="rounded bg-black/30 px-1">/tag add faq &lt;texte&gt;</code> crée une réponse réutilisable, <code className="rounded bg-black/30 px-1">/tag get faq</code> l&apos;affiche (avec autocomplétion). Idéal pour les FAQ, formats de candidature, liens récurrents.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/tags?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Hash className="h-4 w-4" />
-                        <span>Ouvrir Tags</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
-                      <p className="font-bold text-white">Commandes</p>
-                      <ul className="space-y-1 text-[11px] text-zinc-300">
-                        <li><code className="rounded bg-black/30 px-1">/tag get &lt;nom&gt;</code> — affiche un tag</li>
-                        <li><code className="rounded bg-black/30 px-1">/tag add | edit | remove</code> — [Gérer les messages]</li>
-                        <li><code className="rounded bg-black/30 px-1">/tag list</code> · <code className="rounded bg-black/30 px-1">/tag info &lt;nom&gt;</code></li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-                {activeModule === "serverstats" && (
-                  <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Server Stats</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Transforme un salon (vocal verrouillé de préférence) en compteur : son nom affiche le nombre de membres, de boosts, de membres en ligne, etc. Renommé automatiquement toutes les 10-60 min (limite Discord).
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/server-stats?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <BarChart3 className="h-4 w-4" />
-                        <span>Ouvrir Server Stats</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
-                      <p className="font-bold text-white">Commandes</p>
-                      <ul className="space-y-1 text-[11px] text-zinc-300">
-                        <li><code className="rounded bg-black/30 px-1">/serverstats add &lt;salon&gt; &lt;type&gt; [format] [role]</code></li>
-                        <li><code className="rounded bg-black/30 px-1">/serverstats list | remove | refresh</code></li>
-                        <li><code className="rounded bg-black/30 px-1">/serverstats config</code> — actif on/off, intervalle</li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-                {activeModule === "highlights" && (
-                  <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Highlights</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          <code className="rounded bg-black/30 px-1">/highlight add ethone</code> surveille un mot-clé. Dès qu&apos;un AUTRE membre l&apos;écrit dans le serveur, tu reçois un DM avec l&apos;auteur, le salon et un lien direct. Réglage 100% personnel : chacun voit et gère ses propres mots-clés.
-                        </p>
-                      </div>
-                      <Link
-                        href={`/discord/highlights?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-                      >
-                        <Eye className="h-4 w-4" />
-                        <span>Ouvrir Highlights</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
-                      <p className="font-bold text-white">Commandes</p>
-                      <ul className="space-y-1 text-[11px] text-zinc-300">
-                        <li><code className="rounded bg-black/30 px-1">/highlight add | remove &lt;mot-clé&gt;</code> — max 15 par membre</li>
-                        <li><code className="rounded bg-black/30 px-1">/highlight list</code> — tes mots-clés et ton état</li>
-                        <li><code className="rounded bg-black/30 px-1">/highlight toggle &lt;actif&gt;</code> — pause sans tout supprimer</li>
-                        <li><code className="rounded bg-black/30 px-1">/highlight mute-channel | unmute-channel &lt;salon&gt;</code> — ignore un salon trop actif</li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-                {/* MODULE 21: Bot Control Center */}
-                {activeModule === "bot" && (
-                  <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-indigo-500/10 p-4 shadow-sm">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-white">Bot Control Center &amp; Intelligence</p>
-                        </div>
-                        <p className="text-[11px] text-zinc-300 mt-0.5">
-                          Surveillance intégrale du bot : monitoring V8 CPU/RAM, modules, débit temps réel, diagnostic, erreurs dédoublonnées et tokens IA.
-                        </p>
-                      </div>
-                      <Link
-                        href="/discord/bot"
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
-                      >
-                        <Bot className="h-4 w-4" />
-                        <span>Ouvrir Bot Center</span>
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">État Global</p>
-                        <p className="text-lg font-bold text-emerald-400 mt-1">Opérationnel</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">9 sous-systèmes sains</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Télémétrie</p>
-                        <p className="text-lg font-bold text-cyan-400 mt-1">V8 &amp; Latence</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Percentiles P50/P95/P99</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Modules Actifs</p>
-                        <p className="text-lg font-bold text-purple-400 mt-1">22 Modules</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Santé &amp; dépendances</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Auto-Diagnostic</p>
-                        <p className="text-lg font-bold text-amber-400 mt-1">17 Tests</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Contrôle interne complet</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <Link
-                        href="/discord/bot?tab=modules"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Layers className="h-3.5 w-3.5 text-indigo-400" />
-                        <span>Modules (22)</span>
-                      </Link>
-                      <Link
-                        href="/discord/bot?tab=commands"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Terminal className="h-3.5 w-3.5 text-cyan-400" />
-                        <span>Commandes</span>
-                      </Link>
-                      <Link
-                        href="/discord/bot?tab=performance"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <BarChart3 className="h-3.5 w-3.5 text-emerald-400" />
-                        <span>Performances</span>
-                      </Link>
-                      <Link
-                        href="/discord/bot?tab=diagnostics"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
-                      >
-                        <Cpu className="h-3.5 w-3.5 text-amber-400" />
-                        <span>Diagnostics (17 Tests)</span>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
-            <div className="flex h-full min-h-[300px] flex-col items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-12 text-center backdrop-blur-xl">
-              <Server className="h-10 w-10 text-zinc-600 mb-3" />
-              <h3 className="text-base font-bold text-white">
-                {allGuilds.length === 0 && !isDiscordConnected
-                  ? "Connectez votre compte Discord"
-                  : "Aucun serveur sélectionné"}
-              </h3>
-              <p className="mt-1 max-w-sm text-xs text-zinc-400">
-                {allGuilds.length === 0 && !isDiscordConnected
-                  ? "Liez votre compte Discord en un clic pour gérer vos serveurs et configurer le bot Ethone."
-                  : allGuilds.length === 0
-                  ? "Aucun serveur Discord gérable n'a été trouvé sur ce compte."
-                  : "Choisissez un serveur dans la liste de gauche pour configurer le bot."}
+        )}
+
+        {liveMusicState?.currentTrack && (
+          <div className="flex items-center gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
+            <img src={liveMusicState.currentTrack.thumbnail} alt="" className="h-10 w-10 shrink-0 rounded-xl object-cover" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-[var(--text-primary)]">{liveMusicState.currentTrack.title}</p>
+              <p className="truncate text-xs text-[var(--text-muted)]">
+                {liveMusicState.status === "PLAYING" ? "En lecture" : "En pause"} · {liveMusicState.currentTrack.artist}
+                {liveMusicState.voiceChannel ? ` · ${liveMusicState.voiceChannel.name}` : ""}
+                {typeof liveMusicState.queueLength === "number" ? ` · file : ${liveMusicState.queueLength}` : ""}
               </p>
-              {allGuilds.length === 0 && !isDiscordConnected && (
-                <button
-                  onClick={connect}
-                  disabled={discordLoading}
-                  className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#5865F2] px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-[#5865F2]/25 transition-all hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+            </div>
+            <div className="flex shrink-0 items-center gap-1">
+              <button type="button" onClick={handleMusicPrev} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-colors hover:bg-white/[0.07] hover:text-[var(--text-primary)]" title="Précédent" aria-label="Piste précédente">
+                <SkipBack className="h-4 w-4" />
+              </button>
+              <button type="button" onClick={handleMusicPlayPause} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl bg-white/[0.07] text-[var(--text-primary)] transition-colors hover:bg-white/[0.13]" title={liveMusicState.status === "PLAYING" ? "Pause" : "Lecture"} aria-label={liveMusicState.status === "PLAYING" ? "Pause" : "Lecture"}>
+                {liveMusicState.status === "PLAYING" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              </button>
+              <button type="button" onClick={handleMusicSkip} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-colors hover:bg-white/[0.07] hover:text-[var(--text-primary)]" title="Suivant" aria-label="Piste suivante">
+                <SkipForward className="h-4 w-4" />
+              </button>
+              <Link href={`/discord/music?guildId=${selectedGuild.id}`} className={cn(secondaryBtn, "ml-1")}>
+                <Music2 className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Music Center</span>
+              </Link>
+            </div>
+          </div>
+        )}
+
+        <ModuleNavigator
+          modules={navModules}
+          categories={MODULE_CATEGORIES}
+          activeId={activeModule}
+          onSelect={handleSelectModule}
+          status={moduleStatus}
+          onToggle={handleModuleToggle}
+          recommendedIds={RECOMMENDED_MODULE_IDS}
+          pendingIds={pendingModuleIds}
+          heading="Modules"
+          summary={`${activeModuleCount} / ${totalModuleCount} modules activés`}
+        />
+
+        {/* Panneau de configuration rapide du module ouvert */}
+        <div id="module-panel" className="scroll-mt-6 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-5 sm:p-6">
+          <div className="mb-5 flex items-center justify-between border-b border-[var(--panel-border)] pb-4">
+            <div>
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <span>Configuration : {MODULES.find((m) => m.id === activeModule)?.title}</span>
+              </h3>
+              <p className="text-xs text-zinc-400 mt-0.5">
+                {MODULES.find((m) => m.id === activeModule)?.description}
+              </p>
+            </div>
+            <span className="text-[11px] font-mono text-zinc-500">
+              Serveur : {selectedGuild.name}
+            </span>
+          </div>
+
+          {/* MODULE 0: Vue d'ensemble */}
+          {activeModule === "overview" && (
+            <div className="space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Mission Control</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Statut du bot, modération, sécurité, musique, tickets, giveaways, backups et activité récente réunis en un coup d'œil — données réelles, pas de tuile fictive.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/overview?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 text-xs font-semibold text-white transition-colors hover:bg-indigo-500 active:scale-95 cursor-pointer"
                 >
-                  <DiscordIcon className="h-4 w-4" />
-                  <span>Connecter avec Discord</span>
-                </button>
-              )}
+                  <LayoutDashboard className="h-4 w-4" />
+                  <span>Ouvrir la Vue d'ensemble</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <GuildLiveStats guildId={selectedGuild.id} />
             </div>
           )}
-        </main>
-      </div>
 
-      <DiscordOnboardingModal
-        isOpen={isOnboardingOpen}
-        currentStep={onboardingStep}
-        onStepChange={setOnboardingStep}
-        onClose={closeOnboarding}
-        onComplete={completeOnboarding}
-        prefersReducedMotion={prefersReducedMotion}
-      />
-    </div>
+          {/* MODULE 1: Sécurité & Anti-Raid */}
+          {activeModule === "security" && (
+            <div className="space-y-4">
+              {/* Anti-Raid Command Center Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Centre de Sécurité Anti-Raid</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Calcul dynamique du Risk Score (0-100), Live Monitor, activation du Raid Mode d'urgence et dossiers d'investigation.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/security/anti-raid?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
+                >
+                  <ShieldAlert className="h-4 w-4" />
+                  <span>Ouvrir Anti-Raid</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              {/* Anti-Nuke Command Center Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Centre Anti-Nuke</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Détection des bannissements massifs et suppressions de salons/rôles, sanction automatique configurable sur l'auteur.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/security/anti-nuke?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-red-600 px-4 text-xs font-semibold text-white transition-colors hover:bg-red-500 active:scale-95"
+                >
+                  <Bomb className="h-4 w-4" />
+                  <span>Ouvrir Anti-Nuke</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
+                <div>
+                  <p className="text-xs font-bold text-white">Protection Anti-Raid automatique</p>
+                  <p className="text-[11px] text-zinc-400">Détecte et bloque les arrivées massives de bots ou comptes suspects.</p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={guildSettings.antiRaidEnabled}
+                  onClick={() => {
+                    const next = !guildSettings.antiRaidEnabled;
+                    setGuildSettings((p) => ({ ...p, antiRaidEnabled: next }));
+                    toggle(
+                      "Protection Anti-Raid",
+                      next,
+                      next ? "Activée sur ce serveur." : "Désactivée sur ce serveur."
+                    );
+                  }}
+                  className={cn(
+                    "flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 cursor-pointer",
+                    guildSettings.antiRaidEnabled ? "bg-emerald-500" : "bg-zinc-700"
+                  )}
+                >
+                  <span className={cn("inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200", guildSettings.antiRaidEnabled ? "translate-x-5" : "translate-x-0")} />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
+                <div>
+                  <p className="text-xs font-bold text-white">Filtre Anti-Spam & Flooding</p>
+                  <p className="text-[11px] text-zinc-400">Supprime automatiquement les répétitions excessives de messages.</p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={guildSettings.antiSpamEnabled}
+                  onClick={() => {
+                    const next = !guildSettings.antiSpamEnabled;
+                    setGuildSettings((p) => ({ ...p, antiSpamEnabled: next }));
+                    toggle(
+                      "Filtre Anti-Spam",
+                      next,
+                      next ? "Activé sur ce serveur." : "Désactivé sur ce serveur."
+                    );
+                  }}
+                  className={cn(
+                    "flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 cursor-pointer",
+                    guildSettings.antiSpamEnabled ? "bg-emerald-500" : "bg-zinc-700"
+                  )}
+                >
+                  <span className={cn("inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200", guildSettings.antiSpamEnabled ? "translate-x-5" : "translate-x-0")} />
+                </button>
+              </div>
+
+              {/* Mentions Limit (MODERN PILL SELECTOR - NO UGLY HTML SELECT) */}
+              <div className="flex flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Limite de mentions par message</p>
+                    {guildSettings.mentionLimit === 0 ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                        Désactivée (Spam libre)
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                        Actif ({guildSettings.mentionLimit}/msg)
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-zinc-400">
+                    {guildSettings.mentionLimit === 0
+                      ? "Désactivée : aucune limite de mentions, les membres peuvent mentionner librement sans sanction (spam autorisé)."
+                      : "Nombre maximum d'utilisateurs ou rôles mentionnables avant sanction."}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5 rounded-xl bg-white/[0.04] p-1 border border-[var(--panel-border)]">
+                  {[
+                    { val: 3, label: "3 mentions" },
+                    { val: 5, label: "5 (Recommandé)" },
+                    { val: 10, label: "10 mentions" },
+                    { val: 0, label: "Désactivé (Spam)" },
+                  ].map(({ val, label }) => {
+                    const isActive = guildSettings.mentionLimit === val;
+                    return (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => {
+                          setGuildSettings((p) => ({ ...p, mentionLimit: val }));
+                          if (val === 0) {
+                            toggle(
+                              "Limite de mentions",
+                              false,
+                              "Désactivée — Les membres peuvent mentionner sans limite (spam libre)."
+                            );
+                          } else {
+                            toggle(
+                              "Limite de mentions",
+                              true,
+                              `Activée à ${val} mentions maximum par message.`
+                            );
+                          }
+                        }}
+                        className={cn(
+                          "rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
+                          isActive
+                            ? val === 0
+                              ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                              : "bg-emerald-500 text-white shadow-sm"
+                            : "text-zinc-400 hover:text-white hover:bg-white/5"
+                        )}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between rounded-[var(--inset-radius)] border border-rose-500/20 bg-rose-500/[0.05] p-4">
+                <div>
+                  <p className="text-xs font-bold text-rose-300 flex items-center gap-1.5">
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                    Verrouillage d'urgence (Lockdown)
+                  </p>
+                  <p className="text-[11px] text-zinc-400">Empêche tout nouveau membre d'écrire dans les salons en cas d'attaque.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleToggleLockdown}
+                  className={cn(
+                    "rounded-xl px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
+                    guildSettings.emergencyLockdown
+                      ? "bg-rose-500 text-white shadow-sm"
+                      : "border border-rose-500/30 text-rose-300 hover:bg-rose-500/10"
+                  )}
+                >
+                  {guildSettings.emergencyLockdown ? "Actif (Déverrouiller)" : "Déclencher"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE 2: Command Builder */}
+          {activeModule === "commands" && (
+            <div className="space-y-4 text-xs">
+              {/* Command Studio Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Command Studio & Builder</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Créez des commandes Slash (/) et Préfixe (!) sur-mesure, générez des embeds Discord riches, intégrez des variables dynamiques ({'{user}'}, {'{server}'}) et testez en direct dans le simulateur.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/commands?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Code2 className="h-4 w-4" />
+                  <span>Ouvrir Command Studio</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Catalogue</p>
+                  <p className="text-lg font-bold text-indigo-400 mt-1">Slash & Préfixe</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Activation / désactivation en 1 clic</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Embed Studio</p>
+                  <p className="text-lg font-bold text-purple-400 mt-1">Live Discord Render</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Bordures, footers & boutons</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Dynamique</p>
+                  <p className="text-lg font-bold text-cyan-400 mt-1">Variables Live</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">{'{user}'}, {'{server}'}, {'{time}'}</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Testing</p>
+                  <p className="text-lg font-bold text-emerald-400 mt-1">Simulateur Terminal</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Test immédiat sans bot</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Link
+                  href={`/discord/commands?guildId=${selectedGuild.id}&tab=catalog`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Sliders className="h-3.5 w-3.5 text-indigo-400" />
+                  <span>Catalogue des Commandes</span>
+                </Link>
+                <Link
+                  href={`/discord/commands?guildId=${selectedGuild.id}&tab=builder`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Plus className="h-3.5 w-3.5 text-purple-400" />
+                  <span>Créer une Commande No-Code</span>
+                </Link>
+                <Link
+                  href={`/discord/commands?guildId=${selectedGuild.id}&tab=simulator`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>Simulateur Discord Live</span>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE 3: Suggestions & Feedback */}
+          {activeModule === "suggestions" && (
+            <div className="space-y-4 text-xs">
+              {/* Suggestions Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Boîte à Suggestions & Feedback</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Collectez les idées des membres, organisez les votes communautaires (👍 / 👎), traitez les propositions sur un tableau Kanban et publiez les décisions officielles du Staff.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/suggestions?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Lightbulb className="h-4 w-4" />
+                  <span>Ouvrir Suggestions Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Traitement</p>
+                  <p className="text-lg font-bold text-amber-400 mt-1">Kanban Staff</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">En Attente / Approuvée / Rejetée</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Communauté</p>
+                  <p className="text-lg font-bold text-emerald-400 mt-1">Votes Discord</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Boutons interactifs 👍 👎</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Réponses</p>
+                  <p className="text-lg font-bold text-cyan-400 mt-1">Avis Officiel</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Mise à jour directe de l'embed</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Protection</p>
+                  <p className="text-lg font-bold text-purple-400 mt-1">Anti-Doublon</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Filtres et cooldown par membre</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Link
+                  href={`/discord/suggestions?guildId=${selectedGuild.id}&tab=kanban`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Sliders className="h-3.5 w-3.5 text-amber-400" />
+                  <span>Tableau Kanban des Idées</span>
+                </Link>
+                <Link
+                  href={`/discord/suggestions?guildId=${selectedGuild.id}&tab=response_studio`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Send className="h-3.5 w-3.5 text-orange-400" />
+                  <span>Modération & Réponses Staff</span>
+                </Link>
+                <Link
+                  href={`/discord/suggestions?guildId=${selectedGuild.id}&tab=hall_of_fame`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Crown className="h-3.5 w-3.5 text-yellow-400" />
+                  <span>Top Idées (Hall of Fame)</span>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE 4: Leveling & XP */}
+          {activeModule === "leveling" && (
+            <div className="space-y-4 text-xs">
+              {/* Leveling Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Leveling & Rôles XP Center</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Stimulez l'activité de votre serveur : classement interactif, designer de cartes de profil Discord (/rank), attribution automatique de rôles par paliers et bonus pour Nitro Boosters.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/leveling?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Award className="h-4 w-4" />
+                  <span>Ouvrir Leveling Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Leaderboard</p>
+                  <p className="text-lg font-bold text-fuchsia-400 mt-1">Top 100 Live</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Trophées, barres d'XP & ranks</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Rank Card</p>
+                  <p className="text-lg font-bold text-purple-400 mt-1">Card Studio Live</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Bannières, couleurs & thèmes</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Paliers</p>
+                  <p className="text-lg font-bold text-amber-400 mt-1">Rôles Récompenses</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Déblocage auto par niveau</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Multiplicateurs</p>
+                  <p className="text-lg font-bold text-cyan-400 mt-1">Vocal & Boosters</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Gains en vocal et bonus x1.5</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Link
+                  href={`/discord/leveling?guildId=${selectedGuild.id}&tab=leaderboard`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Crown className="h-3.5 w-3.5 text-fuchsia-400" />
+                  <span>Classement & Leaderboard</span>
+                </Link>
+                <Link
+                  href={`/discord/leveling?guildId=${selectedGuild.id}&tab=card_designer`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-purple-400" />
+                  <span>Rank Card Designer</span>
+                </Link>
+                <Link
+                  href={`/discord/leveling?guildId=${selectedGuild.id}&tab=rewards`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Award className="h-3.5 w-3.5 text-amber-400" />
+                  <span>Gérer les Rôles Récompenses</span>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE 5: Giveaways & Concours */}
+          {activeModule === "giveaways" && (
+            <div className="space-y-4 text-xs">
+              {/* Giveaways Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Giveaways & Tirages au Sort</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Pilotez vos concours Discord : création assistée, restrictions de rôles et d'ancienneté, tirage cryptographique impartial (SHA-256 CSPRNG) et système de Reroll en un clic.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/giveaways?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Gift className="h-4 w-4" />
+                  <span>Ouvrir Giveaways Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Concours</p>
+                  <p className="text-lg font-bold text-rose-400 mt-1">Live Discord</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Comptes à rebours & embeds</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Impartialité</p>
+                  <p className="text-lg font-bold text-cyan-400 mt-1">SHA-256 CSPRNG</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Graines vérifiables sans triche</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Conditions</p>
+                  <p className="text-lg font-bold text-amber-400 mt-1">Rôles & Bonus</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Chances + pour Boosters</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Gestion</p>
+                  <p className="text-lg font-bold text-emerald-400 mt-1">Reroll 1-Clic</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Redistribution immédiate</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Link
+                  href={`/discord/giveaways?guildId=${selectedGuild.id}&tab=create`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Plus className="h-3.5 w-3.5 text-rose-400" />
+                  <span>Lancer un Nouveau Concours</span>
+                </Link>
+                <Link
+                  href={`/discord/giveaways?guildId=${selectedGuild.id}&tab=active`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Gift className="h-3.5 w-3.5 text-amber-400" />
+                  <span>Concours en Cours</span>
+                </Link>
+                <Link
+                  href={`/discord/giveaways?guildId=${selectedGuild.id}&tab=history`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <RefreshCw className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>Historique des Gagnants & Reroll</span>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE: Tickets Center */}
+          {activeModule === "tickets" && (
+            <div className="space-y-4 text-xs">
+              {/* Tickets Center Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Tickets Center & Helpdesk</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Helpdesk complet multi-catégories, formulaires avec questions dynamiques, équipes de staff, assignation/transfert, transcripts HTML/TXT/JSON et liaisons avec les Dossiers de Modération.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/tickets?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Ticket className="h-4 w-4" />
+                  <span>Ouvrir Tickets Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Helpdesk</p>
+                  <p className="text-lg font-bold text-emerald-400 mt-1">Multi-Équipes</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Support, Mod & Facturation</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Formulaires</p>
+                  <p className="text-lg font-bold text-teal-400 mt-1">Modals Discord</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Champs configurables</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Archivage</p>
+                  <p className="text-lg font-bold text-indigo-400 mt-1">Transcripts</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">HTML, TXT & JSON</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Audit & Qualité</p>
+                  <p className="text-lg font-bold text-amber-400 mt-1">Notes & CSAT</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Avis membres (1-5★)</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Link
+                  href={`/discord/tickets?guildId=${selectedGuild.id}&tab=panels`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Sliders className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>Créer un Panneau Discord</span>
+                </Link>
+                <Link
+                  href={`/discord/tickets?guildId=${selectedGuild.id}&tab=categories`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Settings2 className="h-3.5 w-3.5 text-teal-400" />
+                  <span>Gérer les Catégories</span>
+                </Link>
+                <Link
+                  href={`/discord/tickets?guildId=${selectedGuild.id}&tab=transcripts`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <FileText className="h-3.5 w-3.5 text-indigo-400" />
+                  <span>Historique des Transcripts</span>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE: Welcome & Onboarding */}
+          {activeModule === "welcome" && (
+            <div className="space-y-4 text-xs">
+              {/* Welcome Center Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Bienvenue & Onboarding Center</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Personnalisation complète sans coder : Message & Embed Builder avec Live Preview, boutons interactifs, cartes de bienvenue, DM Welcome, onboarding multi-étapes et entonnoir de conversion.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/welcome?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  <span>Ouvrir Welcome Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Welcome & Embed</p>
+                  <p className="text-lg font-bold text-teal-400 mt-1">Live Preview</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Rendu Discord instantané</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Parcours</p>
+                  <p className="text-lg font-bold text-emerald-400 mt-1">Onboarding Flow</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Règles, rôles & questions</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Sécurité</p>
+                  <p className="text-lg font-bold text-blue-400 mt-1">Vérification</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Boutons & déblocage rôles</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Conversion</p>
+                  <p className="text-lg font-bold text-amber-400 mt-1">Funnel Analytics</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Taux de complétion en direct</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Link
+                  href={`/discord/welcome?guildId=${selectedGuild.id}&tab=builder`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Sliders className="h-3.5 w-3.5 text-teal-400" />
+                  <span>Message & Embed Builder</span>
+                </Link>
+                <Link
+                  href={`/discord/welcome?guildId=${selectedGuild.id}&tab=onboarding`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Users className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>Configurer l&apos;Onboarding</span>
+                </Link>
+                <Link
+                  href={`/discord/welcome?guildId=${selectedGuild.id}&tab=templates`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-purple-400" />
+                  <span>Templates Prêts à l&apos;Emploi</span>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE 6: Modération & Sanctions */}
+          {activeModule === "moderation" && (
+            <div className="space-y-4 text-xs">
+              {/* Moderation Center / Case System Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Centre de Modération & Case System</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Suivi centralisé des sanctions (Cases #1, #2...), annulation avec audit trail, scheduler d&apos;expiration, notes staff privées et protection anti-abus.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/moderation?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
+                >
+                  <Hammer className="h-4 w-4" />
+                  <span>Ouvrir Moderation</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              {/* AutoMod Command Center Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Centre de Modération Intelligente AutoMod</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Moteur multi-détecteurs (Spam, Flood, Liens, Invites, Mentions, Caps, Regex, Profils), Rule Builder dynamique, Sanctions progressives (Strikes) et Sandbox de test.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/moderation/automod?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
+                >
+                  <Zap className="h-4 w-4" />
+                  <span>Ouvrir AutoMod</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
+                <p className="font-bold text-white">Salon de notification des sanctions</p>
+                <ChannelPicker
+                  value={modLogChannelId}
+                  onChange={(id) => setModLogChannelId(id || null)}
+                  guildId={selectedGuild.id}
+                  emptyLabel="Détection automatique (salon « mod-logs », « logs » ou « audit »)"
+                  allowClear
+                />
+                <p className="text-[11px] text-zinc-400">
+                  Toutes les sanctions appliquées (<code className="text-orange-300">/warn</code>, <code className="text-orange-300">/mute</code>, <code className="text-orange-300">/kick</code>, <code className="text-orange-300">/ban</code>) y seront journalisées. Sans sélection, le bot cherche automatiquement un salon nommé « mod-logs », « logs » ou « audit ».
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE 7: Audit & Logs */}
+          {activeModule === "logs" && (
+            <div className="space-y-4 text-xs">
+              {/* Audit Center Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Audit Center & Traçabilité Temps Réel</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Moteur de traçabilité temps réel, mode enquête (&plusmn;15 min), diffs avant/après, corrélation des sanctions (Cases &amp; Raids), routage multi-salons Discord et exports CSV/JSON.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/logs?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
+                >
+                  <FileText className="h-4 w-4" />
+                  <span>Ouvrir Audit Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
+                <p className="font-bold text-white">Surveillance des événements serveur</p>
+                <div className="space-y-2.5 pt-1 text-[11px]">
+                  <Checkbox
+                    checked={logsPreview.messages}
+                    onCheckedChange={(v) => setLogsPreview((p) => ({ ...p, messages: v }))}
+                    label="Journaliser la suppression et modification de messages"
+                    className="text-zinc-300 [&_span]:text-[11px] [&_span]:text-zinc-300"
+                  />
+                  <Checkbox
+                    checked={logsPreview.roles}
+                    onCheckedChange={(v) => setLogsPreview((p) => ({ ...p, roles: v }))}
+                    label="Journaliser les modifications de rôles, permissions et salons"
+                    className="text-zinc-300 [&_span]:text-[11px] [&_span]:text-zinc-300"
+                  />
+                  <Checkbox
+                    checked={logsPreview.members}
+                    onCheckedChange={(v) => setLogsPreview((p) => ({ ...p, members: v }))}
+                    label="Journaliser les arrivées, départs, bans et timeouts"
+                    className="text-zinc-300 [&_span]:text-[11px] [&_span]:text-zinc-300"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE: Lecteur Musique */}
+          {activeModule === "music" && (
+            <div className="space-y-4 text-xs">
+              {/* Music Center Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Centre de Contrôle Musical ETHONE</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Lecteur audio synchronisé en direct, file d&apos;attente drag & drop, recherche multi-sources, playlists, favoris et mode DJ.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/music?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Music2 className="h-4 w-4" />
+                  <span>Ouvrir Music Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
+                <p className="font-bold text-white">État du lecteur audio</p>
+                <div className="flex items-center justify-between text-xs pt-1">
+                  <div className="space-y-0.5">
+                    <p className="font-semibold text-white">
+                      {liveMusicState?.currentTrack ? liveMusicState.currentTrack.title : "Aucune musique en cours"}
+                    </p>
+                    <p className="text-[11px] text-zinc-400">
+                      {liveMusicState?.currentTrack
+                        ? `${liveMusicState.currentTrack.artist} • File: ${liveMusicState.queueLength} titres`
+                        : "Utilisez la commande /music play ou le Music Center pour écouter."}
+                    </p>
+                  </div>
+                  {liveMusicState?.currentTrack && (
+                    <div className="flex items-center gap-1 bg-black/40 border border-[var(--panel-border)] p-1 rounded-xl">
+                      <button
+                        onClick={handleMusicPlayPause}
+                        className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-600 text-white hover:bg-violet-500 cursor-pointer"
+                      >
+                        {liveMusicState.status === "PLAYING" ? <Pause className="h-3.5 w-3.5 fill-white" /> : <Play className="h-3.5 w-3.5 fill-white ml-0.5" />}
+                      </button>
+                      <button
+                        onClick={handleMusicSkip}
+                        className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 cursor-pointer"
+                      >
+                        <SkipForward className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE: Invites & Parrainages */}
+          {activeModule === "invites" && (
+            <div className="space-y-4 text-xs">
+              {/* Invites & Referrals Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Invite Tracker &amp; Referral Center</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Tracking précis des invitations Discord, calcul de diff par snapshot, détection des faux joins (Risk Score 0-100), campagnes avec objectifs et distribution sécurisée de rôles récompenses.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/invites?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  <span>Ouvrir Invites Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
+                <p className="font-bold text-white">Fonctionnalités actives du tracker</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
+                    <span>Snapshot en temps réel de toutes les invitations de la guilde</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+                    <span>Algorithme heuristique anti-triche (âge du compte, burst, churn)</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-blue-400 shrink-0" />
+                    <span>Suivi de la rétention des membres (24h, 3j, 7j, 30j)</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-purple-400 shrink-0" />
+                    <span>Attribution de rôles par paliers avec vérification de hiérarchie</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE: Salons Vocaux */}
+          {activeModule === "voice" && (
+            <div className="space-y-4 text-xs">
+              {/* Voice Center Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Voice Channels &amp; Hubs Temporaires</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Salons vocaux temporaires automatiques, hubs multiples (Gaming, Chill, Ranked, VIP), panneaux de contrôle Discord, transfert d&apos;ownership et règles d&apos;automatisation.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/voice?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Radio className="h-4 w-4" />
+                  <span>Ouvrir Voice Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
+                <p className="font-bold text-white">Fonctionnalités vocales actives</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
+                    <span>Création instantanée dès la connexion à un salon Hub</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-cyan-400 shrink-0" />
+                    <span>Suppression automatique avec délai de grâce anti-accidents</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-purple-400 shrink-0" />
+                    <span>Panneau de contrôle intégré dans Discord (Renommer, Lock, Limite)</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+                    <span>Stratégies intelligentes de transfert de propriété</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE: Server Backup & Disaster Recovery */}
+          {activeModule === "backups" && (
+            <div className="space-y-4 text-xs">
+              {/* Backup Center Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Server Backup &amp; Disaster Recovery</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Sauvegardez l&apos;intégralité de la structure Discord et des modules ETHONE, comparez les versions et restaurez sélectivement avec rollback automatique.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/backups?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Archive className="h-4 w-4" />
+                  <span>Ouvrir Backup Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
+                <p className="font-bold text-white">Garanties &amp; Protections de Secours</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
+                    <span>Snapshots immuables certifiés SHA-256</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-indigo-400 shrink-0" />
+                    <span>Rollback automatique capturé avant toute restauration</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+                    <span>Comparateur visuel de diffs (Ajouté, Modifié, Supprimé)</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-rose-400 shrink-0" />
+                    <span>Sauvegardes protégées inviolables contre la purge</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE: AI Assistant */}
+          {activeModule === "ai" && (
+            <div className="space-y-4 text-xs">
+              {/* AI Center Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">ETHONE AI Assistant &amp; Knowledge Hub</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Assistant IA Discord intelligent, base de connaissances RAG sémantique, builder de personnalités à 5 curseurs, permissions de salons et handoff de tickets de support.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/ai?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Bot className="h-4 w-4" />
+                  <span>Ouvrir AI Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
+                <p className="font-bold text-white">Fonctionnalités IA Disponibles</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-violet-400 shrink-0" />
+                    <span>RAG sémantique (sources globales, par salon ou restreintes aux rôles)</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
+                    <span>Bouclier de sécurité anti-jailbreak &amp; prompt injection strict</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-cyan-400 shrink-0" />
+                    <span>Commandes slash /ask et /summarize natives avec boutons d&apos;action</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+                    <span>Intégration Helpdesk &amp; escalade en ticket privé pour le staff</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE: Forms & Applications */}
+          {activeModule === "forms" && (
+            <div className="space-y-4 text-xs">
+              {/* Forms Center Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Forms &amp; Applications — No-Code Builder</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Créez des formulaires glisser-déposer sur-mesure (candidatures staff, whitelist, partenariats, feedbacks), publiez-les sur Discord et traitez les candidatures avec review privée et scoring.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/forms?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <FileText className="h-4 w-4" />
+                  <span>Ouvrir Forms Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
+                <p className="font-bold text-white">Fonctionnalités Clés du Form Builder</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-indigo-400 shrink-0" />
+                    <span>Builder drag &amp; drop 20 types de champs (Texte, Rôles, Fichiers, Étoiles)</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-cyan-400 shrink-0" />
+                    <span>Moteur de logique conditionnelle dynamique et étapes multi-steps</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
+                    <span>Panneau Discord interactif (Bouton d&apos;application + Modal natif)</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+                    <span>Review staff privée, attribution de rôles automatique et scoring pondéré</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE: Polls & Voting */}
+          {activeModule === "polls" && (
+            <div className="space-y-4 text-xs">
+              {/* Polls Center Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Polls &amp; Voting Center</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Sondages démocratiques, consultations privées du staff, pondération des voix selon les rôles Discord, votes à bulletin secret et quorums d&apos;approbation.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/polls?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Vote className="h-4 w-4" />
+                  <span>Ouvrir Polls Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
+                <p className="font-bold text-white">Garanties &amp; Fonctionnalités de Vote</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-indigo-400 shrink-0" />
+                    <span>9 modes de scrutin (Choix unique, multiple, préférentiel, pondéré, etc.)</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
+                    <span>Calcul automatique de quorum et majorité qualifiée</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-purple-400 shrink-0" />
+                    <span>Pondération des voix paramétrable selon les rôles du serveur</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5">
+                    <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+                    <span>Bulletins secrets avec anonymisation intégrale garantie</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE: Reaction Roles & Auto-Roles */}
+          {activeModule === "roles" && (
+            <div className="space-y-4 text-xs">
+              {/* Roles Center Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Reaction Roles & Auto-Roles</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Panneaux de sélection de rôles par boutons cliquables et menus déroulants Discord, attribution automatique à l'arrivée (Join-Roles), rôles temporaires avec expiration et audit de hiérarchie.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/roles?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Tag className="h-4 w-4" />
+                  <span>Ouvrir Roles Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Panneaux</p>
+                  <p className="text-lg font-bold text-pink-400 mt-1">Boutons & Menus</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Composants natifs Discord</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Sélection</p>
+                  <p className="text-lg font-bold text-purple-400 mt-1">Unique ou Multiple</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Règles d'exclusivité de groupe</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Accueil</p>
+                  <p className="text-lg font-bold text-amber-400 mt-1">Join-Roles Auto</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Immédiat ou différé X minutes</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Sécurité</p>
+                  <p className="text-lg font-bold text-emerald-400 mt-1">Hiérarchie Bot</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Prévention anti-escalade 403</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Link
+                  href={`/discord/roles?guildId=${selectedGuild.id}&tab=panels`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Sliders className="h-3.5 w-3.5 text-pink-400" />
+                  <span>Panneaux de Rôles Actifs</span>
+                </Link>
+                <Link
+                  href={`/discord/roles?guildId=${selectedGuild.id}&tab=builder`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Plus className="h-3.5 w-3.5 text-purple-400" />
+                  <span>Créer un Panneau Discord</span>
+                </Link>
+                <Link
+                  href={`/discord/roles?guildId=${selectedGuild.id}&tab=join_roles`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Users className="h-3.5 w-3.5 text-amber-400" />
+                  <span>Configurer les Join-Roles</span>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE 8: Analytics & Insights */}
+          {activeModule === "analytics" && (
+            <div className="space-y-4 text-xs">
+              {/* Analytics Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Analytics & Server Insights</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Surveillez la santé de votre serveur en temps réel : volume de messages, flux d'arrivées et départs, heatmaps horaires d'affluence, rétention et classement des membres les plus actifs.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/analytics?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  <span>Ouvrir Analytics Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Activité</p>
+                  <p className="text-lg font-bold text-cyan-400 mt-1">Messages 14j</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Graphiques & répartitions médias</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Croissance</p>
+                  <p className="text-lg font-bold text-emerald-400 mt-1">Flux Membres</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Arrivées nettes & taux de rétention</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Créneaux</p>
+                  <p className="text-lg font-bold text-amber-400 mt-1">Heatmap 24h/7j</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Pics d'affluence pour annonces</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Salons</p>
+                  <p className="text-lg font-bold text-purple-400 mt-1">Part de Voix</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Salons textuels & heures vocales</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Link
+                  href={`/discord/analytics?guildId=${selectedGuild.id}&tab=messages`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <BarChart3 className="h-3.5 w-3.5 text-cyan-400" />
+                  <span>Activité des Messages</span>
+                </Link>
+                <Link
+                  href={`/discord/analytics?guildId=${selectedGuild.id}&tab=growth`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Users className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>Croissance & Rétention</span>
+                </Link>
+                <Link
+                  href={`/discord/analytics?guildId=${selectedGuild.id}&tab=heatmap`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Clock className="h-3.5 w-3.5 text-amber-400" />
+                  <span>Heatmap d'Affluence</span>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE: Events & Calendar */}
+          {activeModule === "events" && (
+            <div className="space-y-4 text-xs">
+              {/* Events Gateway */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Events &amp; Calendar</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Planifiez vos soirées gaming, tournois et réunions avec calendrier interactif (Mois, Semaine, Agenda), gestion des inscriptions (Going, Maybe, Waitlist), pointages et rappels automatiques.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/events?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Calendar className="h-4 w-4" />
+                  <span>Ouvrir Events Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Affichage</p>
+                  <p className="text-lg font-bold text-indigo-400 mt-1">Calendrier Interactif</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Vues Mois, Semaine, Jour &amp; Agenda</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Inscriptions</p>
+                  <p className="text-lg font-bold text-purple-400 mt-1">RSVP &amp; Waitlist</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Jauges &amp; promotion automatique</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Discord</p>
+                  <p className="text-lg font-bold text-cyan-400 mt-1">Embeds &amp; Boutons</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Pointage vocal &amp; slash /event</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Export</p>
+                  <p className="text-lg font-bold text-emerald-400 mt-1">iCal (.ics)</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Synchro Google / Apple Calendar</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Link
+                  href={`/discord/events?guildId=${selectedGuild.id}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Calendar className="h-3.5 w-3.5 text-indigo-400" />
+                  <span>Tous les Événements</span>
+                </Link>
+                <Link
+                  href={`/discord/calendar?guildId=${selectedGuild.id}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Calendar className="h-3.5 w-3.5 text-cyan-400" />
+                  <span>Vue Calendrier</span>
+                </Link>
+                <Link
+                  href={`/discord/events/create?guildId=${selectedGuild.id}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Plus className="h-3.5 w-3.5 text-purple-400" />
+                  <span>Créer un Événement</span>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE 20: Server Management Center */}
+          {activeModule === "server" && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 p-4 shadow-sm">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Server Management Center</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Contrôle intégral : diagnostic santé, score de sécurité, membres, salons, rôles, permission debugger et emojis.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/server?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
+                >
+                  <Server className="h-4 w-4" />
+                  <span>Ouvrir Server Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Sécurité</p>
+                  <p className="text-lg font-bold text-emerald-400 mt-1">Score 0-100</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Évaluation transparente</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Membres</p>
+                  <p className="text-lg font-bold text-indigo-400 mt-1">Profil &amp; Risk</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Timeout, Kick &amp; Ban</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Salons &amp; Rôles</p>
+                  <p className="text-lg font-bold text-purple-400 mt-1">Arborescence</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Hiérarchie &amp; Plafond Bot</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Permissions</p>
+                  <p className="text-lg font-bold text-amber-400 mt-1">Debugger</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Résolution pas à pas</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Link
+                  href={`/discord/server/members?guildId=${selectedGuild.id}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Users className="h-3.5 w-3.5 text-indigo-400" />
+                  <span>Membres</span>
+                </Link>
+                <Link
+                  href={`/discord/server/channels?guildId=${selectedGuild.id}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Hash className="h-3.5 w-3.5 text-cyan-400" />
+                  <span>Salons</span>
+                </Link>
+                <Link
+                  href={`/discord/server/roles?guildId=${selectedGuild.id}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Shield className="h-3.5 w-3.5 text-purple-400" />
+                  <span>Rôles</span>
+                </Link>
+                <Link
+                  href={`/discord/server/permissions?guildId=${selectedGuild.id}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Key className="h-3.5 w-3.5 text-amber-400" />
+                  <span>Permissions &amp; Debugger</span>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE: Starboard */}
+          {activeModule === "starboard" && (
+            <div className="space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Starboard — Hall of Fame</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Quand un message atteint un seuil de réactions ⭐, le bot le republie dans un salon dédié avec un embed maintenu à jour. Salon, emoji, seuil et options se règlent ici.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/starboard?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Star className="h-4 w-4" />
+                  <span>Ouvrir le Starboard</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
+                <p className="font-bold text-white">Mise en route</p>
+                <ol className="list-decimal space-y-1 pl-4 text-[11px] text-zinc-300">
+                  <li>Ouvrez le Starboard et choisissez le salon de publication.</li>
+                  <li>Réglez l&apos;emoji (⭐ par défaut) et le seuil de réactions.</li>
+                  <li>Activez — ou lancez <code className="rounded bg-black/30 px-1">/starboard setup</code> directement sur Discord.</li>
+                </ol>
+              </div>
+            </div>
+          )}
+
+          {activeModule === "sticky" && (
+            <div className="space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Sticky Messages</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Épingle un message en bas d&apos;un salon (règles, format d&apos;une candidature, lien utile…). Dès qu&apos;un membre écrit, le bot supprime l&apos;ancien et le republie tout en bas, avec un anti-rebond réglable.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/sticky?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Pin className="h-4 w-4" />
+                  <span>Ouvrir Sticky Messages</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
+                <p className="font-bold text-white">Mise en route</p>
+                <ol className="list-decimal space-y-1 pl-4 text-[11px] text-zinc-300">
+                  <li>Ouvrez Sticky Messages et choisissez un salon.</li>
+                  <li>Écrivez le contenu, choisissez texte ou embed, et le délai anti-rebond.</li>
+                  <li>Enregistrez — ou lancez <code className="rounded bg-black/30 px-1">/sticky set</code> directement sur Discord.</li>
+                </ol>
+                <p className="text-[11px] text-zinc-400">Le bot a besoin des permissions <strong>Envoyer des messages</strong> et <strong>Gérer les messages</strong> dans le salon.</p>
+              </div>
+            </div>
+          )}
+
+          {activeModule === "reminders" && (
+            <div className="space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Reminders</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Programme un rappel (<code className="rounded bg-black/30 px-1">/reminder add 2h révise le TP</code>). À l&apos;échéance, le bot te mentionne dans le salon avec ton message. Récurrence quotidienne / hebdomadaire possible.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/reminders?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Clock className="h-4 w-4" />
+                  <span>Ouvrir Reminders</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
+                <p className="font-bold text-white">Commandes</p>
+                <ul className="space-y-1 text-[11px] text-zinc-300">
+                  <li><code className="rounded bg-black/30 px-1">/reminder add</code> — délai (<code className="rounded bg-black/30 px-1">10m</code>, <code className="rounded bg-black/30 px-1">2h</code>, <code className="rounded bg-black/30 px-1">1d</code>, <code className="rounded bg-black/30 px-1">1h30m</code>) + message + récurrence</li>
+                  <li><code className="rounded bg-black/30 px-1">/reminder list</code> — tes rappels en attente</li>
+                  <li><code className="rounded bg-black/30 px-1">/reminder cancel &lt;id&gt;</code> — annuler</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {activeModule === "statroles" && (
+            <div className="space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <p className="text-xs font-bold text-white">Statroles</p>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Donne et retire un rôle selon l&apos;activité dans la durée (ex. « Actif » : 100 messages sur 30 jours ET 30 jours d&apos;ancienneté). Ce qu&apos;un rôle de niveau ne sait pas faire : le rôle se retire tout seul. Désactivé par défaut ; s&apos;appuie sur le module Statistiques.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/statroles?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <span>Ouvrir Statroles</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {activeModule === "settings" && (
+            <div className="space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <p className="text-xs font-bold text-white">Paramètres</p>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Langue et fuseau horaire du bot, contacts d&apos;urgence (prévenus par mention et message privé quand une permission manque ou qu&apos;un salon configuré est supprimé), préfixe et types de commandes.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/settings?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <span>Ouvrir les Paramètres</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {activeModule === "secureroles" && (
+            <div className="space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <p className="text-xs font-bold text-white">Rôles sécurisés</p>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Les permissions sensibles d&apos;un rôle du personnel sont déplacées vers un rôle caché que le membre n&apos;obtient que pour quelques minutes, après un code de son application d&apos;authentification (<code className="rounded bg-black/30 px-1">/elevate</code>). Le rôle garde son nom, sa couleur et sa place dans la hiérarchie. Désactivé par défaut.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/secure-roles?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <span>Ouvrir Rôles sécurisés</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {activeModule === "stats" && (
+            <div className="space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <p className="text-xs font-bold text-white">Statistiques</p>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Messages et vocal par jour, arrivées / départs, top membres et salons, fiche par membre. Sur Discord : <code className="rounded bg-black/30 px-1">/stats server</code>, <code className="rounded bg-black/30 px-1">/stats member</code>, <code className="rounded bg-black/30 px-1">/stats top</code>. Désactivé par défaut : les données se collectent à partir de l&apos;activation.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/stats?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <span>Ouvrir Statistiques</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {activeModule === "counting" && (
+            <div className="space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <p className="text-xs font-bold text-white">Comptage</p>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Les membres comptent <code className="rounded bg-black/30 px-1">1, 2, 3…</code> à tour de rôle dans un salon dédié. Une erreur remet le compteur à zéro ; le record et le classement sont conservés. Désactivé par défaut : lancez-le avec <code className="rounded bg-black/30 px-1">/counting setup</code> ou depuis la page du module.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/counting?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <span>Ouvrir Comptage</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {activeModule === "afk" && (
+            <div className="space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">AFK</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    <code className="rounded bg-black/30 px-1">/afk déjeuner</code> te marque absent. Le bot répond « X est AFK : déjeuner » à ceux qui te mentionnent, et retire ton statut dès que tu reparles (avec le décompte des mentions manquées).
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/afk?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Moon className="h-4 w-4" />
+                  <span>Ouvrir AFK</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
+                <p className="font-bold text-white">Réglages</p>
+                <ul className="space-y-1 text-[11px] text-zinc-300">
+                  <li>Retirer le statut au premier message (on/off)</li>
+                  <li>Prévenir sur mention (on/off)</li>
+                  <li>Préfixer le pseudo avec <code className="rounded bg-black/30 px-1">[AFK]</code> (nécessite Gérer les pseudos)</li>
+                  <li>Auto-suppression des réponses du bot (0–60 s)</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {activeModule === "birthdays" && (
+            <div className="space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Birthdays</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    <code className="rounded bg-black/30 px-1">/birthday set 14 07</code> enregistre ta date. Chaque jour à l&apos;heure configurée, le bot annonce les anniversaires du jour dans un salon (message personnalisable, âge affiché si l&apos;année est donnée) et attribue un rôle « Anniversaire » retiré le lendemain.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/birthdays?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Cake className="h-4 w-4" />
+                  <span>Ouvrir Birthdays</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
+                <p className="font-bold text-white">Commandes</p>
+                <ul className="space-y-1 text-[11px] text-zinc-300">
+                  <li><code className="rounded bg-black/30 px-1">/birthday set &lt;jour&gt; &lt;mois&gt; [année]</code></li>
+                  <li><code className="rounded bg-black/30 px-1">/birthday list</code> — anniversaires à venir</li>
+                  <li><code className="rounded bg-black/30 px-1">/birthday remove</code></li>
+                  <li><code className="rounded bg-black/30 px-1">/birthday config</code> — [Admin] salon, heure, rôle, message</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {activeModule === "tags" && (
+            <div className="space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Tags</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    <code className="rounded bg-black/30 px-1">/tag add faq &lt;texte&gt;</code> crée une réponse réutilisable, <code className="rounded bg-black/30 px-1">/tag get faq</code> l&apos;affiche (avec autocomplétion). Idéal pour les FAQ, formats de candidature, liens récurrents.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/tags?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Hash className="h-4 w-4" />
+                  <span>Ouvrir Tags</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
+                <p className="font-bold text-white">Commandes</p>
+                <ul className="space-y-1 text-[11px] text-zinc-300">
+                  <li><code className="rounded bg-black/30 px-1">/tag get &lt;nom&gt;</code> — affiche un tag</li>
+                  <li><code className="rounded bg-black/30 px-1">/tag add | edit | remove</code> — [Gérer les messages]</li>
+                  <li><code className="rounded bg-black/30 px-1">/tag list</code> · <code className="rounded bg-black/30 px-1">/tag info &lt;nom&gt;</code></li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {activeModule === "serverstats" && (
+            <div className="space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Server Stats</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Transforme un salon (vocal verrouillé de préférence) en compteur : son nom affiche le nombre de membres, de boosts, de membres en ligne, etc. Renommé automatiquement toutes les 10-60 min (limite Discord).
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/server-stats?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  <span>Ouvrir Server Stats</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
+                <p className="font-bold text-white">Commandes</p>
+                <ul className="space-y-1 text-[11px] text-zinc-300">
+                  <li><code className="rounded bg-black/30 px-1">/serverstats add &lt;salon&gt; &lt;type&gt; [format] [role]</code></li>
+                  <li><code className="rounded bg-black/30 px-1">/serverstats list | remove | refresh</code></li>
+                  <li><code className="rounded bg-black/30 px-1">/serverstats config</code> — actif on/off, intervalle</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {activeModule === "highlights" && (
+            <div className="space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Highlights</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    <code className="rounded bg-black/30 px-1">/highlight add ethone</code> surveille un mot-clé. Dès qu&apos;un AUTRE membre l&apos;écrit dans le serveur, tu reçois un DM avec l&apos;auteur, le salon et un lien direct. Réglage 100% personnel : chacun voit et gère ses propres mots-clés.
+                  </p>
+                </div>
+                <Link
+                  href={`/discord/highlights?guildId=${selectedGuild.id}`}
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                >
+                  <Eye className="h-4 w-4" />
+                  <span>Ouvrir Highlights</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-2">
+                <p className="font-bold text-white">Commandes</p>
+                <ul className="space-y-1 text-[11px] text-zinc-300">
+                  <li><code className="rounded bg-black/30 px-1">/highlight add | remove &lt;mot-clé&gt;</code> — max 15 par membre</li>
+                  <li><code className="rounded bg-black/30 px-1">/highlight list</code> — tes mots-clés et ton état</li>
+                  <li><code className="rounded bg-black/30 px-1">/highlight toggle &lt;actif&gt;</code> — pause sans tout supprimer</li>
+                  <li><code className="rounded bg-black/30 px-1">/highlight mute-channel | unmute-channel &lt;salon&gt;</code> — ignore un salon trop actif</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {/* MODULE 21: Bot Control Center */}
+          {activeModule === "bot" && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-indigo-500/10 p-4 shadow-sm">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-white">Bot Control Center &amp; Intelligence</p>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">
+                    Surveillance intégrale du bot : monitoring V8 CPU/RAM, modules, débit temps réel, diagnostic, erreurs dédoublonnées et tokens IA.
+                  </p>
+                </div>
+                <Link
+                  href="/discord/bot"
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
+                >
+                  <Bot className="h-4 w-4" />
+                  <span>Ouvrir Bot Center</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">État Global</p>
+                  <p className="text-lg font-bold text-emerald-400 mt-1">Opérationnel</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">9 sous-systèmes sains</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Télémétrie</p>
+                  <p className="text-lg font-bold text-cyan-400 mt-1">V8 &amp; Latence</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Percentiles P50/P95/P99</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Modules Actifs</p>
+                  <p className="text-lg font-bold text-purple-400 mt-1">22 Modules</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Santé &amp; dépendances</p>
+                </div>
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                  <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Auto-Diagnostic</p>
+                  <p className="text-lg font-bold text-amber-400 mt-1">17 Tests</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Contrôle interne complet</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Link
+                  href="/discord/bot?tab=modules"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Layers className="h-3.5 w-3.5 text-indigo-400" />
+                  <span>Modules (22)</span>
+                </Link>
+                <Link
+                  href="/discord/bot?tab=commands"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Terminal className="h-3.5 w-3.5 text-cyan-400" />
+                  <span>Commandes</span>
+                </Link>
+                <Link
+                  href="/discord/bot?tab=performance"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <BarChart3 className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>Performances</span>
+                </Link>
+                <Link
+                  href="/discord/bot?tab=diagnostics"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                >
+                  <Cpu className="h-3.5 w-3.5 text-amber-400" />
+                  <span>Diagnostics (17 Tests)</span>
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      {onboardingModal}
+    </>
   );
 }

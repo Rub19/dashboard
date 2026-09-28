@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, Search, Star, X } from "@/components/icons/ph";
+import { ArrowUpRight, Star } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import Badge from "@/components/ui/Badge";
 import Input from "@/components/ui/Input";
@@ -41,6 +41,10 @@ interface ModuleNavigatorProps {
   recommendedIds?: string[];
   /** IDs de modules dont le toggle est en cours d'envoi au bot (pulse visuel, toggle désactivé). */
   pendingIds?: Set<string>;
+  /** Titre de la section (ex. « Modules »), affiché au-dessus de la recherche. */
+  heading?: string;
+  /** Résumé discret à côté du titre (ex. « 5 / 36 modules activés »). */
+  summary?: string;
 }
 
 const FAV_KEY = "ethone.discord.favoriteModules";
@@ -63,6 +67,8 @@ export default function ModuleNavigator({
   onToggle,
   recommendedIds,
   pendingIds,
+  heading,
+  summary,
 }: ModuleNavigatorProps) {
   const [query, setQuery] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -140,11 +146,10 @@ export default function ModuleNavigator({
         className={cn(
           "group relative flex flex-col gap-3 overflow-hidden rounded-2xl border p-5 text-left transition-colors duration-150",
           current
-            ? "border-emerald-500/40 bg-emerald-500/[0.07] shadow-sm"
+            ? "border-emerald-500/40 bg-emerald-500/[0.07]"
             : "border-[var(--panel-border)] bg-[var(--surface-raised)]/50 hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/80"
         )}
       >
-        {isOn && <span className="absolute left-0 top-4 bottom-4 w-0.5 rounded-full bg-emerald-400/80" />}
         <div className="flex items-start justify-between gap-3">
           <span className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/5 bg-white/[0.05]", m.tint)}>
             <Icon className="h-6 w-6" />
@@ -221,7 +226,13 @@ export default function ModuleNavigator({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      {heading && (
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">{heading}</h2>
+          {summary && <span className="text-sm text-[var(--text-muted)]">{summary}</span>}
+        </div>
+      )}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-sm">
           <Input
             value={query}
@@ -233,7 +244,7 @@ export default function ModuleNavigator({
             inputSize="compact"
           />
         </div>
-        <p className="text-[11px] text-zinc-500">
+        <p className="text-[11px] text-[var(--text-muted)]">
           {total} module{total > 1 ? "s" : ""} · Configurer = configuration rapide · <ArrowUpRight className="inline h-3 w-3 -translate-y-px" /> = page complète · <Star className="inline h-3 w-3 -translate-y-px" /> = favori
         </p>
       </div>
@@ -241,7 +252,7 @@ export default function ModuleNavigator({
       <AnimatedFilterTabs tabs={filterTabs} activeId={filter} onChange={(id) => setFilter(id as QuickFilter)} />
 
       {total === 0 && favoriteModules.length === 0 && (
-        <div className="rounded-[var(--inset-radius)] border border-dashed border-[var(--panel-border)] p-8 text-center text-xs text-zinc-500">
+        <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-xs text-[var(--text-muted)]">
           Aucun module ne correspond{query ? ` à « ${query} »` : ""}
           {filter !== "all" ? " pour ce filtre" : ""}.
         </div>
@@ -249,7 +260,7 @@ export default function ModuleNavigator({
 
       {favoriteModules.length > 0 && (
         <section>
-          <h3 className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-amber-300/90">
+          <h3 className="mb-3 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-amber-300/90">
             <Star className="h-3.5 w-3.5" fill="currentColor" /> Favoris
           </h3>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{favoriteModules.map(card)}</div>

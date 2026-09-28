@@ -66,6 +66,12 @@ export default function Shell({ children }: { children: ReactNode }) {
                   <header className="relative z-10 flex h-12 shrink-0 items-center gap-3 border-b border-[var(--panel-border)]/60 px-4">
                     <Link
                       href="/"
+                      onClick={() => {
+                        // Le prochain accès au Bot Discord repart du choix de serveur.
+                        try {
+                          sessionStorage.removeItem("ethone:discord:picked");
+                        } catch {}
+                      }}
                       className="inline-flex h-9 items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3.5 text-xs font-semibold text-[var(--text-primary)] transition-all hover:border-[var(--accent-primary)]/50 hover:bg-[var(--accent-primary)]/10 active:scale-95"
                     >
                       <ArrowLeft className="h-4 w-4" />

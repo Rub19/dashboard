@@ -126,7 +126,7 @@ export default function EventAnalyticsClient() {
   const timelineMax = Math.max(stats.maxCapacity || 0, ...stats.registrationTimeline.map((t) => t.count), 1);
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-44 selection:bg-indigo-500/30">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] pb-44">
       {/* Glow */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
       </div>
@@ -135,18 +135,18 @@ export default function EventAnalyticsClient() {
         {/* Navigation */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)] mb-8">
           <div>
-            <div className="flex items-center gap-2 mb-1.5 text-xs text-indigo-400 font-semibold uppercase tracking-wider">
+            <div className="flex items-center gap-2 mb-1.5 text-xs text-emerald-400 font-semibold uppercase tracking-wider">
               <Link href={`/discord/events/${eventId}`} className="hover:underline flex items-center gap-1">
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Retour à l'événement
               </Link>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] flex items-center gap-3">
               <BarChart3 className="w-7 h-7 text-emerald-400" />
               Statistiques & Analytics de l'Événement
             </h1>
-            <p className="text-xs text-slate-400 mt-1">
-              Rapport complet de fréquentation, taux de conversion et engagement vocal pour <strong className="text-white">{stats.title}</strong>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              Rapport complet de fréquentation, taux de conversion et engagement vocal pour <strong className="text-[var(--text-primary)]">{stats.title}</strong>
               {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}.
             </p>
           </div>
@@ -154,7 +154,7 @@ export default function EventAnalyticsClient() {
             type="button"
             onClick={loadAnalytics}
             disabled={loading}
-            className="flex items-center gap-1.5 self-start rounded-lg border border-[var(--panel-border)] bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-white/[0.06] disabled:opacity-50"
+            className="flex items-center gap-1.5 self-start rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-50"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
             Actualiser
@@ -163,46 +163,46 @@ export default function EventAnalyticsClient() {
 
         {/* 4 KPI Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="p-5 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+          <div className="p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+            <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-2">
               <span>Taux de Présence</span>
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             </div>
-            <div className="text-3xl font-extrabold text-white">{stats.attendanceRate}%</div>
-            <span className="text-[11px] text-emerald-400 mt-1 block">
+            <div className="text-3xl font-extrabold text-[var(--text-primary)]">{stats.attendanceRate}%</div>
+            <span className="text-xs text-emerald-400 mt-1 block">
               {stats.attendedCount} présents sur {stats.goingCount} confirmés
             </span>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+          <div className="p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+            <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-2">
               <span>Taux de No-Show</span>
               <XCircle className="w-4 h-4 text-rose-400" />
             </div>
-            <div className="text-3xl font-extrabold text-white">{stats.noShowRate}%</div>
-            <span className="text-[11px] text-rose-400/80 mt-1 block">
+            <div className="text-3xl font-extrabold text-[var(--text-primary)]">{stats.noShowRate}%</div>
+            <span className="text-xs text-rose-400/80 mt-1 block">
               {noShowCount} absent{noShowCount > 1 ? "s" : ""} non excusé{noShowCount > 1 ? "s" : ""}
             </span>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+          <div className="p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+            <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-2">
               <span>Pic Vocal Simultané</span>
               <Volume2 className="w-4 h-4 text-cyan-400" />
             </div>
-            <div className="text-3xl font-extrabold text-white">{stats.peakVoiceCount}</div>
-            <span className="text-[11px] text-cyan-400 mt-1 block">
+            <div className="text-3xl font-extrabold text-[var(--text-primary)]">{stats.peakVoiceCount}</div>
+            <span className="text-xs text-cyan-400 mt-1 block">
               Membres connectés en même temps
             </span>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+          <div className="p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+            <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-2">
               <span>Remplissage Capacité</span>
-              <Percent className="w-4 h-4 text-purple-400" />
+              <Percent className="w-4 h-4 text-emerald-400" />
             </div>
-            <div className="text-3xl font-extrabold text-white">{stats.fillRate != null ? `${stats.fillRate}%` : "—"}</div>
-            <span className="text-[11px] text-purple-400 mt-1 block">
+            <div className="text-3xl font-extrabold text-[var(--text-primary)]">{stats.fillRate != null ? `${stats.fillRate}%` : "—"}</div>
+            <span className="text-xs text-emerald-400 mt-1 block">
               {stats.maxCapacity != null ? `${stats.goingCount} places sur ${stats.maxCapacity}` : "Capacité illimitée"}
             </span>
           </div>
@@ -211,28 +211,28 @@ export default function EventAnalyticsClient() {
         {/* 2-Column Analytics Breakdown */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Timeline Bar Chart */}
-          <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
-            <h3 className="text-sm font-bold text-white mb-6 flex items-center justify-between">
+          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+            <h3 className="text-sm font-bold text-[var(--text-primary)] mb-6 flex items-center justify-between">
               <span>Évolution des Inscriptions Cumulées</span>
-              <TrendingUp className="w-4 h-4 text-indigo-400" />
+              <TrendingUp className="w-4 h-4 text-emerald-400" />
             </h3>
 
             {stats.registrationTimeline.length === 0 ? (
-              <p className="text-xs text-slate-500 py-12 text-center">Pas encore assez d'inscriptions pour afficher une tendance.</p>
+              <p className="text-xs text-[var(--text-muted)] py-12 text-center">Pas encore assez d'inscriptions pour afficher une tendance.</p>
             ) : (
               <div className="h-48 flex items-end justify-between gap-4 pt-6 px-2">
                 {stats.registrationTimeline.map((item, i) => {
                   const heightPercent = Math.round((item.count / timelineMax) * 100);
                   return (
                     <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                      <span className="text-[11px] font-bold text-white">{item.count}</span>
-                      <div className="w-full bg-white/5 rounded-t-lg h-36 flex items-end p-1">
+                      <span className="text-xs font-bold text-[var(--text-primary)]">{item.count}</span>
+                      <div className="w-full bg-[var(--surface-raised)]/50 rounded-t-lg h-36 flex items-end p-1">
                         <div
                           className="w-full bg-gradient-to-t from-indigo-600 to-purple-500 rounded-t-md transition-all duration-500"
                           style={{ height: `${heightPercent}%` }}
                         />
                       </div>
-                      <span className="text-[11px] text-slate-400 font-medium">{item.day}</span>
+                      <span className="text-xs text-[var(--text-muted)] font-medium">{item.day}</span>
                     </div>
                   );
                 })}
@@ -241,50 +241,50 @@ export default function EventAnalyticsClient() {
           </div>
 
           {/* Distribution Breakdown */}
-          <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl flex flex-col justify-between">
+          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between">
             <div>
-              <h3 className="text-sm font-bold text-white mb-4 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4 flex items-center justify-between">
                 <span>Répartition des Réponses</span>
-                <PieChart className="w-4 h-4 text-purple-400" />
+                <PieChart className="w-4 h-4 text-emerald-400" />
               </h3>
 
               <div className="space-y-3.5">
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-slate-300 font-semibold flex items-center gap-2">
+                    <span className="text-[var(--text-muted)] font-semibold flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                       Confirmés (Going)
                     </span>
-                    <span className="text-white font-bold">{stats.goingCount}</span>
+                    <span className="text-[var(--text-primary)] font-bold">{stats.goingCount}</span>
                   </div>
-                  <div className="w-full h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div className="w-full h-2 rounded-full bg-[var(--surface-raised)]/50 overflow-hidden">
                     <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${pct(stats.goingCount)}%` }} />
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-slate-300 font-semibold flex items-center gap-2">
+                    <span className="text-[var(--text-muted)] font-semibold flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
                       Peut-être (Maybe)
                     </span>
-                    <span className="text-white font-bold">{stats.maybeCount}</span>
+                    <span className="text-[var(--text-primary)] font-bold">{stats.maybeCount}</span>
                   </div>
-                  <div className="w-full h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div className="w-full h-2 rounded-full bg-[var(--surface-raised)]/50 overflow-hidden">
                     <div className="h-full bg-amber-500 rounded-full" style={{ width: `${pct(stats.maybeCount)}%` }} />
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-slate-300 font-semibold flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
+                    <span className="text-[var(--text-muted)] font-semibold flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                       File d'attente (Waitlist)
                     </span>
-                    <span className="text-white font-bold">{stats.waitlistCount}</span>
+                    <span className="text-[var(--text-primary)] font-bold">{stats.waitlistCount}</span>
                   </div>
-                  <div className="w-full h-2 rounded-full bg-white/5 overflow-hidden">
-                    <div className="h-full bg-purple-500 rounded-full" style={{ width: `${pct(stats.waitlistCount)}%` }} />
+                  <div className="w-full h-2 rounded-full bg-[var(--surface-raised)]/50 overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${pct(stats.waitlistCount)}%` }} />
                   </div>
                 </div>
               </div>

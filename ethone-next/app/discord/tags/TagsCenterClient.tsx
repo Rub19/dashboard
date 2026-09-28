@@ -207,19 +207,19 @@ export default function TagsCenterClient() {
   };
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden bg-[var(--bg-main)] text-white">
-      <div className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--bg-surface-elevated)]/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 z-20">
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)]">
+      <div className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--bg-surface-elevated)]/80 px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 z-20">
         <div className="flex items-center gap-3">
-          <Link href="/discord" className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors" title="Retour au hub Discord">
+          <Link href="/discord" className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-colors" title="Retour au hub Discord">
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-[var(--panel-border)] flex items-center justify-center text-zinc-300">
+            <div className="w-9 h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-center text-[var(--text-muted)]">
               <Hash className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-base font-semibold tracking-tight text-white">Tags</h1>
-              <p className="text-xs text-white/70">Réponses réutilisables : FAQ, formats, liens</p>
+              <h1 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">Tags</h1>
+              <p className="text-xs text-[var(--text-muted)]">Réponses réutilisables : FAQ, formats, liens</p>
             </div>
           </div>
         </div>
@@ -235,9 +235,9 @@ export default function TagsCenterClient() {
               }}
             />
           ) : (
-            <span className="text-xs text-white/70">Aucun serveur administrable</span>
+            <span className="text-xs text-[var(--text-muted)]">Aucun serveur administrable</span>
           )}
-          <button onClick={load} className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-[var(--panel-border)] text-white/70 hover:text-white transition-colors" title="Rafraîchir">
+          <button onClick={load} className="p-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors" title="Rafraîchir">
             <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
           </button>
         </div>
@@ -245,20 +245,20 @@ export default function TagsCenterClient() {
 
       <div className="flex-1 overflow-y-auto os-scroll px-4 sm:px-6 py-6 pb-44 md:pb-44 space-y-6 [overscroll-behavior:contain]">
         {!discordLoading && manageableGuilds.length === 0 && (
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-6 text-center text-sm text-zinc-400">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
             Connectez un serveur Discord où vous êtes administrateur.
           </div>
         )}
 
         {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-300 shrink-0 mt-0.5">
                 <Bot className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
-                <p className="mt-0.5 text-zinc-300">
+                <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-0.5 text-[var(--text-muted)]">
                   Invitez le bot sur « {selectedGuild.name} » pour synchroniser automatiquement les commandes /tag sur Discord.
                 </p>
               </div>
@@ -267,7 +267,7 @@ export default function TagsCenterClient() {
               href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium text-xs transition-colors shrink-0 shadow-lg shadow-[#5865F2]/25 cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-xs transition-colors shrink-0 cursor-pointer"
             >
               Inviter le bot
             </a>
@@ -277,7 +277,7 @@ export default function TagsCenterClient() {
         {offline && selectedGuild && (botGuildIds === null || botGuildIds.includes(selectedGuild.id)) && (
           <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
             <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-            <span>Le serveur du bot n&apos;est pas joignable depuis cet environnement. Utilise <code className="rounded bg-black/30 px-1">/tag add</code> sur Discord.</span>
+            <span>Le serveur du bot n&apos;est pas joignable depuis cet environnement. Utilise <code className="rounded bg-[var(--surface-raised)]/40 px-1">/tag add</code> sur Discord.</span>
           </div>
         )}
 
@@ -285,30 +285,30 @@ export default function TagsCenterClient() {
           <>
             {overview && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
-                  <p className="text-[11px] text-zinc-400">Tags</p>
-                  <p className="mt-1 text-lg font-bold text-white">{overview.total}</p>
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                  <p className="text-xs text-[var(--text-muted)]">Tags</p>
+                  <p className="mt-1 text-lg font-bold text-[var(--text-primary)]">{overview.total}</p>
                 </div>
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
-                  <p className="text-[11px] text-zinc-400">Affichages cumulés</p>
-                  <p className="mt-1 text-lg font-bold text-white">{overview.totalUses}</p>
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                  <p className="text-xs text-[var(--text-muted)]">Affichages cumulés</p>
+                  <p className="mt-1 text-lg font-bold text-[var(--text-primary)]">{overview.totalUses}</p>
                 </div>
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
-                  <p className="text-[11px] text-zinc-400">Le plus utilisé</p>
-                  <p className="mt-1 text-sm font-bold text-white truncate">{overview.top[0] ? `${overview.top[0].name} (${overview.top[0].uses})` : "—"}</p>
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                  <p className="text-xs text-[var(--text-muted)]">Le plus utilisé</p>
+                  <p className="mt-1 text-sm font-bold text-[var(--text-primary)] truncate">{overview.top[0] ? `${overview.top[0].name} (${overview.top[0].uses})` : "—"}</p>
                 </div>
               </div>
             )}
 
             {/* Editor */}
-            <div className="rounded-2xl border border-[#5865F2]/30 bg-white/[0.02] p-4 sm:p-5 space-y-3">
+            <div className="rounded-2xl border border-emerald-500/30 bg-[var(--surface-raised)]/40 p-4 sm:p-5 space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-bold text-white flex items-center gap-2">
+                <p className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <Plus className="h-4 w-4" />
                   {isNew || !editName ? "Nouveau tag" : `Modifier « ${editName} »`}
                 </p>
                 {!isNew && editName && (
-                  <button onClick={() => openEditor()} className="text-xs text-zinc-400 hover:text-white cursor-pointer">Nouveau</button>
+                  <button onClick={() => openEditor()} className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">Nouveau</button>
                 )}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
@@ -317,12 +317,12 @@ export default function TagsCenterClient() {
                   onChange={(e) => setEditName(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 32))}
                   disabled={!isNew && !!editName && tags.some((t) => t.name === editName)}
                   placeholder="nom (faq, regles…)"
-                  className="sm:col-span-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 font-mono text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#5865F2]/50 disabled:opacity-60"
+                  className="sm:col-span-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 font-mono text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] disabled:opacity-60"
                 />
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="sm:col-span-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#5865F2] px-4 py-2 text-xs font-semibold text-white hover:bg-[#4752C4] transition-colors disabled:opacity-50 cursor-pointer"
+                  className="sm:col-span-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-600 transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   {saving ? "…" : "Enregistrer"}
                 </button>
@@ -332,30 +332,30 @@ export default function TagsCenterClient() {
                 onChange={(e) => setEditContent(e.target.value.slice(0, 2000))}
                 rows={4}
                 placeholder="Le texte affiché par /tag get. Markdown Discord supporté."
-                className="w-full resize-y rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#5865F2]/50"
+                className="w-full resize-y rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)]"
               />
-              <p className="text-[10px] text-zinc-500">{editContent.length}/2000</p>
+              <p className="text-xs text-[var(--text-muted)]">{editContent.length}/2000</p>
             </div>
 
             {/* List */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] overflow-hidden">
+            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
               <div className="border-b border-[var(--panel-border)] px-4 py-3">
-                <p className="text-xs font-bold uppercase tracking-wide text-zinc-400">Tags du serveur ({tags.length})</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">Tags du serveur ({tags.length})</p>
               </div>
               {tags.length === 0 ? (
-                <p className="px-4 py-8 text-center text-sm text-zinc-500">Aucun tag. Crée-en un ci-dessus.</p>
+                <p className="px-4 py-8 text-center text-sm text-[var(--text-muted)]">Aucun tag. Crée-en un ci-dessus.</p>
               ) : (
-                <div className="divide-y divide-white/5">
+                <div className="divide-y divide-[var(--panel-border)]">
                   {tags.map((t) => (
                     <div key={t.name} className="flex items-start gap-3 p-4">
                       <button onClick={() => openEditor(t)} className="min-w-0 flex-1 text-left cursor-pointer">
-                        <p className="flex items-center gap-2 text-sm font-semibold text-white">
+                        <p className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
                           <code className="text-[#a9b2ff]">{t.name}</code>
-                          <span className="text-[10px] font-normal text-zinc-500">{t.uses} affichages</span>
+                          <span className="text-xs font-normal text-[var(--text-muted)]">{t.uses} affichages</span>
                         </p>
-                        <p className="mt-1 line-clamp-2 text-[12px] text-zinc-300">{t.content}</p>
+                        <p className="mt-1 line-clamp-2 text-xs text-[var(--text-muted)]">{t.content}</p>
                       </button>
-                      <button onClick={() => handleDelete(t.name)} title="Supprimer" className="shrink-0 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 p-2 text-rose-300 hover:bg-rose-500/15 hover:text-rose-200 transition-colors cursor-pointer">
+                      <button onClick={() => handleDelete(t.name)} title="Supprimer" className="shrink-0 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-rose-300 hover:bg-rose-500/15 hover:text-rose-200 transition-colors cursor-pointer">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>

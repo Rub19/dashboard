@@ -252,26 +252,26 @@ export default function FormResponsesClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white p-4 sm:p-6 lg:p-8 pb-44 md:pb-44 space-y-6">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] p-4 sm:p-6 lg:p-8 pb-44 md:pb-44 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-4">
         <div className="flex items-center gap-3">
           <Link
             href={`/discord/forms?guildId=${rawGuildId}`}
-            className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-black text-white">Réponses &amp; review</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">Réponses &amp; review</h1>
               {isDemo && (
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
                   Démo
                 </span>
               )}
             </div>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
               Examinez les candidatures, prenez les décisions et gardez un historique staff.
             </p>
           </div>
@@ -281,21 +281,21 @@ export default function FormResponsesClient() {
           <button
             onClick={loadResponses}
             disabled={loading}
-            className="flex h-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 text-zinc-400 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50"
+            className="flex h-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2.5 text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-50"
             title="Rafraîchir"
           >
             <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
           </button>
           <button
             onClick={handleExportCSV}
-            className="flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+            className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
           >
             <Download className="h-3.5 w-3.5" />
             <span>Exporter CSV</span>
           </button>
           <Link
             href={`/discord/forms/${formId}?guildId=${rawGuildId}`}
-            className="flex h-9 items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 text-xs font-bold text-white hover:bg-indigo-500 transition-all cursor-pointer"
+            className="flex h-9 items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 text-xs font-bold text-white hover:bg-emerald-600 transition-all cursor-pointer"
           >
             <Sliders className="h-3.5 w-3.5" />
             <span>Ouvrir Builder</span>
@@ -304,7 +304,7 @@ export default function FormResponsesClient() {
       </div>
 
       {/* Filter Tabs & Search */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
         <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           {[
             { id: "ALL", label: "Toutes" },
@@ -319,8 +319,8 @@ export default function FormResponsesClient() {
               className={cn(
                 "h-8 px-3 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer",
                 selectedStatus === tab.id
-                  ? "bg-indigo-600 text-white shadow-sm"
-                  : "text-zinc-400 hover:text-white hover:bg-white/5"
+                  ? "bg-emerald-500 text-white shadow-sm"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
               {tab.label}
@@ -329,23 +329,23 @@ export default function FormResponsesClient() {
         </div>
 
         <div className="relative w-full sm:w-64">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-muted)]" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Rechercher un candidat..."
-            className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 pl-8 pr-3 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-indigo-500"
+            className="h-8 w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] pl-8 pr-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--input-border-hover)]"
           />
         </div>
       </div>
 
       {/* Responses Table */}
-      <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] overflow-hidden backdrop-blur-md">
+      <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-[var(--panel-border)] bg-white/[0.02] text-zinc-400 text-[11px] uppercase tracking-wider font-semibold">
+              <tr className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] text-xs uppercase tracking-wider font-semibold">
                 <th className="p-4">Candidat</th>
                 <th className="p-4">Date de soumission</th>
                 <th className="p-4">Score IA / Test</th>
@@ -355,10 +355,10 @@ export default function FormResponsesClient() {
                 <th className="p-4 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 text-zinc-300">
+            <tbody className="divide-y divide-[var(--panel-border)] text-[var(--text-muted)]">
               {filteredResponses.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-zinc-500">
+                  <td colSpan={7} className="p-8 text-center text-[var(--text-muted)]">
                     Aucune réponse trouvée pour ces filtres.
                   </td>
                 </tr>
@@ -373,32 +373,32 @@ export default function FormResponsesClient() {
                     <tr
                       key={resp.id}
                       onClick={() => setActiveResponse(resp)}
-                      className="hover:bg-white/[0.04] transition-colors cursor-pointer group"
+                      className="hover:bg-[var(--surface-raised)]/70 transition-colors cursor-pointer group"
                     >
                       <td className="p-4">
                         <div className="flex items-center gap-3">
                           <img
                             src={resp.userAvatar}
                             alt={resp.userTag}
-                            className="h-8 w-8 rounded-full border border-[var(--panel-border)] bg-zinc-800"
+                            className="h-8 w-8 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/50"
                           />
                           <div>
-                            <span className="font-bold text-white group-hover:text-indigo-300 transition-colors block">
+                            <span className="font-bold text-[var(--text-primary)] group-hover:text-emerald-300 transition-colors block">
                               {resp.userTag}
                             </span>
-                            <span className="text-[10px] text-zinc-500 font-mono">ID: {resp.userId}</span>
+                            <span className="text-xs text-[var(--text-muted)] font-mono">ID: {resp.userId}</span>
                           </div>
                         </div>
                       </td>
 
-                      <td className="p-4 text-zinc-400">{resp.submittedAt}</td>
+                      <td className="p-4 text-[var(--text-muted)]">{resp.submittedAt}</td>
 
                       <td className="p-4">
                         <div className="flex items-center gap-1.5">
-                          <span className="font-bold text-white">{resp.score}/100</span>
+                          <span className="font-bold text-[var(--text-primary)]">{resp.score}/100</span>
                           <span
                             className={cn(
-                              "text-[9px] font-bold uppercase px-1.5 py-0.5 rounded",
+                              "text-xs font-bold uppercase px-1.5 py-0.5 rounded",
                               resp.score >= 70
                                 ? "bg-emerald-500/20 text-emerald-400"
                                 : resp.score >= 40
@@ -414,9 +414,9 @@ export default function FormResponsesClient() {
                       <td className="p-4">
                         <span
                           className={cn(
-                            "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border",
+                            "text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border",
                             isPending && "bg-amber-500/10 text-amber-300 border-amber-500/30",
-                            isReviewing && "bg-indigo-500/10 text-indigo-300 border-indigo-500/30",
+                            isReviewing && "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
                             isApproved && "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
                             isRejected && "bg-rose-500/10 text-rose-300 border-rose-500/30"
                           )}
@@ -425,8 +425,8 @@ export default function FormResponsesClient() {
                         </span>
                       </td>
 
-                      <td className="p-4 text-zinc-400">
-                        {resp.assignedReviewerTag || <span className="text-zinc-600 italic">Non assigné</span>}
+                      <td className="p-4 text-[var(--text-muted)]">
+                        {resp.assignedReviewerTag || <span className="text-[var(--text-muted)] italic">Non assigné</span>}
                       </td>
 
                       <td className="p-4">
@@ -434,7 +434,7 @@ export default function FormResponsesClient() {
                           {resp.tags.map((t) => (
                             <span
                               key={t}
-                              className="text-[9px] font-medium bg-white/5 border border-[var(--panel-border)] px-1.5 py-0.5 rounded text-zinc-300"
+                              className="text-xs font-medium bg-[var(--surface-raised)]/50 border border-[var(--panel-border)] px-1.5 py-0.5 rounded text-[var(--text-muted)]"
                             >
                               {t}
                             </span>
@@ -448,7 +448,7 @@ export default function FormResponsesClient() {
                             e.stopPropagation();
                             setActiveResponse(resp);
                           }}
-                          className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-indigo-600 hover:text-white text-xs font-semibold text-zinc-300 transition-all cursor-pointer"
+                          className="px-3 py-1.5 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-emerald-600 hover:text-white text-xs font-semibold text-[var(--text-muted)] transition-all cursor-pointer"
                         >
                           Examiner
                         </button>
@@ -464,8 +464,8 @@ export default function FormResponsesClient() {
 
       {/* DETAILED RESPONSE REVIEW MODAL / DRAWER */}
       {activeResponse && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-3xl max-h-[90vh] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 p-4 animate-in fade-in">
+          <div className="w-full max-w-3xl max-h-[90vh] rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 flex flex-col overflow-hidden">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-4 shrink-0">
               <div className="flex items-center gap-3">
@@ -475,11 +475,11 @@ export default function FormResponsesClient() {
                   className="h-10 w-10 rounded-full border border-[var(--input-border-hover)]"
                 />
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <span>{activeResponse.userTag}</span>
                     <span
                       className={cn(
-                        "text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border",
+                        "text-xs font-bold uppercase px-2 py-0.5 rounded-full border",
                         activeResponse.status === "APPROVED" && "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
                         activeResponse.status === "REJECTED" && "bg-rose-500/20 text-rose-400 border-rose-500/30",
                         activeResponse.status === "PENDING" && "bg-amber-500/20 text-amber-400 border-amber-500/30"
@@ -488,7 +488,7 @@ export default function FormResponsesClient() {
                       {activeResponse.status}
                     </span>
                   </h3>
-                  <p className="text-xs text-zinc-400 mt-0.5">
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5">
                     Compte créé il y a {activeResponse.accountAgeDays} jours • Sur le serveur depuis {activeResponse.guildMemberDays} jours
                   </p>
                 </div>
@@ -496,7 +496,7 @@ export default function FormResponsesClient() {
 
               <button
                 onClick={() => setActiveResponse(null)}
-                className="h-8 w-8 flex items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-white/10 cursor-pointer"
+                className="h-8 w-8 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] cursor-pointer"
               >
                 ✕
               </button>
@@ -505,28 +505,28 @@ export default function FormResponsesClient() {
             {/* Modal Body: Scrollable answers and review notes */}
             <div className="flex-1 overflow-y-auto py-4 space-y-6 pr-1">
               {/* Score Bar */}
-              <div className="flex items-center justify-between p-3.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02]">
+              <div className="flex items-center justify-between p-3.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                 <div className="flex items-center gap-2">
                   <span className="text-base">📊</span>
                   <div>
-                    <p className="text-xs font-bold text-white">Score Préliminaire de Candidature</p>
-                    <p className="text-[11px] text-zinc-400">Évaluation automatique des réponses et critères</p>
+                    <p className="text-xs font-bold text-[var(--text-primary)]">Score Préliminaire de Candidature</p>
+                    <p className="text-xs text-[var(--text-muted)]">Évaluation automatique des réponses et critères</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-lg font-black text-indigo-400">{activeResponse.score} / 100</span>
-                  <span className="text-[10px] text-zinc-500 block">Niveau : {activeResponse.scoreLabel}</span>
+                  <span className="text-lg font-bold text-emerald-400">{activeResponse.score} / 100</span>
+                  <span className="text-xs text-[var(--text-muted)] block">Niveau : {activeResponse.scoreLabel}</span>
                 </div>
               </div>
 
               {/* Submitted Answers List */}
               <div className="space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400">Réponses du Candidat</h4>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Réponses du Candidat</h4>
                 <div className="space-y-3">
                   {activeResponse.answers.map((ans, idx) => (
-                    <div key={idx} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5 space-y-1">
-                      <span className="text-[11px] font-semibold text-zinc-400 block">{ans.fieldLabel}</span>
-                      <p className="text-xs text-white font-medium whitespace-pre-wrap leading-relaxed">
+                    <div key={idx} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 space-y-1">
+                      <span className="text-xs font-semibold text-[var(--text-muted)] block">{ans.fieldLabel}</span>
+                      <p className="text-xs text-[var(--text-primary)] font-medium whitespace-pre-wrap leading-relaxed">
                         {String(ans.value || "Non renseigné")}
                       </p>
                     </div>
@@ -536,17 +536,17 @@ export default function FormResponsesClient() {
 
               {/* Internal Notes */}
               <div className="space-y-3 pt-2 border-t border-[var(--panel-border)]">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
                   Notes Internes du Staff ({activeResponse.notes.length})
                 </h4>
 
                 {activeResponse.notes.map((note) => (
-                  <div key={note.id} className="p-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] text-xs space-y-1">
-                    <div className="flex items-center justify-between text-[10px] text-zinc-500">
-                      <span className="font-bold text-zinc-300">{note.authorTag}</span>
+                  <div key={note.id} className="p-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-xs space-y-1">
+                    <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
+                      <span className="font-bold text-[var(--text-muted)]">{note.authorTag}</span>
                       <span>{note.createdAt}</span>
                     </div>
-                    <p className="text-zinc-300">{note.content}</p>
+                    <p className="text-[var(--text-muted)]">{note.content}</p>
                   </div>
                 ))}
 
@@ -556,11 +556,11 @@ export default function FormResponsesClient() {
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
                     placeholder="Ajouter une note privée staff..."
-                    className="h-9 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
+                    className="h-9 flex-1 rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
                   />
                   <button
                     onClick={handleAddNote}
-                    className="h-9 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-white transition-all cursor-pointer"
+                    className="h-9 px-3 rounded-xl bg-[var(--surface-raised)]/80 hover:bg-[var(--surface-raised)] text-xs font-semibold text-[var(--text-primary)] transition-all cursor-pointer"
                   >
                     Ajouter
                   </button>
@@ -585,7 +585,7 @@ export default function FormResponsesClient() {
                 </button>
                 <button
                   onClick={() => handleUpdateStatus("CHANGES_REQUESTED", "Modifications demandées")}
-                  className="flex-1 sm:flex-initial h-9 px-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs font-semibold text-zinc-300 hover:bg-white/10"
+                  className="flex-1 sm:flex-initial h-9 px-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]"
                 >
                   Demander révision
                 </button>
@@ -593,7 +593,7 @@ export default function FormResponsesClient() {
 
               <button
                 onClick={() => setActiveResponse(null)}
-                className="h-9 px-4 rounded-[var(--inset-radius)] border border-[var(--panel-border)] text-xs font-semibold text-zinc-400 hover:text-white"
+                className="h-9 px-4 rounded-xl border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
                 Fermer
               </button>

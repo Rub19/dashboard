@@ -146,7 +146,7 @@ function SpecificFields({ k, draft, set }: { k: DetKey; draft: Det; set: (patch:
               {MARKDOWN_LABELS.map(([id, label]) => {
                 const on = (draft.types ?? []).includes(id);
                 return (
-                  <label key={id} className="flex cursor-pointer items-center gap-2 text-sm text-zinc-300">
+                  <label key={id} className="flex cursor-pointer items-center gap-2 text-sm text-[var(--text-muted)]">
                     <input type="checkbox" checked={on} onChange={() => set({ types: on ? draft.types.filter((t: string) => t !== id) : [...(draft.types ?? []), id] })} />
                     {label}
                   </label>
@@ -164,13 +164,13 @@ function SpecificFields({ k, draft, set }: { k: DetKey; draft: Det; set: (patch:
 
 function Modal({ title, onClose, footer, children }: { title: string; onClose: () => void; footer: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)] shadow-2xl">
+    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 p-4 " role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)] ">
         <div className="overflow-y-auto p-6">
-          <h3 className="mb-5 text-lg font-extrabold uppercase tracking-wide text-white">{title}</h3>
+          <h3 className="mb-5 text-lg font-extrabold uppercase tracking-wide text-[var(--text-primary)]">{title}</h3>
           <div className="space-y-5">{children}</div>
         </div>
-        <div className="flex justify-end gap-2 border-t border-[var(--panel-border)] bg-black/20 px-6 py-4">{footer}</div>
+        <div className="flex justify-end gap-2 border-t border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-6 py-4">{footer}</div>
       </div>
     </div>
   );
@@ -263,10 +263,10 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
   return (
     <div className="space-y-8">
       <section>
-        <h2 className="text-lg font-bold text-white">Détection des infractions</h2>
-        <p className="mt-1 text-sm text-zinc-400">
+        <h2 className="text-lg font-bold text-[var(--text-primary)]">Détection des infractions</h2>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">
           Configurez les détections automatiques. Tout est désactivé par défaut : rien n&apos;agit tant que vous n&apos;avez pas activé une détection.{" "}
-          <span className={cn("font-semibold", activeCount > 0 ? "text-emerald-300" : "text-zinc-300")}>{activeCount} active{activeCount > 1 ? "s" : ""}.</span>
+          <span className={cn("font-semibold", activeCount > 0 ? "text-emerald-300" : "text-[var(--text-muted)]")}>{activeCount} active{activeCount > 1 ? "s" : ""}.</span>
         </p>
         {outdated && <p className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200">Le bot n&apos;est pas encore à jour : les détections « Émojis excessifs », « Mentions interdites » et « Mise en forme interdite » ne sont pas disponibles tant qu&apos;il n&apos;est pas redéployé.</p>}
         <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -274,13 +274,13 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
             const unavailable = NEW_KEYS.includes(c.key) && config[c.key] === undefined;
             const on = config[c.key]?.enabled === true;
             return (
-              <div key={c.key} className={cn("flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-white/[0.03] p-4", unavailable && "opacity-50")}>
+              <div key={c.key} className={cn("flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4", unavailable && "opacity-50")}>
                 <div className="min-w-0">
-                  <p className="text-sm font-bold text-white">{c.title}</p>
-                  <p className="mt-0.5 text-xs text-zinc-400">{c.text}</p>
+                  <p className="text-sm font-bold text-[var(--text-primary)]">{c.title}</p>
+                  <p className="mt-0.5 text-xs text-[var(--text-muted)]">{c.text}</p>
                 </div>
                 <div className="flex shrink-0 items-center gap-2.5">
-                  <button type="button" disabled={busy || unavailable} onClick={() => openSettings(c.key)} aria-label={`Réglages : ${c.title}`} className="cursor-pointer rounded-lg p-1.5 text-zinc-400 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed">
+                  <button type="button" disabled={busy || unavailable} onClick={() => openSettings(c.key)} aria-label={`Réglages : ${c.title}`} className="cursor-pointer rounded-xl p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:cursor-not-allowed">
                     <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <circle cx="12" cy="12" r="3" />
                       <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h0a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
@@ -294,29 +294,29 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
         </div>
       </section>
 
-      <section className="border-t border-white/10 pt-6">
+      <section className="border-t border-[var(--panel-border)] pt-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-bold text-white">Sanctions automatiques</h2>
-            <p className="mt-1 max-w-2xl text-sm text-zinc-400">Quand un membre cumule des infractions (détections avec « Compter comme infraction »), le bot le sanctionne tout seul. Les infractions expirent après {strikes.expirationDays} jour(s).</p>
+            <h2 className="text-lg font-bold text-[var(--text-primary)]">Sanctions automatiques</h2>
+            <p className="mt-1 max-w-2xl text-sm text-[var(--text-muted)]">Quand un membre cumule des infractions (détections avec « Compter comme infraction »), le bot le sanctionne tout seul. Les infractions expirent après {strikes.expirationDays} jour(s).</p>
           </div>
-          <button type="button" disabled={busy} onClick={() => setSanction({ strikeCount: (steps.at(-1)?.strikeCount ?? 0) + 1, action: "TIMEOUT", durationSeconds: 3600, reason: "" })} className="cursor-pointer rounded-lg bg-[#c96a52] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#d97a62] disabled:opacity-50">
+          <button type="button" disabled={busy} onClick={() => setSanction({ strikeCount: (steps.at(-1)?.strikeCount ?? 0) + 1, action: "TIMEOUT", durationSeconds: 3600, reason: "" })} className="cursor-pointer rounded-xl bg-[#c96a52] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#d97a62] disabled:opacity-50">
             Créer une sanction automatique
           </button>
         </div>
         {steps.length === 0 ? (
-          <div className="mt-5 rounded-lg border border-dashed border-white/20 p-4 text-center text-sm text-zinc-400">Vous n&apos;avez créé aucune sanction automatique.</div>
+          <div className="mt-5 rounded-xl border border-dashed border-[var(--panel-border)] p-4 text-center text-sm text-[var(--text-muted)]">Vous n&apos;avez créé aucune sanction automatique.</div>
         ) : (
-          <ul className="mt-5 divide-y divide-white/5 rounded-xl border border-[var(--panel-border)]">
+          <ul className="mt-5 divide-y divide-[var(--panel-border)] rounded-xl border border-[var(--panel-border)]">
             {steps.map((s) => (
               <li key={s.strikeCount} className="flex flex-wrap items-center justify-between gap-3 p-3.5">
                 <div>
-                  <p className="text-sm font-semibold text-white">
+                  <p className="text-sm font-semibold text-[var(--text-primary)]">
                     À {s.strikeCount} infraction{s.strikeCount > 1 ? "s" : ""} : {sanctionText(s)}
                   </p>
-                  <p className="text-xs text-zinc-500">{s.reason}</p>
+                  <p className="text-xs text-[var(--text-muted)]">{s.reason}</p>
                 </div>
-                <button type="button" disabled={busy} onClick={() => void removeSanction(s)} className="cursor-pointer rounded-lg border border-rose-500/30 px-3 py-1.5 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/10 disabled:opacity-50">
+                <button type="button" disabled={busy} onClick={() => void removeSanction(s)} className="cursor-pointer rounded-xl border border-rose-500/30 px-3 py-1.5 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/10 disabled:opacity-50">
                   Supprimer
                 </button>
               </li>
@@ -340,10 +340,10 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
           onClose={() => setEditing(null)}
           footer={
             <>
-              <button type="button" onClick={() => setEditing(null)} className="cursor-pointer rounded-lg border border-white/30 px-5 py-2 text-sm font-semibold text-white transition hover:bg-white/10">
+              <button type="button" onClick={() => setEditing(null)} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-5 py-2 text-sm font-semibold text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/10">
                 Fermer
               </button>
-              <button type="button" disabled={busy} onClick={() => void saveSettings()} className="cursor-pointer rounded-lg bg-[#5865F2] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#4752C4] disabled:opacity-50">
+              <button type="button" disabled={busy} onClick={() => void saveSettings()} className="cursor-pointer rounded-xl bg-emerald-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50">
                 Enregistrer
               </button>
             </>
@@ -363,11 +363,11 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
           <Field label="Actions">
             <div className="space-y-2">
               {ACTION_LABELS.map(([id, label, text]) => (
-                <label key={id} className="flex cursor-pointer items-start gap-2 text-sm text-zinc-300">
+                <label key={id} className="flex cursor-pointer items-start gap-2 text-sm text-[var(--text-muted)]">
                   <input type="checkbox" className="mt-1" checked={draftActions.includes(id)} onChange={() => setD({ actions: draftActions.includes(id) ? draftActions.filter((a) => a !== id) : [...draftActions, id] })} />
                   <span>
                     {label}
-                    <span className="block text-[11px] text-zinc-500">{text}</span>
+                    <span className="block text-xs text-[var(--text-muted)]">{text}</span>
                   </span>
                 </label>
               ))}
@@ -389,10 +389,10 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
           onClose={() => setSanction(null)}
           footer={
             <>
-              <button type="button" onClick={() => setSanction(null)} className="cursor-pointer rounded-lg border border-white/30 px-5 py-2 text-sm font-semibold text-white transition hover:bg-white/10">
+              <button type="button" onClick={() => setSanction(null)} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-5 py-2 text-sm font-semibold text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/10">
                 Annuler
               </button>
-              <button type="button" disabled={busy} onClick={() => void addSanction()} className="cursor-pointer rounded-lg bg-[#5865F2] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#4752C4] disabled:opacity-50">
+              <button type="button" disabled={busy} onClick={() => void addSanction()} className="cursor-pointer rounded-xl bg-emerald-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50">
                 Créer
               </button>
             </>

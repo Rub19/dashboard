@@ -205,7 +205,7 @@ export default function PollSettingsClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-indigo-500/30">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)]">
       {/* Top Glow Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-30">
       </div>
@@ -217,27 +217,27 @@ export default function PollSettingsClient() {
           </div>
         )}
         {/* Breadcrumb */}
-        <div className="mb-6 flex items-center gap-2 text-xs text-zinc-400">
-          <Link href={`/discord?guildId=${guildParam}`} className="hover:text-white transition-colors">
+        <div className="mb-6 flex items-center gap-2 text-xs text-[var(--text-muted)]">
+          <Link href={`/discord?guildId=${guildParam}`} className="hover:text-[var(--text-primary)] transition-colors">
             Discord Center
           </Link>
-          <ChevronRight className="h-3 w-3 text-zinc-600" />
-          <Link href={`/discord/polls?guildId=${guildParam}`} className="hover:text-white transition-colors">
+          <ChevronRight className="h-3 w-3 text-[var(--text-muted)]" />
+          <Link href={`/discord/polls?guildId=${guildParam}`} className="hover:text-[var(--text-primary)] transition-colors">
             Sondages & Votes
           </Link>
-          <ChevronRight className="h-3 w-3 text-zinc-600" />
-          <Link href={`/discord/polls/${pollId}?guildId=${guildParam}`} className="hover:text-white transition-colors">
+          <ChevronRight className="h-3 w-3 text-[var(--text-muted)]" />
+          <Link href={`/discord/polls/${pollId}?guildId=${guildParam}`} className="hover:text-[var(--text-primary)] transition-colors">
             {title}
           </Link>
-          <ChevronRight className="h-3 w-3 text-zinc-600" />
-          <span className="text-zinc-200 font-medium">Paramètres</span>
+          <ChevronRight className="h-3 w-3 text-[var(--text-muted)]" />
+          <span className="text-[var(--text-primary)] font-medium">Paramètres</span>
         </div>
 
         {/* Top Header */}
         <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h1 className="text-2xl font-extrabold text-white sm:text-3xl">Paramètres du Sondage</h1>
-            <p className="mt-1 text-xs text-zinc-400">
+            <h1 className="text-2xl font-extrabold text-[var(--text-primary)] sm:text-3xl">Paramètres du Sondage</h1>
+            <p className="mt-1 text-xs text-[var(--text-muted)]">
               Gérez les règles de vote, la confidentialité, le panneau Discord et les opérations sensibles.
             </p>
           </div>
@@ -247,16 +247,16 @@ export default function PollSettingsClient() {
               type="button"
               onClick={() => fetchChannels(true)}
               disabled={channelsLoading}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs font-medium text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all disabled:opacity-50"
               title="Rafraîchir les salons Discord"
             >
-              <RefreshCw className={cn("h-3.5 w-3.5", channelsLoading && "animate-spin text-indigo-400")} />
+              <RefreshCw className={cn("h-3.5 w-3.5", channelsLoading && "animate-spin text-emerald-400")} />
               <span>Rafraîchir</span>
             </button>
             <button
               onClick={handleSaveSettings}
               disabled={isSaving || !loaded}
-              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-600 disabled:opacity-50"
             >
               <Save className="h-3.5 w-3.5" />
               {isSaving ? "Enregistrement..." : "Enregistrer les modifications"}
@@ -266,50 +266,50 @@ export default function PollSettingsClient() {
 
         <div className="space-y-6">
           {/* General Properties */}
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl">
-            <h3 className="text-base font-bold text-white mb-4">Général</h3>
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+            <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">Général</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
                   Titre du Sondage
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
                   Description
                 </label>
                 <textarea
                   rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
                   Catégorie
                 </label>
                 <input
                   type="text"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]"
                 />
               </div>
             </div>
           </div>
 
           {/* Voting Rules & Confidentiality */}
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl">
-            <h3 className="text-base font-bold text-white mb-4">Règles & Confidentialité</h3>
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+            <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">Règles & Confidentialité</h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Select
                 label="Niveau d'Anonymat"
@@ -335,13 +335,13 @@ export default function PollSettingsClient() {
               />
             </div>
 
-            <div className="mt-4 space-y-3 border-t border-zinc-800/80 pt-4">
+            <div className="mt-4 space-y-3 border-t border-[var(--panel-border)] pt-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold text-white block">
+                  <span className="text-xs font-bold text-[var(--text-primary)] block">
                     Autoriser la modification du vote
                   </span>
-                  <span className="text-[11px] text-zinc-400">
+                  <span className="text-xs text-[var(--text-muted)]">
                     Permet à un membre de changer d'avis avant la fin du scrutin
                   </span>
                 </div>
@@ -349,16 +349,16 @@ export default function PollSettingsClient() {
                   type="checkbox"
                   checked={allowVoteChange}
                   onChange={(e) => setAllowVoteChange(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-800 bg-zinc-900 text-indigo-600 focus:ring-0"
+                  className="h-4 w-4 rounded border-[var(--input-border)] bg-[var(--input-bg)] text-emerald-400 focus:ring-0"
                 />
               </div>
 
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold text-white block">
+                  <span className="text-xs font-bold text-[var(--text-primary)] block">
                     Autoriser le retrait de vote
                   </span>
-                  <span className="text-[11px] text-zinc-400">
+                  <span className="text-xs text-[var(--text-muted)]">
                     Permet d'annuler complètement son vote sans revoter
                   </span>
                 </div>
@@ -366,18 +366,18 @@ export default function PollSettingsClient() {
                   type="checkbox"
                   checked={allowVoteRetract}
                   onChange={(e) => setAllowVoteRetract(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-800 bg-zinc-900 text-indigo-600 focus:ring-0"
+                  className="h-4 w-4 rounded border-[var(--input-border)] bg-[var(--input-bg)] text-emerald-400 focus:ring-0"
                 />
               </div>
             </div>
           </div>
 
           {/* Discord Panel Configuration */}
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl">
-            <h3 className="text-base font-bold text-white mb-4">Panneau Discord</h3>
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+            <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">Panneau Discord</h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
                   Couleur de l'Embed
                 </label>
                 <div className="flex items-center gap-3">
@@ -385,30 +385,30 @@ export default function PollSettingsClient() {
                     type="color"
                     value={panelColor}
                     onChange={(e) => setPanelColor(e.target.value)}
-                    className="h-8 w-12 cursor-pointer rounded-lg border border-zinc-800 bg-zinc-900 p-1"
+                    className="h-8 w-12 cursor-pointer rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] p-1"
                   />
                   <input
                     type="text"
                     value={panelColor}
                     onChange={(e) => setPanelColor(e.target.value)}
-                    className="w-32 rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs text-white focus:outline-none"
+                    className="w-32 rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-1.5 text-sm text-[var(--text-primary)] focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-medium text-zinc-300">
+                  <label className="text-xs font-medium text-[var(--text-muted)]">
                     Salon Discord cible
                   </label>
                   <button
                     type="button"
                     onClick={() => fetchChannels(true)}
                     disabled={channelsLoading}
-                    className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-400 hover:text-indigo-400 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-[var(--text-muted)] hover:text-emerald-400 transition-colors disabled:opacity-50"
                     title="Rafraîchir les salons"
                   >
-                    <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-indigo-400")} />
+                    <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-emerald-400")} />
                     <span>Rafraîchir</span>
                   </button>
                 </div>
@@ -424,19 +424,19 @@ export default function PollSettingsClient() {
           </div>
 
           {/* Danger Zone */}
-          <div className="rounded-2xl border border-rose-500/30 bg-rose-500/5 p-6 backdrop-blur-xl">
+          <div className="rounded-2xl border border-rose-500/30 bg-rose-500/5 p-6">
             <div className="flex items-center gap-2 mb-2 text-rose-400">
               <AlertTriangle className="h-4 w-4" />
               <h3 className="text-sm font-bold">Zone Dangereuse</h3>
             </div>
-            <p className="text-xs text-zinc-400 mb-4">
+            <p className="text-xs text-[var(--text-muted)] mb-4">
               Les actions suivantes peuvent impacter irrémédiablement les données du scrutin.
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
               <button
                 onClick={handleResetVotes}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs font-medium text-zinc-300 hover:text-amber-400 hover:bg-zinc-800"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3.5 py-2 text-xs font-medium text-[var(--text-muted)] hover:text-amber-400 hover:bg-[var(--surface-raised)]"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 Réinitialiser les votes

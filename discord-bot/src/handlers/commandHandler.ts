@@ -69,6 +69,7 @@ import {
 import { playlistCommand } from '../commands/music/playlistBrowser.js';
 import { joinCommand, disconnectCommand, voiceStatusCommand } from '../commands/music/voiceCommands.js';
 import { pollCommand } from '../modules/polls/commands/pollCommand.js';
+import { nativeAutomodCommand } from '../modules/nativeAutomod/commands/nativeAutomodCommand.js';
 import { eventCommand } from '../modules/events/eventsCommand.js';
 import { voiceCommand } from '../modules/voice/commands/voiceCommand.js';
 import { starboardCommand } from '../modules/starboard/commands/starboardCommand.js';
@@ -179,6 +180,9 @@ class CommandRegistry {
 
     // Sondages & Votes 2.0 (Polls Center)
     this.register(pollCommand);
+
+    // AutoMod natif Discord
+    this.register(nativeAutomodCommand);
 
     // Événements & Calendrier 2.0 (Events Center)
     this.register(eventCommand);

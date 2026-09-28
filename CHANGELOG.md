@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.35.0 — 2026-09-28
+
+**AutoMod natif Discord + sous-pages au nouveau style**
+
+- Nouvelle page « AutoMod natif Discord » : gère les règles d'auto-modération intégrées à Discord (mots-clés, spam, mentions massives, profils) directement depuis le dashboard, avec règles recommandées en un clic. Elles s'exécutent chez Discord, même si le bot est hors ligne. Nouvelle commande /automod-native.
+- Une grande partie des sous-pages du Bot Discord passe au style épuré de la nouvelle interface (cartes unifiées, textes lisibles, boutons cohérents).
+
 ## v1.34.0 — 2026-09-28
 
 **Nouveautés Discord : sondages natifs, tickets en forum, panneaux V2**

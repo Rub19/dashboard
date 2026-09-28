@@ -503,35 +503,35 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
     online: "bg-emerald-500 text-emerald-400 border-emerald-500/40",
     idle: "bg-amber-500 text-amber-400 border-amber-500/40",
     dnd: "bg-rose-500 text-rose-400 border-rose-500/40",
-    invisible: "bg-zinc-500 text-zinc-400 border-zinc-500/40",
+    invisible: "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border-[var(--panel-border)]",
   };
 
   const statusDotColor = {
     online: "bg-emerald-500",
     idle: "bg-amber-400",
     dnd: "bg-rose-500",
-    invisible: "bg-zinc-500",
+    invisible: "bg-[var(--surface-raised)]/40",
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-zinc-100 font-sans pb-44">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] font-sans pb-44">
       {/* TOP NOTIFICATION / SCOPE BANNER */}
-      <div className="bg-white/[0.03] border-b border-indigo-500/20 px-6 py-2.5">
+      <div className="bg-[var(--surface-raised)]/40 border-b border-emerald-500/30 px-6 py-2.5">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 text-indigo-300">
-            <Globe className="w-4 h-4 text-indigo-400 shrink-0" />
+          <div className="flex items-center gap-2 text-emerald-300">
+            <Globe className="w-4 h-4 text-emerald-300 shrink-0" />
             <span>
-              <strong className="text-white">Portée Globale de Présence :</strong> Discord diffuse la présence du bot de façon unique pour toute la connexion Gateway (shard).
+              <strong className="text-[var(--text-primary)]">Portée Globale de Présence :</strong> Discord diffuse la présence du bot de façon unique pour toute la connexion Gateway (shard).
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 font-mono text-[11px]">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-mono text-xs">
               <ShieldCheck className="w-3 h-3 text-emerald-400" />
               Bot Owner : {identity.ownerId}
             </span>
             <Link
               href="/discord/bot"
-              className="text-zinc-400 hover:text-white transition-colors flex items-center gap-1"
+              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-1"
             >
               <span>Centre de Contrôle</span>
               <ArrowRight className="w-3 h-3" />
@@ -541,23 +541,23 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       </div>
 
       {/* HEADER SECTION */}
-      <div className="border-b border-zinc-800/80 bg-zinc-950/60 backdrop-blur-md sticky top-0 z-30">
+      <div className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-transparent border border-indigo-500/30 flex items-center justify-center shadow-inner">
-              <Bot className="w-6 h-6 text-indigo-400" />
+            <div className="w-12 h-12 rounded-xl border border-emerald-500/30 flex items-center justify-center bg-[var(--surface-raised)]/40">
+              <Bot className="w-6 h-6 text-emerald-300" />
             </div>
             <div>
               <div className="flex items-center gap-2.5">
-                <h1 className="text-xl font-bold tracking-tight text-white">
-                  Bot Presence & Identity Center <span className="text-indigo-400 text-sm font-mono px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">2.0</span>
+                <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
+                  Bot Presence & Identity Center <span className="text-emerald-300 text-sm font-mono px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30">2.0</span>
                 </h1>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   Gateway Active
                 </span>
               </div>
-              <p className="text-xs text-zinc-400 mt-0.5">
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 Pilotage en temps réel du statut visible, activités, rotation intelligente et identité Discord
               </p>
             </div>
@@ -570,7 +570,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 "px-3 py-1.5 rounded-lg text-xs font-semibold border flex items-center gap-1.5 transition-all shadow-sm",
                 currentStatus === "dnd" && activityName.toLowerCase().includes("maintenance")
                   ? "bg-rose-500/20 border-rose-500/50 text-rose-300 hover:bg-rose-500/30"
-                  : "bg-zinc-900 hover:bg-rose-950/40 border-zinc-800 hover:border-rose-500/30 text-zinc-300 hover:text-rose-400"
+                  : "bg-[var(--surface-raised)]/40 hover:bg-rose-950/40 border-[var(--panel-border)] hover:border-rose-500/30 text-[var(--text-muted)] hover:text-rose-400"
               )}
             >
               <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
@@ -580,16 +580,16 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
             <button
               onClick={fetchData}
               disabled={refreshing}
-              className="px-3 py-1.5 rounded-lg text-xs font-medium bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 flex items-center gap-1.5 transition-colors disabled:opacity-50"
+              className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-[var(--text-muted)] flex items-center gap-1.5 transition-colors disabled:opacity-50"
             >
-              <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin text-indigo-400")} />
+              <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin text-emerald-300")} />
               <span>Actualiser</span>
             </button>
           </div>
         </div>
 
         {/* TABS NAVIGATION */}
-        <div className="max-w-7xl mx-auto px-6 flex items-center gap-1 overflow-x-auto scrollbar-none border-t border-zinc-800/40 pt-1">
+        <div className="max-w-7xl mx-auto px-6 flex items-center gap-1 overflow-x-auto scrollbar-none border-t border-[var(--panel-border)] pt-1">
           {[
             { id: "overview", label: "Présence Directe", icon: Sparkles },
             { id: "rotation", label: "Moteur de Rotation", icon: ListRestart, count: rotationConfig.activities.length },
@@ -607,19 +607,19 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 className={cn(
                   "px-3.5 py-2.5 text-xs font-medium border-b-2 flex items-center gap-2 transition-all whitespace-nowrap",
                   isActive
-                    ? "border-indigo-500 text-white bg-indigo-500/5 font-semibold"
-                    : "border-transparent text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
+                    ? "border-emerald-500/30 text-[var(--text-primary)] bg-emerald-500/10 font-semibold"
+                    : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--input-border-hover)]"
                 )}
               >
-                <Icon className={cn("w-4 h-4", isActive ? "text-indigo-400" : "text-zinc-400")} />
+                <Icon className={cn("w-4 h-4", isActive ? "text-emerald-300" : "text-[var(--text-muted)]")} />
                 <span>{tab.label}</span>
                 {tab.count !== undefined && (
                   <span
                     className={cn(
-                      "px-1.5 py-0.2 rounded-full text-[10px] font-mono",
+                      "px-1.5 py-0.2 rounded-full text-xs font-mono",
                       isActive
-                        ? "bg-indigo-500/20 text-indigo-300"
-                        : "bg-zinc-800/80 text-zinc-400"
+                        ? "bg-emerald-500/10 text-emerald-300"
+                        : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
                     )}
                   >
                     {tab.count}
@@ -636,8 +636,8 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         {activeTab === "overview" && (
           <div className="space-y-8">
             {/* REAL-TIME DISCORD HUD PREVIEW WIDGET */}
-            <div className="p-6 rounded-2xl bg-gradient-to-br from-zinc-900/90 via-zinc-900/60 to-zinc-950/90 border border-zinc-800 shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="p-6 rounded-2xl border border-[var(--panel-border)] relative overflow-hidden bg-[var(--surface-raised)]/40">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
                 <div className="flex items-center gap-5">
@@ -646,7 +646,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <img
                       src={identity.avatarUrl}
                       alt={identity.username}
-                      className="w-20 h-20 rounded-full bg-zinc-800 border-2 border-zinc-700 object-cover shadow-lg"
+                      className="w-20 h-20 rounded-full bg-[var(--surface-raised)]/40 border-2 border-[var(--panel-border)] object-cover"
                       onError={(e) => {
                         (e.target as any).src = "https://cdn.discordapp.com/embed/avatars/0.png";
                       }}
@@ -663,28 +663,28 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                   {/* Identity text and activity */}
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="text-xl font-bold text-white tracking-tight">
+                      <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
                         {identity.username}
                       </h2>
-                      <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#5865F2] text-white tracking-wide">
+                      <span className="px-1.5 py-0.5 rounded text-xs font-bold bg-emerald-500 text-white tracking-wide">
                         BOT
                       </span>
-                      <span className="text-xs text-zinc-400 font-mono">
+                      <span className="text-xs text-[var(--text-muted)] font-mono">
                         #{identity.discriminator}
                       </span>
                     </div>
 
                     <div className="mt-2 flex flex-wrap items-center gap-2">
-                      <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-zinc-800/90 text-indigo-300 border border-zinc-700 flex items-center gap-1.5">
+                      <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--surface-raised)]/40 text-emerald-300 border border-[var(--panel-border)] flex items-center gap-1.5">
                         {activityType === "Playing" && <Flame className="w-3.5 h-3.5 text-orange-400" />}
-                        {activityType === "Streaming" && <Video className="w-3.5 h-3.5 text-purple-400" />}
+                        {activityType === "Streaming" && <Video className="w-3.5 h-3.5 text-emerald-300" />}
                         {activityType === "Listening" && <Headphones className="w-3.5 h-3.5 text-emerald-400" />}
                         {activityType === "Watching" && <Tv className="w-3.5 h-3.5 text-blue-400" />}
                         {activityType === "Competing" && <Trophy className="w-3.5 h-3.5 text-amber-400" />}
                         <span>{activityType}</span>
                       </span>
 
-                      <span className="text-sm font-medium text-zinc-200">
+                      <span className="text-sm font-medium text-[var(--text-primary)]">
                         {resolvedPreviewText || "Aucune activité en cours"}
                       </span>
 
@@ -693,7 +693,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           href={streamUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 hover:underline"
+                          className="inline-flex items-center gap-1 text-xs text-emerald-300 hover:text-emerald-300 hover:underline"
                         >
                           <ExternalLink className="w-3 h-3" />
                           <span>Stream URL</span>
@@ -701,17 +701,17 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       )}
                     </div>
 
-                    <div className="mt-2.5 flex items-center gap-4 text-xs text-zinc-400">
+                    <div className="mt-2.5 flex items-center gap-4 text-xs text-[var(--text-muted)]">
                       <span className="flex items-center gap-1">
-                        <Globe className="w-3.5 h-3.5 text-indigo-400" />
+                        <Globe className="w-3.5 h-3.5 text-emerald-300" />
                         <span>Portée : Globale</span>
                       </span>
                       <span className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-zinc-400" />
-                        <span>Origine : <code className="text-zinc-300">{presenceSource}</code></span>
+                        <Clock className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+                        <span>Origine : <code className="text-[var(--text-muted)]">{presenceSource}</code></span>
                       </span>
                       <span className="flex items-center gap-1">
-                        <Timer className="w-3.5 h-3.5 text-zinc-400" />
+                        <Timer className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                         <span>Actualisé il y a quelques instants</span>
                       </span>
                     </div>
@@ -719,15 +719,15 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 </div>
 
                 {/* Rate limit status card */}
-                <div className="bg-zinc-950/60 p-4 rounded-xl border border-zinc-800/80 min-w-[240px]">
-                  <div className="flex items-center justify-between text-xs text-zinc-400 mb-2">
-                    <span className="font-semibold text-zinc-300 flex items-center gap-1.5">
-                      <ShieldCheck className="w-4 h-4 text-indigo-400" />
+                <div className="bg-[var(--surface-raised)]/40 p-4 rounded-xl border border-[var(--panel-border)] min-w-[240px]">
+                  <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-2">
+                    <span className="font-semibold text-[var(--text-muted)] flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-emerald-300" />
                       Rate Limit Gateway
                     </span>
-                    <span className="font-mono text-indigo-300">5 / 60s max</span>
+                    <span className="font-mono text-emerald-300">5 / 60s max</span>
                   </div>
-                  <div className="w-full h-2 rounded-full bg-zinc-800 overflow-hidden">
+                  <div className="w-full h-2 rounded-full bg-[var(--panel-border)] overflow-hidden">
                     <div
                       className={cn(
                         "h-full rounded-full transition-all duration-300",
@@ -735,7 +735,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       )}
                     />
                   </div>
-                  <div className="mt-2 text-[11px] text-zinc-400 flex items-center justify-between">
+                  <div className="mt-2 text-xs text-[var(--text-muted)] flex items-center justify-between">
                     <span>État :</span>
                     <span className={rateLimited ? "text-rose-400 font-semibold" : "text-emerald-400 font-semibold"}>
                       {rateLimited ? "Protection Anti-Spam Active" : "Prêt pour mise à jour"}
@@ -745,10 +745,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               </div>
 
               {/* Discord API limit transparent disclaimer */}
-              <div className="mt-5 pt-4 border-t border-zinc-800/60 flex items-start gap-2 text-xs text-zinc-400">
+              <div className="mt-5 pt-4 border-t border-[var(--panel-border)] flex items-start gap-2 text-xs text-[var(--text-muted)]">
                 <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <p>
-                  <strong className="text-zinc-300">Transparence Discord API :</strong> Les bots Discord ne supportent pas nativement les statuts personnalisés utilisateur (Custom Status bio textuelle avec emoji). Les activités officielles supportées par la Gateway sont <code className="text-indigo-300">Playing</code>, <code className="text-indigo-300">Streaming</code>, <code className="text-indigo-300">Listening</code>, <code className="text-indigo-300">Watching</code> et <code className="text-indigo-300">Competing</code>.
+                  <strong className="text-[var(--text-muted)]">Transparence Discord API :</strong> Les bots Discord ne supportent pas nativement les statuts personnalisés utilisateur (Custom Status bio textuelle avec emoji). Les activités officielles supportées par la Gateway sont <code className="text-emerald-300">Playing</code>, <code className="text-emerald-300">Streaming</code>, <code className="text-emerald-300">Listening</code>, <code className="text-emerald-300">Watching</code> et <code className="text-emerald-300">Competing</code>.
                 </p>
               </div>
             </div>
@@ -758,13 +758,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               {/* Left Column: Status and Type */}
               <div className="lg:col-span-7 space-y-6">
                 {/* 1. Statut en ligne */}
-                <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+                <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
                   <div>
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                      <Radio className="w-4 h-4 text-indigo-400" />
+                    <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                      <Radio className="w-4 h-4 text-emerald-300" />
                       1. Statut Visible sur Discord
                     </h3>
-                    <p className="text-xs text-zinc-400">Choisissez la pastille d'état affichée sur le profil du bot</p>
+                    <p className="text-xs text-[var(--text-muted)]">Choisissez la pastille d'état affichée sur le profil du bot</p>
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -772,7 +772,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       { id: "online", label: "En Ligne", color: "text-emerald-400", dot: "bg-emerald-500", desc: "Disponible et actif" },
                       { id: "idle", label: "Inactif", color: "text-amber-400", dot: "bg-amber-400", desc: "Absence temporaire" },
                       { id: "dnd", label: "Ne Pas Déranger", color: "text-rose-400", dot: "bg-rose-500", desc: "Maintenance / Busy" },
-                      { id: "invisible", label: "Invisible", color: "text-zinc-400", dot: "bg-zinc-500", desc: "Hors ligne visuel" },
+                      { id: "invisible", label: "Invisible", color: "text-[var(--text-muted)]", dot: "bg-[var(--surface-raised)]/40", desc: "Hors ligne visuel" },
                     ].map((s) => {
                       const isSelected = currentStatus === s.id;
                       return (
@@ -782,19 +782,19 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           className={cn(
                             "p-3.5 rounded-xl border text-left transition-all relative",
                             isSelected
-                              ? "bg-zinc-800/90 border-indigo-500 shadow-md ring-1 ring-indigo-500/50"
-                              : "bg-zinc-950/40 border-zinc-800/80 hover:bg-zinc-800/40 hover:border-zinc-700"
+                              ? "bg-[var(--surface-raised)]/40 border-emerald-500/30 ring-1 ring-emerald-500/30"
+                              : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/70 hover:border-[var(--input-border-hover)]"
                           )}
                         >
                           <div className="flex items-center gap-2 mb-1.5">
                             <span className={cn("w-3 h-3 rounded-full", s.dot)} />
-                            <span className={cn("text-xs font-bold", isSelected ? "text-white" : "text-zinc-300")}>
+                            <span className={cn("text-xs font-bold", isSelected ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>
                               {s.label}
                             </span>
                           </div>
-                          <p className="text-[11px] text-zinc-400 line-clamp-1">{s.desc}</p>
+                          <p className="text-xs text-[var(--text-muted)] line-clamp-1">{s.desc}</p>
                           {isSelected && (
-                            <span className="absolute top-2 right-2 text-indigo-400">
+                            <span className="absolute top-2 right-2 text-emerald-300">
                               <Check className="w-3.5 h-3.5" />
                             </span>
                           )}
@@ -805,19 +805,19 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 </div>
 
                 {/* 2. Type d'activité */}
-                <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+                <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
                   <div>
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                      <Sliders className="w-4 h-4 text-indigo-400" />
+                    <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                      <Sliders className="w-4 h-4 text-emerald-300" />
                       2. Type d'Activité
                     </h3>
-                    <p className="text-xs text-zinc-400">Le verbe qui précède le texte sur le profil Discord</p>
+                    <p className="text-xs text-[var(--text-muted)]">Le verbe qui précède le texte sur le profil Discord</p>
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
                     {[
                       { type: "Playing", label: "Joue à", icon: Flame, color: "text-orange-400" },
-                      { type: "Streaming", label: "Streame", icon: Video, color: "text-purple-400" },
+                      { type: "Streaming", label: "Streame", icon: Video, color: "text-emerald-300" },
                       { type: "Listening", label: "Écoute", icon: Headphones, color: "text-emerald-400" },
                       { type: "Watching", label: "Regarde", icon: Tv, color: "text-blue-400" },
                       { type: "Competing", label: "Participe à", icon: Trophy, color: "text-amber-400" },
@@ -831,12 +831,12 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           className={cn(
                             "p-3 rounded-xl border text-center transition-all flex flex-col items-center gap-1.5",
                             isSelected
-                              ? "bg-zinc-800/90 border-indigo-500 shadow-md ring-1 ring-indigo-500/50"
-                              : "bg-zinc-950/40 border-zinc-800/80 hover:bg-zinc-800/40 hover:border-zinc-700"
+                              ? "bg-[var(--surface-raised)]/40 border-emerald-500/30 ring-1 ring-emerald-500/30"
+                              : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/70 hover:border-[var(--input-border-hover)]"
                           )}
                         >
                           <Icon className={cn("w-5 h-5", item.color)} />
-                          <span className={cn("text-xs font-semibold", isSelected ? "text-white" : "text-zinc-300")}>
+                          <span className={cn("text-xs font-semibold", isSelected ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>
                             {item.label}
                           </span>
                         </button>
@@ -846,9 +846,9 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
                   {/* Streaming URL field */}
                   {activityType === "Streaming" && (
-                    <div className="mt-4 p-4 rounded-xl bg-purple-950/20 border border-purple-500/30 space-y-2">
-                      <label className="text-xs font-semibold text-purple-200 flex items-center gap-1.5">
-                        <Video className="w-3.5 h-3.5 text-purple-400" />
+                    <div className="mt-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+                      <label className="text-xs font-semibold text-emerald-300 flex items-center gap-1.5">
+                        <Video className="w-3.5 h-3.5 text-emerald-300" />
                         URL du Stream (Twitch ou YouTube obligatoire pour Discord)
                       </label>
                       <input
@@ -856,9 +856,9 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         value={streamUrl}
                         onChange={(e) => setStreamUrl(e.target.value)}
                         placeholder="https://www.twitch.tv/ethone"
-                        className="w-full px-3.5 py-2 rounded-lg bg-zinc-900 border border-purple-500/40 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400 font-mono"
+                        className="w-full px-3.5 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-emerald-500/30 text-xs text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] font-mono"
                       />
-                      <p className="text-[11px] text-purple-300/80">
+                      <p className="text-xs text-emerald-300">
                         * Discord exige une URL valide Twitch ou YouTube pour afficher la pastille violette "Streame".
                       </p>
                     </div>
@@ -866,13 +866,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 </div>
 
                 {/* 3. Texte d'activité et variables dynamiques */}
-                <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+                <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
                   <div>
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-indigo-400" />
+                    <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-emerald-300" />
                       3. Texte de l'Activité & Variables Dynamiques
                     </h3>
-                    <p className="text-xs text-zinc-400">
+                    <p className="text-xs text-[var(--text-muted)]">
                       Saisissez le texte ou cliquez sur une variable pour l'insérer dynamiquement
                     </p>
                   </div>
@@ -884,24 +884,24 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       onChange={(e) => setActivityName(e.target.value)}
                       placeholder="Ex: Valorant | {guildCount} serveurs"
                       maxLength={128}
-                      className="w-full px-4 py-2.5 rounded-xl bg-zinc-950 border border-zinc-700 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)]"
                     />
-                    <div className="flex items-center justify-between text-[11px] text-zinc-400 px-1">
-                      <span>Aperçu résolu : <strong className="text-zinc-200">{resolvedPreviewText}</strong></span>
+                    <div className="flex items-center justify-between text-xs text-[var(--text-muted)] px-1">
+                      <span>Aperçu résolu : <strong className="text-[var(--text-primary)]">{resolvedPreviewText}</strong></span>
                       <span>{activityName.length} / 128 caractères</span>
                     </div>
                   </div>
 
                   {/* Clickable dynamic variables */}
                   <div>
-                    <span className="text-xs font-semibold text-zinc-400 block mb-2">Variables disponibles :</span>
+                    <span className="text-xs font-semibold text-[var(--text-muted)] block mb-2">Variables disponibles :</span>
                     <div className="flex flex-wrap gap-2">
                       {DYNAMIC_VARIABLES.map((v) => (
                         <button
                           key={v.tag}
                           onClick={() => insertTag(v.tag)}
                           title={v.desc}
-                          className="px-2.5 py-1 rounded-lg bg-zinc-800/80 hover:bg-indigo-500/20 border border-zinc-700/80 hover:border-indigo-500/40 text-[11px] font-mono text-zinc-300 hover:text-indigo-300 transition-all flex items-center gap-1.5"
+                          className="px-2.5 py-1 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-emerald-500/10 border border-[var(--panel-border)] hover:border-emerald-500/40 text-xs font-mono text-[var(--text-muted)] hover:text-emerald-300 transition-all flex items-center gap-1.5"
                         >
                           <span>+ {v.tag}</span>
                         </button>
@@ -910,17 +910,17 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                   </div>
 
                   {/* Primary Save Action */}
-                  <div className="pt-4 border-t border-zinc-800 flex items-center justify-between">
+                  <div className="pt-4 border-t border-[var(--panel-border)] flex items-center justify-between">
                     <button
                       onClick={() => handleApplyPresence(currentStatus, { type: activityType, name: activityName, url: streamUrl }, false)}
                       disabled={saving}
-                      className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-sm flex items-center gap-2 transition-all disabled:opacity-50"
+                      className="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs shadow-sm flex items-center gap-2 transition-all disabled:opacity-50"
                     >
                       <Save className="w-4 h-4" />
                       <span>{saving ? "Application sur Gateway..." : "Appliquer Immédiatement sur Discord"}</span>
                     </button>
 
-                    <span className="text-[11px] text-zinc-400 font-mono">
+                    <span className="text-xs text-[var(--text-muted)] font-mono">
                       Mise à jour directe Gateway
                     </span>
                   </div>
@@ -930,13 +930,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               {/* Right Column: Quick Presets & Live Statistics */}
               <div className="lg:col-span-5 space-y-6">
                 {/* 1-Click Quick Profiles */}
-                <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+                <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
                   <div>
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                       <Zap className="w-4 h-4 text-amber-400" />
                       Profils Rapides (1-Clic)
                     </h3>
-                    <p className="text-xs text-zinc-400">Basculez instantanément vers un préreglage</p>
+                    <p className="text-xs text-[var(--text-muted)]">Basculez instantanément vers un préreglage</p>
                   </div>
 
                   <div className="space-y-2.5">
@@ -952,8 +952,8 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           className={cn(
                             "p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3",
                             isActive
-                              ? "bg-indigo-500/10 border-indigo-500/50"
-                              : "bg-zinc-950/40 border-zinc-800/80 hover:bg-zinc-800/30 hover:border-zinc-700"
+                              ? "bg-emerald-500/10 border-emerald-500/30"
+                              : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/70 hover:border-[var(--input-border-hover)]"
                           )}
                         >
                           <div className="min-w-0">
@@ -964,9 +964,9 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                                   statusDotColor[p.status as DiscordStatus] || "bg-emerald-500"
                                 )}
                               />
-                              <h4 className="text-xs font-bold text-white truncate">{p.name}</h4>
+                              <h4 className="text-xs font-bold text-[var(--text-primary)] truncate">{p.name}</h4>
                             </div>
-                            <p className="text-[11px] text-zinc-400 mt-1 truncate">
+                            <p className="text-xs text-[var(--text-muted)] mt-1 truncate">
                               {p.activity?.type} <strong>{p.activity?.name}</strong>
                             </p>
                           </div>
@@ -977,8 +977,8 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                             className={cn(
                               "px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all",
                               isActive
-                                ? "bg-indigo-500 text-white shadow-sm"
-                                : "bg-zinc-800 hover:bg-indigo-600 text-zinc-300 hover:text-white"
+                                ? "bg-emerald-500 text-white shadow-sm"
+                                : "bg-[var(--surface-raised)]/40 hover:bg-emerald-600 text-[var(--text-muted)] hover:text-white"
                             )}
                           >
                             {isActive ? "Actif" : "Activer"}
@@ -990,34 +990,34 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 </div>
 
                 {/* Presence Metrics Card */}
-                <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+                  <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <Activity className="w-4 h-4 text-emerald-400" />
                     Statistiques de Présence
                   </h3>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
-                      <span className="text-[11px] text-zinc-400">Total Changements</span>
-                      <p className="text-lg font-bold text-white font-mono mt-1">{stats.totalChanges}</p>
+                    <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+                      <span className="text-xs text-[var(--text-muted)]">Total Changements</span>
+                      <p className="text-lg font-bold text-[var(--text-primary)] font-mono mt-1">{stats.totalChanges}</p>
                     </div>
-                    <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
-                      <span className="text-[11px] text-zinc-400">Rotations Exécutées</span>
-                      <p className="text-lg font-bold text-indigo-300 font-mono mt-1">{stats.rotationsExecuted}</p>
+                    <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+                      <span className="text-xs text-[var(--text-muted)]">Rotations Exécutées</span>
+                      <p className="text-lg font-bold text-emerald-300 font-mono mt-1">{stats.rotationsExecuted}</p>
                     </div>
-                    <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
-                      <span className="text-[11px] text-zinc-400">Rate Limits Rencontrés</span>
+                    <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+                      <span className="text-xs text-[var(--text-muted)]">Rate Limits Rencontrés</span>
                       <p className="text-lg font-bold text-amber-400 font-mono mt-1">{stats.rateLimitHits}</p>
                     </div>
-                    <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
-                      <span className="text-[11px] text-zinc-400">Uptime Gateway</span>
+                    <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+                      <span className="text-xs text-[var(--text-muted)]">Uptime Gateway</span>
                       <p className="text-lg font-bold text-emerald-400 font-mono mt-1">{stats.currentUptimeHours}h</p>
                     </div>
                   </div>
 
-                  <div className="pt-2 text-xs text-zinc-400 flex items-center justify-between">
+                  <div className="pt-2 text-xs text-[var(--text-muted)] flex items-center justify-between">
                     <span>Dernière synchronisation :</span>
-                    <span className="font-mono text-zinc-300">
+                    <span className="font-mono text-[var(--text-muted)]">
                       {new Date(lastUpdated).toLocaleTimeString("fr-FR")}
                     </span>
                   </div>
@@ -1030,14 +1030,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         {/* TAB 2: ROTATION */}
         {activeTab === "rotation" && (
           <div className="space-y-8">
-            <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-6">
+            <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <ListRestart className="w-5 h-5 text-indigo-400" />
+                  <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
+                    <ListRestart className="w-5 h-5 text-emerald-300" />
                     Moteur de Rotation Automatique d'Activités
                   </h2>
-                  <p className="text-xs text-zinc-400 mt-1">
+                  <p className="text-xs text-[var(--text-muted)] mt-1">
                     Faites défiler plusieurs messages d'activités automatiquement selon un intervalle et une stratégie configurable
                   </p>
                 </div>
@@ -1049,7 +1049,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       "px-4 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-2",
                       rotationConfig.enabled
                         ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/30"
-                        : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:bg-zinc-700 hover:text-white"
+                        : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-white"
                     )}
                   >
                     <RotateCcw className={cn("w-4 h-4", rotationConfig.enabled && "animate-spin text-emerald-400")} />
@@ -1059,7 +1059,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                   <button
                     onClick={handleSaveRotationConfig}
                     disabled={saving}
-                    className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md"
+                    className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center gap-1.5 transition-all"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>Sauvegarder</span>
@@ -1067,10 +1067,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-zinc-800">
-                <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
-                  <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                    <Timer className="w-3.5 h-3.5 text-indigo-400" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-[var(--panel-border)]">
+                <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-2">
+                  <label className="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1.5">
+                    <Timer className="w-3.5 h-3.5 text-emerald-300" />
                     Intervalle de rotation (secondes)
                   </label>
                   <input
@@ -1084,14 +1084,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         intervalSeconds: Math.max(30, parseInt(e.target.value) || 30),
                       }))
                     }
-                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-sm text-white font-mono focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-sm text-white font-mono focus:outline-none focus:border-[var(--input-border-hover)]"
                   />
-                  <p className="text-[11px] text-zinc-400">Minimum 30s (Protection anti-spam Discord)</p>
+                  <p className="text-xs text-[var(--text-muted)]">Minimum 30s (Protection anti-spam Discord)</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
-                  <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                    <Shuffle className="w-3.5 h-3.5 text-purple-400" />
+                <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-2">
+                  <label className="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1.5">
+                    <Shuffle className="w-3.5 h-3.5 text-emerald-300" />
                     Stratégie d'ordonnancement
                   </label>
                   <Select
@@ -1110,28 +1110,28 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       { id: "weighted", label: "Pondéré selon le Poids" },
                     ]}
                   />
-                  <p className="text-[11px] text-zinc-400">Détermine le choix de la prochaine activité</p>
+                  <p className="text-xs text-[var(--text-muted)]">Détermine le choix de la prochaine activité</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
-                  <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+                <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-2">
+                  <label className="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5 text-emerald-400" />
                     Prochaine rotation
                   </label>
-                  <div className="px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-sm font-mono text-emerald-400 flex items-center justify-between">
+                  <div className="px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-sm font-mono text-emerald-400 flex items-center justify-between">
                     <span>{rotationConfig.enabled ? "Dans quelques secondes" : "En pause"}</span>
                     <span className="w-2 h-2 rounded-full bg-emerald-400" />
                   </div>
-                  <p className="text-[11px] text-zinc-400">Horodatage précis synchronisé</p>
+                  <p className="text-xs text-[var(--text-muted)]">Horodatage précis synchronisé</p>
                 </div>
               </div>
             </div>
 
             {/* Rotation Activities List */}
-            <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-6">
+            <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-indigo-400" />
+                <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-emerald-300" />
                   Activités dans le Cycle ({rotationConfig.activities.length})
                 </h3>
               </div>
@@ -1140,21 +1140,21 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 {rotationConfig.activities.map((item, index) => (
                   <div
                     key={item.id}
-                    className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-zinc-700 transition-all"
+                    className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[var(--input-border-hover)] transition-all"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="w-7 h-7 rounded-lg bg-zinc-900 text-zinc-400 text-xs font-mono font-bold flex items-center justify-center shrink-0 border border-zinc-800">
+                      <span className="w-7 h-7 rounded-lg bg-[var(--surface-raised)]/40 text-[var(--text-muted)] text-xs font-mono font-bold flex items-center justify-center shrink-0 border border-[var(--panel-border)]">
                         {index + 1}
                       </span>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                          <span className="px-2 py-0.5 rounded text-xs font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
                             {item.type}
                           </span>
-                          <span className="text-sm font-semibold text-white">{item.text}</span>
+                          <span className="text-sm font-semibold text-[var(--text-primary)]">{item.text}</span>
                         </div>
                         {item.url && (
-                          <span className="text-xs text-purple-400 font-mono mt-1 block">
+                          <span className="text-xs text-emerald-300 font-mono mt-1 block">
                             Stream: {item.url}
                           </span>
                         )}
@@ -1163,14 +1163,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
                     <div className="flex items-center gap-4">
                       {rotationConfig.order === "weighted" && (
-                        <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+                        <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
                           <span>Poids:</span>
-                          <span className="font-mono font-bold text-zinc-200">{item.weight || 10}</span>
+                          <span className="font-mono font-bold text-[var(--text-primary)]">{item.weight || 10}</span>
                         </div>
                       )}
                       <button
                         onClick={() => handleRemoveRotationItem(item.id)}
-                        className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                        className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
                         title="Supprimer cette activité"
                       >
                         <X className="w-4 h-4" />
@@ -1181,9 +1181,9 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               </div>
 
               {/* Add Activity to Rotation Form */}
-              <div className="p-4 rounded-xl bg-zinc-950/90 border border-dashed border-zinc-700 space-y-4">
-                <h4 className="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+              <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-dashed border-[var(--panel-border)] space-y-4">
+                <h4 className="text-xs font-bold text-[var(--text-muted)] flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
                   Ajouter une nouvelle activité à la rotation
                 </h4>
 
@@ -1211,14 +1211,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       value={newRotText}
                       onChange={(e) => setNewRotText(e.target.value)}
                       placeholder="Texte (ex: {guildCount} serveurs en ligne)"
-                      className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-white focus:outline-none focus:border-[var(--input-border-hover)]"
                     />
                   </div>
 
                   <div className="sm:col-span-3 flex items-center gap-2">
                     <button
                       onClick={handleAddRotationItem}
-                      className="w-full px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors"
+                      className="w-full px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors"
                     >
                       Ajouter
                     </button>
@@ -1231,7 +1231,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     value={newRotUrl}
                     onChange={(e) => setNewRotUrl(e.target.value)}
                     placeholder="URL Twitch / YouTube (obligatoire pour Streaming)"
-                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-purple-500/40 text-xs text-white font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-emerald-500/30 text-xs text-white font-mono"
                   />
                 )}
               </div>
@@ -1242,13 +1242,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         {/* TAB 3: SCHEDULE */}
         {activeTab === "schedule" && (
           <div className="space-y-8">
-            <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-6">
+            <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
               <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <Zap className="w-5 h-5 text-amber-400" />
                   Profils de Présence Prédéfinis
                 </h2>
-                <p className="text-xs text-zinc-400 mt-1">
+                <p className="text-xs text-[var(--text-muted)] mt-1">
                   Des ambiances configurées d'un clic pour le gaming, la musique, la maintenance ou le mode nuit
                 </p>
               </div>
@@ -1257,11 +1257,11 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 {profiles.map((p) => (
                   <div
                     key={p.id}
-                    className="p-5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex flex-col justify-between gap-4 hover:border-indigo-500/40 transition-all"
+                    className="p-5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between gap-4 hover:border-emerald-500/40 transition-all"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-bold text-white">{p.name}</span>
+                        <span className="text-sm font-bold text-[var(--text-primary)]">{p.name}</span>
                         <span
                           className={cn(
                             "w-2.5 h-2.5 rounded-full",
@@ -1269,16 +1269,16 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           )}
                         />
                       </div>
-                      <p className="text-xs text-zinc-400">{p.description}</p>
-                      <div className="mt-3 p-2.5 rounded-lg bg-zinc-900/80 border border-zinc-800 text-xs font-mono text-zinc-300">
-                        <span className="text-indigo-400 font-bold">{p.activity.type}</span> {p.activity.name}
+                      <p className="text-xs text-[var(--text-muted)]">{p.description}</p>
+                      <div className="mt-3 p-2.5 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs font-mono text-[var(--text-muted)]">
+                        <span className="text-emerald-300 font-bold">{p.activity.type}</span> {p.activity.name}
                       </div>
                     </div>
 
                     <button
                       onClick={() => handleApplyProfile(p.id)}
                       disabled={saving}
-                      className="w-full py-2 rounded-lg bg-zinc-800 hover:bg-indigo-600 text-zinc-200 hover:text-white text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+                      className="w-full py-2 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-emerald-600 text-[var(--text-primary)] hover:text-white text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
                     >
                       <Play className="w-3.5 h-3.5" />
                       <span>Appliquer ce profil</span>
@@ -1288,18 +1288,18 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               </div>
             </div>
 
-            <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+            <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-indigo-400" />
+                  <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-emerald-300" />
                     Planning Hebdomadaire Automatique
                   </h3>
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs text-[var(--text-muted)]">
                     Définissez quel profil activer selon les plages horaires de la semaine
                   </p>
                 </div>
-                <span className="text-xs font-mono text-indigo-300 px-2.5 py-1 rounded bg-indigo-500/10 border border-indigo-500/20">
+                <span className="text-xs font-mono text-emerald-300 px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/30">
                   Fuseau : Europe/Paris
                 </span>
               </div>
@@ -1307,36 +1307,36 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               <div className="overflow-x-auto">
                 <table className="w-full text-xs text-left">
                   <thead>
-                    <tr className="border-b border-zinc-800 text-zinc-400">
+                    <tr className="border-b border-[var(--panel-border)] text-[var(--text-muted)]">
                       <th className="py-2.5 px-3">Créneau</th>
                       <th className="py-2.5 px-3">Lundi - Vendredi</th>
                       <th className="py-2.5 px-3">Samedi - Dimanche</th>
                       <th className="py-2.5 px-3">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
+                  <tbody className="divide-y divide-[var(--panel-border)] text-[var(--text-muted)]">
                     <tr>
-                      <td className="py-3 px-3 font-semibold text-white">08:00 - 18:00 (Journée)</td>
+                      <td className="py-3 px-3 font-semibold text-[var(--text-primary)]">08:00 - 18:00 (Journée)</td>
                       <td className="py-3 px-3 text-emerald-400 font-medium">Surveillance Communauté</td>
-                      <td className="py-3 px-3 text-purple-400 font-medium">Gaming Session</td>
+                      <td className="py-3 px-3 text-emerald-300 font-medium">Gaming Session</td>
                       <td className="py-3 px-3">
-                        <span className="text-indigo-400 hover:underline cursor-pointer">Modifier</span>
+                        <span className="text-emerald-300 hover:underline cursor-pointer">Modifier</span>
                       </td>
                     </tr>
                     <tr>
-                      <td className="py-3 px-3 font-semibold text-white">18:00 - 23:00 (Soirée)</td>
-                      <td className="py-3 px-3 text-purple-400 font-medium">Gaming Session</td>
+                      <td className="py-3 px-3 font-semibold text-[var(--text-primary)]">18:00 - 23:00 (Soirée)</td>
+                      <td className="py-3 px-3 text-emerald-300 font-medium">Gaming Session</td>
                       <td className="py-3 px-3 text-blue-400 font-medium">Music Lounge</td>
                       <td className="py-3 px-3">
-                        <span className="text-indigo-400 hover:underline cursor-pointer">Modifier</span>
+                        <span className="text-emerald-300 hover:underline cursor-pointer">Modifier</span>
                       </td>
                     </tr>
                     <tr>
-                      <td className="py-3 px-3 font-semibold text-white">23:00 - 08:00 (Nuit)</td>
+                      <td className="py-3 px-3 font-semibold text-[var(--text-primary)]">23:00 - 08:00 (Nuit)</td>
                       <td className="py-3 px-3 text-amber-400 font-medium">Mode Nuit (Inactif)</td>
                       <td className="py-3 px-3 text-amber-400 font-medium">Mode Nuit (Inactif)</td>
                       <td className="py-3 px-3">
-                        <span className="text-indigo-400 hover:underline cursor-pointer">Modifier</span>
+                        <span className="text-emerald-300 hover:underline cursor-pointer">Modifier</span>
                       </td>
                     </tr>
                   </tbody>
@@ -1349,13 +1349,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         {/* TAB 4: SERVERS */}
         {activeTab === "servers" && (
           <div className="space-y-8">
-            <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-6">
+            <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
               <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Server className="w-5 h-5 text-indigo-400" />
+                <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Server className="w-5 h-5 text-emerald-300" />
                   Serveurs Installés & Préférences Déclaratives
                 </h2>
-                <p className="text-xs text-zinc-400 mt-1">
+                <p className="text-xs text-[var(--text-muted)] mt-1">
                   Définissez le profil préféré pour chaque serveur Discord où ETHONE est installé
                 </p>
               </div>
@@ -1363,7 +1363,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               <div className="p-4 rounded-xl bg-blue-950/20 border border-blue-500/30 flex items-start gap-3 text-xs text-blue-200">
                 <Info className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-bold text-white">Précision Technique Discord Gateway</h4>
+                  <h4 className="font-bold text-[var(--text-primary)]">Précision Technique Discord Gateway</h4>
                   <p className="mt-0.5 text-blue-300/90">
                     L'architecture de Discord ne permet pas techniquement d'avoir une présence visuelle distincte par serveur (la présence est liée à la connexion Gateway WebSocket globale du bot). ETHONE enregistre ici le <strong>profil de référence préféré</strong> de chaque serveur pour les automatisations et les bascules contextuelles.
                   </p>
@@ -1373,7 +1373,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               <div className="overflow-x-auto">
                 <table className="w-full text-xs text-left">
                   <thead>
-                    <tr className="border-b border-zinc-800 text-zinc-400">
+                    <tr className="border-b border-[var(--panel-border)] text-[var(--text-muted)]">
                       <th className="py-3 px-4">Serveur Discord</th>
                       <th className="py-3 px-4">ID de Guilde</th>
                       <th className="py-3 px-4">Profil Préféré</th>
@@ -1381,22 +1381,22 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       <th className="py-3 px-4 text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
+                  <tbody className="divide-y divide-[var(--panel-border)] text-[var(--text-muted)]">
                     {guilds.map((g) => (
-                      <tr key={g.guildId} className="hover:bg-zinc-800/20">
+                      <tr key={g.guildId} className="hover:bg-[var(--surface-raised)]/70">
                         <td className="py-3.5 px-4 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-white">
+                          <div className="w-8 h-8 rounded-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-center font-bold text-white">
                             {g.guildName?.charAt(0) || "S"}
                           </div>
                           <div>
-                            <span className="font-semibold text-white block">{g.guildName}</span>
-                            <span className="text-[11px] text-emerald-400 flex items-center gap-1">
+                            <span className="font-semibold text-[var(--text-primary)] block">{g.guildName}</span>
+                            <span className="text-xs text-emerald-400 flex items-center gap-1">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                               Bot Installé
                             </span>
                           </div>
                         </td>
-                        <td className="py-3.5 px-4 font-mono text-zinc-400">{g.guildId}</td>
+                        <td className="py-3.5 px-4 font-mono text-[var(--text-muted)]">{g.guildId}</td>
                         <td className="py-3.5 px-4">
                           <Select
                             value={rowProfileByGuild[g.guildId] ?? g.preferredProfileId}
@@ -1407,13 +1407,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                             options={profiles.map((p) => ({ id: p.id, label: `${p.name} (${p.activity?.type || "Activité"})` }))}
                           />
                         </td>
-                        <td className="py-3.5 px-4 font-mono text-zinc-400">
+                        <td className="py-3.5 px-4 font-mono text-[var(--text-muted)]">
                           {new Date(g.updatedAt).toLocaleDateString("fr-FR")}
                         </td>
                         <td className="py-3.5 px-4 text-right">
                           <button
                             onClick={() => handleApplyProfile(rowProfileByGuild[g.guildId] ?? g.preferredProfileId)}
-                            className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-colors"
+                            className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-xs transition-colors"
                           >
                             Appliquer Profil
                           </button>
@@ -1430,13 +1430,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         {/* TAB 5: IDENTITY */}
         {activeTab === "identity" && (
           <div className="space-y-8">
-            <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-6">
+            <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
               <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <User className="w-5 h-5 text-indigo-400" />
+                <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <User className="w-5 h-5 text-emerald-300" />
                   Bot Identity Studio
                 </h2>
-                <p className="text-xs text-zinc-400 mt-1">
+                <p className="text-xs text-[var(--text-muted)] mt-1">
                   Gestion de l'avatar et du nom d'utilisateur du bot avec suivi strict des rate limits Discord
                 </p>
               </div>
@@ -1444,7 +1444,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/30 flex items-start gap-3 text-xs text-amber-200">
                 <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-bold text-white">Quotas Discord Globaux pour l'Identité</h4>
+                  <h4 className="font-bold text-[var(--text-primary)]">Quotas Discord Globaux pour l'Identité</h4>
                   <p className="mt-0.5 text-amber-300/90">
                     Discord applique des restrictions strictes sur les comptes Bot : <strong>maximum 2 changements d'avatar par heure</strong> et <strong>2 changements de nom d'utilisateur par tranche de 2 heures</strong>.
                   </p>
@@ -1453,9 +1453,9 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Avatar Studio */}
-                <div className="p-6 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-4">
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4 text-indigo-400" />
+                <div className="p-6 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+                  <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-emerald-300" />
                     Avatar du Bot
                   </h3>
 
@@ -1463,22 +1463,22 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <img
                       src={identity.avatarUrl}
                       alt={identity.username}
-                      className="w-20 h-20 rounded-full border-2 border-zinc-700 object-cover bg-zinc-800"
+                      className="w-20 h-20 rounded-full border-2 border-[var(--panel-border)] object-cover bg-[var(--surface-raised)]/40"
                     />
                     <div>
-                      <span className="text-xs text-zinc-400 block mb-1">Changements restants :</span>
+                      <span className="text-xs text-[var(--text-muted)] block mb-1">Changements restants :</span>
                       <div className="flex items-center gap-2">
                         <span className="text-lg font-bold font-mono text-emerald-400">
                           {identity.avatarChangesRemaining} / 2
                         </span>
-                        <span className="text-[11px] text-zinc-500 font-mono">(ce cycle de 60m)</span>
+                        <span className="text-xs text-[var(--text-muted)] font-mono">(ce cycle de 60m)</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="pt-2 space-y-2">
-                    <label className="w-full py-2.5 px-4 rounded-xl border border-dashed border-zinc-700 hover:border-indigo-500 hover:bg-indigo-500/5 text-xs text-zinc-300 flex items-center justify-center gap-2 cursor-pointer transition-all">
-                      <Upload className="w-4 h-4 text-indigo-400" />
+                    <label className="w-full py-2.5 px-4 rounded-xl border border-dashed border-[var(--panel-border)] hover:border-emerald-500/40 hover:bg-emerald-500/10 text-xs text-[var(--text-muted)] flex items-center justify-center gap-2 cursor-pointer transition-all">
+                      <Upload className="w-4 h-4 text-emerald-300" />
                       <span>{newAvatarFile ? newAvatarFile.name : "Téléverser un nouvel avatar (PNG/JPG)"}</span>
                       <input
                         type="file"
@@ -1497,7 +1497,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         <button
                           onClick={handleUpdateAvatar}
                           disabled={uploadingAvatar || identity.avatarChangesRemaining <= 0}
-                          className="flex-1 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+                          className="flex-1 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
                         >
                           <Save className="w-3.5 h-3.5" />
                           <span>{uploadingAvatar ? "Envoi en cours..." : "Appliquer l'avatar"}</span>
@@ -1505,14 +1505,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         <button
                           onClick={() => setNewAvatarFile(null)}
                           disabled={uploadingAvatar}
-                          className="px-3 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium transition-colors disabled:opacity-50"
+                          className="px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] text-xs font-medium transition-colors disabled:opacity-50"
                         >
                           Annuler
                         </button>
                       </div>
                     )}
                     {identity.avatarChangesRemaining <= 0 && (
-                      <p className="text-[11px] text-amber-400">
+                      <p className="text-xs text-amber-400">
                         Limite Discord atteinte : réessayez dans moins d'une heure.
                       </p>
                     )}
@@ -1520,37 +1520,37 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 </div>
 
                 {/* Username Studio */}
-                <div className="p-6 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-4">
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <User className="w-4 h-4 text-purple-400" />
+                <div className="p-6 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+                  <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                    <User className="w-4 h-4 text-emerald-300" />
                     Nom d'Utilisateur
                   </h3>
 
                   <div>
-                    <span className="text-xs text-zinc-400 block mb-1">Changements restants :</span>
+                    <span className="text-xs text-[var(--text-muted)] block mb-1">Changements restants :</span>
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-lg font-bold font-mono text-emerald-400">
                         {identity.usernameChangesRemaining} / 2
                       </span>
-                      <span className="text-[11px] text-zinc-500 font-mono">(ce cycle de 2h)</span>
+                      <span className="text-xs text-[var(--text-muted)] font-mono">(ce cycle de 2h)</span>
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-xs font-semibold text-zinc-300">Modifier le pseudo Discord :</label>
+                      <label className="text-xs font-semibold text-[var(--text-muted)]">Modifier le pseudo Discord :</label>
                       <input
                         type="text"
                         value={editUsername}
                         onChange={(e) => setEditUsername(e.target.value)}
                         placeholder="Etho"
                         maxLength={32}
-                        className="w-full px-3.5 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white focus:outline-none focus:border-indigo-500"
+                        className="w-full px-3.5 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-white focus:outline-none focus:border-[var(--input-border-hover)]"
                       />
                     </div>
 
                     <button
                       onClick={handleUpdateUsername}
                       disabled={saving || editUsername === identity.username}
-                      className="mt-3 w-full py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors disabled:opacity-50"
+                      className="mt-3 w-full py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors disabled:opacity-50"
                     >
                       Enregistrer le nouveau nom
                     </button>
@@ -1559,13 +1559,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               </div>
 
               {/* Owner security badge */}
-              <div className="p-4 rounded-xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 text-zinc-300">
+              <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 text-[var(--text-muted)]">
                   <ShieldCheck className="w-4 h-4 text-emerald-400" />
                   <span>Bot Owner Autorisé pour l'Identité :</span>
-                  <code className="text-indigo-300 font-mono">{identity.ownerId}</code>
+                  <code className="text-emerald-300 font-mono">{identity.ownerId}</code>
                 </div>
-                <span className="text-zinc-500 text-[11px]">Discord REST v10</span>
+                <span className="text-[var(--text-muted)] text-xs">Discord REST v10</span>
               </div>
             </div>
           </div>
@@ -1574,14 +1574,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         {/* TAB 6: HISTORY */}
         {activeTab === "history" && (
           <div className="space-y-8">
-            <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-6">
+            <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <History className="w-5 h-5 text-indigo-400" />
+                  <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
+                    <History className="w-5 h-5 text-emerald-300" />
                     Journal d'Audit des Changements de Présence
                   </h2>
-                  <p className="text-xs text-zinc-400 mt-1">
+                  <p className="text-xs text-[var(--text-muted)] mt-1">
                     Historique complet et traçabilité de toutes les modifications appliquées sur la Gateway
                   </p>
                 </div>
@@ -1590,7 +1590,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               <div className="overflow-x-auto">
                 <table className="w-full text-xs text-left">
                   <thead>
-                    <tr className="border-b border-zinc-800 text-zinc-400">
+                    <tr className="border-b border-[var(--panel-border)] text-[var(--text-muted)]">
                       <th className="py-3 px-3">Date & Heure</th>
                       <th className="py-3 px-3">Auteur / Source</th>
                       <th className="py-3 px-3">Transition Statut</th>
@@ -1599,32 +1599,32 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       <th className="py-3 px-3 text-right">Portée</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-800/60 text-zinc-300 font-mono">
+                  <tbody className="divide-y divide-[var(--panel-border)] text-[var(--text-muted)] font-mono">
                     {auditHistory.map((item) => (
-                      <tr key={item.id} className="hover:bg-zinc-800/20 font-sans">
-                        <td className="py-3 px-3 text-zinc-400 whitespace-nowrap font-mono text-[11px]">
+                      <tr key={item.id} className="hover:bg-[var(--surface-raised)]/70 font-sans">
+                        <td className="py-3 px-3 text-[var(--text-muted)] whitespace-nowrap font-mono text-xs">
                           {new Date(item.timestamp).toLocaleString("fr-FR")}
                         </td>
                         <td className="py-3 px-3">
-                          <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-200 text-[11px] font-semibold">
+                          <span className="px-2 py-0.5 rounded bg-[var(--surface-raised)]/40 text-[var(--text-primary)] text-xs font-semibold">
                             {item.actor}
                           </span>
                         </td>
                         <td className="py-3 px-3 whitespace-nowrap">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-zinc-500 line-through text-[11px]">{item.previousStatus}</span>
-                            <ArrowRight className="w-3 h-3 text-zinc-500" />
-                            <span className={cn("px-1.5 py-0.2 rounded text-[11px] font-bold", statusColorMap[item.newStatus as DiscordStatus] || "text-emerald-400")}>
+                            <span className="text-[var(--text-muted)] line-through text-xs">{item.previousStatus}</span>
+                            <ArrowRight className="w-3 h-3 text-[var(--text-muted)]" />
+                            <span className={cn("px-1.5 py-0.2 rounded text-xs font-bold", statusColorMap[item.newStatus as DiscordStatus] || "text-emerald-400")}>
                               {item.newStatus}
                             </span>
                           </div>
                         </td>
-                        <td className="py-3 px-3 text-zinc-200">
-                          <span className="font-semibold text-indigo-300">{item.newActivity}</span>
+                        <td className="py-3 px-3 text-[var(--text-primary)]">
+                          <span className="font-semibold text-emerald-300">{item.newActivity}</span>
                         </td>
-                        <td className="py-3 px-3 text-zinc-400 text-xs">{item.reason || "Mise à jour"}</td>
+                        <td className="py-3 px-3 text-[var(--text-muted)] text-xs">{item.reason || "Mise à jour"}</td>
                         <td className="py-3 px-3 text-right">
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                          <span className="px-2 py-0.5 rounded text-xs font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
                             {item.scope || "global"}
                           </span>
                         </td>

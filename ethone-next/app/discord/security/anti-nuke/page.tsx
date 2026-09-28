@@ -217,24 +217,24 @@ export default function AntiNukePage() {
   };
 
   return (
-    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-zinc-100 font-sans">
-      <header className="shrink-0 border-b border-[var(--panel-border)] bg-black/40 backdrop-blur-xl px-4 sm:px-6 py-3.5 z-20">
+    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)] font-sans">
+      <header className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 sm:px-6 py-3.5 z-20">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Link
               href={selectedGuild ? `/discord/security?guildId=${selectedGuild.id}` : "/discord/security"}
-              className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 transition-all active:scale-95"
               title="Retour au hub Sécurité"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.04] border border-[var(--panel-border)] text-red-400 shadow-inner">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-red-400 ">
                 <Bomb className="h-5 w-5" />
               </div>
               <div>
-                <h1 className="text-base font-semibold tracking-tight text-white">Anti-Nuke</h1>
-                <p className="text-xs text-zinc-400">Bannissements massifs, suppressions de salons et de rôles.</p>
+                <h1 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">Anti-Nuke</h1>
+                <p className="text-xs text-[var(--text-muted)]">Bannissements massifs, suppressions de salons et de rôles.</p>
               </div>
             </div>
           </div>
@@ -253,7 +253,7 @@ export default function AntiNukePage() {
             <button
               onClick={fetchAllData}
               disabled={isLoading}
-              className="flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 text-xs text-zinc-300 hover:text-white hover:bg-white/10 transition-all active:scale-95 disabled:opacity-50"
+              className="flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 transition-all active:scale-95 disabled:opacity-50"
             >
               <RefreshCw className={cn("h-3.5 w-3.5", isLoading && "animate-spin text-red-400")} />
               <span className="hidden sm:inline">Actualiser</span>
@@ -278,14 +278,14 @@ export default function AntiNukePage() {
       <main className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-6 scrollbar-thin scrollbar-thumb-white/10">
         <div className="max-w-5xl mx-auto space-y-6">
           {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
               <div className="flex items-start gap-3">
-                <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+                <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300 shrink-0 mt-0.5">
                   <Bot className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
-                  <p className="mt-0.5 text-zinc-300">
+                  <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                  <p className="mt-0.5 text-[var(--text-muted)]">
                     Invitez le bot sur « {selectedGuild.name} » pour activer la surveillance Anti-Nuke.
                   </p>
                 </div>
@@ -294,7 +294,7 @@ export default function AntiNukePage() {
                 href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-colors shrink-0"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors shrink-0"
               >
                 Inviter le bot
               </a>
@@ -302,39 +302,39 @@ export default function AntiNukePage() {
           )}
           {/* Stat tiles */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-md">
-              <span className="text-xs text-zinc-400 font-medium">Protection</span>
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 ">
+              <span className="text-xs text-[var(--text-muted)] font-medium">Protection</span>
               <div className="mt-2 flex items-center gap-2">
                 {config.enabled ? (
                   <ShieldCheck className="h-5 w-5 text-emerald-400" />
                 ) : (
                   <AlertTriangle className="h-5 w-5 text-red-400" />
                 )}
-                <span className="text-lg font-bold text-white">{config.enabled ? "Active" : "Désactivée"}</span>
+                <span className="text-lg font-bold text-[var(--text-primary)]">{config.enabled ? "Active" : "Désactivée"}</span>
               </div>
             </div>
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-md">
-              <span className="text-xs text-zinc-400 font-medium">Sanction configurée</span>
-              <div className="mt-2 text-sm font-bold text-white">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 ">
+              <span className="text-xs text-[var(--text-muted)] font-medium">Sanction configurée</span>
+              <div className="mt-2 text-sm font-bold text-[var(--text-primary)]">
                 {ACTION_LABELS[config.action].icon} {ACTION_LABELS[config.action].label}
               </div>
             </div>
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-md">
-              <span className="text-xs text-zinc-400 font-medium">Incidents ouverts</span>
-              <div className="mt-2 text-2xl font-bold text-white">{openCount}</div>
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 ">
+              <span className="text-xs text-[var(--text-muted)] font-medium">Incidents ouverts</span>
+              <div className="mt-2 text-2xl font-bold text-[var(--text-primary)]">{openCount}</div>
             </div>
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-md">
-              <span className="text-xs text-zinc-400 font-medium">Fenêtre de détection</span>
-              <div className="mt-2 text-2xl font-bold text-white">{config.timeWindowSeconds}s</div>
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 ">
+              <span className="text-xs text-[var(--text-muted)] font-medium">Fenêtre de détection</span>
+              <div className="mt-2 text-2xl font-bold text-[var(--text-primary)]">{config.timeWindowSeconds}s</div>
             </div>
           </div>
 
           {/* Config panel */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-5">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-white">Configuration</h2>
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-5">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Configuration</h2>
 
             <div className="space-y-1.5">
-              <label className="text-xs text-zinc-400">Sanction appliquée à l'auteur détecté</label>
+              <label className="text-xs text-[var(--text-muted)]">Sanction appliquée à l'auteur détecté</label>
               <Select
                 value={config.action}
                 onChange={(v) => saveConfig({ action: v as AntiNukeAction })}
@@ -346,7 +346,7 @@ export default function AntiNukePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs text-zinc-400">Bannissements max</label>
+                <label className="text-xs text-[var(--text-muted)]">Bannissements max</label>
                 <input
                   type="number"
                   min={2}
@@ -354,11 +354,11 @@ export default function AntiNukePage() {
                   value={config.maxBans}
                   onChange={(e) => setConfig((c) => ({ ...c, maxBans: Number(e.target.value) }))}
                   onBlur={(e) => saveConfig({ maxBans: Number(e.target.value) })}
-                  className="w-full h-10 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-sm text-white outline-none focus:border-red-500"
+                  className="w-full h-10 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-red-500"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-zinc-400">Suppressions de salons max</label>
+                <label className="text-xs text-[var(--text-muted)]">Suppressions de salons max</label>
                 <input
                   type="number"
                   min={2}
@@ -366,11 +366,11 @@ export default function AntiNukePage() {
                   value={config.maxChannelDeletes}
                   onChange={(e) => setConfig((c) => ({ ...c, maxChannelDeletes: Number(e.target.value) }))}
                   onBlur={(e) => saveConfig({ maxChannelDeletes: Number(e.target.value) })}
-                  className="w-full h-10 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-sm text-white outline-none focus:border-red-500"
+                  className="w-full h-10 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-red-500"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-zinc-400">Suppressions de rôles max</label>
+                <label className="text-xs text-[var(--text-muted)]">Suppressions de rôles max</label>
                 <input
                   type="number"
                   min={2}
@@ -378,25 +378,25 @@ export default function AntiNukePage() {
                   value={config.maxRoleDeletes}
                   onChange={(e) => setConfig((c) => ({ ...c, maxRoleDeletes: Number(e.target.value) }))}
                   onBlur={(e) => saveConfig({ maxRoleDeletes: Number(e.target.value) })}
-                  className="w-full h-10 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-sm text-white outline-none focus:border-red-500"
+                  className="w-full h-10 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-red-500"
                 />
               </div>
             </div>
-            <p className="text-[11px] text-zinc-500">
+            <p className="text-xs text-[var(--text-muted)]">
               Ces seuils s'appliquent sur la fenêtre de {config.timeWindowSeconds}s. Le propriétaire du bot et les rôles/membres de confiance (configurés séparément) sont toujours exemptés.
             </p>
           </div>
 
           {/* Incidents */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-white">Incidents récents ({incidents.length})</h2>
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Incidents récents ({incidents.length})</h2>
             {incidents.length === 0 ? (
-              <div className="text-center py-10 text-zinc-500">
+              <div className="text-center py-10 text-[var(--text-muted)]">
                 <CheckCircle2 className="h-7 w-7 text-emerald-500/40 mx-auto mb-2" />
-                <p className="text-xs font-medium text-zinc-300">Aucun incident détecté</p>
+                <p className="text-xs font-medium text-[var(--text-muted)]">Aucun incident détecté</p>
               </div>
             ) : (
-              <div className="divide-y divide-white/[0.06]">
+              <div className="divide-y divide-[var(--panel-border)]">
                 {incidents.map((inc) => {
                   const Icon = inc.type === "MASS_BAN" ? Users : inc.type === "MASS_CHANNEL_DELETE" ? DoorOpen : Trash2;
                   return (
@@ -404,9 +404,9 @@ export default function AntiNukePage() {
                       <div className="flex items-start gap-3 min-w-0">
                         <Icon className="h-4 w-4 text-red-400 mt-0.5 shrink-0" />
                         <div className="min-w-0">
-                          <p className="text-xs font-bold text-white">{inc.title}</p>
-                          <p className="text-[11px] text-zinc-400 mt-0.5">{inc.description}</p>
-                          <p className="text-[10px] text-zinc-500 mt-1">
+                          <p className="text-xs font-bold text-[var(--text-primary)]">{inc.title}</p>
+                          <p className="text-xs text-[var(--text-muted)] mt-0.5">{inc.description}</p>
+                          <p className="text-xs text-[var(--text-muted)] mt-1">
                             {inc.perpetratorTag || "Inconnu"} · {inc.actionTaken} · {new Date(inc.createdAt).toLocaleString()}
                           </p>
                         </div>
@@ -414,12 +414,12 @@ export default function AntiNukePage() {
                       {inc.status === "open" ? (
                         <button
                           onClick={() => resolveIncident(inc.id)}
-                          className="shrink-0 flex h-7 items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2 text-[11px] text-zinc-300 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+                          className="shrink-0 flex h-7 items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 transition-all active:scale-95"
                         >
                           Résoudre
                         </button>
                       ) : (
-                        <span className="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                        <span className="shrink-0 text-xs font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                           Résolu
                         </span>
                       )}

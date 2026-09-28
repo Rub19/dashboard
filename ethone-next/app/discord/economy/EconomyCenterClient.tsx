@@ -160,12 +160,12 @@ const DEMO_SHOP: ShopItem[] = [];
 function NumberField({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
   return (
     <div>
-      <label className="block text-[11px] font-semibold text-slate-400 mb-1">{label}</label>
+      <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1">{label}</label>
       <input
         type="number"
         value={Number.isFinite(value) ? value : 0}
         onChange={(e) => onChange(parseInt(e.target.value, 10) || 0)}
-        className="w-full px-3 py-2 rounded-lg bg-black/40 border border-[var(--panel-border)] text-xs text-white"
+        className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
       />
     </div>
   );
@@ -174,8 +174,8 @@ function NumberField({ label, value, onChange }: { label: string; value: number;
 function ToggleRow({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-xs font-semibold text-slate-300">{label}</span>
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="w-4 h-4 rounded text-indigo-500" />
+      <span className="text-xs font-semibold text-[var(--text-muted)]">{label}</span>
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="w-4 h-4 rounded text-emerald-400" />
     </div>
   );
 }
@@ -418,7 +418,7 @@ export default function EconomyCenterClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-44">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] pb-44">
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)]">
@@ -426,18 +426,18 @@ export default function EconomyCenterClient() {
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
                 href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
+                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer shadow-sm"
                 title="Retour au hub Discord"
               >
-                <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+                <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                 <span>Retour Discord</span>
               </Link>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] flex items-center gap-3">
               <Coins className="w-7 h-7 text-amber-400" />
               Économie — {config.currencyName}
             </h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-[var(--text-muted)] mt-1">
               Soldes, classement et boutique de rôles.
               {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
             </p>
@@ -457,7 +457,7 @@ export default function EconomyCenterClient() {
               type="button"
               onClick={load}
               disabled={loading}
-              className="flex items-center gap-1.5 self-start rounded-lg border border-[var(--panel-border)] bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-white/[0.06] disabled:opacity-50"
+              className="flex items-center gap-1.5 self-start rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-50"
             >
               <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
               Actualiser
@@ -473,7 +473,7 @@ export default function EconomyCenterClient() {
                 <Bot className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-white">Bot non installé sur ce serveur</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Bot non installé sur ce serveur</p>
                 <p className="text-xs text-amber-300/80">
                   Invitez le bot ETHONE sur <strong>{selectedGuild.name}</strong> pour activer le système d'économie et la boutique de rôles.
                 </p>
@@ -495,34 +495,34 @@ export default function EconomyCenterClient() {
           {[
             { label: "Masse en circulation", value: `${activity.totalCirculating.toLocaleString("fr-FR")} ${config.currencySymbol}`, cls: "text-amber-300", sub: "Somme de tous les soldes" },
             { label: "Volume 24h", value: `${activity.volume24h.toLocaleString("fr-FR")} ${config.currencySymbol}`, cls: "text-emerald-400", sub: "Montants échangés" },
-            { label: "Mouvements 24h", value: activity.transactions24h.toLocaleString("fr-FR"), cls: "text-indigo-400", sub: "Transactions enregistrées" },
-            { label: "Membres actifs", value: leaderboard.length.toLocaleString("fr-FR"), cls: "text-white", sub: "Avec un portefeuille" },
+            { label: "Mouvements 24h", value: activity.transactions24h.toLocaleString("fr-FR"), cls: "text-emerald-300", sub: "Transactions enregistrées" },
+            { label: "Membres actifs", value: leaderboard.length.toLocaleString("fr-FR"), cls: "text-[var(--text-primary)]", sub: "Avec un portefeuille" },
           ].map((k) => (
-            <div key={k.label} className="p-4 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] space-y-1">
-              <span className="text-[11px] text-slate-500 font-medium">{k.label}</span>
+            <div key={k.label} className="p-4 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-1">
+              <span className="text-xs text-[var(--text-muted)] font-medium">{k.label}</span>
               <p className={cn("text-xl font-bold truncate", k.cls)}>{k.value}</p>
-              <span className="text-[11px] text-slate-500">{k.sub}</span>
+              <span className="text-xs text-[var(--text-muted)]">{k.sub}</span>
             </div>
           ))}
         </div>
 
         {/* Mon portefeuille personnel */}
         {profile?.user?.id && (
-          <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-950/40 via-purple-950/20 to-black/40 border border-indigo-500/20 backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-6 rounded-2xl border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[var(--surface-raised)]/40">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center shrink-0">
-                <WalletIcon className="w-6 h-6 text-indigo-400" />
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                <WalletIcon className="w-6 h-6 text-emerald-300" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-white">Mon Portefeuille</h3>
+                  <h3 className="text-base font-bold text-[var(--text-primary)]">Mon Portefeuille</h3>
                   {myWallet && myWallet.rank > 0 && (
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                    <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
                       Rang #{myWallet.rank}
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-4 mt-1 text-xs text-slate-400">
+                <div className="flex items-center gap-4 mt-1 text-xs text-[var(--text-muted)]">
                   <span>
                     Solde : <strong className="text-amber-300 font-mono text-sm">{myWallet ? myWallet.balance.toLocaleString("fr-FR") : "0"} {config.currencySymbol}</strong>
                   </span>
@@ -539,7 +539,7 @@ export default function EconomyCenterClient() {
               type="button"
               onClick={handleClaimDaily}
               disabled={claimingDaily}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-lg shadow-emerald-900/20 disabled:opacity-50 transition shrink-0"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[var(--text-primary)] text-xs font-bold disabled:opacity-50 transition shrink-0 bg-[var(--surface-raised)]/40"
             >
               <Gift className={cn("w-4 h-4", claimingDaily && "animate-bounce")} />
               {claimingDaily ? "Réclamation..." : "Réclamer mon quotidien"}
@@ -548,22 +548,22 @@ export default function EconomyCenterClient() {
         )}
 
         {/* Leaderboard */}
-        <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
-          <h2 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+        <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+          <h2 className="text-sm font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
             <Trophy className="w-4 h-4 text-amber-400" />
             Classement
           </h2>
           {leaderboard.length === 0 ? (
-            <p className="text-xs text-slate-500 py-6 text-center">Aucun membre n'a encore de solde sur ce serveur.</p>
+            <p className="text-xs text-[var(--text-muted)] py-6 text-center">Aucun membre n'a encore de solde sur ce serveur.</p>
           ) : (
             <div className="space-y-2">
               {leaderboard.map((w) => (
-                <div key={w.userId} className="flex items-center justify-between p-3 rounded-xl bg-black/30 border border-[var(--panel-border)]">
+                <div key={w.userId} className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold text-slate-400 w-6 text-center">
+                    <span className="text-xs font-bold text-[var(--text-muted)] w-6 text-center">
                       {w.rank <= 3 ? ["🥇", "🥈", "🥉"][w.rank - 1] : `#${w.rank}`}
                     </span>
-                    <span className="text-sm font-semibold text-white">{w.username}</span>
+                    <span className="text-sm font-semibold text-[var(--text-primary)]">{w.username}</span>
                   </div>
                   <span className="text-sm font-bold text-amber-300">{w.balance.toLocaleString("fr-FR")} {config.currencySymbol}</span>
                 </div>
@@ -573,12 +573,12 @@ export default function EconomyCenterClient() {
         </div>
 
         {/* Historique des transactions */}
-        <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl space-y-4">
+        <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <History className="w-4 h-4 text-indigo-400" />
+            <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+              <History className="w-4 h-4 text-emerald-300" />
               Historique des transactions
-              <span className="text-[11px] font-normal text-slate-500">({transactions.length} dernières)</span>
+              <span className="text-xs font-normal text-[var(--text-muted)]">({transactions.length} dernières)</span>
             </h2>
             <Select
               value={txFilter}
@@ -593,7 +593,7 @@ export default function EconomyCenterClient() {
             />
           </div>
           {transactions.length === 0 ? (
-            <p className="text-xs text-slate-500 py-6 text-center">Aucune transaction enregistrée pour l'instant — elles apparaissent dès qu'un membre utilise /economy.</p>
+            <p className="text-xs text-[var(--text-muted)] py-6 text-center">Aucune transaction enregistrée pour l'instant — elles apparaissent dès qu'un membre utilise /economy.</p>
           ) : (
             <div className="space-y-1.5 max-h-96 overflow-y-auto pr-1">
               {transactions
@@ -603,14 +603,14 @@ export default function EconomyCenterClient() {
                   const who = leaderboard.find((w) => w.userId === t.userId)?.username || t.userId;
                   const other = t.counterpartyId ? leaderboard.find((w) => w.userId === t.counterpartyId)?.username || t.counterpartyId : null;
                   return (
-                    <div key={t.id} className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-black/30 border border-[var(--panel-border)]">
+                    <div key={t.id} className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                       <div className="flex items-center gap-3 min-w-0">
                         <span className="text-base w-6 text-center shrink-0">{meta.icon}</span>
                         <div className="min-w-0">
-                          <p className="text-xs font-semibold text-white truncate">
-                            {who} <span className="text-slate-500 font-normal">· {meta.label}{other ? ` ↔ ${other}` : ""}</span>
+                          <p className="text-xs font-semibold text-[var(--text-primary)] truncate">
+                            {who} <span className="text-[var(--text-muted)] font-normal">· {meta.label}{other ? ` ↔ ${other}` : ""}</span>
                           </p>
-                          <p className="text-[10px] text-slate-500 truncate">
+                          <p className="text-xs text-[var(--text-muted)] truncate">
                             {new Date(t.createdAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}
                             {t.note ? ` · ${t.note}` : ""}
                           </p>
@@ -620,7 +620,7 @@ export default function EconomyCenterClient() {
                         <p className={cn("text-xs font-bold font-mono", t.amount >= 0 ? "text-emerald-400" : "text-rose-400")}>
                           {t.amount >= 0 ? "+" : ""}{t.amount.toLocaleString("fr-FR")} {config.currencySymbol}
                         </p>
-                        <p className="text-[10px] text-slate-500 font-mono">solde {t.balanceAfter.toLocaleString("fr-FR")}</p>
+                        <p className="text-xs text-[var(--text-muted)] font-mono">solde {t.balanceAfter.toLocaleString("fr-FR")}</p>
                       </div>
                     </div>
                   );
@@ -630,18 +630,18 @@ export default function EconomyCenterClient() {
         </div>
 
         {/* Shop */}
-        <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl space-y-4">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2">
-            <ShoppingBag className="w-4 h-4 text-indigo-400" />
+        <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+          <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+            <ShoppingBag className="w-4 h-4 text-emerald-300" />
             Boutique de rôles
           </h2>
 
           <div className="space-y-2">
             {shopItems.map((item) => (
-              <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-black/30 border border-[var(--panel-border)]">
+              <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                 <div>
-                  <span className="text-sm font-semibold text-white block">{item.label}</span>
-                  <span className="text-[11px] text-slate-500">{item.description || `Rôle #${item.roleId}`}</span>
+                  <span className="text-sm font-semibold text-[var(--text-primary)] block">{item.label}</span>
+                  <span className="text-xs text-[var(--text-muted)]">{item.description || `Rôle #${item.roleId}`}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-amber-300 mr-1">{item.price.toLocaleString("fr-FR")} {config.currencySymbol}</span>
@@ -677,19 +677,19 @@ export default function EconomyCenterClient() {
               placeholder="Libellé"
               value={newItem.label}
               onChange={(e) => setNewItem((p) => ({ ...p, label: e.target.value }))}
-              className="px-3 py-2 rounded-lg bg-black/40 border border-[var(--panel-border)] text-xs text-white"
+              className="px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
             />
             <input
               type="number"
               placeholder="Prix"
               value={newItem.price}
               onChange={(e) => setNewItem((p) => ({ ...p, price: parseInt(e.target.value, 10) || 0 }))}
-              className="px-3 py-2 rounded-lg bg-black/40 border border-[var(--panel-border)] text-xs text-white"
+              className="px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
             />
             <button
               type="button"
               onClick={addShopItem}
-              className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold"
+              className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold"
             >
               <Plus className="w-3.5 h-3.5" />
               Ajouter
@@ -698,57 +698,57 @@ export default function EconomyCenterClient() {
         </div>
 
         {/* Configuration */}
-        <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl space-y-4">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2">
-            <Settings className="w-4 h-4 text-slate-400" />
+        <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+          <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+            <Settings className="w-4 h-4 text-[var(--text-muted)]" />
             Configuration
           </h2>
 
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-300">Économie activée</span>
+            <span className="text-xs font-semibold text-[var(--text-muted)]">Économie activée</span>
             <input
               type="checkbox"
               checked={config.enabled}
               onChange={(e) => setConfig((p) => ({ ...p, enabled: e.target.checked }))}
-              className="w-4 h-4 rounded text-indigo-500"
+              className="w-4 h-4 rounded text-emerald-400"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Nom de la monnaie</label>
+              <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1">Nom de la monnaie</label>
               <input
                 type="text"
                 value={config.currencyName}
                 onChange={(e) => setConfig((p) => ({ ...p, currencyName: e.target.value }))}
-                className="w-full px-3 py-2 rounded-lg bg-black/40 border border-[var(--panel-border)] text-xs text-white"
+                className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Symbole</label>
+              <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1">Symbole</label>
               <input
                 type="text"
                 value={config.currencySymbol}
                 onChange={(e) => setConfig((p) => ({ ...p, currencySymbol: e.target.value }))}
-                className="w-full px-3 py-2 rounded-lg bg-black/40 border border-[var(--panel-border)] text-xs text-white"
+                className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Bonus quotidien (min)</label>
+              <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1">Bonus quotidien (min)</label>
               <input
                 type="number"
                 value={config.dailyAmountMin}
                 onChange={(e) => setConfig((p) => ({ ...p, dailyAmountMin: parseInt(e.target.value, 10) || 0 }))}
-                className="w-full px-3 py-2 rounded-lg bg-black/40 border border-[var(--panel-border)] text-xs text-white"
+                className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Bonus quotidien (max)</label>
+              <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1">Bonus quotidien (max)</label>
               <input
                 type="number"
                 value={config.dailyAmountMax}
                 onChange={(e) => setConfig((p) => ({ ...p, dailyAmountMax: parseInt(e.target.value, 10) || 0 }))}
-                className="w-full px-3 py-2 rounded-lg bg-black/40 border border-[var(--panel-border)] text-xs text-white"
+                className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
               />
             </div>
           </div>
@@ -784,12 +784,12 @@ export default function EconomyCenterClient() {
           </div>
 
           <div className="flex items-center justify-between pt-2">
-            <span className="text-xs font-semibold text-slate-300">Transferts entre membres (/pay)</span>
+            <span className="text-xs font-semibold text-[var(--text-muted)]">Transferts entre membres (/pay)</span>
             <input
               type="checkbox"
               checked={config.transfersEnabled}
               onChange={(e) => setConfig((p) => ({ ...p, transfersEnabled: e.target.checked }))}
-              className="w-4 h-4 rounded text-indigo-500"
+              className="w-4 h-4 rounded text-emerald-400"
             />
           </div>
 
@@ -797,7 +797,7 @@ export default function EconomyCenterClient() {
             type="button"
             onClick={saveConfig}
             disabled={savingConfig}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:brightness-110 text-white shadow-sm disabled:opacity-60"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-emerald-500 hover:brightness-110 text-white shadow-sm disabled:opacity-60"
           >
             <Save className="w-4 h-4" />
             {savingConfig ? "Enregistrement..." : "Enregistrer"}

@@ -175,23 +175,23 @@ export default function SettingsCenterClient() {
   };
 
   const back = (
-    <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex h-8 items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-3 text-xs font-semibold text-zinc-300 transition hover:bg-zinc-800 hover:text-white">
-      <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+    <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 text-xs font-semibold text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)]">
+      <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
       Retour Discord
     </Link>
   );
 
   if (state !== "ok" || !draft) {
     return (
-      <div className="h-full overflow-y-auto px-4 pb-44 pt-6 text-white sm:px-6 lg:px-10">
+      <div className="h-full overflow-y-auto px-4 pb-44 pt-6 text-[var(--text-primary)] sm:px-6 lg:px-10">
         {back}
-        <p className="mt-8 text-sm text-zinc-400">{state === "offline" ? "Le bot est injoignable ou n'est pas sur ce serveur : impossible de charger les paramètres." : "Chargement…"}</p>
+        <p className="mt-8 text-sm text-[var(--text-muted)]">{state === "offline" ? "Le bot est injoignable ou n'est pas sur ce serveur : impossible de charger les paramètres." : "Chargement…"}</p>
       </div>
     );
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-[var(--bg-main)] px-4 pb-44 pt-6 text-white sm:px-6 lg:px-10">
+    <div className="h-full overflow-y-auto bg-[var(--bg-main)] px-4 pb-44 pt-6 text-[var(--text-primary)] sm:px-6 lg:px-10">
       <div className="mx-auto max-w-4xl space-y-8">
         <PageHeader guildId={guildId} icon="mod-commands" tint="zinc" title="Paramètres" subtitle="Langue, fuseau horaire, contacts d'urgence, aperçu des messages du bot et commandes." />
 
@@ -205,7 +205,7 @@ export default function SettingsCenterClient() {
                 </li>
               ))}
             </ul>
-            <p className="mt-2 text-[11px] text-rose-200/70">Vos contacts d&apos;urgence sont prévenus automatiquement (au plus une fois par jour pour un même problème).</p>
+            <p className="mt-2 text-xs text-rose-200/70">Vos contacts d&apos;urgence sont prévenus automatiquement (au plus une fois par jour pour un même problème).</p>
           </div>
         )}
 
@@ -242,10 +242,10 @@ export default function SettingsCenterClient() {
               </div>
             )}
             <div>
-              <button type="button" disabled={testing || Boolean(dirty)} onClick={() => void sendTest()} className="cursor-pointer rounded-xl border border-zinc-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50">
+              <button type="button" disabled={testing || Boolean(dirty)} onClick={() => void sendTest()} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--text-primary)] transition hover:bg-[var(--surface-raised)]/70 disabled:cursor-not-allowed disabled:opacity-50">
                 {testing ? "Envoi…" : "Envoyer un message de test"}
               </button>
-              <p className="mt-1 text-[11px] text-zinc-500">{dirty ? "Enregistrez d'abord vos modifications pour tester." : "Le test montre ce qui est réellement livré : salon d'alerte et messages privés."}</p>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">{dirty ? "Enregistrez d'abord vos modifications pour tester." : "Le test montre ce qui est réellement livré : salon d'alerte et messages privés."}</p>
             </div>
           </div>
         </Section>
@@ -259,7 +259,7 @@ export default function SettingsCenterClient() {
             />
           </Field>
           <div className="flex items-end">
-            <button type="button" disabled={previewing} onClick={() => void sendPreview()} className="cursor-pointer rounded-xl bg-[#5865F2] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4752C4] disabled:opacity-50">
+            <button type="button" disabled={previewing} onClick={() => void sendPreview()} className="cursor-pointer rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50">
               {previewing ? "Envoi en cours (quelques secondes)…" : "Me les envoyer en message privé"}
             </button>
           </div>
@@ -276,13 +276,13 @@ export default function SettingsCenterClient() {
       </div>
 
       {dirty && (
-        <div className="fixed inset-x-0 bottom-24 z-30 mx-auto flex w-[min(92vw,640px)] items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-3 shadow-2xl">
-          <p className="text-sm text-zinc-300">{invalid ? "Corrigez les champs en rouge avant d'enregistrer." : "Vous avez des modifications non enregistrées."}</p>
+        <div className="fixed inset-x-0 bottom-24 z-30 mx-auto flex w-[min(92vw,640px)] items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-3 ">
+          <p className="text-sm text-[var(--text-muted)]">{invalid ? "Corrigez les champs en rouge avant d'enregistrer." : "Vous avez des modifications non enregistrées."}</p>
           <div className="flex gap-2">
-            <button type="button" onClick={() => setDraft(saved)} className="cursor-pointer rounded-lg px-3 py-2 text-sm font-semibold text-zinc-400 hover:text-white">
+            <button type="button" onClick={() => setDraft(saved)} className="cursor-pointer rounded-xl px-3 py-2 text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]">
               Annuler
             </button>
-            <button type="button" disabled={saving || invalid} onClick={() => void save()} className="cursor-pointer rounded-lg bg-[#5865F2] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#4752C4] disabled:cursor-not-allowed disabled:opacity-50">
+            <button type="button" disabled={saving || invalid} onClick={() => void save()} className="cursor-pointer rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50">
               {saving ? "Enregistrement…" : "Enregistrer"}
             </button>
           </div>

@@ -149,12 +149,12 @@ const MODULE_PAGES: Record<string, string> = {
   backups: "/discord/backups", ai: "/discord/ai", forms: "/discord/forms", polls: "/discord/polls", roles: "/discord/roles",
   analytics: "/discord/analytics", events: "/discord/events", server: "/discord/server", starboard: "/discord/starboard",
   sticky: "/discord/sticky", reminders: "/discord/reminders", afk: "/discord/afk", counting: "/discord/counting", stats: "/discord/stats", statroles: "/discord/statroles", secureroles: "/discord/secure-roles", settings: "/discord/settings", birthdays: "/discord/birthdays", tags: "/discord/tags",
-  serverstats: "/discord/server-stats", highlights: "/discord/highlights", bot: "/discord/bot", economy: "/discord/economy", calendar: "/discord/calendar",
+  serverstats: "/discord/server-stats", automodnative: "/discord/automod-native", highlights: "/discord/highlights", bot: "/discord/bot", economy: "/discord/economy", calendar: "/discord/calendar",
 };
 
 /** Regroupement façon Dyno / MEE6 : l'utilisateur cherche par intention (protéger, animer, gérer), pas par nom technique. */
 const MODULE_CATEGORIES: NavigatorCategory[] = [
-  { id: "protect", label: "Sécurité & modération", hint: "Protégez le serveur", modules: ["security", "secureroles", "moderation", "logs", "backups"] },
+  { id: "protect", label: "Sécurité & modération", hint: "Protégez le serveur", modules: ["security", "secureroles", "moderation", "automodnative", "logs", "backups"] },
   { id: "community", label: "Communauté", hint: "Accueillez et animez vos membres", modules: ["welcome", "roles", "statroles", "leveling", "invites", "suggestions", "polls", "forms", "starboard", "highlights", "birthdays"] },
   { id: "fun", label: "Animation & médias", hint: "Musique, jeux et événements", modules: ["music", "giveaways", "economy", "counting", "events", "calendar", "voice"] },
   { id: "tools", label: "Outils du quotidien", hint: "Support et automatisations", modules: ["tickets", "commands", "tags", "reminders", "sticky", "afk", "serverstats"] },
@@ -504,6 +504,7 @@ const NAV_MODULES_BASE: NavigatorModule[] = [
   ...MODULES.map((m) => ({ id: m.id, title: m.title, description: m.description, icon: m.icon, tint: MODULE_TINTS[m.id] ?? m.color, href: MODULE_PAGES[m.id] ?? `/discord/${m.id}` })),
   { id: "economy", title: "Économie & Boutique", description: "Monnaie du serveur, récompense quotidienne, boutique de rôles et classement.", icon: ethoneIcon("mod-economy"), tint: "text-yellow-300", href: MODULE_PAGES.economy },
   { id: "calendar", title: "Calendrier", description: "Vue mensuelle des événements, anniversaires et rappels du serveur.", icon: ethoneIcon("calendar"), tint: "text-orange-300", href: MODULE_PAGES.calendar },
+  { id: "automodnative", title: "AutoMod natif Discord", description: "Règles d'auto-modération intégrées à Discord (mots-clés, spam, mentions), exécutées même si le bot est hors ligne.", icon: MODULE_ICONS.security, tint: "text-red-300", href: MODULE_PAGES.automodnative },
 ];
 
 

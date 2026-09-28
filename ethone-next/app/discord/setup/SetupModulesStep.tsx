@@ -91,14 +91,14 @@ export default function SetupModulesStep({ guildId }: { guildId: string }) {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div>
-        <h3 className="mb-1 text-xl font-bold text-white">3. Choisir les modules</h3>
-        <p className="text-xs text-zinc-400">
+        <h3 className="mb-1 text-xl font-bold text-[var(--text-primary)]">3. Choisir les modules</h3>
+        <p className="text-xs text-[var(--text-muted)]">
           Rien ne s&apos;active sans votre accord : un nouveau serveur démarre avec le socle essentiel seulement. Choisissez un préréglage, puis ajustez module par module. Tout reste modifiable plus tard.
         </p>
       </div>
 
       {!API_BASE || !known ? (
-        <div className="rounded-2xl border border-dashed border-zinc-800 p-6 text-center text-xs text-zinc-500">
+        <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-6 text-center text-xs text-[var(--text-muted)]">
           Le bot n&apos;a pas répondu pour ce serveur : les modules ne peuvent pas être affichés. Vérifiez que le bot est bien présent, puis rechargez la page.
         </div>
       ) : (
@@ -113,15 +113,15 @@ export default function SetupModulesStep({ guildId }: { guildId: string }) {
                   disabled={busy}
                   onClick={() => applyPreset(p.ids)}
                   className={`cursor-pointer rounded-2xl border p-4 text-left transition-all hover:-translate-y-0.5 disabled:opacity-60 ${
-                    active ? "border-indigo-400/60 bg-indigo-500/10 ring-1 ring-indigo-400/30" : "border-zinc-800 bg-zinc-950/60 hover:border-zinc-600"
+                    active ? "border-emerald-500/30 bg-emerald-500/10 ring-1 ring-emerald-500/30" : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)]"
                   }`}
                 >
-                  <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
                     <span className="text-lg">{p.emoji}</span>
                     {p.label}
-                    {active && <span className="ml-auto rounded-full bg-indigo-400/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-200">Actuel</span>}
+                    {active && <span className="ml-auto rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-emerald-300">Actuel</span>}
                   </div>
-                  <p className="mt-1.5 text-xs leading-relaxed text-zinc-400">{p.text}</p>
+                  <p className="mt-1.5 text-xs leading-relaxed text-[var(--text-muted)]">{p.text}</p>
                 </button>
               );
             })}
@@ -129,7 +129,7 @@ export default function SetupModulesStep({ guildId }: { guildId: string }) {
 
           {GROUPS.map((g) => (
             <div key={g.title}>
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{g.title}</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">{g.title}</p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {g.ids
                   .filter((id) => id in view)
@@ -144,12 +144,12 @@ export default function SetupModulesStep({ guildId }: { guildId: string }) {
                         aria-checked={on}
                         onClick={() => toggle(id)}
                         className={`flex cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-colors ${
-                          on ? "border-emerald-500/30 bg-emerald-500/[0.06]" : "border-zinc-800 bg-zinc-950/50 hover:border-zinc-700"
+                          on ? "border-emerald-500/30 bg-emerald-500/[0.06]" : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)]"
                         }`}
                       >
-                        {meta ? <EthoneIcon name={meta.icon} className={`h-5 w-5 shrink-0 ${on ? meta.tint : "text-zinc-600"}`} /> : <span className="h-5 w-5 shrink-0" />}
-                        <span className={`flex-1 truncate text-sm font-medium ${on ? "text-white" : "text-zinc-400"}`}>{meta?.title ?? EXTRA_TITLES[id] ?? id}</span>
-                        <span className={`relative h-[18px] w-8 shrink-0 rounded-full transition-colors ${on ? "bg-emerald-500" : "bg-zinc-700"}`}>
+                        {meta ? <EthoneIcon name={meta.icon} className={`h-5 w-5 shrink-0 ${on ? meta.tint : "text-[var(--text-muted)]"}`} /> : <span className="h-5 w-5 shrink-0" />}
+                        <span className={`flex-1 truncate text-sm font-medium ${on ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]"}`}>{meta?.title ?? EXTRA_TITLES[id] ?? id}</span>
+                        <span className={`relative h-[18px] w-8 shrink-0 rounded-full transition-colors ${on ? "bg-emerald-500" : "bg-[var(--surface-raised)]/40"}`}>
                           <span className={`absolute top-[2px] h-[14px] w-[14px] rounded-full bg-white transition-all ${on ? "left-[16px]" : "left-[2px]"}`} />
                         </span>
                       </button>
@@ -158,7 +158,7 @@ export default function SetupModulesStep({ guildId }: { guildId: string }) {
               </div>
             </div>
           ))}
-          <p className="text-[11px] text-zinc-500">{enabledIds.length} module(s) actif(s) sur {allIds.length}.</p>
+          <p className="text-xs text-[var(--text-muted)]">{enabledIds.length} module(s) actif(s) sur {allIds.length}.</p>
         </>
       )}
     </div>

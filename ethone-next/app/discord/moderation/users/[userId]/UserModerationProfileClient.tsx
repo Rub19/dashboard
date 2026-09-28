@@ -199,7 +199,7 @@ export default function UserModerationProfileClient() {
     if (userProfile.activeSanctions?.some((s: any) => s.action === "TIMEOUT"))
       return { label: "En Exclusion (Timeout)", color: "text-orange-400", bg: "bg-orange-500/10", dot: "bg-orange-500" };
     if (userProfile.activeSanctions?.some((s: any) => s.action === "QUARANTINE"))
-      return { label: "Quarantaine", color: "text-indigo-400", bg: "bg-indigo-500/10", dot: "bg-indigo-500" };
+      return { label: "Quarantaine", color: "text-emerald-400", bg: "bg-emerald-500/10", dot: "bg-emerald-500" };
     return { label: "Normal", color: "text-emerald-400", bg: "bg-emerald-500/10", dot: "bg-emerald-500" };
   }, [userProfile]);
 
@@ -333,26 +333,26 @@ export default function UserModerationProfileClient() {
   }, [timeline, timelineFilter]);
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-200 pb-44 md:pb-44 font-sans">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] pb-44 md:pb-44 font-sans">
       {/* HEADER NAVIGATION */}
-      <div className="border-b border-[var(--panel-border)] bg-slate-900/40 backdrop-blur-xl sticky top-0 z-30 px-6 py-4">
+      <div className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 sticky top-0 z-30 px-6 py-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
               href={selectedGuild ? `/discord/moderation?guildId=${selectedGuild.id}` : "/discord/moderation"}
-              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+              className="p-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--text-primary)]/10 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Staff Console</span>
-                <span className="text-slate-600">/</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Staff Console</span>
+                <span className="text-[var(--text-muted)]">/</span>
                 <span className="text-xs font-semibold text-ethone-accent">Profil Modérateur</span>
               </div>
-              <h1 className="text-xl font-bold text-white flex items-center gap-2">
+              <h1 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <span>{userProfile?.username || "Chargement..."}</span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-400 font-mono">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--text-primary)]/10 text-[var(--text-muted)] font-mono">
                   {targetUserId}
                 </span>
               </h1>
@@ -362,7 +362,7 @@ export default function UserModerationProfileClient() {
           {/* SÉLECTEUR GUILD & STATUT ACTUEL */}
           <div className="flex items-center gap-3">
             <div className={cn("px-3 py-1.5 rounded-xl border flex items-center gap-2 text-xs font-medium", currentStatus.bg, currentStatus.color, "border-current/20")}>
-              <span className={cn("w-2 h-2 rounded-full shadow-[0_0_5px_currentColor]", currentStatus.dot)} />
+              <span className={cn("w-2 h-2 rounded-full ", currentStatus.dot)} />
               <span>Statut : {currentStatus.label}</span>
             </div>
 
@@ -399,7 +399,7 @@ export default function UserModerationProfileClient() {
               href={BOT_INVITE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-semibold shrink-0 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-semibold shrink-0 transition-colors"
             >
               <Bot className="h-3.5 w-3.5" />
               Inviter le bot
@@ -410,23 +410,23 @@ export default function UserModerationProfileClient() {
         {/* CARD PROFIL & SCORE DE RISQUE */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* FICHE IDENTITÉ */}
-          <div className="lg:col-span-2 p-6 rounded-2xl bg-slate-900/50 border border-[var(--panel-border)] backdrop-blur-md relative overflow-hidden flex flex-col justify-between">
+          <div className="lg:col-span-2 p-6 rounded-2xl bg-[var(--surface-raised)]/50 border border-[var(--panel-border)] relative overflow-hidden flex flex-col justify-between">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
               <div className="relative">
                 {userProfile?.avatarUrl ? (
                   <img
                     src={userProfile.avatarUrl}
                     alt="Avatar"
-                    className="w-20 h-20 rounded-2xl object-cover ring-2 ring-white/10"
+                    className="w-20 h-20 rounded-2xl object-cover ring-2 ring-[var(--panel-border)]"
                   />
                 ) : (
-                  <div className="w-20 h-20 rounded-2xl bg-indigo-500/15 border border-[var(--panel-border)] flex items-center justify-center text-2xl font-bold text-white">
+                  <div className="w-20 h-20 rounded-2xl bg-emerald-500/15 border border-[var(--panel-border)] flex items-center justify-center text-2xl font-bold text-[var(--text-primary)]">
                     {userProfile?.username?.substring(0, 2).toUpperCase() || "??"}
                   </div>
                 )}
                 <span
                   className={cn(
-                    "absolute -bottom-1 -right-1 w-5 h-5 rounded-full ring-2 ring-slate-900",
+                    "absolute -bottom-1 -right-1 w-5 h-5 rounded-full ring-2 ring-[var(--panel-border)]",
                     currentStatus.dot
                   )}
                 />
@@ -434,12 +434,12 @@ export default function UserModerationProfileClient() {
 
               <div className="space-y-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h2 className="text-2xl font-extrabold text-white">{userProfile?.username}</h2>
+                  <h2 className="text-2xl font-extrabold text-[var(--text-primary)]">{userProfile?.username}</h2>
                   {userProfile?.globalName && (
-                    <span className="text-sm text-slate-400 font-medium">({userProfile.globalName})</span>
+                    <span className="text-sm text-[var(--text-muted)] font-medium">({userProfile.globalName})</span>
                   )}
                 </div>
-                <div className="text-xs font-mono text-slate-400 flex items-center gap-2 flex-wrap">
+                <div className="text-xs font-mono text-[var(--text-muted)] flex items-center gap-2 flex-wrap">
                   <span>ID: {targetUserId}</span>
                   <span>•</span>
                   <span>
@@ -463,7 +463,7 @@ export default function UserModerationProfileClient() {
                     userProfile.roles.map((r: any) => (
                       <span
                         key={r.id}
-                        className="text-[11px] px-2 py-0.5 rounded-md font-medium border"
+                        className="text-xs px-2 py-0.5 rounded-md font-medium border"
                         style={{
                           backgroundColor: `${r.color || "#4F46E5"}15`,
                           borderColor: `${r.color || "#4F46E5"}40`,
@@ -474,7 +474,7 @@ export default function UserModerationProfileClient() {
                       </span>
                     ))
                   ) : (
-                    <span className="text-xs text-slate-400">Aucun rôle spécifique</span>
+                    <span className="text-xs text-[var(--text-muted)]">Aucun rôle spécifique</span>
                   )}
                 </div>
               </div>
@@ -482,36 +482,36 @@ export default function UserModerationProfileClient() {
 
             {/* STATISTIQUES SANCTIONS DU MEMBRE */}
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-6 mt-6 border-t border-[var(--panel-border)]">
-              <div className="p-3 rounded-xl bg-slate-800/40 border border-[var(--panel-border)] text-center">
-                <span className="text-xs text-slate-400 block font-medium">Warnings</span>
+              <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-center">
+                <span className="text-xs text-[var(--text-muted)] block font-medium">Warnings</span>
                 <span className="text-lg font-bold text-amber-400">{userProfile?.stats?.warnings || 0}</span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-800/40 border border-[var(--panel-border)] text-center">
-                <span className="text-xs text-slate-400 block font-medium">Timeouts</span>
+              <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-center">
+                <span className="text-xs text-[var(--text-muted)] block font-medium">Timeouts</span>
                 <span className="text-lg font-bold text-orange-400">{userProfile?.stats?.timeouts || 0}</span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-800/40 border border-[var(--panel-border)] text-center">
-                <span className="text-xs text-slate-400 block font-medium">Kicks</span>
+              <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-center">
+                <span className="text-xs text-[var(--text-muted)] block font-medium">Kicks</span>
                 <span className="text-lg font-bold text-rose-400">{userProfile?.stats?.kicks || 0}</span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-800/40 border border-[var(--panel-border)] text-center">
-                <span className="text-xs text-slate-400 block font-medium">Bans</span>
+              <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-center">
+                <span className="text-xs text-[var(--text-muted)] block font-medium">Bans</span>
                 <span className="text-lg font-bold text-red-400">{userProfile?.stats?.bans || 0}</span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-800/40 border border-[var(--panel-border)] text-center col-span-2 sm:col-span-1">
-                <span className="text-xs text-slate-400 block font-medium">Cases Total</span>
-                <span className="text-lg font-bold text-white">{userProfile?.stats?.totalCases || 0}</span>
+              <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-center col-span-2 sm:col-span-1">
+                <span className="text-xs text-[var(--text-muted)] block font-medium">Cases Total</span>
+                <span className="text-lg font-bold text-[var(--text-primary)]">{userProfile?.stats?.totalCases || 0}</span>
               </div>
             </div>
           </div>
 
           {/* JAUGE DE SCORE DE RISQUE */}
-          <div className="p-6 rounded-2xl bg-slate-900/50 border border-[var(--panel-border)] backdrop-blur-md flex flex-col justify-between">
+          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/50 border border-[var(--panel-border)] flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShieldAlert className="w-5 h-5 text-ethone-accent" />
-                  <span className="text-sm font-bold text-white">Score de Risque</span>
+                  <span className="text-sm font-bold text-[var(--text-primary)]">Score de Risque</span>
                 </div>
                 <span className={cn("text-xs font-bold px-2.5 py-1 rounded-full border", riskBadge.bg, riskBadge.text, riskBadge.border)}>
                   {riskBadge.label}
@@ -520,14 +520,14 @@ export default function UserModerationProfileClient() {
 
               {/* JAUGE CIRCULAIRE / BARRE */}
               <div className="mt-4 flex items-baseline gap-2">
-                <span className="text-4xl font-extrabold text-white tracking-tight">
+                <span className="text-4xl font-extrabold text-[var(--text-primary)] tracking-tight">
                   {userProfile?.calculatedRiskScore || 0}
                 </span>
-                <span className="text-sm text-slate-400 font-semibold">/ 100</span>
+                <span className="text-sm text-[var(--text-muted)] font-semibold">/ 100</span>
               </div>
 
               {/* BARRE DE PROGRESSION */}
-              <div className="w-full h-3 bg-slate-800/80 rounded-full mt-3 overflow-hidden p-0.5 ring-1 ring-white/5">
+              <div className="w-full h-3 bg-[var(--surface-raised)]/80 rounded-full mt-3 overflow-hidden p-0.5 ring-1 ring-[var(--panel-border)]">
                 <div
                   className={cn(
                     "h-full rounded-full transition-all duration-500",
@@ -542,32 +542,32 @@ export default function UserModerationProfileClient() {
               </div>
 
               {/* FACTEURS DE RISQUE */}
-              <div className="mt-4 space-y-1.5 text-xs text-slate-400 font-medium">
+              <div className="mt-4 space-y-1.5 text-xs text-[var(--text-muted)] font-medium">
                 <div className="flex justify-between py-1 border-b border-[var(--panel-border)]">
                   <span>Sanctions directes</span>
-                  <span className="text-slate-300 font-mono">+{userProfile?.riskBreakdown?.sanctions || 0} pts</span>
+                  <span className="text-[var(--text-muted)] font-mono">+{userProfile?.riskBreakdown?.sanctions || 0} pts</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-[var(--panel-border)]">
                   <span>Avertissements (Warnings)</span>
-                  <span className="text-slate-300 font-mono">+{userProfile?.riskBreakdown?.warnings || 0} pts</span>
+                  <span className="text-[var(--text-muted)] font-mono">+{userProfile?.riskBreakdown?.warnings || 0} pts</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-[var(--panel-border)]">
                   <span>Incidents AutoMod / Anti-Raid</span>
-                  <span className="text-slate-300 font-mono">+{userProfile?.riskBreakdown?.autoModTriggers || 0} pts</span>
+                  <span className="text-[var(--text-muted)] font-mono">+{userProfile?.riskBreakdown?.autoModTriggers || 0} pts</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-[var(--panel-border)]">
                   <span>Signalements déposés</span>
-                  <span className="text-slate-300 font-mono">+{userProfile?.riskBreakdown?.reportsCount || 0} pts</span>
+                  <span className="text-[var(--text-muted)] font-mono">+{userProfile?.riskBreakdown?.reportsCount || 0} pts</span>
                 </div>
                 <div className="flex justify-between py-1">
                   <span>Pénalité de récidive récente</span>
-                  <span className="text-slate-300 font-mono">+{userProfile?.riskBreakdown?.recidivismPenalty || 0} pts</span>
+                  <span className="text-[var(--text-muted)] font-mono">+{userProfile?.riskBreakdown?.recidivismPenalty || 0} pts</span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-4 p-2.5 rounded-xl bg-white/5 border border-[var(--panel-border)] text-[11px] text-slate-400 flex items-start gap-2">
-              <HelpCircle className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+            <div className="mt-4 p-2.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-muted)] flex items-start gap-2">
+              <HelpCircle className="w-4 h-4 text-[var(--text-muted)] shrink-0 mt-0.5" />
               <span>
                 Le score de risque est calculé pour guider vos modérateurs. Il ne prend aucune décision automatique sans accord humain.
               </span>
@@ -576,10 +576,10 @@ export default function UserModerationProfileClient() {
         </div>
 
         {/* QUICK ACTIONS TOOLBAR */}
-        <div className="p-4 rounded-2xl bg-slate-900/60 border border-[var(--panel-border)] backdrop-blur-md flex items-center justify-between flex-wrap gap-3">
+        <div className="p-4 rounded-2xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-amber-400" />
-            <span className="text-sm font-bold text-white uppercase tracking-wider">Actions Rapides Staff :</span>
+            <span className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-wider">Actions Rapides Staff :</span>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
@@ -617,7 +617,7 @@ export default function UserModerationProfileClient() {
 
             <button
               onClick={() => setActiveActionModal("QUARANTINE")}
-              className="px-3.5 py-2 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              className="px-3.5 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors"
             >
               <Lock className="w-4 h-4" />
               <span>Quarantaine</span>
@@ -625,7 +625,7 @@ export default function UserModerationProfileClient() {
 
             <button
               onClick={() => setActiveTab("notes")}
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-[var(--panel-border)] text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              className="px-3.5 py-2 rounded-xl bg-[var(--surface-raised)] hover:bg-[var(--text-primary)]/20 text-[var(--text-muted)] border border-[var(--panel-border)] text-xs font-semibold flex items-center gap-1.5 transition-colors"
             >
               <Plus className="w-4 h-4" />
               <span>Ajouter une Note</span>
@@ -651,16 +651,16 @@ export default function UserModerationProfileClient() {
               className={cn(
                 "px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-2",
                 activeTab === tab.id
-                  ? "bg-white/10 text-white shadow-sm border border-[var(--panel-border)]"
-                  : "text-slate-400 hover:text-white hover:bg-white/5"
+                  ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm border border-[var(--panel-border)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
               <span>{tab.label}</span>
               {typeof tab.count === "number" && (
                 <span
                   className={cn(
-                    "text-[10px] px-1.5 py-0.5 rounded-full font-mono",
-                    activeTab === tab.id ? "bg-white/20 text-white" : "bg-white/5 text-slate-400"
+                    "text-xs px-1.5 py-0.5 rounded-full font-mono",
+                    activeTab === tab.id ? "bg-[var(--text-primary)]/15 text-[var(--text-primary)]" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
                   )}
                 >
                   {tab.count}
@@ -676,8 +676,8 @@ export default function UserModerationProfileClient() {
         {activeTab === "overview" && (
           <div className="space-y-6">
             {/* Sanctions Actives */}
-            <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)]">
-              <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+            <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+              <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-orange-400" />
                 <span>Sanctions Actives en Cours ({userProfile?.activeSanctions?.length || 0})</span>
               </h3>
@@ -691,16 +691,16 @@ export default function UserModerationProfileClient() {
                           <span className="text-xs px-2 py-0.5 rounded-md font-bold bg-orange-500/20 text-orange-400">
                             {sc.action}
                           </span>
-                          <span className="text-xs font-bold text-white">Case #{sc.caseNumber}</span>
+                          <span className="text-xs font-bold text-[var(--text-primary)]">Case #{sc.caseNumber}</span>
                         </div>
-                        <p className="text-xs text-slate-300 mt-2">{sc.reason}</p>
-                        <span className="text-[11px] text-slate-400 mt-1 block">
+                        <p className="text-xs text-[var(--text-muted)] mt-2">{sc.reason}</p>
+                        <span className="text-xs text-[var(--text-muted)] mt-1 block">
                           Par {sc.moderatorTag} • Expire : {sc.expiresAt ? new Date(sc.expiresAt).toLocaleString("fr-FR") : "Jamais"}
                         </span>
                       </div>
                       <button
                         onClick={() => setRevertingCase(sc)}
-                        className="text-xs px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors"
+                        className="text-xs px-2.5 py-1 rounded-xl bg-[var(--text-primary)]/10 hover:bg-[var(--text-primary)]/15 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                       >
                         Pardonner / Lever
                       </button>
@@ -708,16 +708,16 @@ export default function UserModerationProfileClient() {
                   ))}
                 </div>
               ) : (
-                <div className="p-8 text-center text-xs text-slate-400 rounded-xl bg-slate-800/20 border border-dashed border-[var(--panel-border)]">
+                <div className="p-8 text-center text-xs text-[var(--text-muted)] rounded-xl bg-[var(--surface-raised)]/20 border border-dashed border-[var(--panel-border)]">
                   ✅ Aucune sanction active sur ce membre actuellement.
                 </div>
               )}
             </div>
 
             {/* Dernières Notes Staff */}
-            <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)]">
+            <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <FileText className="w-4 h-4 text-ethone-accent" />
                   <span>Dernières Notes Staff</span>
                 </h3>
@@ -732,17 +732,17 @@ export default function UserModerationProfileClient() {
               {userProfile?.notes?.length > 0 ? (
                 <div className="space-y-3">
                   {userProfile.notes.slice(0, 3).map((n: any) => (
-                    <div key={n.id} className="p-3.5 rounded-xl bg-slate-800/40 border border-[var(--panel-border)]">
-                      <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                        <span className="font-semibold text-white">Ajouté par @{n.authorTag}</span>
-                        <span className="text-[11px]">{new Date(n.createdAt).toLocaleDateString("fr-FR")}</span>
+                    <div key={n.id} className="p-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+                      <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-1">
+                        <span className="font-semibold text-[var(--text-primary)]">Ajouté par @{n.authorTag}</span>
+                        <span className="text-xs">{new Date(n.createdAt).toLocaleDateString("fr-FR")}</span>
                       </div>
-                      <p className="text-xs text-slate-300 whitespace-pre-line">{n.content}</p>
+                      <p className="text-xs text-[var(--text-muted)] whitespace-pre-line">{n.content}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-slate-400 italic">Aucune note staff rédigée.</p>
+                <p className="text-xs text-[var(--text-muted)] italic">Aucune note staff rédigée.</p>
               )}
             </div>
           </div>
@@ -750,26 +750,26 @@ export default function UserModerationProfileClient() {
 
         {/* 2. CASES */}
         {activeTab === "cases" && (
-          <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] space-y-4">
-            <h3 className="text-base font-bold text-white">Dossiers Disciplinaires (Cases)</h3>
+          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+            <h3 className="text-base font-bold text-[var(--text-primary)]">Dossiers Disciplinaires (Cases)</h3>
             {userProfile?.timeline?.length > 0 ? (
-              <div className="divide-y divide-white/5">
+              <div className="divide-y divide-[var(--panel-border)]">
                 {userProfile.timeline.map((c: any) => (
                   <div key={c.id} className="py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs px-2 py-0.5 rounded-md font-bold bg-white/10 text-white font-mono">
+                        <span className="text-xs px-2 py-0.5 rounded-md font-bold bg-[var(--text-primary)]/10 text-[var(--text-primary)] font-mono">
                           #{c.caseNumber}
                         </span>
-                        <span className="text-xs px-2 py-0.5 rounded-md font-bold bg-indigo-500/10 text-indigo-400">
+                        <span className="text-xs px-2 py-0.5 rounded-md font-bold bg-emerald-500/10 text-emerald-400">
                           {c.action}
                         </span>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-[var(--text-muted)]">
                           {new Date(c.createdAt).toLocaleDateString("fr-FR")} à {new Date(c.createdAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
                         </span>
                       </div>
-                      <p className="text-sm text-slate-200 font-medium">{c.reason}</p>
-                      <div className="text-xs text-slate-400 flex items-center gap-2">
+                      <p className="text-sm text-[var(--text-primary)] font-medium">{c.reason}</p>
+                      <div className="text-xs text-[var(--text-muted)] flex items-center gap-2">
                         <span>Modérateur : @{c.moderatorTag}</span>
                         <span>•</span>
                         <span>Source : {c.source || "MANUAL"}</span>
@@ -782,7 +782,7 @@ export default function UserModerationProfileClient() {
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/discord/moderation/cases/${c.caseNumber}`}
-                        className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-white transition-colors"
+                        className="px-3 py-1.5 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--text-primary)]/10 text-xs font-semibold text-[var(--text-primary)] transition-colors"
                       >
                         Consulter
                       </Link>
@@ -799,38 +799,38 @@ export default function UserModerationProfileClient() {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-400 italic">Aucune case enregistrée pour cet utilisateur.</p>
+              <p className="text-xs text-[var(--text-muted)] italic">Aucune case enregistrée pour cet utilisateur.</p>
             )}
           </div>
         )}
 
         {/* 3. WARNINGS */}
         {activeTab === "warnings" && (
-          <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+            <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-amber-400" />
               <span>Historique des Avertissements (Warnings)</span>
             </h3>
             {userProfile?.timeline?.filter((c: any) => c.action === "WARN").length > 0 ? (
-              <div className="divide-y divide-white/5">
+              <div className="divide-y divide-[var(--panel-border)]">
                 {userProfile.timeline
                   .filter((c: any) => c.action === "WARN")
                   .map((w: any) => (
                     <div key={w.id} className="py-3.5 flex items-start justify-between">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-white font-mono">Case #{w.caseNumber}</span>
-                          <span className="text-xs text-slate-400">
+                          <span className="text-xs font-bold text-[var(--text-primary)] font-mono">Case #{w.caseNumber}</span>
+                          <span className="text-xs text-[var(--text-muted)]">
                             {new Date(w.createdAt).toLocaleString("fr-FR")}
                           </span>
                         </div>
-                        <p className="text-sm text-slate-200 mt-1">{w.reason}</p>
-                        <span className="text-xs text-slate-400">Par @{w.moderatorTag}</span>
+                        <p className="text-sm text-[var(--text-primary)] mt-1">{w.reason}</p>
+                        <span className="text-xs text-[var(--text-muted)]">Par @{w.moderatorTag}</span>
                       </div>
                       {w.status !== "REVOKED" && (
                         <button
                           onClick={() => setRevertingCase(w)}
-                          className="text-xs px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
+                          className="text-xs px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
                         >
                           Retirer
                         </button>
@@ -839,36 +839,36 @@ export default function UserModerationProfileClient() {
                   ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-400 italic">Aucun avertissement consigné.</p>
+              <p className="text-xs text-[var(--text-muted)] italic">Aucun avertissement consigné.</p>
             )}
           </div>
         )}
 
         {/* 4. SANCTIONS */}
         {activeTab === "sanctions" && (
-          <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] space-y-4">
-            <h3 className="text-base font-bold text-white">Sanctions Lourdes (Timeouts, Kicks, Bans)</h3>
+          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+            <h3 className="text-base font-bold text-[var(--text-primary)]">Sanctions Lourdes (Timeouts, Kicks, Bans)</h3>
             {userProfile?.timeline?.filter((c: any) => c.action !== "WARN").length > 0 ? (
-              <div className="divide-y divide-white/5">
+              <div className="divide-y divide-[var(--panel-border)]">
                 {userProfile.timeline
                   .filter((c: any) => c.action !== "WARN")
                   .map((s: any) => (
                     <div key={s.id} className="py-3.5 flex items-start justify-between">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs px-2 py-0.5 rounded font-bold bg-white/10 text-white">
+                          <span className="text-xs px-2 py-0.5 rounded font-bold bg-[var(--text-primary)]/10 text-[var(--text-primary)]">
                             {s.action}
                           </span>
-                          <span className="text-xs font-bold text-white font-mono">Case #{s.caseNumber}</span>
-                          <span className="text-xs text-slate-400">{new Date(s.createdAt).toLocaleString("fr-FR")}</span>
+                          <span className="text-xs font-bold text-[var(--text-primary)] font-mono">Case #{s.caseNumber}</span>
+                          <span className="text-xs text-[var(--text-muted)]">{new Date(s.createdAt).toLocaleString("fr-FR")}</span>
                         </div>
-                        <p className="text-sm text-slate-200 mt-1">{s.reason}</p>
-                        <span className="text-xs text-slate-400">Par @{s.moderatorTag}</span>
+                        <p className="text-sm text-[var(--text-primary)] mt-1">{s.reason}</p>
+                        <span className="text-xs text-[var(--text-muted)]">Par @{s.moderatorTag}</span>
                       </div>
                       {s.status !== "REVOKED" && (
                         <button
                           onClick={() => setRevertingCase(s)}
-                          className="text-xs px-2.5 py-1 rounded-lg bg-white/10 text-white hover:bg-white/20"
+                          className="text-xs px-2.5 py-1 rounded-xl bg-[var(--text-primary)]/10 text-[var(--text-primary)] hover:bg-[var(--text-primary)]/15"
                         >
                           Lever
                         </button>
@@ -877,7 +877,7 @@ export default function UserModerationProfileClient() {
                   ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-400 italic">Aucune sanction lourde consignée.</p>
+              <p className="text-xs text-[var(--text-muted)] italic">Aucune sanction lourde consignée.</p>
             )}
           </div>
         )}
@@ -886,8 +886,8 @@ export default function UserModerationProfileClient() {
         {activeTab === "notes" && (
           <div className="space-y-6">
             {/* Formulaire ajout de note */}
-            <form onSubmit={handleAddNote} className="p-5 rounded-2xl bg-slate-900/60 border border-[var(--panel-border)] space-y-3">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <form onSubmit={handleAddNote} className="p-5 rounded-2xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] space-y-3">
+              <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Lock className="w-4 h-4 text-amber-400" />
                 <span>Rédiger une Note Staff Privée</span>
               </h3>
@@ -896,13 +896,13 @@ export default function UserModerationProfileClient() {
                 onChange={(e) => setNewNoteContent(e.target.value)}
                 placeholder="Renseignez une observation confidentielle (visible uniquement par le staff modération)..."
                 rows={3}
-                className="w-full bg-slate-800/80 border border-[var(--panel-border)] rounded-xl p-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-ethone-accent resize-none"
+                className="w-full bg-[var(--surface-raised)]/80 border border-[var(--panel-border)] rounded-xl p-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-ethone-accent resize-none"
               />
               <div className="flex justify-end">
                 <button
                   type="submit"
                   disabled={isSubmittingNote || !newNoteContent.trim()}
-                  className="px-4 py-2 rounded-xl bg-ethone-accent hover:bg-ethone-accent/90 text-white text-xs font-bold transition-all disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-ethone-accent hover:bg-ethone-accent/90 text-[var(--text-primary)] text-xs font-bold transition-all disabled:opacity-50"
                 >
                   {isSubmittingNote ? "Enregistrement..." : "Enregistrer la note"}
                 </button>
@@ -910,22 +910,22 @@ export default function UserModerationProfileClient() {
             </form>
 
             {/* Liste des notes */}
-            <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] space-y-4">
-              <h4 className="text-sm font-bold text-white">Notes Privées Existantes ({userProfile?.notes?.length || 0})</h4>
+            <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+              <h4 className="text-sm font-bold text-[var(--text-primary)]">Notes Privées Existantes ({userProfile?.notes?.length || 0})</h4>
               {userProfile?.notes?.length > 0 ? (
                 <div className="space-y-3">
                   {userProfile.notes.map((n: any) => (
-                    <div key={n.id} className="p-4 rounded-xl bg-slate-800/40 border border-[var(--panel-border)] space-y-1">
+                    <div key={n.id} className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-1">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-white">@{n.authorTag}</span>
-                        <span className="text-slate-400">{new Date(n.createdAt).toLocaleString("fr-FR")}</span>
+                        <span className="font-bold text-[var(--text-primary)]">@{n.authorTag}</span>
+                        <span className="text-[var(--text-muted)]">{new Date(n.createdAt).toLocaleString("fr-FR")}</span>
                       </div>
-                      <p className="text-sm text-slate-300 whitespace-pre-line">{n.content}</p>
+                      <p className="text-sm text-[var(--text-muted)] whitespace-pre-line">{n.content}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-slate-400 italic">Aucune note rédigée pour le moment.</p>
+                <p className="text-xs text-[var(--text-muted)] italic">Aucune note rédigée pour le moment.</p>
               )}
             </div>
           </div>
@@ -933,12 +933,12 @@ export default function UserModerationProfileClient() {
 
         {/* 6. EVIDENCE */}
         {activeTab === "evidence" && (
-          <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] space-y-4">
-            <h3 className="text-base font-bold text-white">Preuves Archivées (Evidence Center)</h3>
-            <p className="text-xs text-slate-400">
+          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+            <h3 className="text-base font-bold text-[var(--text-primary)]">Preuves Archivées (Evidence Center)</h3>
+            <p className="text-xs text-[var(--text-muted)]">
               Métadonnées et captures horodatées associées aux dossiers de cet utilisateur.
             </p>
-            <div className="p-8 text-center text-xs text-slate-400 rounded-xl bg-slate-800/20 border border-dashed border-[var(--panel-border)]">
+            <div className="p-8 text-center text-xs text-[var(--text-muted)] rounded-xl bg-[var(--surface-raised)]/20 border border-dashed border-[var(--panel-border)]">
               📁 Ouvrez une Case pour consulter ou attacher de nouvelles preuves (Message Discord, URL de capture, transcript).
             </div>
           </div>
@@ -946,9 +946,9 @@ export default function UserModerationProfileClient() {
 
         {/* 7. ACTIVITY TIMELINE */}
         {activeTab === "activity" && (
-          <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] space-y-4">
+          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Activity className="w-5 h-5 text-ethone-accent" />
                 <span>Timeline Chronologique Unifiée ({filteredTimeline.length})</span>
               </h3>
@@ -960,10 +960,10 @@ export default function UserModerationProfileClient() {
                     key={f}
                     onClick={() => setTimelineFilter(f)}
                     className={cn(
-                      "text-[11px] px-2.5 py-1 rounded-lg font-semibold transition-colors",
+                      "text-xs px-2.5 py-1 rounded-xl font-semibold transition-colors",
                       timelineFilter === f
-                        ? "bg-white/10 text-white border border-[var(--panel-border)]"
-                        : "text-slate-400 hover:text-white"
+                        ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] border border-[var(--panel-border)]"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
                     {f}
@@ -975,8 +975,8 @@ export default function UserModerationProfileClient() {
             {filteredTimeline.length > 0 ? (
               <div className="space-y-4 pt-2">
                 {filteredTimeline.map((item) => (
-                  <div key={item.id} className="p-4 rounded-xl bg-slate-800/30 border border-[var(--panel-border)] flex items-start gap-4">
-                    <div className="p-2 rounded-xl bg-white/5 text-slate-300 mt-0.5">
+                  <div key={item.id} className="p-4 rounded-xl bg-[var(--surface-raised)]/30 border border-[var(--panel-border)] flex items-start gap-4">
+                    <div className="p-2 rounded-xl bg-[var(--surface-raised)]/40 text-[var(--text-muted)] mt-0.5">
                       {item.type === "CASE" ? (
                         <Shield className="w-4 h-4 text-orange-400" />
                       ) : item.type === "REPORT" ? (
@@ -987,49 +987,49 @@ export default function UserModerationProfileClient() {
                     </div>
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between flex-wrap">
-                        <span className="text-xs font-bold text-white">{item.title}</span>
-                        <span className="text-[11px] text-slate-400 font-mono">
+                        <span className="text-xs font-bold text-[var(--text-primary)]">{item.title}</span>
+                        <span className="text-xs text-[var(--text-muted)] font-mono">
                           {new Date(item.timestamp).toLocaleString("fr-FR")}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-300">{item.description}</p>
-                      <span className="text-[11px] text-slate-400 block">Auteur : @{item.author?.tag}</span>
+                      <p className="text-xs text-[var(--text-muted)]">{item.description}</p>
+                      <span className="text-xs text-[var(--text-muted)] block">Auteur : @{item.author?.tag}</span>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-400 italic">Aucun événement dans cette catégorie.</p>
+              <p className="text-xs text-[var(--text-muted)] italic">Aucun événement dans cette catégorie.</p>
             )}
           </div>
         )}
 
         {/* 8. REPORTS */}
         {activeTab === "reports" && (
-          <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+            <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-amber-400" />
               <span>Signalements Visant ce Membre ({reports.length})</span>
             </h3>
 
             {reports.length > 0 ? (
-              <div className="divide-y divide-white/5">
+              <div className="divide-y divide-[var(--panel-border)]">
                 {reports.map((r) => (
                   <div key={r.id} className="py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-mono font-bold text-white">{r.id}</span>
+                        <span className="text-xs font-mono font-bold text-[var(--text-primary)]">{r.id}</span>
                         <span className="text-xs px-2 py-0.5 rounded font-bold bg-amber-500/10 text-amber-400">
                           {r.status}
                         </span>
-                        <span className="text-xs text-slate-400">{new Date(r.createdAt).toLocaleString("fr-FR")}</span>
+                        <span className="text-xs text-[var(--text-muted)]">{new Date(r.createdAt).toLocaleString("fr-FR")}</span>
                       </div>
-                      <p className="text-sm text-slate-200">{r.reason}</p>
-                      <span className="text-xs text-slate-400">Signalé par @{r.reporterUserTag}</span>
+                      <p className="text-sm text-[var(--text-primary)]">{r.reason}</p>
+                      <span className="text-xs text-[var(--text-muted)]">Signalé par @{r.reporterUserTag}</span>
                     </div>
                     <Link
                       href={selectedGuild ? `/discord/moderation/reports?guildId=${selectedGuild.id}` : "/discord/moderation/reports"}
-                      className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-white transition-colors"
+                      className="px-3 py-1.5 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--text-primary)]/10 text-xs font-semibold text-[var(--text-primary)] transition-colors"
                     >
                       Inspecter le signalement
                     </Link>
@@ -1037,7 +1037,7 @@ export default function UserModerationProfileClient() {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-400 italic">Aucun signalement enregistré contre cet utilisateur.</p>
+              <p className="text-xs text-[var(--text-muted)] italic">Aucun signalement enregistré contre cet utilisateur.</p>
             )}
           </div>
         )}
@@ -1045,12 +1045,12 @@ export default function UserModerationProfileClient() {
 
       {/* MODALE D'ACTION RAPIDE (WARN / TIMEOUT / KICK / BAN / QUARANTINE) */}
       {activeActionModal && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-lg rounded-2xl bg-slate-900 border border-[var(--panel-border)] shadow-2xl p-6 space-y-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80 animate-in fade-in">
+          <div className="w-full max-w-lg rounded-2xl bg-[var(--surface-raised)] border border-[var(--panel-border)] p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ShieldAlert className="w-5 h-5 text-ethone-accent" />
-                <h3 className="text-base font-bold text-white">
+                <h3 className="text-base font-bold text-[var(--text-primary)]">
                   {activeActionModal === "WARN" && "Avertir le membre (Warn)"}
                   {activeActionModal === "TIMEOUT" && "Exclure temporairement (Timeout)"}
                   {activeActionModal === "KICK" && "Expulser du serveur (Kick)"}
@@ -1060,7 +1060,7 @@ export default function UserModerationProfileClient() {
               </div>
               <button
                 onClick={() => setActiveActionModal(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
+                className="p-1 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1069,7 +1069,7 @@ export default function UserModerationProfileClient() {
             <div className="space-y-3">
               {/* Catégorie / Motif standard */}
               <div>
-                <label className="text-xs font-semibold text-slate-400 block mb-1">Motif prédéfini</label>
+                <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1">Motif prédéfini</label>
                 <Select
                   value={actionStandardCategory}
                   onChange={(v) => {
@@ -1083,20 +1083,20 @@ export default function UserModerationProfileClient() {
 
               {/* Raison personnalisée */}
               <div>
-                <label className="text-xs font-semibold text-slate-400 block mb-1">Raison détaillée</label>
+                <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1">Raison détaillée</label>
                 <input
                   type="text"
                   value={actionReason}
                   onChange={(e) => setActionReason(e.target.value)}
                   placeholder="Expliquez la raison exacte..."
-                  className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
+                  className="w-full bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-primary)] text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
                 />
               </div>
 
               {/* Spécifique TIMEOUT : Durée */}
               {activeActionModal === "TIMEOUT" && (
                 <div>
-                  <label className="text-xs font-semibold text-slate-400 block mb-1">Durée de l'exclusion</label>
+                  <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1">Durée de l'exclusion</label>
                   <div className="grid grid-cols-4 gap-2 mb-2">
                     {[
                       { l: "1 min", s: "60" },
@@ -1111,17 +1111,17 @@ export default function UserModerationProfileClient() {
                         type="button"
                         onClick={() => setTimeoutDuration(d.s)}
                         className={cn(
-                          "py-1.5 text-xs rounded-lg font-semibold border transition-colors",
+                          "py-1.5 text-xs rounded-xl font-semibold border transition-colors",
                           timeoutDuration === d.s
                             ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
-                            : "bg-slate-800 text-slate-300 border-[var(--panel-border)] hover:bg-slate-700"
+                            : "bg-[var(--surface-raised)] text-[var(--text-muted)] border-[var(--panel-border)] hover:bg-[var(--text-primary)]/20"
                         )}
                       >
                         {d.l}
                       </button>
                     ))}
                   </div>
-                  <span className="text-[11px] text-orange-400 block">
+                  <span className="text-xs text-orange-400 block">
                     Expire le : {timeoutExpiryText}
                   </span>
                 </div>
@@ -1130,7 +1130,7 @@ export default function UserModerationProfileClient() {
               {/* Spécifique BAN : Supprimer messages */}
               {activeActionModal === "BAN" && (
                 <div>
-                  <label className="text-xs font-semibold text-slate-400 block mb-1">Supprimer l'historique des messages</label>
+                  <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1">Supprimer l'historique des messages</label>
                   <Select
                     value={banDeleteDays}
                     onChange={setBanDeleteDays}
@@ -1146,18 +1146,18 @@ export default function UserModerationProfileClient() {
 
               {/* Note interne */}
               <div>
-                <label className="text-xs font-semibold text-slate-400 block mb-1">Note interne pour le staff (facultatif)</label>
+                <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1">Note interne pour le staff (facultatif)</label>
                 <input
                   type="text"
                   value={internalNote}
                   onChange={(e) => setInternalNote(e.target.value)}
                   placeholder="Contexte supplémentaire..."
-                  className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
+                  className="w-full bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-primary)] text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
                 />
               </div>
 
               {/* Toggles */}
-              <div className="pt-2 space-y-2 text-xs text-slate-300">
+              <div className="pt-2 space-y-2 text-xs text-[var(--text-muted)]">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -1198,7 +1198,7 @@ export default function UserModerationProfileClient() {
               <button
                 type="button"
                 onClick={() => setActiveActionModal(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
                 Annuler
               </button>
@@ -1207,7 +1207,7 @@ export default function UserModerationProfileClient() {
                 onClick={handleExecuteAction}
                 disabled={isSubmittingAction}
                 className={cn(
-                  "px-5 py-2 rounded-xl text-xs font-bold text-white transition-all disabled:opacity-50",
+                  "px-5 py-2 rounded-xl text-xs font-bold text-[var(--text-primary)] transition-all disabled:opacity-50",
                   activeActionModal === "BAN"
                     ? "bg-red-600 hover:bg-red-500"
                     : activeActionModal === "KICK"
@@ -1226,34 +1226,34 @@ export default function UserModerationProfileClient() {
 
       {/* MODALE PARDON / RÉVOCATION */}
       {revertingCase && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-2xl bg-slate-900 border border-[var(--panel-border)] shadow-2xl p-6 space-y-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80 animate-in fade-in">
+          <div className="w-full max-w-md rounded-2xl bg-[var(--surface-raised)] border border-[var(--panel-border)] p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <RotateCcw className="w-5 h-5 text-amber-400" />
                 <span>Pardonner la Case #{revertingCase.caseNumber}</span>
               </h3>
-              <button onClick={() => setRevertingCase(null)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setRevertingCase(null)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[var(--text-muted)]">
               Cette action lèvera la sanction ({revertingCase.action}) sur Discord et marquera le dossier comme révoqué dans le journal d'audit.
             </p>
             <div>
-              <label className="text-xs font-semibold text-slate-400 block mb-1">Motif du pardon / de la révocation</label>
+              <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1">Motif du pardon / de la révocation</label>
               <input
                 type="text"
                 value={revertReason}
                 onChange={(e) => setRevertReason(e.target.value)}
                 placeholder="Ex : Erreur de manipulation, recours accepté..."
-                className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
+                className="w-full bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-primary)] text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
               />
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setRevertingCase(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
                 Annuler
               </button>

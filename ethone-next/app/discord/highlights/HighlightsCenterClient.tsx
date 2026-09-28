@@ -46,16 +46,16 @@ function Switch({ checked, onChange, label, hint }: { checked: boolean; onChange
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="flex w-full items-start justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
+      className="flex w-full items-start justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
     >
       <span className="min-w-0">
-        <span className="block text-xs font-semibold text-white">{label}</span>
-        {hint && <span className="mt-0.5 block text-[11px] leading-snug text-zinc-400">{hint}</span>}
+        <span className="block text-xs font-semibold text-[var(--text-primary)]">{label}</span>
+        {hint && <span className="mt-0.5 block text-xs leading-snug text-[var(--text-muted)]">{hint}</span>}
       </span>
       <span
         className={cn(
           "relative inline-flex mt-0.5 h-5 w-9 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200",
-          checked ? "bg-[#5865F2]" : "bg-white/15"
+          checked ? "bg-emerald-500" : "bg-[var(--panel-border)]"
         )}
       >
         <span
@@ -335,14 +335,14 @@ export default function HighlightsCenterClient() {
         )}
 
         {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-300 shrink-0 mt-0.5">
                 <Bot className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
-                <p className="mt-0.5 text-zinc-300">
+                <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-0.5 text-[var(--text-muted)]">
                   Invitez le bot sur « {selectedGuild.name} » pour recevoir vos alertes mots-clés en direct sur Discord.
                 </p>
               </div>
@@ -351,7 +351,7 @@ export default function HighlightsCenterClient() {
               href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium text-xs transition-colors shrink-0 shadow-lg shadow-[#5865F2]/25 cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-xs transition-colors shrink-0 cursor-pointer"
             >
               Inviter le bot
             </a>
@@ -377,7 +377,7 @@ export default function HighlightsCenterClient() {
                   <Eye className="h-4 w-4" />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">Mots-clés</p>
+                  <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">Mots-clés</p>
                   <p className="mt-0.5 text-lg font-semibold tabular-nums text-[var(--text-primary)]">
                     {keywords.length}/{MAX_KEYWORDS}
                   </p>
@@ -388,7 +388,7 @@ export default function HighlightsCenterClient() {
                   <Hash className="h-4 w-4" />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">Salons ignorés</p>
+                  <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">Salons ignorés</p>
                   <p className="mt-0.5 text-lg font-semibold tabular-nums text-[var(--text-primary)]">{mutedChannels.length}</p>
                 </div>
               </div>
@@ -457,7 +457,7 @@ export default function HighlightsCenterClient() {
             {/* Muted channels */}
             <div className="v8-panel p-4 space-y-3">
               <p className="text-xs font-semibold text-[var(--text-primary)]">Salons ignorés</p>
-              <p className="text-[11px] text-[var(--text-muted)]">
+              <p className="text-xs text-[var(--text-muted)]">
                 Un mot-clé mentionné dans ces salons ne te déclenche aucun DM (ex : un salon trop actif).
               </p>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">

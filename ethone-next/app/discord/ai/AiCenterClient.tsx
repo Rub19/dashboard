@@ -426,7 +426,7 @@ export default function AiCenterClient() {
   const satisfaction = analytics.helpfulCount + analytics.unhelpfulCount > 0 ? Math.round((analytics.helpfulCount / (analytics.helpfulCount + analytics.unhelpfulCount)) * 100) : null;
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8 pb-44 md:pb-44">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] p-4 md:p-8 pb-44 md:pb-44">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -434,25 +434,25 @@ export default function AiCenterClient() {
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
                 href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
+                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer shadow-sm"
                 title="Retour au hub Discord"
               >
-                <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+                <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                 <span>Retour Discord</span>
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-indigo-500/15 text-indigo-400 rounded-xl border border-indigo-500/30 shadow-sm">
+              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-xl border border-emerald-500/30 shadow-sm">
                 <Bot className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+                <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
                   ETHONE AI Assistant
-                  <span className={cn("px-2 py-0.5 rounded text-[11px] font-semibold border", settings.enabled ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-neutral-800 text-neutral-400 border-neutral-700")}>
+                  <span className={cn("px-2 py-0.5 rounded text-xs font-semibold border", settings.enabled ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border-[var(--panel-border)]")}>
                     {settings.enabled ? "🟢 Activé" : "⚪ Désactivé"}
                   </span>
                 </h1>
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Personnalité, base de connaissances RAG, règles par salon et playground branché sur le vrai modèle.
                   {isDemo && isBotPresent && <span className="text-amber-400"> (bot temporairement injoignable)</span>}
                 </p>
@@ -470,11 +470,11 @@ export default function AiCenterClient() {
                 }}
               />
             )}
-            <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
-              <RefreshCw className={cn("w-4 h-4 text-indigo-400", loading && "animate-spin")} />
+            <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
+              <RefreshCw className={cn("w-4 h-4 text-emerald-300", loading && "animate-spin")} />
               Actualiser
             </button>
-            <button onClick={handlePublish} disabled={saving} className={cn("px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-lg transition-all cursor-pointer disabled:opacity-50", dirty ? "bg-indigo-600 hover:bg-indigo-500 text-white" : "bg-neutral-800 hover:bg-neutral-700 text-neutral-300")}>
+            <button onClick={handlePublish} disabled={saving} className={cn("px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50", dirty ? "bg-emerald-500 hover:bg-emerald-600 text-white" : "bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)]")}>
               {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 text-emerald-400" />}
               {dirty ? `Publier v${settings.publishedVersion + 1}` : `v${settings.publishedVersion} publiée`}
             </button>
@@ -489,9 +489,9 @@ export default function AiCenterClient() {
                 <Bot className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm font-bold text-white">Bot non présent sur ce serveur</p>
+                <p className="text-sm font-bold text-[var(--text-primary)]">Bot non présent sur ce serveur</p>
                 <p className="text-xs text-amber-200/80">
-                  Installe le bot sur <span className="font-semibold text-white">{selectedGuild.name}</span> pour activer l'assistant IA et le système RAG.
+                  Installe le bot sur <span className="font-semibold text-[var(--text-primary)]">{selectedGuild.name}</span> pour activer l'assistant IA et le système RAG.
                 </p>
               </div>
             </div>
@@ -509,23 +509,23 @@ export default function AiCenterClient() {
         {/* KPI réels */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {[
-            { label: "Requêtes aujourd'hui", value: analytics.requestsToday.toLocaleString("fr-FR"), cls: "text-white", sub: `${analytics.handoffCount} handoff(s) ticket` },
-            { label: "Conversations actives", value: String(analytics.activeConversations), cls: "text-indigo-400", sub: `${channelRules.length} règle(s) de salon` },
+            { label: "Requêtes aujourd'hui", value: analytics.requestsToday.toLocaleString("fr-FR"), cls: "text-[var(--text-primary)]", sub: `${analytics.handoffCount} handoff(s) ticket` },
+            { label: "Conversations actives", value: String(analytics.activeConversations), cls: "text-emerald-300", sub: `${channelRules.length} règle(s) de salon` },
             { label: "Temps de réponse moyen", value: analytics.avgResponseTimeMs > 0 ? `${analytics.avgResponseTimeMs} ms` : "—", cls: "text-cyan-400", sub: settings.model },
             { label: "Satisfaction", value: satisfaction === null ? "—" : `${satisfaction}% 👍`, cls: "text-emerald-400", sub: `${analytics.helpfulCount} 👍 · ${analytics.unhelpfulCount} 👎` },
-            { label: "Tokens consommés", value: analytics.tokensConsumed >= 1000 ? `${(analytics.tokensConsumed / 1000).toFixed(1)}k` : String(analytics.tokensConsumed), cls: "text-purple-400", sub: `Budget : ${(settings.dailyBudgetTokens / 1000).toFixed(0)}k / jour` },
+            { label: "Tokens consommés", value: analytics.tokensConsumed >= 1000 ? `${(analytics.tokensConsumed / 1000).toFixed(1)}k` : String(analytics.tokensConsumed), cls: "text-emerald-300", sub: `Budget : ${(settings.dailyBudgetTokens / 1000).toFixed(0)}k / jour` },
             { label: "Sources RAG", value: String(knowledgeList.length), cls: "text-amber-400", sub: `${knowledgeList.reduce((a, k) => a + k.tokenCount, 0).toLocaleString("fr-FR")} tokens indexés` },
           ].map((k) => (
-            <div key={k.label} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-              <span className="text-xs text-neutral-500 font-medium">{k.label}</span>
+            <div key={k.label} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
+              <span className="text-xs text-[var(--text-muted)] font-medium">{k.label}</span>
               <p className={cn("text-2xl font-bold truncate", k.cls)}>{k.value}</p>
-              <span className="text-[11px] text-neutral-400 block truncate">{k.sub}</span>
+              <span className="text-xs text-[var(--text-muted)] block truncate">{k.sub}</span>
             </div>
           ))}
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-neutral-800 gap-2 overflow-x-auto pb-1">
+        <div className="flex border-b border-[var(--panel-border)] gap-2 overflow-x-auto pb-1">
           {[
             { id: "overview", label: "Playground", icon: Sparkles },
             { id: "personality", label: "Personnalité", icon: Sliders },
@@ -538,8 +538,8 @@ export default function AiCenterClient() {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer", isActive ? "bg-neutral-900 text-white border-b-2 border-indigo-500" : "text-neutral-400 hover:text-white")}>
-                <Icon className={cn("w-4 h-4", isActive ? "text-indigo-400" : "text-neutral-500")} />
+              <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer", isActive ? "bg-[var(--surface-raised)]/40 text-white border-b-2 border-emerald-500/30" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
+                <Icon className={cn("w-4 h-4", isActive ? "text-emerald-300" : "text-[var(--text-muted)]")} />
                 {tab.label}
               </button>
             );
@@ -549,76 +549,76 @@ export default function AiCenterClient() {
         {/* Playground */}
         {activeTab === "overview" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-4">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-5 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-lg shrink-0">🤖</div>
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-lg shrink-0">🤖</div>
                 <div>
-                  <h3 className="font-bold text-white text-base">{personality.name}</h3>
-                  <p className="text-xs text-neutral-400">{personality.description}</p>
+                  <h3 className="font-bold text-[var(--text-primary)] text-base">{personality.name}</h3>
+                  <p className="text-xs text-[var(--text-muted)]">{personality.description}</p>
                 </div>
               </div>
-              <div className="divide-y divide-neutral-800/80 text-xs pt-2">
-                <div className="py-2 flex justify-between"><span className="text-neutral-500">Ton</span><span className="font-semibold text-neutral-200">{personality.tone}</span></div>
-                <div className="py-2 flex justify-between"><span className="text-neutral-500">Mode par défaut</span><span className="font-semibold text-indigo-400">{settings.defaultMode}</span></div>
-                <div className="py-2 flex justify-between"><span className="text-neutral-500">Fournisseur / modèle</span><span className="font-semibold text-neutral-200 font-mono truncate max-w-[55%]">{settings.provider} · {settings.model}</span></div>
-                <div className="py-2 flex justify-between"><span className="text-neutral-500">Version publiée</span><span className="font-semibold text-emerald-400">v{settings.publishedVersion} · {relative(settings.lastPublishedAt)}</span></div>
+              <div className="divide-y divide-[var(--panel-border)] text-xs pt-2">
+                <div className="py-2 flex justify-between"><span className="text-[var(--text-muted)]">Ton</span><span className="font-semibold text-[var(--text-primary)]">{personality.tone}</span></div>
+                <div className="py-2 flex justify-between"><span className="text-[var(--text-muted)]">Mode par défaut</span><span className="font-semibold text-emerald-300">{settings.defaultMode}</span></div>
+                <div className="py-2 flex justify-between"><span className="text-[var(--text-muted)]">Fournisseur / modèle</span><span className="font-semibold text-[var(--text-primary)] font-mono truncate max-w-[55%]">{settings.provider} · {settings.model}</span></div>
+                <div className="py-2 flex justify-between"><span className="text-[var(--text-muted)]">Version publiée</span><span className="font-semibold text-emerald-400">v{settings.publishedVersion} · {relative(settings.lastPublishedAt)}</span></div>
               </div>
-              <div className="flex items-center justify-between p-3 rounded-xl bg-neutral-950 border border-neutral-800">
-                <span className="text-xs font-semibold text-white">Assistant activé</span>
-                <input type="checkbox" checked={settings.enabled} onChange={(e) => { setSettings((s) => ({ ...s, enabled: e.target.checked })); setDirty(true); }} className="w-4 h-4 rounded text-indigo-600 bg-neutral-900 border-neutral-700" />
+              <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+                <span className="text-xs font-semibold text-[var(--text-primary)]">Assistant activé</span>
+                <input type="checkbox" checked={settings.enabled} onChange={(e) => { setSettings((s) => ({ ...s, enabled: e.target.checked })); setDirty(true); }} className="w-4 h-4 rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
               </div>
-              <button onClick={() => setActiveTab("personality")} className="w-full py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-white transition-colors cursor-pointer">Modifier la personnalité</button>
+              <button onClick={() => setActiveTab("personality")} className="w-full py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-white transition-colors cursor-pointer">Modifier la personnalité</button>
             </div>
 
-            <div className="lg:col-span-2 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-5">
+            <div className="lg:col-span-2 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2"><Zap className="w-4 h-4 text-amber-400" /> Playground</h3>
-                  <p className="text-xs text-neutral-400">Teste une question : le bot applique ton prompt, tes sources RAG et le shield anti-injection, exactement comme sur Discord.</p>
+                  <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><Zap className="w-4 h-4 text-amber-400" /> Playground</h3>
+                  <p className="text-xs text-[var(--text-muted)]">Teste une question : le bot applique ton prompt, tes sources RAG et le shield anti-injection, exactement comme sur Discord.</p>
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">{isDemo ? "Hors ligne" : "Modèle réel"}</span>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">{isDemo ? "Hors ligne" : "Modèle réel"}</span>
               </div>
               <form onSubmit={handlePlaygroundSubmit} className="space-y-3">
                 <div className="relative">
-                  <input type="text" value={playQuery} onChange={(e) => setPlayQuery(e.target.value)} placeholder="Ex: Comment obtenir le rôle VIP ? Quelles sont les règles ?" className="w-full bg-neutral-950 border border-neutral-800 rounded-xl pl-4 pr-24 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500 transition-colors" />
-                  <button type="submit" disabled={isPlaying || !playQuery.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+                  <input type="text" value={playQuery} onChange={(e) => setPlayQuery(e.target.value)} placeholder="Ex: Comment obtenir le rôle VIP ? Quelles sont les règles ?" className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl pl-4 pr-24 py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] transition-colors" />
+                  <button type="submit" disabled={isPlaying || !playQuery.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
                     <Send className="w-3 h-3" /> Tester
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-1.5 text-[11px]">
-                  <span className="text-neutral-500 py-1">Suggestions :</span>
+                <div className="flex flex-wrap gap-1.5 text-xs">
+                  <span className="text-[var(--text-muted)] py-1">Suggestions :</span>
                   {["Comment devenir VIP ?", "Quelles sont les règles ?", "Comment ouvrir un ticket ?", "Bonjour !"].map((s) => (
-                    <button key={s} type="button" onClick={() => setPlayQuery(s)} className="px-2.5 py-1 rounded-lg bg-neutral-800/60 hover:bg-neutral-800 text-neutral-300 transition-colors cursor-pointer">{s}</button>
+                    <button key={s} type="button" onClick={() => setPlayQuery(s)} className="px-2.5 py-1 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] transition-colors cursor-pointer">{s}</button>
                   ))}
                 </div>
               </form>
               {isPlaying && (
-                <div className="p-6 bg-neutral-950 rounded-xl border border-neutral-800 text-center space-y-2">
-                  <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto" />
-                  <p className="text-xs text-neutral-400">{personality.name} réfléchit...</p>
+                <div className="p-6 bg-[var(--surface-raised)]/40 rounded-xl border border-[var(--panel-border)] text-center space-y-2">
+                  <div className="w-6 h-6 border-2 border-emerald-500/30 border-t-transparent rounded-full animate-spin mx-auto" />
+                  <p className="text-xs text-[var(--text-muted)]">{personality.name} réfléchit...</p>
                 </div>
               )}
               {playResult && (
                 <div className="space-y-4">
-                  <div className="p-5 bg-neutral-950 border border-indigo-500/30 rounded-xl space-y-3">
+                  <div className="p-5 bg-[var(--surface-raised)]/40 border border-emerald-500/30 rounded-xl space-y-3">
                     <div className="flex items-center gap-2.5">
                       <span className="text-base">🤖</span>
-                      <span className="font-bold text-sm text-white">{personality.name}</span>
-                      <span className="text-[10px] text-neutral-500 font-mono">{playResult.model} · {playResult.tokensUsed} tokens</span>
+                      <span className="font-bold text-sm text-[var(--text-primary)]">{personality.name}</span>
+                      <span className="text-xs text-[var(--text-muted)] font-mono">{playResult.model} · {playResult.tokensUsed} tokens</span>
                     </div>
-                    <p className="text-sm text-neutral-200 leading-relaxed whitespace-pre-line">{playResult.answer}</p>
+                    <p className="text-sm text-[var(--text-primary)] leading-relaxed whitespace-pre-line">{playResult.answer}</p>
                     {playResult.sourcesUsed.length > 0 && (
-                      <div className="pt-2 border-t border-neutral-800 text-xs">
-                        <span className="text-neutral-400 font-semibold block mb-1">📚 Sources utilisées :</span>
+                      <div className="pt-2 border-t border-[var(--panel-border)] text-xs">
+                        <span className="text-[var(--text-muted)] font-semibold block mb-1">📚 Sources utilisées :</span>
                         <div className="flex flex-wrap gap-1.5">
-                          {playResult.sourcesUsed.map((src) => <span key={src} className="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-[11px]">• {src}</span>)}
+                          {playResult.sourcesUsed.map((src) => <span key={src} className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 text-xs">• {src}</span>)}
                         </div>
                       </div>
                     )}
                   </div>
-                  <div className="p-4 bg-neutral-950/60 rounded-xl border border-neutral-800 text-xs space-y-2">
-                    <span className="font-bold text-neutral-400 flex items-center gap-1.5"><Eye className="w-3.5 h-3.5 text-neutral-500" /> Contexte RAG transmis au modèle :</span>
-                    <p className="font-mono text-[11px] text-neutral-400 bg-neutral-900 p-2.5 rounded-lg whitespace-pre-wrap max-h-40 overflow-y-auto">{playResult.retrievedContext || "Aucune source n'a matché cette question."}</p>
+                  <div className="p-4 bg-[var(--surface-raised)]/40 rounded-xl border border-[var(--panel-border)] text-xs space-y-2">
+                    <span className="font-bold text-[var(--text-muted)] flex items-center gap-1.5"><Eye className="w-3.5 h-3.5 text-[var(--text-muted)]" /> Contexte RAG transmis au modèle :</span>
+                    <p className="font-mono text-xs text-[var(--text-muted)] bg-[var(--surface-raised)]/40 p-2.5 rounded-lg whitespace-pre-wrap max-h-40 overflow-y-auto">{playResult.retrievedContext || "Aucune source n'a matché cette question."}</p>
                   </div>
                 </div>
               )}
@@ -629,18 +629,18 @@ export default function AiCenterClient() {
         {/* Personnalité */}
         {activeTab === "personality" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
+            <div className="lg:col-span-2 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-6">
               <div>
-                <h3 className="text-base font-bold text-white">Personality Builder</h3>
-                <p className="text-xs text-neutral-400">Les changements sont appliqués au bot au clic sur « Publier ».</p>
+                <h3 className="text-base font-bold text-[var(--text-primary)]">Personality Builder</h3>
+                <p className="text-xs text-[var(--text-muted)]">Les changements sont appliqués au bot au clic sur « Publier ».</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-neutral-300">Nom de l'assistant</label>
-                  <input type="text" value={personality.name} onChange={(e) => setPersonality({ name: e.target.value })} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" />
+                  <label className="text-xs font-semibold text-[var(--text-muted)]">Nom de l'assistant</label>
+                  <input type="text" value={personality.name} onChange={(e) => setPersonality({ name: e.target.value })} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3.5 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-neutral-300">Ton général</label>
+                  <label className="text-xs font-semibold text-[var(--text-muted)]">Ton général</label>
                   <Select
                     value={personality.tone}
                     onChange={(v) => setPersonality({ tone: v as Tone })}
@@ -660,50 +660,50 @@ export default function AiCenterClient() {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-neutral-300">Description courte</label>
-                <input type="text" value={personality.description} onChange={(e) => setPersonality({ description: e.target.value })} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" />
+                <label className="text-xs font-semibold text-[var(--text-muted)]">Description courte</label>
+                <input type="text" value={personality.description} onChange={(e) => setPersonality({ description: e.target.value })} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3.5 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]" />
               </div>
-              <div className="space-y-4 pt-2 border-t border-neutral-800">
-                <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 block">Curseurs de personnalité</span>
+              <div className="space-y-4 pt-2 border-t border-[var(--panel-border)]">
+                <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">Curseurs de personnalité</span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                   {([
-                    ["friendly", "Convivialité", "text-indigo-400", "accent-indigo-500"],
+                    ["friendly", "Convivialité", "text-emerald-300", "accent-emerald-500"],
                     ["humor", "Humour", "text-amber-400", "accent-amber-500"],
                     ["formality", "Formalité", "text-cyan-400", "accent-cyan-500"],
-                    ["verbosity", "Longueur des réponses", "text-purple-400", "accent-purple-500"],
+                    ["verbosity", "Longueur des réponses", "text-emerald-300", "accent-emerald-500"],
                     ["creativity", "Créativité", "text-pink-400", "accent-pink-500"],
                   ] as [keyof Personality["sliders"], string, string, string][]).map(([key, label, txt, accent]) => (
-                    <div key={key} className="space-y-1.5 bg-neutral-950 p-3 rounded-xl border border-neutral-800/80">
-                      <div className="flex justify-between font-semibold"><span className="text-neutral-300">{label}</span><span className={txt}>{personality.sliders[key]}%</span></div>
+                    <div key={key} className="space-y-1.5 bg-[var(--surface-raised)]/40 p-3 rounded-xl border border-[var(--panel-border)]">
+                      <div className="flex justify-between font-semibold"><span className="text-[var(--text-muted)]">{label}</span><span className={txt}>{personality.sliders[key]}%</span></div>
                       <input type="range" min={0} max={100} value={personality.sliders[key]} onChange={(e) => setSlider(key, Number(e.target.value))} className={cn("w-full cursor-pointer", accent)} />
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="space-y-2 pt-2 border-t border-neutral-800">
+              <div className="space-y-2 pt-2 border-t border-[var(--panel-border)]">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-neutral-300 flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-emerald-400" /> Instructions système</label>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">🛡️ Shield anti-injection actif</span>
+                  <label className="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-emerald-400" /> Instructions système</label>
+                  <span className="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">🛡️ Shield anti-injection actif</span>
                 </div>
-                <textarea rows={5} value={personality.systemInstructions} onChange={(e) => setPersonality({ systemInstructions: e.target.value })} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-xs font-mono text-neutral-200 focus:outline-none focus:border-indigo-500" />
+                <textarea rows={5} value={personality.systemInstructions} onChange={(e) => setPersonality({ systemInstructions: e.target.value })} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-3 text-xs font-mono text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]" />
               </div>
-              <div className="flex items-center justify-between p-3.5 bg-neutral-950 rounded-xl border border-neutral-800">
+              <div className="flex items-center justify-between p-3.5 bg-[var(--surface-raised)]/40 rounded-xl border border-[var(--panel-border)]">
                 <div className="space-y-0.5">
-                  <span className="text-xs font-semibold text-white flex items-center gap-2"><Globe className="w-3.5 h-3.5 text-indigo-400" /> Répondre dans la langue du membre</span>
-                  <p className="text-[11px] text-neutral-400">Détecte français, anglais, espagnol...</p>
+                  <span className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2"><Globe className="w-3.5 h-3.5 text-emerald-300" /> Répondre dans la langue du membre</span>
+                  <p className="text-xs text-[var(--text-muted)]">Détecte français, anglais, espagnol...</p>
                 </div>
-                <input type="checkbox" checked={personality.replyInUserLanguage} onChange={(e) => setPersonality({ replyInUserLanguage: e.target.checked })} className="w-4 h-4 rounded text-indigo-600 bg-neutral-900 border-neutral-700" />
+                <input type="checkbox" checked={personality.replyInUserLanguage} onChange={(e) => setPersonality({ replyInUserLanguage: e.target.checked })} className="w-4 h-4 rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
               </div>
             </div>
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">Aperçu</h4>
-              <div className="p-4 bg-neutral-950 border border-neutral-800 rounded-xl space-y-3 text-xs">
-                <div className="flex items-center gap-2.5"><span className="text-lg">🤖</span><div><span className="font-bold text-white">{personality.name}</span><span className="text-[10px] text-neutral-500 block">Bot officiel</span></div></div>
-                <p className="text-neutral-300 italic">« Bonjour ! Je suis {personality.name}, en mode {personality.tone.toLowerCase()} ({personality.sliders.friendly}% convivial). Prêt à t'aider sur le serveur ! »</p>
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Aperçu</h4>
+              <div className="p-4 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl space-y-3 text-xs">
+                <div className="flex items-center gap-2.5"><span className="text-lg">🤖</span><div><span className="font-bold text-[var(--text-primary)]">{personality.name}</span><span className="text-xs text-[var(--text-muted)] block">Bot officiel</span></div></div>
+                <p className="text-[var(--text-muted)] italic">« Bonjour ! Je suis {personality.name}, en mode {personality.tone.toLowerCase()} ({personality.sliders.friendly}% convivial). Prêt à t'aider sur le serveur ! »</p>
               </div>
               <div className="space-y-2 text-xs">
-                <label className="font-semibold text-neutral-300 block">Budget quotidien (tokens)</label>
-                <input type="number" min={1000} step={1000} value={settings.dailyBudgetTokens} onChange={(e) => { setSettings((s) => ({ ...s, dailyBudgetTokens: Number(e.target.value) || 0 })); setDirty(true); }} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white" />
+                <label className="font-semibold text-[var(--text-muted)] block">Budget quotidien (tokens)</label>
+                <input type="number" min={1000} step={1000} value={settings.dailyBudgetTokens} onChange={(e) => { setSettings((s) => ({ ...s, dailyBudgetTokens: Number(e.target.value) || 0 })); setDirty(true); }} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)]" />
               </div>
             </div>
           </div>
@@ -714,30 +714,30 @@ export default function AiCenterClient() {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-base font-bold text-white">Base de connaissances (RAG)</h3>
-                <p className="text-xs text-neutral-400">Règles, FAQ et guides que l'IA cite pour répondre précisément.</p>
+                <h3 className="text-base font-bold text-[var(--text-primary)]">Base de connaissances (RAG)</h3>
+                <p className="text-xs text-[var(--text-muted)]">Règles, FAQ et guides que l'IA cite pour répondre précisément.</p>
               </div>
-              <button onClick={() => setShowAddKnowledgeModal(true)} className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all self-start sm:self-auto cursor-pointer">
+              <button onClick={() => setShowAddKnowledgeModal(true)} className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all self-start sm:self-auto cursor-pointer">
                 <Plus className="w-4 h-4" /> Ajouter une source
               </button>
             </div>
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl overflow-hidden">
               <table className="w-full text-left text-xs">
-                <thead className="bg-neutral-950/70 border-b border-neutral-800 text-neutral-400 font-semibold uppercase tracking-wider">
+                <thead className="bg-[var(--surface-raised)]/40 border-b border-[var(--panel-border)] text-[var(--text-muted)] font-semibold uppercase tracking-wider">
                   <tr><th className="px-5 py-3.5">Source</th><th className="px-4 py-3.5">Type</th><th className="px-4 py-3.5">Portée</th><th className="px-4 py-3.5">Tokens</th><th className="px-4 py-3.5">Statut</th><th className="px-4 py-3.5">Mise à jour</th><th className="px-5 py-3.5 text-right">Actions</th></tr>
                 </thead>
-                <tbody className="divide-y divide-neutral-800/60">
-                  {knowledgeList.length === 0 && <tr><td colSpan={7} className="px-5 py-8 text-center text-neutral-500">Aucune source. Ajoute ton règlement ou ta FAQ pour que l'IA réponde avec tes vraies infos.</td></tr>}
+                <tbody className="divide-y divide-[var(--panel-border)]">
+                  {knowledgeList.length === 0 && <tr><td colSpan={7} className="px-5 py-8 text-center text-[var(--text-muted)]">Aucune source. Ajoute ton règlement ou ta FAQ pour que l'IA réponde avec tes vraies infos.</td></tr>}
                   {knowledgeList.map((kn) => (
-                    <tr key={kn.id} className="hover:bg-neutral-800/30 transition-colors">
-                      <td className="px-5 py-4 font-semibold text-white">{kn.title}</td>
-                      <td className="px-4 py-4"><span className="px-2 py-0.5 rounded text-[10px] font-bold bg-neutral-800 text-neutral-300">{kn.type}</span></td>
-                      <td className="px-4 py-4 text-neutral-400">{kn.scope}</td>
-                      <td className="px-4 py-4 font-mono text-neutral-400">{kn.tokenCount}</td>
-                      <td className="px-4 py-4"><span className={cn("px-2 py-0.5 rounded-full text-[10px] font-semibold border", kn.status === "READY" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : kn.status === "ERROR" ? "bg-rose-500/10 text-rose-400 border-rose-500/20" : "bg-amber-500/10 text-amber-400 border-amber-500/20")}>{kn.status}</span></td>
-                      <td className="px-4 py-4 text-neutral-500">{relative(kn.updatedAt)}</td>
+                    <tr key={kn.id} className="hover:bg-[var(--surface-raised)]/70 transition-colors">
+                      <td className="px-5 py-4 font-semibold text-[var(--text-primary)]">{kn.title}</td>
+                      <td className="px-4 py-4"><span className="px-2 py-0.5 rounded text-xs font-bold bg-[var(--surface-raised)]/40 text-[var(--text-muted)]">{kn.type}</span></td>
+                      <td className="px-4 py-4 text-[var(--text-muted)]">{kn.scope}</td>
+                      <td className="px-4 py-4 font-mono text-[var(--text-muted)]">{kn.tokenCount}</td>
+                      <td className="px-4 py-4"><span className={cn("px-2 py-0.5 rounded-full text-xs font-semibold border", kn.status === "READY" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : kn.status === "ERROR" ? "bg-rose-500/10 text-rose-400 border-rose-500/20" : "bg-amber-500/10 text-amber-400 border-amber-500/20")}>{kn.status}</span></td>
+                      <td className="px-4 py-4 text-[var(--text-muted)]">{relative(kn.updatedAt)}</td>
                       <td className="px-5 py-4 text-right">
-                        <button onClick={() => handleDeleteKnowledge(kn.id)} className="p-1.5 rounded-lg bg-neutral-800 hover:bg-rose-500/20 text-neutral-400 hover:text-rose-400 transition-colors cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => handleDeleteKnowledge(kn.id)} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-rose-500/20 text-[var(--text-muted)] hover:text-rose-400 transition-colors cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
                       </td>
                     </tr>
                   ))}
@@ -745,8 +745,8 @@ export default function AiCenterClient() {
               </table>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-2">
-                <label className="text-xs font-semibold text-white block">Mode anti-hallucination</label>
+              <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-5 space-y-2">
+                <label className="text-xs font-semibold text-[var(--text-primary)] block">Mode anti-hallucination</label>
                 <Select
                   value={settings.hallucinationMode}
                   onChange={(v) => { setSettings((s) => ({ ...s, hallucinationMode: v as Settings["hallucinationMode"] })); setDirty(true); }}
@@ -760,8 +760,8 @@ export default function AiCenterClient() {
                   ]}
                 />
               </div>
-              <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-2">
-                <label className="text-xs font-semibold text-white block">Affichage des sources sur Discord</label>
+              <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-5 space-y-2">
+                <label className="text-xs font-semibold text-[var(--text-primary)] block">Affichage des sources sur Discord</label>
                 <Select
                   value={settings.showSources}
                   onChange={(v) => { setSettings((s) => ({ ...s, showSources: v as Settings["showSources"] })); setDirty(true); }}
@@ -781,14 +781,14 @@ export default function AiCenterClient() {
 
         {/* Salons */}
         {activeTab === "channels" && (
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h3 className="text-base font-bold text-white">Salons & règles</h3>
-                <p className="text-xs text-neutral-400">Où et comment l'IA répond. Les règles par salon sont enregistrées immédiatement.</p>
+                <h3 className="text-base font-bold text-[var(--text-primary)]">Salons & règles</h3>
+                <p className="text-xs text-[var(--text-muted)]">Où et comment l'IA répond. Les règles par salon sont enregistrées immédiatement.</p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-neutral-400">Mode global :</span>
+                <span className="text-xs text-[var(--text-muted)]">Mode global :</span>
                 <Select
                   value={settings.defaultMode}
                   onChange={(v) => { setSettings((s) => ({ ...s, defaultMode: v as ResponseMode })); setDirty(true); }}
@@ -806,15 +806,15 @@ export default function AiCenterClient() {
                 />
               </div>
             </div>
-            <div className="divide-y divide-neutral-800 border border-neutral-800 rounded-xl overflow-hidden">
-              {channelRules.length === 0 && <p className="p-4 text-xs text-neutral-500">Aucune règle spécifique — le mode global s'applique partout.</p>}
+            <div className="divide-y divide-[var(--panel-border)] border border-[var(--panel-border)] rounded-xl overflow-hidden">
+              {channelRules.length === 0 && <p className="p-4 text-xs text-[var(--text-muted)]">Aucune règle spécifique — le mode global s'applique partout.</p>}
               {channelRules.map((rule) => (
-                <div key={rule.channelId} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-neutral-800/30 transition-colors">
+                <div key={rule.channelId} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[var(--surface-raised)]/70 transition-colors">
                   <div className="flex items-center gap-3 min-w-0">
-                    <Hash className="w-4 h-4 text-indigo-400 shrink-0" />
+                    <Hash className="w-4 h-4 text-emerald-300 shrink-0" />
                     <div className="min-w-0">
-                      <span className="font-semibold text-white text-sm block truncate">#{rule.channelName}</span>
-                      <span className="text-[10px] text-neutral-500 font-mono">{rule.channelId}</span>
+                      <span className="font-semibold text-[var(--text-primary)] text-sm block truncate">#{rule.channelName}</span>
+                      <span className="text-xs text-[var(--text-muted)] font-mono">{rule.channelId}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 flex-wrap">
@@ -832,21 +832,21 @@ export default function AiCenterClient() {
                         { id: "DISABLED", label: "🔴 Désactivé" },
                       ]}
                     />
-                    <label className="flex items-center gap-1.5 text-xs text-neutral-300 cursor-pointer">
-                      <input type="checkbox" checked={rule.threadModeEnabled} onChange={(e) => saveChannelRule({ ...rule, threadModeEnabled: e.target.checked })} className="rounded text-indigo-600 bg-neutral-900 border-neutral-700" />
+                    <label className="flex items-center gap-1.5 text-xs text-[var(--text-muted)] cursor-pointer">
+                      <input type="checkbox" checked={rule.threadModeEnabled} onChange={(e) => saveChannelRule({ ...rule, threadModeEnabled: e.target.checked })} className="rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
                       Thread dédié
                     </label>
-                    <label className="flex items-center gap-1.5 text-xs text-neutral-300">
+                    <label className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
                       Historique
-                      <input type="number" min={0} max={50} value={rule.maxHistoryMessages} onChange={(e) => saveChannelRule({ ...rule, maxHistoryMessages: Number(e.target.value) || 0 })} className="w-14 bg-neutral-950 border border-neutral-800 rounded-lg px-2 py-1 text-xs text-white" />
+                      <input type="number" min={0} max={50} value={rule.maxHistoryMessages} onChange={(e) => saveChannelRule({ ...rule, maxHistoryMessages: Number(e.target.value) || 0 })} className="w-14 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-lg px-2 py-1 text-xs text-[var(--text-primary)]" />
                     </label>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-end pt-2 border-t border-neutral-800">
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-end pt-2 border-t border-[var(--panel-border)]">
               <div className="sm:col-span-6">
-                <label className="text-[11px] text-neutral-400 block mb-1">Salon Discord</label>
+                <label className="text-xs text-[var(--text-muted)] block mb-1">Salon Discord</label>
                 <ChannelPicker
                   value={newRuleChannelId}
                   onChange={(id, channel) => {
@@ -861,20 +861,20 @@ export default function AiCenterClient() {
                 />
               </div>
               <div className="sm:col-span-4">
-                <label className="text-[11px] text-neutral-400 block mb-1">Nom (affichage)</label>
-                <input value={newRuleChannelName} onChange={(e) => setNewRuleChannelName(e.target.value)} placeholder="ai-chat" className="w-full h-8 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white" />
+                <label className="text-xs text-[var(--text-muted)] block mb-1">Nom (affichage)</label>
+                <input value={newRuleChannelName} onChange={(e) => setNewRuleChannelName(e.target.value)} placeholder="ai-chat" className="w-full h-8 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs text-[var(--text-primary)]" />
               </div>
-              <button onClick={addChannelRule} className="sm:col-span-2 h-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer"><Plus className="w-3.5 h-3.5" /> Règle</button>
+              <button onClick={addChannelRule} className="sm:col-span-2 h-8 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer"><Plus className="w-3.5 h-3.5" /> Règle</button>
             </div>
           </div>
         )}
 
         {/* Outils */}
         {activeTab === "tools" && (
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-6">
             <div>
-              <h3 className="text-base font-bold text-white">Outils & actions autorisées</h3>
-              <p className="text-xs text-neutral-400">Principe du moindre privilège : n'active que ce qui sert à ton serveur.</p>
+              <h3 className="text-base font-bold text-[var(--text-primary)]">Outils & actions autorisées</h3>
+              <p className="text-xs text-[var(--text-muted)]">Principe du moindre privilège : n'active que ce qui sert à ton serveur.</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               {([
@@ -886,9 +886,9 @@ export default function AiCenterClient() {
                 ["summarizeChannels", "Commande /summarize", "Résume les derniers échanges d'un salon."],
                 ["moderationAssist", "Assistant modération", "Pré-rapports d'incident (les sanctions restent manuelles)."],
               ] as [keyof Tools, string, string][]).map(([key, title, desc]) => (
-                <div key={key} className="p-4 bg-neutral-950 rounded-xl border border-neutral-800/80 flex items-start justify-between gap-3">
-                  <div className="space-y-1"><span className="font-semibold text-white block">{title}</span><p className="text-neutral-400">{desc}</p></div>
-                  <input type="checkbox" checked={settings.tools[key]} onChange={(e) => { setSettings((s) => ({ ...s, tools: { ...s.tools, [key]: e.target.checked } })); setDirty(true); }} className="w-4 h-4 mt-0.5 rounded text-indigo-600 bg-neutral-900 border-neutral-700" />
+                <div key={key} className="p-4 bg-[var(--surface-raised)]/40 rounded-xl border border-[var(--panel-border)] flex items-start justify-between gap-3">
+                  <div className="space-y-1"><span className="font-semibold text-[var(--text-primary)] block">{title}</span><p className="text-[var(--text-muted)]">{desc}</p></div>
+                  <input type="checkbox" checked={settings.tools[key]} onChange={(e) => { setSettings((s) => ({ ...s, tools: { ...s.tools, [key]: e.target.checked } })); setDirty(true); }} className="w-4 h-4 mt-0.5 rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
                 </div>
               ))}
             </div>
@@ -898,36 +898,36 @@ export default function AiCenterClient() {
         {/* Mémoire */}
         {activeTab === "memory" && (
           <div className="max-w-4xl space-y-6">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-5">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-white">Mémoire de conversation</h3>
-                  <p className="text-xs text-neutral-400">Contexte récent conservé pour des échanges fluides.</p>
+                  <h3 className="text-base font-bold text-[var(--text-primary)]">Mémoire de conversation</h3>
+                  <p className="text-xs text-[var(--text-muted)]">Contexte récent conservé pour des échanges fluides.</p>
                 </div>
-                <input type="checkbox" checked={settings.memory.enabled} onChange={(e) => { setSettings((s) => ({ ...s, memory: { ...s.memory, enabled: e.target.checked } })); setDirty(true); }} className="w-4 h-4 rounded text-indigo-600 bg-neutral-900 border-neutral-700" />
+                <input type="checkbox" checked={settings.memory.enabled} onChange={(e) => { setSettings((s) => ({ ...s, memory: { ...s.memory, enabled: e.target.checked } })); setDirty(true); }} className="w-4 h-4 rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
               </div>
               {settings.memory.enabled && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-neutral-800 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-[var(--panel-border)] text-xs">
                   <div className="space-y-1.5">
-                    <label className="font-semibold text-neutral-300">Historique (messages)</label>
-                    <input type="number" min={5} max={50} value={settings.memory.contextLength} onChange={(e) => { setSettings((s) => ({ ...s, memory: { ...s.memory, contextLength: Number(e.target.value) || 0 } })); setDirty(true); }} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white" />
+                    <label className="font-semibold text-[var(--text-muted)]">Historique (messages)</label>
+                    <input type="number" min={5} max={50} value={settings.memory.contextLength} onChange={(e) => { setSettings((s) => ({ ...s, memory: { ...s.memory, contextLength: Number(e.target.value) || 0 } })); setDirty(true); }} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)]" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="font-semibold text-neutral-300">Rétention max (heures)</label>
-                    <input type="number" min={1} max={168} value={settings.memory.retentionHours} onChange={(e) => { setSettings((s) => ({ ...s, memory: { ...s.memory, retentionHours: Number(e.target.value) || 0 } })); setDirty(true); }} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white" />
+                    <label className="font-semibold text-[var(--text-muted)]">Rétention max (heures)</label>
+                    <input type="number" min={1} max={168} value={settings.memory.retentionHours} onChange={(e) => { setSettings((s) => ({ ...s, memory: { ...s.memory, retentionHours: Number(e.target.value) || 0 } })); setDirty(true); }} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)]" />
                   </div>
-                  <label className="flex items-center gap-2 pt-5 text-neutral-300 cursor-pointer">
-                    <input type="checkbox" checked={settings.memory.userCanForget} onChange={(e) => { setSettings((s) => ({ ...s, memory: { ...s.memory, userCanForget: e.target.checked } })); setDirty(true); }} className="rounded text-indigo-600 bg-neutral-900 border-neutral-700" />
+                  <label className="flex items-center gap-2 pt-5 text-[var(--text-muted)] cursor-pointer">
+                    <input type="checkbox" checked={settings.memory.userCanForget} onChange={(e) => { setSettings((s) => ({ ...s, memory: { ...s.memory, userCanForget: e.target.checked } })); setDirty(true); }} className="rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
                     Les membres peuvent /forget
                   </label>
                 </div>
               )}
             </div>
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
-              <h3 className="text-base font-bold text-white flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-emerald-400" /> Droit à l'oubli (RGPD)</h3>
-              <p className="text-xs text-neutral-400">Efface immédiatement toutes les conversations mémorisées pour un identifiant Discord.</p>
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+              <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-emerald-400" /> Droit à l'oubli (RGPD)</h3>
+              <p className="text-xs text-[var(--text-muted)]">Efface immédiatement toutes les conversations mémorisées pour un identifiant Discord.</p>
               <div className="flex items-center gap-2">
-                <input type="text" placeholder="ID Discord de l'utilisateur" value={userToForgetId} onChange={(e) => setUserToForgetId(e.target.value)} className="flex-1 bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono" />
+                <input type="text" placeholder="ID Discord de l'utilisateur" value={userToForgetId} onChange={(e) => setUserToForgetId(e.target.value)} className="flex-1 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-4 py-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)] font-mono" />
                 <button onClick={handleForgetUserData} className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-colors cursor-pointer">Oublier cet utilisateur</button>
               </div>
             </div>
@@ -937,24 +937,24 @@ export default function AiCenterClient() {
         {/* Qualité */}
         {activeTab === "analytics" && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
-              <h3 className="text-base font-bold text-white">Satisfaction & retours</h3>
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+              <h3 className="text-base font-bold text-[var(--text-primary)]">Satisfaction & retours</h3>
               <div className="grid grid-cols-2 gap-3 text-center">
                 <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
                   <ThumbsUp className="w-6 h-6 text-emerald-400 mx-auto mb-1" />
                   <p className="text-2xl font-bold text-emerald-400">{analytics.helpfulCount}</p>
-                  <span className="text-xs text-neutral-400">Utiles{satisfaction !== null && ` (${satisfaction}%)`}</span>
+                  <span className="text-xs text-[var(--text-muted)]">Utiles{satisfaction !== null && ` (${satisfaction}%)`}</span>
                 </div>
                 <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl">
                   <ThumbsDown className="w-6 h-6 text-rose-400 mx-auto mb-1" />
                   <p className="text-2xl font-bold text-rose-400">{analytics.unhelpfulCount}</p>
-                  <span className="text-xs text-neutral-400">Inutiles{satisfaction !== null && ` (${100 - satisfaction}%)`}</span>
+                  <span className="text-xs text-[var(--text-muted)]">Inutiles{satisfaction !== null && ` (${100 - satisfaction}%)`}</span>
                 </div>
               </div>
-              <p className="text-[11px] text-neutral-500">Les membres notent chaque réponse avec les boutons 👍 / 👎 sous les messages du bot.</p>
+              <p className="text-xs text-[var(--text-muted)]">Les membres notent chaque réponse avec les boutons 👍 / 👎 sous les messages du bot.</p>
             </div>
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-3 text-xs">
-              <h3 className="text-base font-bold text-white">Usage</h3>
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-3 text-xs">
+              <h3 className="text-base font-bold text-[var(--text-primary)]">Usage</h3>
               {[
                 ["Requêtes aujourd'hui", analytics.requestsToday.toLocaleString("fr-FR")],
                 ["Conversations actives", String(analytics.activeConversations)],
@@ -963,10 +963,10 @@ export default function AiCenterClient() {
                 ["Tokens consommés", analytics.tokensConsumed.toLocaleString("fr-FR")],
                 ["Budget quotidien", settings.dailyBudgetTokens.toLocaleString("fr-FR")],
               ].map(([l, v]) => (
-                <div key={l} className="flex items-center justify-between p-3 bg-neutral-950 rounded-xl border border-neutral-800"><span className="text-neutral-300">{l}</span><span className="font-mono font-bold text-white">{v}</span></div>
+                <div key={l} className="flex items-center justify-between p-3 bg-[var(--surface-raised)]/40 rounded-xl border border-[var(--panel-border)]"><span className="text-[var(--text-muted)]">{l}</span><span className="font-mono font-bold text-[var(--text-primary)]">{v}</span></div>
               ))}
-              <div className="h-1.5 w-full rounded-full bg-neutral-950 border border-neutral-800 overflow-hidden">
-                <div className="h-full bg-purple-500 rounded-full" style={{ width: `${Math.min(100, settings.dailyBudgetTokens > 0 ? (analytics.tokensConsumed / settings.dailyBudgetTokens) * 100 : 0)}%` }} />
+              <div className="h-1.5 w-full rounded-full bg-[var(--panel-border)] border border-[var(--panel-border)] overflow-hidden">
+                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(100, settings.dailyBudgetTokens > 0 ? (analytics.tokensConsumed / settings.dailyBudgetTokens) * 100 : 0)}%` }} />
               </div>
             </div>
           </div>
@@ -974,23 +974,23 @@ export default function AiCenterClient() {
 
         {/* Modal source */}
         {showAddKnowledgeModal && (
-          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-lg w-full p-6 space-y-5 relative">
-              <button onClick={() => setShowAddKnowledgeModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white cursor-pointer"><X className="w-5 h-5" /></button>
+          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 flex items-center justify-center p-4">
+            <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-2xl max-w-lg w-full p-6 space-y-5 relative">
+              <button onClick={() => setShowAddKnowledgeModal(false)} className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"><X className="w-5 h-5" /></button>
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20"><BookOpen className="w-5 h-5" /></div>
+                <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-xl border border-emerald-500/30"><BookOpen className="w-5 h-5" /></div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Ajouter une source</h3>
-                  <p className="text-xs text-neutral-400">Indexée immédiatement pour le moteur RAG.</p>
+                  <h3 className="text-base font-bold text-[var(--text-primary)]">Ajouter une source</h3>
+                  <p className="text-xs text-[var(--text-muted)]">Indexée immédiatement pour le moteur RAG.</p>
                 </div>
               </div>
               <div className="space-y-4 text-xs">
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-neutral-300">Titre</label>
-                  <input type="text" value={newKnTitle} onChange={(e) => setNewKnTitle(e.target.value)} placeholder="Ex: Procédure de recrutement staff" className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" />
+                  <label className="font-semibold text-[var(--text-muted)]">Titre</label>
+                  <input type="text" value={newKnTitle} onChange={(e) => setNewKnTitle(e.target.value)} placeholder="Ex: Procédure de recrutement staff" className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3.5 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-neutral-300">Type</label>
+                  <label className="font-semibold text-[var(--text-muted)]">Type</label>
                   <Select
                     value={newKnType}
                     onChange={(v) => setNewKnType(v as KnowledgeType)}
@@ -1004,13 +1004,13 @@ export default function AiCenterClient() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-neutral-300">Contenu</label>
-                  <textarea rows={6} value={newKnContent} onChange={(e) => setNewKnContent(e.target.value)} placeholder="Colle ici les règles, Q/R ou procédures..." className="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-indigo-500" />
-                  <p className="text-[10px] text-neutral-500">≈ {Math.ceil(newKnContent.length / 4)} tokens</p>
+                  <label className="font-semibold text-[var(--text-muted)]">Contenu</label>
+                  <textarea rows={6} value={newKnContent} onChange={(e) => setNewKnContent(e.target.value)} placeholder="Colle ici les règles, Q/R ou procédures..." className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-3 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]" />
+                  <p className="text-xs text-[var(--text-muted)]">≈ {Math.ceil(newKnContent.length / 4)} tokens</p>
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
-                  <button onClick={() => setShowAddKnowledgeModal(false)} className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-300 transition-colors cursor-pointer">Annuler</button>
-                  <button onClick={handleAddKnowledge} className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-sm transition-all cursor-pointer flex items-center gap-1.5"><Save className="w-3.5 h-3.5" /> Indexer</button>
+                  <button onClick={() => setShowAddKnowledgeModal(false)} className="px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-muted)] transition-colors cursor-pointer">Annuler</button>
+                  <button onClick={handleAddKnowledge} className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-semibold text-white shadow-sm transition-all cursor-pointer flex items-center gap-1.5"><Save className="w-3.5 h-3.5" /> Indexer</button>
                 </div>
               </div>
             </div>

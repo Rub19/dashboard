@@ -284,24 +284,24 @@ export default function InvitesCenterClient() {
   const rewardedPct = trackedCount > 0 ? Math.round((funnel.rewardedMembers / trackedCount) * 100) : 0;
 
   return (
-    <div className="h-full w-full min-w-0 overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white flex flex-col p-4 sm:p-8 pb-44 md:pb-44 max-w-7xl mx-auto">
+    <div className="h-full w-full min-w-0 overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] flex flex-col p-4 sm:p-8 pb-44 md:pb-44 max-w-7xl mx-auto">
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-zinc-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-[var(--panel-border)]">
         <div>
           <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-600 to-indigo-600 flex items-center justify-center text-white shadow-sm">
+            <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-[var(--text-primary)] shadow-sm bg-[var(--surface-raised)]/40">
               <UserPlus className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                <h1 className="text-xl sm:text-2xl font-black text-[var(--text-primary)] tracking-tight">
                   Invites & Referrals
                 </h1>
-                <span className="px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20 text-[10px] font-bold font-mono">
+                <span className="px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20 text-xs font-bold font-mono">
                   CROISSANCE
                 </span>
               </div>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-[var(--text-muted)]">
                 Track referrals, reward members and understand how your community grows.
               </p>
             </div>
@@ -326,7 +326,7 @@ export default function InvitesCenterClient() {
           <button
             onClick={handleSyncDiscord}
             disabled={syncing}
-            className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-medium text-zinc-300 hover:text-white transition cursor-pointer"
+            className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-xs font-medium text-[var(--text-muted)] hover:text-white transition cursor-pointer"
             title="Synchroniser avec Discord Gateway"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${syncing ? "animate-spin text-pink-400" : ""}`} />
@@ -336,16 +336,16 @@ export default function InvitesCenterClient() {
           {/* Settings Link */}
           <Link
             href={`/discord/settings${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-            className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-medium text-zinc-300 hover:text-white transition cursor-pointer"
+            className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-xs font-medium text-[var(--text-muted)] hover:text-white transition cursor-pointer"
           >
-            <Settings className="w-3.5 h-3.5 text-zinc-400" />
+            <Settings className="w-3.5 h-3.5 text-[var(--text-muted)]" />
             <span className="hidden sm:inline">Paramètres</span>
           </Link>
 
           {/* Back to Bot Hub */}
           <Link
             href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-            className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-medium text-zinc-300 hover:text-white transition cursor-pointer"
+            className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-xs font-medium text-[var(--text-muted)] hover:text-white transition cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Retour Discord</span>
@@ -361,7 +361,7 @@ export default function InvitesCenterClient() {
               <Bot className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">Bot non installé sur ce serveur</p>
+              <p className="text-sm font-semibold text-[var(--text-primary)]">Bot non installé sur ce serveur</p>
               <p className="text-xs text-amber-300/80">
                 Invitez le bot ETHONE sur <strong>{selectedGuild.name}</strong> pour activer le suivi des invitations et les récompenses.
               </p>
@@ -380,130 +380,130 @@ export default function InvitesCenterClient() {
 
       {/* 8 Overview KPIs Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
-        <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80">
-          <div className="text-[11px] text-zinc-400 font-medium truncate mb-1">Total Invites</div>
-          <div className="text-xl font-bold text-white font-mono">{kpis.totalInvites}</div>
-          <div className="text-[10px] text-zinc-500 mt-1">Générées & suivies</div>
+        <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+          <div className="text-xs text-[var(--text-muted)] font-medium truncate mb-1">Total Invites</div>
+          <div className="text-xl font-bold text-[var(--text-primary)] font-mono">{kpis.totalInvites}</div>
+          <div className="text-xs text-[var(--text-muted)] mt-1">Générées & suivies</div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-emerald-500/20">
-          <div className="text-[11px] text-zinc-400 font-medium truncate mb-1">Valid Joins</div>
+        <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-emerald-500/20">
+          <div className="text-xs text-[var(--text-muted)] font-medium truncate mb-1">Valid Joins</div>
           <div className="text-xl font-bold text-emerald-400 font-mono">{kpis.validInvites}</div>
-          <div className="text-[10px] text-emerald-400/80 mt-1">Membres authentiques</div>
+          <div className="text-xs text-emerald-400/80 mt-1">Membres authentiques</div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-rose-500/20">
-          <div className="text-[11px] text-zinc-400 font-medium truncate mb-1">Suspicious / Fake</div>
+        <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-rose-500/20">
+          <div className="text-xs text-[var(--text-muted)] font-medium truncate mb-1">Suspicious / Fake</div>
           <div className="text-xl font-bold text-rose-400 font-mono">{kpis.fakeJoins}</div>
-          <div className="text-[10px] text-rose-400/80 mt-1">Score risque &gt; 50</div>
+          <div className="text-xs text-rose-400/80 mt-1">Score risque &gt; 50</div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80">
-          <div className="text-[11px] text-zinc-400 font-medium truncate mb-1">Membres Retenus</div>
-          <div className="text-xl font-bold text-white font-mono">{kpis.retainedMembers}</div>
-          <div className="text-[10px] text-zinc-500 mt-1">Toujours sur le serveur</div>
+        <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+          <div className="text-xs text-[var(--text-muted)] font-medium truncate mb-1">Membres Retenus</div>
+          <div className="text-xl font-bold text-[var(--text-primary)] font-mono">{kpis.retainedMembers}</div>
+          <div className="text-xs text-[var(--text-muted)] mt-1">Toujours sur le serveur</div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-pink-500/20">
-          <div className="text-[11px] text-zinc-400 font-medium truncate mb-1">Rétention 7j</div>
+        <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-pink-500/20">
+          <div className="text-xs text-[var(--text-muted)] font-medium truncate mb-1">Rétention 7j</div>
           <div className="text-xl font-bold text-pink-400 font-mono">{kpis.retentionRate}%</div>
-          <div className="text-[10px] text-pink-400/80 mt-1">Fidélisation globale</div>
+          <div className="text-xs text-pink-400/80 mt-1">Fidélisation globale</div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-indigo-500/20">
-          <div className="text-[11px] text-zinc-400 font-medium truncate mb-1">Top Recruteur</div>
-          <div className="text-base font-bold text-indigo-300 truncate">
+        <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-emerald-500/30">
+          <div className="text-xs text-[var(--text-muted)] font-medium truncate mb-1">Top Recruteur</div>
+          <div className="text-base font-bold text-emerald-300 truncate">
             {kpis.topInviter ? kpis.topInviter.tag.split("#")[0] : "Aucun"}
           </div>
-          <div className="text-[10px] text-indigo-400 mt-1 font-mono">
+          <div className="text-xs text-emerald-300 mt-1 font-mono">
             {kpis.topInviter ? `${kpis.topInviter.invites} invites` : "0"}
           </div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80">
-          <div className="text-[11px] text-zinc-400 font-medium truncate mb-1">Joins Aujourd'hui</div>
-          <div className="text-xl font-bold text-white font-mono">+{kpis.joinsToday}</div>
-          <div className="text-[10px] text-zinc-500 mt-1">Dernières 24h</div>
+        <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+          <div className="text-xs text-[var(--text-muted)] font-medium truncate mb-1">Joins Aujourd'hui</div>
+          <div className="text-xl font-bold text-[var(--text-primary)] font-mono">+{kpis.joinsToday}</div>
+          <div className="text-xs text-[var(--text-muted)] mt-1">Dernières 24h</div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80">
-          <div className="text-[11px] text-zinc-400 font-medium truncate mb-1">Cette Semaine</div>
+        <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+          <div className="text-xs text-[var(--text-muted)] font-medium truncate mb-1">Cette Semaine</div>
           <div className="text-xl font-bold text-teal-400 font-mono">+{kpis.joinsThisWeek}</div>
-          <div className="text-[10px] text-teal-400/80 mt-1">7 derniers jours</div>
+          <div className="text-xs text-teal-400/80 mt-1">7 derniers jours</div>
         </div>
       </div>
 
       {/* Growth Funnel & Live Ticker */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-6">
         {/* Growth Funnel */}
-        <div className="min-w-0 lg:col-span-8 p-4 sm:p-5 rounded-3xl bg-zinc-900/60 border border-zinc-800/80 shadow-xl">
+        <div className="min-w-0 lg:col-span-8 p-4 sm:p-5 rounded-3xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
           <div className="flex flex-wrap items-center justify-between gap-1 mb-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-pink-400" />
               <span>Entonnoir de Croissance Communautaire (Growth Funnel)</span>
             </h3>
-            <span className="text-[10px] font-mono text-emerald-400 font-semibold">Taux Global : {kpis.retentionRate}%</span>
+            <span className="text-xs font-mono text-emerald-400 font-semibold">Taux Global : {kpis.retentionRate}%</span>
           </div>
 
           <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-5">
-            <div className="p-3 rounded-2xl bg-zinc-950 border border-zinc-800">
-              <div className="text-[10px] text-zinc-500 font-mono mb-0.5">1. INVITATIONS</div>
-              <div className="text-sm font-bold text-white font-mono">{funnel.invitationsTracked}</div>
-              <div className="text-[10px] text-zinc-400">100%</div>
+            <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+              <div className="text-xs text-[var(--text-muted)] font-mono mb-0.5">1. INVITATIONS</div>
+              <div className="text-sm font-bold text-[var(--text-primary)] font-mono">{funnel.invitationsTracked}</div>
+              <div className="text-xs text-[var(--text-muted)]">100%</div>
             </div>
 
-            <div className="p-3 rounded-2xl bg-zinc-950 border border-zinc-800">
-              <div className="text-[10px] text-zinc-500 font-mono mb-0.5">2. ARRIVÉES</div>
-              <div className="text-sm font-bold text-white font-mono">{funnel.totalJoins || kpis.totalInvites}</div>
-              <div className="text-[10px] text-zinc-400">{joinsPct}%</div>
+            <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+              <div className="text-xs text-[var(--text-muted)] font-mono mb-0.5">2. ARRIVÉES</div>
+              <div className="text-sm font-bold text-[var(--text-primary)] font-mono">{funnel.totalJoins || kpis.totalInvites}</div>
+              <div className="text-xs text-[var(--text-muted)]">{joinsPct}%</div>
             </div>
 
-            <div className="p-3 rounded-2xl bg-zinc-950 border border-emerald-500/20">
-              <div className="text-[10px] text-emerald-400 font-mono mb-0.5">3. VALIDÉES</div>
+            <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-emerald-500/20">
+              <div className="text-xs text-emerald-400 font-mono mb-0.5">3. VALIDÉES</div>
               <div className="text-sm font-bold text-emerald-400 font-mono">{funnel.validJoins || kpis.validInvites}</div>
-              <div className="text-[10px] text-zinc-400">{validPct}%</div>
+              <div className="text-xs text-[var(--text-muted)]">{validPct}%</div>
             </div>
 
-            <div className="p-3 rounded-2xl bg-zinc-950 border border-pink-500/20">
-              <div className="text-[10px] text-pink-400 font-mono mb-0.5">4. RETENUES &gt;7J</div>
+            <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-pink-500/20">
+              <div className="text-xs text-pink-400 font-mono mb-0.5">4. RETENUES &gt;7J</div>
               <div className="text-sm font-bold text-pink-400 font-mono">{funnel.retainedMembers || kpis.retainedMembers}</div>
-              <div className="text-[10px] text-zinc-400">{retainedPct}%</div>
+              <div className="text-xs text-[var(--text-muted)]">{retainedPct}%</div>
             </div>
 
-            <div className="p-3 rounded-2xl bg-zinc-950 border border-indigo-500/20">
-              <div className="text-[10px] text-indigo-400 font-mono mb-0.5">5. RÉCOMPENSES</div>
-              <div className="text-sm font-bold text-indigo-400 font-mono">{funnel.rewardedMembers}</div>
-              <div className="text-[10px] text-zinc-400">{rewardedPct}%</div>
+            <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-emerald-500/30">
+              <div className="text-xs text-emerald-300 font-mono mb-0.5">5. RÉCOMPENSES</div>
+              <div className="text-sm font-bold text-emerald-300 font-mono">{funnel.rewardedMembers}</div>
+              <div className="text-xs text-[var(--text-muted)]">{rewardedPct}%</div>
             </div>
           </div>
         </div>
 
         {/* Live Stream Ticker */}
-        <div className="min-w-0 lg:col-span-4 p-4 sm:p-5 rounded-3xl bg-zinc-900/60 border border-zinc-800/80 shadow-xl flex flex-col justify-between">
+        <div className="min-w-0 lg:col-span-4 p-4 sm:p-5 rounded-3xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
                 <Radio className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Activité Parrainage Direct</span>
               </h3>
-              <span className="text-[10px] text-zinc-500">Temps réel</span>
+              <span className="text-xs text-[var(--text-muted)]">Temps réel</span>
             </div>
 
-            <div className="p-6 rounded-2xl bg-zinc-950/60 border border-zinc-800/80 text-center flex flex-col items-center justify-center min-h-[120px]">
-              <Radio className="w-5 h-5 text-zinc-600 mb-2 animate-pulse" />
-              <p className="text-xs text-zinc-400 font-medium">En attente d'événements en direct</p>
-              <p className="text-[10px] text-zinc-500 mt-0.5">Les nouvelles arrivées s'afficheront ici en temps réel.</p>
+            <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-center flex flex-col items-center justify-center min-h-[120px]">
+              <Radio className="w-5 h-5 text-[var(--text-muted)] mb-2 animate-pulse" />
+              <p className="text-xs text-[var(--text-muted)] font-medium">En attente d'événements en direct</p>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">Les nouvelles arrivées s'afficheront ici en temps réel.</p>
             </div>
           </div>
 
-          <div className="text-[11px] text-zinc-500 text-center mt-2">
+          <div className="text-xs text-[var(--text-muted)] text-center mt-2">
             Synchronisation continue avec le serveur Discord
           </div>
         </div>
       </div>
 
       {/* Main Tabs Navigation */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-zinc-800 pb-3 mb-6">
+      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--panel-border)] pb-3 mb-6">
         {[
           { id: "leaderboard", label: "Classement (Leaderboard)", icon: Award },
           { id: "links", label: "Liens d'Invitations", icon: LinkIcon },
@@ -520,7 +520,7 @@ export default function InvitesCenterClient() {
               className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-semibold transition-all cursor-pointer ${
                 isActive
                   ? "bg-pink-600 text-white shadow-sm"
-                  : "bg-zinc-900/60 text-zinc-400 hover:text-white hover:bg-zinc-800/80 border border-zinc-800/60"
+                  : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)]"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -532,10 +532,10 @@ export default function InvitesCenterClient() {
 
       {/* TAB 1: LEADERBOARD */}
       {activeTab === "leaderboard" && (
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 shadow-xl backdrop-blur-xl">
+        <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
           {/* Filters row */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-950 border border-zinc-800 text-xs">
+            <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs">
               {[
                 { id: "today", label: "Aujourd'hui" },
                 { id: "7d", label: "7 Jours" },
@@ -547,7 +547,7 @@ export default function InvitesCenterClient() {
                   key={p.id}
                   onClick={() => setPeriod(p.id)}
                   className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer ${
-                    period === p.id ? "bg-pink-600 text-white shadow-sm" : "text-zinc-400 hover:text-white"
+                    period === p.id ? "bg-pink-600 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   }`}
                 >
                   {p.label}
@@ -556,13 +556,13 @@ export default function InvitesCenterClient() {
             </div>
 
             <div className="relative w-full sm:w-64">
-              <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Rechercher un membre..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white focus:outline-none focus:border-pink-500"
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-pink-500"
               />
             </div>
           </div>
@@ -570,7 +570,7 @@ export default function InvitesCenterClient() {
           {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-zinc-800 text-zinc-400 uppercase text-[10px] font-mono">
+              <thead className="border-b border-[var(--panel-border)] text-[var(--text-muted)] uppercase text-xs font-mono">
                 <tr>
                   <th className="py-3 px-3">Rang</th>
                   <th className="py-3 px-3">Membre Recruteur</th>
@@ -583,9 +583,9 @@ export default function InvitesCenterClient() {
                   <th className="py-3 px-3 text-right">Profil</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60">
+              <tbody className="divide-y divide-[var(--panel-border)]">
                 {leaderboard.map((entry) => (
-                  <tr key={entry.userId} className="hover:bg-zinc-800/40 transition">
+                  <tr key={entry.userId} className="hover:bg-[var(--surface-raised)]/70 transition">
                     <td className="py-3.5 px-3">
                       <span className="font-bold text-sm">
                         {entry.rank === 1 ? "🥇" : entry.rank === 2 ? "🥈" : entry.rank === 3 ? "🥉" : `#${entry.rank}`}
@@ -597,32 +597,32 @@ export default function InvitesCenterClient() {
                           {entry.userTag.slice(0, 2).toUpperCase()}
                         </div>
                         <div>
-                          <div className="font-semibold text-white">{entry.userTag}</div>
-                          <div className="text-[10px] text-zinc-500 font-mono">{entry.userId}</div>
+                          <div className="font-semibold text-[var(--text-primary)]">{entry.userTag}</div>
+                          <div className="text-xs text-[var(--text-muted)] font-mono">{entry.userId}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="py-3.5 px-3 font-mono font-semibold text-white">{entry.totalInvites}</td>
+                    <td className="py-3.5 px-3 font-mono font-semibold text-[var(--text-primary)]">{entry.totalInvites}</td>
                     <td className="py-3.5 px-3 font-mono font-bold text-emerald-400">{entry.validInvites}</td>
-                    <td className="py-3.5 px-3 font-mono text-zinc-400">{entry.leftMembers}</td>
+                    <td className="py-3.5 px-3 font-mono text-[var(--text-muted)]">{entry.leftMembers}</td>
                     <td className="py-3.5 px-3 font-mono text-rose-400">{entry.suspiciousInvites}</td>
                     <td className="py-3.5 px-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-16 bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                        <div className="w-16 bg-[var(--panel-border)] h-1.5 rounded-full overflow-hidden">
                           <div className="bg-pink-500 h-full" style={{ width: `${entry.retentionRate}%` }} />
                         </div>
                         <span className="font-mono text-xs font-semibold text-pink-300">{entry.retentionRate}%</span>
                       </div>
                     </td>
                     <td className="py-3.5 px-3">
-                      <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-[10px] font-mono font-bold">
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 text-xs font-mono font-bold">
                         {entry.rewardsEarned} Paliers
                       </span>
                     </td>
                     <td className="py-3.5 px-3 text-right">
                       <Link
                         href={`/discord/invites/users/${entry.userId}?guildId=${currentGuildId}`}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700 transition"
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-primary)] text-xs font-medium border border-[var(--panel-border)] transition"
                       >
                         <span>Voir</span>
                         <ChevronRight className="w-3.5 h-3.5" />
@@ -638,11 +638,11 @@ export default function InvitesCenterClient() {
 
       {/* TAB 2: INVITE LINKS */}
       {activeTab === "links" && (
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 shadow-xl backdrop-blur-xl">
+        <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-base font-bold text-white">Liens d'Invitations Discord</h3>
-              <p className="text-xs text-zinc-400">
+              <h3 className="text-base font-bold text-[var(--text-primary)]">Liens d'Invitations Discord</h3>
+              <p className="text-xs text-[var(--text-muted)]">
                 Invitations actives créées sur le serveur Discord et surveillées par Etho.
               </p>
             </div>
@@ -650,7 +650,7 @@ export default function InvitesCenterClient() {
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-zinc-800 text-zinc-400 uppercase text-[10px] font-mono">
+              <thead className="border-b border-[var(--panel-border)] text-[var(--text-muted)] uppercase text-xs font-mono">
                 <tr>
                   <th className="py-3 px-3">Code</th>
                   <th className="py-3 px-3">Créateur</th>
@@ -661,27 +661,27 @@ export default function InvitesCenterClient() {
                   <th className="py-3 px-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60">
+              <tbody className="divide-y divide-[var(--panel-border)]">
                 {links.map((link) => (
-                  <tr key={link.code} className="hover:bg-zinc-800/40 transition">
+                  <tr key={link.code} className="hover:bg-[var(--surface-raised)]/70 transition">
                     <td className="py-3.5 px-3 font-mono font-bold text-pink-400">
-                      <span className="px-2 py-1 rounded-lg bg-zinc-950 border border-zinc-800">
+                      <span className="px-2 py-1 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                         {link.code}
                       </span>
                     </td>
-                    <td className="py-3.5 px-3 text-white font-medium">{link.creator}</td>
+                    <td className="py-3.5 px-3 text-[var(--text-primary)] font-medium">{link.creator}</td>
                     <td className="py-3.5 px-3 font-mono text-emerald-400 font-bold">{link.uses}</td>
-                    <td className="py-3.5 px-3 font-mono text-zinc-400">{link.maxUses}</td>
-                    <td className="py-3.5 px-3 text-zinc-400">{link.expires}</td>
+                    <td className="py-3.5 px-3 font-mono text-[var(--text-muted)]">{link.maxUses}</td>
+                    <td className="py-3.5 px-3 text-[var(--text-muted)]">{link.expires}</td>
                     <td className="py-3.5 px-3">
-                      <span className="px-2 py-0.5 rounded-full bg-zinc-800 text-[10px] text-zinc-300">
+                      <span className="px-2 py-0.5 rounded-full bg-[var(--surface-raised)]/40 text-xs text-[var(--text-muted)]">
                         {link.temporary ? "Temporaire" : "Permanent"}
                       </span>
                     </td>
                     <td className="py-3.5 px-3 text-right">
                       <button
                         onClick={() => copyToClipboard(link.url)}
-                        className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition cursor-pointer"
+                        className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-white transition cursor-pointer"
                         title="Copier le lien"
                       >
                         <Copy className="w-3.5 h-3.5" />
@@ -698,11 +698,11 @@ export default function InvitesCenterClient() {
       {/* TAB 3: REWARDS & BUILDER */}
       {activeTab === "rewards" && (
         <div className="space-y-6">
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 shadow-xl backdrop-blur-xl">
+          <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div>
-                <h3 className="text-base font-bold text-white">Paliers de Récompenses Automatisés</h3>
-                <p className="text-xs text-zinc-400">
+                <h3 className="text-base font-bold text-[var(--text-primary)]">Paliers de Récompenses Automatisés</h3>
+                <p className="text-xs text-[var(--text-muted)]">
                   Définissez des règles automatiques pour récompenser les meilleurs recruteurs avec des rôles et de l'XP.
                 </p>
               </div>
@@ -721,7 +721,7 @@ export default function InvitesCenterClient() {
               {rewards.map((r) => (
                 <div
                   key={r.id}
-                  className="p-5 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 flex flex-col justify-between"
+                  className="p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-3">
@@ -730,27 +730,27 @@ export default function InvitesCenterClient() {
                       </span>
                       <button
                         onClick={() => handleDeleteReward(r.id)}
-                        className="p-1 text-zinc-500 hover:text-rose-400 transition cursor-pointer"
+                        className="p-1 text-[var(--text-muted)] hover:text-rose-400 transition cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
 
-                    <h4 className="text-sm font-bold text-white mb-1">{r.name}</h4>
-                    <div className="text-xs text-zinc-400 flex items-center gap-1.5 mb-3">
-                      <Award className="w-3.5 h-3.5 text-indigo-400" />
+                    <h4 className="text-sm font-bold text-[var(--text-primary)] mb-1">{r.name}</h4>
+                    <div className="text-xs text-[var(--text-muted)] flex items-center gap-1.5 mb-3">
+                      <Award className="w-3.5 h-3.5 text-emerald-300" />
                       <span>Rôle : @{r.roleName}</span>
                     </div>
 
                     {r.xpAmount && (
-                      <div className="inline-flex items-center gap-1 text-[11px] text-amber-400 font-mono mb-2">
+                      <div className="inline-flex items-center gap-1 text-xs text-amber-400 font-mono mb-2">
                         <Sparkles className="w-3 h-3" />
                         <span>+{r.xpAmount} XP Niveau</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="pt-3 border-t border-zinc-800 text-[10px] text-emerald-400 flex items-center gap-1 font-medium">
+                  <div className="pt-3 border-t border-[var(--panel-border)] text-xs text-emerald-400 flex items-center gap-1 font-medium">
                     <CheckCircle2 className="w-3 h-3" /> Règle Active • Idempotente
                   </div>
                 </div>
@@ -762,11 +762,11 @@ export default function InvitesCenterClient() {
 
       {/* TAB 4: CAMPAIGNS */}
       {activeTab === "campaigns" && (
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 shadow-xl backdrop-blur-xl">
+        <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-base font-bold text-white">Campagnes de Parrainage Actives</h3>
-              <p className="text-xs text-zinc-400">
+              <h3 className="text-base font-bold text-[var(--text-primary)]">Campagnes de Parrainage Actives</h3>
+              <p className="text-xs text-[var(--text-muted)]">
                 Fixez des objectifs temporels pour booster les adhésions lors d'événements spéciaux.
               </p>
             </div>
@@ -776,42 +776,42 @@ export default function InvitesCenterClient() {
             {campaigns.map((c) => {
               const pct = Math.min(100, Math.round((c.currentInvites / c.inviteTarget) * 100));
               return (
-                <div key={c.id} className="p-6 rounded-2xl bg-zinc-950 border border-zinc-800">
+                <div key={c.id} className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                     <div>
                       <div className="flex items-center gap-2">
-                        <h4 className="text-base font-bold text-white">{c.name}</h4>
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-bold font-mono">
+                        <h4 className="text-base font-bold text-[var(--text-primary)]">{c.name}</h4>
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold font-mono">
                           {c.status}
                         </span>
                       </div>
-                      <p className="text-xs text-zinc-400 mt-1">{c.description}</p>
+                      <p className="text-xs text-[var(--text-muted)] mt-1">{c.description}</p>
                     </div>
 
                     <div className="text-right">
-                      <div className="text-lg font-bold text-white font-mono">
+                      <div className="text-lg font-bold text-[var(--text-primary)] font-mono">
                         {c.currentInvites} / {c.inviteTarget}
                       </div>
-                      <div className="text-[10px] text-zinc-500">Invitations réalisées</div>
+                      <div className="text-xs text-[var(--text-muted)]">Invitations réalisées</div>
                     </div>
                   </div>
 
                   {/* Progress Bar */}
-                  <div className="w-full bg-zinc-800 h-2.5 rounded-full overflow-hidden mb-3">
+                  <div className="w-full bg-[var(--panel-border)] h-2.5 rounded-full overflow-hidden mb-3">
                     <div className="bg-pink-500 h-full transition-all" style={{ width: `${pct}%` }} />
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-between text-xs text-zinc-400 pt-2 border-t border-zinc-900">
+                  <div className="flex flex-wrap items-center justify-between text-xs text-[var(--text-muted)] pt-2 border-t border-[var(--panel-border)]">
                     <div className="flex items-center gap-2">
                       <span>Récompenses :</span>
                       {c.rewards.map((rew: string, i: number) => (
-                        <span key={i} className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[10px] text-pink-300">
+                        <span key={i} className="px-2 py-0.5 rounded bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-pink-300">
                           {rew}
                         </span>
                       ))}
                     </div>
 
-                    <div className="flex items-center gap-1 text-[11px] text-zinc-500">
+                    <div className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
                       <Clock className="w-3.5 h-3.5" />
                       <span>Fin le {new Date(c.endDate).toLocaleDateString("fr-FR")}</span>
                     </div>
@@ -828,12 +828,12 @@ export default function InvitesCenterClient() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Retention Curves */}
-            <div className="p-6 rounded-3xl bg-zinc-900/60 border border-zinc-800 shadow-xl">
-              <h3 className="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <div className="p-6 rounded-3xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+              <h3 className="text-sm font-bold text-[var(--text-primary)] mb-1 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-pink-400" />
                 <span>Courbes de Rétention dans le Temps</span>
               </h3>
-              <p className="text-xs text-zinc-400 mb-6">
+              <p className="text-xs text-[var(--text-muted)] mb-6">
                 Pourcentage de membres toujours actifs après X jours suite à leur arrivée via une invitation.
               </p>
 
@@ -841,16 +841,16 @@ export default function InvitesCenterClient() {
                 {[
                   { label: "Après 1 Heure", pct: 95, color: "bg-emerald-500" },
                   { label: "Après 24 Heures", pct: 91, color: "bg-teal-500" },
-                  { label: "Après 3 Jours", pct: 84, color: "bg-indigo-500" },
+                  { label: "Après 3 Jours", pct: 84, color: "bg-emerald-500" },
                   { label: "Après 7 Jours", pct: 76, color: "bg-pink-500" },
-                  { label: "Après 30 Jours", pct: 61, color: "bg-purple-500" },
+                  { label: "Après 30 Jours", pct: 61, color: "bg-emerald-500" },
                 ].map((item) => (
                   <div key={item.label}>
                     <div className="flex justify-between text-xs mb-1">
-                      <span className="text-zinc-300 font-medium">{item.label}</span>
-                      <span className="font-mono font-bold text-white">{item.pct}%</span>
+                      <span className="text-[var(--text-muted)] font-medium">{item.label}</span>
+                      <span className="font-mono font-bold text-[var(--text-primary)]">{item.pct}%</span>
                     </div>
-                    <div className="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
+                    <div className="w-full bg-[var(--panel-border)] h-2 rounded-full overflow-hidden">
                       <div className={`${item.color} h-full`} style={{ width: `${item.pct}%` }} />
                     </div>
                   </div>
@@ -859,28 +859,28 @@ export default function InvitesCenterClient() {
             </div>
 
             {/* Sources Breakdown */}
-            <div className="p-6 rounded-3xl bg-zinc-900/60 border border-zinc-800 shadow-xl flex flex-col justify-between">
+            <div className="p-6 rounded-3xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between">
               <div>
-                <h3 className="text-sm font-bold text-white mb-1 flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-indigo-400" />
+                <h3 className="text-sm font-bold text-[var(--text-primary)] mb-1 flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-emerald-300" />
                   <span>Répartition des Sources d'Arrivée</span>
                 </h3>
-                <p className="text-xs text-zinc-400 mb-6">
+                <p className="text-xs text-[var(--text-muted)] mb-6">
                   Origine des 30 derniers jours d'adhésion au serveur.
                 </p>
 
                 <div className="space-y-3">
-                  <div className="p-3 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-between text-xs">
-                    <span className="text-zinc-300 font-medium">Liens d'Invitations Personnelles</span>
+                  <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between text-xs">
+                    <span className="text-[var(--text-muted)] font-medium">Liens d'Invitations Personnelles</span>
                     <span className="font-mono font-bold text-emerald-400">78% (984 joins)</span>
                   </div>
-                  <div className="p-3 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-between text-xs">
-                    <span className="text-zinc-300 font-medium">Vanity URL (discord.gg/nom)</span>
-                    <span className="font-mono font-bold text-indigo-400">18% (231 joins)</span>
+                  <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between text-xs">
+                    <span className="text-[var(--text-muted)] font-medium">Vanity URL (discord.gg/nom)</span>
+                    <span className="font-mono font-bold text-emerald-300">18% (231 joins)</span>
                   </div>
-                  <div className="p-3 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-between text-xs">
-                    <span className="text-zinc-300 font-medium">Découverte / Direct</span>
-                    <span className="font-mono font-bold text-zinc-400">4% (69 joins)</span>
+                  <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between text-xs">
+                    <span className="text-[var(--text-muted)] font-medium">Découverte / Direct</span>
+                    <span className="font-mono font-bold text-[var(--text-muted)]">4% (69 joins)</span>
                   </div>
                 </div>
               </div>
@@ -896,16 +896,16 @@ export default function InvitesCenterClient() {
 
       {/* Modal: Create Reward */}
       {showRewardModal && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-md p-6 rounded-3xl bg-zinc-900 border border-zinc-800 shadow-2xl">
-            <h3 className="text-lg font-bold text-white mb-1">Créer un Palier de Récompense</h3>
-            <p className="text-xs text-zinc-400 mb-5">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80 animate-in fade-in duration-200">
+          <div className="w-full max-w-md p-6 rounded-3xl bg-[var(--surface-raised)] border border-[var(--panel-border)]">
+            <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Créer un Palier de Récompense</h3>
+            <p className="text-xs text-[var(--text-muted)] mb-5">
               Définissez le seuil d'invitations valides requis pour débloquer automatiquement un rôle ou de l'XP.
             </p>
 
             <div className="space-y-4 mb-6">
               <div>
-                <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">
                   Nom du palier
                 </label>
                 <input
@@ -913,24 +913,24 @@ export default function InvitesCenterClient() {
                   value={newRewardName}
                   onChange={(e) => setNewRewardName(e.target.value)}
                   placeholder="Ex: Rôle VIP Recruteur"
-                  className="w-full p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white focus:outline-none focus:border-pink-500"
+                  className="w-full p-2.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-pink-500"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">
                   Nombre d'invitations valides requises
                 </label>
                 <input
                   type="number"
                   value={newRewardInvites}
                   onChange={(e) => setNewRewardInvites(Number(e.target.value))}
-                  className="w-full p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white focus:outline-none focus:border-pink-500"
+                  className="w-full p-2.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-pink-500"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">
                   Rôle attribué
                 </label>
                 <RolePicker
@@ -944,14 +944,14 @@ export default function InvitesCenterClient() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">
                   XP accordé
                 </label>
                 <input
                   type="number"
                   value={newRewardXp}
                   onChange={(e) => setNewRewardXp(Number(e.target.value))}
-                  className="w-full p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white focus:outline-none focus:border-pink-500"
+                  className="w-full p-2.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-pink-500"
                 />
               </div>
             </div>
@@ -959,7 +959,7 @@ export default function InvitesCenterClient() {
             <div className="flex gap-2">
               <button
                 onClick={() => setShowRewardModal(false)}
-                className="flex-1 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold transition cursor-pointer"
+                className="flex-1 py-2.5 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] text-xs font-semibold transition cursor-pointer"
               >
                 Annuler
               </button>

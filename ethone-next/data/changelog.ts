@@ -38383,6 +38383,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_34_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_34_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_34_0_de);
 
+const v1_35_0_fr: ChangelogEntry = {
+  version: "v1.35.0",
+  date: "2026-09-28",
+  title: "AutoMod natif Discord + sous-pages au nouveau style",
+  items: [
+    "Nouvelle page « AutoMod natif Discord » : gère les règles d'auto-modération intégrées à Discord (mots-clés, spam, mentions massives, profils) directement depuis le dashboard, avec règles recommandées en un clic. Elles s'exécutent chez Discord, même si le bot est hors ligne. Nouvelle commande /automod-native.",
+    "Une grande partie des sous-pages du Bot Discord passe au style épuré de la nouvelle interface (cartes unifiées, textes lisibles, boutons cohérents).",
+  ],
+};
+
+const v1_35_0_en: ChangelogEntry = {
+  version: "v1.35.0",
+  date: "2026-09-28",
+  title: "Discord native AutoMod + sub-pages in the new style",
+  items: [
+    "New \"Discord native AutoMod\" page: manage Discord's built-in auto-moderation rules (keywords, spam, mention spam, profiles) from the dashboard, with one-click recommended rules. They run at Discord, even if the bot is offline. New /automod-native command.",
+    "Many Discord bot sub-pages now use the clean style of the new interface (unified cards, readable text, consistent buttons).",
+  ],
+};
+
+const v1_35_0_es: ChangelogEntry = {
+  version: "v1.35.0",
+  date: "2026-09-28",
+  title: "AutoMod nativo de Discord + subpáginas con el nuevo estilo",
+  items: [
+    "Nueva página «AutoMod nativo de Discord»: gestiona las reglas de auto-moderación integradas en Discord desde el dashboard, con reglas recomendadas en un clic. Nuevo comando /automod-native.",
+    "Muchas subpáginas del bot de Discord pasan al estilo limpio de la nueva interfaz.",
+  ],
+};
+
+const v1_35_0_de: ChangelogEntry = {
+  version: "v1.35.0",
+  date: "2026-09-28",
+  title: "Nativer Discord-AutoMod + Unterseiten im neuen Stil",
+  items: [
+    "Neue Seite „Nativer Discord-AutoMod“: verwalte die in Discord integrierten Auto-Moderationsregeln im Dashboard, mit empfohlenen Regeln per Klick. Neuer Befehl /automod-native.",
+    "Viele Unterseiten des Discord-Bots verwenden jetzt den aufgeräumten Stil der neuen Oberfläche.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_35_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_35_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_35_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_35_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

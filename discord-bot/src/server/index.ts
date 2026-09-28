@@ -38,6 +38,7 @@ import { createBackupRouter } from './routes/backupRoutes.js';
 import { createAiRouter } from './routes/aiRoutes.js';
 import { createFormRouter } from './routes/formRoutes.js';
 import { createPollRouter } from './routes/pollRoutes.js';
+import { createNativeAutomodRouter } from './routes/nativeAutomodRoutes.js';
 import { createStarboardRouter } from './routes/starboardRoutes.js';
 import { createStickyRouter } from './routes/stickyRoutes.js';
 import { createReminderRouter } from './routes/reminderRoutes.js';
@@ -296,6 +297,12 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createPollRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/automod-native',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createNativeAutomodRouter(client)
   );
   app.use(
     '/api/guilds/:guildId/events',

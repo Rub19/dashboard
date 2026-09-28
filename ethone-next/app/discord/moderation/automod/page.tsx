@@ -868,15 +868,15 @@ export default function AutoModCommandCenterPage() {
   };
 
   return (
-    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-zinc-100 font-sans">
+    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)] font-sans">
       {/* HEADER FIXE */}
-      <header className="shrink-0 border-b border-[var(--panel-border)] bg-black/40 backdrop-blur-xl px-4 sm:px-6 py-3.5 z-20">
+      <header className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 sm:px-6 py-3.5 z-20">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           {/* Titre & Navigation Retour */}
           <div className="flex items-center gap-3">
             <Link
               href={selectedGuild ? `/discord?guildId=${selectedGuild.id}` : "/discord"}
-              className="flex h-8 items-center gap-1.5 px-2.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+              className="flex h-8 items-center gap-1.5 px-2.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 transition-all active:scale-95"
               title="Retour au dashboard Discord"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -884,22 +884,22 @@ export default function AutoModCommandCenterPage() {
             </Link>
 
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.04] border border-[var(--panel-border)] text-zinc-300 shadow-inner">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] ">
                 <Zap className="h-5 w-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-base font-semibold tracking-tight text-white">AutoMod</h1>
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                  <h1 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">AutoMod</h1>
+                  <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
                     Smart Engine
                   </span>
                   {config.smartMode && (
-                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/30 flex items-center gap-1">
+                    <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/30 flex items-center gap-1">
                       <Sparkles className="h-2.5 w-2.5" /> Anti-Raid Linked
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Détection intelligente, multi-conditions, sanctions progressives & sandbox de test.
                 </p>
               </div>
@@ -924,7 +924,7 @@ export default function AutoModCommandCenterPage() {
             <button
               onClick={fetchAllData}
               disabled={isLoading}
-              className="flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 text-xs text-zinc-300 hover:text-white hover:bg-white/10 transition-all active:scale-95 disabled:opacity-50"
+              className="flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 transition-all active:scale-95 disabled:opacity-50"
               title="Rafraîchir les métriques et configurations"
             >
               <RefreshCw className={cn("h-3.5 w-3.5", isLoading && "animate-spin text-amber-400")} />
@@ -974,13 +974,13 @@ export default function AutoModCommandCenterPage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-150 cursor-pointer",
+                  "flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all duration-150 cursor-pointer",
                   isCurrent
-                    ? "bg-white/10 text-white shadow-sm border border-[var(--panel-border)]"
-                    : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
+                    ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm border border-[var(--panel-border)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
                 )}
               >
-                <Icon className={cn("h-3.5 w-3.5", isCurrent ? "text-amber-400" : "text-zinc-400")} />
+                <Icon className={cn("h-3.5 w-3.5", isCurrent ? "text-amber-400" : "text-[var(--text-muted)]")} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -1010,7 +1010,7 @@ export default function AutoModCommandCenterPage() {
                 href={BOT_INVITE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-semibold shrink-0 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-semibold shrink-0 transition-colors"
               >
                 <Bot className="h-3.5 w-3.5" />
                 Inviter le bot
@@ -1031,21 +1031,21 @@ export default function AutoModCommandCenterPage() {
               {/* CARTES DE STATISTIQUES EN DIRECT */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {/* 1. Score Moyen de Risque */}
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-md relative overflow-hidden group">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 relative overflow-hidden group">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-zinc-400 font-medium">Niveau de Menace</span>
+                    <span className="text-xs text-[var(--text-muted)] font-medium">Niveau de Menace</span>
                     <span className="text-xs">{RISK_BADGES[overviewMetrics.riskLevel].icon}</span>
                   </div>
                   <div className="mt-2 flex items-baseline gap-2">
-                    <span className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+                    <span className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
                       {overviewMetrics.avgRiskScore}
                     </span>
-                    <span className="text-xs text-zinc-500 font-mono">/100</span>
+                    <span className="text-xs text-[var(--text-muted)] font-mono">/100</span>
                   </div>
                   <div className="mt-2 flex items-center gap-1.5">
                     <span
                       className={cn(
-                        "text-[10px] font-bold px-2 py-0.5 rounded-md border",
+                        "text-xs font-bold px-2 py-0.5 rounded-md border",
                         RISK_BADGES[overviewMetrics.riskLevel].bg,
                         RISK_BADGES[overviewMetrics.riskLevel].text,
                         RISK_BADGES[overviewMetrics.riskLevel].border
@@ -1053,28 +1053,28 @@ export default function AutoModCommandCenterPage() {
                     >
                       {RISK_BADGES[overviewMetrics.riskLevel].label}
                     </span>
-                    <span className="text-[11px] text-zinc-400">sur les derniers messages</span>
+                    <span className="text-xs text-[var(--text-muted)]">sur les derniers messages</span>
                   </div>
                 </div>
 
                 {/* 2. Smart Mode & Anti-Raid Link */}
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-md relative overflow-hidden group">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 relative overflow-hidden group">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-zinc-400 font-medium">Mode Intelligent</span>
+                    <span className="text-xs text-[var(--text-muted)] font-medium">Mode Intelligent</span>
                     <Sparkles className="h-4 w-4 text-blue-400" />
                   </div>
                   <div className="mt-2 flex items-baseline gap-2">
-                    <span className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                    <span className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)]">
                       {config.smartMode ? "Interconnecté" : "Standard"}
                     </span>
                   </div>
                   <div className="mt-2 flex items-center justify-between">
-                    <span className="text-[11px] text-zinc-400">
+                    <span className="text-xs text-[var(--text-muted)]">
                       {config.smartMode ? "Sensibilité adaptative" : "Seuils manuels fixes"}
                     </span>
                     <button
                       onClick={handleToggleSmartMode}
-                      className="text-[10px] font-semibold text-blue-400 hover:text-blue-300 underline"
+                      className="text-xs font-semibold text-blue-400 hover:text-blue-300 underline"
                     >
                       Basculer
                     </button>
@@ -1082,54 +1082,54 @@ export default function AutoModCommandCenterPage() {
                 </div>
 
                 {/* 3. Règles & Sanctions Exécutées */}
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-md relative overflow-hidden group">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 relative overflow-hidden group">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-zinc-400 font-medium">Actions Exécutées</span>
+                    <span className="text-xs text-[var(--text-muted)] font-medium">Actions Exécutées</span>
                     <ShieldCheck className="h-4 w-4 text-emerald-400" />
                   </div>
                   <div className="mt-2 flex items-baseline gap-2">
-                    <span className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+                    <span className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
                       {overviewMetrics.actionsCount}
                     </span>
-                    <span className="text-xs text-zinc-500">sanctions</span>
+                    <span className="text-xs text-[var(--text-muted)]">sanctions</span>
                   </div>
-                  <div className="mt-2 flex items-center gap-1.5 text-[11px] text-zinc-400">
+                  <div className="mt-2 flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
                     <span>{rules.filter((r) => r.enabled).length} règles actives</span>
                   </div>
                 </div>
 
                 {/* 4. Strikes & Avertissements Actifs */}
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-md relative overflow-hidden group">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 relative overflow-hidden group">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-zinc-400 font-medium">Strikes en Cours</span>
+                    <span className="text-xs text-[var(--text-muted)] font-medium">Strikes en Cours</span>
                     <AlertTriangle className="h-4 w-4 text-amber-400" />
                   </div>
                   <div className="mt-2 flex items-baseline gap-2">
-                    <span className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+                    <span className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
                       {overviewMetrics.strikesCount}
                     </span>
-                    <span className="text-xs text-zinc-500">actifs</span>
+                    <span className="text-xs text-[var(--text-muted)]">actifs</span>
                   </div>
-                  <div className="mt-2 flex items-center gap-1.5 text-[11px] text-zinc-400">
+                  <div className="mt-2 flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
                     <span>Expire après {config.strikes.expirationDays} jours</span>
                   </div>
                 </div>
               </div>
 
               {/* BANNIÈRE PASSERELLE ANTI-RAID */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-blue-500/20 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-blue-600/10 p-4 shadow-sm">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-blue-500/20 bg-gradient-to-r from-blue-500/10 via-emerald-500/10 to-blue-600/10 p-4 shadow-sm">
                 <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400">
                     <Shield className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-white flex items-center gap-2">
+                    <h3 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                       Synergie Bidirectionnelle avec le Centre Anti-Raid
-                      <span className="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300">
+                      <span className="text-xs uppercase font-mono px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300">
                         EventBus Connecté
                       </span>
                     </h3>
-                    <p className="text-[11px] text-zinc-300 mt-0.5 leading-relaxed">
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5 leading-relaxed">
                       Si un membre accumule un score de risque AutoMod supérieur à 60, une alerte immédiate est transmise au moteur Anti-Raid. Inversement, en cas de raid détecté sur le serveur, AutoMod passe automatiquement en mode ultra-sensible.
                     </p>
                   </div>
@@ -1144,18 +1144,18 @@ export default function AutoModCommandCenterPage() {
               </div>
 
               {/* FLUX DES INFRACTIONS & INCIDENTS EN DIRECT */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Activity className="h-4 w-4 text-amber-400" />
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-white">
+                    <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
                       Journal des Infractions en Direct ({incidents.length})
                     </h2>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={fetchAllData}
-                      className="text-xs text-zinc-400 hover:text-white flex items-center gap-1"
+                      className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] flex items-center gap-1"
                     >
                       <RefreshCw className="h-3 w-3" />
                       <span>Rafraîchir</span>
@@ -1164,29 +1164,29 @@ export default function AutoModCommandCenterPage() {
                 </div>
 
                 {incidents.length === 0 ? (
-                  <div className="text-center py-12 text-zinc-500">
+                  <div className="text-center py-12 text-[var(--text-muted)]">
                     <CheckCircle2 className="h-8 w-8 text-emerald-500/40 mx-auto mb-2" />
-                    <p className="text-xs font-medium text-zinc-300">Aucune infraction récente enregistrée</p>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">Le serveur est calme et les messages sont conformes.</p>
+                    <p className="text-xs font-medium text-[var(--text-muted)]">Aucune infraction récente enregistrée</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5">Le serveur est calme et les messages sont conformes.</p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-white/[0.06] overflow-hidden">
+                  <div className="divide-y divide-[var(--panel-border)] overflow-hidden">
                     {incidents.map((inc) => {
                       const badge = RISK_BADGES[inc.riskLevel] || RISK_BADGES.SAFE;
                       return (
                         <div
                           key={inc.id}
-                          className="py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-white/[0.01] transition-colors rounded-lg px-2"
+                          className="py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-[var(--surface-raised)]/70 transition-colors rounded-xl px-2"
                         >
                           <div className="flex items-start gap-3">
                             <span className="text-base mt-0.5">{badge.icon}</span>
                             <div>
                               <div className="flex items-center gap-2 flex-wrap">
-                                <span className="text-xs font-bold text-white">{inc.userTag}</span>
-                                <span className="text-[10px] font-mono text-zinc-500">#{inc.channelName}</span>
+                                <span className="text-xs font-bold text-[var(--text-primary)]">{inc.userTag}</span>
+                                <span className="text-xs font-mono text-[var(--text-muted)]">#{inc.channelName}</span>
                                 <span
                                   className={cn(
-                                    "text-[9px] font-bold px-1.5 py-0.5 rounded border",
+                                    "text-xs font-bold px-1.5 py-0.5 rounded border",
                                     badge.bg,
                                     badge.text,
                                     badge.border
@@ -1195,20 +1195,20 @@ export default function AutoModCommandCenterPage() {
                                   Score : {inc.totalRiskScore}/100
                                 </span>
                                 {inc.strikesAdded && inc.strikesAdded > 0 && (
-                                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                  <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
                                     +{inc.strikesAdded} Strike
                                   </span>
                                 )}
                               </div>
                               {inc.messageContent && (
-                                <p className="text-xs text-zinc-300 font-mono bg-black/40 rounded px-2 py-1 mt-1.5 border border-[var(--panel-border)] line-clamp-1">
+                                <p className="text-xs text-[var(--text-muted)] font-mono bg-[var(--surface-raised)]/40 rounded px-2 py-1 mt-1.5 border border-[var(--panel-border)] line-clamp-1">
                                   {inc.messageContent}
                                 </p>
                               )}
-                              <div className="flex items-center gap-2 mt-1 text-[10px] text-zinc-500 flex-wrap">
+                              <div className="flex items-center gap-2 mt-1 text-xs text-[var(--text-muted)] flex-wrap">
                                 <span>Règles/Détecteurs :</span>
                                 {[...inc.triggeredDetectors, ...inc.triggeredRules].map((t, idx) => (
-                                  <span key={idx} className="bg-white/5 text-zinc-300 px-1.5 py-0.2 rounded border border-[var(--panel-border)] font-mono">
+                                  <span key={idx} className="bg-[var(--surface-raised)]/40 text-[var(--text-muted)] px-1.5 py-0.2 rounded border border-[var(--panel-border)] font-mono">
                                     {t}
                                   </span>
                                 ))}
@@ -1224,7 +1224,7 @@ export default function AutoModCommandCenterPage() {
                               {inc.actionsTaken.map((act) => (
                                 <span
                                   key={act}
-                                  className="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-[var(--panel-border)]"
+                                  className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-[var(--surface-raised)] text-[var(--text-muted)] border border-[var(--panel-border)]"
                                 >
                                   {act}
                                 </span>
@@ -1232,7 +1232,7 @@ export default function AutoModCommandCenterPage() {
                             </div>
                             <button
                               onClick={() => handleInspectUser(inc.userId)}
-                              className="flex h-7 items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2 text-[11px] text-zinc-300 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+                              className="flex h-7 items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 transition-all active:scale-95"
                               title="Inspecter le dossier de ce membre"
                             >
                               <Eye className="h-3 w-3" />
@@ -1256,8 +1256,8 @@ export default function AutoModCommandCenterPage() {
               {/* En-tête de la section */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-sm font-bold text-white">Moteur de Règles Personnalisées</h2>
-                  <p className="text-xs text-zinc-400">
+                  <h2 className="text-sm font-bold text-[var(--text-primary)]">Moteur de Règles Personnalisées</h2>
+                  <p className="text-xs text-[var(--text-muted)]">
                     Créez des chaînes de détection complexes avec opérateurs logiques (ALL, ANY, NOT), conditions multi-triggers et sanctions automatiques.
                   </p>
                 </div>
@@ -1272,11 +1272,11 @@ export default function AutoModCommandCenterPage() {
 
               {/* Formulaire d'Édition de Règle */}
               {(isCreatingRule || editingRule) && editingRule && (
-                <div className="rounded-2xl border border-amber-500/30 bg-zinc-900/90 p-5 shadow-2xl space-y-5">
+                <div className="rounded-2xl border border-amber-500/30 bg-[var(--surface-raised)]/90 p-5 space-y-5">
                   <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
                     <div className="flex items-center gap-2">
                       <Layers className="h-4 w-4 text-amber-400" />
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
                         {isCreatingRule ? "Création d'une nouvelle règle" : `Modifier la règle : ${editingRule.name}`}
                       </h3>
                     </div>
@@ -1285,7 +1285,7 @@ export default function AutoModCommandCenterPage() {
                         setEditingRule(null);
                         setIsCreatingRule(false);
                       }}
-                      className="text-zinc-400 hover:text-white"
+                      className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -1294,17 +1294,17 @@ export default function AutoModCommandCenterPage() {
                   {/* Nom, Description, Priorité & Actif */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="space-y-1.5 sm:col-span-2">
-                      <label className="text-xs font-medium text-zinc-300">Nom de la règle</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">Nom de la règle</label>
                       <input
                         type="text"
                         value={editingRule.name}
                         onChange={(e) => setEditingRule({ ...editingRule, name: e.target.value })}
-                        className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none focus:border-amber-500"
+                        className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-amber-500"
                         placeholder="Ex: Bloquer arnaques Nitro"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-zinc-300">Statut</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">Statut</label>
                       <button
                         type="button"
                         onClick={() => setEditingRule({ ...editingRule, enabled: !editingRule.enabled })}
@@ -1312,7 +1312,7 @@ export default function AutoModCommandCenterPage() {
                           "h-9 w-full rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer",
                           editingRule.enabled
                             ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                            : "border-zinc-700 bg-zinc-800 text-zinc-400"
+                            : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                         )}
                       >
                         <div className={cn("h-2 w-2 rounded-full", editingRule.enabled ? "bg-emerald-400" : "bg-zinc-500")} />
@@ -1322,23 +1322,23 @@ export default function AutoModCommandCenterPage() {
                   </div>
 
                   {/* Logique d'évaluation (ALL / ANY / NOT) */}
-                  <div className="space-y-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/30 p-4">
+                  <div className="space-y-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <label className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
                         <SlidersHorizontal className="h-3.5 w-3.5 text-amber-400" />
                         Opérateur Logique
                       </label>
-                      <div className="flex items-center gap-1 rounded-lg bg-white/5 p-0.5 border border-[var(--panel-border)]">
+                      <div className="flex items-center gap-1 rounded-xl bg-[var(--surface-raised)]/40 p-0.5 border border-[var(--panel-border)]">
                         {(["ALL", "ANY", "NOT"] as MatchLogic[]).map((logic) => (
                           <button
                             key={logic}
                             type="button"
                             onClick={() => setEditingRule({ ...editingRule, logic })}
                             className={cn(
-                              "px-2.5 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer",
+                              "px-2.5 py-1 text-xs font-bold rounded-md transition-all cursor-pointer",
                               editingRule.logic === logic
                                 ? "bg-amber-500 text-black shadow"
-                                : "text-zinc-400 hover:text-white"
+                                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                             )}
                           >
                             {logic === "ALL" ? "ET (Toutes)" : logic === "ANY" ? "OU (Au moins une)" : "NON (Aucune)"}
@@ -1346,7 +1346,7 @@ export default function AutoModCommandCenterPage() {
                         ))}
                       </div>
                     </div>
-                    <p className="text-[11px] text-zinc-400">
+                    <p className="text-xs text-[var(--text-muted)]">
                       Détermine comment les conditions ci-dessous doivent être combinées pour déclencher la règle.
                     </p>
                   </div>
@@ -1354,7 +1354,7 @@ export default function AutoModCommandCenterPage() {
                   {/* Conditions List */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-medium text-zinc-300">Conditions de déclenchement</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">Conditions de déclenchement</label>
                       <button
                         type="button"
                         onClick={() => {
@@ -1368,7 +1368,7 @@ export default function AutoModCommandCenterPage() {
                             conditions: [...editingRule.conditions, newCond],
                           });
                         }}
-                        className="text-[11px] text-amber-400 hover:text-amber-300 flex items-center gap-1 font-semibold"
+                        className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1 font-semibold"
                       >
                         <Plus className="h-3 w-3" />
                         <span>Ajouter condition</span>
@@ -1379,9 +1379,9 @@ export default function AutoModCommandCenterPage() {
                       {editingRule.conditions.map((cond, index) => (
                         <div
                           key={cond.id}
-                          className="flex flex-col sm:flex-row items-start sm:items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3"
+                          className="flex flex-col sm:flex-row items-start sm:items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3"
                         >
-                          <span className="text-[10px] font-mono text-zinc-500 w-6">#{index + 1}</span>
+                          <span className="text-xs font-mono text-[var(--text-muted)] w-6">#{index + 1}</span>
                           <Select
                             value={cond.type}
                             onChange={(v) => {
@@ -1416,7 +1416,7 @@ export default function AutoModCommandCenterPage() {
                                 updated[index].minScore = Number(e.target.value);
                                 setEditingRule({ ...editingRule, conditions: updated });
                               }}
-                              className="h-8 w-24 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-800 px-2 text-xs text-white outline-none"
+                              className="h-8 w-24 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 text-xs text-[var(--text-primary)] outline-none"
                               placeholder="Seuil (0-100)"
                             />
                           ) : (
@@ -1428,7 +1428,7 @@ export default function AutoModCommandCenterPage() {
                                 updated[index].pattern = e.target.value;
                                 setEditingRule({ ...editingRule, conditions: updated });
                               }}
-                              className="h-8 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-800 px-3 text-xs text-white outline-none"
+                              className="h-8 flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 text-xs text-[var(--text-primary)] outline-none"
                               placeholder="Valeur, mots-clés séparés par virgules, ou regex"
                             />
                           )}
@@ -1439,7 +1439,7 @@ export default function AutoModCommandCenterPage() {
                               const filtered = editingRule.conditions.filter((_, i) => i !== index);
                               setEditingRule({ ...editingRule, conditions: filtered });
                             }}
-                            className="h-8 w-8 flex items-center justify-center rounded-lg text-zinc-500 hover:text-red-400 hover:bg-white/5"
+                            className="h-8 w-8 flex items-center justify-center rounded-xl text-[var(--text-muted)] hover:text-red-400 hover:bg-[var(--surface-raised)]/70"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -1450,7 +1450,7 @@ export default function AutoModCommandCenterPage() {
 
                   {/* Actions automatiques à appliquer */}
                   <div className="space-y-2">
-                    <label className="text-xs font-medium text-zinc-300">Actions à exécuter</label>
+                    <label className="text-xs font-medium text-[var(--text-muted)]">Actions à exécuter</label>
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                       {ALL_ACTIONS.map((act) => {
                         const isSelected = editingRule.actions.includes(act.id);
@@ -1468,7 +1468,7 @@ export default function AutoModCommandCenterPage() {
                               "h-9 rounded-xl border px-2.5 text-xs font-semibold flex items-center justify-between transition-all cursor-pointer",
                               isSelected
                                 ? "border-amber-500/50 bg-amber-500/20 text-amber-300"
-                                : "border-[var(--panel-border)] bg-white/[0.02] text-zinc-400 hover:text-white"
+                                : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                             )}
                           >
                             <span>{act.label}</span>
@@ -1483,20 +1483,20 @@ export default function AutoModCommandCenterPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                     {editingRule.actions.includes("STRIKE") && (
                       <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-zinc-300">Nombre de strikes à ajouter</label>
+                        <label className="text-xs font-medium text-[var(--text-muted)]">Nombre de strikes à ajouter</label>
                         <input
                           type="number"
                           min={1}
                           max={5}
                           value={editingRule.addStrikesCount || 1}
                           onChange={(e) => setEditingRule({ ...editingRule, addStrikesCount: Number(e.target.value) })}
-                          className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                          className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                         />
                       </div>
                     )}
                     {editingRule.actions.includes("TIMEOUT") && (
                       <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-zinc-300">Durée d'exclusion (secondes)</label>
+                        <label className="text-xs font-medium text-[var(--text-muted)]">Durée d'exclusion (secondes)</label>
                         <Select
                           value={String(editingRule.timeoutDurationSeconds || 300)}
                           onChange={(v) => setEditingRule({ ...editingRule, timeoutDurationSeconds: Number(v) })}
@@ -1521,7 +1521,7 @@ export default function AutoModCommandCenterPage() {
                         setEditingRule(null);
                         setIsCreatingRule(false);
                       }}
-                      className="h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 text-xs font-medium text-zinc-400 hover:text-white"
+                      className="h-8 rounded-xl border border-[var(--panel-border)] px-4 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     >
                       Annuler
                     </button>
@@ -1539,10 +1539,10 @@ export default function AutoModCommandCenterPage() {
               {/* Liste des Règles Existantes */}
               <div className="space-y-3">
                 {rules.length === 0 ? (
-                  <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-8 text-center text-zinc-500">
-                    <Layers className="h-8 w-8 mx-auto mb-2 text-zinc-600" />
-                    <p className="text-xs font-semibold text-zinc-300">Aucune règle personnalisée</p>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">
+                  <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-8 text-center text-[var(--text-muted)]">
+                    <Layers className="h-8 w-8 mx-auto mb-2 text-[var(--text-muted)]" />
+                    <p className="text-xs font-semibold text-[var(--text-muted)]">Aucune règle personnalisée</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5">
                       Les 10 détecteurs intégrés protègent déjà le serveur, mais vous pouvez ajouter des règles sur mesure.
                     </p>
                     <button
@@ -1557,28 +1557,28 @@ export default function AutoModCommandCenterPage() {
                     <div
                       key={rule.id}
                       className={cn(
-                        "rounded-2xl border p-4 backdrop-blur-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4",
+                        "rounded-2xl border p-4 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4",
                         rule.enabled
-                          ? "border-[var(--panel-border)] bg-white/[0.02]"
-                          : "border-[var(--panel-border)] bg-white/[0.005] opacity-60"
+                          ? "border-[var(--panel-border)] bg-[var(--surface-raised)]/40"
+                          : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 opacity-60"
                       )}
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-white">{rule.name}</span>
-                          <span className="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                          <span className="text-xs font-bold text-[var(--text-primary)]">{rule.name}</span>
+                          <span className="text-xs uppercase font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
                             Logique : {rule.logic}
                           </span>
-                          <span className="text-[9px] text-zinc-500 font-mono">
+                          <span className="text-xs text-[var(--text-muted)] font-mono">
                             {rule.conditions.length} condition(s)
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                          <span className="text-[10px] text-zinc-400">Actions :</span>
+                          <span className="text-xs text-[var(--text-muted)]">Actions :</span>
                           {rule.actions.map((a) => (
                             <span
                               key={a}
-                              className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-[var(--panel-border)]"
+                              className="text-xs uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-[var(--surface-raised)] text-[var(--text-muted)] border border-[var(--panel-border)]"
                             >
                               {a}
                             </span>
@@ -1597,10 +1597,10 @@ export default function AutoModCommandCenterPage() {
                             handleSaveCustomRule({ ...rule, enabled: !rule.enabled });
                           }}
                           className={cn(
-                            "h-7 px-2.5 rounded-lg text-xs font-bold border transition-all",
+                            "h-7 px-2.5 rounded-xl text-xs font-bold border transition-all",
                             rule.enabled
                               ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                              : "border-zinc-700 bg-zinc-800 text-zinc-400"
+                              : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                           )}
                         >
                           {rule.enabled ? "Active" : "Désactivée"}
@@ -1610,13 +1610,13 @@ export default function AutoModCommandCenterPage() {
                             setEditingRule(rule);
                             setIsCreatingRule(false);
                           }}
-                          className="h-7 px-2.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs text-zinc-300 hover:text-white"
+                          className="h-7 px-2.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                         >
                           Modifier
                         </button>
                         <button
                           onClick={() => handleDeleteCustomRule(rule.id)}
-                          className="h-7 w-7 flex items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-red-400 hover:border-red-500/30"
+                          className="h-7 w-7 flex items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-red-400 hover:border-red-500/30"
                         >
                           <Trash2 className="h-3 w-3" />
                         </button>
@@ -1655,15 +1655,15 @@ export default function AutoModCommandCenterPage() {
                       key={d.id}
                       onClick={() => setActiveDetector(d.id as any)}
                       className={cn(
-                        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all cursor-pointer",
+                        "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all cursor-pointer",
                         isCurrent
                           ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                          : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
+                          : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
                       )}
                     >
                       <Icon className="h-3.5 w-3.5" />
                       <span>{d.label}</span>
-                      <div className={cn("h-1.5 w-1.5 rounded-full ml-0.5", isDetectorEnabled ? "bg-emerald-400" : "bg-zinc-600")} />
+                      <div className={cn("h-1.5 w-1.5 rounded-full ml-0.5", isDetectorEnabled ? "bg-emerald-400" : "bg-[var(--text-primary)]/20")} />
                     </button>
                   );
                 })}
@@ -1673,19 +1673,19 @@ export default function AutoModCommandCenterPage() {
 
               {/* 1. ANTI-SPAM */}
               {activeDetector === "spam" && (
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-bold text-white">Détecteur Anti-Spam (Messages identiques / similaires)</h3>
-                      <p className="text-xs text-zinc-400">
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">Détecteur Anti-Spam (Messages identiques / similaires)</h3>
+                      <p className="text-xs text-[var(--text-muted)]">
                         Bloque la répétition d'un même message ou de messages très similaires par le même membre.
                       </p>
                     </div>
                     <button
                       onClick={() => setConfig({ ...config, spam: { ...config.spam, enabled: !config.spam.enabled } })}
                       className={cn(
-                        "h-7 px-3 rounded-lg text-xs font-bold border transition-all",
-                        config.spam.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-zinc-700 bg-zinc-800 text-zinc-400"
+                        "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
+                        config.spam.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.spam.enabled ? "Activé" : "Désactivé"}
@@ -1694,36 +1694,36 @@ export default function AutoModCommandCenterPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-zinc-300">Répétitions max autorisées</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">Répétitions max autorisées</label>
                       <input
                         type="number"
                         min={2}
                         max={10}
                         value={config.spam.maxDuplicates}
                         onChange={(e) => setConfig({ ...config, spam: { ...config.spam, maxDuplicates: Number(e.target.value) } })}
-                        className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                        className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-zinc-300">Fenêtre temporelle (secondes)</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">Fenêtre temporelle (secondes)</label>
                       <input
                         type="number"
                         min={3}
                         max={60}
                         value={config.spam.timeWindowSeconds}
                         onChange={(e) => setConfig({ ...config, spam: { ...config.spam, timeWindowSeconds: Number(e.target.value) } })}
-                        className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                        className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-zinc-300">Seuil de similarité (%)</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">Seuil de similarité (%)</label>
                       <input
                         type="number"
                         min={50}
                         max={100}
                         value={config.spam.similarityThreshold}
                         onChange={(e) => setConfig({ ...config, spam: { ...config.spam, similarityThreshold: Number(e.target.value) } })}
-                        className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                        className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                       />
                     </div>
                   </div>
@@ -1732,19 +1732,19 @@ export default function AutoModCommandCenterPage() {
 
               {/* 2. ANTI-FLOOD */}
               {activeDetector === "flood" && (
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-bold text-white">Détecteur Anti-Flood (Rafale de messages)</h3>
-                      <p className="text-xs text-zinc-400">
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">Détecteur Anti-Flood (Rafale de messages)</h3>
+                      <p className="text-xs text-[var(--text-muted)]">
                         Limite la vitesse d'envoi de messages d'un même utilisateur, peu importe le contenu.
                       </p>
                     </div>
                     <button
                       onClick={() => setConfig({ ...config, flood: { ...config.flood, enabled: !config.flood.enabled } })}
                       className={cn(
-                        "h-7 px-3 rounded-lg text-xs font-bold border transition-all",
-                        config.flood.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-zinc-700 bg-zinc-800 text-zinc-400"
+                        "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
+                        config.flood.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.flood.enabled ? "Activé" : "Désactivé"}
@@ -1753,25 +1753,25 @@ export default function AutoModCommandCenterPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-zinc-300">Nombre max de messages</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">Nombre max de messages</label>
                       <input
                         type="number"
                         min={3}
                         max={20}
                         value={config.flood.maxMessagesPerWindow}
                         onChange={(e) => setConfig({ ...config, flood: { ...config.flood, maxMessagesPerWindow: Number(e.target.value) } })}
-                        className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                        className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-zinc-300">Dans un intervalle de (secondes)</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">Dans un intervalle de (secondes)</label>
                       <input
                         type="number"
                         min={1}
                         max={30}
                         value={config.flood.timeWindowSeconds}
                         onChange={(e) => setConfig({ ...config, flood: { ...config.flood, timeWindowSeconds: Number(e.target.value) } })}
-                        className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                        className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                       />
                     </div>
                   </div>
@@ -1780,19 +1780,19 @@ export default function AutoModCommandCenterPage() {
 
               {/* 3. FILTRE DE LIENS */}
               {activeDetector === "links" && (
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-bold text-white">Filtre de Liens & Whitelist de Domaines</h3>
-                      <p className="text-xs text-zinc-400">
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">Filtre de Liens & Whitelist de Domaines</h3>
+                      <p className="text-xs text-[var(--text-muted)]">
                         Autorise uniquement les liens provenant de sites de confiance (ex: YouTube, Twitter, GitHub).
                       </p>
                     </div>
                     <button
                       onClick={() => setConfig({ ...config, links: { ...config.links, enabled: !config.links.enabled } })}
                       className={cn(
-                        "h-7 px-3 rounded-lg text-xs font-bold border transition-all",
-                        config.links.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-zinc-700 bg-zinc-800 text-zinc-400"
+                        "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
+                        config.links.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.links.enabled ? "Activé" : "Désactivé"}
@@ -1800,14 +1800,14 @@ export default function AutoModCommandCenterPage() {
                   </div>
 
                   <div className="space-y-3 pt-2">
-                    <label className="text-xs font-medium text-zinc-300">Domaines autorisés (Whitelist)</label>
+                    <label className="text-xs font-medium text-[var(--text-muted)]">Domaines autorisés (Whitelist)</label>
                     <div className="flex gap-2">
                       <input
                         type="text"
                         value={newDomainInput}
                         onChange={(e) => setNewDomainInput(e.target.value)}
                         placeholder="Ex: reddit.com ou twitch.tv"
-                        className="h-9 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                        className="h-9 flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                       />
                       <button
                         type="button"
@@ -1823,7 +1823,7 @@ export default function AutoModCommandCenterPage() {
                             setNewDomainInput("");
                           }
                         }}
-                        className="h-9 px-4 rounded-xl bg-white/10 text-xs font-bold text-white hover:bg-white/20"
+                        className="h-9 px-4 rounded-xl bg-[var(--text-primary)]/10 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--text-primary)]/15"
                       >
                         Ajouter
                       </button>
@@ -1833,7 +1833,7 @@ export default function AutoModCommandCenterPage() {
                       {config.links.allowedDomains.map((dom) => (
                         <span
                           key={dom}
-                          className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 py-1 text-xs text-zinc-300 font-mono"
+                          className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2.5 py-1 text-xs text-[var(--text-muted)] font-mono"
                         >
                           <span>{dom}</span>
                           <button
@@ -1847,7 +1847,7 @@ export default function AutoModCommandCenterPage() {
                                 },
                               });
                             }}
-                            className="text-zinc-500 hover:text-red-400"
+                            className="text-[var(--text-muted)] hover:text-red-400"
                           >
                             <X className="h-3 w-3" />
                           </button>
@@ -1860,25 +1860,25 @@ export default function AutoModCommandCenterPage() {
 
               {/* 4. INVITATIONS DISCORD */}
               {activeDetector === "invites" && (
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-bold text-white">Bloqueur d'Invitations Discord Externes</h3>
-                      <p className="text-xs text-zinc-400">
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">Bloqueur d'Invitations Discord Externes</h3>
+                      <p className="text-xs text-[var(--text-muted)]">
                         Interdit la publication de liens d'invitation discord.gg menant vers d'autres serveurs.
                       </p>
                     </div>
                     <button
                       onClick={() => setConfig({ ...config, invites: { ...config.invites, enabled: !config.invites.enabled } })}
                       className={cn(
-                        "h-7 px-3 rounded-lg text-xs font-bold border transition-all",
-                        config.invites.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-zinc-700 bg-zinc-800 text-zinc-400"
+                        "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
+                        config.invites.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.invites.enabled ? "Activé" : "Désactivé"}
                     </button>
                   </div>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-xs text-[var(--text-muted)]">
                     Les invitations internes vers ce serveur Discord ({selectedGuild?.name}) sont automatiquement tolérées.
                   </p>
                 </div>
@@ -1886,19 +1886,19 @@ export default function AutoModCommandCenterPage() {
 
               {/* 5. MENTIONS SPAMMER */}
               {activeDetector === "mentions" && (
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-bold text-white">Filtre de Mentions Massives</h3>
-                      <p className="text-xs text-zinc-400">
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">Filtre de Mentions Massives</h3>
+                      <p className="text-xs text-[var(--text-muted)]">
                         Empêche les mentions répétées de membres ou de rôles dans un même message.
                       </p>
                     </div>
                     <button
                       onClick={() => setConfig({ ...config, mentions: { ...config.mentions, enabled: !config.mentions.enabled } })}
                       className={cn(
-                        "h-7 px-3 rounded-lg text-xs font-bold border transition-all",
-                        config.mentions.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-zinc-700 bg-zinc-800 text-zinc-400"
+                        "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
+                        config.mentions.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.mentions.enabled ? "Activé" : "Désactivé"}
@@ -1907,23 +1907,23 @@ export default function AutoModCommandCenterPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-zinc-300">Mentions max par message</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">Mentions max par message</label>
                       <input
                         type="number"
                         min={1}
                         max={15}
                         value={config.mentions.maxMentionsPerMessage}
                         onChange={(e) => setConfig({ ...config, mentions: { ...config.mentions, maxMentionsPerMessage: Number(e.target.value) } })}
-                        className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                        className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                       />
                     </div>
                     <div className="space-y-1.5 flex flex-col justify-end">
-                      <label className="flex items-center gap-2 text-xs text-white cursor-pointer h-9">
+                      <label className="flex items-center gap-2 text-xs text-[var(--text-primary)] cursor-pointer h-9">
                         <input
                           type="checkbox"
                           checked={config.mentions.blockEveryoneHere}
                           onChange={(e) => setConfig({ ...config, mentions: { ...config.mentions, blockEveryoneHere: e.target.checked } })}
-                          className="rounded border-zinc-700 accent-amber-500 h-4 w-4"
+                          className="rounded border-[var(--panel-border)] accent-amber-500 h-4 w-4"
                         />
                         <span>Bloquer strictement @everyone et @here</span>
                       </label>
@@ -1934,19 +1934,19 @@ export default function AutoModCommandCenterPage() {
 
               {/* 6. GHOST PING */}
               {activeDetector === "ghostPing" && (
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-bold text-white">Détecteur de Ghost Ping</h3>
-                      <p className="text-xs text-zinc-400">
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">Détecteur de Ghost Ping</h3>
+                      <p className="text-xs text-[var(--text-muted)]">
                         Alerte le staff si un membre mentionne un utilisateur puis supprime aussitôt son message pour troller.
                       </p>
                     </div>
                     <button
                       onClick={() => setConfig({ ...config, ghostPing: { ...config.ghostPing, enabled: !config.ghostPing.enabled } })}
                       className={cn(
-                        "h-7 px-3 rounded-lg text-xs font-bold border transition-all",
-                        config.ghostPing.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-zinc-700 bg-zinc-800 text-zinc-400"
+                        "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
+                        config.ghostPing.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.ghostPing.enabled ? "Activé" : "Désactivé"}
@@ -1954,14 +1954,14 @@ export default function AutoModCommandCenterPage() {
                   </div>
 
                   <div className="space-y-1.5 pt-2">
-                    <label className="text-xs font-medium text-zinc-300">Fenêtre de détection de suppression (secondes)</label>
+                    <label className="text-xs font-medium text-[var(--text-muted)]">Fenêtre de détection de suppression (secondes)</label>
                     <input
                       type="number"
                       min={5}
                       max={60}
                       value={config.ghostPing.windowSeconds}
                       onChange={(e) => setConfig({ ...config, ghostPing: { ...config.ghostPing, windowSeconds: Number(e.target.value) } })}
-                      className="h-9 w-48 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                      className="h-9 w-48 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                     />
                   </div>
                 </div>
@@ -1969,19 +1969,19 @@ export default function AutoModCommandCenterPage() {
 
               {/* 7. CAPS LOCK */}
               {activeDetector === "caps" && (
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-bold text-white">Filtre Majuscules Excessives (Caps Lock)</h3>
-                      <p className="text-xs text-zinc-400">
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">Filtre Majuscules Excessives (Caps Lock)</h3>
+                      <p className="text-xs text-[var(--text-muted)]">
                         Supprime les messages criés en majuscules pour maintenir la lisibilité des salons.
                       </p>
                     </div>
                     <button
                       onClick={() => setConfig({ ...config, caps: { ...config.caps, enabled: !config.caps.enabled } })}
                       className={cn(
-                        "h-7 px-3 rounded-lg text-xs font-bold border transition-all",
-                        config.caps.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-zinc-700 bg-zinc-800 text-zinc-400"
+                        "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
+                        config.caps.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.caps.enabled ? "Activé" : "Désactivé"}
@@ -1990,25 +1990,25 @@ export default function AutoModCommandCenterPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-zinc-300">Pourcentage min de majuscules (%)</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">Pourcentage min de majuscules (%)</label>
                       <input
                         type="number"
                         min={50}
                         max={100}
                         value={config.caps.minPercentage}
                         onChange={(e) => setConfig({ ...config, caps: { ...config.caps, minPercentage: Number(e.target.value) } })}
-                        className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                        className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-zinc-300">Longueur min du message (caractères)</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">Longueur min du message (caractères)</label>
                       <input
                         type="number"
                         min={5}
                         max={50}
                         value={config.caps.minMessageLength}
                         onChange={(e) => setConfig({ ...config, caps: { ...config.caps, minMessageLength: Number(e.target.value) } })}
-                        className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                        className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                       />
                     </div>
                   </div>
@@ -2017,19 +2017,19 @@ export default function AutoModCommandCenterPage() {
 
               {/* 8. MOTS INTERDITS */}
               {activeDetector === "keywords" && (
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-bold text-white">Liste Noire de Mots-Clés & Expressions</h3>
-                      <p className="text-xs text-zinc-400">
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">Liste Noire de Mots-Clés & Expressions</h3>
+                      <p className="text-xs text-[var(--text-muted)]">
                         Censure immédiate des insultes, arnaques et termes prohibés. Prise en charge des jokers *.
                       </p>
                     </div>
                     <button
                       onClick={() => setConfig({ ...config, keywords: { ...config.keywords, enabled: !config.keywords.enabled } })}
                       className={cn(
-                        "h-7 px-3 rounded-lg text-xs font-bold border transition-all",
-                        config.keywords.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-zinc-700 bg-zinc-800 text-zinc-400"
+                        "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
+                        config.keywords.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.keywords.enabled ? "Activé" : "Désactivé"}
@@ -2043,7 +2043,7 @@ export default function AutoModCommandCenterPage() {
                         value={newKeywordInput}
                         onChange={(e) => setNewKeywordInput(e.target.value)}
                         placeholder="Ex: free nitro*, grabber, token"
-                        className="h-9 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                        className="h-9 flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                       />
                       <button
                         type="button"
@@ -2059,7 +2059,7 @@ export default function AutoModCommandCenterPage() {
                             setNewKeywordInput("");
                           }
                         }}
-                        className="h-9 px-4 rounded-xl bg-white/10 text-xs font-bold text-white hover:bg-white/20"
+                        className="h-9 px-4 rounded-xl bg-[var(--text-primary)]/10 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--text-primary)]/15"
                       >
                         Ajouter
                       </button>
@@ -2069,7 +2069,7 @@ export default function AutoModCommandCenterPage() {
                       {config.keywords.blacklistedWords.map((kw) => (
                         <span
                           key={kw}
-                          className="flex items-center gap-1.5 rounded-lg border border-red-500/20 bg-red-500/10 px-2.5 py-1 text-xs text-red-300 font-mono"
+                          className="flex items-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 px-2.5 py-1 text-xs text-red-300 font-mono"
                         >
                           <span>{kw}</span>
                           <button
@@ -2083,7 +2083,7 @@ export default function AutoModCommandCenterPage() {
                                 },
                               });
                             }}
-                            className="text-red-400 hover:text-white"
+                            className="text-red-400 hover:text-[var(--text-primary)]"
                           >
                             <X className="h-3 w-3" />
                           </button>
@@ -2096,19 +2096,19 @@ export default function AutoModCommandCenterPage() {
 
               {/* 9. SAFE REGEX */}
               {activeDetector === "regex" && (
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-bold text-white">Safe Regex (Expressions Régulières Protégées)</h3>
-                      <p className="text-xs text-zinc-400">
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">Safe Regex (Expressions Régulières Protégées)</h3>
+                      <p className="text-xs text-[var(--text-muted)]">
                         Patterns réguliers avec sandbox et protection ReDoS (délai d'exécution max 25ms).
                       </p>
                     </div>
                     <button
                       onClick={() => setConfig({ ...config, regex: { ...config.regex, enabled: !config.regex.enabled } })}
                       className={cn(
-                        "h-7 px-3 rounded-lg text-xs font-bold border transition-all",
-                        config.regex.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-zinc-700 bg-zinc-800 text-zinc-400"
+                        "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
+                        config.regex.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.regex.enabled ? "Activé" : "Désactivé"}
@@ -2122,7 +2122,7 @@ export default function AutoModCommandCenterPage() {
                         value={newRegexInput}
                         onChange={(e) => setNewRegexInput(e.target.value)}
                         placeholder="Ex: (https?:\\/\\/)?(t\\.me|telegram\\.me)\\/[a-zA-Z0-9_]+"
-                        className="h-9 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white font-mono outline-none"
+                        className="h-9 flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] font-mono outline-none"
                       />
                       <button
                         type="button"
@@ -2143,7 +2143,7 @@ export default function AutoModCommandCenterPage() {
                             }
                           }
                         }}
-                        className="h-9 px-4 rounded-xl bg-white/10 text-xs font-bold text-white hover:bg-white/20"
+                        className="h-9 px-4 rounded-xl bg-[var(--text-primary)]/10 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--text-primary)]/15"
                       >
                         Ajouter
                       </button>
@@ -2153,7 +2153,7 @@ export default function AutoModCommandCenterPage() {
                       {config.regex.patterns.map((pat) => (
                         <div
                           key={pat}
-                          className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 text-xs font-mono text-zinc-300"
+                          className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs font-mono text-[var(--text-muted)]"
                         >
                           <span className="text-amber-300 break-all">{pat}</span>
                           <button
@@ -2167,7 +2167,7 @@ export default function AutoModCommandCenterPage() {
                                 },
                               });
                             }}
-                            className="text-zinc-500 hover:text-red-400 ml-2"
+                            className="text-[var(--text-muted)] hover:text-red-400 ml-2"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -2180,19 +2180,19 @@ export default function AutoModCommandCenterPage() {
 
               {/* 10. PROFILE GUARD */}
               {activeDetector === "profiles" && (
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-bold text-white">Profile Guard (Noms, Comptes récents, Usurpation)</h3>
-                      <p className="text-xs text-zinc-400">
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">Profile Guard (Noms, Comptes récents, Usurpation)</h3>
+                      <p className="text-xs text-[var(--text-muted)]">
                         Détecte les comptes essayant d'usurper le nom du staff (mod, admin, support) ou les comptes ultra-récents sans photo.
                       </p>
                     </div>
                     <button
                       onClick={() => setConfig({ ...config, profiles: { ...config.profiles, enabled: !config.profiles.enabled } })}
                       className={cn(
-                        "h-7 px-3 rounded-lg text-xs font-bold border transition-all",
-                        config.profiles.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-zinc-700 bg-zinc-800 text-zinc-400"
+                        "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
+                        config.profiles.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.profiles.enabled ? "Activé" : "Désactivé"}
@@ -2201,23 +2201,23 @@ export default function AutoModCommandCenterPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-zinc-300">Âge minimum du compte (jours)</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">Âge minimum du compte (jours)</label>
                       <input
                         type="number"
                         min={0}
                         max={30}
                         value={config.profiles.minAccountAgeDays}
                         onChange={(e) => setConfig({ ...config, profiles: { ...config.profiles, minAccountAgeDays: Number(e.target.value) } })}
-                        className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                        className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                       />
                     </div>
                     <div className="space-y-1.5 flex flex-col justify-end">
-                      <label className="flex items-center gap-2 text-xs text-white cursor-pointer h-9">
+                      <label className="flex items-center gap-2 text-xs text-[var(--text-primary)] cursor-pointer h-9">
                         <input
                           type="checkbox"
                           checked={config.profiles.blockDefaultAvatars}
                           onChange={(e) => setConfig({ ...config, profiles: { ...config.profiles, blockDefaultAvatars: e.target.checked } })}
-                          className="rounded border-zinc-700 accent-amber-500 h-4 w-4"
+                          className="rounded border-[var(--panel-border)] accent-amber-500 h-4 w-4"
                         />
                         <span>Pénaliser les avatars Discord par défaut</span>
                       </label>
@@ -2235,13 +2235,13 @@ export default function AutoModCommandCenterPage() {
             <div className="space-y-6 animate-in fade-in duration-200">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-sm font-bold text-white">Échelle Progressive des Sanctions (Strikes)</h2>
-                  <p className="text-xs text-zinc-400">
+                  <h2 className="text-sm font-bold text-[var(--text-primary)]">Échelle Progressive des Sanctions (Strikes)</h2>
+                  <p className="text-xs text-[var(--text-muted)]">
                     Chaque infraction peut attribuer un ou plusieurs strikes. En accumulant des strikes, les sanctions s'intensifient automatiquement.
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
-                  <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-white">
+                  <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-[var(--text-primary)]">
                     <input
                       type="checkbox"
                       checked={config.strikes.enabled}
@@ -2251,27 +2251,27 @@ export default function AutoModCommandCenterPage() {
                     Sanctions progressives automatiques
                   </label>
                   {!config.strikes.enabled && (
-                    <span className="text-[11px] text-amber-300/90">Désactivées : les strikes sont comptés mais aucun timeout, expulsion ou bannissement automatique n'est appliqué.</span>
+                    <span className="text-xs text-amber-300/90">Désactivées : les strikes sont comptés mais aucun timeout, expulsion ou bannissement automatique n'est appliqué.</span>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-zinc-400">Expiration :</span>
+                  <span className="text-xs text-[var(--text-muted)]">Expiration :</span>
                   <input
                     type="number"
                     min={1}
                     max={90}
                     value={config.strikes.expirationDays}
                     onChange={(e) => setConfig({ ...config, strikes: { ...config.strikes, expirationDays: Number(e.target.value) } })}
-                    className="h-8 w-16 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 text-center text-xs text-white font-mono outline-none"
+                    className="h-8 w-16 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] text-center text-xs text-[var(--text-primary)] font-mono outline-none"
                   />
-                  <span className="text-xs text-zinc-400">jours</span>
+                  <span className="text-xs text-[var(--text-muted)]">jours</span>
                 </div>
               </div>
 
               {/* Tableau de l'Échelle des Paliers */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                 <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-white">Paliers Configurés</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Paliers Configurés</span>
                   <button
                     type="button"
                     onClick={() => {
@@ -2296,7 +2296,7 @@ export default function AutoModCommandCenterPage() {
                   </button>
                 </div>
 
-                <div className="divide-y divide-white/5">
+                <div className="divide-y divide-[var(--panel-border)]">
                   {config.strikes.progressiveSteps
                     .sort((a, b) => a.strikeCount - b.strikeCount)
                     .map((step, idx) => (
@@ -2306,11 +2306,11 @@ export default function AutoModCommandCenterPage() {
                             {step.strikeCount}
                           </div>
                           <div>
-                            <p className="text-xs font-bold text-white">
+                            <p className="text-xs font-bold text-[var(--text-primary)]">
                               {step.strikeCount} {step.strikeCount > 1 ? "Strikes cumulés" : "Strike"}
                             </p>
-                            <p className="text-[11px] text-zinc-400">
-                              Sanction déclenchée : <span className="font-mono text-zinc-200">{step.action}</span>
+                            <p className="text-xs text-[var(--text-muted)]">
+                              Sanction déclenchée : <span className="font-mono text-[var(--text-primary)]">{step.action}</span>
                               {step.durationSeconds ? ` (${Math.round(step.durationSeconds / 60)} minutes)` : ""}
                             </p>
                           </div>
@@ -2348,7 +2348,7 @@ export default function AutoModCommandCenterPage() {
                                 strikes: { ...config.strikes, progressiveSteps: filtered },
                               });
                             }}
-                            className="h-8 w-8 flex items-center justify-center rounded-lg text-zinc-500 hover:text-red-400"
+                            className="h-8 w-8 flex items-center justify-center rounded-xl text-[var(--text-muted)] hover:text-red-400"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -2359,8 +2359,8 @@ export default function AutoModCommandCenterPage() {
               </div>
 
               {/* Recherche & Gestion des Strikes d'un Membre */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] flex items-center gap-2">
                   <Search className="h-3.5 w-3.5 text-amber-400" />
                   Consulter ou Révoquer les Strikes d'un Membre
                 </h3>
@@ -2370,7 +2370,7 @@ export default function AutoModCommandCenterPage() {
                     value={userSearchQuery}
                     onChange={(e) => setUserSearchQuery(e.target.value)}
                     placeholder="Entrez l'identifiant Discord du membre (User ID)"
-                    className="h-9 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                    className="h-9 flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none"
                   />
                   <button
                     onClick={() => handleInspectUser(userSearchQuery.trim())}
@@ -2393,8 +2393,8 @@ export default function AutoModCommandCenterPage() {
                 <div className="flex items-start gap-3">
                   <Terminal className="h-5 w-5 text-amber-400 mt-0.5" />
                   <div>
-                    <h2 className="text-sm font-bold text-white">Sandbox de Test AutoMod (Dry-Run Simulator)</h2>
-                    <p className="text-xs text-zinc-300 mt-0.5 leading-relaxed">
+                    <h2 className="text-sm font-bold text-[var(--text-primary)]">Sandbox de Test AutoMod (Dry-Run Simulator)</h2>
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5 leading-relaxed">
                       Testez vos règles et détecteurs en toute sécurité. La sandbox exécute le pipeline complet (10 détecteurs, calculateurs de risque et règles personnalisées) <strong>sans supprimer de message ni sanctionner personne</strong> sur votre serveur Discord.
                     </p>
                   </div>
@@ -2402,60 +2402,60 @@ export default function AutoModCommandCenterPage() {
               </div>
 
               {/* Formulaire de Test */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-zinc-300">Message à simuler</label>
+                  <label className="text-xs font-medium text-[var(--text-muted)]">Message à simuler</label>
                   <textarea
                     rows={3}
                     value={sandboxMessage}
                     onChange={(e) => setSandboxMessage(e.target.value)}
                     placeholder="Saisissez un message suspect ou un exemple pour tester les filtres..."
-                    className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 text-xs text-white font-mono outline-none focus:border-amber-500 resize-none"
+                    className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs text-[var(--text-primary)] font-mono outline-none focus:border-amber-500 resize-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-zinc-400">ID Utilisateur fictif</label>
+                    <label className="text-xs font-medium text-[var(--text-muted)]">ID Utilisateur fictif</label>
                     <input
                       type="text"
                       value={sandboxUserId}
                       onChange={(e) => setSandboxUserId(e.target.value)}
-                      className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-zinc-300 font-mono outline-none"
+                      className="h-8 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-muted)] font-mono outline-none"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-zinc-400">ID Salon fictif</label>
+                    <label className="text-xs font-medium text-[var(--text-muted)]">ID Salon fictif</label>
                     <input
                       type="text"
                       value={sandboxChannelId}
                       onChange={(e) => setSandboxChannelId(e.target.value)}
-                      className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-zinc-300 font-mono outline-none"
+                      className="h-8 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-muted)] font-mono outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between pt-2 border-t border-[var(--panel-border)]">
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] text-zinc-400">Exemples rapides :</span>
+                    <span className="text-xs text-[var(--text-muted)]">Exemples rapides :</span>
                     <button
                       type="button"
                       onClick={() => setSandboxMessage("Venez voir https://discord.gg/hacker rejoint vite")}
-                      className="text-[10px] text-amber-400 hover:underline"
+                      className="text-xs text-amber-400 hover:underline"
                     >
                       [Invite]
                     </button>
                     <button
                       type="button"
                       onClick={() => setSandboxMessage("FREE NITRO CLAIM NOW HTTP://STEAM-COMMUNITY-GIFT.XYZ")}
-                      className="text-[10px] text-amber-400 hover:underline"
+                      className="text-xs text-amber-400 hover:underline"
                     >
                       [Scam Caps]
                     </button>
                     <button
                       type="button"
                       onClick={() => setSandboxMessage("Bonjour à tous, comment allez-vous aujourd'hui ?")}
-                      className="text-[10px] text-emerald-400 hover:underline"
+                      className="text-xs text-emerald-400 hover:underline"
                     >
                       [Propre]
                     </button>
@@ -2475,15 +2475,15 @@ export default function AutoModCommandCenterPage() {
 
               {/* Résultat de Simulation */}
               {sandboxResult && (
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/90 p-5 space-y-4 animate-in fade-in duration-200">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/90 p-5 space-y-4 animate-in fade-in duration-200">
                   <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
                     <div className="flex items-center gap-2">
                       <Terminal className="h-4 w-4 text-amber-400" />
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-white">Résultat du Diagnostic Sandbox</h3>
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Résultat du Diagnostic Sandbox</h3>
                     </div>
                     <span
                       className={cn(
-                        "text-[10px] font-bold px-2 py-0.5 rounded-md border",
+                        "text-xs font-bold px-2 py-0.5 rounded-md border",
                         RISK_BADGES[sandboxResult.riskLevel]?.bg,
                         RISK_BADGES[sandboxResult.riskLevel]?.text,
                         RISK_BADGES[sandboxResult.riskLevel]?.border
@@ -2494,24 +2494,24 @@ export default function AutoModCommandCenterPage() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 space-y-1">
-                      <span className="text-[11px] text-zinc-400">Détecteurs activés</span>
-                      <p className="text-xs font-bold text-white">
+                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-1">
+                      <span className="text-xs text-[var(--text-muted)]">Détecteurs activés</span>
+                      <p className="text-xs font-bold text-[var(--text-primary)]">
                         {sandboxResult.matchedDetectors.length > 0
                           ? sandboxResult.matchedDetectors.join(", ")
                           : "Aucun détecteur déclenché"}
                       </p>
                     </div>
-                    <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 space-y-1">
-                      <span className="text-[11px] text-zinc-400">Règles personnalisées</span>
-                      <p className="text-xs font-bold text-white">
+                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-1">
+                      <span className="text-xs text-[var(--text-muted)]">Règles personnalisées</span>
+                      <p className="text-xs font-bold text-[var(--text-primary)]">
                         {sandboxResult.matchedCustomRules.length > 0
                           ? sandboxResult.matchedCustomRules.join(", ")
                           : "Aucune règle satisfaite"}
                       </p>
                     </div>
-                    <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 space-y-1">
-                      <span className="text-[11px] text-zinc-400">Sanctions prévues</span>
+                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-1">
+                      <span className="text-xs text-[var(--text-muted)]">Sanctions prévues</span>
                       <p className="text-xs font-bold text-amber-400">
                         {sandboxResult.actionsToExecute.length > 0
                           ? sandboxResult.actionsToExecute.join(" + ")
@@ -2521,9 +2521,9 @@ export default function AutoModCommandCenterPage() {
                   </div>
 
                   {/* Explications détaillées */}
-                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/30 p-3 space-y-2">
-                    <span className="text-xs font-medium text-zinc-300">Raisonnement du Moteur :</span>
-                    <ul className="space-y-1 text-xs text-zinc-400">
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
+                    <span className="text-xs font-medium text-[var(--text-muted)]">Raisonnement du Moteur :</span>
+                    <ul className="space-y-1 text-xs text-[var(--text-muted)]">
                       {sandboxResult.explanation.map((exp, i) => (
                         <li key={i} className="flex items-start gap-2">
                           <span className="text-amber-400">•</span>
@@ -2544,14 +2544,14 @@ export default function AutoModCommandCenterPage() {
       {/* DRAWER / MODAL: PROFIL MODÉRATION DU MEMBRE              */}
       {/* ======================================================== */}
       {inspectedUserId && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-5">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 animate-in fade-in">
+          <div className="w-full max-w-xl rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 space-y-5">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <div className="flex items-center gap-2.5">
                 <Users className="h-5 w-5 text-amber-400" />
                 <div>
-                  <h3 className="text-sm font-bold text-white">Dossier Modération Membre</h3>
-                  <p className="text-[11px] text-zinc-400 font-mono">{inspectedUserId}</p>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Dossier Modération Membre</h3>
+                  <p className="text-xs text-[var(--text-muted)] font-mono">{inspectedUserId}</p>
                 </div>
               </div>
               <button
@@ -2559,14 +2559,14 @@ export default function AutoModCommandCenterPage() {
                   setInspectedUserId(null);
                   setInspectedProfile(null);
                 }}
-                className="text-zinc-400 hover:text-white"
+                className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             {isLoadingProfile ? (
-              <div className="py-12 text-center text-zinc-500">
+              <div className="py-12 text-center text-[var(--text-muted)]">
                 <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-amber-400" />
                 <p className="text-xs">Chargement du profil...</p>
               </div>
@@ -2574,20 +2574,20 @@ export default function AutoModCommandCenterPage() {
               <div className="space-y-4">
                 {/* Métriques profil */}
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 text-center">
-                    <span className="text-[10px] text-zinc-500">Strikes Actifs</span>
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-center">
+                    <span className="text-xs text-[var(--text-muted)]">Strikes Actifs</span>
                     <p className="text-xl font-bold text-amber-400 mt-1 font-mono">
                       {inspectedProfile.activeStrikesCount}
                     </p>
                   </div>
-                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 text-center">
-                    <span className="text-[10px] text-zinc-500">Infractions Total</span>
-                    <p className="text-xl font-bold text-white mt-1 font-mono">
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-center">
+                    <span className="text-xs text-[var(--text-muted)]">Infractions Total</span>
+                    <p className="text-xl font-bold text-[var(--text-primary)] mt-1 font-mono">
                       {inspectedProfile.incidentCount}
                     </p>
                   </div>
-                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 text-center">
-                    <span className="text-[10px] text-zinc-500">Risque Calculé</span>
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-center">
+                    <span className="text-xs text-[var(--text-muted)]">Risque Calculé</span>
                     <p className="text-xl font-bold text-red-400 mt-1 font-mono">
                       {inspectedProfile.currentCalculatedRisk}/100
                     </p>
@@ -2597,33 +2597,33 @@ export default function AutoModCommandCenterPage() {
                 {/* Liste des strikes actifs */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-zinc-300">Détail des Strikes</span>
+                    <span className="text-xs font-semibold text-[var(--text-muted)]">Détail des Strikes</span>
                     {inspectedProfile.activeStrikesCount > 0 && (
                       <button
                         type="button"
                         onClick={() => handleClearUserStrikes(inspectedUserId)}
-                        className="text-[11px] text-amber-400 hover:underline font-semibold"
+                        className="text-xs text-amber-400 hover:underline font-semibold"
                       >
                         Pardonner (Révoquer tout)
                       </button>
                     )}
                   </div>
                   {inspectedProfile.activeStrikes.length === 0 ? (
-                    <p className="text-[11px] text-zinc-500 italic">Aucun strike actif pour ce membre.</p>
+                    <p className="text-xs text-[var(--text-muted)] italic">Aucun strike actif pour ce membre.</p>
                   ) : (
                     <div className="space-y-1.5 max-h-40 overflow-y-auto">
                       {inspectedProfile.activeStrikes.map((s) => (
                         <div
                           key={s.id}
-                          className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-2.5 text-xs flex items-center justify-between"
+                          className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs flex items-center justify-between"
                         >
                           <div>
-                            <p className="font-semibold text-white">{s.reason}</p>
-                            <p className="text-[10px] text-zinc-500">
+                            <p className="font-semibold text-[var(--text-primary)]">{s.reason}</p>
+                            <p className="text-xs text-[var(--text-muted)]">
                               Par {s.addedBy} • Expire le {new Date(s.expiresAt).toLocaleDateString()}
                             </p>
                           </div>
-                          <span className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">
+                          <span className="text-xs uppercase font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">
                             Actif
                           </span>
                         </div>
@@ -2639,14 +2639,14 @@ export default function AutoModCommandCenterPage() {
                       setInspectedUserId(null);
                       setInspectedProfile(null);
                     }}
-                    className="h-8 rounded-xl bg-white/10 px-4 text-xs font-medium text-white hover:bg-white/20"
+                    className="h-8 rounded-xl bg-[var(--text-primary)]/10 px-4 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--text-primary)]/15"
                   >
                     Fermer
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="py-8 text-center text-zinc-500">
+              <div className="py-8 text-center text-[var(--text-muted)]">
                 <p className="text-xs">Aucune information trouvée pour cet identifiant.</p>
               </div>
             )}

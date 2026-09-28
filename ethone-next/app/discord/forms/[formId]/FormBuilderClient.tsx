@@ -345,50 +345,50 @@ export default function FormBuilderClient() {
   };
 
   if (loading) {
-    return <div className="min-h-full bg-[var(--bg-main)] text-xs text-zinc-400 flex items-center justify-center">Chargement du formulaire...</div>;
+    return <div className="min-h-full bg-[var(--bg-main)] text-xs text-[var(--text-muted)] flex items-center justify-center">Chargement du formulaire...</div>;
   }
   if (loadError) {
     return (
-      <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white p-8 pb-44 space-y-4">
-        <Link href={`/discord/forms?guildId=${rawGuildId}`} className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white"><ArrowLeft className="h-4 w-4" /> Retour aux formulaires</Link>
+      <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] p-8 pb-44 space-y-4">
+        <Link href={`/discord/forms?guildId=${rawGuildId}`} className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)]"><ArrowLeft className="h-4 w-4" /> Retour aux formulaires</Link>
         <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300">{loadError}</div>
       </div>
     );
   }
 
   return (
-    <div className="h-full min-h-0 bg-[var(--bg-main)] text-white flex flex-col overflow-hidden">
+    <div className="h-full min-h-0 bg-[var(--bg-main)] text-[var(--text-primary)] flex flex-col overflow-hidden">
       {/* Top Builder Navbar */}
-      <header className="h-14 border-b border-[var(--panel-border)] bg-zinc-950/90 backdrop-blur-md px-4 flex items-center justify-between gap-4 shrink-0">
+      <header className="h-14 border-b border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] px-4 flex items-center justify-between gap-4 shrink-0">
         <div className="flex items-center gap-3">
           <Link
             href={`/discord/forms?guildId=${rawGuildId}`}
-            className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-zinc-500 hidden sm:inline">Forms &gt;</span>
+            <span className="text-xs font-mono text-[var(--text-muted)] hidden sm:inline">Forms &gt;</span>
             <input
               type="text"
               value={formTitle}
               onChange={(e) => setFormTitle(e.target.value)}
-              className="bg-transparent text-sm font-bold text-white border-b border-transparent hover:border-[var(--input-border-hover)] focus:border-indigo-500 outline-none px-1 py-0.5 rounded transition-colors"
+              className="bg-transparent text-sm font-bold text-[var(--text-primary)] border-b border-transparent hover:border-[var(--input-border-hover)] focus:border-[var(--input-border-hover)] outline-none px-1 py-0.5 rounded transition-colors"
             />
-            <span className={cn("text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border", formStatus === "PUBLISHED" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : formStatus === "DRAFT" ? "bg-amber-500/20 text-amber-300 border-amber-500/30" : "bg-zinc-700/40 text-zinc-300 border-zinc-600")}>
+            <span className={cn("text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border", formStatus === "PUBLISHED" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : formStatus === "DRAFT" ? "bg-amber-500/20 text-amber-300 border-amber-500/30" : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)] border-[var(--panel-border)]")}>
               {formStatus === "PUBLISHED" ? "Publié" : formStatus === "DRAFT" ? "Brouillon" : formStatus === "CLOSED" ? "Fermé" : "Archivé"} v{formVersion}
             </span>
-            {dirty && <span className="text-[10px] text-amber-400">• non enregistré</span>}
+            {dirty && <span className="text-xs text-amber-400">• non enregistré</span>}
           </div>
         </div>
 
         {/* Center: View Switcher */}
-        <div className="flex items-center gap-1 bg-white/5 border border-[var(--panel-border)] p-0.5 rounded-xl">
+        <div className="flex items-center gap-1 bg-[var(--surface-raised)]/50 border border-[var(--panel-border)] p-0.5 rounded-xl">
           <button
             onClick={() => setPreviewMode("edit")}
             className={cn(
               "flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer",
-              previewMode === "edit" ? "bg-indigo-600 text-white shadow-sm" : "text-zinc-400 hover:text-white"
+              previewMode === "edit" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-white"
             )}
           >
             <Sliders className="h-3 w-3" />
@@ -398,7 +398,7 @@ export default function FormBuilderClient() {
             onClick={() => setPreviewMode("desktop")}
             className={cn(
               "flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer",
-              previewMode === "desktop" ? "bg-indigo-600 text-white shadow-sm" : "text-zinc-400 hover:text-white"
+              previewMode === "desktop" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-white"
             )}
           >
             <Monitor className="h-3 w-3" />
@@ -408,7 +408,7 @@ export default function FormBuilderClient() {
             onClick={() => setPreviewMode("mobile")}
             className={cn(
               "flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer",
-              previewMode === "mobile" ? "bg-indigo-600 text-white shadow-sm" : "text-zinc-400 hover:text-white"
+              previewMode === "mobile" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-white"
             )}
           >
             <Smartphone className="h-3 w-3" />
@@ -418,10 +418,10 @@ export default function FormBuilderClient() {
             onClick={() => setPreviewMode("discord")}
             className={cn(
               "flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer",
-              previewMode === "discord" ? "bg-indigo-600 text-white shadow-sm" : "text-zinc-400 hover:text-white"
+              previewMode === "discord" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-white"
             )}
           >
-            <MessageSquare className="h-3 w-3 text-indigo-400" />
+            <MessageSquare className="h-3 w-3 text-emerald-400" />
             <span className="hidden md:inline">Modal Discord</span>
           </button>
         </div>
@@ -430,7 +430,7 @@ export default function FormBuilderClient() {
         <div className="flex items-center gap-2">
           <Link
             href={`/discord/forms/${formId}/settings?guildId=${rawGuildId}`}
-            className="flex h-8 items-center gap-1.5 px-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+            className="flex h-8 items-center gap-1.5 px-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
           >
             <Settings className="h-3.5 w-3.5" />
             <span className="hidden lg:inline">Paramètres &amp; Discord</span>
@@ -438,7 +438,7 @@ export default function FormBuilderClient() {
           <button
             onClick={handleSave}
             disabled={isSaving || !dirty}
-            className="flex h-8 items-center gap-1.5 px-3.5 rounded-xl border border-[var(--panel-border)] bg-white/5 text-xs font-bold text-white hover:bg-white/10 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+            className="flex h-8 items-center gap-1.5 px-3.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer active:scale-95 disabled:opacity-50"
           >
             <Save className="h-3.5 w-3.5" />
             <span>{isSaving ? "Sauvegarde..." : "Enregistrer"}</span>
@@ -447,7 +447,7 @@ export default function FormBuilderClient() {
             <button
               onClick={handlePublish}
               disabled={isSaving}
-              className="flex h-8 items-center gap-1.5 px-3.5 rounded-xl bg-indigo-600 text-xs font-bold text-white shadow hover:bg-indigo-500 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+              className="flex h-8 items-center gap-1.5 px-3.5 rounded-xl bg-emerald-500 text-xs font-bold text-white shadow hover:bg-emerald-600 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
             >
               <CheckCircle2 className="h-3.5 w-3.5" />
               <span>Publier</span>
@@ -460,15 +460,15 @@ export default function FormBuilderClient() {
       {previewMode === "edit" ? (
         <div className="flex-1 flex overflow-hidden">
           {/* LEFT PALETTE (Fields Library) */}
-          <aside className="w-64 border-r border-[var(--panel-border)] bg-zinc-950/60 p-4 overflow-y-auto shrink-0 hidden md:block space-y-5 pb-44">
+          <aside className="w-64 border-r border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-4 overflow-y-auto shrink-0 hidden md:block space-y-5 pb-44">
             <div>
-              <h2 className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Bibliothèque de Champs</h2>
-              <p className="text-[10px] text-zinc-500 mt-0.5">Cliquez sur un élément pour l&apos;ajouter à l&apos;étape active.</p>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Bibliothèque de Champs</h2>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">Cliquez sur un élément pour l&apos;ajouter à l&apos;étape active.</p>
             </div>
 
             {FIELD_PALETTE.map((cat) => (
               <div key={cat.category} className="space-y-1.5">
-                <span className="text-[10px] font-bold text-zinc-400 tracking-wider block uppercase">
+                <span className="text-xs font-bold text-[var(--text-muted)] tracking-wider block uppercase">
                   {cat.category}
                 </span>
                 <div className="grid grid-cols-1 gap-1">
@@ -478,16 +478,16 @@ export default function FormBuilderClient() {
                       <button
                         key={item.type}
                         onClick={() => handleAddField(item.type, item.label)}
-                        className="flex items-center gap-2.5 p-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] hover:bg-indigo-600/10 hover:border-indigo-500/40 text-left transition-all cursor-pointer group"
+                        className="flex items-center gap-2.5 p-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-emerald-500/15 hover:border-[var(--input-border-hover)] text-left transition-all cursor-pointer group"
                       >
-                        <div className="h-7 w-7 rounded-lg bg-white/5 group-hover:bg-indigo-600 text-zinc-400 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
+                        <div className="h-7 w-7 rounded-lg bg-[var(--surface-raised)]/50 group-hover:bg-emerald-600 text-[var(--text-muted)] group-hover:text-[var(--text-primary)] flex items-center justify-center shrink-0 transition-colors">
                           <Icon className="h-3.5 w-3.5" />
                         </div>
                         <div className="min-w-0">
-                          <span className="text-xs font-semibold text-zinc-200 group-hover:text-white block truncate">
+                          <span className="text-xs font-semibold text-[var(--text-primary)] group-hover:text-[var(--text-primary)] block truncate">
                             {item.label}
                           </span>
-                          <span className="text-[10px] text-zinc-500 block truncate">{item.desc}</span>
+                          <span className="text-xs text-[var(--text-muted)] block truncate">{item.desc}</span>
                         </div>
                       </button>
                     );
@@ -498,7 +498,7 @@ export default function FormBuilderClient() {
           </aside>
 
           {/* CENTER CANVAS (Form Preview & Step Navigation) */}
-          <main className="flex-1 overflow-y-auto os-scroll [overscroll-behavior:contain] p-4 sm:p-6 lg:p-8 pb-44 md:pb-44 bg-black/50 flex flex-col items-center">
+          <main className="flex-1 overflow-y-auto os-scroll [overscroll-behavior:contain] p-4 sm:p-6 lg:p-8 pb-44 md:pb-44 bg-[var(--surface-raised)]/40 flex flex-col items-center">
             <div className="w-full max-w-2xl space-y-5">
               {/* Multi-step Header Navigation */}
               <div className="flex items-center justify-between gap-2 border-b border-[var(--panel-border)] pb-3">
@@ -510,11 +510,11 @@ export default function FormBuilderClient() {
                       className={cn(
                         "h-8 px-3 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer",
                         activeSectionId === sec.id
-                          ? "bg-indigo-600 text-white shadow"
-                          : "bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10"
+                          ? "bg-emerald-500 text-white shadow"
+                          : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
                       )}
                     >
-                      <span className="h-4 w-4 rounded-full bg-black/30 flex items-center justify-center text-[10px]">
+                      <span className="h-4 w-4 rounded-full bg-[var(--surface-raised)]/40 flex items-center justify-center text-xs">
                         {idx + 1}
                       </span>
                       <span>{sec.title}</span>
@@ -522,7 +522,7 @@ export default function FormBuilderClient() {
                   ))}
                   <button
                     onClick={handleAddSection}
-                    className="h-8 px-2.5 rounded-xl border border-dashed border-[var(--input-border-hover)] text-zinc-400 hover:text-white hover:border-[var(--input-border-hover)] text-xs flex items-center gap-1 transition-all cursor-pointer"
+                    className="h-8 px-2.5 rounded-xl border border-dashed border-[var(--input-border-hover)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--input-border-hover)] text-xs flex items-center gap-1 transition-all cursor-pointer"
                   >
                     <Plus className="h-3 w-3" />
                     <span>Étape</span>
@@ -531,7 +531,7 @@ export default function FormBuilderClient() {
               </div>
 
               {/* Active Step Card */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-sm space-y-4">
+              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                 <div className="border-b border-[var(--panel-border)] pb-3">
                   <input
                     type="text"
@@ -543,7 +543,7 @@ export default function FormBuilderClient() {
                       );
                     }}
                     placeholder="Titre de l'étape..."
-                    className="text-base font-black text-white bg-transparent outline-none w-full border-b border-transparent hover:border-[var(--input-border-hover)] focus:border-indigo-500"
+                    className="text-base font-bold text-[var(--text-primary)] bg-transparent outline-none w-full border-b border-transparent hover:border-[var(--input-border-hover)] focus:border-[var(--input-border-hover)]"
                   />
                   <input
                     type="text"
@@ -555,15 +555,15 @@ export default function FormBuilderClient() {
                       );
                     }}
                     placeholder="Sous-titre ou consignes de l'étape..."
-                    className="text-xs text-zinc-400 bg-transparent outline-none w-full mt-1"
+                    className="text-sm text-[var(--text-muted)] bg-transparent outline-none w-full mt-1"
                   />
                 </div>
 
                 {/* Fields List */}
                 {currentSectionFields.length === 0 ? (
                   <div className="py-12 border border-dashed border-[var(--panel-border)] rounded-2xl text-center space-y-2">
-                    <p className="text-xs text-zinc-400">Aucun champ dans cette étape.</p>
-                    <p className="text-[11px] text-zinc-500">Cliquez sur la palette à gauche pour ajouter votre premier champ.</p>
+                    <p className="text-xs text-[var(--text-muted)]">Aucun champ dans cette étape.</p>
+                    <p className="text-xs text-[var(--text-muted)]">Cliquez sur la palette à gauche pour ajouter votre premier champ.</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -576,16 +576,16 @@ export default function FormBuilderClient() {
                           className={cn(
                             "rounded-2xl border p-4 transition-all cursor-pointer relative group",
                             isSelected
-                              ? "border-indigo-500 bg-indigo-500/[0.08] ring-1 ring-indigo-500/40 shadow-md"
-                              : "border-[var(--panel-border)] bg-white/[0.02] hover:border-[var(--input-border-hover)] hover:bg-white/[0.03]"
+                              ? "border-emerald-500 bg-emerald-500/10 ring-1 ring-emerald-500/40 "
+                              : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/70"
                           )}
                         >
                           <div className="flex items-start justify-between gap-3 mb-2">
                             <div className="flex items-center gap-2">
-                              <span className="cursor-grab text-zinc-600 group-hover:text-zinc-400">
+                              <span className="cursor-grab text-[var(--text-muted)] group-hover:text-[var(--text-muted)]">
                                 <GripVertical className="h-4 w-4" />
                               </span>
-                              <span className="text-xs font-bold text-white flex items-center gap-1">
+                              <span className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1">
                                 <span>{field.label}</span>
                                 {field.required && <span className="text-rose-400 font-bold">*</span>}
                               </span>
@@ -599,7 +599,7 @@ export default function FormBuilderClient() {
                                   handleMoveField(index, "up");
                                 }}
                                 disabled={index === 0}
-                                className="h-6 w-6 flex items-center justify-center rounded text-zinc-400 hover:text-white disabled:opacity-20 cursor-pointer"
+                                className="h-6 w-6 flex items-center justify-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] disabled:opacity-20 cursor-pointer"
                               >
                                 <ChevronUp className="h-3.5 w-3.5" />
                               </button>
@@ -609,7 +609,7 @@ export default function FormBuilderClient() {
                                   handleMoveField(index, "down");
                                 }}
                                 disabled={index === currentSectionFields.length - 1}
-                                className="h-6 w-6 flex items-center justify-center rounded text-zinc-400 hover:text-white disabled:opacity-20 cursor-pointer"
+                                className="h-6 w-6 flex items-center justify-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] disabled:opacity-20 cursor-pointer"
                               >
                                 <ChevronDown className="h-3.5 w-3.5" />
                               </button>
@@ -618,7 +618,7 @@ export default function FormBuilderClient() {
                                   e.stopPropagation();
                                   handleDuplicateField(field);
                                 }}
-                                className="h-6 w-6 flex items-center justify-center rounded text-zinc-400 hover:text-white cursor-pointer"
+                                className="h-6 w-6 flex items-center justify-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
                               >
                                 <Copy className="h-3.5 w-3.5" />
                               </button>
@@ -627,7 +627,7 @@ export default function FormBuilderClient() {
                                   e.stopPropagation();
                                   handleDeleteField(field.id);
                                 }}
-                                className="h-6 w-6 flex items-center justify-center rounded text-zinc-400 hover:text-rose-400 cursor-pointer"
+                                className="h-6 w-6 flex items-center justify-center rounded text-[var(--text-muted)] hover:text-rose-400 cursor-pointer"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </button>
@@ -635,7 +635,7 @@ export default function FormBuilderClient() {
                           </div>
 
                           {field.description && (
-                            <p className="text-[11px] text-zinc-400 mb-2 pl-6">{field.description}</p>
+                            <p className="text-xs text-[var(--text-muted)] mb-2 pl-6">{field.description}</p>
                           )}
 
                           {/* Interactive Mock Input */}
@@ -645,7 +645,7 @@ export default function FormBuilderClient() {
                                 type="text"
                                 disabled
                                 placeholder={field.placeholder || "Réponse courte..."}
-                                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-zinc-400"
+                                className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-sm text-[var(--text-muted)]"
                               />
                             )}
                             {field.type === "LONG_TEXT" && (
@@ -653,7 +653,7 @@ export default function FormBuilderClient() {
                                 disabled
                                 rows={2}
                                 placeholder={field.placeholder || "Réponse détaillée..."}
-                                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-2.5 text-xs text-zinc-400 resize-none"
+                                className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2.5 text-sm text-[var(--text-muted)] resize-none"
                               />
                             )}
                             {field.type === "NUMBER" && (
@@ -661,15 +661,15 @@ export default function FormBuilderClient() {
                                 type="number"
                                 disabled
                                 placeholder={field.placeholder || "0"}
-                                className="h-9 w-36 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-zinc-400"
+                                className="h-9 w-36 rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-sm text-[var(--text-muted)]"
                               />
                             )}
                             {field.type === "YES_NO" && (
                               <div className="flex gap-2">
-                                <span className="px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs text-zinc-300">
+                                <span className="px-3 py-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs text-[var(--text-muted)]">
                                   Oui
                                 </span>
-                                <span className="px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs text-zinc-300">
+                                <span className="px-3 py-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs text-[var(--text-muted)]">
                                   Non
                                 </span>
                               </div>
@@ -677,7 +677,7 @@ export default function FormBuilderClient() {
                             {field.type === "SELECT" && (
                               <select
                                 disabled
-                                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-zinc-400"
+                                className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-sm text-[var(--text-muted)]"
                               >
                                 <option>{field.placeholder || "Choisir une option..."}</option>
                                 {field.options.map((o) => (
@@ -703,16 +703,16 @@ export default function FormBuilderClient() {
           </main>
 
           {/* RIGHT SIDEBAR (Field Settings & Logic) */}
-          <aside className="w-72 border-l border-[var(--panel-border)] bg-zinc-950/60 p-4 overflow-y-auto shrink-0 hidden lg:block space-y-4 pb-44">
+          <aside className="w-72 border-l border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-4 overflow-y-auto shrink-0 hidden lg:block space-y-4 pb-44">
             <div>
-              <h2 className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Configuration</h2>
-              <p className="text-[10px] text-zinc-500 mt-0.5">Propriétés et règles du champ sélectionné.</p>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Configuration</h2>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">Propriétés et règles du champ sélectionné.</p>
             </div>
 
             {selectedField ? (
               <div className="space-y-4 text-xs">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-zinc-300">Intitulé de la question *</label>
+                  <label className="text-xs font-semibold text-[var(--text-muted)]">Intitulé de la question *</label>
                   <input
                     type="text"
                     value={selectedField.label}
@@ -722,12 +722,12 @@ export default function FormBuilderClient() {
                         prev.map((f) => (f.id === selectedField.id ? { ...f, label: val } : f))
                       );
                     }}
-                    className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-xs text-white outline-none focus:border-indigo-500"
+                    className="h-8 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-2.5 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-zinc-300">Description / Aide</label>
+                  <label className="text-xs font-semibold text-[var(--text-muted)]">Description / Aide</label>
                   <textarea
                     rows={2}
                     value={selectedField.description}
@@ -738,12 +738,12 @@ export default function FormBuilderClient() {
                       );
                     }}
                     placeholder="Précisez les attentes..."
-                    className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2 text-xs text-white outline-none focus:border-indigo-500 resize-none"
+                    className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)] resize-none"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-zinc-300">Placeholder</label>
+                  <label className="text-xs font-semibold text-[var(--text-muted)]">Placeholder</label>
                   <input
                     type="text"
                     value={selectedField.placeholder}
@@ -754,13 +754,13 @@ export default function FormBuilderClient() {
                       );
                     }}
                     placeholder="Ex: 18, Mon serveur..."
-                    className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-xs text-white outline-none focus:border-indigo-500"
+                    className="h-8 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-2.5 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
                   />
                 </div>
 
                 {/* Required Toggle */}
-                <label className="flex items-center justify-between p-2.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] cursor-pointer">
-                  <span className="font-semibold text-zinc-200">Champ obligatoire</span>
+                <label className="flex items-center justify-between p-2.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 cursor-pointer">
+                  <span className="font-semibold text-[var(--text-primary)]">Champ obligatoire</span>
                   <input
                     type="checkbox"
                     checked={selectedField.required}
@@ -770,7 +770,7 @@ export default function FormBuilderClient() {
                         prev.map((f) => (f.id === selectedField.id ? { ...f, required: checked } : f))
                       );
                     }}
-                    className="rounded border-zinc-700 accent-indigo-500 h-4 w-4 cursor-pointer"
+                    className="rounded border-[var(--input-border)] accent-emerald-500 h-4 w-4 cursor-pointer"
                   />
                 </label>
 
@@ -778,7 +778,7 @@ export default function FormBuilderClient() {
                 {selectedField.options.length > 0 && (
                   <div className="space-y-2 pt-2 border-t border-[var(--panel-border)]">
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-zinc-200">Choix &amp; Points</span>
+                      <span className="font-semibold text-[var(--text-primary)]">Choix &amp; Points</span>
                       <button
                         onClick={() => {
                           const newOpt: FormOption = {
@@ -795,7 +795,7 @@ export default function FormBuilderClient() {
                             )
                           );
                         }}
-                        className="text-[10px] text-indigo-400 hover:text-indigo-300 font-bold"
+                        className="text-xs text-emerald-400 hover:text-emerald-300 font-bold"
                       >
                         + Ajouter
                       </button>
@@ -822,7 +822,7 @@ export default function FormBuilderClient() {
                                 )
                               );
                             }}
-                            className="h-7 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-[11px] text-white outline-none"
+                            className="h-7 flex-1 rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-2 text-sm text-[var(--text-primary)] outline-none"
                           />
                           <input
                             type="number"
@@ -843,7 +843,7 @@ export default function FormBuilderClient() {
                                 )
                               );
                             }}
-                            className="h-7 w-12 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-1 text-[11px] text-amber-300 outline-none text-center"
+                            className="h-7 w-12 rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-1 text-sm text-amber-300 outline-none text-center"
                           />
                         </div>
                       ))}
@@ -852,26 +852,26 @@ export default function FormBuilderClient() {
                 )}
               </div>
             ) : (
-              <p className="text-xs text-zinc-500 py-8 text-center">Sélectionnez un champ sur le canevas pour modifier ses options.</p>
+              <p className="text-xs text-[var(--text-muted)] py-8 text-center">Sélectionnez un champ sur le canevas pour modifier ses options.</p>
             )}
           </aside>
         </div>
       ) : (
         /* LIVE PREVIEW CANVAS (Desktop, Mobile, Discord Modal) */
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8 flex justify-center items-start bg-zinc-950">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 flex justify-center items-start bg-[var(--bg-surface-elevated)]">
           <div
             className={cn(
               "w-full transition-all duration-200",
-              previewMode === "desktop" && "max-w-2xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/60 p-6 sm:p-8 shadow-2xl backdrop-blur-xl",
-              previewMode === "mobile" && "max-w-sm rounded-[40px] border-4 border-zinc-800 bg-[var(--bg-main)] p-6 shadow-2xl space-y-4",
-              previewMode === "discord" && "max-w-md rounded-2xl border border-indigo-500/40 bg-[#313338] p-5 shadow-2xl text-white"
+              previewMode === "desktop" && "max-w-2xl rounded-xl border border-[var(--panel-border)] bg-black/60 p-6 sm:p-8 ",
+              previewMode === "mobile" && "max-w-sm rounded-[40px] border-4 border-[var(--panel-border)] bg-[var(--bg-main)] p-6 space-y-4",
+              previewMode === "discord" && "max-w-md rounded-2xl border border-emerald-500/40 bg-[#313338] p-5 text-white"
             )}
           >
             {/* Discord Header */}
             {previewMode === "discord" && (
               <div className="border-b border-[var(--panel-border)] pb-3 mb-4">
-                <span className="text-xs font-bold text-zinc-300 uppercase tracking-wider block">Modal Discord</span>
-                <h3 className="text-base font-bold text-white">{formTitle}</h3>
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block">Modal Discord</span>
+                <h3 className="text-base font-bold text-[var(--text-primary)]">{formTitle}</h3>
               </div>
             )}
 
@@ -880,9 +880,9 @@ export default function FormBuilderClient() {
               <div className="border-b border-[var(--panel-border)] pb-4 mb-5">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-lg">🛡️</span>
-                  <h2 className="text-lg font-bold text-white">{formTitle}</h2>
+                  <h2 className="text-lg font-bold text-[var(--text-primary)]">{formTitle}</h2>
                 </div>
-                <p className="text-xs text-zinc-400">{formDescription}</p>
+                <p className="text-xs text-[var(--text-muted)]">{formDescription}</p>
               </div>
             )}
 
@@ -890,35 +890,35 @@ export default function FormBuilderClient() {
             <div className="space-y-4">
               {fields.map((f) => (
                 <div key={f.id} className="space-y-1.5 text-xs">
-                  <label className="font-semibold text-zinc-200 flex items-center gap-1">
+                  <label className="font-semibold text-[var(--text-primary)] flex items-center gap-1">
                     <span>{f.label}</span>
                     {f.required && <span className="text-rose-400">*</span>}
                   </label>
-                  {f.description && <p className="text-[11px] text-zinc-400">{f.description}</p>}
+                  {f.description && <p className="text-xs text-[var(--text-muted)]">{f.description}</p>}
 
                   {f.type === "SHORT_TEXT" && (
                     <input
                       type="text"
                       placeholder={f.placeholder || "Votre réponse..."}
-                      className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 px-3 text-xs text-white outline-none focus:border-indigo-500"
+                      className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
                     />
                   )}
                   {f.type === "LONG_TEXT" && (
                     <textarea
                       rows={3}
                       placeholder={f.placeholder || "Votre réponse détaillée..."}
-                      className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 p-2.5 text-xs text-white outline-none focus:border-indigo-500 resize-none"
+                      className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] p-2.5 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)] resize-none"
                     />
                   )}
                   {f.type === "NUMBER" && (
                     <input
                       type="number"
                       placeholder={f.placeholder || "0"}
-                      className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 px-3 text-xs text-white outline-none focus:border-indigo-500"
+                      className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
                     />
                   )}
                   {f.type === "SELECT" && (
-                    <select className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 px-3 text-xs text-zinc-300 outline-none focus:border-indigo-500">
+                    <select className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-sm text-[var(--text-muted)] outline-none focus:border-[var(--input-border-hover)]">
                       <option>{f.placeholder || "Sélectionnez..."}</option>
                       {f.options.map((o) => (
                         <option key={o.id}>{o.label}</option>
@@ -927,10 +927,10 @@ export default function FormBuilderClient() {
                   )}
                   {f.type === "YES_NO" && (
                     <div className="flex gap-2 pt-1">
-                      <button className="flex-1 h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs font-semibold text-zinc-300 hover:bg-white/10">
+                      <button className="flex-1 h-8 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]">
                         Oui
                       </button>
-                      <button className="flex-1 h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs font-semibold text-zinc-300 hover:bg-white/10">
+                      <button className="flex-1 h-8 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]">
                         Non
                       </button>
                     </div>
@@ -944,7 +944,7 @@ export default function FormBuilderClient() {
                 type="button"
                 disabled
                 title="Aperçu seulement — les membres répondent via le panneau Discord ou le portail web"
-                className="h-9 px-4 rounded-xl bg-indigo-600/60 text-xs font-bold text-white shadow cursor-not-allowed"
+                className="h-9 px-4 rounded-xl bg-emerald-500/60 text-xs font-bold text-[var(--text-primary)] shadow cursor-not-allowed"
               >
                 Envoyer (aperçu)
               </button>

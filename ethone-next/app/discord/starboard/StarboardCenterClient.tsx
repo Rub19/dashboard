@@ -108,16 +108,16 @@ function Switch({
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="flex w-full items-start justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
+      className="flex w-full items-start justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
     >
       <span className="min-w-0">
-        <span className="block text-xs font-semibold text-white">{label}</span>
-        {hint && <span className="mt-0.5 block text-[11px] leading-snug text-zinc-400">{hint}</span>}
+        <span className="block text-xs font-semibold text-[var(--text-primary)]">{label}</span>
+        {hint && <span className="mt-0.5 block text-xs leading-snug text-[var(--text-muted)]">{hint}</span>}
       </span>
       <span
         className={cn(
           "relative inline-flex mt-0.5 h-5 w-9 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200",
-          checked ? "bg-amber-500" : "bg-white/15"
+          checked ? "bg-amber-500" : "bg-[var(--surface-raised)]/80"
         )}
       >
         <span
@@ -350,29 +350,29 @@ export default function StarboardCenterClient() {
   };
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden bg-[var(--bg-main)] text-white">
+    <div className="mx-auto w-full max-w-6xl space-y-6 px-4 py-6 sm:px-6 text-[var(--text-primary)]">
       {/* Header */}
-      <div className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--bg-surface-elevated)]/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 z-20">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Link
             href="/discord"
-            className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors"
+            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-colors"
             title="Retour au hub Discord"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-[var(--panel-border)] flex items-center justify-center text-zinc-300">
+            <div className="w-9 h-9 rounded-xl bg-[var(--surface-raised)]/50 border border-[var(--panel-border)] flex items-center justify-center text-[var(--text-muted)]">
               <Star className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-base font-semibold tracking-tight text-white">Starboard</h1>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                <h1 className="text-xl font-bold text-[var(--text-primary)]">Starboard</h1>
+                <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
                   Hall of Fame
                 </span>
               </div>
-              <p className="text-xs text-white/70">Les messages les plus appréciés, épinglés automatiquement</p>
+              <p className="text-xs text-[var(--text-muted)]">Les messages les plus appréciés, épinglés automatiquement</p>
             </div>
           </div>
         </div>
@@ -388,11 +388,11 @@ export default function StarboardCenterClient() {
               }}
             />
           ) : (
-            <span className="text-xs text-white/70">Aucun serveur administrable</span>
+            <span className="text-xs text-[var(--text-muted)]">Aucun serveur administrable</span>
           )}
           <button
             onClick={load}
-            className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-[var(--panel-border)] text-white/70 hover:text-white transition-colors"
+            className="p-2 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
             title="Rafraîchir"
           >
             <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
@@ -409,22 +409,22 @@ export default function StarboardCenterClient() {
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto os-scroll px-4 sm:px-6 py-6 pb-44 md:pb-44 space-y-6 [overscroll-behavior:contain]">
+      <div className="space-y-6">
         {!discordLoading && manageableGuilds.length === 0 && (
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-6 text-center text-sm text-zinc-400">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
             Connectez un serveur Discord où vous êtes administrateur pour configurer le Starboard.
           </div>
         )}
 
         {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-300 shrink-0 mt-0.5">
                 <Bot className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
-                <p className="mt-0.5 text-zinc-300">
+                <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-0.5 text-[var(--text-muted)]">
                   Invitez le bot sur « {selectedGuild.name} » pour créer et animer le salon Starboard sur Discord.
                 </p>
               </div>
@@ -433,7 +433,7 @@ export default function StarboardCenterClient() {
               href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium text-xs transition-colors shrink-0 shadow-lg shadow-[#5865F2]/25 cursor-pointer"
+              className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#5865F2] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#4752C4]"
             >
               Inviter le bot
             </a>
@@ -445,7 +445,7 @@ export default function StarboardCenterClient() {
             <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
             <span>
               Mode hors-ligne : le serveur du bot n&apos;est pas joignable depuis cet environnement. Les réglages ci-dessous sont affichés à
-              titre indicatif ; utilisez la commande <code className="rounded bg-black/30 px-1">/starboard</code> sur
+              titre indicatif ; utilisez la commande <code className="rounded bg-[var(--surface-raised)]/40 px-1">/starboard</code> sur
               Discord, ou réessayez plus tard.
             </span>
           </div>
@@ -456,27 +456,27 @@ export default function StarboardCenterClient() {
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {[
-                { label: "État", value: stats.enabled ? "Actif" : "Inactif", icon: Sparkles, tone: stats.enabled ? "text-emerald-400" : "text-zinc-500" },
+                { label: "État", value: stats.enabled ? "Actif" : "Inactif", icon: Sparkles, tone: stats.enabled ? "text-emerald-400" : "text-[var(--text-muted)]" },
                 { label: "Messages épinglés", value: String(stats.postedEntries), icon: MessageSquare, tone: "text-amber-400" },
                 { label: "⭐ cumulées", value: String(stats.totalStars), icon: Star, tone: "text-yellow-400" },
                 { label: "Record", value: stats.topMessage ? `${stats.topMessage.starCount} ⭐` : "—", icon: Trophy, tone: "text-fuchsia-400" },
               ].map((s) => (
-                <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-3.5">
-                  <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400">
+                <div key={s.label} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-muted)]">
                     <s.icon className={cn("h-3.5 w-3.5", s.tone)} />
                     {s.label}
                   </div>
-                  <div className="mt-1 text-lg font-bold text-white">{s.value}</div>
+                  <div className="mt-1 text-lg font-bold text-[var(--text-primary)]">{s.value}</div>
                 </div>
               ))}
             </div>
 
             {/* Config */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-5 sm:p-6 space-y-5">
+            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-5">
               <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-4">
                 <div>
-                  <h3 className="text-sm font-bold text-white">Configuration</h3>
-                  <p className="text-xs text-zinc-400 mt-0.5">Serveur : {selectedGuild.name}</p>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Configuration</h3>
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5">Serveur : {selectedGuild.name}</p>
                 </div>
                 <Switch checked={config.enabled} onChange={(v) => patch("enabled", v)} label={config.enabled ? "Activé" : "Désactivé"} />
               </div>
@@ -484,7 +484,7 @@ export default function StarboardCenterClient() {
               <div className="grid gap-4 sm:grid-cols-2">
                 {/* Channel */}
                 <div>
-                  <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-white">
+                  <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-[var(--text-primary)]">
                     <Hash className="h-3.5 w-3.5 text-amber-400" /> Salon de publication
                   </label>
                   <ChannelPicker
@@ -497,24 +497,24 @@ export default function StarboardCenterClient() {
                     placeholder="ID du salon (ex: 123456789012345678)"
                     emptyLabel="— Choisir un salon —"
                   />
-                  <p className="mt-1 text-[11px] text-zinc-500">Actuel : #{channelName(config.channelId)}</p>
+                  <p className="mt-1 text-xs text-[var(--text-muted)]">Actuel : #{channelName(config.channelId)}</p>
                 </div>
 
                 {/* Emoji */}
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold text-white">Emoji déclencheur</label>
+                  <label className="mb-1.5 block text-xs font-semibold text-[var(--text-primary)]">Emoji déclencheur</label>
                   <input
                     value={config.emoji}
                     onChange={(e) => patch("emoji", e.target.value)}
                     placeholder="⭐ ou <:nom:id>"
-                    className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-amber-500/50 focus:outline-none"
+                    className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-amber-500/50 focus:outline-none"
                   />
-                  <p className="mt-1 text-[11px] text-zinc-500">Emoji unicode ou custom du serveur.</p>
+                  <p className="mt-1 text-xs text-[var(--text-muted)]">Emoji unicode ou custom du serveur.</p>
                 </div>
 
                 {/* Threshold */}
                 <div className="sm:col-span-2">
-                  <label className="mb-1.5 flex items-center justify-between text-xs font-semibold text-white">
+                  <label className="mb-1.5 flex items-center justify-between text-xs font-semibold text-[var(--text-primary)]">
                     <span>Seuil de réactions</span>
                     <span className="font-mono text-amber-400">{config.threshold} {config.emoji}</span>
                   </label>
@@ -540,8 +540,8 @@ export default function StarboardCenterClient() {
               {/* Ignored channels */}
               {channels.length > 0 && (
                 <div>
-                  <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-white">
-                    <Info className="h-3.5 w-3.5 text-zinc-400" /> Salons ignorés ({config.ignoredChannelIds.length})
+                  <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-[var(--text-primary)]">
+                    <Info className="h-3.5 w-3.5 text-[var(--text-muted)]" /> Salons ignorés ({config.ignoredChannelIds.length})
                   </label>
                   <div className="flex flex-wrap gap-1.5">
                     {channels.map((c) => {
@@ -552,10 +552,10 @@ export default function StarboardCenterClient() {
                           type="button"
                           onClick={() => toggleIgnored(c.id)}
                           className={cn(
-                            "rounded-lg border px-2 py-1 text-[11px] font-medium transition-colors cursor-pointer",
+                            "rounded-lg border px-2 py-1 text-xs font-medium transition-colors cursor-pointer",
                             on
                               ? "border-rose-500/40 bg-rose-500/15 text-rose-300"
-                              : "border-[var(--panel-border)] bg-white/[0.03] text-zinc-400 hover:border-[var(--input-border-hover)] hover:text-white"
+                              : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)]"
                           )}
                         >
                           #{c.name}
@@ -568,22 +568,22 @@ export default function StarboardCenterClient() {
             </div>
 
             {/* Top starred */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-5 sm:p-6">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6">
+              <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-amber-400" /> Messages les plus étoilés
               </h3>
               {entries.length === 0 ? (
-                <p className="mt-3 text-xs text-zinc-400">
+                <p className="mt-3 text-xs text-[var(--text-muted)]">
                   Aucun message étoilé pour l&apos;instant. Dès qu&apos;un message atteint {config.threshold} {config.emoji},
                   il apparaîtra ici et dans #{channelName(config.channelId)}.
                 </p>
               ) : (
-                <ul className="mt-3 divide-y divide-white/5">
+                <ul className="mt-3 divide-y divide-[var(--panel-border)]">
                   {entries.slice(0, 10).map((e) => (
                     <li key={e.messageId} className="flex items-center justify-between gap-3 py-2.5 text-xs">
                       <span className="flex items-center gap-2 min-w-0">
                         <span className="font-mono font-bold text-amber-400 shrink-0">{e.starCount} ⭐</span>
-                        <span className="truncate text-zinc-400">
+                        <span className="truncate text-[var(--text-muted)]">
                           #{channelName(e.channelId)} • message <span className="font-mono">{e.messageId}</span>
                         </span>
                       </span>
@@ -591,7 +591,7 @@ export default function StarboardCenterClient() {
                         href={`https://discord.com/channels/${selectedGuild.id}/${e.channelId}/${e.messageId}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="shrink-0 text-zinc-500 hover:text-white transition-colors"
+                        className="shrink-0 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                         title="Ouvrir dans Discord"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />

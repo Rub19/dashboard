@@ -390,32 +390,32 @@ export default function PollCreateClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-indigo-500/30">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)]">
       {/* Top Background Glow */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-30">
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 pb-44 md:pb-44">
         {/* Navigation Breadcrumbs */}
-        <div className="mb-6 flex items-center gap-2 text-xs text-zinc-400">
-          <Link href={`/discord?guildId=${guildParam}`} className="hover:text-white transition-colors">
+        <div className="mb-6 flex items-center gap-2 text-xs text-[var(--text-muted)]">
+          <Link href={`/discord?guildId=${guildParam}`} className="hover:text-[var(--text-primary)] transition-colors">
             Discord Center
           </Link>
-          <ChevronRight className="h-3 w-3 text-zinc-600" />
-          <Link href={`/discord/polls?guildId=${guildParam}`} className="hover:text-white transition-colors">
+          <ChevronRight className="h-3 w-3 text-[var(--text-muted)]" />
+          <Link href={`/discord/polls?guildId=${guildParam}`} className="hover:text-[var(--text-primary)] transition-colors">
             Sondages & Votes
           </Link>
-          <ChevronRight className="h-3 w-3 text-zinc-600" />
-          <span className="text-zinc-200 font-medium">Créateur de Sondage</span>
+          <ChevronRight className="h-3 w-3 text-[var(--text-muted)]" />
+          <span className="text-[var(--text-primary)] font-medium">Créateur de Sondage</span>
         </div>
 
         {/* Header Hero */}
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+            <h1 className="text-3xl font-extrabold tracking-tight text-[var(--text-primary)] sm:text-4xl">
               Nouveau Sondage ou Vote
             </h1>
-            <p className="mt-1 text-sm text-zinc-400">
+            <p className="mt-1 text-sm text-[var(--text-muted)]">
               Configurez le type de scrutin, les questions à choix multiples, les règles d'éligibilité et l'affichage Discord.
             </p>
           </div>
@@ -425,17 +425,17 @@ export default function PollCreateClient() {
               type="button"
               onClick={handleRefreshAll}
               disabled={isRefreshing || channelsLoading || rolesLoading}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] px-3 py-2.5 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all disabled:opacity-50"
               title="Rafraîchir les salons et rôles du serveur"
             >
-              <RefreshCw className={cn("h-3.5 w-3.5", (isRefreshing || channelsLoading || rolesLoading) && "animate-spin text-indigo-400")} />
+              <RefreshCw className={cn("h-3.5 w-3.5", (isRefreshing || channelsLoading || rolesLoading) && "animate-spin text-emerald-400")} />
               <span className="hidden sm:inline">Rafraîchir</span>
             </button>
             <button
               onClick={() => handleSave(false)}
               disabled={isSubmitting || nativeMode}
               title={nativeMode ? "Un sondage natif est publié immédiatement (pas de brouillon)." : undefined}
-              className="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-2.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] px-4 py-2.5 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all disabled:opacity-50"
             >
               <Save className="h-3.5 w-3.5" />
               Sauvegarder Brouillon
@@ -443,7 +443,7 @@ export default function PollCreateClient() {
             <button
               onClick={() => handleSave(true)}
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50"
             >
               <Send className="h-3.5 w-3.5" />
               {isSubmitting ? "Publication en cours..." : "Publier Immédiatement"}
@@ -452,7 +452,7 @@ export default function PollCreateClient() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="mb-6 flex overflow-x-auto border-b border-zinc-800 pb-2">
+        <div className="mb-6 flex overflow-x-auto border-b border-[var(--panel-border)] pb-2">
           {[
             { id: "general", label: "Général & Scrutin", icon: Vote },
             { id: "questions", label: nativeMode ? "Réponses" : "Questions & Options", icon: Layers },
@@ -471,11 +471,11 @@ export default function PollCreateClient() {
                 className={cn(
                   "flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-semibold whitespace-nowrap transition-all",
                   isActive
-                    ? "border-indigo-500 text-white"
-                    : "border-transparent text-zinc-400 hover:text-zinc-200"
+                    ? "border-emerald-500 text-[var(--text-primary)]"
+                    : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
               >
-                <Icon className={cn("h-4 w-4", isActive ? "text-indigo-400" : "text-zinc-500")} />
+                <Icon className={cn("h-4 w-4", isActive ? "text-emerald-400" : "text-[var(--text-muted)]")} />
                 {tab.label}
               </button>
             );
@@ -488,8 +488,8 @@ export default function PollCreateClient() {
             <div className="space-y-6 lg:col-span-2">
               <label
                 className={cn(
-                  "flex cursor-pointer items-start gap-3 rounded-2xl border p-5 backdrop-blur-xl transition-colors",
-                  nativeMode ? "border-sky-500/50 bg-sky-500/10" : "border-zinc-800/80 bg-zinc-900/40 hover:border-zinc-700"
+                  "flex cursor-pointer items-start gap-3 rounded-2xl border p-5 transition-colors",
+                  nativeMode ? "border-sky-500/50 bg-sky-500/10" : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)]"
                 )}
               >
                 <input
@@ -503,18 +503,18 @@ export default function PollCreateClient() {
                   className="mt-0.5 h-4 w-4 cursor-pointer accent-sky-500"
                 />
                 <span>
-                  <span className="block text-sm font-bold text-white">Sondage natif Discord</span>
-                  <span className="mt-1 block text-xs text-zinc-400">
+                  <span className="block text-sm font-bold text-[var(--text-primary)]">Sondage natif Discord</span>
+                  <span className="mt-1 block text-xs text-[var(--text-muted)]">
                     Utilise le sondage intégré de Discord : simple et fiable, mais sans quorum, pondération, vote secret, éligibilité ni décisions automatiques (10 réponses max, 32 jours max).
                   </span>
                 </span>
               </label>
 
-              <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl">
-                <h3 className="text-base font-bold text-white mb-4">Informations Générales</h3>
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+                <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">Informations Générales</h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                    <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">
                       {nativeMode ? "Question du sondage" : "Titre du Sondage"} <span className="text-rose-400">*</span>
                     </label>
                     <input
@@ -523,13 +523,13 @@ export default function PollCreateClient() {
                       placeholder={nativeMode ? "Ex: Quel jeu pour la soirée de vendredi ?" : "Ex: Élection du Représentant de Communauté 2026"}
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                      className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/60 focus:border-[var(--input-border-hover)] focus:outline-none"
                     />
                   </div>
 
                   {!nativeMode && (
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                    <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">
                       Description explicative
                     </label>
                     <textarea
@@ -537,7 +537,7 @@ export default function PollCreateClient() {
                       placeholder="Expliquez l'objectif de la consultation ou les consignes de vote..."
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                      className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-4 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/60 focus:border-[var(--input-border-hover)] focus:outline-none"
                     />
                   </div>
                   )}
@@ -545,20 +545,20 @@ export default function PollCreateClient() {
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     {!nativeMode && (
                     <div>
-                      <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                      <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">
                         Catégorie
                       </label>
                       <input
                         type="text"
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
+                        className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] focus:border-[var(--input-border-hover)] focus:outline-none"
                       />
                     </div>
                     )}
 
                     <div>
-                      <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                      <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">
                         Durée du scrutin (heures)
                       </label>
                       <input
@@ -567,25 +567,25 @@ export default function PollCreateClient() {
                         max={nativeMode ? NATIVE_MAX_HOURS : undefined}
                         value={durationHours}
                         onChange={(e) => setDurationHours(Number(e.target.value))}
-                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
+                        className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] focus:border-[var(--input-border-hover)] focus:outline-none"
                       />
                     </div>
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <label className="text-xs font-medium text-zinc-300 flex items-center gap-1.5">
-                        <Hash className="h-3.5 w-3.5 text-indigo-400" />
+                      <label className="text-xs font-medium text-[var(--text-muted)] flex items-center gap-1.5">
+                        <Hash className="h-3.5 w-3.5 text-emerald-400" />
                         Salon Discord de diffusion <span className="text-rose-400">*</span>
                       </label>
                       <button
                         type="button"
                         onClick={() => fetchChannelsList(true)}
                         disabled={channelsLoading}
-                        className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-400 hover:text-indigo-400 transition-colors disabled:opacity-50"
+                        className="inline-flex items-center gap-1 text-xs font-medium text-[var(--text-muted)] hover:text-emerald-400 transition-colors disabled:opacity-50"
                         title="Rafraîchir la liste des salons"
                       >
-                        <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-indigo-400")} />
+                        <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-emerald-400")} />
                         <span>Rafraîchir</span>
                       </button>
                     </div>
@@ -597,7 +597,7 @@ export default function PollCreateClient() {
                       filterTypes={DESTINATION_TYPES}
                       placeholder="Sélectionner un salon ou saisir un ID..."
                     />
-                    <p className="text-[11px] text-zinc-500 mt-1">
+                    <p className="text-xs text-[var(--text-muted)] mt-1">
                       {nativeMode
                         ? "Le salon (texte, annonces, forum ou média) où le bot publiera le sondage natif."
                         : "Le salon textuel où le bot publiera le message interactif avec les boutons de vote."}
@@ -607,22 +607,22 @@ export default function PollCreateClient() {
               </div>
 
               {nativeMode && (
-                <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-xl">
+                <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
                   <input
                     type="checkbox"
                     checked={allowMultiselect}
                     onChange={(e) => setAllowMultiselect(e.target.checked)}
                     className="h-4 w-4 cursor-pointer accent-sky-500"
                   />
-                  <span className="text-xs font-semibold text-white">Autoriser plusieurs réponses</span>
+                  <span className="text-xs font-semibold text-[var(--text-primary)]">Autoriser plusieurs réponses</span>
                 </label>
               )}
 
               {/* Voting Type Selection */}
               {!nativeMode && (
-              <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl">
-                <h3 className="text-base font-bold text-white mb-2">Mode de Scrutin & Mécanique de Vote</h3>
-                <p className="text-xs text-zinc-400 mb-4">
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+                <h3 className="text-base font-bold text-[var(--text-primary)] mb-2">Mode de Scrutin & Mécanique de Vote</h3>
+                <p className="text-xs text-[var(--text-muted)] mb-4">
                   Choisissez la règle mathématique utilisée pour déterminer le vainqueur et comptabiliser les suffrages.
                 </p>
 
@@ -645,15 +645,15 @@ export default function PollCreateClient() {
                         className={cn(
                           "flex flex-col items-start rounded-xl border p-4 text-left transition-all",
                           isSel
-                            ? "border-indigo-500 bg-indigo-500/10 text-white shadow-sm"
-                            : "border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:border-zinc-700 hover:text-white"
+                            ? "border-emerald-500 bg-emerald-500/10 text-[var(--text-primary)] shadow-sm"
+                            : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)]"
                         )}
                       >
-                        <div className={cn("p-2 rounded-lg mb-2", isSel ? "bg-indigo-600 text-white" : "bg-zinc-800 text-zinc-400")}>
+                        <div className={cn("p-2 rounded-lg mb-2", isSel ? "bg-emerald-500 text-white" : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)]")}>
                           <Icon className="h-4 w-4" />
                         </div>
-                        <span className="text-xs font-bold text-white">{item.label}</span>
-                        <span className="text-[11px] text-zinc-400 mt-1">{item.desc}</span>
+                        <span className="text-xs font-bold text-[var(--text-primary)]">{item.label}</span>
+                        <span className="text-xs text-[var(--text-muted)] mt-1">{item.desc}</span>
                       </button>
                     );
                   })}
@@ -664,13 +664,13 @@ export default function PollCreateClient() {
 
             {/* Quick Summary Sidebar */}
             <div className="space-y-4">
-              <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-xl">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3">
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-3">
                   Résumé de Configuration
                 </h4>
-                <div className="space-y-2.5 text-xs text-zinc-300">
-                  <div className="flex justify-between border-b border-zinc-800 pb-2">
-                    <span className="text-zinc-500">Salon de diffusion :</span>
+                <div className="space-y-2.5 text-xs text-[var(--text-muted)]">
+                  <div className="flex justify-between border-b border-[var(--panel-border)] pb-2">
+                    <span className="text-[var(--text-muted)]">Salon de diffusion :</span>
                     <span className="font-semibold text-emerald-400">
                       {channels.find((c) => c.id === targetChannel)
                         ? `#${channels.find((c) => c.id === targetChannel)?.name}`
@@ -679,21 +679,21 @@ export default function PollCreateClient() {
                         : "Non sélectionné"}
                     </span>
                   </div>
-                  <div className="flex justify-between border-b border-zinc-800 pb-2">
-                    <span className="text-zinc-500">Type de scrutin :</span>
-                    <span className="font-semibold text-indigo-400">{nativeMode ? "Natif Discord" : pollType}</span>
+                  <div className="flex justify-between border-b border-[var(--panel-border)] pb-2">
+                    <span className="text-[var(--text-muted)]">Type de scrutin :</span>
+                    <span className="font-semibold text-emerald-400">{nativeMode ? "Natif Discord" : pollType}</span>
                   </div>
-                  <div className="flex justify-between border-b border-zinc-800 pb-2">
-                    <span className="text-zinc-500">Durée :</span>
-                    <span className="font-semibold text-white">{durationHours} heures</span>
+                  <div className="flex justify-between border-b border-[var(--panel-border)] pb-2">
+                    <span className="text-[var(--text-muted)]">Durée :</span>
+                    <span className="font-semibold text-[var(--text-primary)]">{durationHours} heures</span>
                   </div>
-                  <div className="flex justify-between border-b border-zinc-800 pb-2">
-                    <span className="text-zinc-500">Questions :</span>
-                    <span className="font-semibold text-white">{questions.length}</span>
+                  <div className="flex justify-between border-b border-[var(--panel-border)] pb-2">
+                    <span className="text-[var(--text-muted)]">Questions :</span>
+                    <span className="font-semibold text-[var(--text-primary)]">{questions.length}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Anonymat :</span>
-                    <span className="font-semibold text-white">{anonymity}</span>
+                    <span className="text-[var(--text-muted)]">Anonymat :</span>
+                    <span className="font-semibold text-[var(--text-primary)]">{anonymity}</span>
                   </div>
                 </div>
               </div>
@@ -706,8 +706,8 @@ export default function PollCreateClient() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-white">{nativeMode ? "Réponses du sondage natif" : "Questions & Options du Sondage"}</h3>
-                <p className="text-xs text-zinc-400">
+                <h3 className="text-base font-bold text-[var(--text-primary)]">{nativeMode ? "Réponses du sondage natif" : "Questions & Options du Sondage"}</h3>
+                <p className="text-xs text-[var(--text-muted)]">
                   {nativeMode
                     ? `De 2 à ${NATIVE_MAX_ANSWERS} réponses (55 caractères max chacune, emoji facultatif). La question est le titre saisi dans l'onglet Général.`
                     : "Définissez l'intitulé des questions, le nombre minimal/maximal de choix et personnalisez chaque option."}
@@ -716,7 +716,7 @@ export default function PollCreateClient() {
               {!nativeMode && (
               <button
                 onClick={handleAddQuestion}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-indigo-500"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-semibold text-white hover:bg-emerald-600"
               >
                 <Plus className="h-3.5 w-3.5" />
                 Ajouter une question
@@ -727,19 +727,19 @@ export default function PollCreateClient() {
             {(nativeMode ? questions.slice(0, 1) : questions).map((q, qIndex) => (
               <div
                 key={q.id}
-                className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl"
+                className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6"
               >
                 {!nativeMode && (
                 <div className="flex items-center justify-between gap-4 mb-4">
                   <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500/20 text-xs font-bold text-indigo-400">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/10 text-xs font-bold text-emerald-400">
                       {qIndex + 1}
                     </span>
-                    <h4 className="text-sm font-bold text-white">Question #{qIndex + 1}</h4>
+                    <h4 className="text-sm font-bold text-[var(--text-primary)]">Question #{qIndex + 1}</h4>
                   </div>
                   <button
                     onClick={() => handleRemoveQuestion(q.id)}
-                    className="text-zinc-500 hover:text-rose-400 transition-colors p-1"
+                    className="text-[var(--text-muted)] hover:text-rose-400 transition-colors p-1"
                     title="Supprimer la question"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -750,7 +750,7 @@ export default function PollCreateClient() {
                 {!nativeMode && (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-4">
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
                       Intitulé de la question
                     </label>
                     <input
@@ -763,13 +763,13 @@ export default function PollCreateClient() {
                           )
                         )
                       }
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
+                      className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] focus:border-[var(--input-border-hover)] focus:outline-none"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-xs font-medium text-zinc-300 mb-1">
+                      <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
                         Min Choix
                       </label>
                       <input
@@ -785,11 +785,11 @@ export default function PollCreateClient() {
                             )
                           )
                         }
-                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
+                        className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] focus:border-[var(--input-border-hover)] focus:outline-none"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-zinc-300 mb-1">
+                      <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
                         Max Choix
                       </label>
                       <input
@@ -805,7 +805,7 @@ export default function PollCreateClient() {
                             )
                           )
                         }
-                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
+                        className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] focus:border-[var(--input-border-hover)] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -814,11 +814,11 @@ export default function PollCreateClient() {
 
                 {/* Options List */}
                 <div className="space-y-2 mb-4">
-                  <span className="text-xs font-semibold text-zinc-400">Options disponibles</span>
+                  <span className="text-xs font-semibold text-[var(--text-muted)]">Options disponibles</span>
                   {q.options.map((opt, optIndex) => (
                     <div
                       key={opt.id}
-                      className="flex items-center gap-2 rounded-xl border border-zinc-800/80 bg-black/40 p-2.5"
+                      className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5"
                     >
                       <input
                         type="text"
@@ -837,7 +837,7 @@ export default function PollCreateClient() {
                             )
                           )
                         }
-                        className="w-12 text-center rounded-lg border border-zinc-800 bg-zinc-900 py-1 text-sm text-white focus:outline-none"
+                        className="w-12 text-center rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] py-1 text-sm text-[var(--text-primary)] focus:outline-none"
                       />
 
                       <input
@@ -859,7 +859,7 @@ export default function PollCreateClient() {
                             )
                           )
                         }
-                        className="flex-1 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-white focus:outline-none"
+                        className="flex-1 rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-1 text-sm text-[var(--text-primary)] focus:outline-none"
                       />
 
                       {!nativeMode && (
@@ -881,13 +881,13 @@ export default function PollCreateClient() {
                             )
                           )
                         }
-                        className="flex-1 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-300 focus:outline-none"
+                        className="flex-1 rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-1 text-sm text-[var(--text-muted)] focus:outline-none"
                       />
                       )}
 
                       <button
                         onClick={() => handleRemoveOption(q.id, opt.id)}
-                        className="text-zinc-500 hover:text-rose-400 p-1"
+                        className="text-[var(--text-muted)] hover:text-rose-400 p-1"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
@@ -897,7 +897,7 @@ export default function PollCreateClient() {
 
                 <button
                   onClick={() => handleAddOption(q.id)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-zinc-700 bg-zinc-800/30 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 py-1.5 text-xs text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)]"
                 >
                   <Plus className="h-3 w-3" />
                   Ajouter une option
@@ -910,15 +910,15 @@ export default function PollCreateClient() {
         {/* Tab 3: Eligibility & Role Weights */}
         {activeTab === "eligibility" && (
           <div className="space-y-6">
-            <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl">
-              <h3 className="text-base font-bold text-white mb-2">Conditions d'Accès & Éligibilité</h3>
-              <p className="text-xs text-zinc-400 mb-6">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+              <h3 className="text-base font-bold text-[var(--text-primary)] mb-2">Conditions d'Accès & Éligibilité</h3>
+              <p className="text-xs text-[var(--text-muted)] mb-6">
                 Restreignez l'accès au vote selon les rôles Discord, l'ancienneté du compte ou du membre sur le serveur.
               </p>
 
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
-                  <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                  <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">
                     Ancienneté minimale du compte Discord (jours)
                   </label>
                   <input
@@ -926,13 +926,13 @@ export default function PollCreateClient() {
                     min={0}
                     value={minAccountAgeDays}
                     onChange={(e) => setMinAccountAgeDays(Number(e.target.value))}
-                    className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
+                    className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] focus:border-[var(--input-border-hover)] focus:outline-none"
                   />
-                  <p className="text-[11px] text-zinc-500 mt-1">Évite les raids de comptes fraîchement créés.</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-1">Évite les raids de comptes fraîchement créés.</p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                  <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">
                     Ancienneté minimale sur le serveur (jours)
                   </label>
                   <input
@@ -940,43 +940,43 @@ export default function PollCreateClient() {
                     min={0}
                     value={minGuildMembershipDays}
                     onChange={(e) => setMinGuildMembershipDays(Number(e.target.value))}
-                    className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
+                    className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] focus:border-[var(--input-border-hover)] focus:outline-none"
                   />
-                  <p className="text-[11px] text-zinc-500 mt-1">Exige que l'utilisateur soit membre depuis au moins X jours.</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-1">Exige que l'utilisateur soit membre depuis au moins X jours.</p>
                 </div>
               </div>
             </div>
 
             {/* Role Weights Multiplier */}
-            <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-base font-bold text-white">Pondération des Voix par Rôle</h3>
+                <h3 className="text-base font-bold text-[var(--text-primary)]">Pondération des Voix par Rôle</h3>
                 <button
                   type="button"
                   onClick={() => fetchRolesList(true)}
                   disabled={rolesLoading}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-indigo-400 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-emerald-400 transition-colors disabled:opacity-50"
                   title="Rafraîchir les rôles du serveur"
                 >
-                  <RefreshCw className={cn("h-3 w-3", rolesLoading && "animate-spin text-indigo-400")} />
+                  <RefreshCw className={cn("h-3 w-3", rolesLoading && "animate-spin text-emerald-400")} />
                   <span>Rafraîchir les rôles</span>
                 </button>
               </div>
-              <p className="text-xs text-zinc-400 mb-4">
+              <p className="text-xs text-[var(--text-muted)] mb-4">
                 Attribuez un coefficient multiplicateur aux votes exprimés par certains rôles (ex: Boosters 2x, Vétérans 2x, Staff 3x).
               </p>
 
               <div className="space-y-3">
                 {roleWeights.map((rw, index) => (
-                  <div key={rw.roleId} className="flex items-center justify-between rounded-xl border border-zinc-800 bg-black/40 p-3">
+                  <div key={rw.roleId} className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
                     <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-indigo-400" />
-                      <span className="text-xs font-bold text-white">{rw.roleName}</span>
-                      <span className="text-[10px] text-zinc-500">({rw.roleId})</span>
+                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                      <span className="text-xs font-bold text-[var(--text-primary)]">{rw.roleName}</span>
+                      <span className="text-xs text-[var(--text-muted)]">({rw.roleId})</span>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <span className="text-xs text-zinc-400">Poids :</span>
+                      <span className="text-xs text-[var(--text-muted)]">Poids :</span>
                       <input
                         type="number"
                         min={1}
@@ -988,13 +988,13 @@ export default function PollCreateClient() {
                             prev.map((item, i) => (i === index ? { ...item, weightMultiplier: val } : item))
                           );
                         }}
-                        className="w-16 rounded-lg border border-zinc-800 bg-zinc-900 px-2 py-1 text-xs text-center text-indigo-400 font-bold focus:outline-none"
+                        className="w-16 rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-2 py-1 text-sm text-center text-emerald-400 font-bold focus:outline-none"
                       />
-                      <span className="text-xs font-semibold text-indigo-400">x</span>
+                      <span className="text-xs font-semibold text-emerald-400">x</span>
                       <button
                         type="button"
                         onClick={() => setRoleWeights((prev) => prev.filter((_, i) => i !== index))}
-                        className="text-zinc-500 hover:text-rose-400 p-1"
+                        className="text-[var(--text-muted)] hover:text-rose-400 p-1"
                         title="Retirer ce rôle"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -1005,7 +1005,7 @@ export default function PollCreateClient() {
               </div>
 
               {roles.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-zinc-800 flex items-center gap-2">
+                <div className="mt-4 pt-4 border-t border-[var(--panel-border)] flex items-center gap-2">
                   <Select
                     className="flex-1"
                     value=""
@@ -1034,11 +1034,11 @@ export default function PollCreateClient() {
         {/* Tab 4: Quorum & Security */}
         {activeTab === "quorum" && (
           <div className="space-y-6">
-            <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-base font-bold text-white">Quorum & Seuil de Décision</h3>
-                  <p className="text-xs text-zinc-400">
+                  <h3 className="text-base font-bold text-[var(--text-primary)]">Quorum & Seuil de Décision</h3>
+                  <p className="text-xs text-[var(--text-muted)]">
                     Définissez les conditions indispensables pour valider officiellement le résultat d'un vote.
                   </p>
                 </div>
@@ -1049,14 +1049,14 @@ export default function PollCreateClient() {
                     onChange={(e) => setQuorumEnabled(e.target.checked)}
                     className="peer sr-only"
                   />
-                  <div className="h-5 w-9 rounded-full bg-zinc-800 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-indigo-600 peer-checked:after:translate-x-full peer-checked:after:border-white" />
+                  <div className="h-5 w-9 rounded-full bg-[var(--surface-raised)]/50 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-emerald-500 peer-checked:after:translate-x-full peer-checked:after:border-white" />
                 </label>
               </div>
 
               {quorumEnabled && (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-4 pt-4 border-t border-zinc-800">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-4 pt-4 border-t border-[var(--panel-border)]">
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
                       Nombre minimum de participants requis
                     </label>
                     <input
@@ -1064,12 +1064,12 @@ export default function PollCreateClient() {
                       min={1}
                       value={minParticipantsCount}
                       onChange={(e) => setMinParticipantsCount(Number(e.target.value))}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
+                      className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] focus:border-[var(--input-border-hover)] focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
                       Majorité requise d'approbation (%)
                     </label>
                     <input
@@ -1078,7 +1078,7 @@ export default function PollCreateClient() {
                       max={100}
                       value={approvalThreshold}
                       onChange={(e) => setApprovalThreshold(Number(e.target.value))}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
+                      className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] focus:border-[var(--input-border-hover)] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1086,9 +1086,9 @@ export default function PollCreateClient() {
             </div>
 
             {/* Anonymity Settings */}
-            <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl">
-              <h3 className="text-base font-bold text-white mb-2">Confidentialité & Anonymat</h3>
-              <p className="text-xs text-zinc-400 mb-4">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+              <h3 className="text-base font-bold text-[var(--text-primary)] mb-2">Confidentialité & Anonymat</h3>
+              <p className="text-xs text-[var(--text-muted)] mb-4">
                 Contrôlez la visibilité des votes des membres et l'accès aux résultats en direct.
               </p>
 
@@ -1105,12 +1105,12 @@ export default function PollCreateClient() {
                     className={cn(
                       "rounded-xl border p-4 text-left transition-all",
                       anonymity === item.id
-                        ? "border-indigo-500 bg-indigo-500/10 text-white"
-                        : "border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:text-white"
+                        ? "border-emerald-500 bg-emerald-500/10 text-[var(--text-primary)]"
+                        : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
-                    <span className="text-xs font-bold text-white">{item.label}</span>
-                    <p className="text-[11px] text-zinc-400 mt-1">{item.desc}</p>
+                    <span className="text-xs font-bold text-[var(--text-primary)]">{item.label}</span>
+                    <p className="text-xs text-[var(--text-muted)] mt-1">{item.desc}</p>
                   </button>
                 ))}
               </div>
@@ -1121,11 +1121,11 @@ export default function PollCreateClient() {
         {/* Tab 5: Discord Panel & Preview */}
         {activeTab === "panel" && (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl">
-              <h3 className="text-base font-bold text-white mb-4">Personnalisation du Panneau Discord</h3>
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+              <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">Personnalisation du Panneau Discord</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-zinc-300 mb-1">
+                  <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
                     Couleur de l'Embed
                   </label>
                   <div className="flex items-center gap-3">
@@ -1133,30 +1133,30 @@ export default function PollCreateClient() {
                       type="color"
                       value={panelColor}
                       onChange={(e) => setPanelColor(e.target.value)}
-                      className="h-9 w-12 cursor-pointer rounded-lg border border-zinc-800 bg-zinc-900 p-1"
+                      className="h-9 w-12 cursor-pointer rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] p-1"
                     />
                     <input
                       type="text"
                       value={panelColor}
                       onChange={(e) => setPanelColor(e.target.value)}
-                      className="w-32 rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:outline-none"
+                      className="w-32 rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-medium text-zinc-300">
+                    <label className="text-xs font-medium text-[var(--text-muted)]">
                       Salon Discord par défaut
                     </label>
                     <button
                       type="button"
                       onClick={() => fetchChannelsList(true)}
                       disabled={channelsLoading}
-                      className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-400 hover:text-indigo-400 transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-[var(--text-muted)] hover:text-emerald-400 transition-colors disabled:opacity-50"
                       title="Rafraîchir la liste des salons"
                     >
-                      <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-indigo-400")} />
+                      <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-emerald-400")} />
                       <span>Rafraîchir</span>
                     </button>
                   </div>
@@ -1174,13 +1174,13 @@ export default function PollCreateClient() {
 
             {/* Live Discord Embed Mockup */}
             <div>
-              <span className="text-xs font-semibold text-zinc-400 mb-2 block">Aperçu Discord Direct</span>
-              <div className="rounded-2xl border border-zinc-800 bg-[#2b2d31] p-4 text-[#dbdee1] shadow-2xl">
+              <span className="text-xs font-semibold text-[var(--text-muted)] mb-2 block">Aperçu Discord Direct</span>
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[#2b2d31] p-4 text-[#dbdee1]">
                 <div
                   className="rounded-lg border-l-4 bg-[#1e1f22] p-4"
                   style={{ borderLeftColor: panelColor }}
                 >
-                  <h4 className="text-sm font-bold text-white mb-1">
+                  <h4 className="text-sm font-bold text-[var(--text-primary)] mb-1">
                     📊 {title || "Titre du Sondage"}
                   </h4>
                   <p className="text-xs text-[#b5bac1] mb-3 leading-relaxed">
@@ -1188,8 +1188,8 @@ export default function PollCreateClient() {
                   </p>
 
                   {questions[0] && (
-                    <div className="space-y-1.5 border-t border-zinc-800/80 pt-2 mb-3">
-                      <span className="text-xs font-semibold text-white">
+                    <div className="space-y-1.5 border-t border-[var(--panel-border)] pt-2 mb-3">
+                      <span className="text-xs font-semibold text-[var(--text-primary)]">
                         ❓ {questions[0].title}
                       </span>
                       <div className="space-y-1">
@@ -1202,7 +1202,7 @@ export default function PollCreateClient() {
                     </div>
                   )}
 
-                  <div className="text-[10px] text-zinc-500 border-t border-zinc-800/80 pt-2">
+                  <div className="text-xs text-[var(--text-muted)] border-t border-[var(--panel-border)] pt-2">
                     ETHONE Polls & Voting • Fin dans {durationHours}h
                   </div>
                 </div>

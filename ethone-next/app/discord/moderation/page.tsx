@@ -170,16 +170,16 @@ const ACTION_CONFIG: Record<
   },
   SOFTBAN: {
     label: "Softban",
-    badge: "text-purple-400",
-    border: "border-purple-500/30",
-    bg: "bg-purple-500/10",
+    badge: "text-emerald-400",
+    border: "border-emerald-500/30",
+    bg: "bg-emerald-500/10",
     icon: Trash2,
   },
   QUARANTINE: {
     label: "Quarantaine",
-    badge: "text-indigo-400",
-    border: "border-indigo-500/30",
-    bg: "bg-indigo-500/10",
+    badge: "text-emerald-400",
+    border: "border-emerald-500/30",
+    bg: "bg-emerald-500/10",
     icon: Lock,
   },
 };
@@ -542,34 +542,34 @@ export default function ModerationCenterPage() {
   };
 
   return (
-    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-zinc-100 font-sans">
+    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)] font-sans">
       {/* HEADER FIXE */}
-      <header className="shrink-0 border-b border-[var(--panel-border)] bg-black/40 backdrop-blur-xl px-4 sm:px-6 py-3.5 z-20">
+      <header className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 sm:px-6 py-3.5 z-20">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           {/* Titre & Navigation Retour */}
           <div className="flex items-center gap-3">
             <Link
               href={selectedGuild ? `/discord?guildId=${selectedGuild.id}` : "/discord"}
-              className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 transition-all active:scale-95"
               title="Retour au dashboard Discord"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
 
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.04] border border-[var(--panel-border)] text-zinc-300 shadow-inner">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] ">
                 <Shield className="h-5 w-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-base font-semibold tracking-tight text-white">
+                  <h1 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">
                     Moderation Center 3.0
                   </h1>
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-300 border border-orange-500/30">
+                  <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-300 border border-orange-500/30">
                     Staff Console
                   </span>
                 </div>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Console d'investigation, recherche rapide, dossiers disciplinaires & sanctions coordonnées.
                 </p>
               </div>
@@ -601,7 +601,7 @@ export default function ModerationCenterPage() {
             <button
               onClick={fetchOverview}
               disabled={isLoading}
-              className="flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 text-xs text-zinc-300 hover:text-white hover:bg-white/10 transition-all active:scale-95 disabled:opacity-50"
+              className="flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 transition-all active:scale-95 disabled:opacity-50"
               title="Rafraîchir les dossiers et sanctions"
             >
               <RefreshCw className={cn("h-3.5 w-3.5", isLoading && "animate-spin text-orange-400")} />
@@ -635,13 +635,13 @@ export default function ModerationCenterPage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-150 cursor-pointer",
+                  "flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all duration-150 cursor-pointer",
                   isCurrent
-                    ? "bg-white/10 text-white shadow-sm border border-[var(--panel-border)]"
-                    : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
+                    ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm border border-[var(--panel-border)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
                 )}
               >
-                <Icon className={cn("h-3.5 w-3.5", isCurrent ? "text-orange-400" : "text-zinc-400")} />
+                <Icon className={cn("h-3.5 w-3.5", isCurrent ? "text-orange-400" : "text-[var(--text-muted)]")} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -671,7 +671,7 @@ export default function ModerationCenterPage() {
                 href={BOT_INVITE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-semibold shrink-0 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-semibold shrink-0 transition-colors"
               >
                 <Bot className="h-3.5 w-3.5" />
                 Inviter le bot
@@ -681,57 +681,57 @@ export default function ModerationCenterPage() {
 
           {/* 5 OVERVIEW KPI STATS CARDS */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-md">
-              <span className="text-xs text-zinc-400 font-semibold block">Active cases</span>
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 ">
+              <span className="text-xs text-[var(--text-muted)] font-semibold block">Active cases</span>
               <p className="text-2xl font-extrabold text-orange-400 mt-1 font-mono">{stats.activeSanctionsCount}</p>
-              <span className="text-[10px] text-zinc-500">Sanctions actives en cours</span>
+              <span className="text-xs text-[var(--text-muted)]">Sanctions actives en cours</span>
             </div>
 
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-md">
-              <span className="text-xs text-zinc-400 font-semibold block">Warnings today</span>
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 ">
+              <span className="text-xs text-[var(--text-muted)] font-semibold block">Warnings today</span>
               <p className="text-2xl font-extrabold text-amber-400 mt-1 font-mono">{stats.counts.warnings}</p>
-              <span className="text-[10px] text-zinc-500">Avertissements émis</span>
+              <span className="text-xs text-[var(--text-muted)]">Avertissements émis</span>
             </div>
 
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-md">
-              <span className="text-xs text-zinc-400 font-semibold block">Timeouts today</span>
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 ">
+              <span className="text-xs text-[var(--text-muted)] font-semibold block">Timeouts today</span>
               <p className="text-2xl font-extrabold text-orange-400 mt-1 font-mono">{stats.counts.timeouts}</p>
-              <span className="text-[10px] text-zinc-500">Membres temporairement exclus</span>
+              <span className="text-xs text-[var(--text-muted)]">Membres temporairement exclus</span>
             </div>
 
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-md">
-              <span className="text-xs text-zinc-400 font-semibold block">Bans today</span>
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 ">
+              <span className="text-xs text-[var(--text-muted)] font-semibold block">Bans today</span>
               <p className="text-2xl font-extrabold text-red-400 mt-1 font-mono">{stats.counts.bans}</p>
-              <span className="text-[10px] text-zinc-500">Bannissements enregistrés</span>
+              <span className="text-xs text-[var(--text-muted)]">Bannissements enregistrés</span>
             </div>
 
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-md col-span-2 sm:col-span-1">
-              <span className="text-xs text-zinc-400 font-semibold block">Reports pending</span>
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 col-span-2 sm:col-span-1">
+              <span className="text-xs text-[var(--text-muted)] font-semibold block">Reports pending</span>
               <p className="text-2xl font-extrabold text-blue-400 mt-1 font-mono">{(stats as any).pendingReports || 0}</p>
-              <span className="text-[10px] text-zinc-500">Signalements en attente</span>
+              <span className="text-xs text-[var(--text-muted)]">Signalements en attente</span>
             </div>
           </div>
 
           {/* 🔎 FAST MEMBER SEARCH BAR */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-slate-900/60 p-4 backdrop-blur-md space-y-3">
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Search className="w-4 h-4 text-orange-400" />
-                <span className="text-xs font-bold uppercase tracking-wider text-white">Recherche Membre (Staff Console)</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Recherche Membre (Staff Console)</span>
               </div>
-              <span className="text-[11px] text-zinc-400 font-mono hidden sm:inline">
+              <span className="text-xs text-[var(--text-muted)] font-mono hidden sm:inline">
                 Username, Display name, User ID, Mention &lt;@ID&gt;, Case #
               </span>
             </div>
 
             <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
               <input
                 type="text"
                 value={memberSearchQuery}
                 onChange={(e) => setMemberSearchQuery(e.target.value)}
                 placeholder="Rechercher immédiatement un membre (@pseudo, 123456789, #1842)..."
-                className="h-10 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/50 pl-10 pr-4 text-xs text-white placeholder-zinc-500 outline-none focus:border-orange-500 transition-colors"
+                className="h-10 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 pl-10 pr-4 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-orange-500 transition-colors"
               />
               {isSearchingMember && (
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
@@ -746,22 +746,22 @@ export default function ModerationCenterPage() {
                 {memberSearchResults.map((m) => (
                   <div
                     key={m.userId}
-                    className="p-3.5 rounded-xl bg-slate-800/60 border border-[var(--panel-border)] flex items-center justify-between gap-3 hover:border-[var(--input-border-hover)] transition-all"
+                    className="p-3.5 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] flex items-center justify-between gap-3 hover:border-[var(--input-border-hover)] transition-all"
                   >
                     <div className="flex items-center gap-3">
                       {m.avatarUrl ? (
                         <img src={m.avatarUrl} alt="Avatar" className="w-10 h-10 rounded-xl object-cover" />
                       ) : (
-                        <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xs font-bold text-white">
+                        <div className="w-10 h-10 rounded-xl bg-[var(--text-primary)]/10 flex items-center justify-center text-xs font-bold text-[var(--text-primary)]">
                           {m.username.substring(0, 2).toUpperCase()}
                         </div>
                       )}
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-white">@{m.userTag || m.username}</span>
+                          <span className="text-xs font-bold text-[var(--text-primary)]">@{m.userTag || m.username}</span>
                           <span
                             className={cn(
-                              "text-[10px] font-bold px-1.5 py-0.5 rounded border",
+                              "text-xs font-bold px-1.5 py-0.5 rounded border",
                               m.riskLevel === "DANGEROUS"
                                 ? "bg-red-500/20 text-red-400 border-red-500/30"
                                 : m.riskLevel === "SUSPICIOUS"
@@ -772,7 +772,7 @@ export default function ModerationCenterPage() {
                             RISK: {m.riskLevel || "LOW"}
                           </span>
                         </div>
-                        <div className="text-[11px] text-zinc-400 flex items-center gap-2">
+                        <div className="text-xs text-[var(--text-muted)] flex items-center gap-2">
                           <span>Cases: {m.casesCount}</span>
                           <span>•</span>
                           <span>Warns: {m.warningsCount}</span>
@@ -802,15 +802,15 @@ export default function ModerationCenterPage() {
           {activeTab === "cases" && (
             <div className="space-y-4 animate-in fade-in duration-200">
               {/* BARRE DE RECHERCHE & FILTRES */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5 backdrop-blur-md flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-muted)]" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Recherche par #Case, nom, ID utilisateur, modérateur, motif..."
-                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 pl-9 pr-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-orange-500"
+                    className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 pl-9 pr-3 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-orange-500"
                   />
                 </div>
 
@@ -866,12 +866,12 @@ export default function ModerationCenterPage() {
               </div>
 
               {/* TABLEAU DES CASES */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] backdrop-blur-md overflow-hidden">
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
                 {cases.length === 0 ? (
-                  <div className="py-16 text-center text-zinc-500">
-                    <FileCheck className="h-8 w-8 text-zinc-600 mx-auto mb-2" />
-                    <p className="text-xs font-semibold text-zinc-300">Aucun dossier de modération trouvé</p>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">
+                  <div className="py-16 text-center text-[var(--text-muted)]">
+                    <FileCheck className="h-8 w-8 text-[var(--text-muted)] mx-auto mb-2" />
+                    <p className="text-xs font-semibold text-[var(--text-muted)]">Aucun dossier de modération trouvé</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5">
                       Aucune sanction ne correspond à vos critères de recherche.
                     </p>
                   </div>
@@ -879,7 +879,7 @@ export default function ModerationCenterPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
-                        <tr className="border-b border-[var(--panel-border)] bg-white/[0.02] text-[11px] font-semibold text-zinc-400">
+                        <tr className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-xs font-semibold text-[var(--text-muted)]">
                           <th className="py-3 px-4">Case #</th>
                           <th className="py-3 px-4">Action</th>
                           <th className="py-3 px-4">Utilisateur</th>
@@ -890,7 +890,7 @@ export default function ModerationCenterPage() {
                           <th className="py-3 px-4 text-right">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-white/[0.04]">
+                      <tbody className="divide-y divide-[var(--panel-border)]">
                         {cases.map((c) => {
                           const conf = ACTION_CONFIG[c.action] || ACTION_CONFIG.WARN;
                           const Icon = conf.icon;
@@ -900,10 +900,10 @@ export default function ModerationCenterPage() {
                           return (
                             <tr
                               key={c.id}
-                              className="hover:bg-white/[0.02] transition-colors group"
+                              className="hover:bg-[var(--surface-raised)]/70 transition-colors group"
                             >
                               {/* Case # */}
-                              <td className="py-3 px-4 font-mono font-bold text-white">
+                              <td className="py-3 px-4 font-mono font-bold text-[var(--text-primary)]">
                                 #{c.caseNumber}
                               </td>
 
@@ -911,7 +911,7 @@ export default function ModerationCenterPage() {
                               <td className="py-3 px-4">
                                 <span
                                   className={cn(
-                                    "inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] font-bold uppercase",
+                                    "inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-xs font-bold uppercase",
                                     conf.bg,
                                     conf.badge,
                                     conf.border
@@ -926,47 +926,47 @@ export default function ModerationCenterPage() {
                               <td className="py-3 px-4">
                                 <button
                                   onClick={() => handleInspectUser(c.userId)}
-                                  className="font-semibold text-zinc-200 hover:text-white hover:underline flex items-center gap-1.5"
+                                  className="font-semibold text-[var(--text-primary)] hover:text-[var(--text-primary)] hover:underline flex items-center gap-1.5"
                                 >
                                   <span>{c.userTag}</span>
                                 </button>
-                                <span className="text-[10px] font-mono text-zinc-500">
+                                <span className="text-xs font-mono text-[var(--text-muted)]">
                                   {c.userId}
                                 </span>
                               </td>
 
                               {/* Motif */}
                               <td className="py-3 px-4 max-w-xs">
-                                <p className="text-zinc-300 line-clamp-1">{c.reason}</p>
-                                <span className="text-[10px] text-zinc-500">
+                                <p className="text-[var(--text-muted)] line-clamp-1">{c.reason}</p>
+                                <span className="text-xs text-[var(--text-muted)]">
                                   {c.standardCategory || "Other"} • {new Date(c.createdAt).toLocaleDateString()}
                                 </span>
                               </td>
 
                               {/* Modérateur & Source */}
                               <td className="py-3 px-4">
-                                <span className="font-medium text-zinc-300">{c.moderatorTag}</span>
-                                <div className="text-[10px] text-zinc-500 flex items-center gap-1">
+                                <span className="font-medium text-[var(--text-muted)]">{c.moderatorTag}</span>
+                                <div className="text-xs text-[var(--text-muted)] flex items-center gap-1">
                                   <span>Source :</span>
-                                  <span className="font-mono text-zinc-400">{c.source}</span>
+                                  <span className="font-mono text-[var(--text-muted)]">{c.source}</span>
                                 </div>
                               </td>
 
                               {/* Durée & Expiration */}
-                              <td className="py-3 px-4 text-zinc-400">
+                              <td className="py-3 px-4 text-[var(--text-muted)]">
                                 {c.durationSeconds ? (
                                   <div>
-                                    <span className="font-mono text-zinc-200">
+                                    <span className="font-mono text-[var(--text-primary)]">
                                       {Math.round(c.durationSeconds / 60)} min
                                     </span>
                                     {c.expiresAt && (
-                                      <p className="text-[10px] text-zinc-500">
+                                      <p className="text-xs text-[var(--text-muted)]">
                                         Exp: {new Date(c.expiresAt).toLocaleTimeString()}
                                       </p>
                                     )}
                                   </div>
                                 ) : (
-                                  <span className="text-zinc-500 italic">Permanent</span>
+                                  <span className="text-[var(--text-muted)] italic">Permanent</span>
                                 )}
                               </td>
 
@@ -974,9 +974,9 @@ export default function ModerationCenterPage() {
                               <td className="py-3 px-4">
                                 <span
                                   className={cn(
-                                    "text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border",
+                                    "text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border",
                                     isRevoked
-                                      ? "bg-zinc-800 text-zinc-400 border-zinc-700"
+                                      ? "bg-[var(--surface-raised)] text-[var(--text-muted)] border-[var(--panel-border)]"
                                       : isExpired
                                       ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
                                       : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
@@ -991,7 +991,7 @@ export default function ModerationCenterPage() {
                                 <div className="flex items-center justify-end gap-1.5">
                                   <Link
                                     href={`/discord/moderation/cases/${c.caseNumber}?guildId=${c.guildId}`}
-                                    className="flex h-7 items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2 text-[11px] text-zinc-300 hover:text-white hover:bg-white/10 transition-all"
+                                    className="flex h-7 items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 transition-all"
                                     title="Voir dossier complet"
                                   >
                                     <Eye className="h-3 w-3" />
@@ -1001,7 +1001,7 @@ export default function ModerationCenterPage() {
                                   {c.status === "ACTIVE" && (
                                     <button
                                       onClick={() => setRevertingCase(c)}
-                                      className="flex h-7 items-center gap-1 rounded-lg border border-red-500/20 bg-red-500/10 px-2 text-[11px] text-red-300 hover:bg-red-500/20 transition-all"
+                                      className="flex h-7 items-center gap-1 rounded-xl border border-red-500/20 bg-red-500/10 px-2 text-xs text-red-300 hover:bg-red-500/20 transition-all"
                                       title="Révoquer / Pardonner cette sanction"
                                     >
                                       <RotateCcw className="h-3 w-3" />
@@ -1029,20 +1029,20 @@ export default function ModerationCenterPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 rounded-2xl bg-orange-500/10 border border-orange-500/20 space-y-1">
                   <span className="text-xs text-orange-300 font-semibold block">Dossiers Assignés</span>
-                  <p className="text-2xl font-bold text-white font-mono">
+                  <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">
                     {cases.filter((c: any) => c.assignedTo?.id === profile?.user?.id).length}
                   </p>
-                  <span className="text-[10px] text-orange-300/80">Dossiers sous votre responsabilité</span>
+                  <span className="text-xs text-orange-300/80">Dossiers sous votre responsabilité</span>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 space-y-1">
                   <span className="text-xs text-blue-300 font-semibold block">Signalements en Attente</span>
-                  <p className="text-2xl font-bold text-white font-mono">
+                  <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">
                     {(stats as any).pendingReports || 0}
                   </p>
                   <Link
                     href={selectedGuild ? `/discord/moderation/reports?guildId=${selectedGuild.id}` : "/discord/moderation/reports"}
-                    className="text-[10px] text-blue-300 hover:underline flex items-center gap-1 font-semibold mt-1"
+                    className="text-xs text-blue-300 hover:underline flex items-center gap-1 font-semibold mt-1"
                   >
                     <span>Ouvrir la file des signalements</span>
                     <ChevronRight className="w-3 h-3" />
@@ -1051,40 +1051,40 @@ export default function ModerationCenterPage() {
 
                 <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-1">
                   <span className="text-xs text-amber-300 font-semibold block">Membres Actuellement Exclus</span>
-                  <p className="text-2xl font-bold text-white font-mono">
+                  <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">
                     {cases.filter((c) => c.action === "TIMEOUT" && c.status === "ACTIVE").length}
                   </p>
-                  <span className="text-[10px] text-amber-300/80">Exclusions actives temporaires</span>
+                  <span className="text-xs text-amber-300/80">Exclusions actives temporaires</span>
                 </div>
               </div>
 
               {/* LISTE DES DOSSIERS RÉCENTS NÉCESSITANT UNE ATTENTION */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] flex items-center gap-2">
                     <ShieldAlert className="h-4 w-4 text-orange-400" />
                     <span>Dossiers Récents Nécessitant une Attention Modérateur</span>
                   </h3>
                 </div>
 
-                <div className="divide-y divide-white/5">
+                <div className="divide-y divide-[var(--panel-border)]">
                   {cases.slice(0, 6).map((c) => (
                     <div key={c.id} className="py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-white font-mono">#{c.caseNumber}</span>
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/10 text-white">
+                          <span className="text-xs font-bold text-[var(--text-primary)] font-mono">#{c.caseNumber}</span>
+                          <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-[var(--text-primary)]/10 text-[var(--text-primary)]">
                             {c.action}
                           </span>
-                          <span className="text-xs font-semibold text-zinc-300">@{c.userTag}</span>
+                          <span className="text-xs font-semibold text-[var(--text-muted)]">@{c.userTag}</span>
                         </div>
-                        <p className="text-xs text-zinc-400">{c.reason}</p>
+                        <p className="text-xs text-[var(--text-muted)]">{c.reason}</p>
                       </div>
 
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/discord/moderation/users/${c.userId}?guildId=${c.guildId}`}
-                          className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-white transition-colors"
+                          className="px-3 py-1.5 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--text-primary)]/10 text-xs font-semibold text-[var(--text-primary)] transition-colors"
                         >
                           Profil Membre
                         </Link>
@@ -1107,27 +1107,27 @@ export default function ModerationCenterPage() {
           {/* ======================================================== */}
           {activeTab === "timeline" && (
             <div className="space-y-4 animate-in fade-in duration-200">
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2 mb-4">
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 ">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] flex items-center gap-2 mb-4">
                   <Clock className="h-4 w-4 text-orange-400" />
                   Timeline Chronologique des Sanctions
                 </h2>
 
-                <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/10">
+                <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-[var(--text-primary)]/10">
                   {cases.map((c) => {
                     const conf = ACTION_CONFIG[c.action] || ACTION_CONFIG.WARN;
                     return (
                       <div key={c.id} className="relative group">
                         <div className="absolute -left-[27px] top-1.5 h-3.5 w-3.5 rounded-full border-2 border-[var(--bg-main)] bg-orange-500 group-hover:scale-125 transition-transform" />
-                        <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.01] p-3.5 hover:border-[var(--input-border-hover)] transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 hover:border-[var(--input-border-hover)] transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                           <div className="space-y-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-xs font-bold text-white font-mono">
+                              <span className="text-xs font-bold text-[var(--text-primary)] font-mono">
                                 #{c.caseNumber}
                               </span>
                               <span
                                 className={cn(
-                                  "text-[9px] uppercase font-bold px-1.5 py-0.2 rounded border",
+                                  "text-xs uppercase font-bold px-1.5 py-0.2 rounded border",
                                   conf.bg,
                                   conf.badge,
                                   conf.border
@@ -1135,18 +1135,18 @@ export default function ModerationCenterPage() {
                               >
                                 {c.action}
                               </span>
-                              <span className="text-xs font-semibold text-zinc-200">
+                              <span className="text-xs font-semibold text-[var(--text-primary)]">
                                 {c.userTag}
                               </span>
-                              <span className="text-[10px] text-zinc-500">
+                              <span className="text-xs text-[var(--text-muted)]">
                                 par {c.moderatorTag} ({c.source})
                               </span>
                             </div>
-                            <p className="text-xs text-zinc-300">{c.reason}</p>
+                            <p className="text-xs text-[var(--text-muted)]">{c.reason}</p>
                           </div>
 
                           <div className="flex items-center gap-2 self-end sm:self-center">
-                            <span className="text-[10px] font-mono text-zinc-500">
+                            <span className="text-xs font-mono text-[var(--text-muted)]">
                               {new Date(c.createdAt).toLocaleTimeString()} • {new Date(c.createdAt).toLocaleDateString()}
                             </span>
                             <Link
@@ -1173,17 +1173,17 @@ export default function ModerationCenterPage() {
             <div className="space-y-6 animate-in fade-in duration-200">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Répartition Manuelle vs Automatisée */}
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-3">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
                     Origine des Sanctions
                   </h3>
                   <div className="space-y-2 pt-2">
                     <div>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="text-zinc-400">Modération Manuelle (Staff)</span>
-                        <span className="font-bold text-white">{stats.sources.manual}</span>
+                        <span className="text-[var(--text-muted)]">Modération Manuelle (Staff)</span>
+                        <span className="font-bold text-[var(--text-primary)]">{stats.sources.manual}</span>
                       </div>
-                      <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
+                      <div className="h-2 w-full rounded-full bg-[var(--surface-raised)]/40 overflow-hidden">
                         <div
                           className="h-full bg-orange-500 rounded-full"
                           style={{
@@ -1199,10 +1199,10 @@ export default function ModerationCenterPage() {
 
                     <div>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="text-zinc-400">Automatisée (AutoMod / Anti-Raid)</span>
-                        <span className="font-bold text-white">{stats.sources.automated}</span>
+                        <span className="text-[var(--text-muted)]">Automatisée (AutoMod / Anti-Raid)</span>
+                        <span className="font-bold text-[var(--text-primary)]">{stats.sources.automated}</span>
                       </div>
-                      <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
+                      <div className="h-2 w-full rounded-full bg-[var(--surface-raised)]/40 overflow-hidden">
                         <div
                           className="h-full bg-blue-500 rounded-full"
                           style={{
@@ -1219,18 +1219,18 @@ export default function ModerationCenterPage() {
                 </div>
 
                 {/* Ventilation par type de sanction */}
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-3">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
                     Ventilation des Sanctions
                   </h3>
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     {Object.entries(stats.counts).map(([type, count]) => (
                       <div
                         key={type}
-                        className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-2.5 flex items-center justify-between"
+                        className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 flex items-center justify-between"
                       >
-                        <span className="text-xs text-zinc-400 capitalize">{type}</span>
-                        <span className="text-sm font-bold text-white font-mono">{count}</span>
+                        <span className="text-xs text-[var(--text-muted)] capitalize">{type}</span>
+                        <span className="text-sm font-bold text-[var(--text-primary)] font-mono">{count}</span>
                       </div>
                     ))}
                   </div>
@@ -1248,10 +1248,10 @@ export default function ModerationCenterPage() {
                 <div className="flex items-start gap-3">
                   <ShieldCheck className="h-5 w-5 text-blue-400 mt-0.5" />
                   <div>
-                    <h3 className="text-xs font-bold text-white">
+                    <h3 className="text-xs font-bold text-[var(--text-primary)]">
                       Protection Contre les Abus Staff (Staff Abuse Guard)
                     </h3>
-                    <p className="text-[11px] text-zinc-300 mt-0.5">
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5">
                       Surveillance continue de la cadence des sanctions par modérateur. En cas de vagues suspectes (ex: plus de 10 bans en 60s), le système déclenche une alerte de sécurité critique et prévient les administrateurs.
                     </p>
                   </div>
@@ -1265,11 +1265,11 @@ export default function ModerationCenterPage() {
           {/* ======================================================== */}
           {activeTab === "settings" && (
             <div className="space-y-4 animate-in fade-in duration-200">
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
                   Politique de Conservation & Purge (Data Retention)
                 </h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Définissez la durée de conservation des dossiers de modération. Les cas plus anciens sont archivés selon la politique choisie.
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
@@ -1284,10 +1284,10 @@ export default function ModerationCenterPage() {
                       type="button"
                       onClick={() => saveRetention(p.value)}
                       aria-pressed={retentionDays === p.value}
-                      className={`h-10 cursor-pointer rounded-[var(--inset-radius)] border text-xs font-semibold transition-all ${
+                      className={`h-10 cursor-pointer rounded-xl border text-xs font-semibold transition-all ${
                         retentionDays === p.value
                           ? "border-orange-500 bg-orange-500/10 text-orange-300"
-                          : "border-[var(--panel-border)] bg-white/[0.02] hover:border-orange-500 hover:text-orange-400"
+                          : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-orange-500 hover:text-orange-400"
                       }`}
                     >
                       {p.label}
@@ -1296,11 +1296,11 @@ export default function ModerationCenterPage() {
                 </div>
               </div>
 
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-white">Sanction automatique après plusieurs avertissements</h3>
-                    <p className="mt-1 text-xs text-zinc-400">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Sanction automatique après plusieurs avertissements</h3>
+                    <p className="mt-1 text-xs text-[var(--text-muted)]">
                       Quand un membre atteint le nombre d&apos;avertissements actifs choisi, le bot applique lui-même une sanction. Désactivez-la si vous voulez décider à la main.
                     </p>
                   </div>
@@ -1311,12 +1311,12 @@ export default function ModerationCenterPage() {
                     aria-label="Sanction automatique après avertissements"
                     disabled={!escalation}
                     onClick={() => escalation && saveEscalation({ enabled: !escalation.enabled })}
-                    className={`relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors disabled:opacity-40 ${escalation?.enabled ? "bg-emerald-500" : "bg-white/15"}`}
+                    className={`relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors disabled:opacity-40 ${escalation?.enabled ? "bg-emerald-500" : "bg-[var(--text-primary)]/15"}`}
                   >
                     <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${escalation?.enabled ? "translate-x-5" : "translate-x-0"}`} />
                   </button>
                 </div>
-                {!escalation && <p className="text-xs text-zinc-500">Réglage indisponible : bot injoignable ou serveur non sélectionné.</p>}
+                {!escalation && <p className="text-xs text-[var(--text-muted)]">Réglage indisponible : bot injoignable ou serveur non sélectionné.</p>}
                 {escalation && escalation.enabled && (
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     <Select
@@ -1364,16 +1364,16 @@ export default function ModerationCenterPage() {
       {/* MODAL: NOUVELLE SANCTION MANUELLE                        */}
       {/* ======================================================== */}
       {isNewSanctionOpen && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-lg rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 animate-in fade-in">
+          <div className="w-full max-w-lg rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <div className="flex items-center gap-2">
                 <Plus className="h-4 w-4 text-orange-400" />
-                <h3 className="text-sm font-bold text-white">Appliquer une Sanction Disciplinaire</h3>
+                <h3 className="text-sm font-bold text-[var(--text-primary)]">Appliquer une Sanction Disciplinaire</h3>
               </div>
               <button
                 onClick={() => setIsNewSanctionOpen(false)}
-                className="text-zinc-400 hover:text-white"
+                className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -1381,14 +1381,14 @@ export default function ModerationCenterPage() {
 
             <form onSubmit={handleCreateSanction} className="space-y-4 text-xs">
               <div className="space-y-1.5">
-                <label className="font-medium text-zinc-300">Identifiant Utilisateur (User ID)</label>
+                <label className="font-medium text-[var(--text-muted)]">Identifiant Utilisateur (User ID)</label>
                 <input
                   type="text"
                   required
                   value={sanctionTargetId}
                   onChange={(e) => setSanctionTargetId(e.target.value)}
                   placeholder="Ex: 123456789012345678"
-                  className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white font-mono outline-none focus:border-orange-500"
+                  className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] font-mono outline-none focus:border-orange-500"
                 />
               </div>
 
@@ -1434,13 +1434,13 @@ export default function ModerationCenterPage() {
               )}
 
               <div className="space-y-1.5">
-                <label className="font-medium text-zinc-300">Motif détaillé</label>
+                <label className="font-medium text-[var(--text-muted)]">Motif détaillé</label>
                 <textarea
                   rows={3}
                   value={sanctionReason}
                   onChange={(e) => setSanctionReason(e.target.value)}
                   placeholder="Précisez la raison de la sanction..."
-                  className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 text-xs text-white outline-none focus:border-orange-500 resize-none"
+                  className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs text-[var(--text-primary)] outline-none focus:border-orange-500 resize-none"
                 />
               </div>
 
@@ -1448,7 +1448,7 @@ export default function ModerationCenterPage() {
                 <button
                   type="button"
                   onClick={() => setIsNewSanctionOpen(false)}
-                  className="h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 text-zinc-400 hover:text-white"
+                  className="h-8 rounded-xl border border-[var(--panel-border)] px-4 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 >
                   Annuler
                 </button>
@@ -1469,35 +1469,35 @@ export default function ModerationCenterPage() {
       {/* MODAL: RÉVOCATION / PARDON                                */}
       {/* ======================================================== */}
       {revertingCase && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 animate-in fade-in">
+          <div className="w-full max-w-md rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <div className="flex items-center gap-2">
                 <RotateCcw className="h-4 w-4 text-orange-400" />
-                <h3 className="text-sm font-bold text-white">
+                <h3 className="text-sm font-bold text-[var(--text-primary)]">
                   Révoquer la Case #{revertingCase.caseNumber}
                 </h3>
               </div>
               <button
                 onClick={() => setRevertingCase(null)}
-                className="text-zinc-400 hover:text-white"
+                className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[var(--text-muted)]">
               Cette action lèvera la sanction sur Discord et marquera le dossier comme révoqué dans l'audit log.
             </p>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-300">Motif de levée / pardon</label>
+              <label className="text-xs font-medium text-[var(--text-muted)]">Motif de levée / pardon</label>
               <textarea
                 rows={2}
                 value={revertReason}
                 onChange={(e) => setRevertReason(e.target.value)}
                 placeholder="Ex: Excuses acceptées, erreur de manipulation..."
-                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-2.5 text-xs text-white outline-none focus:border-orange-500 resize-none"
+                className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-orange-500 resize-none"
               />
             </div>
 
@@ -1505,7 +1505,7 @@ export default function ModerationCenterPage() {
               <button
                 type="button"
                 onClick={() => setRevertingCase(null)}
-                className="h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 text-xs font-medium text-zinc-400 hover:text-white"
+                className="h-8 rounded-xl border border-[var(--panel-border)] px-4 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
                 Annuler
               </button>
@@ -1526,14 +1526,14 @@ export default function ModerationCenterPage() {
       {/* DRAWER: PROFIL MODÉRATION DU MEMBRE                      */}
       {/* ======================================================== */}
       {inspectedUserId && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-5">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 animate-in fade-in">
+          <div className="w-full max-w-xl rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 space-y-5">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <div className="flex items-center gap-2.5">
                 <Users className="h-5 w-5 text-orange-400" />
                 <div>
-                  <h3 className="text-sm font-bold text-white">Dossier Modération Membre</h3>
-                  <p className="text-[11px] text-zinc-400 font-mono">{inspectedUserId}</p>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Dossier Modération Membre</h3>
+                  <p className="text-xs text-[var(--text-muted)] font-mono">{inspectedUserId}</p>
                 </div>
               </div>
               <button
@@ -1541,14 +1541,14 @@ export default function ModerationCenterPage() {
                   setInspectedUserId(null);
                   setUserProfile(null);
                 }}
-                className="text-zinc-400 hover:text-white"
+                className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             {isLoadingProfile ? (
-              <div className="py-12 text-center text-zinc-500">
+              <div className="py-12 text-center text-[var(--text-muted)]">
                 <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-orange-400" />
                 <p className="text-xs">Chargement du profil...</p>
               </div>
@@ -1556,20 +1556,20 @@ export default function ModerationCenterPage() {
               <div className="space-y-4">
                 {/* Statistiques profil */}
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 text-center">
-                    <span className="text-[10px] text-zinc-500">Total Sanctions</span>
-                    <p className="text-xl font-bold text-white mt-1 font-mono">
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-center">
+                    <span className="text-xs text-[var(--text-muted)]">Total Sanctions</span>
+                    <p className="text-xl font-bold text-[var(--text-primary)] mt-1 font-mono">
                       {userProfile.stats.totalCases}
                     </p>
                   </div>
-                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 text-center">
-                    <span className="text-[10px] text-zinc-500">Sanctions Actives</span>
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-center">
+                    <span className="text-xs text-[var(--text-muted)]">Sanctions Actives</span>
                     <p className="text-xl font-bold text-orange-400 mt-1 font-mono">
                       {userProfile.stats.activeSanctionsCount}
                     </p>
                   </div>
-                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 text-center">
-                    <span className="text-[10px] text-zinc-500">Score de Risque</span>
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-center">
+                    <span className="text-xs text-[var(--text-muted)]">Score de Risque</span>
                     <p className="text-xl font-bold text-red-400 mt-1 font-mono">
                       {userProfile.calculatedRiskScore}/100
                     </p>
@@ -1578,24 +1578,24 @@ export default function ModerationCenterPage() {
 
                 {/* Historique timeline */}
                 <div className="space-y-2">
-                  <span className="text-xs font-semibold text-zinc-300">Historique des Dossiers</span>
+                  <span className="text-xs font-semibold text-[var(--text-muted)]">Historique des Dossiers</span>
                   {userProfile.timeline.length === 0 ? (
-                    <p className="text-[11px] text-zinc-500 italic">Aucune sanction au dossier.</p>
+                    <p className="text-xs text-[var(--text-muted)] italic">Aucune sanction au dossier.</p>
                   ) : (
                     <div className="space-y-1.5 max-h-48 overflow-y-auto">
                       {userProfile.timeline.map((c) => (
                         <div
                           key={c.id}
-                          className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-2.5 text-xs flex items-center justify-between"
+                          className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs flex items-center justify-between"
                         >
                           <div>
-                            <span className="font-bold text-white font-mono mr-2">#{c.caseNumber}</span>
-                            <span className="text-zinc-300 font-medium">{c.action}</span>
-                            <p className="text-[10px] text-zinc-500">
+                            <span className="font-bold text-[var(--text-primary)] font-mono mr-2">#{c.caseNumber}</span>
+                            <span className="text-[var(--text-muted)] font-medium">{c.action}</span>
+                            <p className="text-xs text-[var(--text-muted)]">
                               {c.reason} • {new Date(c.createdAt).toLocaleDateString()}
                             </p>
                           </div>
-                          <span className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-white/10 text-zinc-300 font-mono">
+                          <span className="text-xs uppercase font-bold px-1.5 py-0.5 rounded bg-[var(--text-primary)]/10 text-[var(--text-muted)] font-mono">
                             {c.status}
                           </span>
                         </div>
@@ -1611,7 +1611,7 @@ export default function ModerationCenterPage() {
                       setInspectedUserId(null);
                       setUserProfile(null);
                     }}
-                    className="h-8 rounded-xl bg-white/10 px-4 text-xs font-medium text-white hover:bg-white/20"
+                    className="h-8 rounded-xl bg-[var(--text-primary)]/10 px-4 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--text-primary)]/15"
                   >
                     Fermer
                   </button>

@@ -480,15 +480,15 @@ export default function GiveawaysCenterClient() {
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
                 href={`/discord${selectedGuild?.id ? `?guildId=${selectedGuild.id}` : ""}`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
+                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer shadow-sm"
                 title="Retour au hub Discord"
               >
-                <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+                <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                 <span>Retour Discord</span>
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-rose-500/15 text-rose-400 rounded-[var(--inset-radius)] border border-rose-500/30">
+              <div className="p-2.5 bg-rose-500/15 text-rose-400 rounded-xl border border-rose-500/30">
                 <Gift className="w-6 h-6" />
               </div>
               <div>
@@ -502,7 +502,7 @@ export default function GiveawaysCenterClient() {
           <div className="flex items-center gap-2.5 flex-wrap">
             <button
               onClick={() => setActiveTab("create")}
-              className="px-4 py-2 rounded-[var(--inset-radius)] bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors shadow-sm"
+              className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors shadow-sm"
             >
               <Plus className="w-4 h-4" />
               Créer un concours
@@ -510,7 +510,7 @@ export default function GiveawaysCenterClient() {
             <button
               onClick={load}
               disabled={loading}
-              className="px-3.5 py-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface)] text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
+              className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface)] text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
               Actualiser
@@ -530,14 +530,14 @@ export default function GiveawaysCenterClient() {
         )}
 
         {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-300 shrink-0 mt-0.5">
                 <Bot className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
-                <p className="mt-0.5 text-zinc-300">
+                <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-0.5 text-[var(--text-muted)]">
                   Invitez le bot sur « {selectedGuild.name} » pour gérer vos concours et tirages au sort.
                 </p>
               </div>
@@ -546,7 +546,7 @@ export default function GiveawaysCenterClient() {
               href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-colors shrink-0"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-600 transition-colors shrink-0"
             >
               Inviter le bot
             </a>
@@ -566,19 +566,19 @@ export default function GiveawaysCenterClient() {
 
         {/* KPI tiles */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] p-4 space-y-1">
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-4 space-y-1">
             <span className="text-xs text-[var(--text-muted)] font-medium">Concours actifs</span>
             <p className="text-2xl font-bold text-rose-400">{overview?.activeCount ?? "—"}</p>
           </div>
-          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] p-4 space-y-1">
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-4 space-y-1">
             <span className="text-xs text-[var(--text-muted)] font-medium">Concours terminés</span>
             <p className="text-2xl font-bold">{overview?.endedCount ?? "—"}</p>
           </div>
-          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] p-4 space-y-1">
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-4 space-y-1">
             <span className="text-xs text-[var(--text-muted)] font-medium">Participations</span>
             <p className="text-2xl font-bold text-amber-400">{overview?.totalParticipants ?? "—"}</p>
           </div>
-          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] p-4 space-y-1">
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-4 space-y-1">
             <span className="text-xs text-[var(--text-muted)] font-medium">Gagnants tirés</span>
             <p className="text-2xl font-bold text-emerald-400">{overview?.totalWinners ?? "—"}</p>
           </div>
@@ -598,7 +598,7 @@ export default function GiveawaysCenterClient() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`px-4 py-2.5 text-xs font-semibold rounded-t-[var(--inset-radius)] transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                   isActive
                     ? "bg-[var(--surface-raised)] border-b-2 border-rose-500 text-[var(--text-primary)]"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -622,13 +622,13 @@ export default function GiveawaysCenterClient() {
                   placeholder="Rechercher par lot ou description..."
                   value={activeSearch}
                   onChange={(e) => setActiveSearch(e.target.value)}
-                  className="w-full h-9 pl-9 pr-3 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] text-xs focus:outline-none focus:border-rose-500"
+                  className="w-full h-9 pl-9 pr-3 rounded-xl bg-[var(--surface)] border border-[var(--input-border)] text-sm focus:outline-none focus:border-rose-500"
                 />
               </div>
             )}
 
             {activeGiveaways.length === 0 && !loading && (
-              <div className="py-16 text-center rounded-[var(--panel-radius)] border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/20 p-8">
+              <div className="py-16 text-center rounded-xl border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/20 p-8">
                 <Gift className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3 opacity-60" />
                 <p className="text-sm font-semibold text-[var(--text-muted)]">Aucun concours en cours</p>
                 <p className="text-xs text-[var(--text-muted)] mt-1">
@@ -636,7 +636,7 @@ export default function GiveawaysCenterClient() {
                 </p>
                 <button
                   onClick={() => setActiveTab("create")}
-                  className="mt-4 px-4 py-2 rounded-[var(--inset-radius)] bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold inline-flex items-center gap-2 transition-colors cursor-pointer"
+                  className="mt-4 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold inline-flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                   Créer un concours
@@ -653,10 +653,10 @@ export default function GiveawaysCenterClient() {
                 return (
                   <div
                     key={gw.id}
-                    className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-rose-500/40 rounded-[var(--panel-radius)] p-5 space-y-4 transition-all flex flex-col justify-between overflow-hidden relative"
+                    className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-rose-500/40 rounded-xl p-5 space-y-4 transition-all flex flex-col justify-between overflow-hidden relative"
                   >
                     {gw.bannerUrl && (
-                      <div className="relative h-28 -mx-5 -mt-5 mb-1 overflow-hidden border-b border-[var(--panel-border)] bg-neutral-900">
+                      <div className="relative h-28 -mx-5 -mt-5 mb-1 overflow-hidden border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={gw.bannerUrl}
@@ -669,12 +669,12 @@ export default function GiveawaysCenterClient() {
 
                     <div className="space-y-3">
                       <div className="flex items-start justify-between gap-2">
-                        <span className="px-2.5 py-1 rounded-[var(--inset-radius)] text-[10px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center gap-1.5">
+                        <span className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center gap-1.5">
                           <Clock className="w-3 h-3" />
                           {relativeEndsAt(gw.endsAt)}
                         </span>
                         {channelName && (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono text-[var(--text-muted)] bg-[var(--surface)] border border-[var(--panel-border)]">
+                          <span className="px-2 py-0.5 rounded text-xs font-mono text-[var(--text-muted)] bg-[var(--surface)] border border-[var(--panel-border)]">
                             #{channelName}
                           </span>
                         )}
@@ -691,7 +691,7 @@ export default function GiveawaysCenterClient() {
 
                       <div className="pt-2 border-t border-[var(--panel-border)] grid grid-cols-2 gap-2 text-xs">
                         <div>
-                          <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block">
+                          <span className="text-xs text-[var(--text-muted)] uppercase tracking-wider block">
                             Gagnants
                           </span>
                           <span className="font-semibold flex items-center gap-1">
@@ -700,7 +700,7 @@ export default function GiveawaysCenterClient() {
                           </span>
                         </div>
                         <div>
-                          <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block">
+                          <span className="text-xs text-[var(--text-muted)] uppercase tracking-wider block">
                             Participants
                           </span>
                           <button
@@ -711,7 +711,7 @@ export default function GiveawaysCenterClient() {
                           >
                             <Users className="w-3.5 h-3.5" />
                             {gw.participants.length}
-                            <span className="text-[10px] text-[var(--text-muted)] font-sans underline ml-0.5">
+                            <span className="text-xs text-[var(--text-muted)] font-sans underline ml-0.5">
                               (voir)
                             </span>
                           </button>
@@ -719,10 +719,10 @@ export default function GiveawaysCenterClient() {
                       </div>
 
                       {requiredRoleNames.length > 0 && (
-                        <div className="p-2 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] text-[11px] flex items-center gap-2">
-                          <ShieldCheck className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                        <div className="p-2 rounded-xl bg-[var(--surface)] border border-[var(--panel-border)] text-xs flex items-center gap-2">
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                           <span>
-                            Requis : <strong className="text-indigo-300">{requiredRoleNames.join(", ")}</strong>
+                            Requis : <strong className="text-emerald-300">{requiredRoleNames.join(", ")}</strong>
                           </span>
                         </div>
                       )}
@@ -732,7 +732,7 @@ export default function GiveawaysCenterClient() {
                       <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => handleEndNow(gw.id)}
-                          className="px-3 py-1.5 rounded-[var(--inset-radius)] bg-[var(--surface)] hover:bg-[var(--surface-raised)] text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer border border-[var(--panel-border)]"
+                          className="px-3 py-1.5 rounded-xl bg-[var(--surface)] hover:bg-[var(--surface-raised)] text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer border border-[var(--panel-border)]"
                           title="Clôturer immédiatement et tirer les gagnants"
                         >
                           <Trophy className="w-3 h-3 text-amber-400" />
@@ -740,10 +740,10 @@ export default function GiveawaysCenterClient() {
                         </button>
                         <button
                           onClick={() => setExtendTarget(gw)}
-                          className="px-3 py-1.5 rounded-[var(--inset-radius)] bg-[var(--surface)] hover:bg-[var(--surface-raised)] text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer border border-[var(--panel-border)]"
+                          className="px-3 py-1.5 rounded-xl bg-[var(--surface)] hover:bg-[var(--surface-raised)] text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer border border-[var(--panel-border)]"
                           title="Prolonger la durée du concours"
                         >
-                          <CalendarPlus className="w-3 h-3 text-indigo-400" />
+                          <CalendarPlus className="w-3 h-3 text-emerald-400" />
                           Prolonger
                         </button>
                       </div>
@@ -751,14 +751,14 @@ export default function GiveawaysCenterClient() {
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => openParticipantsModal(gw)}
-                          className="p-1.5 rounded-[var(--inset-radius)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)] transition-colors cursor-pointer"
+                          className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)] transition-colors cursor-pointer"
                           title="Consulter la liste des participants"
                         >
                           <Users className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleCancel(gw.id, gw.prize)}
-                          className="p-1.5 rounded-[var(--inset-radius)] text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                          className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
                           title="Annuler le concours sans tirage"
                         >
                           <Ban className="h-4 w-4" />
@@ -777,7 +777,7 @@ export default function GiveawaysCenterClient() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <form
               onSubmit={handleCreate}
-              className="lg:col-span-7 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] p-6 space-y-5"
+              className="lg:col-span-7 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-6 space-y-5"
             >
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-rose-400" />
@@ -792,7 +792,7 @@ export default function GiveawaysCenterClient() {
                   placeholder="ex: Discord Nitro 1 mois, Clé Steam Cyberpunk, 5000 Crédits..."
                   value={formPrize}
                   onChange={(e) => setFormPrize(e.target.value)}
-                  className="w-full h-10 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3.5 text-xs focus:outline-none focus:border-rose-500"
+                  className="w-full h-10 rounded-xl bg-[var(--surface)] border border-[var(--input-border)] px-3.5 text-sm focus:outline-none focus:border-rose-500"
                 />
               </div>
 
@@ -803,7 +803,7 @@ export default function GiveawaysCenterClient() {
                   placeholder="Détails du lot, consignes particulières, lien vers votre chaîne ou partenaire..."
                   value={formDesc}
                   onChange={(e) => setFormDesc(e.target.value)}
-                  className="w-full rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] p-3 text-xs focus:outline-none focus:border-rose-500"
+                  className="w-full rounded-xl bg-[var(--surface)] border border-[var(--input-border)] p-3 text-sm focus:outline-none focus:border-rose-500"
                 />
               </div>
 
@@ -817,9 +817,9 @@ export default function GiveawaysCenterClient() {
                   placeholder="https://example.com/banner.png"
                   value={formBannerUrl}
                   onChange={(e) => setFormBannerUrl(e.target.value)}
-                  className="w-full h-10 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3.5 text-xs focus:outline-none focus:border-rose-500"
+                  className="w-full h-10 rounded-xl bg-[var(--surface)] border border-[var(--input-border)] px-3.5 text-sm focus:outline-none focus:border-rose-500"
                 />
-                <p className="text-[11px] text-[var(--text-muted)] mt-1">
+                <p className="text-xs text-[var(--text-muted)] mt-1">
                   L'image sera intégrée sous forme de bannière dans l'embed officiel Discord.
                 </p>
               </div>
@@ -842,7 +842,7 @@ export default function GiveawaysCenterClient() {
                         key={cnt}
                         type="button"
                         onClick={() => setFormWinners(cnt)}
-                        className={`flex-1 h-10 rounded-[var(--inset-radius)] text-xs font-semibold transition-all cursor-pointer ${
+                        className={`flex-1 h-10 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                           formWinners === cnt
                             ? "bg-rose-500 text-white"
                             : "bg-[var(--surface)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -864,12 +864,12 @@ export default function GiveawaysCenterClient() {
                     max={365}
                     value={formDurationValue}
                     onChange={(e) => setFormDurationValue(Math.max(1, Number(e.target.value)))}
-                    className="w-24 h-10 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs text-center focus:outline-none focus:border-rose-500 font-mono"
+                    className="w-24 h-10 rounded-xl bg-[var(--surface)] border border-[var(--input-border)] px-3 text-sm text-center focus:outline-none focus:border-rose-500 font-mono"
                   />
                   <button
                     type="button"
                     onClick={() => setFormDurationUnit("h")}
-                    className={`flex-1 h-10 rounded-[var(--inset-radius)] text-xs font-semibold cursor-pointer transition-colors ${
+                    className={`flex-1 h-10 rounded-xl text-xs font-semibold cursor-pointer transition-colors ${
                       formDurationUnit === "h"
                         ? "bg-[var(--surface-raised)] border border-rose-500/50 text-rose-300"
                         : "bg-[var(--surface)] text-[var(--text-muted)] border border-[var(--panel-border)]"
@@ -880,7 +880,7 @@ export default function GiveawaysCenterClient() {
                   <button
                     type="button"
                     onClick={() => setFormDurationUnit("d")}
-                    className={`flex-1 h-10 rounded-[var(--inset-radius)] text-xs font-semibold cursor-pointer transition-colors ${
+                    className={`flex-1 h-10 rounded-xl text-xs font-semibold cursor-pointer transition-colors ${
                       formDurationUnit === "d"
                         ? "bg-[var(--surface-raised)] border border-rose-500/50 text-rose-300"
                         : "bg-[var(--surface)] text-[var(--text-muted)] border border-[var(--panel-border)]"
@@ -893,12 +893,12 @@ export default function GiveawaysCenterClient() {
 
               <div className="pt-2 border-t border-[var(--panel-border)] space-y-3">
                 <h4 className="text-xs font-bold flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-indigo-400" />
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
                   Conditions d'éligibilité
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] text-[var(--text-muted)] mb-1">Rôle Discord requis</label>
+                    <label className="block text-xs text-[var(--text-muted)] mb-1">Rôle Discord requis</label>
                     <RolePicker
                       value={formRequiredRoleId}
                       onChange={(id) => setFormRequiredRoleId(id)}
@@ -911,7 +911,7 @@ export default function GiveawaysCenterClient() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-[var(--text-muted)] mb-1">
+                    <label className="block text-xs text-[var(--text-muted)] mb-1">
                       Ancienneté min. du compte (jours)
                     </label>
                     <input
@@ -919,21 +919,21 @@ export default function GiveawaysCenterClient() {
                       min={0}
                       value={formMinAge}
                       onChange={(e) => setFormMinAge(Math.max(0, Number(e.target.value)))}
-                      className="w-full h-9 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs font-mono"
+                      className="w-full h-9 rounded-xl bg-[var(--surface)] border border-[var(--input-border)] px-3 text-sm font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-[var(--text-muted)] mb-1">Niveau XP minimum</label>
+                    <label className="block text-xs text-[var(--text-muted)] mb-1">Niveau XP minimum</label>
                     <input
                       type="number"
                       min={0}
                       value={formMinLevel}
                       onChange={(e) => setFormMinLevel(Math.max(0, Number(e.target.value)))}
-                      className="w-full h-9 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs font-mono"
+                      className="w-full h-9 rounded-xl bg-[var(--surface)] border border-[var(--input-border)] px-3 text-sm font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-[var(--text-muted)] mb-1">
+                    <label className="block text-xs text-[var(--text-muted)] mb-1">
                       Rôle automatique attribué au(x) gagnant(s)
                     </label>
                     <RolePicker
@@ -962,7 +962,7 @@ export default function GiveawaysCenterClient() {
                 </label>
                 {formRequireClaim && (
                   <div>
-                    <label className="block text-[11px] text-[var(--text-muted)] mb-1">
+                    <label className="block text-xs text-[var(--text-muted)] mb-1">
                       Délai de réclamation imparti (heures)
                     </label>
                     <input
@@ -971,7 +971,7 @@ export default function GiveawaysCenterClient() {
                       max={72}
                       value={formClaimTimeoutHours}
                       onChange={(e) => setFormClaimTimeoutHours(Math.max(1, Number(e.target.value)))}
-                      className="w-32 h-9 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs font-mono"
+                      className="w-32 h-9 rounded-xl bg-[var(--surface)] border border-[var(--input-border)] px-3 text-sm font-mono"
                     />
                   </div>
                 )}
@@ -980,7 +980,7 @@ export default function GiveawaysCenterClient() {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full h-11 rounded-[var(--inset-radius)] bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50 shadow-md shadow-rose-600/20"
+                className="w-full h-11 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
               >
                 <Send className="w-4 h-4" />
                 {saving ? "Publication sur Discord..." : "Publier le concours sur Discord"}
@@ -990,19 +990,19 @@ export default function GiveawaysCenterClient() {
             <div className="lg:col-span-5 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[var(--text-muted)] flex items-center gap-1.5">
-                  <Eye className="w-4 h-4 text-indigo-400" />
+                  <Eye className="w-4 h-4 text-emerald-400" />
                   Aperçu temps réel Discord
                 </span>
               </div>
-              <div className="bg-[#2B2D31] rounded-[var(--panel-radius)] p-4 space-y-3 border border-[var(--panel-border)] font-sans">
+              <div className="bg-[#2B2D31] rounded-xl p-4 space-y-3 border border-[var(--panel-border)] font-sans">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 flex items-center justify-center text-white font-bold text-xs">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 flex items-center justify-center text-[var(--text-primary)] font-bold text-xs">
                     ET
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-bold text-white">Etho</span>
-                      <span className="bg-[#5865F2] text-white text-[9px] font-bold px-1 rounded">BOT</span>
+                      <span className="text-xs font-bold text-[var(--text-primary)]">Etho</span>
+                      <span className="bg-[#5865F2] text-white text-xs font-bold px-1 rounded">BOT</span>
                     </div>
                   </div>
                 </div>
@@ -1011,11 +1011,11 @@ export default function GiveawaysCenterClient() {
                     <Gift className="w-4 h-4" />
                     <span>CONCOURS</span>
                   </div>
-                  <h4 className="text-sm font-bold text-white">{formPrize || "Titre du lot à gagner"}</h4>
-                  <p className="text-xs text-neutral-300 leading-relaxed whitespace-pre-line">
+                  <h4 className="text-sm font-bold text-[var(--text-primary)]">{formPrize || "Titre du lot à gagner"}</h4>
+                  <p className="text-xs text-[var(--text-muted)] leading-relaxed whitespace-pre-line">
                     {formDesc || "Cliquez sur le bouton ci-dessous pour participer au tirage au sort !"}
                   </p>
-                  <div className="pt-2 border-t border-neutral-800 text-[11px] space-y-1 text-neutral-300">
+                  <div className="pt-2 border-t border-[var(--panel-border)] text-xs space-y-1 text-[var(--text-muted)]">
                     <p>
                       🏆 <strong>Gagnants :</strong> {formWinners}
                     </p>
@@ -1044,7 +1044,7 @@ export default function GiveawaysCenterClient() {
                       <img
                         src={formBannerUrl.trim()}
                         alt="Aperçu bannière"
-                        className="max-h-44 w-full object-cover rounded-md border border-neutral-700"
+                        className="max-h-44 w-full object-cover rounded-md border border-[var(--panel-border)]"
                         onError={(e) => (e.currentTarget.style.display = "none")}
                       />
                     </div>
@@ -1065,7 +1065,7 @@ export default function GiveawaysCenterClient() {
         {activeTab === "history" && (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-1 bg-[var(--surface-raised)]/40 p-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)]">
+              <div className="flex items-center gap-1 bg-[var(--surface-raised)]/40 p-1 rounded-xl border border-[var(--panel-border)]">
                 {[
                   { id: "all", label: `Tous (${giveaways.filter((g) => g.status !== "active").length})` },
                   { id: "ended", label: `Terminés (${giveaways.filter((g) => g.status === "ended").length})` },
@@ -1074,7 +1074,7 @@ export default function GiveawaysCenterClient() {
                   <button
                     key={f.id}
                     onClick={() => setHistoryFilter(f.id as typeof historyFilter)}
-                    className={`px-3 py-1.5 rounded-[var(--inset-radius)] text-xs font-semibold transition-colors cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                       historyFilter === f.id
                         ? "bg-[var(--surface)] text-[var(--text-primary)] shadow-sm"
                         : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -1092,12 +1092,12 @@ export default function GiveawaysCenterClient() {
                   placeholder="Filtrer par lot ou créateur..."
                   value={historySearch}
                   onChange={(e) => setHistorySearch(e.target.value)}
-                  className="w-full h-9 pl-9 pr-3 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] text-xs focus:outline-none focus:border-rose-500"
+                  className="w-full h-9 pl-9 pr-3 rounded-xl bg-[var(--surface)] border border-[var(--input-border)] text-sm focus:outline-none focus:border-rose-500"
                 />
               </div>
             </div>
 
-            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] overflow-hidden">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl overflow-hidden">
               {pastGiveaways.length === 0 && (
                 <div className="py-12 text-center text-sm text-[var(--text-muted)]">
                   Aucun concours dans l'historique correspondant à ce filtre.
@@ -1115,7 +1115,7 @@ export default function GiveawaysCenterClient() {
                       <div className="space-y-1.5">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            className={`px-2 py-0.5 rounded text-xs font-bold ${
                               isEnded
                                 ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                                 : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
@@ -1133,13 +1133,13 @@ export default function GiveawaysCenterClient() {
 
                       <div className="flex items-center gap-3 flex-wrap">
                         {isEnded && gw.winnerIds.length > 0 && (
-                          <div className="flex items-center gap-2 bg-[var(--surface)] px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)]">
+                          <div className="flex items-center gap-2 bg-[var(--surface)] px-3 py-1.5 rounded-xl border border-[var(--panel-border)]">
                             <Crown className="w-4 h-4 text-amber-400" />
                             <span className="text-xs font-semibold text-amber-300">
                               {winnerNames(gw).join(", ")}
                             </span>
                             {gw.requireClaim && (
-                              <span className="text-[10px] text-[var(--text-muted)] ml-1">
+                              <span className="text-xs text-[var(--text-muted)] ml-1">
                                 ({gw.claimedWinnerIds?.length || 0}/{gw.winnerIds.length} réclamé)
                               </span>
                             )}
@@ -1154,7 +1154,7 @@ export default function GiveawaysCenterClient() {
 
                         <button
                           onClick={() => openParticipantsModal(gw)}
-                          className="px-3 py-1.5 rounded-[var(--inset-radius)] bg-[var(--surface)] hover:bg-[var(--surface-raised)] text-[var(--text-primary)] border border-[var(--panel-border)] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                          className="px-3 py-1.5 rounded-xl bg-[var(--surface)] hover:bg-[var(--surface-raised)] text-[var(--text-primary)] border border-[var(--panel-border)] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                         >
                           <Users className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                           Participants
@@ -1166,7 +1166,7 @@ export default function GiveawaysCenterClient() {
                               setRerollTarget(gw);
                               setRerollCount(1);
                             }}
-                            className="px-3 py-1.5 rounded-[var(--inset-radius)] bg-rose-600/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                            className="px-3 py-1.5 rounded-xl bg-rose-600/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                           >
                             <RefreshCw className="w-3.5 h-3.5" />
                             Reroll
@@ -1184,7 +1184,7 @@ export default function GiveawaysCenterClient() {
         {/* TAB: Fairness */}
         {activeTab === "fairness" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] p-6 space-y-4">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-6 space-y-4">
               <div className="flex items-center gap-2">
                 <Dice5 className="w-5 h-5 text-emerald-400" />
                 <h3 className="text-base font-bold">Tirage au sort cryptographique</h3>
@@ -1197,32 +1197,32 @@ export default function GiveawaysCenterClient() {
                 </code>
                 ), sans remise (un même membre ne peut pas être tiré deux fois pour le même concours).
               </p>
-              <div className="p-3 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] text-xs space-y-1.5">
+              <div className="p-3 rounded-xl bg-[var(--surface)] border border-[var(--panel-border)] text-xs space-y-1.5">
                 <div className="flex items-center gap-2 text-emerald-400 font-semibold">
                   <CheckCircle2 className="w-4 h-4 shrink-0" />
                   <span>Pas de seed manipulable</span>
                 </div>
-                <p className="text-[11px] text-[var(--text-muted)]">
+                <p className="text-xs text-[var(--text-muted)]">
                   Le tirage est instantané et basé sur l'entropie du système d'exploitation hôte.
                 </p>
               </div>
             </div>
 
-            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] p-6 space-y-4">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-6 space-y-4">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-indigo-400" />
+                <ShieldCheck className="w-5 h-5 text-emerald-400" />
                 <h3 className="text-base font-bold">Vérification d'éligibilité en direct</h3>
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
                 Au moment précis du tirage, chaque candidat est re-vérifié en direct sur Discord : rôle requis toujours
                 possédé, aucun rôle banni/exclu, ancienneté de compte respectée et niveau XP suffisant.
               </p>
-              <div className="p-3 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] text-xs space-y-1.5">
-                <div className="flex items-center gap-2 text-indigo-400 font-semibold">
+              <div className="p-3 rounded-xl bg-[var(--surface)] border border-[var(--panel-border)] text-xs space-y-1.5">
+                <div className="flex items-center gap-2 text-emerald-400 font-semibold">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                   <span>Modération et exclusion manuelle</span>
                 </div>
-                <p className="text-[11px] text-[var(--text-muted)]">
+                <p className="text-xs text-[var(--text-muted)]">
                   Les administrateurs peuvent à tout moment disqualifier un participant frauduleux directement depuis
                   l'onglet Participants du dashboard.
                 </p>
@@ -1233,10 +1233,10 @@ export default function GiveawaysCenterClient() {
 
         {/* Modal: Prolongation / Extend */}
         {extendTarget && (
-          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-[var(--panel-radius)] max-w-md w-full p-6 space-y-4 shadow-xl">
+          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 flex items-center justify-center p-4">
+            <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-xl max-w-md w-full p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
                   <CalendarPlus className="w-4 h-4" />
                   <span>Prolonger le concours</span>
                 </div>
@@ -1255,7 +1255,7 @@ export default function GiveawaysCenterClient() {
 
               <form onSubmit={handleExtendSubmit} className="space-y-4 pt-1">
                 <div>
-                  <label className="block text-[11px] text-[var(--text-muted)] mb-1.5 font-semibold">
+                  <label className="block text-xs text-[var(--text-muted)] mb-1.5 font-semibold">
                     Raccourcis rapides
                   </label>
                   <div className="grid grid-cols-4 gap-2">
@@ -1272,9 +1272,9 @@ export default function GiveawaysCenterClient() {
                           setExtendValue(preset.v);
                           setExtendUnit(preset.u as "h" | "d");
                         }}
-                        className={`h-8 rounded-[var(--inset-radius)] text-xs font-semibold transition-all cursor-pointer ${
+                        className={`h-8 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                           extendValue === preset.v && extendUnit === preset.u
-                            ? "bg-indigo-600 text-white"
+                            ? "bg-emerald-500 text-white"
                             : "bg-[var(--surface)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                         }`}
                       >
@@ -1285,7 +1285,7 @@ export default function GiveawaysCenterClient() {
                 </div>
 
                 <div>
-                  <label className="block text-[11px] text-[var(--text-muted)] mb-1 font-semibold">
+                  <label className="block text-xs text-[var(--text-muted)] mb-1 font-semibold">
                     Durée personnalisée
                   </label>
                   <div className="flex gap-2">
@@ -1295,14 +1295,14 @@ export default function GiveawaysCenterClient() {
                       max={365}
                       value={extendValue}
                       onChange={(e) => setExtendValue(Math.max(1, Number(e.target.value)))}
-                      className="w-24 h-9 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs text-center font-mono"
+                      className="w-24 h-9 rounded-xl bg-[var(--surface)] border border-[var(--input-border)] px-3 text-sm text-center font-mono"
                     />
                     <button
                       type="button"
                       onClick={() => setExtendUnit("h")}
-                      className={`flex-1 h-9 rounded-[var(--inset-radius)] text-xs font-semibold cursor-pointer ${
+                      className={`flex-1 h-9 rounded-xl text-xs font-semibold cursor-pointer ${
                         extendUnit === "h"
-                          ? "bg-[var(--surface-raised)] border border-indigo-500/50 text-indigo-300"
+                          ? "bg-[var(--surface-raised)] border border-emerald-500/50 text-emerald-300"
                           : "bg-[var(--surface)] text-[var(--text-muted)] border border-[var(--panel-border)]"
                       }`}
                     >
@@ -1311,9 +1311,9 @@ export default function GiveawaysCenterClient() {
                     <button
                       type="button"
                       onClick={() => setExtendUnit("d")}
-                      className={`flex-1 h-9 rounded-[var(--inset-radius)] text-xs font-semibold cursor-pointer ${
+                      className={`flex-1 h-9 rounded-xl text-xs font-semibold cursor-pointer ${
                         extendUnit === "d"
-                          ? "bg-[var(--surface-raised)] border border-indigo-500/50 text-indigo-300"
+                          ? "bg-[var(--surface-raised)] border border-emerald-500/50 text-emerald-300"
                           : "bg-[var(--surface)] text-[var(--text-muted)] border border-[var(--panel-border)]"
                       }`}
                     >
@@ -1326,14 +1326,14 @@ export default function GiveawaysCenterClient() {
                   <button
                     type="button"
                     onClick={() => setExtendTarget(null)}
-                    className="px-4 py-2 rounded-[var(--inset-radius)] text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--surface)] cursor-pointer"
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--surface)] cursor-pointer"
                   >
                     Annuler
                   </button>
                   <button
                     type="submit"
                     disabled={extendBusy}
-                    className="px-4 py-2 rounded-[var(--inset-radius)] text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
                   >
                     <CalendarPlus className="w-4 h-4" />
                     {extendBusy ? "Prolongation..." : "Valider la prolongation"}
@@ -1346,8 +1346,8 @@ export default function GiveawaysCenterClient() {
 
         {/* Modal: Participants & Modération */}
         {participantsTarget && (
-          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-[var(--panel-radius)] max-w-xl w-full p-6 space-y-4 shadow-xl max-h-[85vh] flex flex-col">
+          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 flex items-center justify-center p-4">
+            <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-xl max-w-xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
                   <Users className="w-4 h-4" />
@@ -1369,7 +1369,7 @@ export default function GiveawaysCenterClient() {
                     placeholder="Filtrer par pseudo ou ID..."
                     value={participantSearch}
                     onChange={(e) => setParticipantSearch(e.target.value)}
-                    className="w-full h-9 pl-9 pr-3 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] text-xs focus:outline-none focus:border-rose-500"
+                    className="w-full h-9 pl-9 pr-3 rounded-xl bg-[var(--surface)] border border-[var(--input-border)] text-sm focus:outline-none focus:border-rose-500"
                   />
                 </div>
                 <span className="text-xs text-[var(--text-muted)] font-mono whitespace-nowrap">
@@ -1395,26 +1395,26 @@ export default function GiveawaysCenterClient() {
                   filteredParticipants.map((p) => (
                     <div
                       key={p.userId}
-                      className="p-2.5 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] flex items-center justify-between gap-3"
+                      className="p-2.5 rounded-xl bg-[var(--surface)] border border-[var(--panel-border)] flex items-center justify-between gap-3"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         {p.avatarUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={p.avatarUrl} alt={p.username} className="w-7 h-7 rounded-full shrink-0" />
                         ) : (
-                          <div className="w-7 h-7 rounded-full bg-neutral-800 flex items-center justify-center text-[10px] font-bold text-neutral-300 shrink-0">
+                          <div className="w-7 h-7 rounded-full bg-[var(--surface-raised)]/50 flex items-center justify-center text-xs font-bold text-[var(--text-muted)] shrink-0">
                             {p.username.substring(0, 2).toUpperCase()}
                           </div>
                         )}
                         <div className="min-w-0">
                           <p className="text-xs font-semibold text-[var(--text-primary)] truncate">{p.username}</p>
-                          <p className="text-[10px] text-[var(--text-muted)] font-mono truncate">{p.userId}</p>
+                          <p className="text-xs text-[var(--text-muted)] font-mono truncate">{p.userId}</p>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0">
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                          className={`px-2 py-0.5 rounded text-xs font-semibold ${
                             p.isEligible
                               ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                               : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
@@ -1426,7 +1426,7 @@ export default function GiveawaysCenterClient() {
                           <button
                             onClick={() => handleDisqualifyParticipant(p.userId, p.username)}
                             disabled={disqualifyBusy === p.userId}
-                            className="p-1.5 rounded-[var(--inset-radius)] text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer disabled:opacity-50"
+                            className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer disabled:opacity-50"
                             title="Disqualifier du concours"
                           >
                             <UserX className="w-4 h-4" />
@@ -1441,7 +1441,7 @@ export default function GiveawaysCenterClient() {
                 <button
                   type="button"
                   onClick={() => setParticipantsTarget(null)}
-                  className="px-4 py-2 rounded-[var(--inset-radius)] text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--surface)] cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--surface)] cursor-pointer"
                 >
                   Fermer
                 </button>
@@ -1452,8 +1452,8 @@ export default function GiveawaysCenterClient() {
 
         {/* Modal: Reroll */}
         {rerollTarget && (
-          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-[var(--panel-radius)] max-w-md w-full p-6 space-y-4 shadow-xl">
+          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 flex items-center justify-center p-4">
+            <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-xl max-w-md w-full p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
                   <RefreshCw className="w-4 h-4" />
@@ -1472,7 +1472,7 @@ export default function GiveawaysCenterClient() {
               </p>
 
               <div>
-                <label className="block text-[11px] text-[var(--text-muted)] mb-1 font-semibold">
+                <label className="block text-xs text-[var(--text-muted)] mb-1 font-semibold">
                   Nombre de gagnants à tirer
                 </label>
                 <div className="flex items-center gap-2">
@@ -1481,7 +1481,7 @@ export default function GiveawaysCenterClient() {
                       key={cnt}
                       type="button"
                       onClick={() => setRerollCount(cnt)}
-                      className={`flex-1 h-9 rounded-[var(--inset-radius)] text-xs font-semibold transition-all cursor-pointer ${
+                      className={`flex-1 h-9 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                         rerollCount === cnt
                           ? "bg-rose-600 text-white"
                           : "bg-[var(--surface)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -1496,14 +1496,14 @@ export default function GiveawaysCenterClient() {
               <div className="flex justify-end gap-2 pt-2 border-t border-[var(--panel-border)]">
                 <button
                   onClick={() => setRerollTarget(null)}
-                  className="px-4 py-2 rounded-[var(--inset-radius)] text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--surface)] cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--surface)] cursor-pointer"
                 >
                   Annuler
                 </button>
                 <button
                   onClick={() => executeReroll(rerollCount)}
                   disabled={rerollBusy}
-                  className="px-4 py-2 rounded-[var(--inset-radius)] text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
                 >
                   <Dice5 className="w-4 h-4" />
                   {rerollBusy ? "Tirage..." : "Tirer au sort"}

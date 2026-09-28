@@ -66,11 +66,11 @@ function OverviewCard({
   return (
     <Link
       href={href}
-      className="group flex flex-col rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 transition-colors hover:border-[var(--accent-primary)]/30"
+      className="group flex flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 transition-colors hover:border-[var(--accent-primary)]/30"
     >
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className={`flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] ${color}`}>
+          <span className={`flex h-8 w-8 items-center justify-center rounded-xl ${color}`}>
             {icon}
           </span>
           <h3 className="text-sm font-semibold text-[var(--text-primary)]">{title}</h3>
@@ -142,8 +142,8 @@ export default function OverviewClient() {
 
   if (!BOT_API_URL) {
     return (
-      <div className="flex h-full items-center justify-center p-8">
-        <div className="max-w-sm rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center">
+      <div className="flex min-h-[50vh] items-center justify-center p-8">
+        <div className="max-w-sm rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center">
           <LayoutDashboard className="mx-auto mb-3 h-8 w-8 text-[var(--text-muted)]" />
           <p className="text-sm text-[var(--text-muted)]">Le serveur du bot n'est pas configuré ici.</p>
         </div>
@@ -154,16 +154,16 @@ export default function OverviewClient() {
   const gid = selectedGuild?.id || "";
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] p-4 pb-44 text-[var(--text-primary)] md:p-8 md:pb-44">
-      <div className="mx-auto max-w-7xl space-y-6">
+    <div className="w-full px-4 py-6 text-[var(--text-primary)] sm:px-6">
+      <div className="mx-auto max-w-6xl space-y-6">
         {/* Header */}
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="flex items-center gap-3">
-            <div className="rounded-[var(--inset-radius)] border border-indigo-500/30 bg-indigo-500/15 p-2.5 text-indigo-400">
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/15 p-2.5 text-emerald-400">
               <LayoutDashboard className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Vue d'ensemble</h1>
+              <h1 className="text-xl font-bold">Vue d'ensemble</h1>
               <p className="text-xs text-[var(--text-muted)]">
                 État en direct du bot, de la modération, de la musique et plus — pour ce serveur.
               </p>
@@ -172,7 +172,7 @@ export default function OverviewClient() {
           <button
             onClick={refresh}
             disabled={anyLoading}
-            className="flex items-center gap-2 self-start rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2 text-xs font-semibold transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
+            className="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 self-start rounded-xl border border-[var(--panel-border)] px-3.5 text-sm font-medium text-[var(--text-muted)] transition-colors hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)] disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${anyLoading ? "animate-spin" : ""}`} />
             Actualiser
@@ -192,14 +192,14 @@ export default function OverviewClient() {
 
         {/* Bot Invitation Banner if absent */}
         {selectedGuild && botGuildIds !== null && !isBotPresent && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[var(--panel-radius)] border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+              <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300 shrink-0 mt-0.5">
                 <Bot className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
-                <p className="mt-0.5 text-zinc-300">
+                <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-0.5 text-[var(--text-muted)]">
                   Invitez le bot sur « {selectedGuild.name} » pour activer la modération en temps réel, la musique, les tickets et les statistiques.
                 </p>
               </div>
@@ -208,7 +208,7 @@ export default function OverviewClient() {
               href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-colors shrink-0"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors shrink-0"
             >
               <span>Inviter le bot</span>
               <ExternalLink className="h-3 w-3" />
@@ -223,7 +223,7 @@ export default function OverviewClient() {
         ) : (
           <>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <OverviewCard icon={<Server className="h-4 w-4" />} color="bg-indigo-500/15 text-indigo-400" title="Statut" href="/discord/bot">
+              <OverviewCard icon={<Server className="h-4 w-4" />} color="bg-emerald-500/15 text-emerald-400" title="Statut" href="/discord/bot">
                 {guild.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
@@ -304,7 +304,7 @@ export default function OverviewClient() {
                 )}
               </OverviewCard>
 
-              <OverviewCard icon={<Music2 className="h-4 w-4" />} color="bg-purple-500/15 text-purple-400" title="Musique" href={`/discord/music?guildId=${gid}`}>
+              <OverviewCard icon={<Music2 className="h-4 w-4" />} color="bg-emerald-500/15 text-emerald-400" title="Musique" href={`/discord/music?guildId=${gid}`}>
                 {music.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
@@ -338,7 +338,7 @@ export default function OverviewClient() {
                 )}
               </OverviewCard>
 
-              <OverviewCard icon={<Gift className="h-4 w-4" />} color="bg-pink-500/15 text-pink-400" title="Giveaways" href={`/discord/giveaways?guildId=${gid}`}>
+              <OverviewCard icon={<Gift className="h-4 w-4" />} color="bg-emerald-500/15 text-emerald-400" title="Giveaways" href={`/discord/giveaways?guildId=${gid}`}>
                 {giveaways.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
@@ -380,9 +380,9 @@ export default function OverviewClient() {
             </div>
 
             {/* Recent Activity */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
               <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
-                <Activity className="h-4 w-4 text-indigo-400" />
+                <Activity className="h-4 w-4 text-emerald-400" />
                 Activité récente
               </h3>
               {guild.loading ? (
@@ -397,7 +397,7 @@ export default function OverviewClient() {
               ) : (
                 <div className="space-y-1.5">
                   {guild.data.stats.recentActivities.slice(0, 8).map((a) => (
-                    <div key={a.id} className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 py-2 text-xs">
+                    <div key={a.id} className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] px-3 py-2 text-xs">
                       <span className="truncate">
                         <span className="font-semibold text-[var(--text-primary)]">{a.userTag}</span>
                         <span className="text-[var(--text-muted)]"> a utilisé </span>
@@ -411,42 +411,42 @@ export default function OverviewClient() {
             </div>
 
             {/* Quick Actions */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
               <h3 className="mb-3 text-sm font-semibold">Actions rapides</h3>
               <div className="flex flex-wrap gap-2">
                 <Link
                   href={`/discord/tickets?guildId=${gid}`}
-                  className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
                 >
                   <Ticket className="h-3.5 w-3.5 text-amber-400" />
                   Voir les tickets
                 </Link>
                 <Link
                   href={`/discord/giveaways?guildId=${gid}&tab=create`}
-                  className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
                 >
-                  <Plus className="h-3.5 w-3.5 text-pink-400" />
+                  <Plus className="h-3.5 w-3.5 text-emerald-400" />
                   Lancer un giveaway
                 </Link>
                 <Link
                   href={`/discord/moderation?guildId=${gid}`}
-                  className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
                 >
                   <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />
                   Voir la modération
                 </Link>
                 <Link
                   href={`/discord/backups?guildId=${gid}`}
-                  className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
                 >
                   <DatabaseBackup className="h-3.5 w-3.5 text-emerald-400" />
                   Gérer les sauvegardes
                 </Link>
                 <Link
                   href={`/discord/music?guildId=${gid}`}
-                  className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
                 >
-                  <Music2 className="h-3.5 w-3.5 text-purple-400" />
+                  <Music2 className="h-3.5 w-3.5 text-emerald-400" />
                   Ouvrir la musique
                 </Link>
               </div>

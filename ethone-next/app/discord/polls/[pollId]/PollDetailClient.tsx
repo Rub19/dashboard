@@ -55,55 +55,55 @@ export default function PollDetailClient() {
     }
   };
 
-  if (loading) return <div className="flex h-full items-center justify-center text-xs text-zinc-400">Chargement du sondage…</div>;
+  if (loading) return <div className="flex h-full items-center justify-center text-xs text-[var(--text-muted)]">Chargement du sondage…</div>;
 
   if (error || !poll) {
     return (
       <div className="mx-auto max-w-xl px-6 py-16 text-center">
-        <p className="text-sm font-semibold text-white">Sondage indisponible</p>
-        <p className="mt-2 text-xs text-zinc-400">{error || "Ce sondage n'existe pas sur ce serveur."}</p>
-        <Link href={`/discord/polls${guildQuery}`} className="mt-5 inline-block rounded-lg border border-white/10 px-4 py-2 text-xs font-semibold text-white hover:bg-white/5">
+        <p className="text-sm font-semibold text-[var(--text-primary)]">Sondage indisponible</p>
+        <p className="mt-2 text-xs text-[var(--text-muted)]">{error || "Ce sondage n'existe pas sur ce serveur."}</p>
+        <Link href={`/discord/polls${guildQuery}`} className="mt-5 inline-block rounded-lg border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70">
           Retour aux sondages
         </Link>
       </div>
     );
   }
 
-  const status = STATUS_LABELS[poll.status] ?? { label: poll.status, tone: "bg-zinc-500/15 text-zinc-300" };
+  const status = STATUS_LABELS[poll.status] ?? { label: poll.status, tone: "bg-[var(--surface-raised)]/60 text-[var(--text-muted)]" };
   const byQuestion = new Map((results?.questionsResults ?? []).map((q) => [q.questionId, q]));
 
   return (
-    <div className="h-full overflow-y-auto bg-[var(--bg-main)] text-white">
+    <div className="h-full overflow-y-auto bg-[var(--bg-main)] text-[var(--text-primary)]">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-        <nav className="mb-5 text-xs text-zinc-500">
-          <Link href={`/discord/polls${guildQuery}`} className="hover:text-white">Sondages &amp; votes</Link>
+        <nav className="mb-5 text-xs text-[var(--text-muted)]">
+          <Link href={`/discord/polls${guildQuery}`} className="hover:text-[var(--text-primary)]">Sondages &amp; votes</Link>
           <span className="mx-1.5">/</span>
-          <span className="text-zinc-300">{poll.title}</span>
+          <span className="text-[var(--text-muted)]">{poll.title}</span>
         </nav>
 
-        <header className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-6">
-          <div className="flex flex-wrap items-center gap-2 text-[11px]">
-            <span className="rounded-md bg-white/[0.06] px-2 py-0.5 text-zinc-300">{poll.category}</span>
+        <header className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="rounded-md bg-[var(--surface-raised)]/50 px-2 py-0.5 text-[var(--text-muted)]">{poll.category}</span>
             {poll.native && (
               <span className="rounded-md bg-sky-500/15 px-2 py-0.5 font-semibold text-sky-300" title="Vote et affichage gérés par Discord">Natif</span>
             )}
-            <span className="rounded-md bg-white/[0.06] px-2 py-0.5 font-mono text-zinc-400">{poll.type}</span>
+            <span className="rounded-md bg-[var(--surface-raised)]/50 px-2 py-0.5 font-mono text-[var(--text-muted)]">{poll.type}</span>
             <span className={`rounded-md px-2 py-0.5 font-semibold ${status.tone}`}>{status.label}</span>
           </div>
           <h1 className="mt-3 text-2xl font-bold tracking-tight">{poll.title}</h1>
-          {poll.description && <p className="mt-2 text-sm text-zinc-400">{poll.description}</p>}
+          {poll.description && <p className="mt-2 text-sm text-[var(--text-muted)]">{poll.description}</p>}
 
           <div className="mt-5 flex flex-wrap gap-2">
-            <Link href={`/discord/polls/${encodeURIComponent(pollId)}/results${guildQuery}`} className="rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-indigo-500">
+            <Link href={`/discord/polls/${encodeURIComponent(pollId)}/results${guildQuery}`} className="rounded-lg bg-emerald-500 px-3.5 py-2 text-xs font-semibold text-white hover:bg-emerald-600">
               Résultats détaillés
             </Link>
             {!isNative && (
-              <Link href={`/discord/polls/${encodeURIComponent(pollId)}/settings${guildQuery}`} className="rounded-lg border border-white/10 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/5">
+              <Link href={`/discord/polls/${encodeURIComponent(pollId)}/settings${guildQuery}`} className="rounded-lg border border-[var(--panel-border)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70">
                 Réglages
               </Link>
             )}
             {!isNative && (
-              <button type="button" onClick={copyVoteLink} className="cursor-pointer rounded-lg border border-white/10 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/5">
+              <button type="button" onClick={copyVoteLink} className="cursor-pointer rounded-lg border border-[var(--panel-border)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70">
                 Copier le lien de vote
               </button>
             )}
@@ -113,7 +113,7 @@ export default function PollDetailClient() {
                 type="button"
                 disabled={busy}
                 onClick={() => runAction(a)}
-                className="cursor-pointer rounded-lg border border-white/10 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/5 disabled:opacity-50"
+                className="cursor-pointer rounded-lg border border-[var(--panel-border)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-50"
               >
                 {a.label}
               </button>
@@ -133,8 +133,8 @@ export default function PollDetailClient() {
                   ["Anonymat", poll.anonymity],
                 ]),
           ].map(([label, value]) => (
-            <div key={label} className="rounded-xl border border-[var(--panel-border)] bg-white/[0.02] p-4">
-              <p className="text-[11px] text-zinc-500">{label}</p>
+            <div key={label} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+              <p className="text-xs text-[var(--text-muted)]">{label}</p>
               <p className="mt-1 text-lg font-semibold">{value}</p>
             </div>
           ))}
@@ -144,7 +144,7 @@ export default function PollDetailClient() {
           {poll.questions.map((question) => {
             const result = byQuestion.get(question.id);
             return (
-              <div key={question.id} className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
+              <div key={question.id} className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
                 <h2 className="text-sm font-semibold">{question.title}</h2>
                 <ul className="mt-3 space-y-2.5">
                   {question.options.map((option) => {
@@ -153,15 +153,15 @@ export default function PollDetailClient() {
                     return (
                       <li key={option.id}>
                         <div className="flex items-center justify-between text-xs">
-                          <span className="text-zinc-200">
+                          <span className="text-[var(--text-primary)]">
                             {option.emoji ? `${option.emoji} ` : ""}
                             {option.label}
                           </span>
-                          <span className="text-zinc-400">
+                          <span className="text-[var(--text-muted)]">
                             {r?.votesCount ?? 0} vote{(r?.votesCount ?? 0) > 1 ? "s" : ""} · {pct} %
                           </span>
                         </div>
-                        <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+                        <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[var(--surface-raised)]/50">
                           <div className="h-full rounded-full" style={{ width: `${Math.min(100, pct)}%`, background: option.color || "var(--accent-primary)" }} />
                         </div>
                       </li>

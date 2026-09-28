@@ -108,18 +108,18 @@ interface SuggestionConfig {
 const STATUS_META: Record<SuggestionStatus, { label: string; cls: string }> = {
   pending: { label: "En attente", cls: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
   under_review: { label: "En discussion", cls: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
-  planned: { label: "Planifiée", cls: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" },
+  planned: { label: "Planifiée", cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
   accepted: { label: "Approuvée", cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
-  in_progress: { label: "En développement", cls: "bg-purple-500/10 text-purple-400 border-purple-500/20" },
+  in_progress: { label: "En développement", cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
   completed: { label: "Réalisée", cls: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" },
   rejected: { label: "Rejetée", cls: "bg-rose-500/10 text-rose-400 border-rose-500/20" },
-  duplicate: { label: "Doublon", cls: "bg-neutral-500/10 text-neutral-300 border-neutral-500/20" },
+  duplicate: { label: "Doublon", cls: "bg-[var(--surface-raised)]/60 text-[var(--text-muted)] border-[var(--panel-border)]" },
   on_hold: { label: "En pause", cls: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
 };
 
 const PRIORITY_META: Record<SuggestionPriority, { label: string; cls: string }> = {
-  low: { label: "Basse", cls: "text-neutral-400" },
-  normal: { label: "Normale", cls: "text-neutral-300" },
+  low: { label: "Basse", cls: "text-[var(--text-muted)]" },
+  normal: { label: "Normale", cls: "text-[var(--text-muted)]" },
   high: { label: "Haute", cls: "text-amber-400" },
   critical: { label: "Critique", cls: "text-rose-400" },
 };
@@ -507,7 +507,7 @@ export default function SuggestionsCenterClient() {
   const inProgressCount = (overview.statusDistribution.in_progress || 0) + (overview.statusDistribution.planned || 0) + (overview.acceptedCount || 0);
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8 pb-44 md:pb-44">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] p-4 md:p-8 pb-44 md:pb-44">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -515,10 +515,10 @@ export default function SuggestionsCenterClient() {
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
                 href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
+                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer shadow-sm"
                 title="Retour au hub Discord"
               >
-                <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+                <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                 <span>Retour Discord</span>
               </Link>
             </div>
@@ -527,8 +527,8 @@ export default function SuggestionsCenterClient() {
                 <Lightbulb className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">ETHONE Boîte à Suggestions</h1>
-                <p className="text-xs text-neutral-400">
+                <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">ETHONE Boîte à Suggestions</h1>
+                <p className="text-xs text-[var(--text-muted)]">
                   Idées communautaires, votes Discord, Kanban de traitement et réponses officielles.
                   {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
                 </p>
@@ -548,7 +548,7 @@ export default function SuggestionsCenterClient() {
             )}
             <button
               onClick={() => setActiveTab("settings")}
-              className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer"
+              className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)] text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer"
             >
               <Sliders className="w-4 h-4 text-amber-400" />
               Paramètres
@@ -572,7 +572,7 @@ export default function SuggestionsCenterClient() {
                 <Bot className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-white">Bot non installé sur ce serveur</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Bot non installé sur ce serveur</p>
                 <p className="text-xs text-amber-300/80">
                   Invitez le bot ETHONE sur <strong>{selectedGuild.name}</strong> pour activer la boîte à suggestions et les votes.
                 </p>
@@ -592,23 +592,23 @@ export default function SuggestionsCenterClient() {
         {/* KPI (réels) */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {[
-            { label: "Suggestions totales", value: overview.totalCount, cls: "text-white", sub: `${Object.keys(overview.categoryDistribution).length} catégorie(s)` },
+            { label: "Suggestions totales", value: overview.totalCount, cls: "text-[var(--text-primary)]", sub: `${Object.keys(overview.categoryDistribution).length} catégorie(s)` },
             { label: "En attente staff", value: overview.pendingCount + overview.underReviewCount, cls: "text-amber-400", sub: "À examiner" },
             { label: "Approuvées / En cours", value: inProgressCount, cls: "text-emerald-400", sub: "Validées par le staff" },
             { label: "Réalisées", value: overview.completedCount, cls: "text-cyan-400", sub: "Livrées sur Discord" },
-            { label: "Total votes", value: overview.totalVotes, cls: "text-purple-400", sub: "👍 / 👎 cumulés" },
+            { label: "Total votes", value: overview.totalVotes, cls: "text-emerald-400", sub: "👍 / 👎 cumulés" },
             { label: "Taux d'adoption", value: adoptionRate === null ? "—" : `${adoptionRate}%`, cls: "text-rose-400", sub: adoptionRate === null ? "Aucune décision encore" : "Idées retenues" },
           ].map((k) => (
-            <div key={k.label} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-              <span className="text-xs text-neutral-500 font-medium">{k.label}</span>
+            <div key={k.label} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
+              <span className="text-xs text-[var(--text-muted)] font-medium">{k.label}</span>
               <p className={cn("text-2xl font-bold", k.cls)}>{typeof k.value === "number" ? k.value.toLocaleString("fr-FR") : k.value}</p>
-              <span className="text-[11px] text-neutral-400">{k.sub}</span>
+              <span className="text-xs text-[var(--text-muted)]">{k.sub}</span>
             </div>
           ))}
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-neutral-800 gap-2 overflow-x-auto pb-1">
+        <div className="flex border-b border-[var(--panel-border)] gap-2 overflow-x-auto pb-1">
           {[
             { id: "kanban", label: "Kanban & Suggestions", icon: Kanban },
             { id: "response_studio", label: "Réponse Staff", icon: MessageSquare },
@@ -623,10 +623,10 @@ export default function SuggestionsCenterClient() {
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
                 className={cn(
                   "px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer",
-                  isActive ? "bg-neutral-900 text-white border-b-2 border-amber-500" : "text-neutral-400 hover:text-white"
+                  isActive ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] border-b-2 border-amber-500" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
               >
-                <Icon className={cn("w-4 h-4", isActive ? "text-amber-400" : "text-neutral-500")} />
+                <Icon className={cn("w-4 h-4", isActive ? "text-amber-400" : "text-[var(--text-muted)]")} />
                 {tab.label}
               </button>
             );
@@ -639,23 +639,23 @@ export default function SuggestionsCenterClient() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
                 <div className="relative w-full sm:w-72">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                   <input
                     type="text"
                     placeholder="Filtrer les idées..."
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
-                    className="w-full h-9 rounded-xl bg-neutral-900 border border-neutral-800 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-amber-500"
+                    className="w-full h-9 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] pl-9 pr-3 text-sm text-[var(--text-primary)] focus:outline-none focus:border-amber-500"
                   />
                 </div>
-                <div className="flex items-center gap-1 bg-neutral-900 p-1 rounded-xl border border-neutral-800 text-xs flex-wrap">
+                <div className="flex items-center gap-1 bg-[var(--surface-raised)]/40 p-1 rounded-xl border border-[var(--panel-border)] text-xs flex-wrap">
                   {["ALL", ...categories].map((cat) => (
                     <button
                       key={cat}
                       onClick={() => setCategoryFilter(cat)}
                       className={cn(
                         "px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer",
-                        categoryFilter === cat ? "bg-amber-500 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                        categoryFilter === cat ? "bg-amber-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-white"
                       )}
                     >
                       {cat === "ALL" ? "Toutes" : cat}
@@ -663,21 +663,21 @@ export default function SuggestionsCenterClient() {
                   ))}
                 </div>
               </div>
-              <span className="text-xs text-neutral-500">{filteredSuggestions.length} suggestion(s)</span>
+              <span className="text-xs text-[var(--text-muted)]">{filteredSuggestions.length} suggestion(s)</span>
             </div>
 
             {/* Création rapide */}
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 grid grid-cols-1 md:grid-cols-12 gap-2 items-end">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 grid grid-cols-1 md:grid-cols-12 gap-2 items-end">
               <div className="md:col-span-4">
-                <label className="text-[11px] text-neutral-400 block mb-1">Titre</label>
-                <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Nouvelle idée..." className="w-full h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white" />
+                <label className="text-xs text-[var(--text-muted)] block mb-1">Titre</label>
+                <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Nouvelle idée..." className="w-full h-9 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] px-3 text-sm text-[var(--text-primary)]" />
               </div>
               <div className="md:col-span-5">
-                <label className="text-[11px] text-neutral-400 block mb-1">Description</label>
-                <input value={newDescription} onChange={(e) => setNewDescription(e.target.value)} placeholder="Pourquoi, comment..." className="w-full h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white" />
+                <label className="text-xs text-[var(--text-muted)] block mb-1">Description</label>
+                <input value={newDescription} onChange={(e) => setNewDescription(e.target.value)} placeholder="Pourquoi, comment..." className="w-full h-9 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] px-3 text-sm text-[var(--text-primary)]" />
               </div>
               <div className="md:col-span-2">
-                <label className="text-[11px] text-neutral-400 block mb-1">Catégorie</label>
+                <label className="text-xs text-[var(--text-muted)] block mb-1">Catégorie</label>
                 <Select value={newCategory} onChange={setNewCategory} size="sm" options={categories.map((c) => ({ id: c, label: c }))} />
               </div>
               <button onClick={createSuggestion} disabled={submitting} className="md:col-span-1 h-9 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold flex items-center justify-center gap-1 disabled:opacity-50 cursor-pointer">
@@ -686,8 +686,8 @@ export default function SuggestionsCenterClient() {
             </div>
 
             {filteredSuggestions.length === 0 ? (
-              <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-10 text-center text-xs text-neutral-500">
-                Aucune suggestion pour ce filtre. Les membres peuvent en proposer sur Discord via <code className="text-neutral-300">/suggest</code>.
+              <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-10 text-center text-xs text-[var(--text-muted)]">
+                Aucune suggestion pour ce filtre. Les membres peuvent en proposer sur Discord via <code className="text-[var(--text-muted)]">/suggest</code>.
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
@@ -696,63 +696,63 @@ export default function SuggestionsCenterClient() {
                   return (
                     <div key={col.id} className="space-y-3">
                       <div className="flex items-center justify-between px-1">
-                        <span className="text-xs font-bold text-neutral-300 uppercase tracking-wider">{col.label}</span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-400">{items.length}</span>
+                        <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">{col.label}</span>
+                        <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-[var(--surface-raised)]/50 text-[var(--text-muted)]">{items.length}</span>
                       </div>
                       {items.map((sug) => {
                         const meta = STATUS_META[sug.status];
                         const total = sug.upvotesCount + sug.downvotesCount;
                         const approval = total > 0 ? Math.round((sug.upvotesCount / total) * 100) : null;
                         return (
-                          <div key={sug.id} className="bg-neutral-900 border border-neutral-800 hover:border-amber-500/30 rounded-2xl p-4 space-y-3 transition-all shadow-lg">
+                          <div key={sug.id} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-amber-500/30 rounded-2xl p-4 space-y-3 transition-all">
                             <div className="flex items-center justify-between gap-2">
                               <div className="flex items-center gap-2 min-w-0">
                                 <span className="font-mono text-xs font-bold text-amber-400 shrink-0">#{sug.numericId}</span>
-                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-neutral-800 text-neutral-300 border border-neutral-700 truncate">{sug.category}</span>
+                                <span className="px-2 py-0.5 rounded text-xs font-bold bg-[var(--surface-raised)]/50 text-[var(--text-muted)] border border-[var(--panel-border)] truncate">{sug.category}</span>
                               </div>
-                              <span className={cn("px-2 py-0.5 rounded text-[10px] font-bold border shrink-0", meta.cls)}>{meta.label}</span>
+                              <span className={cn("px-2 py-0.5 rounded text-xs font-bold border shrink-0", meta.cls)}>{meta.label}</span>
                             </div>
                             <div>
-                              <h3 className="text-sm font-bold text-white leading-snug">{sug.title}</h3>
-                              <p className="text-xs text-neutral-400 line-clamp-3 mt-1.5 leading-relaxed">{sug.description}</p>
+                              <h3 className="text-sm font-bold text-[var(--text-primary)] leading-snug">{sug.title}</h3>
+                              <p className="text-xs text-[var(--text-muted)] line-clamp-3 mt-1.5 leading-relaxed">{sug.description}</p>
                             </div>
-                            <div className="flex items-center justify-between text-[11px] text-neutral-400">
+                            <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                               <span className="flex items-center gap-1.5 min-w-0">
                                 {sug.authorAvatarUrl ? (
                                   <img src={sug.authorAvatarUrl} alt="" className="w-5 h-5 rounded-full object-cover" />
                                 ) : (
-                                  <span className="w-5 h-5 rounded-full bg-neutral-800 flex items-center justify-center text-[9px] font-bold">{sug.authorTag.slice(0, 2).toUpperCase()}</span>
+                                  <span className="w-5 h-5 rounded-full bg-[var(--surface-raised)]/50 flex items-center justify-center text-xs font-bold">{sug.authorTag.slice(0, 2).toUpperCase()}</span>
                                 )}
                                 <span className="truncate">{sug.authorTag}</span>
                               </span>
                               <span>{formatRelative(sug.createdAt)}</span>
                             </div>
                             <div className="space-y-1">
-                              <div className="flex items-center justify-between text-[11px]">
+                              <div className="flex items-center justify-between text-xs">
                                 <span className="flex items-center gap-2">
                                   <span className="flex items-center gap-1 text-emerald-400"><ThumbsUp className="w-3 h-3" />{sug.upvotesCount}</span>
                                   <span className="flex items-center gap-1 text-rose-400"><ThumbsDown className="w-3 h-3" />{sug.downvotesCount}</span>
-                                  {sug.comments.length > 0 && <span className="flex items-center gap-1 text-neutral-400"><MessageSquare className="w-3 h-3" />{sug.comments.length}</span>}
+                                  {sug.comments.length > 0 && <span className="flex items-center gap-1 text-[var(--text-muted)]"><MessageSquare className="w-3 h-3" />{sug.comments.length}</span>}
                                 </span>
                                 <span className={cn("font-semibold", PRIORITY_META[sug.priority].cls)}>{PRIORITY_META[sug.priority].label}</span>
                               </div>
                               {approval !== null && (
-                                <div className="h-1.5 w-full bg-neutral-950 rounded-full overflow-hidden border border-neutral-800">
+                                <div className="h-1.5 w-full bg-[var(--bg-surface-elevated)] rounded-full overflow-hidden border border-[var(--panel-border)]">
                                   <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${approval}%` }} />
                                 </div>
                               )}
                             </div>
                             {sug.staffResponse && (
-                              <div className="p-2.5 rounded-xl bg-amber-500/5 border border-amber-500/20 text-[11px] text-neutral-300">
+                              <div className="p-2.5 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-[var(--text-muted)]">
                                 <span className="font-bold text-amber-400 flex items-center gap-1 mb-1"><Crown className="w-3 h-3" />{sug.staffResponderTag || "Staff"}</span>
                                 <p className="line-clamp-2">{sug.staffResponse}</p>
                               </div>
                             )}
                             <div className="flex gap-2 pt-1">
-                              <button onClick={() => openStudio(sug)} className="flex-1 py-1.5 rounded-xl bg-neutral-800 hover:bg-amber-600 text-neutral-200 hover:text-white text-[11px] font-semibold transition-colors cursor-pointer">
+                              <button onClick={() => openStudio(sug)} className="flex-1 py-1.5 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-amber-600 text-[var(--text-primary)] hover:text-white text-xs font-semibold transition-colors cursor-pointer">
                                 Répondre / Statut
                               </button>
-                              <button onClick={() => deleteSuggestion(sug)} className="px-2.5 py-1.5 rounded-xl border border-neutral-800 text-neutral-500 hover:text-rose-400 hover:border-rose-500/40 transition-colors cursor-pointer" title="Supprimer">
+                              <button onClick={() => deleteSuggestion(sug)} className="px-2.5 py-1.5 rounded-xl border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-rose-400 hover:border-rose-500/40 transition-colors cursor-pointer" title="Supprimer">
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
@@ -770,45 +770,45 @@ export default function SuggestionsCenterClient() {
         {/* TAB: Studio de réponse */}
         {activeTab === "response_studio" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-4 bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-2 max-h-[70vh] overflow-y-auto">
-              <span className="text-xs font-bold text-neutral-300 uppercase tracking-wider">Sélectionner une suggestion</span>
-              {suggestions.length === 0 && <p className="text-xs text-neutral-500">Aucune suggestion.</p>}
+            <div className="lg:col-span-4 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-2 max-h-[70vh] overflow-y-auto">
+              <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Sélectionner une suggestion</span>
+              {suggestions.length === 0 && <p className="text-xs text-[var(--text-muted)]">Aucune suggestion.</p>}
               {suggestions.map((s) => (
                 <button
                   key={s.id}
                   onClick={() => openStudio(s)}
                   className={cn(
                     "w-full text-left p-3 rounded-xl border transition-colors cursor-pointer",
-                    selectedId === s.id ? "bg-amber-500/10 border-amber-500/40" : "bg-neutral-950 border-neutral-800 hover:border-neutral-700"
+                    selectedId === s.id ? "bg-amber-500/10 border-amber-500/40" : "bg-[var(--bg-surface-elevated)] border-[var(--panel-border)] hover:border-[var(--input-border-hover)]"
                   )}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-bold text-white truncate">#{s.numericId} · {s.title}</span>
-                    <span className={cn("px-1.5 py-0.5 rounded text-[9px] font-bold border shrink-0", STATUS_META[s.status].cls)}>{STATUS_META[s.status].label}</span>
+                    <span className="text-xs font-bold text-[var(--text-primary)] truncate">#{s.numericId} · {s.title}</span>
+                    <span className={cn("px-1.5 py-0.5 rounded text-xs font-bold border shrink-0", STATUS_META[s.status].cls)}>{STATUS_META[s.status].label}</span>
                   </div>
-                  <span className="text-[10px] text-neutral-500">{s.authorTag} · 👍 {s.upvotesCount} 👎 {s.downvotesCount}</span>
+                  <span className="text-xs text-[var(--text-muted)]">{s.authorTag} · 👍 {s.upvotesCount} 👎 {s.downvotesCount}</span>
                 </button>
               ))}
             </div>
 
-            <div className="lg:col-span-8 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-5">
+            <div className="lg:col-span-8 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5">
               {!selected ? (
-                <p className="text-xs text-neutral-500">Choisis une suggestion à gauche pour publier une réponse officielle, changer son statut ou sa priorité.</p>
+                <p className="text-xs text-[var(--text-muted)]">Choisis une suggestion à gauche pour publier une réponse officielle, changer son statut ou sa priorité.</p>
               ) : (
                 <>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-mono text-xs font-bold text-amber-400">#{selected.numericId}</span>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-neutral-800 text-neutral-300 border border-neutral-700">{selected.category}</span>
+                      <span className="px-2 py-0.5 rounded text-xs font-bold bg-[var(--surface-raised)]/50 text-[var(--text-muted)] border border-[var(--panel-border)]">{selected.category}</span>
                     </div>
-                    <h3 className="text-base font-bold text-white">{selected.title}</h3>
-                    <p className="text-xs text-neutral-400 mt-1 leading-relaxed">{selected.description}</p>
-                    <p className="text-[11px] text-neutral-500 mt-2">par {selected.authorTag} · {formatRelative(selected.createdAt)} · 👍 {selected.upvotesCount} / 👎 {selected.downvotesCount}</p>
+                    <h3 className="text-base font-bold text-[var(--text-primary)]">{selected.title}</h3>
+                    <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">{selected.description}</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-2">par {selected.authorTag} · {formatRelative(selected.createdAt)} · 👍 {selected.upvotesCount} / 👎 {selected.downvotesCount}</p>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-semibold text-neutral-300 block mb-1.5">Nouveau statut</label>
+                      <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">Nouveau statut</label>
                       <Select
                         value={newStatus}
                         onChange={(v) => setNewStatus(v as SuggestionStatus)}
@@ -816,10 +816,10 @@ export default function SuggestionsCenterClient() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-neutral-300 block mb-1.5">Priorité interne</label>
+                      <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">Priorité interne</label>
                       <div className="flex gap-1.5">
                         {(Object.keys(PRIORITY_META) as SuggestionPriority[]).map((p) => (
-                          <button key={p} onClick={() => savePriority(p)} className={cn("flex-1 h-10 rounded-xl border text-[11px] font-semibold cursor-pointer transition-colors", newPriority === p ? "bg-amber-500/15 border-amber-500 text-white" : "bg-neutral-950 border-neutral-800 text-neutral-400 hover:text-white")}>
+                          <button key={p} onClick={() => savePriority(p)} className={cn("flex-1 h-10 rounded-xl border text-xs font-semibold cursor-pointer transition-colors", newPriority === p ? "bg-amber-500/15 border-amber-500 text-[var(--text-primary)]" : "bg-[var(--bg-surface-elevated)] border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
                             {PRIORITY_META[p].label}
                           </button>
                         ))}
@@ -828,8 +828,8 @@ export default function SuggestionsCenterClient() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-neutral-300 block mb-1.5">Réponse officielle (visible sur Discord)</label>
-                    <textarea value={staffReplyText} onChange={(e) => setStaffReplyText(e.target.value)} rows={4} placeholder="Explique la décision au membre..." className="w-full rounded-xl bg-neutral-950 border border-neutral-800 px-3 py-2 text-xs text-white resize-none" />
+                    <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">Réponse officielle (visible sur Discord)</label>
+                    <textarea value={staffReplyText} onChange={(e) => setStaffReplyText(e.target.value)} rows={4} placeholder="Explique la décision au membre..." className="w-full rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] px-3 py-2 text-sm text-[var(--text-primary)] resize-none" />
                   </div>
 
                   <button onClick={saveStatus} disabled={submitting} className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold flex items-center gap-2 disabled:opacity-50 cursor-pointer">
@@ -837,22 +837,22 @@ export default function SuggestionsCenterClient() {
                     Publier le statut & la réponse
                   </button>
 
-                  <div className="pt-4 border-t border-neutral-800 space-y-3">
-                    <span className="text-xs font-bold text-neutral-300 flex items-center gap-1.5"><MessageSquare className="w-3.5 h-3.5" /> Commentaires ({selected.comments.length})</span>
+                  <div className="pt-4 border-t border-[var(--panel-border)] space-y-3">
+                    <span className="text-xs font-bold text-[var(--text-muted)] flex items-center gap-1.5"><MessageSquare className="w-3.5 h-3.5" /> Commentaires ({selected.comments.length})</span>
                     <div className="space-y-2 max-h-56 overflow-y-auto">
-                      {selected.comments.length === 0 && <p className="text-[11px] text-neutral-500">Aucun commentaire.</p>}
+                      {selected.comments.length === 0 && <p className="text-xs text-[var(--text-muted)]">Aucun commentaire.</p>}
                       {selected.comments.map((c) => (
-                        <div key={c.id} className={cn("p-2.5 rounded-xl border text-[11px]", c.isStaff ? "bg-amber-500/5 border-amber-500/20" : "bg-neutral-950 border-neutral-800")}>
-                          <span className="font-bold text-white">{c.userTag}</span>
-                          {c.isStaff && <span className="ml-1.5 text-[9px] px-1 py-0.5 rounded bg-amber-500/20 text-amber-300">STAFF</span>}
-                          <span className="text-neutral-500 ml-2">{formatRelative(c.timestamp)}</span>
-                          <p className="text-neutral-300 mt-1">{c.content}</p>
+                        <div key={c.id} className={cn("p-2.5 rounded-xl border text-xs", c.isStaff ? "bg-amber-500/5 border-amber-500/20" : "bg-[var(--bg-surface-elevated)] border-[var(--panel-border)]")}>
+                          <span className="font-bold text-[var(--text-primary)]">{c.userTag}</span>
+                          {c.isStaff && <span className="ml-1.5 text-xs px-1 py-0.5 rounded bg-amber-500/20 text-amber-300">STAFF</span>}
+                          <span className="text-[var(--text-muted)] ml-2">{formatRelative(c.timestamp)}</span>
+                          <p className="text-[var(--text-muted)] mt-1">{c.content}</p>
                         </div>
                       ))}
                     </div>
                     <div className="flex gap-2">
-                      <input value={commentText} onChange={(e) => setCommentText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addComment()} placeholder="Ajouter un commentaire staff..." className="flex-1 h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white" />
-                      <button onClick={addComment} disabled={submitting || !commentText.trim()} className="px-3 h-9 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold disabled:opacity-50 cursor-pointer">Envoyer</button>
+                      <input value={commentText} onChange={(e) => setCommentText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addComment()} placeholder="Ajouter un commentaire staff..." className="flex-1 h-9 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] px-3 text-sm text-[var(--text-primary)]" />
+                      <button onClick={addComment} disabled={submitting || !commentText.trim()} className="px-3 h-9 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-primary)] text-xs font-semibold disabled:opacity-50 cursor-pointer">Envoyer</button>
                     </div>
                   </div>
                 </>
@@ -864,19 +864,19 @@ export default function SuggestionsCenterClient() {
         {/* TAB: Top idées */}
         {activeTab === "hall_of_fame" && (
           <div className="space-y-4">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2"><Sparkles className="w-4 h-4 text-amber-400" /> Les idées les mieux notées (score = 👍 − 👎)</h2>
+            <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2"><Sparkles className="w-4 h-4 text-amber-400" /> Les idées les mieux notées (score = 👍 − 👎)</h2>
             {topIdeas.length === 0 ? (
-              <p className="text-xs text-neutral-500">Pas encore de suggestion votée.</p>
+              <p className="text-xs text-[var(--text-muted)]">Pas encore de suggestion votée.</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {topIdeas.map((s, i) => (
-                  <div key={s.id} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-2">
+                  <div key={s.id} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-5 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-xl">{["🥇", "🥈", "🥉"][i] || `#${i + 1}`}</span>
-                      <span className={cn("px-2 py-0.5 rounded text-[10px] font-bold border", STATUS_META[s.status].cls)}>{STATUS_META[s.status].label}</span>
+                      <span className={cn("px-2 py-0.5 rounded text-xs font-bold border", STATUS_META[s.status].cls)}>{STATUS_META[s.status].label}</span>
                     </div>
-                    <h3 className="text-sm font-bold text-white">{s.title}</h3>
-                    <p className="text-[11px] text-neutral-400">{s.authorTag} · score <span className="text-emerald-400 font-bold">{s.score}</span> · 👍 {s.upvotesCount} / 👎 {s.downvotesCount}</p>
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">{s.title}</h3>
+                    <p className="text-xs text-[var(--text-muted)]">{s.authorTag} · score <span className="text-emerald-400 font-bold">{s.score}</span> · 👍 {s.upvotesCount} / 👎 {s.downvotesCount}</p>
                   </div>
                 ))}
               </div>
@@ -886,21 +886,21 @@ export default function SuggestionsCenterClient() {
 
         {/* TAB: Paramètres */}
         {activeTab === "settings" && (
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-5 max-w-2xl">
-            <h3 className="text-base font-bold text-white flex items-center gap-2"><Sliders className="w-4 h-4 text-amber-400" /> Salon, anti-spam & notifications</h3>
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5 max-w-2xl">
+            <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><Sliders className="w-4 h-4 text-amber-400" /> Salon, anti-spam & notifications</h3>
 
-            <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--panel-border)]">
               <div>
-                <span className="font-bold text-white text-xs block">Module activé</span>
-                <span className="text-neutral-500 text-[11px]">Autorise /suggest et les votes sur Discord</span>
+                <span className="font-bold text-[var(--text-primary)] text-xs block">Module activé</span>
+                <span className="text-[var(--text-muted)] text-xs">Autorise /suggest et les votes sur Discord</span>
               </div>
-              <button onClick={() => saveConfig({ enabled: !config.enabled })} className={cn("px-3 py-1 rounded-lg text-xs font-bold cursor-pointer", config.enabled ? "bg-amber-500 text-white" : "bg-neutral-800 text-neutral-400")}>
+              <button onClick={() => saveConfig({ enabled: !config.enabled })} className={cn("px-3 py-1 rounded-lg text-xs font-bold cursor-pointer", config.enabled ? "bg-amber-500 text-white" : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)]")}>
                 {config.enabled ? "Activé" : "Désactivé"}
               </button>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-300 mb-1">Salon des suggestions</label>
+              <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1">Salon des suggestions</label>
               <ChannelPicker
                 guildId={currentGuildId}
                 value={config.channelId || ""}
@@ -914,45 +914,45 @@ export default function SuggestionsCenterClient() {
               />
             </div>
 
-            <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--panel-border)]">
               <div>
-                <span className="font-bold text-white text-xs block">Cooldown entre deux suggestions</span>
-                <span className="text-neutral-500 text-[11px]">Minutes minimum par membre (anti-spam)</span>
+                <span className="font-bold text-[var(--text-primary)] text-xs block">Cooldown entre deux suggestions</span>
+                <span className="text-[var(--text-muted)] text-xs">Minutes minimum par membre (anti-spam)</span>
               </div>
-              <input type="number" min={0} max={1440} value={config.cooldownMinutes} onChange={(e) => setConfig((p) => ({ ...p, cooldownMinutes: Number(e.target.value) }))} onBlur={() => saveConfig({ cooldownMinutes: config.cooldownMinutes })} className="w-20 h-9 rounded-xl bg-neutral-900 border border-neutral-700 text-center text-xs font-bold text-amber-400" />
+              <input type="number" min={0} max={1440} value={config.cooldownMinutes} onChange={(e) => setConfig((p) => ({ ...p, cooldownMinutes: Number(e.target.value) }))} onBlur={() => saveConfig({ cooldownMinutes: config.cooldownMinutes })} className="w-20 h-9 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-center text-sm font-bold text-amber-400" />
             </div>
 
-            <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--panel-border)]">
               <div>
-                <span className="font-bold text-white text-xs block">Fil de discussion automatique</span>
-                <span className="text-neutral-500 text-[11px]">Crée un thread sous chaque suggestion</span>
+                <span className="font-bold text-[var(--text-primary)] text-xs block">Fil de discussion automatique</span>
+                <span className="text-[var(--text-muted)] text-xs">Crée un thread sous chaque suggestion</span>
               </div>
-              <button onClick={() => saveConfig({ autoThread: !config.autoThread })} className={cn("px-3 py-1 rounded-lg text-xs font-bold cursor-pointer", config.autoThread ? "bg-amber-500 text-white" : "bg-neutral-800 text-neutral-400")}>
+              <button onClick={() => saveConfig({ autoThread: !config.autoThread })} className={cn("px-3 py-1 rounded-lg text-xs font-bold cursor-pointer", config.autoThread ? "bg-amber-500 text-white" : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)]")}>
                 {config.autoThread ? "Activé" : "Désactivé"}
               </button>
             </div>
 
-            <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--panel-border)]">
               <div>
-                <span className="font-bold text-white text-xs block">Notifier l'auteur en MP</span>
-                <span className="text-neutral-500 text-[11px]">À chaque changement de statut</span>
+                <span className="font-bold text-[var(--text-primary)] text-xs block">Notifier l'auteur en MP</span>
+                <span className="text-[var(--text-muted)] text-xs">À chaque changement de statut</span>
               </div>
-              <button onClick={() => saveConfig({ dmNotifications: !config.dmNotifications })} className={cn("px-3 py-1 rounded-lg text-xs font-bold cursor-pointer", config.dmNotifications ? "bg-amber-500 text-white" : "bg-neutral-800 text-neutral-400")}>
+              <button onClick={() => saveConfig({ dmNotifications: !config.dmNotifications })} className={cn("px-3 py-1 rounded-lg text-xs font-bold cursor-pointer", config.dmNotifications ? "bg-amber-500 text-white" : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)]")}>
                 {config.dmNotifications ? "Activé" : "Désactivé"}
               </button>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-300 mb-1">Catégories (séparées par des virgules)</label>
+              <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1">Catégories (séparées par des virgules)</label>
               <input
                 type="text"
                 value={config.categories.join(", ")}
                 onChange={(e) => setConfig((p) => ({ ...p, categories: e.target.value.split(",").map((c) => c.trim()).filter(Boolean) }))}
                 onBlur={() => saveConfig({ categories: config.categories })}
-                className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white"
+                className="w-full h-10 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--input-border)] px-3 text-sm text-[var(--text-primary)]"
               />
             </div>
-            {savingConfig && <p className="text-[10px] text-neutral-500">Enregistrement...</p>}
+            {savingConfig && <p className="text-xs text-[var(--text-muted)]">Enregistrement...</p>}
           </div>
         )}
       </div>

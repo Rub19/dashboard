@@ -124,7 +124,7 @@ function formatDelta(kpi: AnalyticsKPI) {
   if (kpi.trend === "down") {
     return { text: `${kpi.percentageChange}%`, colorClass: "text-rose-400", Icon: ArrowDownRight };
   }
-  return { text: "Stable", colorClass: "text-neutral-400", Icon: Minus };
+  return { text: "Stable", colorClass: "text-[var(--text-muted)]", Icon: Minus };
 }
 
 function healthStatusLabel(status: ServerHealthScore["status"]) {
@@ -143,7 +143,7 @@ function healthStatusLabel(status: ServerHealthScore["status"]) {
 function insightTrendClass(trend: AutomaticInsight["trend"]) {
   if (trend === "positive") return "border-emerald-500/20 bg-emerald-500/10 text-emerald-300";
   if (trend === "warning") return "border-amber-500/20 bg-amber-500/10 text-amber-300";
-  return "border-neutral-800 bg-neutral-950 text-neutral-300";
+  return "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)]";
 }
 
 const INSIGHT_ICON: Record<AutomaticInsight["type"], typeof TrendingUp> = {
@@ -300,18 +300,18 @@ export default function AnalyticsCenterClient() {
 
   const kpiCards: Array<{ label: string; kpi: AnalyticsKPI; colorClass: string }> = overview
     ? [
-        { label: `Messages (${period})`, kpi: overview.kpis.messages, colorClass: "text-white" },
+        { label: `Messages (${period})`, kpi: overview.kpis.messages, colorClass: "text-[var(--text-primary)]" },
         { label: "Membres Totaux", kpi: overview.kpis.members, colorClass: "text-cyan-400" },
-        { label: "Membres Actifs", kpi: overview.kpis.activeUsers, colorClass: "text-indigo-400" },
+        { label: "Membres Actifs", kpi: overview.kpis.activeUsers, colorClass: "text-emerald-300" },
         { label: "Commandes Exécutées", kpi: overview.kpis.commands, colorClass: "text-amber-400" },
-        { label: "Heures en Vocal", kpi: overview.kpis.voiceHours, colorClass: "text-purple-400" },
+        { label: "Heures en Vocal", kpi: overview.kpis.voiceHours, colorClass: "text-emerald-300" },
         { label: "Sanctions Modération", kpi: overview.kpis.moderationActions, colorClass: "text-rose-400" },
         { label: "Tickets Support", kpi: overview.kpis.tickets, colorClass: "text-emerald-400" },
       ]
     : [];
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -321,10 +321,10 @@ export default function AnalyticsCenterClient() {
                 <BarChart3 className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">
+                <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">
                   ETHONE Analytics &amp; Server Insights
                 </h1>
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Métriques d'activité réelles pour {selectedGuild?.name || "votre serveur"} : messages, croissance des
                   membres, heatmap horaire et top salons/membres.
                 </p>
@@ -343,11 +343,11 @@ export default function AnalyticsCenterClient() {
                 }}
               />
             ) : (
-              <span className="text-xs text-neutral-400">Aucun serveur administrable</span>
+              <span className="text-xs text-[var(--text-muted)]">Aucun serveur administrable</span>
             )}
 
             {/* Period Selector */}
-            <div className="flex items-center bg-neutral-900 border border-neutral-800 rounded-xl p-1 text-xs font-semibold">
+            <div className="flex items-center bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-1 text-xs font-semibold">
               {(["7d", "30d", "90d"] as const).map((p) => (
                 <button
                   key={p}
@@ -355,7 +355,7 @@ export default function AnalyticsCenterClient() {
                   className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                     period === p
                       ? "bg-cyan-500 text-white shadow-sm"
-                      : "text-neutral-400 hover:text-white"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   }`}
                 >
                   {p === "7d" ? "7 Jours" : p === "30d" ? "30 Jours" : "3 Mois"}
@@ -366,7 +366,7 @@ export default function AnalyticsCenterClient() {
             <button
               onClick={handleExport}
               disabled={exporting || !selectedGuild || !overview}
-              className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
+              className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
             >
               {exporting ? (
                 <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />
@@ -380,14 +380,14 @@ export default function AnalyticsCenterClient() {
 
         {/* Bot Not Installed Banner */}
         {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-5 text-xs text-indigo-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5 text-xs text-emerald-300">
             <div className="flex items-start gap-3">
-              <div className="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+              <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-300 shrink-0 mt-0.5">
                 <Bot className="h-6 w-6" />
               </div>
               <div>
-                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
-                <p className="mt-1 text-zinc-300 leading-relaxed">
+                <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-1 text-[var(--text-muted)] leading-relaxed">
                   Invitez le bot sur « {selectedGuild.name} » pour collecter et afficher les métriques en temps réel (messages, vocal, commandes, flux de membres).
                 </p>
               </div>
@@ -396,7 +396,7 @@ export default function AnalyticsCenterClient() {
               href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium text-xs transition-colors shrink-0 shadow-lg shadow-[#5865F2]/25 cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-xs transition-colors shrink-0 cursor-pointer"
             >
               Inviter le bot
             </a>
@@ -416,7 +416,7 @@ export default function AnalyticsCenterClient() {
         {/* Loading Indicator */}
         {loading && !overview && (
           <div className="flex items-center justify-center py-20">
-            <div className="flex items-center gap-2.5 text-sm text-neutral-400">
+            <div className="flex items-center gap-2.5 text-sm text-[var(--text-muted)]">
               <Loader2 className="w-5 h-5 animate-spin text-cyan-400" />
               Chargement des statistiques...
             </div>
@@ -425,14 +425,14 @@ export default function AnalyticsCenterClient() {
 
         {/* No Server Selected */}
         {!selectedGuild && !loading && (
-          <div className="flex items-center justify-center py-20 text-sm text-neutral-400">
+          <div className="flex items-center justify-center py-20 text-sm text-[var(--text-muted)]">
             Sélectionnez un serveur Discord pour afficher ses analytics.
           </div>
         )}
 
         {/* No Data Available for Installed Guild */}
         {!overview && !loading && selectedGuild && (botGuildIds === null || botGuildIds.includes(selectedGuild.id)) && (
-          <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-8 text-center text-sm text-neutral-400">
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-8 text-center text-sm text-[var(--text-muted)]">
             Aucune donnée d&apos;analytics disponible pour ce serveur pour le moment.
           </div>
         )}
@@ -444,7 +444,7 @@ export default function AnalyticsCenterClient() {
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               {toastMsg}
             </span>
-            <button onClick={() => setToastMsg(null)} className="text-emerald-400 hover:text-white">
+            <button onClick={() => setToastMsg(null)} className="text-emerald-400 hover:text-[var(--text-primary)]">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -457,28 +457,28 @@ export default function AnalyticsCenterClient() {
           {kpiCards.map(({ label, kpi, colorClass }) => {
             const delta = formatDelta(kpi);
             return (
-              <div key={label} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-                <span className="text-xs text-neutral-500 font-medium">{label}</span>
+              <div key={label} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
+                <span className="text-xs text-[var(--text-muted)] font-medium">{label}</span>
                 <p className={`text-2xl font-bold ${colorClass}`}>
                   {kpi.current.toLocaleString("fr-FR")}
                   {kpi.unit ? ` ${kpi.unit}` : ""}
                 </p>
-                <span className={`text-[11px] flex items-center gap-0.5 ${delta.colorClass}`}>
+                <span className={`text-xs flex items-center gap-0.5 ${delta.colorClass}`}>
                   <delta.Icon className="w-3 h-3" /> {delta.text}
                 </span>
               </div>
             );
           })}
 
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Score de Santé</span>
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
+            <span className="text-xs text-[var(--text-muted)] font-medium">Score de Santé</span>
             <p className={`text-2xl font-bold ${health.colorClass}`}>{overview.healthScore.score} / 100</p>
-            <span className={`text-[11px] ${health.colorClass}`}>{health.text}</span>
+            <span className={`text-xs ${health.colorClass}`}>{health.text}</span>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-neutral-800 gap-2 overflow-x-auto pb-1">
+        <div className="flex border-b border-[var(--panel-border)] gap-2 overflow-x-auto pb-1">
           {[
             { id: "messages", label: "Activité des Messages", icon: MessageSquare },
             { id: "growth", label: "Croissance & Rétention", icon: TrendingUp },
@@ -494,11 +494,11 @@ export default function AnalyticsCenterClient() {
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                   isActive
-                    ? "bg-neutral-900 text-white border-b-2 border-cyan-500"
-                    : "text-neutral-400 hover:text-white"
+                    ? "bg-[var(--surface-raised)]/40 text-white border-b-2 border-cyan-500"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? "text-cyan-400" : "text-neutral-500"}`} />
+                <Icon className={`w-4 h-4 ${isActive ? "text-cyan-400" : "text-[var(--text-muted)]"}`} />
                 {tab.label}
               </button>
             );
@@ -508,14 +508,14 @@ export default function AnalyticsCenterClient() {
         {/* TAB 1: Messages Chart */}
         {activeTab === "messages" && (
           <div className="space-y-6">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-cyan-400" />
                     Volume de Messages
                   </h3>
-                  <p className="text-xs text-neutral-400">
+                  <p className="text-xs text-[var(--text-muted)]">
                     Distribution réelle sur la période sélectionnée ({period})
                   </p>
                 </div>
@@ -525,7 +525,7 @@ export default function AnalyticsCenterClient() {
               </div>
 
               {overview.timeSeries.length === 0 ? (
-                <p className="text-xs text-neutral-500 py-10 text-center">
+                <p className="text-xs text-[var(--text-muted)] py-10 text-center">
                   Pas encore de données de messages pour cette période.
                 </p>
               ) : (
@@ -535,16 +535,16 @@ export default function AnalyticsCenterClient() {
                       const heightPct = Math.round((item.messages / maxTimeSeries) * 100);
                       return (
                         <div key={idx} className="flex-1 flex flex-col items-center gap-2 group">
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-mono text-cyan-300 font-bold">
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs font-mono text-cyan-300 font-bold">
                             {item.messages}
                           </div>
-                          <div className="w-full bg-neutral-950 rounded-t-lg overflow-hidden h-44 flex items-end">
+                          <div className="w-full bg-[var(--surface-raised)]/40 rounded-t-lg overflow-hidden h-44 flex items-end">
                             <div
-                              className="w-full bg-gradient-to-t from-cyan-600 to-indigo-500 rounded-t-lg group-hover:from-cyan-400 group-hover:to-indigo-400 transition-all duration-300 shadow-sm"
+                              className="w-full rounded-t-lg transition-all duration-300 shadow-sm bg-[var(--surface-raised)]/40"
                               style={{ height: `${heightPct}%` }}
                             />
                           </div>
-                          <span className="text-[10px] text-neutral-500 font-mono">{item.timestamp}</span>
+                          <span className="text-xs text-[var(--text-muted)] font-mono">{item.timestamp}</span>
                         </div>
                       );
                     })}
@@ -555,21 +555,21 @@ export default function AnalyticsCenterClient() {
 
             {/* Message Type Distribution */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-2">
-                <span className="text-xs text-neutral-400 font-medium">Messages Textuels</span>
-                <p className="text-2xl font-bold text-white">{overview.messageTypeBreakdown.textPct}%</p>
-                <div className="h-1.5 w-full bg-neutral-950 rounded-full overflow-hidden">
+              <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-5 space-y-2">
+                <span className="text-xs text-[var(--text-muted)] font-medium">Messages Textuels</span>
+                <p className="text-2xl font-bold text-[var(--text-primary)]">{overview.messageTypeBreakdown.textPct}%</p>
+                <div className="h-1.5 w-full bg-[var(--panel-border)] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-indigo-500 rounded-full"
+                    className="h-full bg-emerald-500 rounded-full"
                     style={{ width: `${overview.messageTypeBreakdown.textPct}%` }}
                   />
                 </div>
               </div>
 
-              <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-2">
-                <span className="text-xs text-neutral-400 font-medium">Images & Vidéos (Médias)</span>
+              <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-5 space-y-2">
+                <span className="text-xs text-[var(--text-muted)] font-medium">Images & Vidéos (Médias)</span>
                 <p className="text-2xl font-bold text-cyan-400">{overview.messageTypeBreakdown.mediaPct}%</p>
-                <div className="h-1.5 w-full bg-neutral-950 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-[var(--panel-border)] rounded-full overflow-hidden">
                   <div
                     className="h-full bg-cyan-500 rounded-full"
                     style={{ width: `${overview.messageTypeBreakdown.mediaPct}%` }}
@@ -577,12 +577,12 @@ export default function AnalyticsCenterClient() {
                 </div>
               </div>
 
-              <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-2">
-                <span className="text-xs text-neutral-400 font-medium">Liens & Intégrations</span>
-                <p className="text-2xl font-bold text-purple-400">{overview.messageTypeBreakdown.linkPct}%</p>
-                <div className="h-1.5 w-full bg-neutral-950 rounded-full overflow-hidden">
+              <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-5 space-y-2">
+                <span className="text-xs text-[var(--text-muted)] font-medium">Liens & Intégrations</span>
+                <p className="text-2xl font-bold text-emerald-300">{overview.messageTypeBreakdown.linkPct}%</p>
+                <div className="h-1.5 w-full bg-[var(--panel-border)] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-purple-500 rounded-full"
+                    className="h-full bg-emerald-500 rounded-full"
                     style={{ width: `${overview.messageTypeBreakdown.linkPct}%` }}
                   />
                 </div>
@@ -594,33 +594,33 @@ export default function AnalyticsCenterClient() {
         {/* TAB 2: Growth & Retention */}
         {activeTab === "growth" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <Users className="w-5 h-5 text-emerald-400" />
                   Flux des Membres ({period})
                 </h3>
               </div>
 
               <div className="space-y-3">
-                <div className="p-4 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between">
+                <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <span className="text-xs text-neutral-400">Nouveaux arrivants</span>
+                    <span className="text-xs text-[var(--text-muted)]">Nouveaux arrivants</span>
                     <p className="text-xl font-bold text-emerald-400">+{joinsTotal} membres</p>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between">
+                <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <span className="text-xs text-neutral-400">Départs constatés</span>
+                    <span className="text-xs text-[var(--text-muted)]">Départs constatés</span>
                     <p className="text-xl font-bold text-rose-400">-{leavesTotal} départs</p>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between">
+                <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <span className="text-xs text-neutral-400">Croissance nette</span>
-                    <p className="text-xl font-bold text-white">
+                    <span className="text-xs text-[var(--text-muted)]">Croissance nette</span>
+                    <p className="text-xl font-bold text-[var(--text-primary)]">
                       {netGrowth >= 0 ? "+" : ""}
                       {netGrowth} membres
                     </p>
@@ -638,26 +638,26 @@ export default function AnalyticsCenterClient() {
               </div>
             </div>
 
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+              <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-cyan-400" />
                 Rétention des Membres Actifs
               </h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed">
                 Part des membres actifs de la période précédente encore actifs cette période :
               </p>
 
               {overview.retentionRate === null ? (
-                <p className="text-xs text-neutral-500 py-6 text-center">
+                <p className="text-xs text-[var(--text-muted)] py-6 text-center">
                   Pas assez de données sur la période précédente pour calculer une rétention.
                 </p>
               ) : (
                 <div className="space-y-1.5 pt-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-neutral-300 font-semibold">Rétention ({period})</span>
+                    <span className="text-[var(--text-muted)] font-semibold">Rétention ({period})</span>
                     <span className="text-emerald-400 font-bold font-mono">{overview.retentionRate}%</span>
                   </div>
-                  <div className="h-2.5 w-full bg-neutral-950 rounded-full overflow-hidden">
+                  <div className="h-2.5 w-full bg-[var(--panel-border)] rounded-full overflow-hidden">
                     <div
                       className="h-full bg-emerald-500 rounded-full"
                       style={{ width: `${Math.min(100, overview.retentionRate)}%` }}
@@ -671,14 +671,14 @@ export default function AnalyticsCenterClient() {
 
         {/* TAB 3: Heatmap */}
         {activeTab === "heatmap" && (
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <Clock className="w-5 h-5 text-amber-400" />
                   Heatmap d'Affluence Horaire
                 </h3>
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Messages + commandes réels, par jour et par heure, sur la période sélectionnée.
                 </p>
               </div>
@@ -690,7 +690,7 @@ export default function AnalyticsCenterClient() {
             </div>
 
             {maxHeatmapValue === 0 ? (
-              <p className="text-xs text-neutral-500 py-10 text-center">
+              <p className="text-xs text-[var(--text-muted)] py-10 text-center">
                 Pas encore assez d'activité enregistrée pour afficher une heatmap.
               </p>
             ) : (
@@ -702,7 +702,7 @@ export default function AnalyticsCenterClient() {
                       .sort((a, b) => a.hour - b.hour);
                     return (
                       <div key={dayIdx} className="flex items-center gap-2 text-xs">
-                        <span className="w-10 font-bold text-neutral-400">
+                        <span className="w-10 font-bold text-[var(--text-muted)]">
                           {DAY_LABELS_BY_JS_INDEX[dayIdx]}
                         </span>
                         <div
@@ -711,7 +711,7 @@ export default function AnalyticsCenterClient() {
                         >
                           {dayCells.map((cell) => {
                             const ratio = maxHeatmapValue > 0 ? cell.value / maxHeatmapValue : 0;
-                            let opacityClass = "bg-neutral-950 border border-neutral-800";
+                            let opacityClass = "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]";
                             if (ratio > 0.75) opacityClass = "bg-cyan-400 shadow-sm";
                             else if (ratio > 0.5) opacityClass = "bg-cyan-600";
                             else if (ratio > 0.25) opacityClass = "bg-cyan-800/70";
@@ -730,7 +730,7 @@ export default function AnalyticsCenterClient() {
                     );
                   })}
 
-                  <div className="flex items-center justify-between text-[11px] text-neutral-500 font-mono pt-2 pl-12">
+                  <div className="flex items-center justify-between text-xs text-[var(--text-muted)] font-mono pt-2 pl-12">
                     <span>00h</span>
                     <span>04h</span>
                     <span>08h</span>
@@ -749,14 +749,14 @@ export default function AnalyticsCenterClient() {
         {activeTab === "channels" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Channels Share */}
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Hash className="w-5 h-5 text-indigo-400" />
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+              <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                <Hash className="w-5 h-5 text-emerald-300" />
                 Part de Voix des Salons Textuels
               </h3>
 
               {overview.topChannels.length === 0 ? (
-                <p className="text-xs text-neutral-500 py-6 text-center">
+                <p className="text-xs text-[var(--text-muted)] py-6 text-center">
                   Pas encore de messages enregistrés sur cette période.
                 </p>
               ) : (
@@ -764,14 +764,14 @@ export default function AnalyticsCenterClient() {
                   {overview.topChannels.map((ch) => (
                     <div key={ch.channelId} className="space-y-1.5">
                       <div className="flex justify-between text-xs">
-                        <span className="font-mono text-white font-medium">#{ch.channelName}</span>
-                        <span className="text-neutral-400 font-mono">
+                        <span className="font-mono text-[var(--text-primary)] font-medium">#{ch.channelName}</span>
+                        <span className="text-[var(--text-muted)] font-mono">
                           {ch.messageCount.toLocaleString("fr-FR")} msg ({ch.percentage}%)
                         </span>
                       </div>
-                      <div className="h-2 w-full bg-neutral-950 rounded-full overflow-hidden">
+                      <div className="h-2 w-full bg-[var(--panel-border)] rounded-full overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-indigo-500"
+                          className="h-full rounded-full bg-emerald-500"
                           style={{ width: `${ch.percentage}%` }}
                         />
                       </div>
@@ -782,37 +782,37 @@ export default function AnalyticsCenterClient() {
             </div>
 
             {/* Top Chatters */}
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+              <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Crown className="w-5 h-5 text-amber-400" />
                 Membres les Plus Actifs ({period})
               </h3>
 
               {overview.topMembers.length === 0 ? (
-                <p className="text-xs text-neutral-500 py-6 text-center">
+                <p className="text-xs text-[var(--text-muted)] py-6 text-center">
                   Pas encore de messages enregistrés sur cette période.
                 </p>
               ) : (
-                <div className="divide-y divide-neutral-800">
+                <div className="divide-y divide-[var(--panel-border)]">
                   {overview.topMembers.map((m, idx) => (
                     <div key={m.userId} className="py-2.5 flex items-center justify-between text-xs">
                       <div className="flex items-center gap-3">
-                        <span className="w-5 font-mono font-bold text-neutral-400">#{idx + 1}</span>
+                        <span className="w-5 font-mono font-bold text-[var(--text-muted)]">#{idx + 1}</span>
                         {m.avatarUrl ? (
                           <img
                             src={m.avatarUrl}
                             alt={m.username}
-                            className="w-8 h-8 rounded-full border border-neutral-700 object-cover"
+                            className="w-8 h-8 rounded-full border border-[var(--panel-border)] object-cover"
                           />
                         ) : (
-                          <div className="w-8 h-8 rounded-full border border-neutral-700 bg-neutral-800 flex items-center justify-center">
-                            <UserIcon className="w-4 h-4 text-neutral-500" />
+                          <div className="w-8 h-8 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-center justify-center">
+                            <UserIcon className="w-4 h-4 text-[var(--text-muted)]" />
                           </div>
                         )}
-                        <span className="font-bold text-white">{m.username}</span>
+                        <span className="font-bold text-[var(--text-primary)]">{m.username}</span>
                       </div>
 
-                      <span className="text-cyan-400 font-semibold font-mono text-[11px]">
+                      <span className="text-cyan-400 font-semibold font-mono text-xs">
                         {m.messageCount.toLocaleString("fr-FR")} msg
                       </span>
                     </div>
@@ -826,18 +826,18 @@ export default function AnalyticsCenterClient() {
         {/* TAB 5: Automatic Insights */}
         {activeTab === "insights" && (
           <div className="space-y-4 max-w-2xl">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+              <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-cyan-400" />
                 Informations Générées Automatiquement
               </h3>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-[var(--text-muted)]">
                 Calculées à partir des données réelles de la période sélectionnée — aucune valeur
                 inventée.
               </p>
 
               {overview.insights.length === 0 ? (
-                <p className="text-xs text-neutral-500 py-6 text-center">
+                <p className="text-xs text-[var(--text-muted)] py-6 text-center">
                   Pas assez de données pour générer des informations sur cette période.
                 </p>
               ) : (
@@ -860,19 +860,19 @@ export default function AnalyticsCenterClient() {
               )}
             </div>
 
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-3">
-              <h3 className="text-sm font-bold text-white">État du Bot</h3>
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-3">
+              <h3 className="text-sm font-bold text-[var(--text-primary)]">État du Bot</h3>
               <div className="grid grid-cols-3 gap-3 text-xs">
                 <div>
-                  <span className="text-neutral-500 block">Ping</span>
-                  <span className="text-white font-mono">{overview.botHealth.pingMs} ms</span>
+                  <span className="text-[var(--text-muted)] block">Ping</span>
+                  <span className="text-[var(--text-primary)] font-mono">{overview.botHealth.pingMs} ms</span>
                 </div>
                 <div>
-                  <span className="text-neutral-500 block">Mémoire</span>
-                  <span className="text-white font-mono">{overview.botHealth.memoryMb} Mo</span>
+                  <span className="text-[var(--text-muted)] block">Mémoire</span>
+                  <span className="text-[var(--text-primary)] font-mono">{overview.botHealth.memoryMb} Mo</span>
                 </div>
                 <div>
-                  <span className="text-neutral-500 block">Statut</span>
+                  <span className="text-[var(--text-muted)] block">Statut</span>
                   <span
                     className={`font-mono ${
                       overview.botHealth.status === "healthy" ? "text-emerald-400" : "text-amber-400"

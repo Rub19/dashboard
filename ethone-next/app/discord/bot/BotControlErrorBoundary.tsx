@@ -34,20 +34,20 @@ export default class BotControlErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-full bg-[var(--bg-main)] text-zinc-100 flex flex-col items-center justify-center p-6">
-          <div className="max-w-md w-full rounded-2xl border border-zinc-800 bg-zinc-950/80 p-8 text-center space-y-6 shadow-xl backdrop-blur-md">
+        <div className="min-h-full bg-[var(--bg-main)] text-[var(--text-primary)] flex flex-col items-center justify-center p-6">
+          <div className="max-w-md w-full rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-8 text-center space-y-6">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20">
               <AlertTriangle className="h-7 w-7" />
             </div>
 
             <div className="space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-rose-400">
                 Bot Control Center
               </span>
-              <h2 className="text-lg font-bold text-white">
+              <h2 className="text-lg font-bold text-[var(--text-primary)]">
                 Un problème est survenu lors du chargement
               </h2>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed">
                 {this.state.error?.message ||
                   "Une erreur inattendue est survenue dans la console de contrôle du bot."}
               </p>
@@ -56,7 +56,7 @@ export default class BotControlErrorBoundary extends Component<Props, State> {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
               <Link
                 href="/discord"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-700 bg-zinc-900 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-white transition-all"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Retour Discord</span>
@@ -65,7 +65,7 @@ export default class BotControlErrorBoundary extends Component<Props, State> {
               <button
                 type="button"
                 onClick={this.handleRetry}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 text-xs font-semibold text-white hover:bg-indigo-500 transition-all cursor-pointer shadow-sm"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 text-xs font-semibold text-white hover:bg-emerald-600 transition-all cursor-pointer shadow-sm"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Réessayer</span>

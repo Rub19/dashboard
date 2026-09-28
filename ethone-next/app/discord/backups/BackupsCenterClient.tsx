@@ -465,14 +465,14 @@ export default function BackupsCenterClient() {
   const healthy = kpis.healthStatus === "HEALTHY";
 
   const TYPE_BADGE: Record<BackupType, string> = {
-    FULL: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
+    FULL: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
     PARTIAL: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
     PRE_CHANGE: "bg-amber-500/20 text-amber-300 border-amber-500/30",
     ROLLBACK: "bg-rose-500/20 text-rose-300 border-rose-500/30",
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8 pb-44 md:pb-44">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] p-4 md:p-8 pb-44 md:pb-44">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -480,20 +480,20 @@ export default function BackupsCenterClient() {
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
                 href={`/discord${guildQuery}`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
+                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer shadow-sm"
                 title="Retour au hub Discord"
               >
-                <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+                <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                 <span>Retour Discord</span>
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20">
+              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-xl border border-emerald-500/30">
                 <Archive className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">Sauvegardes & Disaster Recovery</h1>
-                <p className="text-xs text-neutral-400">
+                <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">Sauvegardes & Disaster Recovery</h1>
+                <p className="text-xs text-[var(--text-muted)]">
                   Snapshots signés SHA-256 de la structure Discord et des modules ETHONE.
                   {isDemo && isBotPresent && <span className="text-amber-400"> (bot temporairement injoignable)</span>}
                 </p>
@@ -511,19 +511,19 @@ export default function BackupsCenterClient() {
                 }}
               />
             )}
-            <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
-              <RefreshCw className={cn("w-4 h-4 text-indigo-400", loading && "animate-spin")} />
+            <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
+              <RefreshCw className={cn("w-4 h-4 text-emerald-300", loading && "animate-spin")} />
               Actualiser
             </button>
-            <Link href={`/discord/backups/compare${guildQuery}`} className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors">
-              <GitCompare className="w-4 h-4 text-indigo-400" />
+            <Link href={`/discord/backups/compare${guildQuery}`} className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors">
+              <GitCompare className="w-4 h-4 text-emerald-300" />
               Comparer
             </Link>
-            <Link href={`/discord/backups/settings${guildQuery}`} className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors">
-              <Settings className="w-4 h-4 text-neutral-400" />
+            <Link href={`/discord/backups/settings${guildQuery}`} className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors">
+              <Settings className="w-4 h-4 text-[var(--text-muted)]" />
               Paramètres
             </Link>
-            <button onClick={handleStartCreateWizard} className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer">
+            <button onClick={handleStartCreateWizard} className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer">
               <Plus className="w-4 h-4" />
               Créer une Sauvegarde
             </button>
@@ -538,9 +538,9 @@ export default function BackupsCenterClient() {
                 <Bot className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm font-bold text-white">Bot non présent sur ce serveur</p>
+                <p className="text-sm font-bold text-[var(--text-primary)]">Bot non présent sur ce serveur</p>
                 <p className="text-xs text-amber-200/80">
-                  Installe le bot sur <span className="font-semibold text-white">{selectedGuild.name}</span> pour sauvegarder et restaurer la structure du serveur.
+                  Installe le bot sur <span className="font-semibold text-[var(--text-primary)]">{selectedGuild.name}</span> pour sauvegarder et restaurer la structure du serveur.
                 </p>
               </div>
             </div>
@@ -558,31 +558,31 @@ export default function BackupsCenterClient() {
         {/* KPI réels */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {[
-            { label: "Total sauvegardes", value: String(kpis.totalBackups), cls: "text-white", sub: `${kpis.verifiedCount} vérifiée(s)` },
+            { label: "Total sauvegardes", value: String(kpis.totalBackups), cls: "text-[var(--text-primary)]", sub: `${kpis.verifiedCount} vérifiée(s)` },
             { label: "Dernière sauvegarde", value: relative(kpis.lastBackupAt), cls: "text-emerald-400", sub: kpis.lastBackupAt ? new Date(kpis.lastBackupAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }) : "Aucune" },
-            { label: "Stockage utilisé", value: `${(kpis.storageUsedBytes / 1024 / 1024).toFixed(2)} MB`, cls: "text-indigo-400", sub: "Fichiers JSON signés" },
+            { label: "Stockage utilisé", value: `${(kpis.storageUsedBytes / 1024 / 1024).toFixed(2)} MB`, cls: "text-emerald-300", sub: "Fichiers JSON signés" },
             { label: "Planification", value: kpis.scheduledEnabled ? FREQ_LABEL[kpis.frequency] || kpis.frequency : "Désactivée", cls: "text-amber-400", sub: kpis.nextScheduledAt ? `Prochaine : ${new Date(kpis.nextScheduledAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}` : "Aucune auto-sauvegarde" },
             { label: "Snapshots protégés", value: String(kpis.protectedCount), cls: "text-rose-400", sub: "Exclus de la rétention" },
             { label: "Santé DR", value: healthy ? "Protégé" : kpis.healthStatus === "WARNING" ? "À surveiller" : "Critique", cls: healthy ? "text-emerald-400" : kpis.healthStatus === "WARNING" ? "text-amber-400" : "text-rose-400", sub: healthy ? "Snapshot récent valide" : "Crée une sauvegarde" },
           ].map((k) => (
-            <div key={k.label} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-              <span className="text-xs text-neutral-500 font-medium">{k.label}</span>
+            <div key={k.label} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
+              <span className="text-xs text-[var(--text-muted)] font-medium">{k.label}</span>
               <p className={cn("text-xl font-bold truncate", k.cls)}>{k.value}</p>
-              <span className="text-[11px] text-neutral-400 block truncate">{k.sub}</span>
+              <span className="text-xs text-[var(--text-muted)] block truncate">{k.sub}</span>
             </div>
           ))}
         </div>
 
         {/* Bandeau santé */}
-        <div className={cn("border border-neutral-800 rounded-2xl p-6 relative overflow-hidden bg-gradient-to-r via-neutral-900", healthy ? "from-indigo-950/40 to-emerald-950/40" : "from-amber-950/40 to-rose-950/30")}>
+        <div className={cn("border border-[var(--panel-border)] rounded-2xl p-6 relative overflow-hidden bg-[var(--surface-raised)]/40", healthy ? " to-emerald-950/40" : "from-amber-950/40 to-rose-950/30")}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className={cn("w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0", healthy ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-amber-500/10 border-amber-500/20 text-amber-400")}>
                 {healthy ? <ShieldCheck className="w-6 h-6" /> : <AlertTriangle className="w-6 h-6" />}
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">{healthy ? "Ton serveur Discord est protégé" : "Aucune sauvegarde récente"}</h3>
-                <p className="text-xs text-neutral-400 mt-0.5">
+                <h3 className="text-base font-bold text-[var(--text-primary)]">{healthy ? "Ton serveur Discord est protégé" : "Aucune sauvegarde récente"}</h3>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
                   {healthy
                     ? `Dernier snapshot ${relative(kpis.lastBackupAt).toLowerCase()}, signé SHA-256.${kpis.scheduledEnabled ? " Auto-sauvegarde active." : " Active la planification dans les paramètres."}`
                     : "Crée un snapshot maintenant pour pouvoir restaurer salons, rôles et configuration ETHONE en cas d'incident."}
@@ -591,11 +591,11 @@ export default function BackupsCenterClient() {
             </div>
             <div className="flex items-center gap-2">
               {backups[0] && (
-                <button onClick={() => openTest(backups[0])} className="px-3.5 py-1.5 rounded-xl border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-200 transition-colors cursor-pointer">
+                <button onClick={() => openTest(backups[0])} className="px-3.5 py-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer">
                   Tester intégrité
                 </button>
               )}
-              <button onClick={handleStartCreateWizard} className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition-colors cursor-pointer">
+              <button onClick={handleStartCreateWizard} className="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-semibold text-white transition-colors cursor-pointer">
                 Sauvegarder maintenant
               </button>
             </div>
@@ -605,15 +605,15 @@ export default function BackupsCenterClient() {
         {/* Filtres */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input type="text" placeholder="Rechercher par nom, ID ou créateur..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-neutral-900 border border-neutral-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500 transition-colors" />
+            <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input type="text" placeholder="Rechercher par nom, ID ou créateur..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] transition-colors" />
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
             {[
               { id: "ALL", label: "Toutes" }, { id: "FULL", label: "Complètes" }, { id: "PARTIAL", label: "Partielles" },
               { id: "PRE_CHANGE", label: "Pre-Change" }, { id: "ROLLBACK", label: "Rollback" }, { id: "PROTECTED", label: "🔒 Protégées" },
             ].map((tab) => (
-              <button key={tab.id} onClick={() => setSelectedType(tab.id)} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer", selectedType === tab.id ? "bg-indigo-600 text-white" : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white")}>
+              <button key={tab.id} onClick={() => setSelectedType(tab.id)} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer", selectedType === tab.id ? "bg-emerald-500 text-white" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-white")}>
                 {tab.label}
               </button>
             ))}
@@ -621,10 +621,10 @@ export default function BackupsCenterClient() {
         </div>
 
         {/* Table */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden">
+        <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-neutral-950/70 border-b border-neutral-800 text-neutral-400 font-semibold uppercase tracking-wider">
+              <thead className="bg-[var(--surface-raised)]/40 border-b border-[var(--panel-border)] text-[var(--text-muted)] font-semibold uppercase tracking-wider">
                 <tr>
                   <th className="px-5 py-3.5">Sauvegarde</th>
                   <th className="px-4 py-3.5">Type</th>
@@ -635,55 +635,55 @@ export default function BackupsCenterClient() {
                   <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800/60">
+              <tbody className="divide-y divide-[var(--panel-border)]">
                 {filteredBackups.length === 0 && (
-                  <tr><td colSpan={7} className="px-5 py-10 text-center text-neutral-500">Aucune sauvegarde pour ce filtre.</td></tr>
+                  <tr><td colSpan={7} className="px-5 py-10 text-center text-[var(--text-muted)]">Aucune sauvegarde pour ce filtre.</td></tr>
                 )}
                 {filteredBackups.map((bkp) => (
-                  <tr key={bkp.backupId} className="hover:bg-neutral-800/30 transition-colors group">
+                  <tr key={bkp.backupId} className="hover:bg-[var(--surface-raised)]/70 transition-colors group">
                     <td className="px-5 py-4">
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2">
-                          <Link href={`/discord/backups/${bkp.backupId}${guildQuery}`} className="font-semibold text-white hover:text-indigo-400 transition-colors text-sm">{bkp.name}</Link>
+                          <Link href={`/discord/backups/${bkp.backupId}${guildQuery}`} className="font-semibold text-[var(--text-primary)] hover:text-emerald-300 transition-colors text-sm">{bkp.name}</Link>
                           {bkp.isProtected && <span className="p-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20" title="Protégé"><Lock className="w-3 h-3" /></span>}
                         </div>
-                        <p className="font-mono text-[11px] text-neutral-500">{bkp.backupId}</p>
+                        <p className="font-mono text-xs text-[var(--text-muted)]">{bkp.backupId}</p>
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <span className={cn("px-2.5 py-0.5 rounded-full text-[10px] font-bold border", TYPE_BADGE[bkp.type])}>{bkp.type.replace("_", "-")}</span>
+                      <span className={cn("px-2.5 py-0.5 rounded-full text-xs font-bold border", TYPE_BADGE[bkp.type])}>{bkp.type.replace("_", "-")}</span>
                     </td>
-                    <td className="px-4 py-4 text-neutral-300">
+                    <td className="px-4 py-4 text-[var(--text-muted)]">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="px-1.5 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-400">{bkp.objectCounts.channels} salons</span>
-                        <span className="px-1.5 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-400">{bkp.objectCounts.roles} rôles</span>
-                        <span className="px-1.5 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-400">{bkp.objectCounts.ethoneModules} modules</span>
+                        <span className="px-1.5 py-0.5 rounded bg-[var(--surface-raised)]/40 text-xs text-[var(--text-muted)]">{bkp.objectCounts.channels} salons</span>
+                        <span className="px-1.5 py-0.5 rounded bg-[var(--surface-raised)]/40 text-xs text-[var(--text-muted)]">{bkp.objectCounts.roles} rôles</span>
+                        <span className="px-1.5 py-0.5 rounded bg-[var(--surface-raised)]/40 text-xs text-[var(--text-muted)]">{bkp.objectCounts.ethoneModules} modules</span>
                       </div>
                     </td>
-                    <td className="px-4 py-4 font-mono text-neutral-400">{(bkp.sizeBytes / 1024).toFixed(0)} Ko</td>
+                    <td className="px-4 py-4 font-mono text-[var(--text-muted)]">{(bkp.sizeBytes / 1024).toFixed(0)} Ko</td>
                     <td className="px-4 py-4">
-                      <span className="text-neutral-300 font-medium block">{bkp.createdBy.tag}</span>
-                      <span className="text-neutral-500 text-[11px]">{new Date(bkp.createdAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}</span>
+                      <span className="text-[var(--text-muted)] font-medium block">{bkp.createdBy.tag}</span>
+                      <span className="text-[var(--text-muted)] text-xs">{new Date(bkp.createdAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}</span>
                     </td>
                     <td className="px-4 py-4">
                       {bkp.status === "COMPLETED" ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><CheckCircle2 className="w-3 h-3" /> Vérifié</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><CheckCircle2 className="w-3 h-3" /> Vérifié</span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20"><AlertTriangle className="w-3 h-3" /> {bkp.status}</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20"><AlertTriangle className="w-3 h-3" /> {bkp.status}</span>
                       )}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
-                        <Link href={`/discord/backups/${bkp.backupId}${guildQuery}`} className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors" title="Inspecter"><Eye className="w-3.5 h-3.5" /></Link>
+                        <Link href={`/discord/backups/${bkp.backupId}${guildQuery}`} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-white transition-colors" title="Inspecter"><Eye className="w-3.5 h-3.5" /></Link>
                         {!isDemo && (
-                          <a href={`${base}/${bkp.backupId}/download`} className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors" title="Télécharger (.ethone-backup.json)"><Download className="w-3.5 h-3.5" /></a>
+                          <a href={`${base}/${bkp.backupId}/download`} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-white transition-colors" title="Télécharger (.ethone-backup.json)"><Download className="w-3.5 h-3.5" /></a>
                         )}
                         <button onClick={() => handleOpenRestore(bkp)} className="p-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 transition-colors cursor-pointer" title="Restaurer"><RotateCcw className="w-3.5 h-3.5" /></button>
-                        <Link href={`/discord/backups/compare?backupA=${bkp.backupId}&backupB=LIVE${selectedGuild ? `&guildId=${selectedGuild.id}` : ""}`} className="p-1.5 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 border border-indigo-500/30 transition-colors" title="Comparer avec le direct"><GitCompare className="w-3.5 h-3.5" /></Link>
-                        <button onClick={() => handleToggleProtect(bkp)} className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white transition-colors cursor-pointer" title={bkp.isProtected ? "Retirer protection" : "Protéger"}>
+                        <Link href={`/discord/backups/compare?backupA=${bkp.backupId}&backupB=LIVE${selectedGuild ? `&guildId=${selectedGuild.id}` : ""}`} className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 transition-colors" title="Comparer avec le direct"><GitCompare className="w-3.5 h-3.5" /></Link>
+                        <button onClick={() => handleToggleProtect(bkp)} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer" title={bkp.isProtected ? "Retirer protection" : "Protéger"}>
                           {bkp.isProtected ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
                         </button>
-                        <button onClick={() => handleDelete(bkp)} className="p-1.5 rounded-lg bg-neutral-800 hover:bg-rose-500/20 text-neutral-400 hover:text-rose-400 transition-colors cursor-pointer" title="Supprimer"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => handleDelete(bkp)} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-rose-500/20 text-[var(--text-muted)] hover:text-rose-400 transition-colors cursor-pointer" title="Supprimer"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
                   </tr>
@@ -695,57 +695,57 @@ export default function BackupsCenterClient() {
 
         {/* MODAL: création */}
         {showCreateModal && (
-          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-xl w-full p-6 space-y-6 relative">
-              <button onClick={() => !isCreating && setShowCreateModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white cursor-pointer"><X className="w-5 h-5" /></button>
+          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 flex items-center justify-center p-4">
+            <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-2xl max-w-xl w-full p-6 space-y-6 relative">
+              <button onClick={() => !isCreating && setShowCreateModal(false)} className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"><X className="w-5 h-5" /></button>
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20"><Archive className="w-5 h-5" /></div>
+                <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-xl border border-emerald-500/30"><Archive className="w-5 h-5" /></div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">Créer une Sauvegarde</h3>
-                  <p className="text-xs text-neutral-400">Le bot capture la structure Discord et les modules ETHONE en temps réel.</p>
+                  <h3 className="text-lg font-bold text-[var(--text-primary)]">Créer une Sauvegarde</h3>
+                  <p className="text-xs text-[var(--text-muted)]">Le bot capture la structure Discord et les modules ETHONE en temps réel.</p>
                 </div>
               </div>
               {!isCreating ? (
                 <div className="space-y-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-neutral-300">Nom du snapshot</label>
-                    <input type="text" value={backupName} onChange={(e) => setBackupName(e.target.value)} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" />
+                    <label className="text-xs font-semibold text-[var(--text-muted)]">Nom du snapshot</label>
+                    <input type="text" value={backupName} onChange={(e) => setBackupName(e.target.value)} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3.5 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-neutral-300">Description</label>
-                    <input type="text" value={backupDesc} onChange={(e) => setBackupDesc(e.target.value)} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" />
+                    <label className="text-xs font-semibold text-[var(--text-muted)]">Description</label>
+                    <input type="text" value={backupDesc} onChange={(e) => setBackupDesc(e.target.value)} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3.5 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]" />
                   </div>
-                  <div className="space-y-2 pt-2 border-t border-neutral-800">
-                    <label className="text-xs font-semibold text-neutral-300 block">Composants inclus :</label>
+                  <div className="space-y-2 pt-2 border-t border-[var(--panel-border)]">
+                    <label className="text-xs font-semibold text-[var(--text-muted)] block">Composants inclus :</label>
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       {([
                         ["ROLES", "Rôles & hiérarchie"], ["CATEGORIES", "Catégories"], ["CHANNELS", "Salons texte & vocaux"], ["PERMISSIONS", "Permissions"],
                         ["SERVER_CONFIG", "Configuration serveur"], ["EMOJIS", "Emojis"], ["ETHONE_CONFIG", "Modules ETHONE"],
                       ] as [BackupComponent, string][]).map(([key, label]) => (
-                        <label key={key} className="flex items-center gap-2 p-2 bg-neutral-950 rounded-lg border border-neutral-800/80 cursor-pointer">
-                          <input type="checkbox" checked={included[key]} onChange={(e) => setIncluded((prev) => ({ ...prev, [key]: e.target.checked }))} className="rounded text-indigo-600 bg-neutral-900 border-neutral-700" />
-                          <span className="text-neutral-300">{label}</span>
+                        <label key={key} className="flex items-center gap-2 p-2 bg-[var(--surface-raised)]/40 rounded-lg border border-[var(--panel-border)] cursor-pointer">
+                          <input type="checkbox" checked={included[key]} onChange={(e) => setIncluded((prev) => ({ ...prev, [key]: e.target.checked }))} className="rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
+                          <span className="text-[var(--text-muted)]">{label}</span>
                         </label>
                       ))}
                     </div>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-neutral-950 rounded-xl border border-neutral-800">
+                  <div className="flex items-center justify-between p-3 bg-[var(--surface-raised)]/40 rounded-xl border border-[var(--panel-border)]">
                     <div>
-                      <span className="text-xs font-semibold text-white flex items-center gap-1.5"><Lock className="w-3.5 h-3.5 text-amber-400" /> Protéger ce snapshot</span>
-                      <p className="text-[11px] text-neutral-400">Exclu de la suppression manuelle et de la rétention automatique.</p>
+                      <span className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5"><Lock className="w-3.5 h-3.5 text-amber-400" /> Protéger ce snapshot</span>
+                      <p className="text-xs text-[var(--text-muted)]">Exclu de la suppression manuelle et de la rétention automatique.</p>
                     </div>
-                    <input type="checkbox" checked={backupProtect} onChange={(e) => setBackupProtect(e.target.checked)} className="w-4 h-4 rounded text-indigo-600 bg-neutral-900 border-neutral-700" />
+                    <input type="checkbox" checked={backupProtect} onChange={(e) => setBackupProtect(e.target.checked)} className="w-4 h-4 rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
                   </div>
                   <div className="flex justify-end gap-2 pt-2">
-                    <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-300 transition-colors cursor-pointer">Annuler</button>
-                    <button onClick={handleExecuteCreate} className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-sm transition-all cursor-pointer">Lancer la sauvegarde</button>
+                    <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-muted)] transition-colors cursor-pointer">Annuler</button>
+                    <button onClick={handleExecuteCreate} className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-semibold text-white shadow-sm transition-all cursor-pointer">Lancer la sauvegarde</button>
                   </div>
                 </div>
               ) : (
                 <div className="py-8 space-y-4 text-center">
-                  <div className="w-14 h-14 mx-auto rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 animate-pulse"><Archive className="w-7 h-7" /></div>
-                  <p className="text-sm font-bold text-white">Le bot scanne le serveur et signe le snapshot...</p>
-                  <p className="text-xs text-neutral-400">Quelques secondes selon la taille du serveur.</p>
+                  <div className="w-14 h-14 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-300 animate-pulse"><Archive className="w-7 h-7" /></div>
+                  <p className="text-sm font-bold text-[var(--text-primary)]">Le bot scanne le serveur et signe le snapshot...</p>
+                  <p className="text-xs text-[var(--text-muted)]">Quelques secondes selon la taille du serveur.</p>
                 </div>
               )}
             </div>
@@ -754,14 +754,14 @@ export default function BackupsCenterClient() {
 
         {/* MODAL: restauration */}
         {showRestoreModal && selectedBackupForAction && (
-          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-xl w-full p-6 space-y-6 relative">
-              <button onClick={() => setShowRestoreModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white cursor-pointer"><X className="w-5 h-5" /></button>
+          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 flex items-center justify-center p-4">
+            <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-2xl max-w-xl w-full p-6 space-y-6 relative">
+              <button onClick={() => setShowRestoreModal(false)} className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"><X className="w-5 h-5" /></button>
               <div className="flex items-center gap-3">
                 <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20"><RotateCcw className="w-5 h-5" /></div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">Restaurer le serveur</h3>
-                  <p className="text-xs text-neutral-400">Cible : <strong>{selectedBackupForAction.name}</strong></p>
+                  <h3 className="text-lg font-bold text-[var(--text-primary)]">Restaurer le serveur</h3>
+                  <p className="text-xs text-[var(--text-muted)]">Cible : <strong>{selectedBackupForAction.name}</strong></p>
                 </div>
               </div>
 
@@ -775,39 +775,39 @@ export default function BackupsCenterClient() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-semibold text-neutral-300">Niveau de sécurité :</label>
+                    <label className="text-xs font-semibold text-[var(--text-muted)]">Niveau de sécurité :</label>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       {([
                         ["SAFE", "🛡️ Safe", "Re-crée ce qui manque, ne supprime rien.", "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"],
-                        ["STANDARD", "⚖️ Standard", "Synchronise salons et propriétés.", "bg-indigo-500/10 border-indigo-500/30 text-indigo-300"],
+                        ["STANDARD", "⚖️ Standard", "Synchronise salons et propriétés.", "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"],
                         ["DESTRUCTIVE", "⚠️ Destructif", "Supprime ce qui n'est pas dans le snapshot.", "bg-rose-500/10 border-rose-500/30 text-rose-300"],
                       ] as [SafetyLevel, string, string, string][]).map(([lvl, label, desc, activeCls]) => (
-                        <button key={lvl} onClick={() => changeRestoreLevel(lvl)} className={cn("p-3 rounded-xl border text-left transition-colors cursor-pointer", restoreLevel === lvl ? activeCls : "bg-neutral-950 border-neutral-800 text-neutral-400")}>
+                        <button key={lvl} onClick={() => changeRestoreLevel(lvl)} className={cn("p-3 rounded-xl border text-left transition-colors cursor-pointer", restoreLevel === lvl ? activeCls : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] text-[var(--text-muted)]")}>
                           <span className="font-bold text-xs block">{label}</span>
-                          <span className="text-[10px] text-neutral-400">{desc}</span>
+                          <span className="text-xs text-[var(--text-muted)]">{desc}</span>
                         </button>
                       ))}
                     </div>
                   </div>
-                  <div className="bg-neutral-950 p-3.5 rounded-xl border border-neutral-800 space-y-2 text-xs">
-                    <span className="font-semibold text-neutral-300 block">Plan calculé par le bot {planLoading && <span className="text-neutral-500">(calcul...)</span>} :</span>
+                  <div className="bg-[var(--surface-raised)]/40 p-3.5 rounded-xl border border-[var(--panel-border)] space-y-2 text-xs">
+                    <span className="font-semibold text-[var(--text-muted)] block">Plan calculé par le bot {planLoading && <span className="text-[var(--text-muted)]">(calcul...)</span>} :</span>
                     <div className="grid grid-cols-4 gap-2 text-center">
                       {[
                         ["Créés", restorePlan?.counts.willCreate, "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"],
                         ["Modifiés", restorePlan?.counts.willModify, "bg-amber-500/10 text-amber-400 border-amber-500/20"],
                         ["Supprimés", restorePlan?.counts.willDelete, "bg-rose-500/10 text-rose-400 border-rose-500/20"],
-                        ["Ignorés", restorePlan?.counts.willSkip, "bg-neutral-800 text-neutral-400 border-neutral-800"],
+                        ["Ignorés", restorePlan?.counts.willSkip, "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border-[var(--panel-border)]"],
                       ].map(([label, val, cls]) => (
                         <div key={String(label)} className={cn("p-2 rounded border", String(cls))}>
                           <span className="block font-bold">{val ?? "—"}</span>
-                          <span className="text-[10px]">{label}</span>
+                          <span className="text-xs">{label}</span>
                         </div>
                       ))}
                     </div>
                     {restorePlan && restorePlan.actions.length > 0 && (
-                      <div className="max-h-28 overflow-y-auto space-y-0.5 pt-1 border-t border-neutral-800 font-mono text-[10px] text-neutral-400">
+                      <div className="max-h-28 overflow-y-auto space-y-0.5 pt-1 border-t border-[var(--panel-border)] font-mono text-xs text-[var(--text-muted)]">
                         {restorePlan.actions.slice(0, 40).map((a, i) => (
-                          <div key={i}><span className={cn("font-bold", a.action === "DELETE" ? "text-rose-400" : a.action === "CREATE" ? "text-emerald-400" : a.action === "MODIFY" ? "text-amber-400" : "text-neutral-500")}>{a.action}</span> {a.type.toLowerCase()} · {a.name}</div>
+                          <div key={i}><span className={cn("font-bold", a.action === "DELETE" ? "text-rose-400" : a.action === "CREATE" ? "text-emerald-400" : a.action === "MODIFY" ? "text-amber-400" : "text-[var(--text-muted)]")}>{a.action}</span> {a.type.toLowerCase()} · {a.name}</div>
                         ))}
                       </div>
                     )}
@@ -815,11 +815,11 @@ export default function BackupsCenterClient() {
                   {restoreLevel === "DESTRUCTIVE" && (
                     <div className="space-y-1.5 p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs">
                       <label className="font-bold text-rose-300 block">Confirmation : saisis « {selectedGuild?.name || "le nom du serveur"} »</label>
-                      <input type="text" value={confirmServerName} onChange={(e) => setConfirmServerName(e.target.value)} placeholder={selectedGuild?.name || ""} className="w-full bg-neutral-950 border border-rose-500/40 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-rose-500" />
+                      <input type="text" value={confirmServerName} onChange={(e) => setConfirmServerName(e.target.value)} placeholder={selectedGuild?.name || ""} className="w-full bg-[var(--surface-raised)]/40 border border-rose-500/40 rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-rose-500" />
                     </div>
                   )}
                   <div className="flex justify-end gap-2 pt-2">
-                    <button onClick={() => setShowRestoreModal(false)} className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-300 transition-colors cursor-pointer">Annuler</button>
+                    <button onClick={() => setShowRestoreModal(false)} className="px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-muted)] transition-colors cursor-pointer">Annuler</button>
                     <button onClick={handleExecuteRestore} disabled={planLoading} className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white shadow-sm transition-all cursor-pointer disabled:opacity-50">Confirmer & restaurer</button>
                   </div>
                 </div>
@@ -829,15 +829,15 @@ export default function BackupsCenterClient() {
                     {restoreJob.status === "COMPLETED" ? <CheckCircle2 className="w-7 h-7" /> : <RotateCcw className="w-7 h-7" />}
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-bold text-white">{restoreJob.currentStep}</p>
-                    <p className="text-xs text-neutral-400 font-mono">{restoreJob.status} · {restoreJob.progressPercent}%</p>
+                    <p className="text-sm font-bold text-[var(--text-primary)]">{restoreJob.currentStep}</p>
+                    <p className="text-xs text-[var(--text-muted)] font-mono">{restoreJob.status} · {restoreJob.progressPercent}%</p>
                   </div>
-                  <div className="w-full bg-neutral-950 h-2.5 rounded-full overflow-hidden border border-neutral-800 max-w-md mx-auto">
+                  <div className="w-full bg-[var(--panel-border)] h-2.5 rounded-full overflow-hidden border border-[var(--panel-border)] max-w-md mx-auto">
                     <div className="bg-emerald-600 h-full transition-all duration-300 rounded-full" style={{ width: `${restoreJob.progressPercent}%` }} />
                   </div>
-                  {restoreJob.errors?.length > 0 && <p className="text-[11px] text-rose-300 text-left max-h-24 overflow-y-auto">{restoreJob.errors.join("\n")}</p>}
+                  {restoreJob.errors?.length > 0 && <p className="text-xs text-rose-300 text-left max-h-24 overflow-y-auto">{restoreJob.errors.join("\n")}</p>}
                   {["COMPLETED", "PARTIAL", "FAILED", "ROLLED_BACK"].includes(restoreJob.status) && (
-                    <button onClick={() => setShowRestoreModal(false)} className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-white transition-colors cursor-pointer">Fermer</button>
+                    <button onClick={() => setShowRestoreModal(false)} className="px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-white transition-colors cursor-pointer">Fermer</button>
                   )}
                 </div>
               )}
@@ -847,26 +847,26 @@ export default function BackupsCenterClient() {
 
         {/* MODAL: test intégrité */}
         {showTestModal && selectedBackupForAction && (
-          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-md w-full p-6 space-y-5 relative">
-              <button onClick={() => setShowTestModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white cursor-pointer"><X className="w-5 h-5" /></button>
+          <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 flex items-center justify-center p-4">
+            <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-2xl max-w-md w-full p-6 space-y-5 relative">
+              <button onClick={() => setShowTestModal(false)} className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"><X className="w-5 h-5" /></button>
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20"><ShieldCheck className="w-5 h-5" /></div>
+                <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-xl border border-emerald-500/30"><ShieldCheck className="w-5 h-5" /></div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Test d'intégrité</h3>
-                  <p className="text-xs text-neutral-400">Dry-run sans impact sur le serveur</p>
+                  <h3 className="text-base font-bold text-[var(--text-primary)]">Test d'intégrité</h3>
+                  <p className="text-xs text-[var(--text-muted)]">Dry-run sans impact sur le serveur</p>
                 </div>
               </div>
-              {testLoading && <p className="text-xs text-neutral-400">Vérification de la signature...</p>}
+              {testLoading && <p className="text-xs text-[var(--text-muted)]">Vérification de la signature...</p>}
               {testResult && (
                 <div className="space-y-3 text-xs">
                   <div className={cn("p-3 border rounded-xl space-y-1", testResult.valid ? "bg-emerald-500/10 border-emerald-500/20" : "bg-rose-500/10 border-rose-500/20")}>
                     <span className={cn("font-bold flex items-center gap-1.5", testResult.valid ? "text-emerald-400" : "text-rose-400")}>
                       {testResult.valid ? <CheckCircle2 className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />} {testResult.readiness}
                     </span>
-                    {testResult.notes.map((n, i) => <p key={i} className="text-neutral-300">{n}</p>)}
+                    {testResult.notes.map((n, i) => <p key={i} className="text-[var(--text-muted)]">{n}</p>)}
                   </div>
-                  <div className="bg-neutral-950 p-3 rounded-xl border border-neutral-800 font-mono text-[11px] text-neutral-400 space-y-1">
+                  <div className="bg-[var(--surface-raised)]/40 p-3 rounded-xl border border-[var(--panel-border)] font-mono text-xs text-[var(--text-muted)] space-y-1">
                     <p>ID : {selectedBackupForAction.backupId}</p>
                     <p className="truncate">SHA-256 : {testResult.checksum}</p>
                     <p>Schéma v{testResult.schemaVersion} · {testResult.objectCounts.channels} salons, {testResult.objectCounts.roles} rôles, {testResult.objectCounts.ethoneModules} modules</p>
@@ -874,7 +874,7 @@ export default function BackupsCenterClient() {
                 </div>
               )}
               <div className="flex justify-end">
-                <button onClick={() => setShowTestModal(false)} className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-white transition-colors cursor-pointer">Fermer</button>
+                <button onClick={() => setShowTestModal(false)} className="px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-white transition-colors cursor-pointer">Fermer</button>
               </div>
             </div>
           </div>

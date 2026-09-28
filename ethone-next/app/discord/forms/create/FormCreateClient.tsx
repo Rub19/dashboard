@@ -157,33 +157,33 @@ export default function FormCreateClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white p-4 sm:p-6 lg:p-8 pb-44 md:pb-44 space-y-6 max-w-5xl mx-auto">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] p-4 sm:p-6 lg:p-8 pb-44 md:pb-44 space-y-6 max-w-5xl mx-auto">
       <div className="flex items-center gap-3 border-b border-[var(--panel-border)] pb-4">
-        <Link href={`/discord/forms?guildId=${guildId}`} className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer">
+        <Link href={`/discord/forms?guildId=${guildId}`} className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer">
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-white">Nouveau formulaire</h1>
-          <p className="text-xs text-zinc-400">Choisis un modèle, il sera créé en brouillon sur le bot puis ouvert dans le builder.{!isRealGuild && <span className="text-amber-400"> Connecte un serveur d'abord.</span>}</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">Nouveau formulaire</h1>
+          <p className="text-xs text-[var(--text-muted)]">Choisis un modèle, il sera créé en brouillon sur le bot puis ouvert dans le builder.{!isRealGuild && <span className="text-amber-400"> Connecte un serveur d'abord.</span>}</p>
         </div>
       </div>
 
       <div className="space-y-3">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400">1. Point de départ</h2>
+        <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">1. Point de départ</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {TEMPLATES.map((tmpl) => {
             const isSelected = selectedTemplate === tmpl.id;
             return (
-              <div key={tmpl.id} onClick={() => handleSelectTemplate(tmpl.id)} className={cn("rounded-2xl border p-4 cursor-pointer transition-all duration-150 flex flex-col justify-between", isSelected ? "border-indigo-500 bg-indigo-500/10 shadow-sm ring-1 ring-indigo-500/50" : "border-[var(--panel-border)] bg-white/[0.02] hover:border-[var(--input-border-hover)] hover:bg-white/[0.04]")}>
+              <div key={tmpl.id} onClick={() => handleSelectTemplate(tmpl.id)} className={cn("rounded-2xl border p-4 cursor-pointer transition-all duration-150 flex flex-col justify-between", isSelected ? "border-emerald-500 bg-emerald-500/10 shadow-sm ring-1 ring-emerald-500/50" : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/70")}>
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-2xl">{tmpl.icon}</span>
-                    {isSelected && <CheckCircle2 className="h-4 w-4 text-indigo-400 fill-indigo-400/20" />}
+                    {isSelected && <CheckCircle2 className="h-4 w-4 text-emerald-400 fill-emerald-500/20" />}
                   </div>
-                  <h3 className="text-sm font-bold text-white">{tmpl.title}</h3>
-                  <p className="text-xs text-zinc-400 mt-1 line-clamp-2 leading-relaxed">{tmpl.description}</p>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">{tmpl.title}</h3>
+                  <p className="text-xs text-[var(--text-muted)] mt-1 line-clamp-2 leading-relaxed">{tmpl.description}</p>
                 </div>
-                <div className="mt-3 pt-2.5 border-t border-[var(--panel-border)] flex items-center justify-between text-[11px] text-zinc-500">
+                <div className="mt-3 pt-2.5 border-t border-[var(--panel-border)] flex items-center justify-between text-xs text-[var(--text-muted)]">
                   <span>{tmpl.category}</span>
                   <span>{tmpl.fields.length} champs</span>
                 </div>
@@ -193,25 +193,25 @@ export default function FormCreateClient() {
         </div>
       </div>
 
-      <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 sm:p-6 space-y-4">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400">2. Informations de base</h2>
+      <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">2. Informations de base</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="sm:col-span-2 space-y-1.5">
-            <label className="text-xs font-semibold text-zinc-300">Titre *</label>
-            <input type="text" value={formTitle} onChange={(e) => setFormTitle(e.target.value)} placeholder="Ex: Candidature Modérateur 2026" className="h-10 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-indigo-500" />
+            <label className="text-xs font-semibold text-[var(--text-muted)]">Titre *</label>
+            <input type="text" value={formTitle} onChange={(e) => setFormTitle(e.target.value)} placeholder="Ex: Candidature Modérateur 2026" className="h-10 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--input-border-hover)]" />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-zinc-300">Catégorie</label>
-            <input type="text" value={formCategory} onChange={(e) => setFormCategory(e.target.value)} placeholder="Staff & Modération" className="h-10 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-indigo-500" />
+            <label className="text-xs font-semibold text-[var(--text-muted)]">Catégorie</label>
+            <input type="text" value={formCategory} onChange={(e) => setFormCategory(e.target.value)} placeholder="Staff & Modération" className="h-10 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--input-border-hover)]" />
           </div>
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-zinc-300">Description publique</label>
-          <textarea value={formDescription} onChange={(e) => setFormDescription(e.target.value)} rows={3} placeholder="Objectif, critères, délai de réponse..." className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-3 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-indigo-500 resize-none" />
+          <label className="text-xs font-semibold text-[var(--text-muted)]">Description publique</label>
+          <textarea value={formDescription} onChange={(e) => setFormDescription(e.target.value)} rows={3} placeholder="Objectif, critères, délai de réponse..." className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--input-border-hover)] resize-none" />
         </div>
         <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--panel-border)]">
-          <Link href={`/discord/forms?guildId=${guildId}`} className="h-9 px-4 rounded-[var(--inset-radius)] border border-[var(--panel-border)] text-xs font-semibold text-zinc-300 hover:bg-white/5 flex items-center transition-all cursor-pointer">Annuler</Link>
-          <button onClick={handleCreate} disabled={isSubmitting || !formTitle.trim()} className="h-9 px-5 rounded-xl bg-indigo-600 text-xs font-bold text-white shadow-sm hover:bg-indigo-500 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-95">
+          <Link href={`/discord/forms?guildId=${guildId}`} className="h-9 px-4 rounded-xl border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 flex items-center transition-all cursor-pointer">Annuler</Link>
+          <button onClick={handleCreate} disabled={isSubmitting || !formTitle.trim()} className="h-9 px-5 rounded-xl bg-emerald-500 text-xs font-bold text-white shadow-sm hover:bg-emerald-600 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-95">
             <span>{isSubmitting ? "Création..." : "Créer et ouvrir le builder"}</span>
             <ArrowRight className="h-3.5 w-3.5" />
           </button>

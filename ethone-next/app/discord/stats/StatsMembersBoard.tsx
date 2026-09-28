@@ -167,15 +167,15 @@ export default function StatsMembersBoard({
             return (
               <div
                 key={c.kind}
-                className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-4"
+                className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4"
               >
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-[var(--text-primary)]">
                   <span className="mr-1.5">{c.icon}</span>
                   {c.title}
                 </p>
-                <p className="mb-3 text-[11px] text-zinc-500">{c.hint}</p>
+                <p className="mb-3 text-xs text-[var(--text-muted)]">{c.hint}</p>
                 {list.length === 0 ? (
-                  <p className="py-3 text-center text-[11px] text-zinc-500">
+                  <p className="py-3 text-center text-xs text-[var(--text-muted)]">
                     Pas encore de données
                   </p>
                 ) : (
@@ -198,12 +198,12 @@ export default function StatsMembersBoard({
                               className="h-6 w-6 shrink-0 rounded-full"
                             />
                           ) : (
-                            <span className="h-6 w-6 shrink-0 rounded-full bg-white/10" />
+                            <span className="h-6 w-6 shrink-0 rounded-full bg-[var(--surface-raised)]/40" />
                           )}
-                          <span className="min-w-0 flex-1 truncate text-xs font-semibold text-zinc-100">
+                          <span className="min-w-0 flex-1 truncate text-xs font-semibold text-[var(--text-primary)]">
                             {m.name}
                           </span>
-                          <span className="shrink-0 text-[11px] tabular-nums text-zinc-400">
+                          <span className="shrink-0 text-xs tabular-nums text-[var(--text-muted)]">
                             {c.unit(m.value)}
                           </span>
                         </button>
@@ -216,14 +216,14 @@ export default function StatsMembersBoard({
           })}
         </div>
       )}
-      <section className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
+      <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-sm font-semibold text-white">
+            <h2 className="text-sm font-semibold text-[var(--text-primary)]">
               Classement des membres
             </h2>
             <p
-              className="mt-0.5 text-[11px] text-zinc-500"
+              className="mt-0.5 text-xs text-[var(--text-muted)]"
               title="Score = 1 point par message + 1 point par 2 minutes de vocal"
             >
               {totals
@@ -241,8 +241,8 @@ export default function StatsMembersBoard({
                   className={cn(
                     "cursor-pointer rounded-lg px-3 py-1 text-xs font-semibold transition",
                     sort === k
-                      ? "bg-white/10 text-white"
-                      : "text-zinc-400 hover:text-white",
+                      ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)]"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
                   )}
                 >
                   {l}
@@ -254,17 +254,17 @@ export default function StatsMembersBoard({
               onChange={(e) => setQ(e.target.value)}
               placeholder="Rechercher un membre…"
               aria-label="Rechercher un membre"
-              className="h-9 w-48 rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface)] px-3 text-xs text-white outline-none focus:border-[#5865F2]/70"
+              className="h-9 w-48 rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface)] px-3 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
             />
           </div>
         </div>
 
         {failed ? (
-          <p className="py-10 text-center text-xs text-zinc-400">
+          <p className="py-10 text-center text-xs text-[var(--text-muted)]">
             Le bot n&apos;a pas répondu : le classement est indisponible.
           </p>
         ) : rows.length === 0 && !loading ? (
-          <p className="py-10 text-center text-xs text-zinc-500">
+          <p className="py-10 text-center text-xs text-[var(--text-muted)]">
             {query
               ? "Aucun membre ne correspond à cette recherche."
               : "Aucune activité enregistrée sur cette période."}
@@ -272,7 +272,7 @@ export default function StatsMembersBoard({
         ) : (
           <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[720px] text-left text-xs">
-              <thead className="text-[11px] text-zinc-500">
+              <thead className="text-xs text-[var(--text-muted)]">
                 <tr>
                   <th className="w-10 pb-2 font-semibold">#</th>
                   <th className="pb-2 font-semibold">Membre</th>
@@ -284,14 +284,14 @@ export default function StatsMembersBoard({
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-[var(--panel-border)]">
                 {rows.map((r) => (
                   <tr
                     key={r.id}
                     onClick={() => onPick(r.id)}
-                    className="cursor-pointer transition hover:bg-white/[0.04]"
+                    className="cursor-pointer transition hover:bg-[var(--surface-raised)]/70"
                   >
-                    <td className="py-2 pr-2 font-bold text-zinc-400">
+                    <td className="py-2 pr-2 font-bold text-[var(--text-muted)]">
                       {MEDALS[r.rank - 1] ?? r.rank}
                     </td>
                     <td className="py-2 pr-3">
@@ -304,9 +304,9 @@ export default function StatsMembersBoard({
                             className="h-7 w-7 shrink-0 rounded-full"
                           />
                         ) : (
-                          <span className="h-7 w-7 shrink-0 rounded-full bg-white/10" />
+                          <span className="h-7 w-7 shrink-0 rounded-full bg-[var(--surface-raised)]/40" />
                         )}
-                        <span className="max-w-[180px] truncate text-sm font-semibold text-white">
+                        <span className="max-w-[180px] truncate text-sm font-semibold text-[var(--text-primary)]">
                           {r.name}
                         </span>
                       </span>
@@ -316,26 +316,26 @@ export default function StatsMembersBoard({
                     </td>
                     <td className="py-2 pr-4">
                       <span className="flex items-center gap-2">
-                        <span className="w-14 shrink-0 tabular-nums font-semibold text-white">
+                        <span className="w-14 shrink-0 tabular-nums font-semibold text-[var(--text-primary)]">
                           {fmt(r.messages)}
                         </span>
-                        <span className="h-1.5 w-24 overflow-hidden rounded-full bg-white/10">
+                        <span className="h-1.5 w-24 overflow-hidden rounded-full bg-[var(--panel-border)]">
                           <span
                             className="block h-full rounded-full bg-sky-400/80"
                             style={{ width: `${(r.messages / maxMsg) * 100}%` }}
                           />
                         </span>
-                        <span className="text-[11px] text-zinc-500">
+                        <span className="text-xs text-[var(--text-muted)]">
                           {r.messageShare}%
                         </span>
                       </span>
                     </td>
                     <td className="py-2 pr-4">
                       <span className="flex items-center gap-2">
-                        <span className="w-14 shrink-0 tabular-nums font-semibold text-white">
+                        <span className="w-14 shrink-0 tabular-nums font-semibold text-[var(--text-primary)]">
                           {fmt(r.voiceHours)} h
                         </span>
-                        <span className="h-1.5 w-24 overflow-hidden rounded-full bg-white/10">
+                        <span className="h-1.5 w-24 overflow-hidden rounded-full bg-[var(--panel-border)]">
                           <span
                             className="block h-full rounded-full bg-pink-400/80"
                             style={{
@@ -343,12 +343,12 @@ export default function StatsMembersBoard({
                             }}
                           />
                         </span>
-                        <span className="text-[11px] text-zinc-500">
+                        <span className="text-xs text-[var(--text-muted)]">
                           {r.voiceShare}%
                         </span>
                       </span>
                     </td>
-                    <td className="py-2 text-right tabular-nums text-zinc-300">
+                    <td className="py-2 text-right tabular-nums text-[var(--text-muted)]">
                       {r.activeDays} j
                     </td>
                   </tr>
@@ -358,7 +358,7 @@ export default function StatsMembersBoard({
           </div>
         )}
 
-        <div className="mt-3 flex items-center justify-between text-[11px] text-zinc-500">
+        <div className="mt-3 flex items-center justify-between text-xs text-[var(--text-muted)]">
           <span>
             {rows.length > 0
               ? `${rows.length} sur ${fmt(total)} affiché(s)`
@@ -371,7 +371,7 @@ export default function StatsMembersBoard({
               type="button"
               disabled={loading}
               onClick={() => void load(rows.length)}
-              className="cursor-pointer rounded-lg border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-zinc-200 transition hover:bg-white/[0.05] disabled:opacity-50"
+              className="cursor-pointer rounded-lg border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition hover:bg-[var(--surface-raised)]/70 disabled:opacity-50"
             >
               {loading ? "Chargement…" : "Voir plus"}
             </button>

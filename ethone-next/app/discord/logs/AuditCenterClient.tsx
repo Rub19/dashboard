@@ -580,9 +580,9 @@ export function AuditCenterClient() {
       case "MEMBERS":
         return <User className="h-3.5 w-3.5 text-blue-400" />;
       case "MESSAGES":
-        return <FileText className="h-3.5 w-3.5 text-indigo-400" />;
+        return <FileText className="h-3.5 w-3.5 text-emerald-400" />;
       case "ROLES":
-        return <Sliders className="h-3.5 w-3.5 text-purple-400" />;
+        return <Sliders className="h-3.5 w-3.5 text-emerald-400" />;
       case "CHANNELS":
         return <Hash className="h-3.5 w-3.5 text-cyan-400" />;
       case "VOICE":
@@ -590,36 +590,36 @@ export function AuditCenterClient() {
       case "SERVER":
       case "SYSTEM":
       default:
-        return <Server className="h-3.5 w-3.5 text-zinc-400" />;
+        return <Server className="h-3.5 w-3.5 text-[var(--text-muted)]" />;
     }
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-indigo-500 selection:text-white pb-44 md:pb-44">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-emerald-500 selection:text-white pb-44 md:pb-44">
       {/* HEADER TOP BAR */}
-      <div className="sticky top-0 z-40 border-b border-[var(--panel-border)] bg-zinc-950/80 backdrop-blur-xl">
+      <div className="sticky top-0 z-40 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/80 ">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
             <Link
               href={selectedGuild ? `/discord?guildId=${selectedGuild.id}` : "/discord"}
-              className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-300 transition-all hover:bg-white/10 hover:text-white"
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-sm">
                 <FileText className="h-4 w-4" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-sm font-bold tracking-tight text-white sm:text-base">
+                  <h1 className="text-sm font-bold tracking-tight text-[var(--text-primary)] sm:text-base">
                     Audit Center
                   </h1>
-                  <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-semibold text-indigo-300">
+                  <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-300">
                     Traçabilité Absolue
                   </span>
                 </div>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   {selectedGuild ? selectedGuild.name : "Sélectionnez un serveur"}
                 </p>
               </div>
@@ -646,7 +646,7 @@ export function AuditCenterClient() {
                 "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
                 liveStreaming
                   ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 shadow-sm"
-                  : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
+                  : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
             >
               {liveStreaming ? (
@@ -666,7 +666,7 @@ export function AuditCenterClient() {
             <button
               type="button"
               onClick={() => setExportModalOpen(true)}
-              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 py-1.5 text-xs font-semibold text-zinc-200 transition-all hover:bg-white/10 hover:text-white cursor-pointer"
+              className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] cursor-pointer"
             >
               <Download className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Exporter</span>
@@ -684,7 +684,7 @@ export function AuditCenterClient() {
                 <Bot className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-white">Bot non installé sur ce serveur</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Bot non installé sur ce serveur</p>
                 <p className="text-xs text-amber-300/80">
                   Invitez le bot ETHONE sur <strong>{selectedGuild.name}</strong> pour activer la traçabilité des logs et de l'audit en direct.
                 </p>
@@ -703,78 +703,78 @@ export function AuditCenterClient() {
 
         {/* KPI METRICS OVERVIEW BANNER */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-4 backdrop-blur-xl">
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 ">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-zinc-400">Événements (Auj.)</span>
-              <Activity className="h-4 w-4 text-indigo-400" />
+              <span className="text-xs text-[var(--text-muted)]">Événements (Auj.)</span>
+              <Activity className="h-4 w-4 text-emerald-400" />
             </div>
-            <p className="mt-2 text-2xl font-extrabold tracking-tight text-white font-mono">
+            <p className="mt-2 text-2xl font-extrabold tracking-tight text-[var(--text-primary)] font-mono">
               {overview?.eventsToday ?? 0}
             </p>
-            <span className="text-[10px] text-zinc-500">
+            <span className="text-xs text-[var(--text-muted)]">
               Total indexé : {overview?.totalEvents ?? 0}
             </span>
           </div>
 
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-4 backdrop-blur-xl">
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 ">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-zinc-400">Sécurité & Raids</span>
+              <span className="text-xs text-[var(--text-muted)]">Sécurité & Raids</span>
               <ShieldAlert className="h-4 w-4 text-rose-400" />
             </div>
             <p className="mt-2 text-2xl font-extrabold tracking-tight text-rose-400 font-mono">
               {overview?.securityToday ?? 0}
             </p>
-            <span className="text-[10px] text-zinc-500">Menaces & verrouillages</span>
+            <span className="text-xs text-[var(--text-muted)]">Menaces & verrouillages</span>
           </div>
 
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-4 backdrop-blur-xl">
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 ">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-zinc-400">Modération</span>
+              <span className="text-xs text-[var(--text-muted)]">Modération</span>
               <Scale className="h-4 w-4 text-orange-400" />
             </div>
             <p className="mt-2 text-2xl font-extrabold tracking-tight text-orange-400 font-mono">
               {overview?.moderationToday ?? 0}
             </p>
-            <span className="text-[10px] text-zinc-500">Cases générées</span>
+            <span className="text-xs text-[var(--text-muted)]">Cases générées</span>
           </div>
 
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-4 backdrop-blur-xl">
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 ">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-zinc-400">AutoMod</span>
+              <span className="text-xs text-[var(--text-muted)]">AutoMod</span>
               <Zap className="h-4 w-4 text-amber-400" />
             </div>
             <p className="mt-2 text-2xl font-extrabold tracking-tight text-amber-400 font-mono">
               {overview?.automodToday ?? 0}
             </p>
-            <span className="text-[10px] text-zinc-500">Détections intelligentes</span>
+            <span className="text-xs text-[var(--text-muted)]">Détections intelligentes</span>
           </div>
 
           <div
             className={cn(
-              "col-span-2 sm:col-span-1 rounded-2xl border p-4 backdrop-blur-xl transition-all",
+              "col-span-2 sm:col-span-1 rounded-2xl border p-4 transition-all",
               (overview?.criticalToday ?? 0) > 0
-                ? "border-rose-500/40 bg-white/[0.03] shadow-sm"
-                : "border-[var(--panel-border)] bg-zinc-900/60"
+                ? "border-rose-500/40 bg-[var(--surface-raised)]/40 shadow-sm"
+                : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60"
             )}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs text-zinc-400">Alertes Critiques</span>
+              <span className="text-xs text-[var(--text-muted)]">Alertes Critiques</span>
               <AlertOctagon
                 className={cn(
                   "h-4 w-4",
-                  (overview?.criticalToday ?? 0) > 0 ? "text-rose-400" : "text-zinc-500"
+                  (overview?.criticalToday ?? 0) > 0 ? "text-rose-400" : "text-[var(--text-muted)]"
                 )}
               />
             </div>
             <p
               className={cn(
                 "mt-2 text-2xl font-extrabold tracking-tight font-mono",
-                (overview?.criticalToday ?? 0) > 0 ? "text-rose-400" : "text-zinc-300"
+                (overview?.criticalToday ?? 0) > 0 ? "text-rose-400" : "text-[var(--text-muted)]"
               )}
             >
               {overview?.criticalToday ?? 0}
             </p>
-            <span className="text-[10px] text-zinc-500">Gravité CRITICAL</span>
+            <span className="text-xs text-[var(--text-muted)]">Gravité CRITICAL</span>
           </div>
         </div>
 
@@ -786,8 +786,8 @@ export function AuditCenterClient() {
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-2 transition-all cursor-pointer shrink-0",
               activeTab === "stream"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                ? "bg-emerald-500 text-white shadow-sm"
+                : "text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)]"
             )}
           >
             <Layers className="h-4 w-4" />
@@ -801,7 +801,7 @@ export function AuditCenterClient() {
               "flex items-center gap-2 rounded-xl px-4 py-2 transition-all cursor-pointer shrink-0",
               activeTab === "critical"
                 ? "bg-rose-600 text-white shadow-sm"
-                : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                : "text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)]"
             )}
           >
             <AlertOctagon className="h-4 w-4 text-rose-300" />
@@ -814,8 +814,8 @@ export function AuditCenterClient() {
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-2 transition-all cursor-pointer shrink-0",
               activeTab === "analytics"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                ? "bg-emerald-500 text-white shadow-sm"
+                : "text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)]"
             )}
           >
             <Activity className="h-4 w-4" />
@@ -828,8 +828,8 @@ export function AuditCenterClient() {
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-2 transition-all cursor-pointer shrink-0",
               activeTab === "routing"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                ? "bg-emerald-500 text-white shadow-sm"
+                : "text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)]"
             )}
           >
             <Sliders className="h-4 w-4" />
@@ -841,22 +841,22 @@ export function AuditCenterClient() {
         {activeTab === "stream" && (
           <div className="space-y-4">
             {/* BARRE DE FILTRES MULTI-CRITÈRES */}
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-3.5 backdrop-blur-xl">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3.5 ">
               <div className="flex flex-1 items-center gap-2 min-w-[240px]">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Recherche (acteur, cible, ID, Case #, salon, raison...)"
-                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 pl-9 pr-3 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-indigo-500"
+                    className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 pl-9 pr-3 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--input-border-hover)]"
                   />
                   {searchQuery && (
                     <button
                       type="button"
                       onClick={() => setSearchQuery("")}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -905,17 +905,17 @@ export function AuditCenterClient() {
                 />
 
                 {/* Filtre Période */}
-                <div className="flex items-center rounded-xl bg-zinc-950/80 p-0.5 border border-[var(--panel-border)]">
+                <div className="flex items-center rounded-xl bg-[var(--surface-raised)]/80 p-0.5 border border-[var(--panel-border)]">
                   {["1h", "24h", "7d", "30d", "all"].map((p) => (
                     <button
                       key={p}
                       type="button"
                       onClick={() => setSelectedPeriod(p)}
                       className={cn(
-                        "rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all cursor-pointer",
+                        "rounded-xl px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
                         selectedPeriod === p
-                          ? "bg-indigo-600 text-white shadow-sm"
-                          : "text-zinc-400 hover:text-white"
+                          ? "bg-emerald-500 text-white shadow-sm"
+                          : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                       )}
                     >
                       {p.toUpperCase()}
@@ -926,7 +926,7 @@ export function AuditCenterClient() {
                 <button
                   type="button"
                   onClick={fetchEvents}
-                  className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-300 transition-all hover:bg-white/10 hover:text-white cursor-pointer"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] cursor-pointer"
                   title="Rafraîchir les logs"
                 >
                   <RefreshCw className={cn("h-3.5 w-3.5", loadingEvents && "animate-spin")} />
@@ -935,19 +935,19 @@ export function AuditCenterClient() {
             </div>
 
             {/* TABLEAU DES LOGS */}
-            <div className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 backdrop-blur-xl">
+            <div className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 ">
               {events.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-center text-zinc-500">
-                  <FileText className="h-10 w-10 text-zinc-600 mb-2" />
-                  <p className="text-sm font-semibold text-zinc-400">Aucun événement ne correspond aux filtres</p>
-                  <p className="text-xs text-zinc-600 max-w-sm mt-1">
+                <div className="flex flex-col items-center justify-center py-16 text-center text-[var(--text-muted)]">
+                  <FileText className="h-10 w-10 text-[var(--text-muted)] mb-2" />
+                  <p className="text-sm font-semibold text-[var(--text-muted)]">Aucun événement ne correspond aux filtres</p>
+                  <p className="text-xs text-[var(--text-muted)] max-w-sm mt-1">
                     Les actions Discord, AutoMod, modérations et alertes de sécurité apparaîtront ici en temps réel.
                   </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="border-b border-[var(--panel-border)] bg-white/[0.02] text-[11px] font-bold uppercase text-zinc-400">
+                    <thead className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-xs font-bold uppercase text-[var(--text-muted)]">
                       <tr>
                         <th className="px-4 py-3">Gravité</th>
                         <th className="px-4 py-3">Module & Type</th>
@@ -957,17 +957,17 @@ export function AuditCenterClient() {
                         <th className="px-4 py-3 text-right">Date / Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-[var(--panel-border)]">
                       {events.map((evt) => (
                         <tr
                           key={evt.id}
-                          className="group hover:bg-white/[0.03] transition-colors"
+                          className="group hover:bg-[var(--surface-raised)]/70 transition-colors"
                         >
                           {/* GRAVITÉ */}
                           <td className="px-4 py-3 whitespace-nowrap">
                             <span
                               className={cn(
-                                "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-extrabold uppercase font-mono tracking-wide",
+                                "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-extrabold uppercase font-mono tracking-wide",
                                 getSeverityBadge(evt.severity)
                               )}
                             >
@@ -978,12 +978,12 @@ export function AuditCenterClient() {
                           {/* MODULE & TYPE */}
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
-                              <span className="p-1 rounded-lg bg-white/5">{getModuleIcon(evt.module)}</span>
+                              <span className="p-1 rounded-xl bg-[var(--surface-raised)]/40">{getModuleIcon(evt.module)}</span>
                               <div>
-                                <p className="font-bold text-white tracking-tight text-xs">
+                                <p className="font-bold text-[var(--text-primary)] tracking-tight text-xs">
                                   {evt.type.replace(/_/g, " ")}
                                 </p>
-                                <span className="text-[10px] text-zinc-500 font-mono">{evt.id}</span>
+                                <span className="text-xs text-[var(--text-muted)] font-mono">{evt.id}</span>
                               </div>
                             </div>
                           </td>
@@ -991,11 +991,11 @@ export function AuditCenterClient() {
                           {/* ACTEUR */}
                           <td className="px-4 py-3 whitespace-nowrap">
                             <div className="flex items-center gap-1.5">
-                              <span className="font-semibold text-zinc-200">
+                              <span className="font-semibold text-[var(--text-primary)]">
                                 {evt.actor.tag || evt.actor.id}
                               </span>
                               {evt.actor.isBot && (
-                                <span className="rounded bg-indigo-500/20 px-1 py-0.2 text-[9px] font-bold text-indigo-300">
+                                <span className="rounded bg-emerald-500/20 px-1 py-0.2 text-xs font-bold text-emerald-300">
                                   BOT
                                 </span>
                               )}
@@ -1005,42 +1005,42 @@ export function AuditCenterClient() {
                           {/* CIBLE / SALON */}
                           <td className="px-4 py-3">
                             {evt.target && (
-                              <div className="text-zinc-300">
-                                <span className="font-medium text-white">{evt.target.name || evt.target.id}</span>
-                                <span className="text-[10px] text-zinc-500 block">Type: {evt.target.type}</span>
+                              <div className="text-[var(--text-muted)]">
+                                <span className="font-medium text-[var(--text-primary)]">{evt.target.name || evt.target.id}</span>
+                                <span className="text-xs text-[var(--text-muted)] block">Type: {evt.target.type}</span>
                               </div>
                             )}
                             {evt.channel && (
-                              <span className="text-cyan-400 text-[11px] block">
+                              <span className="text-cyan-400 text-xs block">
                                 #{evt.channel.name}
                               </span>
                             )}
                             {!evt.target && !evt.channel && (
-                              <span className="text-zinc-600">—</span>
+                              <span className="text-[var(--text-muted)]">—</span>
                             )}
                           </td>
 
                           {/* RAISON & LIENS (CASE / INCIDENT) */}
                           <td className="px-4 py-3 max-w-xs truncate">
-                            <p className="text-zinc-300 truncate" title={evt.reason}>
+                            <p className="text-[var(--text-muted)] truncate" title={evt.reason}>
                               {evt.reason || "Aucune raison spécifiée"}
                             </p>
                             <div className="flex items-center gap-2 mt-0.5">
                               {evt.caseId && (
                                 <Link
                                   href={`/discord/moderation?guildId=${selectedGuild?.id}&caseNumber=${evt.caseId}`}
-                                  className="text-[10px] font-bold text-orange-400 hover:underline"
+                                  className="text-xs font-bold text-orange-400 hover:underline"
                                 >
                                   Case #{evt.caseId}
                                 </Link>
                               )}
                               {evt.incidentId && (
-                                <span className="text-[10px] font-mono font-bold text-rose-400">
+                                <span className="text-xs font-mono font-bold text-rose-400">
                                   {evt.incidentId}
                                 </span>
                               )}
                               {evt.diff && evt.diff.length > 0 && (
-                                <span className="rounded bg-white/5 px-1 text-[9px] text-zinc-400">
+                                <span className="rounded bg-[var(--surface-raised)]/40 px-1 text-xs text-[var(--text-muted)]">
                                   {evt.diff.length} modif(s)
                                 </span>
                               )}
@@ -1049,7 +1049,7 @@ export function AuditCenterClient() {
 
                           {/* DATE & BOUTON ENQUÊTER */}
                           <td className="px-4 py-3 text-right whitespace-nowrap">
-                            <div className="text-[11px] text-zinc-400">
+                            <div className="text-xs text-[var(--text-muted)]">
                               {new Date(evt.timestamp).toLocaleTimeString("fr-FR", {
                                 hour: "2-digit",
                                 minute: "2-digit",
@@ -1059,7 +1059,7 @@ export function AuditCenterClient() {
                             <button
                               type="button"
                               onClick={() => handleInvestigate(evt.id)}
-                              className="mt-1 inline-flex items-center gap-1 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1 text-[10px] font-bold text-indigo-300 transition-all hover:bg-indigo-500 hover:text-white cursor-pointer"
+                              className="mt-1 inline-flex items-center gap-1 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-300 transition-all hover:bg-emerald-600 hover:text-white cursor-pointer"
                             >
                               <Eye className="h-3 w-3" />
                               <span>Enquêter</span>
@@ -1081,9 +1081,9 @@ export function AuditCenterClient() {
             <div className="rounded-2xl border border-rose-500/30 bg-gradient-to-r from-rose-950/20 via-red-900/10 to-rose-950/30 p-4">
               <div className="flex items-center gap-2">
                 <AlertOctagon className="h-5 w-5 text-rose-400" />
-                <h3 className="font-bold text-white text-sm">Centre de Commandement des Menaces Critiques</h3>
+                <h3 className="font-bold text-[var(--text-primary)] text-sm">Centre de Commandement des Menaces Critiques</h3>
               </div>
-              <p className="text-xs text-zinc-400 mt-1">
+              <p className="text-xs text-[var(--text-muted)] mt-1">
                 Cette vue isole strictement les raids, tentatives de nuke, vagues d&apos;expulsions massives et élévations de privilèges non autorisées.
               </p>
             </div>
@@ -1092,20 +1092,20 @@ export function AuditCenterClient() {
               {(overview?.criticalEvents || []).map((crit) => (
                 <div
                   key={crit.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-rose-500/30 bg-zinc-900/80 p-4 backdrop-blur-xl shadow-sm"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-rose-500/30 bg-[var(--surface-raised)]/80 p-4 shadow-sm"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="rounded-md border border-rose-500/40 bg-rose-500/20 px-2 py-0.5 text-[10px] font-bold text-rose-300 font-mono">
+                      <span className="rounded-md border border-rose-500/40 bg-rose-500/20 px-2 py-0.5 text-xs font-bold text-rose-300 font-mono">
                         {crit.severity}
                       </span>
-                      <span className="font-bold text-white text-xs">{crit.type}</span>
-                      <span className="text-[10px] text-zinc-500 font-mono">{crit.id}</span>
+                      <span className="font-bold text-[var(--text-primary)] text-xs">{crit.type}</span>
+                      <span className="text-xs text-[var(--text-muted)] font-mono">{crit.id}</span>
                     </div>
-                    <p className="text-xs text-zinc-300">{crit.reason || "Alerte de sécurité critique déclenchée."}</p>
-                    <div className="flex items-center gap-3 text-[11px] text-zinc-400 pt-1">
-                      <span>👤 Par: <strong className="text-white">{crit.actor.tag}</strong></span>
-                      {crit.target && <span>🎯 Cible: <strong className="text-white">{crit.target.name}</strong></span>}
+                    <p className="text-xs text-[var(--text-muted)]">{crit.reason || "Alerte de sécurité critique déclenchée."}</p>
+                    <div className="flex items-center gap-3 text-xs text-[var(--text-muted)] pt-1">
+                      <span>👤 Par: <strong className="text-[var(--text-primary)]">{crit.actor.tag}</strong></span>
+                      {crit.target && <span>🎯 Cible: <strong className="text-[var(--text-primary)]">{crit.target.name}</strong></span>}
                       {crit.incidentId && <span className="font-mono text-rose-400">Incident: {crit.incidentId}</span>}
                     </div>
                   </div>
@@ -1130,9 +1130,9 @@ export function AuditCenterClient() {
         {activeTab === "analytics" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* RÉPARTITION PAR MODULE */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-5 backdrop-blur-xl space-y-4">
-              <h3 className="text-xs font-bold text-white flex items-center gap-2">
-                <Layers className="h-4 w-4 text-indigo-400" />
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
+              <h3 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
+                <Layers className="h-4 w-4 text-emerald-400" />
                 Répartition des Événements par Module
               </h3>
               <div className="space-y-2.5">
@@ -1141,12 +1141,12 @@ export function AuditCenterClient() {
                   return (
                     <div key={mod} className="space-y-1">
                       <div className="flex justify-between text-xs">
-                        <span className="text-zinc-300 font-medium">{mod}</span>
-                        <span className="text-zinc-400 font-mono">{count} ({pct}%)</span>
+                        <span className="text-[var(--text-muted)] font-medium">{mod}</span>
+                        <span className="text-[var(--text-muted)] font-mono">{count} ({pct}%)</span>
                       </div>
-                      <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
+                      <div className="h-2 w-full rounded-full bg-[var(--surface-raised)]/40 overflow-hidden">
                         <div
-                          className="h-full bg-indigo-500 rounded-full"
+                          className="h-full bg-emerald-500 rounded-full"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -1157,8 +1157,8 @@ export function AuditCenterClient() {
             </div>
 
             {/* RÉPARTITION PAR SÉVÉRITÉ */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-5 backdrop-blur-xl space-y-4">
-              <h3 className="text-xs font-bold text-white flex items-center gap-2">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
+              <h3 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Activity className="h-4 w-4 text-emerald-400" />
                 Distribution par Niveau de Sévérité
               </h3>
@@ -1174,10 +1174,10 @@ export function AuditCenterClient() {
                   return (
                     <div key={sev} className="space-y-1">
                       <div className="flex justify-between text-xs">
-                        <span className="text-zinc-300 font-medium">{sev}</span>
-                        <span className="text-zinc-400 font-mono">{count} ({pct}%)</span>
+                        <span className="text-[var(--text-muted)] font-medium">{sev}</span>
+                        <span className="text-[var(--text-muted)] font-mono">{count} ({pct}%)</span>
                       </div>
-                      <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
+                      <div className="h-2 w-full rounded-full bg-[var(--surface-raised)]/40 overflow-hidden">
                         <div
                           className={cn("h-full bg-gradient-to-r rounded-full", barColor)}
                           style={{ width: `${pct}%` }}
@@ -1194,11 +1194,11 @@ export function AuditCenterClient() {
         {/* TAB 4: ROUTAGE SALONS & RÉTENTION */}
         {activeTab === "routing" && (
           <div className="max-w-4xl space-y-6">
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-5 backdrop-blur-xl space-y-4">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
               <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
                 <div>
-                  <h3 className="text-sm font-bold text-white">Routage vers Salons Discord</h3>
-                  <p className="text-xs text-zinc-400">
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Routage vers Salons Discord</h3>
+                  <p className="text-xs text-[var(--text-muted)]">
                     Définissez les salons de destination et le seuil de sévérité requis pour l&apos;envoi des embeds.
                   </p>
                 </div>
@@ -1206,7 +1206,7 @@ export function AuditCenterClient() {
                   type="button"
                   onClick={handleSaveConfig}
                   disabled={savingConfig}
-                  className="flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-indigo-500 transition-all cursor-pointer"
+                  className="flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-all cursor-pointer"
                 >
                   <CheckCircle2 className="h-4 w-4" />
                   <span>{savingConfig ? "Sauvegarde..." : "Enregistrer"}</span>
@@ -1215,16 +1215,16 @@ export function AuditCenterClient() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 {/* Salon Général */}
-                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 space-y-2">
-                  <span className="font-bold text-white">Logs Généraux & Serveur</span>
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
+                  <span className="font-bold text-[var(--text-primary)]">Logs Généraux & Serveur</span>
                   <ChannelSelect
                     value={configRouting.generalChannelId}
                     onChange={(id) => setConfigRouting({ ...configRouting, generalChannelId: id })}
                     channels={textChannels}
                     emptyLabel="— Aucun (salon général) —"
-                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-white outline-none focus:border-indigo-500"
+                    className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
                   />
-                  <div className="flex items-center justify-between text-[11px] text-zinc-400">
+                  <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span>Seuil de déclenchement :</span>
                     <Select
                       value={configRouting.generalThreshold}
@@ -1243,16 +1243,16 @@ export function AuditCenterClient() {
                 </div>
 
                 {/* Salon Modération */}
-                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 space-y-2">
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
                   <span className="font-bold text-orange-400">Logs de Modération (Cases)</span>
                   <ChannelSelect
                     value={configRouting.moderationChannelId}
                     onChange={(id) => setConfigRouting({ ...configRouting, moderationChannelId: id })}
                     channels={textChannels}
                     emptyLabel="— Aucun (salon général) —"
-                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-white outline-none focus:border-orange-500"
+                    className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-orange-500"
                   />
-                  <div className="flex items-center justify-between text-[11px] text-zinc-400">
+                  <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span>Seuil de déclenchement :</span>
                     <Select
                       value={configRouting.moderationThreshold}
@@ -1271,16 +1271,16 @@ export function AuditCenterClient() {
                 </div>
 
                 {/* Salon Sécurité */}
-                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 space-y-2">
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
                   <span className="font-bold text-rose-400">Logs Sécurité & Anti-Raid</span>
                   <ChannelSelect
                     value={configRouting.securityChannelId}
                     onChange={(id) => setConfigRouting({ ...configRouting, securityChannelId: id })}
                     channels={textChannels}
                     emptyLabel="— Aucun (salon général) —"
-                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-white outline-none focus:border-rose-500"
+                    className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-rose-500"
                   />
-                  <div className="flex items-center justify-between text-[11px] text-zinc-400">
+                  <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span>Seuil de déclenchement :</span>
                     <Select
                       value={configRouting.securityThreshold}
@@ -1299,16 +1299,16 @@ export function AuditCenterClient() {
                 </div>
 
                 {/* Salon AutoMod */}
-                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 space-y-2">
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
                   <span className="font-bold text-amber-400">Logs Détections AutoMod</span>
                   <ChannelSelect
                     value={configRouting.automodChannelId}
                     onChange={(id) => setConfigRouting({ ...configRouting, automodChannelId: id })}
                     channels={textChannels}
                     emptyLabel="— Aucun (salon général) —"
-                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-white outline-none focus:border-amber-500"
+                    className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-amber-500"
                   />
-                  <div className="flex items-center justify-between text-[11px] text-zinc-400">
+                  <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span>Seuil de déclenchement :</span>
                     <Select
                       value={configRouting.automodThreshold}
@@ -1329,11 +1329,11 @@ export function AuditCenterClient() {
             </div>
 
             {/* WEBHOOKS PAR CATÉGORIE */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-5 backdrop-blur-xl space-y-4">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
               <div className="flex flex-col gap-3 border-b border-[var(--panel-border)] pb-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-white">Webhooks par catégorie</h3>
-                  <p className="text-xs text-zinc-400">
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Webhooks par catégorie</h3>
+                  <p className="text-xs text-[var(--text-muted)]">
                     Chaque catégorie de logs est envoyée par un webhook qui porte le nom que tu choisis (« vocals », « mod »…), dans son propre salon si tu en indiques un.
                   </p>
                 </div>
@@ -1341,7 +1341,7 @@ export function AuditCenterClient() {
                   type="button"
                   onClick={handleSaveConfig}
                   disabled={savingConfig}
-                  className="flex items-center gap-2 self-start rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-indigo-500 transition-all cursor-pointer disabled:opacity-60"
+                  className="flex items-center gap-2 self-start rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-all cursor-pointer disabled:opacity-60"
                 >
                   <CheckCircle2 className="h-4 w-4" />
                   <span>{savingConfig ? "Sauvegarde..." : "Enregistrer"}</span>
@@ -1352,9 +1352,9 @@ export function AuditCenterClient() {
                 {LOG_CATEGORIES.map((cat) => (
                   <div
                     key={cat.key}
-                    className="grid grid-cols-1 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5 text-xs sm:grid-cols-[9rem_minmax(0,1fr)_minmax(0,1fr)_auto]"
+                    className="grid grid-cols-1 items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs sm:grid-cols-[9rem_minmax(0,1fr)_minmax(0,1fr)_auto]"
                   >
-                    <span className="font-bold text-white">
+                    <span className="font-bold text-[var(--text-primary)]">
                       <span className="mr-1.5">{cat.icon}</span>
                       {cat.label}
                     </span>
@@ -1364,35 +1364,35 @@ export function AuditCenterClient() {
                       value={webhookNames[cat.key] || ""}
                       onChange={(e) => setWebhookNames({ ...webhookNames, [cat.key]: e.target.value })}
                       placeholder={`Nom du webhook (défaut : ${cat.defaultName})`}
-                      className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-white outline-none focus:border-indigo-500"
+                      className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
                     />
                     <ChannelSelect
                       value={categoryChannels[cat.key] || ""}
                       onChange={(id) => setCategoryChannels({ ...categoryChannels, [cat.key]: id })}
                       channels={textChannels}
                       emptyLabel="Salon par défaut (routage ci-dessus)"
-                      className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-2 text-white outline-none focus:border-indigo-500"
+                      className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-2 text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
                     />
                     <button
                       type="button"
                       onClick={() => handleTestCategory(cat.key)}
                       disabled={testingCategory !== null}
-                      className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 text-[11px] font-semibold text-zinc-300 hover:bg-white/10 hover:text-white disabled:opacity-50 cursor-pointer"
+                      className="h-9 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-50 cursor-pointer"
                     >
                       {testingCategory === cat.key ? "Envoi…" : "Tester"}
                     </button>
                   </div>
                 ))}
               </div>
-              <p className="text-[11px] text-zinc-500">
+              <p className="text-xs text-[var(--text-muted)]">
                 Discord n&apos;accepte pas les noms contenant « discord » ou « clyde » : ces mots sont retirés automatiquement. Un nom vide rétablit le nom par défaut.
               </p>
             </div>
 
             {/* RÉTENTION DES LOGS */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-5 backdrop-blur-xl space-y-3">
-              <h3 className="text-sm font-bold text-white">Politique de Conservation & Purge (Rétention)</h3>
-              <p className="text-xs text-zinc-400">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-3">
+              <h3 className="text-sm font-bold text-[var(--text-primary)]">Politique de Conservation & Purge (Rétention)</h3>
+              <p className="text-xs text-[var(--text-muted)]">
                 Détermine combien de temps les logs sont conservés avant d&apos;être purgés automatiquement pour préserver l&apos;espace disque et le respect de la vie privée.
               </p>
               <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -1411,8 +1411,8 @@ export function AuditCenterClient() {
                     className={cn(
                       "rounded-xl border px-3.5 py-2 text-xs font-semibold transition-all cursor-pointer",
                       configRouting.retentionDays === r.val
-                        ? "border-indigo-500 bg-indigo-600/20 text-indigo-300"
-                        : "border-[var(--panel-border)] bg-zinc-950/60 text-zinc-400 hover:text-white"
+                        ? "border-emerald-500/30 bg-emerald-500/20 text-emerald-300"
+                        : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
                     {r.label}
@@ -1426,28 +1426,28 @@ export function AuditCenterClient() {
 
       {/* MODAL INVESTIGATION (MODE ENQUÊTE APPROFONDIE) */}
       {investigatingEventId && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="relative w-full max-w-3xl rounded-3xl border border-[var(--panel-border)] bg-zinc-900 p-6 shadow-2xl space-y-5 my-8">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 p-4 overflow-y-auto">
+          <div className="relative w-full max-w-3xl rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-5 my-8">
             <button
               type="button"
               onClick={() => {
                 setInvestigatingEventId(null);
                 setInvestigationData(null);
               }}
-              className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-zinc-400 hover:bg-white/20 hover:text-white transition-all cursor-pointer"
+              className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--text-primary)]/10 text-[var(--text-muted)] hover:bg-[var(--text-primary)]/15 hover:text-[var(--text-primary)] transition-all cursor-pointer"
             >
               <X className="h-4 w-4" />
             </button>
 
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-sm">
                 <Eye className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-white">
+                <h2 className="text-base font-bold text-[var(--text-primary)]">
                   Mode Enquête & Causalité — Événement {investigatingEventId}
                 </h2>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Analyse contextuelle approfondie (Fenêtre temporelle de ±15 minutes)
                 </p>
               </div>
@@ -1455,35 +1455,35 @@ export function AuditCenterClient() {
 
             {loadingInvestigation ? (
               <div className="flex flex-col items-center justify-center py-12 gap-3">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
-                <p className="text-xs text-zinc-400">Reconstitution de la chaîne de causalité...</p>
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500/30 border-t-transparent" />
+                <p className="text-xs text-[var(--text-muted)]">Reconstitution de la chaîne de causalité...</p>
               </div>
             ) : investigationData ? (
               <div className="space-y-5 text-xs">
                 {/* SYNTHÈSE "QUI, QUOI, QUAND, OÙ, POURQUOI" */}
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/80 p-4 space-y-3">
-                  <h3 className="font-bold text-white text-xs uppercase tracking-wider text-indigo-400">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 p-4 space-y-3">
+                  <h3 className="font-bold text-[var(--text-primary)] text-xs uppercase tracking-wider text-emerald-400">
                     Fiche d&apos;Investigation
                   </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <div>
-                      <span className="text-[10px] text-zinc-500 uppercase font-bold">QUI ? (Acteur)</span>
-                      <p className="font-bold text-white text-xs mt-0.5">
+                      <span className="text-xs text-[var(--text-muted)] uppercase font-bold">QUI ? (Acteur)</span>
+                      <p className="font-bold text-[var(--text-primary)] text-xs mt-0.5">
                         {investigationData.targetEvent.actor.tag}
                       </p>
-                      <span className="text-[10px] text-zinc-500 font-mono">
+                      <span className="text-xs text-[var(--text-muted)] font-mono">
                         {investigationData.targetEvent.actor.id}
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-zinc-500 uppercase font-bold">QUOI ? (Type d&apos;action)</span>
-                      <p className="font-bold text-white text-xs mt-0.5">
+                      <span className="text-xs text-[var(--text-muted)] uppercase font-bold">QUOI ? (Type d&apos;action)</span>
+                      <p className="font-bold text-[var(--text-primary)] text-xs mt-0.5">
                         {investigationData.targetEvent.type}
                       </p>
                       <span
                         className={cn(
-                          "inline-block text-[9px] font-bold px-1.5 py-0.2 rounded mt-0.5",
+                          "inline-block text-xs font-bold px-1.5 py-0.2 rounded mt-0.5",
                           getSeverityBadge(investigationData.targetEvent.severity)
                         )}
                       >
@@ -1492,14 +1492,14 @@ export function AuditCenterClient() {
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-zinc-500 uppercase font-bold">QUAND ?</span>
-                      <p className="font-mono text-zinc-300 text-xs mt-0.5">
+                      <span className="text-xs text-[var(--text-muted)] uppercase font-bold">QUAND ?</span>
+                      <p className="font-mono text-[var(--text-muted)] text-xs mt-0.5">
                         {new Date(investigationData.targetEvent.timestamp).toLocaleString("fr-FR")}
                       </p>
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-zinc-500 uppercase font-bold">OÙ ? (Salon / Serveur)</span>
+                      <span className="text-xs text-[var(--text-muted)] uppercase font-bold">OÙ ? (Salon / Serveur)</span>
                       <p className="font-bold text-cyan-400 text-xs mt-0.5">
                         {investigationData.targetEvent.channel
                           ? `#${investigationData.targetEvent.channel.name}`
@@ -1508,14 +1508,14 @@ export function AuditCenterClient() {
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-zinc-500 uppercase font-bold">CIBLE</span>
-                      <p className="font-bold text-white text-xs mt-0.5">
+                      <span className="text-xs text-[var(--text-muted)] uppercase font-bold">CIBLE</span>
+                      <p className="font-bold text-[var(--text-primary)] text-xs mt-0.5">
                         {investigationData.targetEvent.target?.name || "Aucune"}
                       </p>
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-zinc-500 uppercase font-bold">DOSSIER ASSOCIÉ</span>
+                      <span className="text-xs text-[var(--text-muted)] uppercase font-bold">DOSSIER ASSOCIÉ</span>
                       <div className="mt-0.5">
                         {investigationData.targetEvent.caseId ? (
                           <span className="font-bold text-orange-400">Case #{investigationData.targetEvent.caseId}</span>
@@ -1524,7 +1524,7 @@ export function AuditCenterClient() {
                             {investigationData.targetEvent.incidentId}
                           </span>
                         ) : (
-                          <span className="text-zinc-600">Aucun</span>
+                          <span className="text-[var(--text-muted)]">Aucun</span>
                         )}
                       </div>
                     </div>
@@ -1532,8 +1532,8 @@ export function AuditCenterClient() {
 
                   {investigationData.targetEvent.reason && (
                     <div className="border-t border-[var(--panel-border)] pt-2">
-                      <span className="text-[10px] text-zinc-500 uppercase font-bold">POURQUOI ? (Motif)</span>
-                      <p className="text-xs text-zinc-300 mt-0.5 bg-white/5 p-2 rounded-xl">
+                      <span className="text-xs text-[var(--text-muted)] uppercase font-bold">POURQUOI ? (Motif)</span>
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5 bg-[var(--surface-raised)]/40 p-2 rounded-xl">
                         {investigationData.targetEvent.reason}
                       </p>
                     </div>
@@ -1542,32 +1542,32 @@ export function AuditCenterClient() {
 
                 {/* CHAÎNE DE CAUSALITÉ INTERACTIVE */}
                 <div className="space-y-2">
-                  <h3 className="font-bold text-white text-xs flex items-center gap-1.5">
-                    <Clock className="h-4 w-4 text-indigo-400" />
+                  <h3 className="font-bold text-[var(--text-primary)] text-xs flex items-center gap-1.5">
+                    <Clock className="h-4 w-4 text-emerald-400" />
                     Chronologie des Événements Connexes (Chaîne de Causalité)
                   </h3>
-                  <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/60 p-3 space-y-2 max-h-60 overflow-y-auto">
+                  <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3 space-y-2 max-h-60 overflow-y-auto">
                     {investigationData.causalityChain.map((step) => (
                       <div
                         key={step.eventId}
                         className={cn(
                           "flex items-start gap-3 rounded-xl p-2.5 transition-all text-xs",
                           step.eventId === investigatingEventId
-                            ? "border border-indigo-500/40 bg-indigo-950/30"
-                            : "bg-white/[0.02]"
+                            ? "border border-emerald-500/40 bg-emerald-500/30"
+                            : "bg-[var(--surface-raised)]/40"
                         )}
                       >
-                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 font-mono text-[10px] font-bold text-zinc-300">
+                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--text-primary)]/10 font-mono text-xs font-bold text-[var(--text-muted)]">
                           {step.step}
                         </span>
                         <div className="flex-1 space-y-0.5">
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-white">{step.summary}</span>
-                            <span className="text-[9px] font-mono uppercase px-1 rounded bg-white/5 text-zinc-400">
+                            <span className="font-bold text-[var(--text-primary)]">{step.summary}</span>
+                            <span className="text-xs font-mono uppercase px-1 rounded bg-[var(--surface-raised)]/40 text-[var(--text-muted)]">
                               {step.relation}
                             </span>
                           </div>
-                          <span className="text-[10px] text-zinc-500 font-mono">
+                          <span className="text-xs text-[var(--text-muted)] font-mono">
                             {new Date(step.timestamp).toLocaleTimeString("fr-FR")}
                           </span>
                         </div>
@@ -1579,23 +1579,23 @@ export function AuditCenterClient() {
                 {/* DIFF INSPECTION (AVANT / APRÈS) */}
                 {investigationData.diffInspection && investigationData.diffInspection.length > 0 && (
                   <div className="space-y-2">
-                    <h3 className="font-bold text-white text-xs flex items-center gap-1.5">
+                    <h3 className="font-bold text-[var(--text-primary)] text-xs flex items-center gap-1.5">
                       <Sliders className="h-4 w-4 text-amber-400" />
                       Différence d&apos;État Détectée (Avant / Après)
                     </h3>
-                    <div className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/60">
+                    <div className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60">
                       <table className="w-full text-left text-xs">
-                        <thead className="border-b border-[var(--panel-border)] bg-white/5 text-[10px] uppercase font-bold text-zinc-400">
+                        <thead className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-xs uppercase font-bold text-[var(--text-muted)]">
                           <tr>
                             <th className="px-3 py-2">Champ Modifié</th>
                             <th className="px-3 py-2 text-rose-400">État Avant (Previous)</th>
                             <th className="px-3 py-2 text-emerald-400">État Après (Current)</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-white/5 font-mono text-[11px]">
+                        <tbody className="divide-y divide-[var(--panel-border)] font-mono text-xs">
                           {investigationData.diffInspection.map((d, i) => (
-                            <tr key={i} className="hover:bg-white/[0.02]">
-                              <td className="px-3 py-2 font-bold text-zinc-300">{d.field}</td>
+                            <tr key={i} className="hover:bg-[var(--surface-raised)]/70">
+                              <td className="px-3 py-2 font-bold text-[var(--text-muted)]">{d.field}</td>
                               <td className="px-3 py-2 text-rose-300 bg-rose-500/5">{d.beforeDisplay}</td>
                               <td className="px-3 py-2 text-emerald-300 bg-emerald-500/5">{d.afterDisplay}</td>
                             </tr>
@@ -1613,27 +1613,27 @@ export function AuditCenterClient() {
 
       {/* MODAL EXPORT (CSV / JSON) */}
       {exportModalOpen && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-md rounded-3xl border border-[var(--panel-border)] bg-zinc-900 p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 p-4">
+          <div className="relative w-full max-w-md rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
             <button
               type="button"
               onClick={() => setExportModalOpen(false)}
-              className="absolute right-5 top-5 text-zinc-400 hover:text-white"
+              className="absolute right-5 top-5 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             >
               <X className="h-4 w-4" />
             </button>
 
             <div className="flex items-center gap-2">
-              <Download className="h-5 w-5 text-indigo-400" />
-              <h3 className="font-bold text-white text-sm">Exporter le Journal d&apos;Audit</h3>
+              <Download className="h-5 w-5 text-emerald-400" />
+              <h3 className="font-bold text-[var(--text-primary)] text-sm">Exporter le Journal d&apos;Audit</h3>
             </div>
 
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[var(--text-muted)]">
               Exportez l&apos;ensemble des événements actuellement filtrés pour archivage ou audit externe.
             </p>
 
             <div className="space-y-2 text-xs">
-              <label className="font-bold text-zinc-300">Format d&apos;export :</label>
+              <label className="font-bold text-[var(--text-muted)]">Format d&apos;export :</label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
@@ -1641,8 +1641,8 @@ export function AuditCenterClient() {
                   className={cn(
                     "flex flex-col items-center justify-center p-3 rounded-2xl border text-xs font-bold transition-all cursor-pointer",
                     exportFormat === "csv"
-                      ? "border-indigo-500 bg-indigo-500/20 text-indigo-300"
-                      : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
+                      ? "border-emerald-500/30 bg-emerald-500/20 text-emerald-300"
+                      : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   )}
                 >
                   <span className="text-base">📊</span>
@@ -1655,8 +1655,8 @@ export function AuditCenterClient() {
                   className={cn(
                     "flex flex-col items-center justify-center p-3 rounded-2xl border text-xs font-bold transition-all cursor-pointer",
                     exportFormat === "json"
-                      ? "border-indigo-500 bg-indigo-500/20 text-indigo-300"
-                      : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
+                      ? "border-emerald-500/30 bg-emerald-500/20 text-emerald-300"
+                      : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   )}
                 >
                   <span className="text-base">📦</span>
@@ -1669,7 +1669,7 @@ export function AuditCenterClient() {
               <button
                 type="button"
                 onClick={handleDownloadExport}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-indigo-500 transition-all cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-500 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-600 transition-all cursor-pointer"
               >
                 <Download className="h-4 w-4" />
                 <span>Télécharger l&apos;export {exportFormat.toUpperCase()}</span>

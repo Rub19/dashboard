@@ -131,7 +131,7 @@ const STEP_DEFAULTS: Record<OnboardingStep["type"], { title: string; description
 };
 
 const fieldClass =
-  "w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/70 px-3 py-2 text-xs text-white outline-none focus:border-teal-500";
+  "w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500";
 
 function OnboardingEditor({
   onboarding,
@@ -189,8 +189,8 @@ function OnboardingEditor({
     <div className="mt-6 max-w-3xl space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-bold text-white">Parcours d&apos;Onboarding</h2>
-          <p className="text-xs text-zinc-400">
+          <h2 className="text-base font-bold text-[var(--text-primary)]">Parcours d&apos;Onboarding</h2>
+          <p className="text-xs text-[var(--text-muted)]">
             Chaque nouvel arrivant reçoit ces étapes en message privé (ou dans le salon de secours si ses messages privés sont fermés), avec des boutons.
           </p>
         </div>
@@ -199,7 +199,7 @@ function OnboardingEditor({
             type="button"
             onClick={onPreview}
             disabled={previewing || onboarding.steps.length === 0}
-            className="rounded-xl border border-[var(--panel-border)] bg-white/5 px-4 py-2 text-xs font-bold text-zinc-200 hover:bg-white/10 disabled:opacity-50 cursor-pointer"
+            className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-2 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-50 cursor-pointer"
             title="Reçois le parcours en message privé, tel que le verrait un nouvel arrivant"
           >
             {previewing ? "Envoi…" : "M'envoyer un aperçu"}
@@ -216,18 +216,18 @@ function OnboardingEditor({
       </div>
 
       {/* Réglages généraux */}
-      <div className="space-y-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
+      <div className="space-y-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
         <label className="flex cursor-pointer items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-bold text-white">Activer le parcours</p>
-            <p className="text-[11px] text-zinc-400">Envoyé automatiquement à chaque nouveau membre (les bots sont ignorés).</p>
+            <p className="text-xs font-bold text-[var(--text-primary)]">Activer le parcours</p>
+            <p className="text-xs text-[var(--text-muted)]">Envoyé automatiquement à chaque nouveau membre (les bots sont ignorés).</p>
           </div>
           <Checkbox checked={onboarding.enabled} onCheckedChange={(checked) => patchFlow({ enabled: checked })} />
         </label>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1">
-            <span className="text-[11px] font-semibold text-zinc-300">Salon de secours (si messages privés fermés)</span>
+            <span className="text-xs font-semibold text-[var(--text-muted)]">Salon de secours (si messages privés fermés)</span>
             <ChannelPicker
               value={onboarding.channelId || ""}
               onChange={(id) => patchFlow({ channelId: id || null })}
@@ -237,7 +237,7 @@ function OnboardingEditor({
             />
           </div>
           <div className="space-y-1">
-            <span className="text-[11px] font-semibold text-zinc-300">Rôle donné à la fin du parcours</span>
+            <span className="text-xs font-semibold text-[var(--text-muted)]">Rôle donné à la fin du parcours</span>
             <RolePicker
               value={onboarding.completionRoleId}
               onChange={(id) => patchFlow({ completionRoleId: id || null })}
@@ -254,7 +254,7 @@ function OnboardingEditor({
           <Checkbox
             checked={onboarding.sendDmOnCompletion}
             onCheckedChange={(checked) => patchFlow({ sendDmOnCompletion: checked })}
-            label={<span className="text-xs font-bold text-white">Envoyer un message privé de félicitations à la fin</span>}
+            label={<span className="text-xs font-bold text-[var(--text-primary)]">Envoyer un message privé de félicitations à la fin</span>}
           />
           {onboarding.sendDmOnCompletion && (
             <textarea
@@ -271,14 +271,14 @@ function OnboardingEditor({
       {/* Étapes */}
       <div className="space-y-3">
         {onboarding.steps.length === 0 && (
-          <p className="rounded-xl border border-dashed border-[var(--panel-border)] p-6 text-center text-xs text-zinc-400">
+          <p className="rounded-xl border border-dashed border-[var(--panel-border)] p-6 text-center text-xs text-[var(--text-muted)]">
             Aucune étape pour l&apos;instant : ajoute-en une ci-dessous.
           </p>
         )}
         {onboarding.steps.map((step, idx) => {
           const meta = STEP_TYPES.find((s) => s.type === step.type);
           return (
-            <div key={step.id} className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
+            <div key={step.id} className="space-y-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-500/20 text-xs font-bold text-teal-300">{idx + 1}</span>
@@ -292,10 +292,10 @@ function OnboardingEditor({
                   />
                 </div>
                 <div className="flex items-center gap-1">
-                  <button type="button" disabled={idx === 0} onClick={() => moveStep(idx, -1)} className="p-1 text-zinc-400 hover:text-white disabled:opacity-30" title="Monter">
+                  <button type="button" disabled={idx === 0} onClick={() => moveStep(idx, -1)} className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] disabled:opacity-30" title="Monter">
                     <ChevronUp className="h-4 w-4" />
                   </button>
-                  <button type="button" disabled={idx === onboarding.steps.length - 1} onClick={() => moveStep(idx, 1)} className="p-1 text-zinc-400 hover:text-white disabled:opacity-30" title="Descendre">
+                  <button type="button" disabled={idx === onboarding.steps.length - 1} onClick={() => moveStep(idx, 1)} className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] disabled:opacity-30" title="Descendre">
                     <ChevronDown className="h-4 w-4" />
                   </button>
                   <button type="button" onClick={() => removeStep(idx)} className="p-1 text-rose-400 hover:text-rose-300" title="Supprimer l'étape">
@@ -303,7 +303,7 @@ function OnboardingEditor({
                   </button>
                 </div>
               </div>
-              {meta && <p className="text-[11px] text-zinc-500">{meta.hint}</p>}
+              {meta && <p className="text-xs text-[var(--text-muted)]">{meta.hint}</p>}
 
               <input type="text" value={step.title} onChange={(e) => patchStep(idx, { title: e.target.value })} placeholder="Titre de l'étape" className={fieldClass} />
               <textarea rows={2} value={step.description} onChange={(e) => patchStep(idx, { description: e.target.value })} placeholder="Description (variables : {user} {username} {server} {membercount})" className={fieldClass} />
@@ -312,12 +312,12 @@ function OnboardingEditor({
                 <Checkbox
                   checked={step.required}
                   onCheckedChange={(checked) => patchStep(idx, { required: checked })}
-                  className="text-[11px] text-zinc-300"
+                  className="text-xs text-[var(--text-muted)]"
                   label={
                     <>
                       Étape obligatoire
-                      {step.type === "QUESTION" && <span className="text-zinc-500"> (sinon un bouton « Passer » est proposé)</span>}
-                      {step.type === "ROLE_SELECTION" && <span className="text-zinc-500"> (sinon le membre peut continuer sans choisir)</span>}
+                      {step.type === "QUESTION" && <span className="text-[var(--text-muted)]"> (sinon un bouton « Passer » est proposé)</span>}
+                      {step.type === "ROLE_SELECTION" && <span className="text-[var(--text-muted)]"> (sinon le membre peut continuer sans choisir)</span>}
                     </>
                   }
                 />
@@ -325,7 +325,7 @@ function OnboardingEditor({
 
               {step.type === "RULES" && (
                 <label className="block space-y-1">
-                  <span className="text-[11px] font-semibold text-zinc-300">Règles (une par ligne)</span>
+                  <span className="text-xs font-semibold text-[var(--text-muted)]">Règles (une par ligne)</span>
                   <textarea
                     rows={5}
                     value={(step.rulesList || []).join("\n")}
@@ -344,7 +344,7 @@ function OnboardingEditor({
 
               {step.type === "ROLE_SELECTION" && (
                 <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-[11px] text-zinc-300">
+                  <label className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                     Nombre maximum de rôles choisis
                     <input
                       type="number"
@@ -352,7 +352,7 @@ function OnboardingEditor({
                       max={25}
                       value={step.maxRoleSelections || 1}
                       onChange={(e) => patchStep(idx, { maxRoleSelections: Math.max(1, Math.min(25, Number(e.target.value) || 1)) })}
-                      className="w-16 rounded-lg border border-[var(--panel-border)] bg-zinc-950/70 px-2 py-1 text-xs text-white outline-none"
+                      className="w-16 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 py-1 text-xs text-[var(--text-primary)] outline-none"
                     />
                   </label>
                   {(step.roleChoices || []).map((choice, ci) => (
@@ -383,11 +383,11 @@ function OnboardingEditor({
                   <button
                     type="button"
                     onClick={() => patchStep(idx, { roleChoices: [...(step.roleChoices || []), { roleId: "", label: "", emoji: null, description: null }] })}
-                    className="text-[11px] font-semibold text-teal-300 hover:text-teal-200"
+                    className="text-xs font-semibold text-teal-300 hover:text-teal-200"
                   >
                     + Ajouter un rôle à proposer
                   </button>
-                  {(step.roleChoices || []).length === 0 && <p className="text-[11px] text-amber-300">Sans rôle proposé, le menu de choix n&apos;apparaît pas.</p>}
+                  {(step.roleChoices || []).length === 0 && <p className="text-xs text-amber-300">Sans rôle proposé, le menu de choix n&apos;apparaît pas.</p>}
                 </div>
               )}
             </div>
@@ -396,8 +396,8 @@ function OnboardingEditor({
       </div>
 
       {/* Ajouter une étape */}
-      <div className="space-y-2 rounded-[var(--panel-radius)] border border-dashed border-[var(--panel-border)] p-3">
-        <p className="text-[11px] font-semibold text-zinc-300">Ajouter une étape</p>
+      <div className="space-y-2 rounded-xl border border-dashed border-[var(--panel-border)] p-3">
+        <p className="text-xs font-semibold text-[var(--text-muted)]">Ajouter une étape</p>
         <div className="flex flex-wrap gap-1.5">
           {STEP_TYPES.map((s) => (
             <button
@@ -405,7 +405,7 @@ function OnboardingEditor({
               type="button"
               onClick={() => addStep(s.type)}
               title={s.hint}
-              className="rounded-lg border border-[var(--panel-border)] bg-white/5 px-2.5 py-1.5 text-[11px] font-semibold text-zinc-200 hover:bg-white/10 cursor-pointer"
+              className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 cursor-pointer"
             >
               {s.icon} {s.label}
             </button>
@@ -774,7 +774,7 @@ export function WelcomeCenterClient() {
 
   if (!loading && isBotPresent && (loadFailed || !config?.welcome || !config?.goodbye)) {
     return (
-      <div className="h-full overflow-y-auto os-scroll bg-[var(--bg-main)] px-4 py-10 text-white sm:px-8">
+      <div className="h-full overflow-y-auto os-scroll bg-[var(--bg-main)] px-4 py-10 text-[var(--text-primary)] sm:px-8">
         <div className="mx-auto max-w-xl space-y-4 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-6">
           <h1 className="text-lg font-bold">Bienvenue &amp; Onboarding</h1>
           <p className="text-sm text-amber-100/90">
@@ -804,28 +804,28 @@ export function WelcomeCenterClient() {
   }
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white px-4 sm:px-8 py-6 pb-44 md:pb-44">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] px-4 sm:px-8 py-6 pb-44 md:pb-44">
       {/* Top Bar / Guild Selector */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-6">
         <div className="flex items-center gap-3">
           <Link
             href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-            className="flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+            className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)] transition-all cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Retour Discord</span>
           </Link>
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-600 shadow-sm">
-            <Sparkles className="h-6 w-6 text-white" />
+            <Sparkles className="h-6 w-6 text-[var(--text-primary)]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-white">Bienvenue & Onboarding</h1>
-              <span className="rounded-full border border-teal-500/30 bg-teal-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-teal-300">
+              <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Bienvenue & Onboarding</h1>
+              <span className="rounded-full border border-teal-500/30 bg-teal-500/10 px-2.5 py-0.5 text-xs font-semibold text-teal-300">
                 Experience Designer
               </span>
             </div>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[var(--text-muted)]">
               Personnalisation complète de l&apos;accueil, Live Preview Discord, formulaires de rôles, vérification et entonnoir de conversion.
             </p>
           </div>
@@ -847,7 +847,7 @@ export function WelcomeCenterClient() {
           <button
             onClick={fetchAllData}
             disabled={loading}
-            className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)] transition-all cursor-pointer"
             title="Rafraîchir"
           >
             <RefreshCw className={cn("h-4 w-4", loading && "animate-spin text-teal-400")} />
@@ -886,49 +886,49 @@ export function WelcomeCenterClient() {
 
       {/* KPI Header Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-6">
-        <div className="rounded-2xl border border-teal-500/20 bg-white/[0.02] p-4 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-400 text-xs">
+        <div className="rounded-2xl border border-teal-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
+          <div className="flex items-center justify-between text-[var(--text-muted)] text-xs">
             <span>Nouveaux Membres</span>
             <UserPlus className="h-4 w-4 text-teal-400" />
           </div>
-          <p className="text-2xl font-bold text-white mt-1">{overview?.newMembersToday ?? 0}</p>
-          <p className="text-[10px] text-teal-300/80 mt-1">Arrivées enregistrées aujourd&apos;hui</p>
+          <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{overview?.newMembersToday ?? 0}</p>
+          <p className="text-xs text-teal-300/80 mt-1">Arrivées enregistrées aujourd&apos;hui</p>
         </div>
 
-        <div className="rounded-2xl border border-emerald-500/20 bg-white/[0.02] p-4 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-400 text-xs">
+        <div className="rounded-2xl border border-emerald-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
+          <div className="flex items-center justify-between text-[var(--text-muted)] text-xs">
             <span>Messages Envoyés</span>
             <MessageSquare className="h-4 w-4 text-emerald-400" />
           </div>
-          <p className="text-2xl font-bold text-white mt-1">{overview?.welcomeMessagesToday ?? 0}</p>
-          <p className="text-[10px] text-emerald-300/80 mt-1">Salons + DMs délivrés</p>
+          <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{overview?.welcomeMessagesToday ?? 0}</p>
+          <p className="text-xs text-emerald-300/80 mt-1">Salons + DMs délivrés</p>
         </div>
 
-        <div className="rounded-2xl border border-blue-500/20 bg-white/[0.02] p-4 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-400 text-xs">
+        <div className="rounded-2xl border border-blue-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
+          <div className="flex items-center justify-between text-[var(--text-muted)] text-xs">
             <span>Taux de Vérification</span>
             <Shield className="h-4 w-4 text-blue-400" />
           </div>
-          <p className="text-2xl font-bold text-white mt-1">{overview?.verificationRate ?? "—"}</p>
-          <p className="text-[10px] text-blue-300/80 mt-1">Membres ayant validé le règlement</p>
+          <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{overview?.verificationRate ?? "—"}</p>
+          <p className="text-xs text-blue-300/80 mt-1">Membres ayant validé le règlement</p>
         </div>
 
-        <div className="rounded-2xl border border-purple-500/20 bg-white/[0.02] p-4 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-400 text-xs">
+        <div className="rounded-2xl border border-emerald-500/30 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
+          <div className="flex items-center justify-between text-[var(--text-muted)] text-xs">
             <span>Complétion Onboarding</span>
-            <Users className="h-4 w-4 text-purple-400" />
+            <Users className="h-4 w-4 text-emerald-300" />
           </div>
-          <p className="text-2xl font-bold text-white mt-1">{overview?.onboardingCompletionRate ?? "—"}</p>
-          <p className="text-[10px] text-purple-300/80 mt-1">Parcours terminé avec rôles</p>
+          <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{overview?.onboardingCompletionRate ?? "—"}</p>
+          <p className="text-xs text-emerald-300 mt-1">Parcours terminé avec rôles</p>
         </div>
 
-        <div className="rounded-2xl border border-amber-500/20 bg-white/[0.02] p-4 shadow-sm col-span-2 sm:col-span-1">
-          <div className="flex items-center justify-between text-zinc-400 text-xs">
+        <div className="rounded-2xl border border-amber-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm col-span-2 sm:col-span-1">
+          <div className="flex items-center justify-between text-[var(--text-muted)] text-xs">
             <span>Rôles Distribués</span>
             <Sparkles className="h-4 w-4 text-amber-400" />
           </div>
-          <p className="text-2xl font-bold text-white mt-1">{overview?.rolesDistributedToday ?? 0}</p>
-          <p className="text-[10px] text-amber-300/80 mt-1">Auto-roles & choix onboarding</p>
+          <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{overview?.rolesDistributedToday ?? 0}</p>
+          <p className="text-xs text-amber-300/80 mt-1">Auto-roles & choix onboarding</p>
         </div>
       </div>
 
@@ -956,7 +956,7 @@ export function WelcomeCenterClient() {
                 "flex items-center gap-2 rounded-xl px-3.5 py-2 font-medium transition-all whitespace-nowrap cursor-pointer",
                 isActive
                   ? "bg-teal-600 text-white shadow-sm"
-                  : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                  : "text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)]"
               )}
             >
               <Icon className="h-3.5 w-3.5" />
@@ -971,68 +971,68 @@ export function WelcomeCenterClient() {
         <div className="space-y-6 mt-6">
           {/* System Status Toggles */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
+            <div className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
               <div>
-                <p className="text-xs font-bold text-white">Système Welcome</p>
-                <p className="text-[10px] text-zinc-400">Salons textuels d&apos;accueil</p>
+                <p className="text-xs font-bold text-[var(--text-primary)]">Système Welcome</p>
+                <p className="text-xs text-[var(--text-muted)]">Salons textuels d&apos;accueil</p>
               </div>
               <span
                 className={cn(
-                  "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase",
+                  "rounded-full px-2 py-0.5 text-xs font-bold uppercase",
                   config?.welcome?.enabled
                     ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                    : "bg-zinc-700/40 text-zinc-400 border border-zinc-600/30"
+                    : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border border-[var(--panel-border)]"
                 )}
               >
                 {config?.welcome?.enabled ? "Actif" : "Inactif"}
               </span>
             </div>
 
-            <div className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
+            <div className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
               <div>
-                <p className="text-xs font-bold text-white">Système Goodbye</p>
-                <p className="text-[10px] text-zinc-400">Notifications de départ</p>
+                <p className="text-xs font-bold text-[var(--text-primary)]">Système Goodbye</p>
+                <p className="text-xs text-[var(--text-muted)]">Notifications de départ</p>
               </div>
               <span
                 className={cn(
-                  "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase",
+                  "rounded-full px-2 py-0.5 text-xs font-bold uppercase",
                   config?.goodbye?.enabled
                     ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                    : "bg-zinc-700/40 text-zinc-400 border border-zinc-600/30"
+                    : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border border-[var(--panel-border)]"
                 )}
               >
                 {config?.goodbye?.enabled ? "Actif" : "Inactif"}
               </span>
             </div>
 
-            <div className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
+            <div className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
               <div>
-                <p className="text-xs font-bold text-white">Vérification</p>
-                <p className="text-[10px] text-zinc-400">Validation de règlement</p>
+                <p className="text-xs font-bold text-[var(--text-primary)]">Vérification</p>
+                <p className="text-xs text-[var(--text-muted)]">Validation de règlement</p>
               </div>
               <span
                 className={cn(
-                  "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase",
+                  "rounded-full px-2 py-0.5 text-xs font-bold uppercase",
                   verification?.enabled
                     ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                    : "bg-zinc-700/40 text-zinc-400 border border-zinc-600/30"
+                    : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border border-[var(--panel-border)]"
                 )}
               >
                 {verification?.enabled ? "Actif" : "Inactif"}
               </span>
             </div>
 
-            <div className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
+            <div className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
               <div>
-                <p className="text-xs font-bold text-white">Onboarding Flow</p>
-                <p className="text-[10px] text-zinc-400">Parcours multi-étapes</p>
+                <p className="text-xs font-bold text-[var(--text-primary)]">Onboarding Flow</p>
+                <p className="text-xs text-[var(--text-muted)]">Parcours multi-étapes</p>
               </div>
               <span
                 className={cn(
-                  "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase",
+                  "rounded-full px-2 py-0.5 text-xs font-bold uppercase",
                   onboarding?.enabled
                     ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                    : "bg-zinc-700/40 text-zinc-400 border border-zinc-600/30"
+                    : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border border-[var(--panel-border)]"
                 )}
               >
                 {onboarding?.enabled ? "Actif" : "Inactif"}
@@ -1041,13 +1041,13 @@ export function WelcomeCenterClient() {
           </div>
 
           {/* Onboarding Funnel Visualizer */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-6 space-y-4 shadow-xl">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
             <div>
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
+              <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <BarChart3 className="h-4 w-4 text-teal-400" />
                 <span>Entonnoir de Conversion des Nouveaux Membres (Onboarding Funnel)</span>
               </h2>
-              <p className="text-xs text-zinc-400 mt-0.5">
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 Analysez le taux de rétention et identifiez à quelle étape les utilisateurs abandonnent le processus.
               </p>
             </div>
@@ -1057,18 +1057,18 @@ export function WelcomeCenterClient() {
                 <div key={stage.stage} className="space-y-1">
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold text-zinc-300">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--surface-raised)]/40 text-xs font-bold text-[var(--text-muted)]">
                         {idx + 1}
                       </span>
-                      <span className="font-semibold text-zinc-200">{stage.label}</span>
+                      <span className="font-semibold text-[var(--text-primary)]">{stage.label}</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-zinc-400">{stage.count} membre(s)</span>
+                      <span className="text-[var(--text-muted)]">{stage.count} membre(s)</span>
                       <span className="font-bold text-teal-300 w-12 text-right">{stage.percentage}%</span>
                     </div>
                   </div>
 
-                  <div className="h-3 w-full rounded-full bg-white/5 overflow-hidden">
+                  <div className="h-3 w-full rounded-full bg-[var(--surface-raised)]/40 overflow-hidden">
                     <div
                       className="h-full bg-teal-500 rounded-full transition-all duration-500"
                       style={{ width: `${Math.min(100, Math.max(0, stage.percentage))}%` }}
@@ -1080,33 +1080,33 @@ export function WelcomeCenterClient() {
           </div>
 
           {/* Live Recent Events Stream */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
               <Clock className="h-3.5 w-3.5 text-teal-400" />
               <span>Activité Récente de Bienvenue</span>
             </h3>
 
-            <div className="divide-y divide-white/5">
+            <div className="divide-y divide-[var(--panel-border)]">
               {overview?.recentEvents?.length > 0 ? (
                 overview.recentEvents.map((evt: any) => (
                   <div key={evt.id} className="py-2.5 flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2.5">
                       <span className="h-2 w-2 rounded-full bg-teal-400" />
                       <div>
-                        <p className="font-semibold text-white">
+                        <p className="font-semibold text-[var(--text-primary)]">
                           {evt.userTag}{" "}
-                          <span className="text-[10px] text-zinc-400 font-normal">({evt.type})</span>
+                          <span className="text-xs text-[var(--text-muted)] font-normal">({evt.type})</span>
                         </p>
-                        <p className="text-[11px] text-zinc-400">{evt.detail || "Événement enregistré"}</p>
+                        <p className="text-xs text-[var(--text-muted)]">{evt.detail || "Événement enregistré"}</p>
                       </div>
                     </div>
-                    <span className="text-[10px] text-zinc-500">
+                    <span className="text-xs text-[var(--text-muted)]">
                       {new Date(evt.timestamp).toLocaleTimeString("fr-FR")}
                     </span>
                   </div>
                 ))
               ) : (
-                <p className="text-xs text-zinc-500 py-4 italic">Aucun événement récent enregistré.</p>
+                <p className="text-xs text-[var(--text-muted)] py-4 italic">Aucun événement récent enregistré.</p>
               )}
             </div>
           </div>
@@ -1120,8 +1120,8 @@ export function WelcomeCenterClient() {
           <div className="space-y-5">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-base font-bold text-white">Message & Embed Builder</h2>
-                <p className="text-xs text-zinc-400">Configurez le message texte, l&apos;embed et les boutons interactifs.</p>
+                <h2 className="text-base font-bold text-[var(--text-primary)]">Message & Embed Builder</h2>
+                <p className="text-xs text-[var(--text-muted)]">Configurez le message texte, l&apos;embed et les boutons interactifs.</p>
               </div>
               <button
                 onClick={() => handleSaveConfig()}
@@ -1133,8 +1133,8 @@ export function WelcomeCenterClient() {
             </div>
 
             {/* Variable Helper Chips */}
-            <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 space-y-2">
-              <p className="text-[10px] uppercase font-bold text-zinc-400">Variables Disponibles (Cliquez pour insérer)</p>
+            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
+              <p className="text-xs uppercase font-bold text-[var(--text-muted)]">Variables Disponibles (Cliquez pour insérer)</p>
               <div className="flex flex-wrap gap-1.5">
                 {[
                   "{user}",
@@ -1152,7 +1152,7 @@ export function WelcomeCenterClient() {
                       navigator.clipboard.writeText(v);
                       info("Variable copiée", `${v} est dans votre presse-papiers.`);
                     }}
-                    className="rounded-md bg-white/5 border border-[var(--panel-border)] px-2 py-0.5 text-[11px] font-mono text-teal-300 hover:bg-teal-500/20 transition-colors cursor-pointer"
+                    className="rounded-md bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-2 py-0.5 text-xs font-mono text-teal-300 hover:bg-teal-500/20 transition-colors cursor-pointer"
                   >
                     {v}
                   </button>
@@ -1161,9 +1161,9 @@ export function WelcomeCenterClient() {
             </div>
 
             {/* General Switch & Text */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
+            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3">
               <label className="flex items-center justify-between cursor-pointer">
-                <span className="text-xs font-bold text-white">Activer le message de bienvenue</span>
+                <span className="text-xs font-bold text-[var(--text-primary)]">Activer le message de bienvenue</span>
                 <Checkbox
                   checked={config.welcome.enabled}
                   onCheckedChange={(checked) =>
@@ -1176,7 +1176,7 @@ export function WelcomeCenterClient() {
               </label>
 
               <div>
-                <label className="text-xs font-semibold text-zinc-300 mb-1 block">Salon de destination</label>
+                <label className="text-xs font-semibold text-[var(--text-muted)] mb-1 block">Salon de destination</label>
                 <ChannelPicker
                   value={config.welcome.channelId || ""}
                   onChange={(id) =>
@@ -1191,7 +1191,7 @@ export function WelcomeCenterClient() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-zinc-300">Contenu texte (Hors embed)</label>
+                <label className="text-xs font-semibold text-[var(--text-muted)]">Contenu texte (Hors embed)</label>
                 <textarea
                   rows={2}
                   value={config.welcome.messageContent}
@@ -1202,13 +1202,13 @@ export function WelcomeCenterClient() {
                     }))
                   }
                   placeholder="👋 Bienvenue {user} sur **{server}** !"
-                  className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none font-sans"
+                  className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500 resize-none font-sans"
                 />
               </div>
             </div>
 
             {/* Embed Builder */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
+            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <Checkbox
                   checked={config.welcome.embed.enabled}
@@ -1221,12 +1221,12 @@ export function WelcomeCenterClient() {
                       },
                     }))
                   }
-                  label={<span className="text-xs font-bold text-white">Activer l&apos;Embed Discord</span>}
+                  label={<span className="text-xs font-bold text-[var(--text-primary)]">Activer l&apos;Embed Discord</span>}
                 />
 
                 {/* Color picker */}
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-zinc-400">Couleur :</span>
+                  <span className="text-xs text-[var(--text-muted)]">Couleur :</span>
                   <input
                     type="color"
                     value={config.welcome.embed.color || "#10B981"}
@@ -1247,7 +1247,7 @@ export function WelcomeCenterClient() {
               {config.welcome.embed.enabled && (
                 <div className="space-y-3 pt-2 border-t border-[var(--panel-border)]">
                   <div>
-                    <label className="text-[11px] font-semibold text-zinc-300">Titre de l&apos;embed</label>
+                    <label className="text-xs font-semibold text-[var(--text-muted)]">Titre de l&apos;embed</label>
                     <input
                       type="text"
                       value={config.welcome.embed.title}
@@ -1260,12 +1260,12 @@ export function WelcomeCenterClient() {
                           },
                         }))
                       }
-                      className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500"
+                      className="mt-1 h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-white outline-none focus:border-teal-500"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-semibold text-zinc-300">Description</label>
+                    <label className="text-xs font-semibold text-[var(--text-muted)]">Description</label>
                     <textarea
                       rows={3}
                       value={config.welcome.embed.description}
@@ -1278,13 +1278,13 @@ export function WelcomeCenterClient() {
                           },
                         }))
                       }
-                      className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none"
+                      className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[11px] font-semibold text-zinc-300">Auteur (Texte haut)</label>
+                      <label className="text-xs font-semibold text-[var(--text-muted)]">Auteur (Texte haut)</label>
                       <input
                         type="text"
                         value={config.welcome.embed.authorName || ""}
@@ -1297,11 +1297,11 @@ export function WelcomeCenterClient() {
                             },
                           }))
                         }
-                        className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500"
+                        className="mt-1 h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-white outline-none focus:border-teal-500"
                       />
                     </div>
                     <div>
-                      <label className="text-[11px] font-semibold text-zinc-300">Footer (Pied de page)</label>
+                      <label className="text-xs font-semibold text-[var(--text-muted)]">Footer (Pied de page)</label>
                       <input
                         type="text"
                         value={config.welcome.embed.footer || ""}
@@ -1314,7 +1314,7 @@ export function WelcomeCenterClient() {
                             },
                           }))
                         }
-                        className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500"
+                        className="mt-1 h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-white outline-none focus:border-teal-500"
                       />
                     </div>
                   </div>
@@ -1322,7 +1322,7 @@ export function WelcomeCenterClient() {
                   {/* Dynamic Fields List */}
                   <div className="space-y-2 pt-2 border-t border-[var(--panel-border)]">
                     <div className="flex items-center justify-between">
-                      <label className="text-[11px] font-bold text-zinc-300">Champs Personnalisés</label>
+                      <label className="text-xs font-bold text-[var(--text-muted)]">Champs Personnalisés</label>
                       <button
                         type="button"
                         onClick={() => {
@@ -1343,14 +1343,14 @@ export function WelcomeCenterClient() {
                             },
                           }));
                         }}
-                        className="text-[10px] font-bold text-teal-400 hover:text-teal-300"
+                        className="text-xs font-bold text-teal-400 hover:text-teal-300"
                       >
                         + Ajouter un champ
                       </button>
                     </div>
 
                     {config.welcome.embed.fields?.map((f: EmbedField, idx: number) => (
-                      <div key={f.id} className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-2 text-xs">
+                      <div key={f.id} className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-xs">
                         <input
                           type="text"
                           value={f.name}
@@ -1363,7 +1363,7 @@ export function WelcomeCenterClient() {
                             }));
                           }}
                           placeholder="Nom"
-                          className="h-7 w-1/3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-[11px] text-white"
+                          className="h-7 w-1/3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-white"
                         />
                         <input
                           type="text"
@@ -1377,10 +1377,10 @@ export function WelcomeCenterClient() {
                             }));
                           }}
                           placeholder="Valeur"
-                          className="h-7 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-[11px] text-white"
+                          className="h-7 flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-white"
                         />
                         <Checkbox
-                          className="text-[10px] text-zinc-400"
+                          className="text-xs text-[var(--text-muted)]"
                           checked={f.inline}
                           onCheckedChange={(checked) => {
                             const updated = [...config.welcome.embed.fields];
@@ -1413,9 +1413,9 @@ export function WelcomeCenterClient() {
             </div>
 
             {/* Interactive Buttons Builder */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
+            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold text-white">Boutons d&apos;Action Discord (Max 5)</p>
+                <p className="text-xs font-bold text-[var(--text-primary)]">Boutons d&apos;Action Discord (Max 5)</p>
                 <button
                   type="button"
                   onClick={() => {
@@ -1436,7 +1436,7 @@ export function WelcomeCenterClient() {
                     }));
                   }}
                   disabled={config.welcome.buttons?.length >= 5}
-                  className="text-[10px] font-bold text-teal-400 hover:text-teal-300 disabled:opacity-40"
+                  className="text-xs font-bold text-teal-400 hover:text-teal-300 disabled:opacity-40"
                 >
                   + Ajouter un bouton
                 </button>
@@ -1444,7 +1444,7 @@ export function WelcomeCenterClient() {
 
               <div className="space-y-2">
                 {config.welcome.buttons?.map((btn: WelcomeButton, idx: number) => (
-                  <div key={btn.id} className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 space-y-2 text-xs">
+                  <div key={btn.id} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2 text-xs">
                     <div className="flex items-center gap-2">
                       <input
                         type="text"
@@ -1455,7 +1455,7 @@ export function WelcomeCenterClient() {
                           setConfig((p: any) => ({ ...p, welcome: { ...p.welcome, buttons: updated } }));
                         }}
                         placeholder="Label"
-                        className="h-8 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-xs text-white"
+                        className="h-8 flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-white"
                       />
                       <input
                         type="text"
@@ -1466,7 +1466,7 @@ export function WelcomeCenterClient() {
                           setConfig((p: any) => ({ ...p, welcome: { ...p.welcome, buttons: updated } }));
                         }}
                         placeholder="Emoji"
-                        className="h-8 w-14 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-xs text-white text-center"
+                        className="h-8 w-14 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-white text-center"
                       />
                       <Select
                         value={btn.action}
@@ -1509,7 +1509,7 @@ export function WelcomeCenterClient() {
                           setConfig((p: any) => ({ ...p, welcome: { ...p.welcome, buttons: updated } }));
                         }}
                         placeholder="https://..."
-                        className="h-7 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-[11px] text-white"
+                        className="h-7 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-white"
                       />
                     )}
                   </div>
@@ -1521,34 +1521,34 @@ export function WelcomeCenterClient() {
           {/* RIGHT: LIVE DISCORD PREVIEW */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Eye className="h-4 w-4 text-teal-400" />
                 <span>Rendu Discord en Direct (Live Preview)</span>
               </h3>
-              <span className="text-[10px] text-zinc-500 font-mono">Synchronisation instantanée</span>
+              <span className="text-xs text-[var(--text-muted)] font-mono">Synchronisation instantanée</span>
             </div>
 
             {/* Discord Mock Screen */}
-            <div className="rounded-2xl border border-zinc-800 bg-[#313338] p-4 text-zinc-200 font-sans shadow-2xl">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[#313338] p-4 text-[var(--text-primary)] font-sans">
               {/* Message Header */}
               <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-full bg-teal-600 flex items-center justify-center font-bold text-white text-xs shrink-0 shadow-md">
+                <div className="h-10 w-10 rounded-full bg-teal-600 flex items-center justify-center font-bold text-white text-xs shrink-0">
                   ETH
                 </div>
                 <div className="flex-1 min-w-0 space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-white text-sm hover:underline cursor-pointer">
+                    <span className="font-semibold text-[var(--text-primary)] text-sm hover:underline cursor-pointer">
                       Etho
                     </span>
-                    <span className="rounded bg-[#5865F2] px-1 py-0.2 text-[9px] font-bold text-white">
+                    <span className="rounded bg-emerald-500 px-1 py-0.2 text-xs font-bold text-white">
                       BOT
                     </span>
-                    <span className="text-[10px] text-zinc-400">Aujourd&apos;hui à 14:32</span>
+                    <span className="text-xs text-[var(--text-muted)]">Aujourd&apos;hui à 14:32</span>
                   </div>
 
                   {/* Message Raw Text */}
                   {config.welcome.messageContent && (
-                    <p className="text-xs text-zinc-200 whitespace-pre-wrap leading-relaxed">
+                    <p className="text-xs text-[var(--text-primary)] whitespace-pre-wrap leading-relaxed">
                       {renderParsed(config.welcome.messageContent)}
                     </p>
                   )}
@@ -1561,21 +1561,21 @@ export function WelcomeCenterClient() {
                     >
                       {/* Author */}
                       {config.welcome.embed.authorName && (
-                        <p className="text-[11px] font-semibold text-zinc-300">
+                        <p className="text-xs font-semibold text-[var(--text-muted)]">
                           {renderParsed(config.welcome.embed.authorName)}
                         </p>
                       )}
 
                       {/* Title */}
                       {config.welcome.embed.title && (
-                        <h4 className="text-sm font-bold text-white leading-snug">
+                        <h4 className="text-sm font-bold text-[var(--text-primary)] leading-snug">
                           {renderParsed(config.welcome.embed.title)}
                         </h4>
                       )}
 
                       {/* Description */}
                       {config.welcome.embed.description && (
-                        <p className="text-xs text-zinc-300 whitespace-pre-wrap leading-relaxed">
+                        <p className="text-xs text-[var(--text-muted)] whitespace-pre-wrap leading-relaxed">
                           {renderParsed(config.welcome.embed.description)}
                         </p>
                       )}
@@ -1585,15 +1585,15 @@ export function WelcomeCenterClient() {
                         <div className="grid grid-cols-2 gap-2 pt-1">
                           {config.welcome.embed.fields.map((f: EmbedField) => (
                             <div key={f.id} className={cn(f.inline ? "col-span-1" : "col-span-2")}>
-                              <p className="text-[10px] font-bold text-zinc-400 uppercase">{f.name}</p>
-                              <p className="text-xs text-zinc-200">{renderParsed(f.value)}</p>
+                              <p className="text-xs font-bold text-[var(--text-muted)] uppercase">{f.name}</p>
+                              <p className="text-xs text-[var(--text-primary)]">{renderParsed(f.value)}</p>
                             </div>
                           ))}
                         </div>
                       )}
 
                       {/* Footer & Timestamp */}
-                      <div className="flex items-center gap-2 pt-2 text-[10px] text-zinc-400 border-t border-[var(--panel-border)]">
+                      <div className="flex items-center gap-2 pt-2 text-xs text-[var(--text-muted)] border-t border-[var(--panel-border)]">
                         <span>{renderParsed(config.welcome.embed.footer || "ETHONE Guard")}</span>
                         {config.welcome.embed.showTimestamp && <span>• Aujourd&apos;hui à 14:32</span>}
                       </div>
@@ -1608,7 +1608,7 @@ export function WelcomeCenterClient() {
                           key={btn.id}
                           type="button"
                           className={cn(
-                            "flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-all",
+                            "flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] shadow-sm transition-all",
                             btn.style === "SUCCESS"
                               ? "bg-[#248046] hover:bg-[#1a6334]"
                               : btn.style === "DANGER"
@@ -1617,7 +1617,7 @@ export function WelcomeCenterClient() {
                               ? "bg-[#4E5058] hover:bg-[#6D6F78]"
                               : btn.style === "LINK"
                               ? "bg-[#4E5058] text-blue-300 hover:underline"
-                              : "bg-[#5865F2] hover:bg-[#4752C4]"
+                              : "bg-emerald-500 hover:bg-emerald-600"
                           )}
                         >
                           {btn.emoji && <span>{btn.emoji}</span>}
@@ -1638,15 +1638,15 @@ export function WelcomeCenterClient() {
       {activeTab === "goodbye" && config && (
         <div className="space-y-5 mt-6 max-w-2xl">
           <div>
-            <h2 className="text-base font-bold text-white">Message de Départ (Goodbye)</h2>
-            <p className="text-xs text-zinc-400">
+            <h2 className="text-base font-bold text-[var(--text-primary)]">Message de Départ (Goodbye)</h2>
+            <p className="text-xs text-[var(--text-muted)]">
               Notifiez les départs dans un salon dédié pour garder une trace des membres qui quittent le serveur.
             </p>
           </div>
 
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
-              <span className="text-xs font-bold text-white">Activer les messages de départ</span>
+              <span className="text-xs font-bold text-[var(--text-primary)]">Activer les messages de départ</span>
               <Checkbox
                 checked={config.goodbye.enabled}
                 onCheckedChange={(checked) =>
@@ -1659,7 +1659,7 @@ export function WelcomeCenterClient() {
             </label>
 
             <div>
-              <label className="text-xs font-semibold text-zinc-300 mb-1 block">Salon de départ</label>
+              <label className="text-xs font-semibold text-[var(--text-muted)] mb-1 block">Salon de départ</label>
               <ChannelPicker
                 value={config.goodbye.channelId || ""}
                 onChange={(id) =>
@@ -1674,7 +1674,7 @@ export function WelcomeCenterClient() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-zinc-300">Message de départ</label>
+              <label className="text-xs font-semibold text-[var(--text-muted)]">Message de départ</label>
               <textarea
                 rows={3}
                 value={config.goodbye.messageContent}
@@ -1685,7 +1685,7 @@ export function WelcomeCenterClient() {
                   }))
                 }
                 placeholder="📤 Au revoir **{username}** ! Nous ne sommes plus que **{membercount}** membres."
-                className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none font-sans"
+                className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none font-sans"
               />
             </div>
 
@@ -1704,17 +1704,17 @@ export function WelcomeCenterClient() {
       {activeTab === "dm" && config && (
         <div className="space-y-5 mt-6 max-w-2xl">
           <div>
-            <h2 className="text-base font-bold text-white">Message Privé d&apos;Accueil (DM Welcome)</h2>
-            <p className="text-xs text-zinc-400">
+            <h2 className="text-base font-bold text-[var(--text-primary)]">Message Privé d&apos;Accueil (DM Welcome)</h2>
+            <p className="text-xs text-[var(--text-muted)]">
               Envoyez automatiquement un message de bienvenue privé aux membres qui rejoignent votre serveur.
             </p>
           </div>
 
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
               <div>
-                <p className="text-xs font-bold text-white">Activer le message privé en DM</p>
-                <p className="text-[11px] text-zinc-400">Si un membre a fermé ses DMs, l&apos;envoi échouera sans bloquer l&apos;arrivée.</p>
+                <p className="text-xs font-bold text-[var(--text-primary)]">Activer le message privé en DM</p>
+                <p className="text-xs text-[var(--text-muted)]">Si un membre a fermé ses DMs, l&apos;envoi échouera sans bloquer l&apos;arrivée.</p>
               </div>
               <Checkbox
                 checked={config.welcome.dm?.enabled ?? false}
@@ -1727,12 +1727,12 @@ export function WelcomeCenterClient() {
                     },
                   }))
                 }
-                className="h-4 w-4 rounded border-zinc-700 accent-teal-500"
+                className="h-4 w-4 rounded border-[var(--panel-border)] accent-teal-500"
               />
             </label>
 
             <div>
-              <label className="text-xs font-semibold text-zinc-300">Message texte privé</label>
+              <label className="text-xs font-semibold text-[var(--text-muted)]">Message texte privé</label>
               <textarea
                 rows={3}
                 value={config.welcome.dm?.messageContent || ""}
@@ -1746,7 +1746,7 @@ export function WelcomeCenterClient() {
                   }))
                 }
                 placeholder="👋 Bonjour {user}, bienvenue sur **{server}** !"
-                className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none font-sans"
+                className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none font-sans"
               />
             </div>
 
@@ -1779,15 +1779,15 @@ export function WelcomeCenterClient() {
       {activeTab === "verification" && verification && (
         <div className="space-y-5 mt-6 max-w-2xl">
           <div>
-            <h2 className="text-base font-bold text-white">Vérification & Validation de Règlement</h2>
-            <p className="text-xs text-zinc-400">
+            <h2 className="text-base font-bold text-[var(--text-primary)]">Vérification & Validation de Règlement</h2>
+            <p className="text-xs text-[var(--text-muted)]">
               Obligez les nouveaux membres à cliquer sur un bouton de vérification pour débloquer les salons du serveur.
             </p>
           </div>
 
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
-              <span className="text-xs font-bold text-white">Activer le module de vérification</span>
+              <span className="text-xs font-bold text-[var(--text-primary)]">Activer le module de vérification</span>
               <Checkbox
                 checked={verification.enabled}
                 onCheckedChange={(checked) => setVerification((p: any) => ({ ...p, enabled: checked }))}
@@ -1795,7 +1795,7 @@ export function WelcomeCenterClient() {
             </label>
 
             <div>
-              <label className="text-xs font-semibold text-zinc-300">Rôle attribué après vérification (Vérifié)</label>
+              <label className="text-xs font-semibold text-[var(--text-muted)]">Rôle attribué après vérification (Vérifié)</label>
               <div className="mt-1">
                 <RolePicker
                   value={verification.verifiedRoleId}
@@ -1810,12 +1810,12 @@ export function WelcomeCenterClient() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-zinc-300">Texte d&apos;invitation à la vérification</label>
+              <label className="text-xs font-semibold text-[var(--text-muted)]">Texte d&apos;invitation à la vérification</label>
               <textarea
                 rows={2}
                 value={verification.verificationPrompt}
                 onChange={(e) => setVerification((p: any) => ({ ...p, verificationPrompt: e.target.value }))}
-                className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none"
+                className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none"
               />
             </div>
 
@@ -1834,8 +1834,8 @@ export function WelcomeCenterClient() {
       {activeTab === "templates" && (
         <div className="space-y-5 mt-6">
           <div>
-            <h2 className="text-base font-bold text-white">Templates Prêts à l&apos;Emploi</h2>
-            <p className="text-xs text-zinc-400">
+            <h2 className="text-base font-bold text-[var(--text-primary)]">Templates Prêts à l&apos;Emploi</h2>
+            <p className="text-xs text-[var(--text-muted)]">
               Appliquez en un clic une configuration complète adaptée au thème de votre serveur Discord.
             </p>
           </div>
@@ -1844,26 +1844,26 @@ export function WelcomeCenterClient() {
             {templates.map((tpl) => (
               <div
                 key={tpl.id}
-                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-3 hover:border-teal-500/40 transition-colors flex flex-col justify-between"
+                className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3 hover:border-teal-500/40 transition-colors flex flex-col justify-between"
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span
-                      className="rounded-md px-2 py-0.5 text-[10px] font-bold text-white uppercase"
+                      className="rounded-md px-2 py-0.5 text-xs font-bold text-[var(--text-primary)] uppercase"
                       style={{ backgroundColor: tpl.previewColor || "#10B981" }}
                     >
                       {tpl.badge}
                     </span>
-                    <span className="text-[10px] text-zinc-400 font-mono">{tpl.category}</span>
+                    <span className="text-xs text-[var(--text-muted)] font-mono">{tpl.category}</span>
                   </div>
-                  <h3 className="font-bold text-white text-sm">{tpl.name}</h3>
-                  <p className="text-xs text-zinc-400">{tpl.description}</p>
+                  <h3 className="font-bold text-[var(--text-primary)] text-sm">{tpl.name}</h3>
+                  <p className="text-xs text-[var(--text-muted)]">{tpl.description}</p>
                 </div>
 
                 <button
                   onClick={() => handleApplyTemplate(tpl.id)}
                   disabled={saving}
-                  className="w-full rounded-xl bg-white/5 border border-[var(--panel-border)] py-2 text-xs font-bold text-zinc-200 hover:bg-teal-600 hover:text-white hover:border-teal-500 transition-all cursor-pointer"
+                  className="w-full rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] py-2 text-xs font-bold text-[var(--text-primary)] hover:bg-teal-600 hover:text-[var(--text-primary)] hover:border-teal-500 transition-all cursor-pointer"
                 >
                   Appliquer ce modèle
                 </button>
@@ -1877,15 +1877,15 @@ export function WelcomeCenterClient() {
       {activeTab === "autoroles" && config && (
         <div className="space-y-5 mt-6 max-w-2xl">
           <div>
-            <h2 className="text-base font-bold text-white">Attribution Automatique de Rôles (Auto-Roles)</h2>
-            <p className="text-xs text-zinc-400">
+            <h2 className="text-base font-bold text-[var(--text-primary)]">Attribution Automatique de Rôles (Auto-Roles)</h2>
+            <p className="text-xs text-[var(--text-muted)]">
               Rôles Discord accordés instantanément au membre dès son entrée sur le serveur.
             </p>
           </div>
 
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-zinc-300">Rôles attribués à l&apos;arrivée</label>
+              <label className="text-xs font-semibold text-[var(--text-muted)]">Rôles attribués à l&apos;arrivée</label>
               <div className="flex flex-wrap gap-2 pt-1">
                 {roles.map((r) => {
                   const isSelected = config.welcome.autoRoleIds?.includes(r.id);
@@ -1907,7 +1907,7 @@ export function WelcomeCenterClient() {
                         "flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs transition-all cursor-pointer",
                         isSelected
                           ? "border-teal-500 bg-teal-500/20 text-teal-200 font-bold"
-                          : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
+                          : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                       )}
                     >
                       <span className="h-2 w-2 rounded-full" style={{ backgroundColor: r.color }} />
@@ -1934,15 +1934,15 @@ export function WelcomeCenterClient() {
       {activeTab === "conditions" && config && (
         <div className="space-y-5 mt-6 max-w-2xl">
           <div>
-            <h2 className="text-base font-bold text-white">Conditions d&apos;Éligibilité & Automatisations</h2>
-            <p className="text-xs text-zinc-400">
+            <h2 className="text-base font-bold text-[var(--text-primary)]">Conditions d&apos;Éligibilité & Automatisations</h2>
+            <p className="text-xs text-[var(--text-muted)]">
               Définissez des règles pour filtrer ou adapter l&apos;accueil selon l&apos;ancienneté du compte Discord.
             </p>
           </div>
 
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
-              <span className="text-xs font-bold text-white">Activer le filtrage conditionnel</span>
+              <span className="text-xs font-bold text-[var(--text-primary)]">Activer le filtrage conditionnel</span>
               <Checkbox
                 checked={config.welcome.conditions?.enabled ?? false}
                 onCheckedChange={(checked) =>
@@ -1954,12 +1954,12 @@ export function WelcomeCenterClient() {
                     },
                   }))
                 }
-                className="h-4 w-4 rounded border-zinc-700 accent-teal-500"
+                className="h-4 w-4 rounded border-[var(--panel-border)] accent-teal-500"
               />
             </label>
 
             <div>
-              <label className="text-xs font-semibold text-zinc-300">Âge minimum du compte Discord (Jours)</label>
+              <label className="text-xs font-semibold text-[var(--text-muted)]">Âge minimum du compte Discord (Jours)</label>
               <input
                 type="number"
                 min="0"
@@ -1977,9 +1977,9 @@ export function WelcomeCenterClient() {
                     },
                   }))
                 }
-                className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500"
+                className="mt-1 h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-white outline-none focus:border-teal-500"
               />
-              <p className="text-[10px] text-zinc-400 mt-1">Si le compte est plus jeune, l&apos;accueil peut être différé ou restreint.</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1">Si le compte est plus jeune, l&apos;accueil peut être différé ou restreint.</p>
             </div>
 
             <button
@@ -1997,15 +1997,15 @@ export function WelcomeCenterClient() {
       {activeTab === "settings" && config && (
         <div className="space-y-5 mt-6 max-w-2xl">
           <div>
-            <h2 className="text-base font-bold text-white">Paramètres Généraux & Salons de Destination</h2>
-            <p className="text-xs text-zinc-400">
+            <h2 className="text-base font-bold text-[var(--text-primary)]">Paramètres Généraux & Salons de Destination</h2>
+            <p className="text-xs text-[var(--text-muted)]">
               Sélectionnez les salons Discord et vérifiez automatiquement les permissions requises pour le bot.
             </p>
           </div>
 
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <div>
-              <label className="text-xs font-semibold text-zinc-300 mb-1 block">Salon de bienvenue (Welcome Channel)</label>
+              <label className="text-xs font-semibold text-[var(--text-muted)] mb-1 block">Salon de bienvenue (Welcome Channel)</label>
               <ChannelPicker
                 value={config.welcome.channelId || ""}
                 onChange={(id) =>
@@ -2021,7 +2021,7 @@ export function WelcomeCenterClient() {
 
             <div className="space-y-2 pt-2 border-t border-[var(--panel-border)]">
               <label className="flex items-center justify-between cursor-pointer text-xs">
-                <span className="text-zinc-300">Mentionner le membre lors de l&apos;arrivée</span>
+                <span className="text-[var(--text-muted)]">Mentionner le membre lors de l&apos;arrivée</span>
                 <Checkbox
                   checked={config.welcome.mentionUser}
                   onCheckedChange={(checked) =>
@@ -2034,7 +2034,7 @@ export function WelcomeCenterClient() {
               </label>
 
               <label className="flex items-center justify-between cursor-pointer text-xs">
-                <span className="text-zinc-300">Ignorer les bots (ne pas envoyer de message de bienvenue)</span>
+                <span className="text-[var(--text-muted)]">Ignorer les bots (ne pas envoyer de message de bienvenue)</span>
                 <Checkbox
                   checked={!config.welcome.sendForBots}
                   onCheckedChange={(checked) =>
@@ -2060,18 +2060,18 @@ export function WelcomeCenterClient() {
 
       {/* MODAL: TEST WELCOME */}
       {showTestModal && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 p-4">
+          <div className="w-full max-w-md rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
+            <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
               <span>🧪 Tester l&apos;Accueil en Conditions Réelles</span>
             </h3>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[var(--text-muted)]">
               Visualisez le rendu en envoyant un message de test sécurisé sans impacter les membres du serveur.
             </p>
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-zinc-300">Type de message</label>
+                <label className="text-xs font-semibold text-[var(--text-muted)]">Type de message</label>
                 <div className="grid grid-cols-2 gap-2 mt-1">
                   <button
                     type="button"
@@ -2080,7 +2080,7 @@ export function WelcomeCenterClient() {
                       "rounded-xl border py-2 text-xs font-bold transition-all",
                       testType === "welcome"
                         ? "border-teal-500 bg-teal-500/20 text-teal-300"
-                        : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
+                        : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
                     👋 Bienvenue
@@ -2092,7 +2092,7 @@ export function WelcomeCenterClient() {
                       "rounded-xl border py-2 text-xs font-bold transition-all",
                       testType === "goodbye"
                         ? "border-teal-500 bg-teal-500/20 text-teal-300"
-                        : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
+                        : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
                     📤 Départ
@@ -2101,7 +2101,7 @@ export function WelcomeCenterClient() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-zinc-300">Destination du test</label>
+                <label className="text-xs font-semibold text-[var(--text-muted)]">Destination du test</label>
                 <div className="grid grid-cols-2 gap-2 mt-1">
                   <button
                     type="button"
@@ -2110,7 +2110,7 @@ export function WelcomeCenterClient() {
                       "rounded-xl border py-2 text-xs font-bold transition-all",
                       testTarget === "channel"
                         ? "border-teal-500 bg-teal-500/20 text-teal-300"
-                        : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
+                        : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
                     Salon Textuel
@@ -2122,7 +2122,7 @@ export function WelcomeCenterClient() {
                       "rounded-xl border py-2 text-xs font-bold transition-all",
                       testTarget === "dm"
                         ? "border-teal-500 bg-teal-500/20 text-teal-300"
-                        : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
+                        : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
                     Message Privé (DM)
@@ -2135,7 +2135,7 @@ export function WelcomeCenterClient() {
               <button
                 type="button"
                 onClick={() => setShowTestModal(false)}
-                className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5"
+                className="rounded-xl border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70"
               >
                 Annuler
               </button>

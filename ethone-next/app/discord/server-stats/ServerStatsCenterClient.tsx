@@ -80,10 +80,10 @@ function useDebounced<T>(value: T, delay = 350): T {
 function DiscordPreview({ title, lines }: { title: string; lines: string[] }) {
   return (
     <div className="rounded-xl bg-[#2b2d31] p-3 text-[#b5bac1]">
-      <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-[#949ba4]">⌄ {title}</p>
+      <p className="mb-1.5 text-xs font-bold uppercase tracking-wide text-[#949ba4]">⌄ {title}</p>
       <ul className="space-y-1">
         {lines.map((l, i) => (
-          <li key={i} className="flex items-center gap-2 rounded-md px-2 py-1 text-[13px] hover:bg-white/5">
+          <li key={i} className="flex items-center gap-2 rounded-md px-2 py-1 text-[13px] hover:bg-[var(--surface-raised)]/70">
             <Volume2 className="h-4 w-4 shrink-0 opacity-70" />
             <span className="truncate">{l}</span>
           </li>
@@ -232,14 +232,14 @@ export default function ServerStatsCenterClient() {
   const insert = (token: string) => setTemplate((t) => (t.trim() ? `${t} ${token}` : token));
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] p-4 pb-44 text-white sm:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] p-4 pb-44 text-[var(--text-primary)] sm:p-8">
       <div className="mx-auto w-full min-w-0 max-w-5xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex items-center gap-2 text-xs font-medium text-zinc-400 transition hover:text-white">
+          <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] transition hover:text-[var(--text-primary)]">
             <ArrowLeft className="h-4 w-4" />
             Retour au hub Discord
           </Link>
-          <button type="button" onClick={() => void load()} className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition hover:bg-white/[0.05]">
+          <button type="button" onClick={() => void load()} className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)]/70">
             <RefreshCw className="h-3.5 w-3.5" />
             Actualiser
           </button>
@@ -247,23 +247,23 @@ export default function ServerStatsCenterClient() {
 
         <PageHeader hideBack guildId={guildId} icon="mod-serverstats" tint="emerald" title="Compteurs de salons" subtitle="Affichez les statistiques du serveur dans le nom de salons vocaux : membres, horloge, objectif, activité, membre le plus actif…" />
 
-        {state === "loading" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-zinc-500">Chargement…</div>}
-        {state === "offline" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-zinc-400">Le bot n&apos;a pas répondu pour ce serveur. Vérifiez qu&apos;il est présent, puis actualisez.</div>}
+        {state === "loading" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">Chargement…</div>}
+        {state === "offline" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">Le bot n&apos;a pas répondu pour ce serveur. Vérifiez qu&apos;il est présent, puis actualisez.</div>}
 
         {state === "ok" && overview && (
           <>
-            <section className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
+            <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <h2 className="text-sm font-semibold">Démarrage en un clic</h2>
-              <p className="mt-1 text-xs text-zinc-400">Crée la catégorie « SERVER STATS » avec des salons vocaux verrouillés (visibles, personne ne peut s&apos;y connecter) déjà configurés.</p>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">Crée la catégorie « SERVER STATS » avec des salons vocaux verrouillés (visibles, personne ne peut s&apos;y connecter) déjà configurés.</p>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 {presets.map((p) => (
-                  <div key={p.id} className="flex flex-col gap-3 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-4">
+                  <div key={p.id} className="flex flex-col gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
                     <div>
                       <p className="text-sm font-semibold">{p.label}</p>
-                      <p className="text-[11px] text-zinc-500">{p.templates.length} salons</p>
+                      <p className="text-xs text-[var(--text-muted)]">{p.templates.length} salons</p>
                     </div>
                     <DiscordPreview title={p.categoryName} lines={PRESET_SAMPLE[p.id] ?? p.templates} />
-                    <button type="button" disabled={busy} onClick={() => void setup(p.id)} className="cursor-pointer rounded-xl bg-[#5865F2] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#4752C4] disabled:opacity-50">
+                    <button type="button" disabled={busy} onClick={() => void setup(p.id)} className="cursor-pointer rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50">
                       Créer cette catégorie
                     </button>
                   </div>
@@ -271,11 +271,11 @@ export default function ServerStatsCenterClient() {
               </div>
             </section>
 
-            <section className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
+            <section className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-sm font-semibold">Vos compteurs ({overview.channels.length}/25)</h2>
                 <div className="flex flex-wrap items-center gap-3 text-xs">
-                  <div className="flex items-center gap-2 text-zinc-400">
+                  <div className="flex items-center gap-2 text-[var(--text-muted)]">
                     <span>Rafraîchir toutes les</span>
                     <Select
                       value={String(overview.updateIntervalMinutes)}
@@ -287,21 +287,21 @@ export default function ServerStatsCenterClient() {
                       options={[10, 15, 30, 60, 180, 360].map((m) => ({ id: String(m), label: `${m} min` }))}
                     />
                   </div>
-                  <button type="button" role="switch" aria-checked={overview.enabled} disabled={busy} onClick={() => void setConfig({ enabled: !overview.enabled })} className={cn("cursor-pointer rounded-full px-3 py-1 font-semibold transition", overview.enabled ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-500/15 text-zinc-400")}>
+                  <button type="button" role="switch" aria-checked={overview.enabled} disabled={busy} onClick={() => void setConfig({ enabled: !overview.enabled })} className={cn("cursor-pointer rounded-full px-3 py-1 font-semibold transition", overview.enabled ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-500/15 text-[var(--text-muted)]")}>
                     {overview.enabled ? "Actif" : "En pause"}
                   </button>
                 </div>
               </div>
               {overview.channels.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-[var(--panel-border)] p-6 text-center text-xs text-zinc-500">Aucun compteur. Utilisez un démarrage en un clic ci-dessus ou ajoutez-en un ci-dessous.</p>
+                <p className="rounded-xl border border-dashed border-[var(--panel-border)] p-6 text-center text-xs text-[var(--text-muted)]">Aucun compteur. Utilisez un démarrage en un clic ci-dessus ou ajoutez-en un ci-dessous.</p>
               ) : (
                 <ul className="space-y-2">
                   {overview.channels.map((c) => (
-                    <li key={c.channelId} className="flex flex-wrap items-center gap-3 rounded-xl bg-white/[0.03] px-4 py-3 text-xs">
-                      <Volume2 className="h-4 w-4 shrink-0 text-zinc-500" />
+                    <li key={c.channelId} className="flex flex-wrap items-center gap-3 rounded-xl bg-[var(--surface-raised)]/40 px-4 py-3 text-xs">
+                      <Volume2 className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate font-semibold text-white">{c.lastName ?? nameOf.get(c.channelId) ?? "(pas encore renommé)"}</p>
-                        <p className="truncate font-mono text-[11px] text-zinc-500">
+                        <p className="truncate font-semibold text-[var(--text-primary)]">{c.lastName ?? nameOf.get(c.channelId) ?? "(pas encore renommé)"}</p>
+                        <p className="truncate font-mono text-xs text-[var(--text-muted)]">
                           {c.type === "custom" ? c.template : `${LEGACY_LABEL[c.type] ?? c.type} · ${c.template}`}
                         </p>
                       </div>
@@ -312,12 +312,12 @@ export default function ServerStatsCenterClient() {
                             setChannelId(c.channelId);
                             setTemplate(c.template);
                           }}
-                          className="cursor-pointer rounded-lg border border-[var(--panel-border)] px-2.5 py-1 font-semibold text-zinc-300 transition hover:bg-white/[0.06]"
+                          className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-2.5 py-1 font-semibold text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)]/70"
                         >
                           Modifier
                         </button>
                       )}
-                      <button type="button" aria-label="Retirer ce compteur" disabled={busy} onClick={() => void removeCounter(c.channelId)} className="cursor-pointer rounded-lg p-1.5 text-zinc-400 transition hover:bg-rose-500/10 hover:text-rose-300">
+                      <button type="button" aria-label="Retirer ce compteur" disabled={busy} onClick={() => void removeCounter(c.channelId)} className="cursor-pointer rounded-xl p-1.5 text-[var(--text-muted)] transition hover:bg-rose-500/10 hover:text-rose-300">
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </li>
@@ -326,21 +326,21 @@ export default function ServerStatsCenterClient() {
               )}
             </section>
 
-            <section className="space-y-4 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
+            <section className="space-y-4 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <h2 className="text-sm font-semibold">{channelId && overview.channels.some((c) => c.channelId === channelId) ? "Modifier le compteur" : "Ajouter un compteur"}</h2>
               <div>
-                <p className="mb-1.5 text-[11px] font-medium text-zinc-400">Salon vocal à transformer</p>
+                <p className="mb-1.5 text-xs font-medium text-[var(--text-muted)]">Salon vocal à transformer</p>
                 <ChannelPicker value={channelId} guildId={guildId} filterTypes={[2, 13]} onChange={(id) => setChannelId(id)} placeholder="Choisir un salon vocal" />
               </div>
               <div>
-                <p className="mb-1.5 text-[11px] font-medium text-zinc-400">Modèle du nom</p>
-                <input value={template} maxLength={100} onChange={(e) => setTemplate(e.target.value)} placeholder="🕐 {time12:UTC} UTC" className="h-10 w-full rounded-xl border border-[var(--panel-border)] bg-white/[0.03] px-3 text-sm text-white outline-none focus:border-indigo-400/60" />
+                <p className="mb-1.5 text-xs font-medium text-[var(--text-muted)]">Modèle du nom</p>
+                <input value={template} maxLength={100} onChange={(e) => setTemplate(e.target.value)} placeholder="🕐 {time12:UTC} UTC" className="h-10 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]" />
                 <div className="mt-2 rounded-xl bg-[#2b2d31] px-3 py-2 text-[13px] text-[#dbdee1]">
-                  <span className="mr-2 text-[11px] uppercase tracking-wide text-[#949ba4]">Aperçu</span>
+                  <span className="mr-2 text-xs uppercase tracking-wide text-[#949ba4]">Aperçu</span>
                   {preview?.text || "…"}
                 </div>
                 {preview && preview.warnings.length > 0 && (
-                  <ul className="mt-2 space-y-1 text-[11px] text-amber-300">
+                  <ul className="mt-2 space-y-1 text-xs text-amber-300">
                     {preview.warnings.map((w, i) => (
                       <li key={i}>⚠ {w}</li>
                     ))}
@@ -348,13 +348,13 @@ export default function ServerStatsCenterClient() {
                 )}
               </div>
               <div className="space-y-3">
-                <p className="text-[11px] font-medium text-zinc-400">Jetons (cliquez pour insérer)</p>
+                <p className="text-xs font-medium text-[var(--text-muted)]">Jetons (cliquez pour insérer)</p>
                 {groups.map(([group, list]) => (
                   <div key={group}>
-                    <p className="mb-1 text-[11px] font-semibold text-zinc-500">{group}</p>
+                    <p className="mb-1 text-xs font-semibold text-[var(--text-muted)]">{group}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {list.map((t) => (
-                        <button key={t.token} type="button" title={`${t.label} — ex. ${t.example}${t.needsStats ? " (module Statistiques requis)" : ""}`} onClick={() => insert(t.token)} className="cursor-pointer rounded-lg border border-[var(--panel-border)] bg-white/[0.03] px-2 py-1 font-mono text-[11px] text-zinc-300 transition hover:border-indigo-400/50 hover:text-white">
+                        <button key={t.token} type="button" title={`${t.label} — ex. ${t.example}${t.needsStats ? " (module Statistiques requis)" : ""}`} onClick={() => insert(t.token)} className="cursor-pointer rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 py-1 font-mono text-xs text-[var(--text-muted)] transition hover:border-emerald-500/50 hover:text-[var(--text-primary)]">
                           {t.token}
                           {t.needsStats && <span className="ml-1 text-sky-300">•</span>}
                         </button>
@@ -362,11 +362,11 @@ export default function ServerStatsCenterClient() {
                     </div>
                   </div>
                 ))}
-                <p className="text-[11px] text-zinc-500">
+                <p className="text-xs text-[var(--text-muted)]">
                   <span className="text-sky-300">•</span> = nécessite le module <Link href={`/discord/stats?guildId=${guildId}`} className="underline">Statistiques</Link>. Discord limite le renommage d&apos;un salon à 2 fois toutes les 10 minutes : l&apos;horloge s&apos;affiche à la dizaine de minutes près.
                 </p>
               </div>
-              <button type="button" disabled={busy || !channelId} onClick={() => void saveCounter()} className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[#5865F2] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#4752C4] disabled:cursor-not-allowed disabled:opacity-50">
+              <button type="button" disabled={busy || !channelId} onClick={() => void saveCounter()} className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50">
                 <Plus className="h-4 w-4" />
                 Enregistrer le compteur
               </button>

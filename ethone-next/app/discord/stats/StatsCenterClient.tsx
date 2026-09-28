@@ -103,10 +103,10 @@ const dateFr = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString("
 
 function Card({ title, hint, children, className }: { title: string; hint?: string; children: React.ReactNode; className?: string }) {
   return (
-    <section className={cn("min-w-0 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5", className)}>
+    <section className={cn("min-w-0 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5", className)}>
       <div className="mb-3">
-        <h2 className="text-sm font-semibold text-white">{title}</h2>
-        {hint && <p className="mt-0.5 text-[11px] text-zinc-500">{hint}</p>}
+        <h2 className="text-sm font-semibold text-[var(--text-primary)]">{title}</h2>
+        {hint && <p className="mt-0.5 text-xs text-[var(--text-muted)]">{hint}</p>}
       </div>
       {children}
     </section>
@@ -115,24 +115,24 @@ function Card({ title, hint, children, className }: { title: string; hint?: stri
 
 /** Variation par rapport à la période précédente (vert si ça monte, rouge si ça baisse ; `invert` pour les départs). */
 function Delta({ value, invert }: { value: number | null | undefined; invert?: boolean }) {
-  if (value === null || value === undefined) return <span className="text-[11px] text-zinc-600">pas de période précédente</span>;
+  if (value === null || value === undefined) return <span className="text-xs text-[var(--text-muted)]">pas de période précédente</span>;
   const good = invert ? value <= 0 : value >= 0;
   return (
-    <span className={cn("text-[11px] font-semibold", value === 0 ? "text-zinc-400" : good ? "text-emerald-400" : "text-rose-400")}>
+    <span className={cn("text-xs font-semibold", value === 0 ? "text-[var(--text-muted)]" : good ? "text-emerald-400" : "text-rose-400")}>
       {value > 0 ? "▲ +" : value < 0 ? "▼ " : "= "}
-      {fmt(value)} %<span className="ml-1 font-normal text-zinc-500">vs période précédente</span>
+      {fmt(value)} %<span className="ml-1 font-normal text-[var(--text-muted)]">vs période précédente</span>
     </span>
   );
 }
 
 function Kpi({ label, value, hint, delta, invert }: { label: string; value: string; hint?: string; delta?: number | null; invert?: boolean }) {
   return (
-    <div className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-4">
-      <p className="text-[11px] text-zinc-500">{label}</p>
-      <p className="mt-1 whitespace-nowrap text-xl font-bold tabular-nums text-white xl:text-2xl">{value}</p>
+    <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+      <p className="text-xs text-[var(--text-muted)]">{label}</p>
+      <p className="mt-1 whitespace-nowrap text-xl font-bold tabular-nums text-[var(--text-primary)] xl:text-2xl">{value}</p>
       {delta !== undefined ? <p className="mt-1">
         <Delta value={delta} invert={invert} />
-      </p> : hint && <p className="mt-1 text-[11px] text-zinc-500">{hint}</p>}
+      </p> : hint && <p className="mt-1 text-xs text-[var(--text-muted)]">{hint}</p>}
     </div>
   );
 }
@@ -607,22 +607,22 @@ export default function StatsCenterClient() {
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <p className="mb-1 text-[11px] font-semibold text-zinc-400">Messages — 60 jours</p>
+                    <p className="mb-1 text-xs font-semibold text-[var(--text-muted)]">Messages — 60 jours</p>
                     <AnalyticsBarChart data={member.series.map((p) => ({ label: shortDay(p.day), value: p.messages }))} height={130} color="#3fd28a" />
                   </div>
                   <div>
-                    <p className="mb-1 text-[11px] font-semibold text-zinc-400">Vocal — 60 jours</p>
+                    <p className="mb-1 text-xs font-semibold text-[var(--text-muted)]">Vocal — 60 jours</p>
                     <AnalyticsBarChart data={member.series.map((p) => ({ label: shortDay(p.day), value: p.voiceHours }))} height={130} color="#f0559a" valueSuffix=" h" />
                   </div>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <p className="mb-2 text-[11px] font-semibold text-zinc-400">Salons textuels préférés</p>
+                    <p className="mb-2 text-xs font-semibold text-[var(--text-muted)]">Salons textuels préférés</p>
                     <RankList rows={member.topChannels} unit="msg" />
                   </div>
                   <div>
-                    <p className="mb-2 text-[11px] font-semibold text-zinc-400">Salons vocaux préférés</p>
+                    <p className="mb-2 text-xs font-semibold text-[var(--text-muted)]">Salons vocaux préférés</p>
                     <RankList rows={member.topVoiceChannels} unit="h" />
                   </div>
                 </div>

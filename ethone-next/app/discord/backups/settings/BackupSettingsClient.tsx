@@ -150,17 +150,17 @@ export default function BackupSettingsClient() {
   const protectedBytes = protectedBackups.reduce((a, b) => a + b.sizeBytes, 0);
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <Link href={`/discord/backups${guildQuery}`} className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors">
+          <Link href={`/discord/backups${guildQuery}`} className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
             <ArrowLeft className="w-4 h-4" /> Retour aux sauvegardes
           </Link>
           <div className="flex items-center gap-2">
-            <button onClick={load} disabled={loading} className="px-3 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 cursor-pointer disabled:opacity-50">
+            <button onClick={load} disabled={loading} className="px-3 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 cursor-pointer disabled:opacity-50">
               <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
             </button>
-            <button onClick={handleSave} disabled={saving || !dirty} className={cn("px-4 py-2 rounded-xl text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50", dirty ? "bg-indigo-600 hover:bg-indigo-500" : "bg-neutral-800")}>
+            <button onClick={handleSave} disabled={saving || !dirty} className={cn("px-4 py-2 rounded-xl text-[var(--text-primary)] text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50", dirty ? "bg-emerald-500 hover:bg-emerald-600" : "bg-[var(--surface-raised)]/40")}>
               <Save className="w-4 h-4" />
               {saving ? "Enregistrement..." : dirty ? "Enregistrer les paramètres" : "À jour"}
             </button>
@@ -168,34 +168,34 @@ export default function BackupSettingsClient() {
         </div>
 
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
-            <Settings className="w-6 h-6 text-indigo-400" /> Paramètres de sauvegarde & rétention
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-2.5">
+            <Settings className="w-6 h-6 text-emerald-300" /> Paramètres de sauvegarde & rétention
           </h1>
-          <p className="text-sm text-neutral-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Planification automatique, conservation et garde-fous de restauration.
             {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
           </p>
         </div>
 
         {/* Planification */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-5">
+        <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20"><Clock className="w-5 h-5" /></div>
+              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-xl border border-emerald-500/30"><Clock className="w-5 h-5" /></div>
               <div>
-                <h3 className="font-semibold text-white text-base">Sauvegardes automatiques</h3>
-                <p className="text-xs text-neutral-400">Le bot capture un snapshot complet à intervalle régulier.</p>
+                <h3 className="font-semibold text-[var(--text-primary)] text-base">Sauvegardes automatiques</h3>
+                <p className="text-xs text-[var(--text-muted)]">Le bot capture un snapshot complet à intervalle régulier.</p>
               </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" checked={settings.enabled} onChange={(e) => patch({ enabled: e.target.checked })} className="sr-only peer" />
-              <div className="w-11 h-6 bg-neutral-800 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600" />
+              <div className="w-11 h-6 bg-[var(--surface-raised)]/40 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500" />
             </label>
           </div>
           {settings.enabled && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-neutral-800/80">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-[var(--panel-border)]">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-neutral-300">Fréquence</label>
+                <label className="text-xs font-medium text-[var(--text-muted)]">Fréquence</label>
                 <Select
                   value={settings.frequency}
                   onChange={(v) => patch({ frequency: v as ScheduleSettings["frequency"] })}
@@ -210,11 +210,11 @@ export default function BackupSettingsClient() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-neutral-300">Heure préférée</label>
-                <input type="time" value={settings.preferredTime} onChange={(e) => patch({ preferredTime: e.target.value })} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" />
+                <label className="text-xs font-medium text-[var(--text-muted)]">Heure préférée</label>
+                <input type="time" value={settings.preferredTime} onChange={(e) => patch({ preferredTime: e.target.value })} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-neutral-300">Fuseau horaire</label>
+                <label className="text-xs font-medium text-[var(--text-muted)]">Fuseau horaire</label>
                 <Select
                   value={settings.timezone}
                   onChange={(v) => patch({ timezone: v })}
@@ -234,59 +234,59 @@ export default function BackupSettingsClient() {
         </div>
 
         {/* Rétention */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-5">
+        <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20"><Archive className="w-5 h-5" /></div>
             <div>
-              <h3 className="font-semibold text-white text-base">Conservation & purge</h3>
-              <p className="text-xs text-neutral-400">Nettoyage automatique des sauvegardes non protégées.</p>
+              <h3 className="font-semibold text-[var(--text-primary)] text-base">Conservation & purge</h3>
+              <p className="text-xs text-[var(--text-muted)]">Nettoyage automatique des sauvegardes non protégées.</p>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-neutral-800/80">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-[var(--panel-border)]">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-neutral-300">Nombre maximum</label>
+              <label className="text-xs font-medium text-[var(--text-muted)]">Nombre maximum</label>
               <div className="flex items-center gap-2">
-                <input type="number" min={1} max={100} value={settings.retentionCount} onChange={(e) => patch({ retentionCount: Number(e.target.value) || 1 })} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white" />
-                <span className="text-xs text-neutral-400">snapshots</span>
+                <input type="number" min={1} max={100} value={settings.retentionCount} onChange={(e) => patch({ retentionCount: Number(e.target.value) || 1 })} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)]" />
+                <span className="text-xs text-[var(--text-muted)]">snapshots</span>
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-neutral-300">Âge maximal</label>
+              <label className="text-xs font-medium text-[var(--text-muted)]">Âge maximal</label>
               <div className="flex items-center gap-2">
-                <input type="number" min={1} max={365} value={settings.retentionDays} onChange={(e) => patch({ retentionDays: Number(e.target.value) || 1 })} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white" />
-                <span className="text-xs text-neutral-400">jours</span>
+                <input type="number" min={1} max={365} value={settings.retentionDays} onChange={(e) => patch({ retentionDays: Number(e.target.value) || 1 })} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)]" />
+                <span className="text-xs text-[var(--text-muted)]">jours</span>
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-neutral-300">Quota de stockage</label>
+              <label className="text-xs font-medium text-[var(--text-muted)]">Quota de stockage</label>
               <div className="flex items-center gap-2">
-                <input type="number" min={5} max={500} value={settings.maxStorageMb} onChange={(e) => patch({ maxStorageMb: Number(e.target.value) || 5 })} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white" />
-                <span className="text-xs text-neutral-400">MB</span>
+                <input type="number" min={5} max={500} value={settings.maxStorageMb} onChange={(e) => patch({ maxStorageMb: Number(e.target.value) || 5 })} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)]" />
+                <span className="text-xs text-[var(--text-muted)]">MB</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Sécurité */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-5">
+        <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20"><Shield className="w-5 h-5" /></div>
             <div>
-              <h3 className="font-semibold text-white text-base">Sécurité & Disaster Recovery</h3>
-              <p className="text-xs text-neutral-400">Snapshots de secours et garde-fous de restauration.</p>
+              <h3 className="font-semibold text-[var(--text-primary)] text-base">Sécurité & Disaster Recovery</h3>
+              <p className="text-xs text-[var(--text-muted)]">Snapshots de secours et garde-fous de restauration.</p>
             </div>
           </div>
-          <div className="space-y-4 pt-3 border-t border-neutral-800/80">
-            <div className="flex items-center justify-between p-3.5 bg-neutral-950 rounded-xl border border-neutral-800/80 gap-3">
+          <div className="space-y-4 pt-3 border-t border-[var(--panel-border)]">
+            <div className="flex items-center justify-between p-3.5 bg-[var(--surface-raised)]/40 rounded-xl border border-[var(--panel-border)] gap-3">
               <div className="space-y-0.5">
-                <span className="text-sm font-semibold text-white flex items-center gap-2"><Zap className="w-4 h-4 text-amber-400" /> Snapshot pré-changement automatique</span>
-                <p className="text-xs text-neutral-400 max-w-lg">Sauvegarde automatique avant toute restauration ou opération majeure.</p>
+                <span className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2"><Zap className="w-4 h-4 text-amber-400" /> Snapshot pré-changement automatique</span>
+                <p className="text-xs text-[var(--text-muted)] max-w-lg">Sauvegarde automatique avant toute restauration ou opération majeure.</p>
               </div>
-              <input type="checkbox" checked={settings.autoBackupBeforeMajorChanges} onChange={(e) => patch({ autoBackupBeforeMajorChanges: e.target.checked })} className="w-4 h-4 rounded text-indigo-600 bg-neutral-900 border-neutral-700" />
+              <input type="checkbox" checked={settings.autoBackupBeforeMajorChanges} onChange={(e) => patch({ autoBackupBeforeMajorChanges: e.target.checked })} className="w-4 h-4 rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-neutral-300">Mode de restauration par défaut</label>
+                <label className="text-xs font-medium text-[var(--text-muted)]">Mode de restauration par défaut</label>
                 <Select
                   value={settings.defaultSafetyLevel}
                   onChange={(v) => patch({ defaultSafetyLevel: v as ScheduleSettings["defaultSafetyLevel"] })}
@@ -300,7 +300,7 @@ export default function BackupSettingsClient() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-neutral-300">Salon de notification (optionnel)</label>
+                <label className="text-xs font-medium text-[var(--text-muted)]">Salon de notification (optionnel)</label>
                 <ChannelPicker
                   value={settings.notifyChannelId || ""}
                   onChange={(id) => patch({ notifyChannelId: id })}
@@ -314,26 +314,26 @@ export default function BackupSettingsClient() {
         </div>
 
         {/* Protégées */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+        <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-rose-500/10 text-rose-400 rounded-xl border border-rose-500/20"><Lock className="w-5 h-5" /></div>
             <div>
-              <h3 className="font-semibold text-white text-base">Sauvegardes protégées ({protectedBackups.length})</h3>
-              <p className="text-xs text-neutral-400">Jamais purgées par la rétention · {(protectedBytes / 1024).toFixed(0)} Ko au total.</p>
+              <h3 className="font-semibold text-[var(--text-primary)] text-base">Sauvegardes protégées ({protectedBackups.length})</h3>
+              <p className="text-xs text-[var(--text-muted)]">Jamais purgées par la rétention · {(protectedBytes / 1024).toFixed(0)} Ko au total.</p>
             </div>
           </div>
-          <div className="divide-y divide-neutral-800 border border-neutral-800 rounded-xl overflow-hidden">
-            {protectedBackups.length === 0 && <p className="p-4 text-xs text-neutral-500">Aucune sauvegarde protégée{isDemo ? " (démo)" : ""}. Protège un snapshot depuis la liste principale.</p>}
+          <div className="divide-y divide-[var(--panel-border)] border border-[var(--panel-border)] rounded-xl overflow-hidden">
+            {protectedBackups.length === 0 && <p className="p-4 text-xs text-[var(--text-muted)]">Aucune sauvegarde protégée{isDemo ? " (démo)" : ""}. Protège un snapshot depuis la liste principale.</p>}
             {protectedBackups.map((b) => (
-              <div key={b.backupId} className="p-3.5 flex items-center justify-between gap-3 hover:bg-neutral-800/30 transition-colors">
+              <div key={b.backupId} className="p-3.5 flex items-center justify-between gap-3 hover:bg-[var(--surface-raised)]/70 transition-colors">
                 <div className="space-y-0.5 min-w-0">
                   <div className="flex items-center gap-2">
-                    <Link href={`/discord/backups/${b.backupId}${guildQuery}`} className="font-semibold text-sm text-white hover:text-indigo-400 truncate">{b.name}</Link>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1 shrink-0"><Lock className="w-2.5 h-2.5" /> PROTÉGÉ</span>
+                    <Link href={`/discord/backups/${b.backupId}${guildQuery}`} className="font-semibold text-sm text-[var(--text-primary)] hover:text-emerald-300 truncate">{b.name}</Link>
+                    <span className="px-2 py-0.5 rounded text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1 shrink-0"><Lock className="w-2.5 h-2.5" /> PROTÉGÉ</span>
                   </div>
-                  <span className="text-xs text-neutral-500 block truncate">{new Date(b.createdAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })} · {(b.sizeBytes / 1024).toFixed(0)} Ko · {b.backupId}</span>
+                  <span className="text-xs text-[var(--text-muted)] block truncate">{new Date(b.createdAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })} · {(b.sizeBytes / 1024).toFixed(0)} Ko · {b.backupId}</span>
                 </div>
-                <button onClick={() => handleUnprotect(b)} className="px-3 py-1 rounded bg-neutral-800 hover:bg-neutral-700 text-xs font-medium text-neutral-300 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0">
+                <button onClick={() => handleUnprotect(b)} className="px-3 py-1 rounded bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-medium text-[var(--text-muted)] flex items-center gap-1.5 transition-colors cursor-pointer shrink-0">
                   <Unlock className="w-3.5 h-3.5" /> Retirer
                 </button>
               </div>

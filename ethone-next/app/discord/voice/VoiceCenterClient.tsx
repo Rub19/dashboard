@@ -300,17 +300,17 @@ export default function VoiceCenterClient() {
   );
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white space-y-8 px-4 sm:px-6 lg:px-10 pt-6 pb-44 selection:bg-indigo-500/30">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] space-y-8 px-4 sm:px-6 lg:px-10 pt-6 pb-44 selection:bg-emerald-500/20">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-2.5 mb-2">
             <Link
               href={`/discord${guildId ? `?guildId=${guildId}` : ""}`}
-              className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
+              className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer shadow-sm"
               title="Retour au hub Discord"
             >
-              <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+              <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
               <span>Retour Discord</span>
             </Link>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
@@ -318,13 +318,13 @@ export default function VoiceCenterClient() {
               <span>Personal Voice Rooms • 100% Interactif</span>
             </div>
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-white flex items-center gap-3">
+          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)] flex items-center gap-3">
             <span>Salons Vocaux Personnalisés</span>
-            <span className="text-xs px-2.5 py-0.5 rounded-md bg-zinc-800 text-zinc-300 font-mono">
+            <span className="text-xs px-2.5 py-0.5 rounded-md bg-[var(--surface-raised)]/40 text-[var(--text-muted)] font-mono">
               v2.0
             </span>
           </h1>
-          <p className="text-sm text-zinc-400 mt-1 max-w-2xl">
+          <p className="text-sm text-[var(--text-muted)] mt-1 max-w-2xl">
             Système sans commandes : panneau de création permanent, déplacement automatique, contrôle total en direct dans le chat vocal (verrouillage, whitelist, banlist, mute, expulsion).
           </p>
         </div>
@@ -346,7 +346,7 @@ export default function VoiceCenterClient() {
               fetchOverview().finally(() => setRefreshing(false));
             }}
             disabled={refreshing}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
             title="Rafraîchir"
           >
             <RefreshCw className={cn("h-4 w-4", refreshing && "animate-spin text-emerald-400")} />
@@ -354,9 +354,9 @@ export default function VoiceCenterClient() {
 
           <Link
             href={`/discord/voice/settings?guildId=${guildId}`}
-            className="flex h-10 items-center gap-2 rounded-xl bg-zinc-900 border border-zinc-800 px-4 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer"
+            className="flex h-10 items-center gap-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-4 text-xs font-bold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
           >
-            <Settings className="h-4 w-4 text-zinc-400" />
+            <Settings className="h-4 w-4 text-[var(--text-muted)]" />
             <span>Paramètres & Délais</span>
           </Link>
         </div>
@@ -370,7 +370,7 @@ export default function VoiceCenterClient() {
               <Bot className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">Bot non installé sur ce serveur</p>
+              <p className="text-sm font-semibold text-[var(--text-primary)]">Bot non installé sur ce serveur</p>
               <p className="text-xs text-amber-300/80">
                 Invitez le bot ETHONE sur <strong>{selectedGuild.name}</strong> pour activer les salons vocaux personnalisés.
               </p>
@@ -389,83 +389,83 @@ export default function VoiceCenterClient() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 backdrop-blur-xl relative overflow-hidden group hover:border-emerald-500/30 transition-all">
+        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-emerald-500/30 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Salons Actifs</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Salons Actifs</span>
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
               <Radio className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">{data?.kpis.activeVoiceChannelsCount || 0}</span>
+            <span className="text-3xl font-black text-[var(--text-primary)]">{data?.kpis.activeVoiceChannelsCount || 0}</span>
             <span className="text-xs text-emerald-400 font-semibold flex items-center gap-0.5">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block mr-1" />
               En direct
             </span>
           </div>
-          <p className="text-[11px] text-zinc-500 mt-1">Salons temporaires ouverts</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">Salons temporaires ouverts</p>
         </div>
 
-        <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 backdrop-blur-xl relative overflow-hidden group hover:border-indigo-500/30 transition-all">
+        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-emerald-500/40 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Membres Connectés</span>
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Membres Connectés</span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
               <Users className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">{data?.kpis.usersInVoiceCount || 0}</span>
-            <span className="text-xs text-indigo-400 font-semibold">
+            <span className="text-3xl font-black text-[var(--text-primary)]">{data?.kpis.usersInVoiceCount || 0}</span>
+            <span className="text-xs text-emerald-300 font-semibold">
               Pic : {data?.kpis.peakConcurrentUsers || 0}
             </span>
           </div>
-          <p className="text-[11px] text-zinc-500 mt-1">Utilisateurs en conversation</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">Utilisateurs en conversation</p>
         </div>
 
-        <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 backdrop-blur-xl relative overflow-hidden group hover:border-purple-500/30 transition-all">
+        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-emerald-500/40 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Sessions Aujourd'hui</span>
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Sessions Aujourd'hui</span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
               <Flame className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">{data?.kpis.sessionsTodayCount || 0}</span>
-            <span className="text-xs text-purple-400 font-semibold">créations</span>
+            <span className="text-3xl font-black text-[var(--text-primary)]">{data?.kpis.sessionsTodayCount || 0}</span>
+            <span className="text-xs text-emerald-300 font-semibold">créations</span>
           </div>
-          <p className="text-[11px] text-zinc-500 mt-1">Passages en salon vocal</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">Passages en salon vocal</p>
         </div>
 
-        <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 backdrop-blur-xl relative overflow-hidden group hover:border-amber-500/30 transition-all">
+        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-amber-500/30 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Durée Moyenne</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Durée Moyenne</span>
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
               <Clock className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">{data?.kpis.averageSessionMinutes || 0}m</span>
-            <span className="text-xs text-zinc-400 font-semibold">
+            <span className="text-3xl font-black text-[var(--text-primary)]">{data?.kpis.averageSessionMinutes || 0}m</span>
+            <span className="text-xs text-[var(--text-muted)] font-semibold">
               Total: {Math.round((data?.kpis.totalVoiceTimeMinutes || 0) / 60)}h
             </span>
           </div>
-          <p className="text-[11px] text-zinc-500 mt-1">Par salon avant suppression</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">Par salon avant suppression</p>
         </div>
       </div>
 
       {/* DISCORD PANEL DEPLOYER (Personal Voice Rooms Banner) */}
-      <div className="rounded-2xl border border-indigo-500/30 bg-white/[0.02] p-6 backdrop-blur-xl shadow-xl">
+      <div className="rounded-2xl border border-emerald-500/30 bg-[var(--surface-raised)]/40 p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-400 uppercase tracking-wider">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300 uppercase tracking-wider">
               <Sparkles className="h-3.5 w-3.5" />
               <span>Déploiement Instantané</span>
             </div>
-            <h2 className="text-xl font-black text-white tracking-tight">
+            <h2 className="text-xl font-black text-[var(--text-primary)] tracking-tight">
               Publier le Panneau Interactif sur Discord
             </h2>
-            <p className="text-xs text-zinc-300 leading-relaxed">
-              Installez un message permanent avec les boutons <span className="font-semibold text-white">[ ➕ Créer mon salon ]</span>, <span className="font-semibold text-white">[ ⚙️ Mes préférences ]</span> et <span className="font-semibold text-white">[ 📖 Comment ça marche ]</span> dans le salon textuel de votre choix. Les membres créent leur salon en 1 clic sans aucune commande !
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+              Installez un message permanent avec les boutons <span className="font-semibold text-[var(--text-primary)]">[ ➕ Créer mon salon ]</span>, <span className="font-semibold text-[var(--text-primary)]">[ ⚙️ Mes préférences ]</span> et <span className="font-semibold text-[var(--text-primary)]">[ 📖 Comment ça marche ]</span> dans le salon textuel de votre choix. Les membres créent leur salon en 1 clic sans aucune commande !
             </p>
           </div>
 
@@ -480,7 +480,7 @@ export default function VoiceCenterClient() {
             <button
               onClick={handlePublishPanel}
               disabled={isPublishing}
-              className="flex h-10 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-xs font-bold text-white shadow-sm hover:bg-indigo-500 transition-all active:scale-95 disabled:opacity-50 cursor-pointer whitespace-nowrap"
+              className="flex h-10 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 text-xs font-bold text-white shadow-sm hover:bg-emerald-600 transition-all active:scale-95 disabled:opacity-50 cursor-pointer whitespace-nowrap"
             >
               {isPublishing ? (
                 <RefreshCw className="h-4 w-4 animate-spin" />
@@ -494,15 +494,15 @@ export default function VoiceCenterClient() {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex items-center justify-between border-b border-zinc-800/80 pb-4">
+      <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-4">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setActiveTab("overview")}
             className={cn(
               "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer",
               activeTab === "overview"
-                ? "bg-zinc-800 text-white shadow-sm"
-                : "text-zinc-400 hover:text-white hover:bg-zinc-900"
+                ? "bg-[var(--surface-raised)]/40 text-white shadow-sm"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
             )}
           >
             Vue d'ensemble & Salons Actifs ({data?.activeRooms.length || 0})
@@ -512,8 +512,8 @@ export default function VoiceCenterClient() {
             className={cn(
               "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer",
               activeTab === "hubs"
-                ? "bg-zinc-800 text-white shadow-sm"
-                : "text-zinc-400 hover:text-white hover:bg-zinc-900"
+                ? "bg-[var(--surface-raised)]/40 text-white shadow-sm"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
             )}
           >
             Hubs de Création ({data?.hubs.length || 0})
@@ -523,8 +523,8 @@ export default function VoiceCenterClient() {
             className={cn(
               "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer",
               activeTab === "analytics"
-                ? "bg-zinc-800 text-white shadow-sm"
-                : "text-zinc-400 hover:text-white hover:bg-zinc-900"
+                ? "bg-[var(--surface-raised)]/40 text-white shadow-sm"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
             )}
           >
             Sessions & Historique
@@ -533,13 +533,13 @@ export default function VoiceCenterClient() {
 
         {/* Search */}
         <div className="relative w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-muted)]" />
           <input
             type="text"
             placeholder="Rechercher un salon ou membre..."
             value={roomSearch}
             onChange={(e) => setRoomSearch(e.target.value)}
-            className="w-full h-9 pl-9 pr-3 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition-all"
+            className="w-full h-9 pl-9 pr-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] transition-all"
           />
         </div>
       </div>
@@ -555,18 +555,18 @@ export default function VoiceCenterClient() {
       {activeTab === "overview" && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
+            <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
               <Radio className="h-4 w-4 text-emerald-400" />
               <span>Salons Temporaires Actifs ({filteredRooms.length})</span>
             </h3>
-            <span className="text-xs text-zinc-500">Auto-nettoyage activé dès que vide</span>
+            <span className="text-xs text-[var(--text-muted)]">Auto-nettoyage activé dès que vide</span>
           </div>
 
           {filteredRooms.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/30 p-12 text-center">
-              <Radio className="h-10 w-10 text-zinc-600 mx-auto mb-3" />
-              <p className="text-sm font-semibold text-zinc-300">Aucun salon vocal actif actuellement</p>
-              <p className="text-xs text-zinc-500 mt-1 max-w-md mx-auto">
+            <div className="rounded-2xl border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-12 text-center">
+              <Radio className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-3" />
+              <p className="text-sm font-semibold text-[var(--text-muted)]">Aucun salon vocal actif actuellement</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1 max-w-md mx-auto">
                 Les membres peuvent cliquer sur le bouton "Créer mon salon" dans Discord pour en ouvrir un instantanément.
               </p>
             </div>
@@ -575,30 +575,30 @@ export default function VoiceCenterClient() {
               {filteredRooms.map((room) => (
                 <div
                   key={room.id}
-                  className="rounded-2xl border border-zinc-800/80 bg-zinc-900/70 p-5 backdrop-blur-xl flex flex-col justify-between hover:border-zinc-700 transition-all group"
+                  className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 flex flex-col justify-between hover:border-[var(--input-border-hover)] transition-all group"
                 >
                   <div>
                     {/* Header */}
                     <div className="flex items-start justify-between gap-3">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-black text-white group-hover:text-emerald-400 transition-colors">
+                          <span className="text-sm font-black text-[var(--text-primary)] group-hover:text-emerald-400 transition-colors">
                             {room.name}
                           </span>
                           {room.isLocked && (
-                            <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                            <span className="flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20">
                               <Lock className="h-2.5 w-2.5" />
                               Verrouillé
                             </span>
                           )}
                           {room.status === "EMPTY_COUNTDOWN" && (
-                            <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse">
+                            <span className="flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse">
                               <Clock className="h-2.5 w-2.5" />
                               Nettoyage en cours
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-zinc-400">
+                        <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                           <span className="flex items-center gap-1 text-amber-400 font-medium">
                             <Crown className="h-3 w-3" />
                             {room.ownerTag}
@@ -612,7 +612,7 @@ export default function VoiceCenterClient() {
 
                       <Link
                         href={`/discord/voice/rooms/${room.id}?guildId=${guildId}`}
-                        className="flex h-8 px-3 items-center gap-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-700 text-xs font-semibold transition-all cursor-pointer whitespace-nowrap"
+                        className="flex h-8 px-3 items-center gap-1.5 rounded-lg bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 text-xs font-semibold transition-all cursor-pointer whitespace-nowrap"
                       >
                         <span>Contrôler</span>
                         <ChevronRight className="h-3 w-3" />
@@ -620,13 +620,13 @@ export default function VoiceCenterClient() {
                     </div>
 
                     {/* Connected Users */}
-                    <div className="mt-4 pt-3 border-t border-zinc-800/60">
+                    <div className="mt-4 pt-3 border-t border-[var(--panel-border)]">
                       <div className="flex items-center justify-between text-xs mb-2">
-                        <span className="font-semibold text-zinc-400 flex items-center gap-1.5">
+                        <span className="font-semibold text-[var(--text-muted)] flex items-center gap-1.5">
                           <Users className="h-3.5 w-3.5" />
                           <span>Participants ({room.currentUsers?.length || 0}{room.userLimit > 0 ? ` / ${room.userLimit}` : ""})</span>
                         </span>
-                        <div className="flex items-center gap-2 text-[11px] text-zinc-500">
+                        <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                           <span className="flex items-center gap-1 text-emerald-400">
                             <Shield className="h-2.5 w-2.5" />
                             Whitelist ({(room.allowedUserIds || room.whitelist || []).length})
@@ -639,18 +639,18 @@ export default function VoiceCenterClient() {
                       </div>
 
                       {(!room.currentUsers || room.currentUsers.length === 0) ? (
-                        <p className="text-xs text-zinc-500 italic py-1">Aucun membre connecté actuellement.</p>
+                        <p className="text-xs text-[var(--text-muted)] italic py-1">Aucun membre connecté actuellement.</p>
                       ) : (
                         <div className="flex flex-wrap gap-2">
                           {room.currentUsers.map((user) => (
                             <div
                               key={user.id}
-                              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-300"
+                              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-muted)]"
                             >
                               <div className="h-2 w-2 rounded-full bg-emerald-400" />
                               <span className="font-medium">{user.tag}</span>
                               {user.isMuted && <MicOff className="h-3 w-3 text-rose-400" />}
-                              {user.isStreaming && <Tv className="h-3 w-3 text-purple-400" />}
+                              {user.isStreaming && <Tv className="h-3 w-3 text-emerald-300" />}
                             </div>
                           ))}
                         </div>
@@ -659,11 +659,11 @@ export default function VoiceCenterClient() {
                   </div>
 
                   {/* Quick Control Actions */}
-                  <div className="mt-4 pt-3 border-t border-zinc-800/60 flex items-center justify-between">
+                  <div className="mt-4 pt-3 border-t border-[var(--panel-border)] flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => handleRoomAction(room.id, room.isLocked ? "unlock" : "lock")}
-                        className="flex h-7 px-2.5 items-center gap-1 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-[11px] font-semibold transition-all cursor-pointer"
+                        className="flex h-7 px-2.5 items-center gap-1 rounded-md bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-white text-xs font-semibold transition-all cursor-pointer"
                         title={room.isLocked ? "Déverrouiller le salon" : "Verrouiller le salon"}
                       >
                         {room.isLocked ? <Unlock className="h-3 w-3 text-emerald-400" /> : <Lock className="h-3 w-3 text-rose-400" />}
@@ -676,7 +676,7 @@ export default function VoiceCenterClient() {
                           setNewRoomName(room.name);
                           setIsRenameOpen(true);
                         }}
-                        className="flex h-7 px-2.5 items-center gap-1 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-[11px] font-semibold transition-all cursor-pointer"
+                        className="flex h-7 px-2.5 items-center gap-1 rounded-md bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-white text-xs font-semibold transition-all cursor-pointer"
                         title="Renommer"
                       >
                         <Edit2 className="h-3 w-3" />
@@ -686,7 +686,7 @@ export default function VoiceCenterClient() {
 
                     <button
                       onClick={() => handleRoomAction(room.id, "delete")}
-                      className="flex h-7 px-2.5 items-center gap-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-[11px] font-semibold transition-all cursor-pointer"
+                      className="flex h-7 px-2.5 items-center gap-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold transition-all cursor-pointer"
                       title="Forcer la fermeture"
                     >
                       <Trash2 className="h-3 w-3" />
@@ -708,10 +708,10 @@ export default function VoiceCenterClient() {
       {/* TAB CONTENT: Analytics */}
       {activeTab === "analytics" && (
         <div className="space-y-4">
-          <h3 className="text-base font-bold text-white">Dernières Sessions Vocales</h3>
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 overflow-hidden">
+          <h3 className="text-base font-bold text-[var(--text-primary)]">Dernières Sessions Vocales</h3>
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
             <table className="w-full text-left text-xs">
-              <thead className="bg-zinc-950/60 border-b border-zinc-800 text-zinc-400 font-semibold uppercase">
+              <thead className="bg-[var(--surface-raised)]/40 border-b border-[var(--panel-border)] text-[var(--text-muted)] font-semibold uppercase">
                 <tr>
                   <th className="p-3.5">Membre</th>
                   <th className="p-3.5">Salon</th>
@@ -719,12 +719,12 @@ export default function VoiceCenterClient() {
                   <th className="p-3.5">Durée</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
+              <tbody className="divide-y divide-[var(--panel-border)] text-[var(--text-muted)]">
                 {sessions.map((sess) => (
-                  <tr key={sess.id} className="hover:bg-zinc-800/30 transition-colors">
-                    <td className="p-3.5 font-medium text-white">{sess.userTag}</td>
+                  <tr key={sess.id} className="hover:bg-[var(--surface-raised)]/70 transition-colors">
+                    <td className="p-3.5 font-medium text-[var(--text-primary)]">{sess.userTag}</td>
                     <td className="p-3.5">{sess.roomName}</td>
-                    <td className="p-3.5 text-zinc-400">{new Date(sess.joinedAt).toLocaleTimeString()}</td>
+                    <td className="p-3.5 text-[var(--text-muted)]">{new Date(sess.joinedAt).toLocaleTimeString()}</td>
                     <td className="p-3.5 text-emerald-400 font-medium">{Math.round(sess.durationSeconds / 60)} min</td>
                   </tr>
                 ))}
@@ -736,20 +736,20 @@ export default function VoiceCenterClient() {
 
       {/* Rename Modal */}
       {isRenameOpen && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl space-y-4">
-            <h3 className="text-base font-bold text-white">Renommer le salon vocal</h3>
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
+            <h3 className="text-base font-bold text-[var(--text-primary)]">Renommer le salon vocal</h3>
             <input
               type="text"
               value={newRoomName}
               onChange={(e) => setNewRoomName(e.target.value)}
               placeholder="Nouveau nom du salon"
-              className="w-full h-10 px-3.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-white focus:outline-none focus:border-emerald-500"
+              className="w-full h-10 px-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-emerald-500"
             />
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setIsRenameOpen(false)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
               >
                 Annuler
               </button>

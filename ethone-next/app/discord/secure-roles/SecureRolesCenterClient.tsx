@@ -54,7 +54,7 @@ interface Overview {
 }
 
 const STATUS: Record<MemberRow["status"], { label: string; cls: string }> = {
-  none: { label: "Pas invité", cls: "bg-zinc-800 text-zinc-300" },
+  none: { label: "Pas invité", cls: "bg-[var(--surface-raised)] text-[var(--text-muted)]" },
   invited: { label: "Invité", cls: "bg-amber-500/15 text-amber-300" },
   pending: { label: "Configuration en cours", cls: "bg-sky-500/15 text-sky-300" },
   active: { label: "Protégé", cls: "bg-emerald-500/15 text-emerald-300" },
@@ -103,8 +103,8 @@ function Item({ n, title, text }: { n: string; title: string; text: string }) {
     <div className="flex gap-3">
       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-xs font-bold text-emerald-300">{n}</span>
       <div>
-        <p className="text-sm font-semibold text-white">{title}</p>
-        <p className="mt-0.5 text-xs leading-relaxed text-zinc-400">{text}</p>
+        <p className="text-sm font-semibold text-[var(--text-primary)]">{title}</p>
+        <p className="mt-0.5 text-xs leading-relaxed text-[var(--text-muted)]">{text}</p>
       </div>
     </div>
   );
@@ -113,16 +113,16 @@ function Item({ n, title, text }: { n: string; title: string; text: string }) {
 /** Fenêtre d'accueil : le problème, le principe, ce que l'équipe voit. Affichée une fois, rouvrable depuis « Comment ça marche ». */
 function WelcomeModal({ onClose }: { onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Rôles sécurisés">
-      <div className="w-full max-w-lg rounded-3xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 shadow-2xl">
+    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 p-4 " role="dialog" aria-modal="true" aria-label="Rôles sécurisés">
+      <div className="w-full max-w-lg rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 ">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-300">
               <EthoneIcon name="mod-security" className="h-6 w-6" />
             </span>
-            <h2 className="text-lg font-bold text-white">Protégez votre équipe avec les rôles sécurisés</h2>
+            <h2 className="text-lg font-bold text-[var(--text-primary)]">Protégez votre équipe avec les rôles sécurisés</h2>
           </div>
-          <button type="button" onClick={onClose} aria-label="Fermer" className="cursor-pointer rounded-lg p-1.5 text-zinc-400 hover:bg-white/5 hover:text-white">
+          <button type="button" onClick={onClose} aria-label="Fermer" className="cursor-pointer rounded-xl p-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)]">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -131,7 +131,7 @@ function WelcomeModal({ onClose }: { onClose: () => void }) {
           <Item n="2" title="La solution" text="Les permissions sensibles (bannir, gérer les rôles, administrateur…) quittent le rôle visible pour un rôle caché. Le membre ne l'obtient que quelques minutes, après un code à usage unique de son application d'authentification (/elevate). Un pirate qui a le compte Discord n'a pas le code." />
           <Item n="3" title="Invisible pour votre équipe" text="Le rôle garde son nom, sa couleur et sa place dans la hiérarchie. Vos modérateurs continuent de discuter normalement ; ils tapent /elevate seulement quand ils doivent sanctionner." />
         </div>
-        <button type="button" onClick={onClose} className="mt-6 w-full cursor-pointer rounded-xl bg-[#5865F2] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#4752C4]">
+        <button type="button" onClick={onClose} className="mt-6 w-full cursor-pointer rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600">
           Compris, commencer
         </button>
       </div>
@@ -240,17 +240,17 @@ export default function SecureRolesCenterClient() {
   };
 
   const back = (
-    <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex h-8 items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-3 text-xs font-semibold text-zinc-300 transition hover:bg-zinc-800 hover:text-white">
-      <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+    <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 text-xs font-semibold text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)]">
+      <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
       Retour Discord
     </Link>
   );
 
   if (state !== "ok" || !data) {
     return (
-      <div className="h-full overflow-y-auto px-4 pb-44 pt-6 text-white sm:px-6 lg:px-10">
+      <div className="h-full overflow-y-auto px-4 pb-44 pt-6 text-[var(--text-primary)] sm:px-6 lg:px-10">
         {back}
-        <p className="mt-8 text-sm text-zinc-400">{state === "offline" ? "Le bot est injoignable ou n'est pas sur ce serveur : impossible de charger les rôles sécurisés." : "Chargement…"}</p>
+        <p className="mt-8 text-sm text-[var(--text-muted)]">{state === "offline" ? "Le bot est injoignable ou n'est pas sur ce serveur : impossible de charger les rôles sécurisés." : "Chargement…"}</p>
       </div>
     );
   }
@@ -260,7 +260,7 @@ export default function SecureRolesCenterClient() {
   const others = data.roles.filter((r) => r.sensitive.length === 0 && !r.secured);
 
   return (
-    <div className="h-full overflow-y-auto bg-[var(--bg-main)] px-4 pb-44 pt-6 text-white sm:px-6 lg:px-10">
+    <div className="h-full overflow-y-auto bg-[var(--bg-main)] px-4 pb-44 pt-6 text-[var(--text-primary)] sm:px-6 lg:px-10">
       {welcome && <WelcomeModal onClose={closeWelcome} />}
       <div className="mx-auto max-w-5xl space-y-6">
         <PageHeader
@@ -271,10 +271,10 @@ export default function SecureRolesCenterClient() {
           subtitle="Les permissions sensibles de votre équipe ne s'activent qu'après un code à usage unique."
           actions={
             <>
-              <button type="button" onClick={() => setWelcome(true)} className="cursor-pointer rounded-xl border border-zinc-700 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/5">
+              <button type="button" onClick={() => setWelcome(true)} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-3 py-2 text-xs font-semibold text-[var(--text-primary)] transition hover:bg-[var(--surface-raised)]/70">
                 Comment ça marche
               </button>
-              <button type="button" onClick={() => void load()} aria-label="Actualiser" className="cursor-pointer rounded-xl border border-zinc-700 p-2 text-zinc-300 transition hover:bg-white/5">
+              <button type="button" onClick={() => void load()} aria-label="Actualiser" className="cursor-pointer rounded-xl border border-[var(--panel-border)] p-2 text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)]/70">
                 <RefreshCw className="h-4 w-4" />
               </button>
             </>
@@ -282,10 +282,10 @@ export default function SecureRolesCenterClient() {
         />
 
         {!config.enabled ? (
-          <section className="rounded-3xl border border-[var(--panel-border)] bg-white/[0.02] p-8 text-center">
+          <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-8 text-center">
             <h2 className="text-lg font-bold">Votre équipe n&apos;est pas encore protégée</h2>
-            <p className="mx-auto mt-2 max-w-xl text-sm text-zinc-400">Activez le module, puis choisissez les rôles à sécuriser. Rien ne change tant que vous n&apos;avez pas sécurisé un rôle.</p>
-            <button type="button" disabled={busy === "enable"} onClick={() => void call("enable", "/config", "PUT", { enabled: true }, "Module activé")} className="mt-6 cursor-pointer rounded-xl bg-[#5865F2] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#4752C4] disabled:opacity-50">
+            <p className="mx-auto mt-2 max-w-xl text-sm text-[var(--text-muted)]">Activez le module, puis choisissez les rôles à sécuriser. Rien ne change tant que vous n&apos;avez pas sécurisé un rôle.</p>
+            <button type="button" disabled={busy === "enable"} onClick={() => void call("enable", "/config", "PUT", { enabled: true }, "Module activé")} className="mt-6 cursor-pointer rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50">
               Activer les rôles sécurisés
             </button>
           </section>
@@ -293,24 +293,24 @@ export default function SecureRolesCenterClient() {
           <>
             {!data.bot.canManageRoles && <p className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">Le bot n&apos;a pas la permission « Gérer les rôles » : il ne pourra pas sécuriser de rôle. Ajoutez-la à son rôle dans Paramètres du serveur → Rôles, en le plaçant au-dessus des rôles à protéger.</p>}
 
-            <section className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
+            <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <h2 className="text-base font-bold">1. Choisir les rôles à protéger</h2>
-              <p className="mt-1 text-xs text-zinc-400">Le bot doit être placé au-dessus du rôle dans la hiérarchie et posséder lui-même les permissions déplacées (le rôle Administrateur du bot suffit).</p>
-              <div className="mt-4 divide-y divide-white/5">
-                {risky.length === 0 && <p className="py-3 text-sm text-zinc-400">Aucun rôle ne porte de permission sensible.</p>}
+              <p className="mt-1 text-xs text-[var(--text-muted)]">Le bot doit être placé au-dessus du rôle dans la hiérarchie et posséder lui-même les permissions déplacées (le rôle Administrateur du bot suffit).</p>
+              <div className="mt-4 divide-y divide-[var(--panel-border)]">
+                {risky.length === 0 && <p className="py-3 text-sm text-[var(--text-muted)]">Aucun rôle ne porte de permission sensible.</p>}
                 {risky.map((r) => (
                   <div key={r.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
                     <div className="min-w-0">
                       <p className="flex items-center gap-2 text-sm font-semibold">
                         <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: r.color && r.color !== "#000000" ? r.color : "#71717a" }} />
                         <span className="truncate">{r.name}</span>
-                        <span className="text-[11px] font-normal text-zinc-500">{r.memberCount} membre(s)</span>
-                        {r.secured && <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-300">Sécurisé</span>}
+                        <span className="text-xs font-normal text-[var(--text-muted)]">{r.memberCount} membre(s)</span>
+                        {r.secured && <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-bold uppercase text-emerald-300">Sécurisé</span>}
                       </p>
                       {!r.secured && (
                         <p className="mt-1 flex flex-wrap gap-1">
                           {r.sensitive.map((p) => (
-                            <span key={p} className="rounded bg-rose-500/10 px-1.5 py-0.5 text-[11px] text-rose-300">
+                            <span key={p} className="rounded bg-rose-500/10 px-1.5 py-0.5 text-xs text-rose-300">
                               {permLabel(p)}
                             </span>
                           ))}
@@ -318,11 +318,11 @@ export default function SecureRolesCenterClient() {
                       )}
                     </div>
                     {r.secured ? (
-                      <button type="button" disabled={busy === `role:${r.id}`} onClick={() => void restore(r)} className="cursor-pointer rounded-xl border border-zinc-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-white/5 disabled:opacity-50">
+                      <button type="button" disabled={busy === `role:${r.id}`} onClick={() => void restore(r)} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition hover:bg-[var(--surface-raised)]/70 disabled:opacity-50">
                         Restaurer
                       </button>
                     ) : (
-                      <button type="button" disabled={!r.editable || busy === `role:${r.id}`} title={r.editable ? undefined : "Ce rôle est au-dessus du rôle du bot"} onClick={() => void secure(r)} className="cursor-pointer rounded-xl bg-[#5865F2] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#4752C4] disabled:cursor-not-allowed disabled:opacity-40">
+                      <button type="button" disabled={!r.editable || busy === `role:${r.id}`} title={r.editable ? undefined : "Ce rôle est au-dessus du rôle du bot"} onClick={() => void secure(r)} className="cursor-pointer rounded-xl bg-emerald-500 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-40">
                         {busy === `role:${r.id}` ? "Sécurisation…" : "Sécuriser"}
                       </button>
                     )}
@@ -330,24 +330,24 @@ export default function SecureRolesCenterClient() {
                 ))}
               </div>
               {others.length > 0 && (
-                <button type="button" onClick={() => setShowAll((v) => !v)} className="mt-3 cursor-pointer text-xs text-zinc-400 hover:text-white">
+                <button type="button" onClick={() => setShowAll((v) => !v)} className="mt-3 cursor-pointer text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                   {showAll ? "Masquer" : `Voir ${others.length === 1 ? "le rôle sans permission sensible" : `les ${others.length} rôles sans permission sensible`}`}
                 </button>
               )}
-              {showAll && <p className="mt-2 text-xs text-zinc-500">{others.map((r) => r.name).join(" · ")}</p>}
+              {showAll && <p className="mt-2 text-xs text-[var(--text-muted)]">{others.map((r) => r.name).join(" · ")}</p>}
             </section>
 
-            <section className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
+            <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <h2 className="text-base font-bold">2. Membres protégés</h2>
-              <p className="mt-1 text-xs text-zinc-400">
-                Chaque membre invité tape <code className="rounded bg-black/30 px-1">/elevate</code> sur Discord : le bot lui donne une clé à ajouter dans son application d&apos;authentification, puis <code className="rounded bg-black/30 px-1">/elevate code:123456</code> ouvre une session de {config.sessionMinutes} minutes. Seuls les membres invités par un administrateur peuvent s&apos;enrôler, pour qu&apos;un compte volé ne puisse pas configurer son propre code.
+              <p className="mt-1 text-xs text-[var(--text-muted)]">
+                Chaque membre invité tape <code className="rounded bg-[var(--surface-raised)]/40 px-1">/elevate</code> sur Discord : le bot lui donne une clé à ajouter dans son application d&apos;authentification, puis <code className="rounded bg-[var(--surface-raised)]/40 px-1">/elevate code:123456</code> ouvre une session de {config.sessionMinutes} minutes. Seuls les membres invités par un administrateur peuvent s&apos;enrôler, pour qu&apos;un compte volé ne puisse pas configurer son propre code.
               </p>
               {data.members.length === 0 ? (
-                <p className="mt-4 text-sm text-zinc-400">Aucun membre ne possède de rôle sécurisé pour l&apos;instant.</p>
+                <p className="mt-4 text-sm text-[var(--text-muted)]">Aucun membre ne possède de rôle sécurisé pour l&apos;instant.</p>
               ) : (
                 <div className="mt-4 overflow-x-auto">
                   <table className="w-full min-w-[560px] text-left text-xs">
-                    <thead className="text-zinc-500">
+                    <thead className="text-[var(--text-muted)]">
                       <tr>
                         <th className="pb-2 font-semibold">Membre</th>
                         <th className="pb-2 font-semibold">État</th>
@@ -355,7 +355,7 @@ export default function SecureRolesCenterClient() {
                         <th className="pb-2 text-right font-semibold">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-[var(--panel-border)]">
                       {data.members.map((m) => (
                         <tr key={m.userId}>
                           <td className="py-2.5 pr-3">
@@ -364,33 +364,33 @@ export default function SecureRolesCenterClient() {
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={m.avatar} alt="" className="h-7 w-7 rounded-full" />
                               ) : (
-                                <span className="h-7 w-7 rounded-full bg-zinc-800" />
+                                <span className="h-7 w-7 rounded-full bg-[var(--surface-raised)]" />
                               )}
                               <span>
-                                <span className="block text-sm font-semibold text-white">{m.displayName}</span>
-                                <span className="block text-[11px] text-zinc-500">{m.roleNames.join(", ")}</span>
+                                <span className="block text-sm font-semibold text-[var(--text-primary)]">{m.displayName}</span>
+                                <span className="block text-xs text-[var(--text-muted)]">{m.roleNames.join(", ")}</span>
                               </span>
                             </span>
                           </td>
                           <td className="py-2.5 pr-3">
-                            <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", STATUS[m.status].cls)}>{STATUS[m.status].label}</span>
-                            {m.lockedUntil && new Date(m.lockedUntil).getTime() > Date.now() && <span className="ml-2 text-[11px] text-rose-300">bloqué jusqu&apos;à {new Date(m.lockedUntil).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</span>}
+                            <span className={cn("rounded-full px-2 py-0.5 text-xs font-semibold", STATUS[m.status].cls)}>{STATUS[m.status].label}</span>
+                            {m.lockedUntil && new Date(m.lockedUntil).getTime() > Date.now() && <span className="ml-2 text-xs text-rose-300">bloqué jusqu&apos;à {new Date(m.lockedUntil).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</span>}
                           </td>
-                          <td className="py-2.5 pr-3 text-zinc-300">{m.sessionExpiresAt ? `jusqu'à ${new Date(m.sessionExpiresAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : "—"}</td>
+                          <td className="py-2.5 pr-3 text-[var(--text-muted)]">{m.sessionExpiresAt ? `jusqu'à ${new Date(m.sessionExpiresAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : "—"}</td>
                           <td className="py-2.5 text-right">
                             <span className="inline-flex flex-wrap justify-end gap-1.5">
                               {(m.status === "none" || m.status === "invited") && (
-                                <button type="button" disabled={busy === `m:${m.userId}`} onClick={() => void call(`m:${m.userId}`, `/members/${m.userId}/invite`, "POST", {}, "Invitation envoyée", "Le membre peut maintenant taper /elevate sur Discord (valable 24 h).")} className="cursor-pointer rounded-lg border border-zinc-700 px-2.5 py-1 font-semibold text-white transition hover:bg-white/5 disabled:opacity-50">
+                                <button type="button" disabled={busy === `m:${m.userId}`} onClick={() => void call(`m:${m.userId}`, `/members/${m.userId}/invite`, "POST", {}, "Invitation envoyée", "Le membre peut maintenant taper /elevate sur Discord (valable 24 h).")} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-2.5 py-1 font-semibold text-[var(--text-primary)] transition hover:bg-[var(--surface-raised)]/70 disabled:opacity-50">
                                   {m.status === "invited" ? "Réinviter" : "Inviter"}
                                 </button>
                               )}
                               {m.sessionExpiresAt && (
-                                <button type="button" disabled={busy === `m:${m.userId}`} onClick={() => void call(`m:${m.userId}`, `/members/${m.userId}/revoke`, "POST", {}, "Session terminée")} className="cursor-pointer rounded-lg border border-zinc-700 px-2.5 py-1 font-semibold text-white transition hover:bg-white/5 disabled:opacity-50">
+                                <button type="button" disabled={busy === `m:${m.userId}`} onClick={() => void call(`m:${m.userId}`, `/members/${m.userId}/revoke`, "POST", {}, "Session terminée")} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-2.5 py-1 font-semibold text-[var(--text-primary)] transition hover:bg-[var(--surface-raised)]/70 disabled:opacity-50">
                                   Terminer la session
                                 </button>
                               )}
                               {(m.status === "pending" || m.status === "active") && (
-                                <button type="button" disabled={busy === `m:${m.userId}`} onClick={() => void resetMember(m)} className="cursor-pointer rounded-lg border border-rose-500/30 px-2.5 py-1 font-semibold text-rose-300 transition hover:bg-rose-500/10 disabled:opacity-50">
+                                <button type="button" disabled={busy === `m:${m.userId}`} onClick={() => void resetMember(m)} className="cursor-pointer rounded-xl border border-rose-500/30 px-2.5 py-1 font-semibold text-rose-300 transition hover:bg-rose-500/10 disabled:opacity-50">
                                   Réinitialiser
                                 </button>
                               )}
@@ -404,7 +404,7 @@ export default function SecureRolesCenterClient() {
               )}
             </section>
 
-            <section className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
+            <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <h2 className="text-base font-bold">3. Réglages</h2>
               <div className="mt-3 max-w-xs">
                 <Select
@@ -415,20 +415,20 @@ export default function SecureRolesCenterClient() {
                   options={DURATIONS.map((d) => ({ id: String(d), label: d < 60 ? `${d} minutes` : `${d / 60} heure${d > 60 ? "s" : ""}` }))}
                 />
               </div>
-              <p className="mt-3 text-[11px] text-zinc-500">Le module ne peut être désactivé qu&apos;une fois tous les rôles restaurés, pour ne jamais enfermer votre équipe hors de ses permissions. Si quelqu&apos;un se donne à la main un rôle caché sans code, le bot le retire aussitôt et le consigne dans le journal.</p>
+              <p className="mt-3 text-xs text-[var(--text-muted)]">Le module ne peut être désactivé qu&apos;une fois tous les rôles restaurés, pour ne jamais enfermer votre équipe hors de ses permissions. Si quelqu&apos;un se donne à la main un rôle caché sans code, le bot le retire aussitôt et le consigne dans le journal.</p>
             </section>
 
-            <section className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
+            <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <h2 className="text-base font-bold">Journal</h2>
               {data.audit.length === 0 ? (
-                <p className="mt-3 text-sm text-zinc-400">Aucune activité pour l&apos;instant.</p>
+                <p className="mt-3 text-sm text-[var(--text-muted)]">Aucune activité pour l&apos;instant.</p>
               ) : (
-                <ul className="mt-3 divide-y divide-white/5 text-xs">
+                <ul className="mt-3 divide-y divide-[var(--panel-border)] text-xs">
                   {data.audit.map((a) => (
                     <li key={a.id} className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 py-2">
-                      <span className="w-28 shrink-0 text-zinc-500">{fmtTime(a.at)}</span>
-                      <span className={cn("w-44 shrink-0 font-semibold", AUDIT_TONE[a.type] ?? "text-white")}>{AUDIT_LABEL[a.type] ?? a.type}</span>
-                      <span className="text-zinc-300">
+                      <span className="w-28 shrink-0 text-[var(--text-muted)]">{fmtTime(a.at)}</span>
+                      <span className={cn("w-44 shrink-0 font-semibold", AUDIT_TONE[a.type] ?? "text-[var(--text-primary)]")}>{AUDIT_LABEL[a.type] ?? a.type}</span>
+                      <span className="text-[var(--text-muted)]">
                         {a.userName ? `${a.userName} · ` : ""}
                         {a.detail}
                       </span>

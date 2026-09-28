@@ -261,7 +261,7 @@ export default function DiscordCalendarClient() {
   const monthLabel = currentDate.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 
   return (
-    <div className="h-full min-h-0 overflow-y-auto os-scroll bg-[var(--bg-main)] text-slate-100 pb-44 selection:bg-indigo-500/30 [overscroll-behavior:contain]">
+    <div className="h-full min-h-0 overflow-y-auto os-scroll bg-[var(--bg-main)] text-[var(--text-primary)] pb-44 [overscroll-behavior:contain]">
       {/* Glow Effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
       </div>
@@ -273,27 +273,27 @@ export default function DiscordCalendarClient() {
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
                 href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
+                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer shadow-sm"
                 title="Retour au hub Discord"
               >
-                <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+                <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                 <span>Retour Discord</span>
               </Link>
-              <div className="flex items-center gap-2 text-xs text-indigo-400 font-semibold uppercase tracking-wider">
+              <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold uppercase tracking-wider">
                 <Link href={`/discord/events${currentGuildId ? `?guildId=${currentGuildId}` : ""}`} className="hover:underline flex items-center gap-1">
                   <CalendarIcon className="w-3.5 h-3.5" />
                   Événements Hub
                 </Link>
                 <span>/</span>
-                <span className="text-slate-400">Calendrier</span>
+                <span className="text-[var(--text-muted)]">Calendrier</span>
                 {isDemo && (
-                  <span className="normal-case rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                  <span className="normal-case rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-300">
                     Démo
                   </span>
                 )}
               </div>
             </div>
-            <h1 className="text-3xl font-extrabold text-white flex items-center gap-3 capitalize">
+            <h1 className="text-3xl font-extrabold text-[var(--text-primary)] flex items-center gap-3 capitalize">
               {monthLabel}
             </h1>
           </div>
@@ -313,14 +313,14 @@ export default function DiscordCalendarClient() {
             <button
               onClick={loadEvents}
               disabled={loading}
-              className="inline-flex items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 p-2 text-slate-400 transition-colors hover:text-white hover:bg-white/10 disabled:opacity-50"
+              className="inline-flex items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-2 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] disabled:opacity-50"
               title="Rafraîchir"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
             </button>
             <button
               onClick={handleExportICS}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-slate-200 transition-colors"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-primary)] transition-colors"
             >
               <Download className="w-3.5 h-3.5 text-cyan-400" />
               Exporter iCal (.ics)
@@ -328,7 +328,7 @@ export default function DiscordCalendarClient() {
 
             <Link
               href={`/discord/events/create${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-[#5865F2] hover:bg-[#4752C4] text-white transition-colors"
+              className="inline-flex items-center gap-2 px-4 h-9 rounded-xl text-sm font-semibold bg-emerald-500 hover:bg-emerald-600 text-white transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
               Créer un Événement
@@ -358,30 +358,30 @@ export default function DiscordCalendarClient() {
         )}
 
         {/* Toolbar: Navigation & View Switcher */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 my-6 p-4 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 my-6 p-4 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
           {/* Navigation Controls */}
           <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
             <button
               onClick={handleToday}
-              className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-xs font-semibold text-white transition-colors"
+              className="px-3 py-1.5 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-primary)] transition-colors"
             >
               Aujourd'hui
             </button>
             <div className="flex items-center gap-1">
               <button
                 onClick={handlePrev}
-                className="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-slate-300 transition-colors"
+                className="p-1.5 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-muted)] transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={handleNext}
-                className="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-slate-300 transition-colors"
+                className="p-1.5 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-muted)] transition-colors"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
-            <span className="text-sm font-bold text-white sm:hidden capitalize">{monthLabel}</span>
+            <span className="text-sm font-bold text-[var(--text-primary)] sm:hidden capitalize">{monthLabel}</span>
           </div>
 
           {/* Category Filter Pills */}
@@ -398,8 +398,8 @@ export default function DiscordCalendarClient() {
                 onClick={() => setSelectedCategory(f.id)}
                 className={`px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   selectedCategory === f.id
-                    ? "bg-indigo-500 text-white shadow-sm"
-                    : "bg-white/5 hover:bg-white/10 text-slate-400"
+                    ? "bg-emerald-500 text-white shadow-sm"
+                    : "bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)]"
                 }`}
               >
                 {f.label}
@@ -408,15 +408,15 @@ export default function DiscordCalendarClient() {
           </div>
 
           {/* View Modes */}
-          <div className="flex items-center gap-1 bg-black/40 p-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)]">
+          <div className="flex items-center gap-1 bg-[var(--surface-raised)]/40 p-1 rounded-xl border border-[var(--panel-border)]">
             {(["MONTH", "AGENDA"] as ViewMode[]).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                   viewMode === mode
-                    ? "bg-indigo-500 text-white shadow"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-emerald-500 text-white shadow"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 }`}
               >
                 {mode === "MONTH" ? "Mois" : "Agenda"}
@@ -428,10 +428,10 @@ export default function DiscordCalendarClient() {
         {/* View 1: Month View — the 7-col grid needs room; on narrow screens it
             scrolls horizontally instead of crushing every cell to nothing. */}
         {viewMode === "MONTH" && (
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.01] backdrop-blur-xl overflow-x-auto os-scroll shadow-2xl">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-x-auto os-scroll">
            <div className="min-w-[640px]">
             {/* Weekdays Header */}
-            <div className="grid grid-cols-7 border-b border-[var(--panel-border)] bg-white/[0.03] text-center text-xs font-bold text-slate-400 py-3">
+            <div className="grid grid-cols-7 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-center text-xs font-bold text-[var(--text-muted)] py-3">
               {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d, i) => (
                 <div key={i}>{d}</div>
               ))}
@@ -449,23 +449,23 @@ export default function DiscordCalendarClient() {
                   <div
                     key={idx}
                     className={`min-h-[120px] p-2 border-b border-r border-[var(--panel-border)] transition-colors flex flex-col justify-between ${
-                      cell.isCurrentMonth ? "bg-transparent" : "bg-black/40 text-slate-600"
-                    } hover:bg-white/[0.02]`}
+                      cell.isCurrentMonth ? "bg-transparent" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
+                    } hover:bg-[var(--surface-raised)]/70`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span
                         className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full ${
                           isToday
-                            ? "bg-indigo-500 text-white shadow-sm"
+                            ? "bg-emerald-500 text-white shadow-sm"
                             : cell.isCurrentMonth
-                            ? "text-slate-300"
-                            : "text-slate-600"
+                            ? "text-[var(--text-muted)]"
+                            : "text-[var(--text-muted)]"
                         }`}
                       >
                         {cell.day}
                       </span>
                       {dayEvents.length > 0 && (
-                        <span className="text-[10px] text-indigo-400 font-semibold">
+                        <span className="text-xs text-emerald-400 font-semibold">
                           {dayEvents.length} évt
                         </span>
                       )}
@@ -506,7 +506,7 @@ export default function DiscordCalendarClient() {
                 <div
                   key={ev.id}
                   onClick={() => setActiveModalEvent(ev)}
-                  className="p-5 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl hover:border-indigo-500/40 cursor-pointer transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+                  className="p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--input-border-hover)] cursor-pointer transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
                 >
                   <div className="flex items-start gap-4">
                     <div
@@ -517,26 +517,26 @@ export default function DiscordCalendarClient() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white/5 border border-[var(--panel-border)] text-slate-300">
+                        <span className="px-2 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider bg-[var(--surface-raised)]/50 border border-[var(--panel-border)] text-[var(--text-muted)]">
                           {ev.category}
                         </span>
-                        <span className="text-xs text-indigo-400 font-semibold">
+                        <span className="text-xs text-emerald-400 font-semibold">
                           {start.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })} • {start.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
                         </span>
                       </div>
-                      <h3 className="text-base font-bold text-white">{ev.title}</h3>
-                      <p className="text-xs text-slate-400 mt-1 line-clamp-1">{ev.description}</p>
+                      <h3 className="text-base font-bold text-[var(--text-primary)]">{ev.title}</h3>
+                      <p className="text-xs text-[var(--text-muted)] mt-1 line-clamp-1">{ev.description}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end pt-3 md:pt-0 border-t md:border-t-0 border-[var(--panel-border)]">
                     <div className="text-right">
-                      <div className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                      <div className="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1.5">
                         <Volume2 className="w-3.5 h-3.5 text-cyan-400" />
                         {ev.location}
                       </div>
-                      <div className="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
-                        <Users className="w-3.5 h-3.5 text-indigo-400" />
+                      <div className="text-xs text-[var(--text-muted)] mt-0.5 flex items-center gap-1">
+                        <Users className="w-3.5 h-3.5 text-emerald-400" />
                         {ev.attendeesCount} {ev.maxCapacity ? `/ ${ev.maxCapacity}` : "inscrits"}
                       </div>
                     </div>
@@ -544,7 +544,7 @@ export default function DiscordCalendarClient() {
                     <Link
                       href={`/discord/events/${ev.id}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 border border-[var(--panel-border)] transition-colors"
+                      className="p-2.5 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)] border border-[var(--panel-border)] transition-colors"
                     >
                       <ExternalLink className="w-4 h-4" />
                     </Link>
@@ -558,57 +558,57 @@ export default function DiscordCalendarClient() {
         {/* Modal Event Preview */}
         <AnimatePresence>
           {activeModalEvent && (
-            <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/80">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="relative w-full max-w-lg rounded-2xl bg-[var(--bg-surface-elevated)] border border-[var(--panel-border)] p-6 shadow-2xl"
+                className="relative w-full max-w-lg rounded-2xl bg-[var(--bg-surface-elevated)] border border-[var(--panel-border)] p-6"
               >
                 <button
                   onClick={() => setActiveModalEvent(null)}
-                  className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
+                  className="absolute top-4 right-4 p-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
 
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl p-3 rounded-2xl bg-white/5 border border-[var(--panel-border)]">
+                  <span className="text-3xl p-3 rounded-2xl bg-[var(--surface-raised)]/50 border border-[var(--panel-border)]">
                     {activeModalEvent.emoji}
                   </span>
                   <div>
-                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                    <span className="px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
                       {activeModalEvent.category}
                     </span>
-                    <h3 className="text-xl font-bold text-white mt-1">{activeModalEvent.title}</h3>
+                    <h3 className="text-xl font-bold text-[var(--text-primary)] mt-1">{activeModalEvent.title}</h3>
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-300 mb-6 leading-relaxed">
+                <p className="text-xs text-[var(--text-muted)] mb-6 leading-relaxed">
                   {activeModalEvent.description}
                 </p>
 
-                <div className="grid grid-cols-2 gap-3 p-4 rounded-xl bg-black/40 border border-[var(--panel-border)] mb-6 text-xs">
+                <div className="grid grid-cols-2 gap-3 p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] mb-6 text-xs">
                   <div>
-                    <span className="text-slate-500 block mb-0.5">Date & Heure</span>
-                    <span className="text-slate-200 font-semibold">
+                    <span className="text-[var(--text-muted)] block mb-0.5">Date & Heure</span>
+                    <span className="text-[var(--text-primary)] font-semibold">
                       {new Date(activeModalEvent.startDate).toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block mb-0.5">Lieu Discord</span>
-                    <span className="text-slate-200 font-semibold truncate block">
+                    <span className="text-[var(--text-muted)] block mb-0.5">Lieu Discord</span>
+                    <span className="text-[var(--text-primary)] font-semibold truncate block">
                       {activeModalEvent.location}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block mb-0.5">Participants</span>
-                    <span className="text-slate-200 font-semibold">
+                    <span className="text-[var(--text-muted)] block mb-0.5">Participants</span>
+                    <span className="text-[var(--text-primary)] font-semibold">
                       {activeModalEvent.attendeesCount} confirmés
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block mb-0.5">Statut</span>
+                    <span className="text-[var(--text-muted)] block mb-0.5">Statut</span>
                     <span className="text-emerald-400 font-semibold uppercase">
                       {activeModalEvent.status}
                     </span>
@@ -618,13 +618,13 @@ export default function DiscordCalendarClient() {
                 <div className="flex items-center gap-3">
                   <Link
                     href={`/discord/events/${activeModalEvent.id}`}
-                    className="flex-1 py-2.5 px-4 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-semibold text-center transition-colors"
+                    className="flex-1 h-9 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold text-center transition-colors"
                   >
                     Voir la Page Complète de l'Événement
                   </Link>
                   <button
                     onClick={() => setActiveModalEvent(null)}
-                    className="py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold transition-colors"
+                    className="py-2.5 px-4 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)] text-xs font-semibold transition-colors"
                   >
                     Fermer
                   </button>

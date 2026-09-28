@@ -245,17 +245,17 @@ export default function SetupWizardClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white flex flex-col items-center justify-start py-8 px-4 sm:px-6 relative overflow-hidden pb-36">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] flex flex-col items-center justify-start py-8 px-4 sm:px-6 relative overflow-hidden pb-36">
       {/* Background Glows */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Container */}
       <div className="w-full max-w-3xl relative z-10 flex flex-col">
         {/* Top Header */}
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-zinc-800/80">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-[var(--panel-border)]">
           <Link
             href="/discord"
-            className="inline-flex items-center gap-2 text-xs font-medium text-zinc-400 hover:text-white transition"
+            className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Retour au Dashboard Discord</span>
@@ -263,23 +263,23 @@ export default function SetupWizardClient() {
 
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span className="text-xs font-mono text-zinc-400 font-medium">SETUP ASSISTÉ</span>
+            <span className="text-xs font-mono text-[var(--text-muted)] font-medium">SETUP ASSISTÉ</span>
           </div>
         </div>
 
         {/* Stepper Progress Bar */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-300">
               Étape {currentStep} sur {STEPS.length}
             </span>
-            <span className="text-xs font-mono text-zinc-400">
+            <span className="text-xs font-mono text-[var(--text-muted)]">
               {STEPS[currentStep - 1]?.title}
             </span>
           </div>
-          <div className="w-full bg-zinc-900 h-2 rounded-full overflow-hidden border border-zinc-800">
+          <div className="w-full bg-[var(--panel-border)] h-2 rounded-full overflow-hidden border border-[var(--panel-border)]">
             <div
-              className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 transition-all duration-300"
+              className="h-full transition-all duration-300 bg-[var(--surface-raised)]/40"
               style={{ width: `${(currentStep / STEPS.length) * 100}%` }}
             />
           </div>
@@ -294,10 +294,10 @@ export default function SetupWizardClient() {
                   key={s.id}
                   className={`flex items-center gap-2 p-2 rounded-xl border text-left transition ${
                     isCurrent
-                      ? "bg-zinc-900 border-indigo-500/50 text-white"
+                      ? "bg-[var(--surface-raised)]/40 border-emerald-500/30 text-white"
                       : isPast
-                      ? "bg-zinc-950/60 border-zinc-800/60 text-zinc-400"
-                      : "opacity-40 border-transparent text-zinc-600"
+                      ? "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] text-[var(--text-muted)]"
+                      : "opacity-40 border-transparent text-[var(--text-muted)]"
                   }`}
                 >
                   <div
@@ -305,15 +305,15 @@ export default function SetupWizardClient() {
                       isPast
                         ? "bg-emerald-500/20 text-emerald-400"
                         : isCurrent
-                        ? "bg-indigo-500 text-white"
-                        : "bg-zinc-800 text-zinc-500"
+                        ? "bg-emerald-500 text-white"
+                        : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
                     }`}
                   >
                     {isPast ? <Check className="w-3.5 h-3.5" /> : s.id}
                   </div>
                   <div className="min-w-0">
-                    <div className="text-[11px] font-bold truncate">{s.title}</div>
-                    <div className="text-[9px] text-zinc-500 truncate">{s.desc}</div>
+                    <div className="text-xs font-bold truncate">{s.title}</div>
+                    <div className="text-xs text-[var(--text-muted)] truncate">{s.desc}</div>
                   </div>
                 </div>
               );
@@ -322,40 +322,40 @@ export default function SetupWizardClient() {
         </div>
 
         {/* Step Contents Card */}
-        <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl mb-6">
+        <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-3xl p-6 sm:p-8 mb-6">
           
           {/* STEP 1: SELECT GUILD */}
           {currentStep === 1 && (
             <div className="space-y-5 animate-in fade-in duration-300">
               <div>
-                <h3 className="text-xl font-bold text-white mb-1">
+                <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">
                   1. Sélectionner votre serveur Discord
                 </h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Choisissez le serveur où vous souhaitez activer Etho. Seuls les serveurs où vous possédez les droits d'administration sont affichés.
                 </p>
               </div>
 
               {!profile?.connected ? (
-                <div className="p-6 rounded-2xl bg-zinc-950/80 border border-zinc-800 text-center space-y-3">
-                  <DiscordIcon className="w-10 h-10 text-indigo-400 mx-auto" />
-                  <div className="text-sm font-semibold text-white">Compte Discord non lié</div>
-                  <p className="text-xs text-zinc-400 max-w-sm mx-auto">
+                <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-center space-y-3">
+                  <DiscordIcon className="w-10 h-10 text-emerald-300 mx-auto" />
+                  <div className="text-sm font-semibold text-[var(--text-primary)]">Compte Discord non lié</div>
+                  <p className="text-xs text-[var(--text-muted)] max-w-sm mx-auto">
                     Connectez votre compte Discord pour charger la liste de vos serveurs réels.
                   </p>
                   <button
                     onClick={() => connect()}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md transition cursor-pointer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition cursor-pointer"
                   >
                     <DiscordIcon className="w-4 h-4" />
                     <span>Lier mon compte Discord</span>
                   </button>
                 </div>
               ) : manageableGuilds.length === 0 ? (
-                <div className="p-6 rounded-2xl bg-zinc-950/80 border border-zinc-800 text-center space-y-2">
+                <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-center space-y-2">
                   <AlertTriangle className="w-8 h-8 text-amber-400 mx-auto" />
-                  <div className="text-sm font-semibold text-white">Aucun serveur administrable trouvé</div>
-                  <p className="text-xs text-zinc-400">
+                  <div className="text-sm font-semibold text-[var(--text-primary)]">Aucun serveur administrable trouvé</div>
+                  <p className="text-xs text-[var(--text-muted)]">
                     Vous devez être Propriétaire ou Administrateur d'un serveur Discord pour le configurer.
                   </p>
                 </div>
@@ -369,8 +369,8 @@ export default function SetupWizardClient() {
                         onClick={() => setSelectedGuild(g)}
                         className={`flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition ${
                           isSelected
-                            ? "bg-indigo-950/30 border-indigo-500 shadow-sm"
-                            : "bg-zinc-950/60 border-zinc-800/80 hover:bg-zinc-900/80"
+                            ? "bg-emerald-500/20 border-emerald-500/30 shadow-sm"
+                            : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/70"
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -381,16 +381,16 @@ export default function SetupWizardClient() {
                               className="w-10 h-10 rounded-xl object-cover"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center text-sm font-bold text-indigo-400">
+                            <div className="w-10 h-10 rounded-xl bg-[var(--surface-raised)]/40 flex items-center justify-center text-sm font-bold text-emerald-300">
                               {g.name.slice(0, 2).toUpperCase()}
                             </div>
                           )}
                           <div>
-                            <div className="text-sm font-semibold text-white">{g.name}</div>
-                            <div className="text-[11px] text-zinc-400 flex items-center gap-2">
+                            <div className="text-sm font-semibold text-[var(--text-primary)]">{g.name}</div>
+                            <div className="text-xs text-[var(--text-muted)] flex items-center gap-2">
                               <span>ID: {g.id}</span>
                               {g.owner && (
-                                <span className="px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-300 text-[10px] font-medium">
+                                <span className="px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-300 text-xs font-medium">
                                   Owner
                                 </span>
                               )}
@@ -400,7 +400,7 @@ export default function SetupWizardClient() {
 
                         <div className="flex items-center gap-2">
                           {isSelected && (
-                            <div className="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white">
+                            <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white">
                               <Check className="w-3.5 h-3.5" />
                             </div>
                           )}
@@ -412,13 +412,13 @@ export default function SetupWizardClient() {
               )}
 
               {/* Bot invite reminder */}
-              <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between text-xs">
-                <span className="text-zinc-400">Le bot n'est pas encore sur votre serveur ?</span>
+              <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between text-xs">
+                <span className="text-[var(--text-muted)]">Le bot n'est pas encore sur votre serveur ?</span>
                 <a
                   href={BOT_INVITE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-indigo-400 hover:text-indigo-300 font-medium"
+                  className="inline-flex items-center gap-1.5 text-emerald-300 hover:text-emerald-300 font-medium"
                 >
                   <span>Inviter Etho</span>
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -431,50 +431,50 @@ export default function SetupWizardClient() {
           {currentStep === 2 && (
             <div className="space-y-5 animate-in fade-in duration-300">
               <div>
-                <h3 className="text-xl font-bold text-white mb-1">
+                <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">
                   2. Audit des permissions du Bot
                 </h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Vérification des droits requis pour assurer un fonctionnement optimal sur{" "}
-                  <span className="text-indigo-400 font-semibold">{selectedGuild?.name}</span>.
+                  <span className="text-emerald-300 font-semibold">{selectedGuild?.name}</span>.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between">
+                <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between">
                   <div>
-                    <div className="text-xs font-bold text-white">Administrateur</div>
-                    <div className="text-[10px] text-zinc-400">Gestion complète automatique</div>
+                    <div className="text-xs font-bold text-[var(--text-primary)]">Administrateur</div>
+                    <div className="text-xs text-[var(--text-muted)]">Gestion complète automatique</div>
                   </div>
                   <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold">
                     Accordé
                   </span>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between">
+                <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between">
                   <div>
-                    <div className="text-xs font-bold text-white">Gérer les Rôles</div>
-                    <div className="text-[10px] text-zinc-400">Auto-rôles & Sanctions Mute</div>
+                    <div className="text-xs font-bold text-[var(--text-primary)]">Gérer les Rôles</div>
+                    <div className="text-xs text-[var(--text-muted)]">Auto-rôles & Sanctions Mute</div>
                   </div>
                   <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold">
                     Requis
                   </span>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between">
+                <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between">
                   <div>
-                    <div className="text-xs font-bold text-white">Bannir & Expulser</div>
-                    <div className="text-[10px] text-zinc-400">Modération & Anti-Raid</div>
+                    <div className="text-xs font-bold text-[var(--text-primary)]">Bannir & Expulser</div>
+                    <div className="text-xs text-[var(--text-muted)]">Modération & Anti-Raid</div>
                   </div>
                   <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold">
                     Requis
                   </span>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between">
+                <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between">
                   <div>
-                    <div className="text-xs font-bold text-white">Gérer les Salons</div>
-                    <div className="text-[10px] text-zinc-400">Création des salons de tickets</div>
+                    <div className="text-xs font-bold text-[var(--text-primary)]">Gérer les Salons</div>
+                    <div className="text-xs text-[var(--text-muted)]">Création des salons de tickets</div>
                   </div>
                   <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold">
                     Requis
@@ -484,7 +484,7 @@ export default function SetupWizardClient() {
 
               <div className="p-3.5 rounded-2xl bg-emerald-950/20 border border-emerald-500/30 flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                <p className="text-xs text-zinc-300 leading-relaxed">
+                <p className="text-xs text-[var(--text-muted)] leading-relaxed">
                   Toutes les autorisations critiques sont configurées avec le lien d'invitation officiel ETHONE (Permission 8 = Administrateur).
                 </p>
               </div>
@@ -498,10 +498,10 @@ export default function SetupWizardClient() {
           {currentStep === 4 && (
             <div className="space-y-5 animate-in fade-in duration-300">
               <div>
-                <h3 className="text-xl font-bold text-white mb-1">
+                <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">
                   4. Configuration rapide de la Modération
                 </h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Définissez vos règles de protection initiale pour neutraliser les abus automatiquement.
                 </p>
               </div>
@@ -509,7 +509,7 @@ export default function SetupWizardClient() {
               <div className="space-y-4">
                 {/* Mod Log Channel */}
                 <div>
-                  <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                  <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">
                     Salon des logs de modération
                   </label>
                   <ChannelPicker
@@ -522,15 +522,15 @@ export default function SetupWizardClient() {
                 </div>
 
                 {/* Anti-spam Toggle */}
-                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800">
+                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                   <div>
-                    <div className="text-xs font-semibold text-white">Protection Anti-Spam & Liens</div>
-                    <div className="text-[11px] text-zinc-400">Supprime les messages répétés et liens suspects</div>
+                    <div className="text-xs font-semibold text-[var(--text-primary)]">Protection Anti-Spam & Liens</div>
+                    <div className="text-xs text-[var(--text-muted)]">Supprime les messages répétés et liens suspects</div>
                   </div>
                   <button
                     onClick={() => setAntiSpamEnabled(!antiSpamEnabled)}
                     className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
-                      antiSpamEnabled ? "bg-indigo-600" : "bg-zinc-800"
+                      antiSpamEnabled ? "bg-emerald-500" : "bg-[var(--surface-raised)]/40"
                     }`}
                   >
                     <span
@@ -543,7 +543,7 @@ export default function SetupWizardClient() {
 
                 {/* Default Timeout Duration */}
                 <div>
-                  <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                  <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">
                     Timeout automatique (durée, ou « Aucun » pour le désactiver)
                   </label>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -553,8 +553,8 @@ export default function SetupWizardClient() {
                         onClick={() => setTimeoutDuration(d)}
                         className={`py-2 rounded-xl text-xs font-medium border transition cursor-pointer ${
                           timeoutDuration === d
-                            ? "bg-indigo-600/20 border-indigo-500 text-white font-bold"
-                            : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:text-white"
+                            ? "bg-emerald-500/10 border-emerald-500/30 text-[var(--text-primary)] font-bold"
+                            : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                         }`}
                       >
                         {d === "none" ? "Aucun" : d === "5m" ? "5 Minutes" : d === "10m" ? "10 Minutes" : "1 Heure"}
@@ -570,25 +570,25 @@ export default function SetupWizardClient() {
           {currentStep === 5 && (
             <div className="space-y-5 animate-in fade-in duration-300">
               <div>
-                <h3 className="text-xl font-bold text-white mb-1">
+                <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">
                   5. Configuration de l'Accueil (Welcome)
                 </h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Accueillez chaleureusement chaque nouveau membre dès son arrivée sur le serveur.
                 </p>
               </div>
 
               <div className="space-y-4">
                 {/* Welcome Toggle */}
-                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800">
+                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                   <div>
-                    <div className="text-xs font-semibold text-white">Activer le message de bienvenue</div>
-                    <div className="text-[11px] text-zinc-400">Envoie un embed stylisé dans le salon dédié</div>
+                    <div className="text-xs font-semibold text-[var(--text-primary)]">Activer le message de bienvenue</div>
+                    <div className="text-xs text-[var(--text-muted)]">Envoie un embed stylisé dans le salon dédié</div>
                   </div>
                   <button
                     onClick={() => setWelcomeEnabled(!welcomeEnabled)}
                     className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
-                      welcomeEnabled ? "bg-teal-600" : "bg-zinc-800"
+                      welcomeEnabled ? "bg-teal-600" : "bg-[var(--surface-raised)]/40"
                     }`}
                   >
                     <span
@@ -601,7 +601,7 @@ export default function SetupWizardClient() {
 
                 {/* Welcome Channel */}
                 <div>
-                  <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                  <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">
                     Salon d'accueil
                   </label>
                   <ChannelPicker
@@ -615,17 +615,17 @@ export default function SetupWizardClient() {
 
                 {/* Welcome Message */}
                 <div>
-                  <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                  <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">
                     Message de l'embed d'accueil
                   </label>
                   <textarea
                     rows={3}
                     value={welcomeMessage}
                     onChange={(e) => setWelcomeMessage(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white focus:outline-none resize-none leading-relaxed"
+                    className="w-full p-2.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none resize-none leading-relaxed"
                   />
                   <div className="flex gap-1.5 mt-1.5">
-                    <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] text-zinc-400">
+                    <span className="px-2 py-0.5 rounded bg-[var(--surface-raised)]/40 text-xs text-[var(--text-muted)]">
                       Variables: {"{user}"}, {"{server}"}
                     </span>
                   </div>
@@ -633,7 +633,7 @@ export default function SetupWizardClient() {
 
                 {/* Auto Role */}
                 <div>
-                  <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                  <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">
                     Rôle attribué automatiquement
                   </label>
                   <RolePicker
@@ -652,17 +652,17 @@ export default function SetupWizardClient() {
           {/* STEP 6: FINISH & LAUNCH */}
           {currentStep === 6 && (
             <div className="space-y-6 text-center py-4 animate-in fade-in duration-300">
-              <div className="w-16 h-16 rounded-3xl bg-emerald-600 flex items-center justify-center text-white mx-auto shadow-xl">
+              <div className="w-16 h-16 rounded-3xl bg-emerald-600 flex items-center justify-center text-white mx-auto">
                 <Rocket className="w-8 h-8 animate-bounce" />
               </div>
 
               <div>
-                <h3 className="text-2xl font-bold text-white mb-2">
+                <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
                   Félicitations ! Votre serveur est prêt.
                 </h3>
-                <p className="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">
+                <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-md mx-auto leading-relaxed">
                   Etho est désormais actif sur{" "}
-                  <span className="text-white font-semibold">{selectedGuild?.name}</span> avec la modération, la sécurité et le message d'accueil configurés.
+                  <span className="text-[var(--text-primary)] font-semibold">{selectedGuild?.name}</span> avec la modération, la sécurité et le message d'accueil configurés.
                 </p>
               </div>
 
@@ -670,29 +670,29 @@ export default function SetupWizardClient() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
                 <Link
                   href="/discord"
-                  className="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 hover:border-indigo-500/50 transition group"
+                  className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-emerald-500/40 transition group"
                 >
-                  <LayoutDashboard className="w-5 h-5 text-indigo-400 mb-2 group-hover:scale-110 transition" />
-                  <div className="text-xs font-bold text-white">Dashboard Général</div>
-                  <div className="text-[10px] text-zinc-400">Vue d'ensemble des métriques</div>
+                  <LayoutDashboard className="w-5 h-5 text-emerald-300 mb-2 group-hover:scale-110 transition" />
+                  <div className="text-xs font-bold text-[var(--text-primary)]">Dashboard Général</div>
+                  <div className="text-xs text-[var(--text-muted)]">Vue d'ensemble des métriques</div>
                 </Link>
 
                 <Link
                   href="/discord/moderation"
-                  className="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 hover:border-orange-500/50 transition group"
+                  className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-orange-500/50 transition group"
                 >
                   <Hammer className="w-5 h-5 text-orange-400 mb-2 group-hover:scale-110 transition" />
-                  <div className="text-xs font-bold text-white">Modération 3.0</div>
-                  <div className="text-[10px] text-zinc-400">Casiers & Sanctions staff</div>
+                  <div className="text-xs font-bold text-[var(--text-primary)]">Modération 3.0</div>
+                  <div className="text-xs text-[var(--text-muted)]">Casiers & Sanctions staff</div>
                 </Link>
 
                 <Link
                   href="/discord/welcome"
-                  className="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 hover:border-teal-500/50 transition group"
+                  className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-teal-500/50 transition group"
                 >
                   <Sparkles className="w-5 h-5 text-teal-400 mb-2 group-hover:scale-110 transition" />
-                  <div className="text-xs font-bold text-white">Welcome</div>
-                  <div className="text-[10px] text-zinc-400">Cartes graphiques & rôles</div>
+                  <div className="text-xs font-bold text-[var(--text-primary)]">Welcome</div>
+                  <div className="text-xs text-[var(--text-muted)]">Cartes graphiques & rôles</div>
                 </Link>
               </div>
 
@@ -718,8 +718,8 @@ export default function SetupWizardClient() {
               disabled={currentStep === 1}
               className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
                 currentStep === 1
-                  ? "text-zinc-600 cursor-not-allowed opacity-50"
-                  : "text-zinc-300 hover:text-white hover:bg-zinc-900 border border-zinc-800"
+                  ? "text-[var(--text-muted)] cursor-not-allowed opacity-50"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)]"
               }`}
             >
               <ChevronLeft className="w-4 h-4" />
@@ -729,7 +729,7 @@ export default function SetupWizardClient() {
             {currentStep < STEPS.length - 1 ? (
               <button
                 onClick={handleNext}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold shadow-sm transition cursor-pointer"
               >
                 <span>Étape suivante</span>
                 <ChevronRight className="w-4 h-4" />

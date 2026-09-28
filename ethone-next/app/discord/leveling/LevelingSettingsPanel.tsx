@@ -60,8 +60,8 @@ const fill = (tpl: string, extra: Record<string, string> = {}) => {
 /** Aperçu de l'embed tel qu'il apparaît sur Discord. */
 function EmbedPreview({ color, title, text }: { color: string; title?: string; text: string }) {
   return (
-    <div className="rounded-lg border-l-4 bg-[#2b2d31] p-3 text-[13px] text-[#dbdee1]" style={{ borderColor: color }}>
-      {title && <p className="mb-1 font-bold text-white">{title}</p>}
+    <div className="rounded-lg border-l-4 bg-[#2b2d31] p-3 text-sm text-[#dbdee1]" style={{ borderColor: color }}>
+      {title && <p className="mb-1 font-bold text-[var(--text-primary)]">{title}</p>}
       <p className="whitespace-pre-wrap">{text}</p>
     </div>
   );
@@ -71,7 +71,7 @@ function Chips({ vars, onPick }: { vars: string[]; onPick: (v: string) => void }
   return (
     <span className="mt-1 flex flex-wrap gap-1">
       {vars.map((v) => (
-        <button key={v} type="button" onClick={() => onPick(v)} className="cursor-pointer rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[11px] text-zinc-300 hover:bg-zinc-700">
+        <button key={v} type="button" onClick={() => onPick(v)} className="cursor-pointer rounded bg-[var(--surface-raised)]/40 px-1.5 py-0.5 font-mono text-xs text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70">
           {v}
         </button>
       ))}
@@ -103,10 +103,10 @@ export default function LevelingSettingsPanel({ guildId, config, saving, disable
 
   return (
     <div className="space-y-6 pb-24">
-      <div className="flex items-start justify-between gap-4 rounded-2xl border border-[var(--panel-border)] bg-white/[0.03] p-4">
+      <div className="flex items-start justify-between gap-4 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
         <div>
-          <h2 className="text-lg font-bold text-white">Niveaux</h2>
-          <p className="text-sm text-zinc-400">Système de niveaux qui récompense l&apos;activité des membres. Désactivé par défaut : personne ne gagne d&apos;XP tant que vous ne l&apos;activez pas.</p>
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">Niveaux</h2>
+          <p className="text-sm text-[var(--text-muted)]">Système de niveaux qui récompense l&apos;activité des membres. Désactivé par défaut : personne ne gagne d&apos;XP tant que vous ne l&apos;activez pas.</p>
         </div>
         <Switch checked={config.enabled} disabled={disabled || saving} label="Activer les niveaux" onChange={(v) => void onSave({ enabled: v })} />
       </div>
@@ -182,7 +182,7 @@ export default function LevelingSettingsPanel({ guildId, config, saving, disable
               {publicUrl}
             </a>
           )}
-          {draft.leaderboardPublic && !config.leaderboardPublic && <p className="text-[11px] text-zinc-500">Le lien apparaît après l&apos;enregistrement. Seuls le pseudo, l&apos;avatar, le niveau et l&apos;XP sont affichés.</p>}
+          {draft.leaderboardPublic && !config.leaderboardPublic && <p className="text-xs text-[var(--text-muted)]">Le lien apparaît après l&apos;enregistrement. Seuls le pseudo, l&apos;avatar, le niveau et l&apos;XP sont affichés.</p>}
         </div>
       </Section>
 
@@ -236,13 +236,13 @@ export default function LevelingSettingsPanel({ guildId, config, saving, disable
       </Section>
 
       {dirty && (
-        <div className="fixed inset-x-0 bottom-24 z-30 mx-auto flex w-[min(92vw,640px)] items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-3 shadow-2xl">
-          <p className="text-sm text-zinc-300">{invalid ? "Corrigez les champs en rouge avant d'enregistrer." : "Vous avez des modifications non enregistrées."}</p>
+        <div className="fixed inset-x-0 bottom-24 z-30 mx-auto flex w-[min(92vw,640px)] items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-3">
+          <p className="text-sm text-[var(--text-muted)]">{invalid ? "Corrigez les champs en rouge avant d'enregistrer." : "Vous avez des modifications non enregistrées."}</p>
           <div className="flex gap-2">
-            <button type="button" onClick={() => setDraft(config)} className="cursor-pointer rounded-lg px-3 py-2 text-sm font-semibold text-zinc-400 hover:text-white">
+            <button type="button" onClick={() => setDraft(config)} className="cursor-pointer rounded-lg px-3 py-2 text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]">
               Annuler
             </button>
-            <button type="button" disabled={saving || invalid || disabled} onClick={() => void onSave(draft)} className="cursor-pointer rounded-lg bg-[#5865F2] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#4752C4] disabled:cursor-not-allowed disabled:opacity-50">
+            <button type="button" disabled={saving || invalid || disabled} onClick={() => void onSave(draft)} className="cursor-pointer rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50">
               {saving ? "Enregistrement…" : "Enregistrer"}
             </button>
           </div>

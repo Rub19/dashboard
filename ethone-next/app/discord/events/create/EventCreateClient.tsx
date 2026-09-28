@@ -310,7 +310,7 @@ export default function EventCreateClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-44 selection:bg-indigo-500/30">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] pb-44">
       {/* Background glow */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
       </div>
@@ -319,22 +319,22 @@ export default function EventCreateClient() {
         {/* Navigation & Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)] mb-8">
           <div>
-            <div className="flex items-center gap-2 mb-1.5 text-xs text-indigo-400 font-semibold uppercase tracking-wider">
+            <div className="flex items-center gap-2 mb-1.5 text-xs text-emerald-400 font-semibold uppercase tracking-wider">
               <Link href="/discord/events" className="hover:underline flex items-center gap-1">
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Retour aux Événements
               </Link>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)]">
               Assistant de Création d'Événement
             </h1>
           </div>
 
           <button
             onClick={handleSaveDraft}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-slate-300 transition-colors self-start sm:self-auto"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-muted)] transition-colors self-start sm:self-auto"
           >
-            <Save className="w-3.5 h-3.5 text-indigo-400" />
+            <Save className="w-3.5 h-3.5 text-emerald-400" />
             {saveToast ? "Brouillon Sauvegardé !" : "Sauvegarder Brouillon"}
           </button>
         </div>
@@ -343,9 +343,9 @@ export default function EventCreateClient() {
         <div className="mb-10 overflow-x-auto pb-3 scrollbar-none">
           <div className="flex items-center justify-between min-w-[700px] relative">
             {/* Progress line */}
-            <div className="absolute top-4 left-0 right-0 h-0.5 bg-white/10 z-0" />
+            <div className="absolute top-4 left-0 right-0 h-0.5 bg-[var(--surface-raised)]/80 z-0" />
             <div
-              className="absolute top-4 left-0 h-0.5 bg-indigo-500 transition-all duration-300 z-0"
+              className="absolute top-4 left-0 h-0.5 bg-emerald-500 transition-all duration-300 z-0"
               style={{ width: `${((step - 1) / (STEPS.length - 1)) * 100}%` }}
             />
 
@@ -362,17 +362,17 @@ export default function EventCreateClient() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                       isCompleted
-                        ? "bg-indigo-500 text-white shadow-sm"
+                        ? "bg-emerald-500 text-white shadow-sm"
                         : isCurrent
-                        ? "bg-purple-600 text-white ring-4 ring-purple-500/20 shadow-lg"
-                        : "bg-black/60 border border-[var(--panel-border)] text-slate-500"
+                        ? "bg-emerald-500 text-white ring-4 ring-emerald-500/20 "
+                        : "bg-black/60 border border-[var(--panel-border)] text-[var(--text-muted)]"
                     }`}
                   >
                     {isCompleted ? <Check className="w-4 h-4" /> : s.id}
                   </div>
                   <span
-                    className={`text-[11px] font-semibold mt-2 transition-colors ${
-                      isCurrent ? "text-white" : isCompleted ? "text-slate-300" : "text-slate-500"
+                    className={`text-xs font-semibold mt-2 transition-colors ${
+                      isCurrent ? "text-[var(--text-primary)]" : isCompleted ? "text-[var(--text-muted)]" : "text-[var(--text-muted)]"
                     }`}
                   >
                     {s.title}
@@ -386,17 +386,17 @@ export default function EventCreateClient() {
         {/* Main 2-column Grid: Form vs Live Discord Preview */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Step Form Area (7 Cols) */}
-          <div className="lg:col-span-7 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] p-6 backdrop-blur-xl shadow-xl">
+          <div className="lg:col-span-7 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] p-6">
             {/* STEP 1: Basic Info */}
             {step === 1 && (
               <div className="space-y-5">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-indigo-400" />
+                <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-emerald-400" />
                   Informations Générales
                 </h2>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                     Titre de l'événement *
                   </label>
                   <input
@@ -404,13 +404,13 @@ export default function EventCreateClient() {
                     value={form.title}
                     onChange={(e) => updateForm("title", e.target.value)}
                     placeholder="Ex: Soirée Valorant Tournoi 5v5"
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                       Catégorie
                     </label>
                     <Select
@@ -431,20 +431,20 @@ export default function EventCreateClient() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                       Emoji de l'événement
                     </label>
                     <input
                       type="text"
                       value={form.emoji}
                       onChange={(e) => updateForm("emoji", e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                     Description & Programme
                   </label>
                   <textarea
@@ -452,12 +452,12 @@ export default function EventCreateClient() {
                     value={form.description}
                     onChange={(e) => updateForm("description", e.target.value)}
                     placeholder="Expliquez les détails, règles et horaires aux participants..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                     URL de l'image de couverture (Bannière)
                   </label>
                   <input
@@ -465,7 +465,7 @@ export default function EventCreateClient() {
                     value={form.imageUrl}
                     onChange={(e) => updateForm("imageUrl", e.target.value)}
                     placeholder="https://images.unsplash.com/..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]"
                   />
                 </div>
               </div>
@@ -474,63 +474,63 @@ export default function EventCreateClient() {
             {/* STEP 2: Date & Time */}
             {step === 2 && (
               <div className="space-y-5">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-indigo-400" />
+                <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-emerald-400" />
                   Date, Heure & Récurrence
                 </h2>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                       Date de début *
                     </label>
                     <input
                       type="date"
                       value={form.startDate}
                       onChange={(e) => updateForm("startDate", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
+                      className="w-full px-3 py-2 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--text-primary)]"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                       Heure de début *
                     </label>
                     <input
                       type="time"
                       value={form.startTime}
                       onChange={(e) => updateForm("startTime", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
+                      className="w-full px-3 py-2 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--text-primary)]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                       Date de fin
                     </label>
                     <input
                       type="date"
                       value={form.endDate}
                       onChange={(e) => updateForm("endDate", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
+                      className="w-full px-3 py-2 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--text-primary)]"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                       Heure de fin
                     </label>
                     <input
                       type="time"
                       value={form.endTime}
                       onChange={(e) => updateForm("endTime", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
+                      className="w-full px-3 py-2 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--text-primary)]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                     Fréquence de Récurrence
                   </label>
                   <Select
@@ -552,8 +552,8 @@ export default function EventCreateClient() {
             {/* STEP 3: Location */}
             {step === 3 && (
               <div className="space-y-5">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Volume2 className="w-5 h-5 text-indigo-400" />
+                <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Volume2 className="w-5 h-5 text-emerald-400" />
                   Lieu sur Discord
                 </h2>
 
@@ -570,18 +570,18 @@ export default function EventCreateClient() {
                       onClick={() => updateForm("locationType", loc.id)}
                       className={`p-4 rounded-xl border text-left flex items-center gap-3 transition-all ${
                         form.locationType === loc.id
-                          ? "bg-indigo-500/20 border-indigo-500 text-white"
-                          : "bg-black/30 border-[var(--panel-border)] text-slate-400 hover:border-[var(--input-border-hover)]"
+                          ? "bg-emerald-500/10 border-emerald-500 text-[var(--text-primary)]"
+                          : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] text-[var(--text-muted)] hover:border-[var(--input-border-hover)]"
                       }`}
                     >
-                      <loc.icon className="w-5 h-5 text-indigo-400" />
+                      <loc.icon className="w-5 h-5 text-emerald-400" />
                       <span className="text-xs font-bold">{loc.label}</span>
                     </button>
                   ))}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                     Nom ou Sélecteur de Salon Discord
                   </label>
                   {form.locationType === "EXTERNAL" ? (
@@ -590,7 +590,7 @@ export default function EventCreateClient() {
                       value={form.channelName}
                       onChange={(e) => updateForm("channelName", e.target.value)}
                       placeholder="Ex: Twitch / YouTube / Zoom"
-                      className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--text-primary)]"
                     />
                   ) : (
                     <ChannelPicker
@@ -608,28 +608,28 @@ export default function EventCreateClient() {
             {/* STEP 4: Capacity */}
             {step === 4 && (
               <div className="space-y-5">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Users className="w-5 h-5 text-indigo-400" />
+                <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Users className="w-5 h-5 text-emerald-400" />
                   Capacité & Inscriptions
                 </h2>
 
-                <div className="p-4 rounded-xl bg-black/40 border border-[var(--panel-border)] space-y-4">
+                <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-xs font-bold text-white block">Capacité Illimitée</span>
-                      <span className="text-[11px] text-slate-400">Tout le monde peut s'inscrire sans restriction</span>
+                      <span className="text-xs font-bold text-[var(--text-primary)] block">Capacité Illimitée</span>
+                      <span className="text-xs text-[var(--text-muted)]">Tout le monde peut s'inscrire sans restriction</span>
                     </div>
                     <input
                       type="checkbox"
                       checked={form.unlimitedCapacity}
                       onChange={(e) => updateForm("unlimitedCapacity", e.target.checked)}
-                      className="w-4 h-4 rounded text-indigo-500 focus:ring-0"
+                      className="w-4 h-4 rounded text-emerald-400 focus:ring-0"
                     />
                   </div>
 
                   {!form.unlimitedCapacity && (
                     <div className="pt-3 border-t border-[var(--panel-border)]">
-                      <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                      <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                         Nombre Maximum de Participants
                       </label>
                       <input
@@ -638,21 +638,21 @@ export default function EventCreateClient() {
                         max="500"
                         value={form.maxParticipants}
                         onChange={(e) => updateForm("maxParticipants", parseInt(e.target.value, 10))}
-                        className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-[var(--panel-border)] text-sm text-white"
+                        className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-[var(--input-border)] text-sm text-white"
                       />
                     </div>
                   )}
 
                   <div className="flex items-center justify-between pt-3 border-t border-[var(--panel-border)]">
                     <div>
-                      <span className="text-xs font-bold text-white block">Liste d'Attente Automatique</span>
-                      <span className="text-[11px] text-slate-400">Si complet, place les nouveaux inscrits en file d'attente</span>
+                      <span className="text-xs font-bold text-[var(--text-primary)] block">Liste d'Attente Automatique</span>
+                      <span className="text-xs text-[var(--text-muted)]">Si complet, place les nouveaux inscrits en file d'attente</span>
                     </div>
                     <input
                       type="checkbox"
                       checked={form.waitlistEnabled}
                       onChange={(e) => updateForm("waitlistEnabled", e.target.checked)}
-                      className="w-4 h-4 rounded text-indigo-500 focus:ring-0"
+                      className="w-4 h-4 rounded text-emerald-400 focus:ring-0"
                     />
                   </div>
                 </div>
@@ -662,13 +662,13 @@ export default function EventCreateClient() {
             {/* STEP 5: Publishing & Sync */}
             {step === 5 && (
               <div className="space-y-5">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Radio className="w-5 h-5 text-indigo-400" />
+                <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Radio className="w-5 h-5 text-emerald-400" />
                   Publication Discord & Annonces
                 </h2>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                     Salon d'Annonce de l'Événement
                   </label>
                   <ChannelPicker
@@ -681,7 +681,7 @@ export default function EventCreateClient() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                     Mention lors de l'annonce
                   </label>
                   <Select
@@ -700,7 +700,7 @@ export default function EventCreateClient() {
 
                 {form.mentionType === "ROLE" && (
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">
                       Rôle à mentionner
                     </label>
                     <RolePicker
@@ -714,16 +714,16 @@ export default function EventCreateClient() {
                   </div>
                 )}
 
-                <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-between">
+                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
                   <div>
-                    <span className="text-xs font-bold text-white block">Synchronisation Discord Événement Natif</span>
-                    <span className="text-[11px] text-indigo-300/80">Créera automatiquement l'événement officiel en tête de liste des salons</span>
+                    <span className="text-xs font-bold text-[var(--text-primary)] block">Synchronisation Discord Événement Natif</span>
+                    <span className="text-xs text-emerald-300/80">Créera automatiquement l'événement officiel en tête de liste des salons</span>
                   </div>
                   <input
                     type="checkbox"
                     checked={form.syncToDiscordScheduled}
                     onChange={(e) => updateForm("syncToDiscordScheduled", e.target.checked)}
-                    className="w-4 h-4 rounded text-indigo-500"
+                    className="w-4 h-4 rounded text-emerald-400"
                   />
                 </div>
               </div>
@@ -732,12 +732,12 @@ export default function EventCreateClient() {
             {/* STEP 6: Notifications & Reminders */}
             {step === 6 && (
               <div className="space-y-5">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Bell className="w-5 h-5 text-indigo-400" />
+                <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Bell className="w-5 h-5 text-emerald-400" />
                   Rappels & Notifications Automatisés
                 </h2>
 
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Le bot enverra un rappel automatique dans le salon d'annonce et/ou par message privé aux membres inscrits :
                 </p>
 
@@ -750,11 +750,11 @@ export default function EventCreateClient() {
                   ].map((r) => (
                     <div
                       key={r.key}
-                      className="p-3.5 rounded-xl bg-black/40 border border-[var(--panel-border)] flex items-center justify-between"
+                      className="p-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between"
                     >
                       <div>
-                        <span className="text-xs font-bold text-white block">{r.label}</span>
-                        <span className="text-[11px] text-slate-400">{r.sub}</span>
+                        <span className="text-xs font-bold text-[var(--text-primary)] block">{r.label}</span>
+                        <span className="text-xs text-[var(--text-muted)]">{r.sub}</span>
                       </div>
                       <input
                         type="checkbox"
@@ -765,7 +765,7 @@ export default function EventCreateClient() {
                             reminders: { ...prev.reminders, [r.key]: e.target.checked },
                           }))
                         }
-                        className="w-4 h-4 rounded text-indigo-500"
+                        className="w-4 h-4 rounded text-emerald-400"
                       />
                     </div>
                   ))}
@@ -776,16 +776,16 @@ export default function EventCreateClient() {
             {/* STEP 7: Automations */}
             {step === 7 && (
               <div className="space-y-5">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Bot className="w-5 h-5 text-indigo-400" />
+                <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Bot className="w-5 h-5 text-emerald-400" />
                   Automatisations & Rôles
                 </h2>
 
                 <div className="space-y-3">
-                  <div className="p-4 rounded-xl bg-black/40 border border-[var(--panel-border)] flex items-center justify-between">
+                  <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between">
                     <div>
-                      <span className="text-xs font-bold text-white block">Fil de discussion dédié</span>
-                      <span className="text-[11px] text-slate-400">Créer un thread automatique sous l'annonce pour les questions</span>
+                      <span className="text-xs font-bold text-[var(--text-primary)] block">Fil de discussion dédié</span>
+                      <span className="text-xs text-[var(--text-muted)]">Créer un thread automatique sous l'annonce pour les questions</span>
                     </div>
                     <input
                       type="checkbox"
@@ -796,14 +796,14 @@ export default function EventCreateClient() {
                           automations: { ...prev.automations, createDiscussionThread: e.target.checked },
                         }))
                       }
-                      className="w-4 h-4 rounded text-indigo-500"
+                      className="w-4 h-4 rounded text-emerald-400"
                     />
                   </div>
 
-                  <div className="p-4 rounded-xl bg-black/40 border border-[var(--panel-border)] flex items-center justify-between">
+                  <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between">
                     <div>
-                      <span className="text-xs font-bold text-white block">Rôle temporaire d'inscrit</span>
-                      <span className="text-[11px] text-slate-400">Attribue automatiquement un rôle Discord lors du RSVP 'Going'</span>
+                      <span className="text-xs font-bold text-[var(--text-primary)] block">Rôle temporaire d'inscrit</span>
+                      <span className="text-xs text-[var(--text-muted)]">Attribue automatiquement un rôle Discord lors du RSVP 'Going'</span>
                     </div>
                     <input
                       type="checkbox"
@@ -814,13 +814,13 @@ export default function EventCreateClient() {
                           automations: { ...prev.automations, assignRoleOnRSVP: e.target.checked },
                         }))
                       }
-                      className="w-4 h-4 rounded text-indigo-500"
+                      className="w-4 h-4 rounded text-emerald-400"
                     />
                   </div>
 
                   {form.automations.assignRoleOnRSVP && (
-                    <div className="p-4 rounded-xl bg-black/40 border border-[var(--panel-border)] space-y-2">
-                      <label className="block text-xs font-semibold text-slate-300">
+                    <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-2">
+                      <label className="block text-xs font-semibold text-[var(--text-muted)]">
                         Rôle à attribuer aux participants
                       </label>
                       <RolePicker
@@ -839,10 +839,10 @@ export default function EventCreateClient() {
                     </div>
                   )}
 
-                  <div className="p-4 rounded-xl bg-black/40 border border-[var(--panel-border)] flex items-center justify-between">
+                  <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between">
                     <div>
-                      <span className="text-xs font-bold text-white block">Nettoyage après l'événement</span>
-                      <span className="text-[11px] text-slate-400">Retirer automatiquement le rôle temporaire une fois l'événement terminé</span>
+                      <span className="text-xs font-bold text-[var(--text-primary)] block">Nettoyage après l'événement</span>
+                      <span className="text-xs text-[var(--text-muted)]">Retirer automatiquement le rôle temporaire une fois l'événement terminé</span>
                     </div>
                     <input
                       type="checkbox"
@@ -853,7 +853,7 @@ export default function EventCreateClient() {
                           automations: { ...prev.automations, removeRoleAfterEvent: e.target.checked },
                         }))
                       }
-                      className="w-4 h-4 rounded text-indigo-500"
+                      className="w-4 h-4 rounded text-emerald-400"
                     />
                   </div>
                 </div>
@@ -863,7 +863,7 @@ export default function EventCreateClient() {
             {/* STEP 8: Review & Publish */}
             {step === 8 && (
               <div className="space-y-5">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                   Vérification Finale
                 </h2>
@@ -872,22 +872,22 @@ export default function EventCreateClient() {
                   ✅ Votre événement est prêt à être programmé. Le bot ETHONE publiera l'encart interactif dans {form.announcementChannel}.
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-xs p-4 rounded-xl bg-black/40 border border-[var(--panel-border)]">
+                <div className="grid grid-cols-2 gap-3 text-xs p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                   <div>
-                    <span className="text-slate-500 block">Titre</span>
-                    <span className="text-white font-semibold">{form.emoji} {form.title || "Sans titre"}</span>
+                    <span className="text-[var(--text-muted)] block">Titre</span>
+                    <span className="text-[var(--text-primary)] font-semibold">{form.emoji} {form.title || "Sans titre"}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block">Date</span>
-                    <span className="text-white font-semibold">{form.startDate} à {form.startTime}</span>
+                    <span className="text-[var(--text-muted)] block">Date</span>
+                    <span className="text-[var(--text-primary)] font-semibold">{form.startDate} à {form.startTime}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block">Lieu</span>
-                    <span className="text-white font-semibold">{form.channelName}</span>
+                    <span className="text-[var(--text-muted)] block">Lieu</span>
+                    <span className="text-[var(--text-primary)] font-semibold">{form.channelName}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block">Capacité</span>
-                    <span className="text-white font-semibold">{form.unlimitedCapacity ? "Illimitée" : `${form.maxParticipants} max`}</span>
+                    <span className="text-[var(--text-muted)] block">Capacité</span>
+                    <span className="text-[var(--text-primary)] font-semibold">{form.unlimitedCapacity ? "Illimitée" : `${form.maxParticipants} max`}</span>
                   </div>
                 </div>
               </div>
@@ -907,8 +907,8 @@ export default function EventCreateClient() {
                 onClick={() => setStep((s) => s - 1)}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold ${
                   step === 1
-                    ? "opacity-30 cursor-not-allowed text-slate-500"
-                    : "bg-white/5 hover:bg-white/10 text-slate-300 border border-[var(--panel-border)]"
+                    ? "opacity-30 cursor-not-allowed text-[var(--text-muted)]"
+                    : "bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)] border border-[var(--panel-border)]"
                 }`}
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -919,7 +919,7 @@ export default function EventCreateClient() {
                 <button
                   type="button"
                   onClick={() => setStep((s) => s + 1)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-500 hover:bg-indigo-600 text-white shadow-sm"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm"
                 >
                   Suivant
                   <ArrowRight className="w-4 h-4" />
@@ -941,25 +941,25 @@ export default function EventCreateClient() {
           {/* Right Area (5 Cols): Live Discord Embed Preview */}
           <div className="lg:col-span-5 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Eye className="w-3.5 h-3.5 text-indigo-400" />
+              <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider flex items-center gap-1.5">
+                <Eye className="w-3.5 h-3.5 text-emerald-400" />
                 Aperçu Discord Interactif
               </span>
-              <span className="text-[11px] text-slate-500">Mise à jour en temps réel</span>
+              <span className="text-xs text-[var(--text-muted)]">Mise à jour en temps réel</span>
             </div>
 
             {/* Discord Embed Mockup */}
-            <div className="p-4 rounded-2xl bg-[#1e1f22] border-l-4 border-indigo-500 shadow-2xl font-sans">
+            <div className="p-4 rounded-2xl bg-[#1e1f22] border-l-4 border-emerald-500 font-sans">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-bold text-indigo-400">Etho</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#5865F2] text-white font-bold">BOT</span>
+                <span className="text-xs font-bold text-emerald-400">Etho</span>
+                <span className="text-xs px-1.5 py-0.5 rounded bg-[#5865F2] text-white font-bold">BOT</span>
               </div>
 
-              <h4 className="text-base font-bold text-white mb-2">
+              <h4 className="text-base font-bold text-[var(--text-primary)] mb-2">
                 {form.emoji} {form.title || "Titre de votre événement"}
               </h4>
 
-              <p className="text-xs text-slate-300 mb-4 whitespace-pre-wrap">
+              <p className="text-xs text-[var(--text-muted)] mb-4 whitespace-pre-wrap">
                 {form.description || "Description de l'événement..."}
               </p>
 
@@ -969,33 +969,33 @@ export default function EventCreateClient() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-3 p-3 rounded-lg bg-black/30 text-xs mb-4">
+              <div className="grid grid-cols-2 gap-3 p-3 rounded-lg bg-[var(--surface-raised)]/40 text-xs mb-4">
                 <div>
-                  <span className="text-slate-400 block text-[11px]">📅 Date</span>
-                  <span className="text-white font-semibold">
+                  <span className="text-[var(--text-muted)] block text-xs">📅 Date</span>
+                  <span className="text-[var(--text-primary)] font-semibold">
                     {form.startDate} à {form.startTime}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">📍 Lieu</span>
-                  <span className="text-white font-semibold">{form.channelName}</span>
+                  <span className="text-[var(--text-muted)] block text-xs">📍 Lieu</span>
+                  <span className="text-[var(--text-primary)] font-semibold">{form.channelName}</span>
                 </div>
               </div>
 
               {/* Action Buttons Mockup */}
               <div className="space-y-2">
                 <div className="grid grid-cols-3 gap-1.5">
-                  <button type="button" className="py-1.5 px-2 rounded bg-[#248046] text-white text-[11px] font-semibold text-center">
+                  <button type="button" className="py-1.5 px-2 rounded bg-[#248046] text-white text-xs font-semibold text-center">
                     ✅ Participer
                   </button>
-                  <button type="button" className="py-1.5 px-2 rounded bg-[#4e5058] text-white text-[11px] font-semibold text-center">
+                  <button type="button" className="py-1.5 px-2 rounded bg-[#4e5058] text-white text-xs font-semibold text-center">
                     🤔 Peut-être
                   </button>
-                  <button type="button" className="py-1.5 px-2 rounded bg-[#da373c] text-white text-[11px] font-semibold text-center">
+                  <button type="button" className="py-1.5 px-2 rounded bg-[#da373c] text-white text-xs font-semibold text-center">
                     ❌ Refuser
                   </button>
                 </div>
-                <button type="button" className="w-full py-1.5 px-2 rounded bg-[#5865f2] text-white text-[11px] font-semibold text-center">
+                <button type="button" className="w-full py-1.5 px-2 rounded bg-[#5865f2] text-white text-xs font-semibold text-center">
                   🎟️ Pointage / Check-in
                 </button>
               </div>

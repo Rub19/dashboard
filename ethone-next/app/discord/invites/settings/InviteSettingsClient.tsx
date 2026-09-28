@@ -173,18 +173,18 @@ export default function InviteSettingsClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white flex flex-col p-4 sm:p-8 pb-36 max-w-4xl mx-auto">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] flex flex-col p-4 sm:p-8 pb-36 max-w-4xl mx-auto">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-zinc-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-[var(--panel-border)]">
         <div>
           <Link
             href={`/discord/invites${guildId ? `?guildId=${guildId}` : ""}`}
-            className="inline-flex items-center gap-2 text-xs font-medium text-zinc-400 hover:text-white transition"
+            className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Retour à l'Invite Tracker</span>
           </Link>
-          <h1 className="text-xl font-bold tracking-tight text-white mt-1">Paramètres de l'Invite Tracker</h1>
+          <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] mt-1">Paramètres de l'Invite Tracker</h1>
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
@@ -211,14 +211,14 @@ export default function InviteSettingsClient() {
       </div>
 
       {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300 mb-6">
           <div className="flex items-start gap-3">
-            <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-300 shrink-0 mt-0.5">
               <Bot className="h-5 w-5" />
             </div>
             <div>
-              <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
-              <p className="mt-0.5 text-zinc-300">
+              <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+              <p className="mt-0.5 text-[var(--text-muted)]">
                 Invitez le bot sur « {selectedGuild.name} » pour gérer les invitations et récompenses de parrainage.
               </p>
             </div>
@@ -227,7 +227,7 @@ export default function InviteSettingsClient() {
             href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-colors shrink-0"
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-600 transition-colors shrink-0"
           >
             Inviter le bot
           </a>
@@ -236,25 +236,25 @@ export default function InviteSettingsClient() {
 
       <div className="space-y-6">
         {/* Section 1: Tracking Général */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 shadow-xl backdrop-blur-xl">
-          <h3 className="text-base font-bold text-white mb-1 flex items-center gap-2">
+        <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+          <h3 className="text-base font-bold text-[var(--text-primary)] mb-1 flex items-center gap-2">
             <Settings className="w-4 h-4 text-pink-400" />
             <span>Options de Tracking</span>
           </h3>
-          <p className="text-xs text-zinc-400 mb-4">
+          <p className="text-xs text-[var(--text-muted)] mb-4">
             Contrôlez les entités et événements pris en compte par le moteur d'invitations.
           </p>
 
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800">
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
               <div>
-                <div className="text-xs font-semibold text-white">Module Invite Tracker Actif</div>
-                <div className="text-[11px] text-zinc-400">Active la détection différentielle des invitations</div>
+                <div className="text-xs font-semibold text-[var(--text-primary)]">Module Invite Tracker Actif</div>
+                <div className="text-xs text-[var(--text-muted)]">Active la détection différentielle des invitations</div>
               </div>
               <button
                 onClick={() => setEnabled(!enabled)}
                 className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
-                  enabled ? "bg-pink-600" : "bg-zinc-800"
+                  enabled ? "bg-pink-600" : "bg-[var(--surface-raised)]/40"
                 }`}
               >
                 <span
@@ -265,15 +265,15 @@ export default function InviteSettingsClient() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800">
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
               <div>
-                <div className="text-xs font-semibold text-white">Tracker les Bots Discord</div>
-                <div className="text-[11px] text-zinc-400">Créer un referral pour les bots invités</div>
+                <div className="text-xs font-semibold text-[var(--text-primary)]">Tracker les Bots Discord</div>
+                <div className="text-xs text-[var(--text-muted)]">Créer un referral pour les bots invités</div>
               </div>
               <button
                 onClick={() => setTrackBots(!trackBots)}
                 className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
-                  trackBots ? "bg-pink-600" : "bg-zinc-800"
+                  trackBots ? "bg-pink-600" : "bg-[var(--surface-raised)]/40"
                 }`}
               >
                 <span
@@ -284,15 +284,15 @@ export default function InviteSettingsClient() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800">
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
               <div>
-                <div className="text-xs font-semibold text-white">Tracker l'URL Personnalisée (Vanity URL)</div>
-                <div className="text-[11px] text-zinc-400">Enregistrer les arrivées directes par l'URL du serveur</div>
+                <div className="text-xs font-semibold text-[var(--text-primary)]">Tracker l'URL Personnalisée (Vanity URL)</div>
+                <div className="text-xs text-[var(--text-muted)]">Enregistrer les arrivées directes par l'URL du serveur</div>
               </div>
               <button
                 onClick={() => setTrackVanity(!trackVanity)}
                 className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
-                  trackVanity ? "bg-pink-600" : "bg-zinc-800"
+                  trackVanity ? "bg-pink-600" : "bg-[var(--surface-raised)]/40"
                 }`}
               >
                 <span
@@ -306,33 +306,33 @@ export default function InviteSettingsClient() {
         </div>
 
         {/* Section 2: Détection & Anti-Raid */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 shadow-xl backdrop-blur-xl">
-          <h3 className="text-base font-bold text-white mb-1 flex items-center gap-2">
+        <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+          <h3 className="text-base font-bold text-[var(--text-primary)] mb-1 flex items-center gap-2">
             <Shield className="w-4 h-4 text-amber-400" />
             <span>Détection des Faux Joins & Sécurité</span>
           </h3>
-          <p className="text-xs text-zinc-400 mb-4">
+          <p className="text-xs text-[var(--text-muted)] mb-4">
             Configuration du calcul du ReferralRiskScore (0-100) et des seuils d'invalidation.
           </p>
 
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+              <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">
                 Âge minimum du compte pour être éligible (heures)
               </label>
               <input
                 type="number"
                 value={minAccountAgeHours}
                 onChange={(e) => setMinAccountAgeHours(Number(e.target.value))}
-                className="w-full p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white focus:outline-none focus:border-pink-500"
+                className="w-full p-2.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-pink-500"
               />
-              <span className="text-[10px] text-zinc-500 mt-1 block">
+              <span className="text-xs text-[var(--text-muted)] mt-1 block">
                 Les comptes créés plus récemment recevront un malus de risque et ne rapporteront pas de récompense immédiatement.
               </span>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+              <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">
                 Sensibilité de détection du risque
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -342,8 +342,8 @@ export default function InviteSettingsClient() {
                     onClick={() => setRiskSensitivity(sens)}
                     className={`py-2 rounded-xl text-xs font-medium border transition cursor-pointer ${
                       riskSensitivity === sens
-                        ? "bg-pink-600/20 border-pink-500 text-white font-bold"
-                        : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:text-white"
+                        ? "bg-pink-600/20 border-pink-500 text-[var(--text-primary)] font-bold"
+                        : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     }`}
                   >
                     {sens === "low" ? "Basse" : sens === "standard" ? "Standard" : "Haute"}
@@ -355,18 +355,18 @@ export default function InviteSettingsClient() {
         </div>
 
         {/* Section 3: Notifications */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 shadow-xl backdrop-blur-xl">
-          <h3 className="text-base font-bold text-white mb-1 flex items-center gap-2">
+        <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+          <h3 className="text-base font-bold text-[var(--text-primary)] mb-1 flex items-center gap-2">
             <Bell className="w-4 h-4 text-teal-400" />
             <span>Notifications Discord</span>
           </h3>
-          <p className="text-xs text-zinc-400 mb-4">
+          <p className="text-xs text-[var(--text-muted)] mb-4">
             Annoncez automatiquement les parrainages dans un salon dédié.
           </p>
 
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+              <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">
                 Salon Discord des annonces
               </label>
               <ChannelPicker
@@ -380,18 +380,18 @@ export default function InviteSettingsClient() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+              <label className="text-xs font-semibold text-[var(--text-muted)] block mb-1.5">
                 Modèle de message personnalisé
               </label>
               <textarea
                 rows={3}
                 value={messageTemplate}
                 onChange={(e) => setMessageTemplate(e.target.value)}
-                className="w-full p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white focus:outline-none focus:border-pink-500 resize-none leading-relaxed"
+                className="w-full p-2.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-pink-500 resize-none leading-relaxed"
               />
               <div className="flex flex-wrap gap-1.5 mt-1.5">
                 {["{user}", "{inviter}", "{server}", "{inviteCount}"].map((chip) => (
-                  <span key={chip} className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] text-zinc-400 font-mono">
+                  <span key={chip} className="px-2 py-0.5 rounded bg-[var(--surface-raised)]/40 text-xs text-[var(--text-muted)] font-mono">
                     {chip}
                   </span>
                 ))}
@@ -401,19 +401,19 @@ export default function InviteSettingsClient() {
         </div>
 
         {/* Section 4: Export des Données */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 shadow-xl backdrop-blur-xl">
-          <h3 className="text-base font-bold text-white mb-1 flex items-center gap-2">
-            <Download className="w-4 h-4 text-indigo-400" />
+        <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+          <h3 className="text-base font-bold text-[var(--text-primary)] mb-1 flex items-center gap-2">
+            <Download className="w-4 h-4 text-emerald-300" />
             <span>Export & Confidentialité</span>
           </h3>
-          <p className="text-xs text-zinc-400 mb-4">
+          <p className="text-xs text-[var(--text-muted)] mb-4">
             Exportez l'ensemble des données d'invitations et referrals pour votre archivage ou vos analyses externes.
           </p>
 
           <div className="flex gap-3">
             <button
               onClick={() => handleExport("csv")}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold border border-zinc-700 transition cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-white text-xs font-semibold border border-[var(--panel-border)] transition cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Exporter en CSV</span>
@@ -421,7 +421,7 @@ export default function InviteSettingsClient() {
 
             <button
               onClick={() => handleExport("json")}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold border border-zinc-700 transition cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-white text-xs font-semibold border border-[var(--panel-border)] transition cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Exporter en JSON</span>

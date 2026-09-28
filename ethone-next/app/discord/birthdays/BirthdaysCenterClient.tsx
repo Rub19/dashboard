@@ -65,16 +65,16 @@ function Switch({ checked, onChange, label, hint }: { checked: boolean; onChange
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="flex w-full items-start justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
+      className="flex w-full items-start justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
     >
       <span className="min-w-0">
-        <span className="block text-xs font-semibold text-white">{label}</span>
-        {hint && <span className="mt-0.5 block text-[11px] leading-snug text-zinc-400">{hint}</span>}
+        <span className="block text-xs font-semibold text-[var(--text-primary)]">{label}</span>
+        {hint && <span className="mt-0.5 block text-xs leading-snug text-[var(--text-muted)]">{hint}</span>}
       </span>
       <span
         className={cn(
           "relative inline-flex mt-0.5 h-5 w-9 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200",
-          checked ? "bg-[#5865F2]" : "bg-white/15"
+          checked ? "bg-emerald-500" : "bg-[var(--surface-raised)]/80"
         )}
       >
         <span
@@ -277,19 +277,19 @@ export default function BirthdaysCenterClient() {
   };
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden bg-[var(--bg-main)] text-white">
-      <div className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--bg-surface-elevated)]/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 z-20">
+    <div className="mx-auto w-full max-w-6xl space-y-6 px-4 py-6 sm:px-6 text-[var(--text-primary)]">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <Link href="/discord" className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors" title="Retour au hub Discord">
+          <Link href="/discord" className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-colors" title="Retour au hub Discord">
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-[var(--panel-border)] flex items-center justify-center text-zinc-300">
+            <div className="w-9 h-9 rounded-xl bg-[var(--surface-raised)]/50 border border-[var(--panel-border)] flex items-center justify-center text-[var(--text-muted)]">
               <Cake className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-base font-semibold tracking-tight text-white">Birthdays</h1>
-              <p className="text-xs text-white/70">Annonce quotidienne des anniversaires + rôle du jour</p>
+              <h1 className="text-xl font-bold text-[var(--text-primary)]">Birthdays</h1>
+              <p className="text-xs text-[var(--text-muted)]">Annonce quotidienne des anniversaires + rôle du jour</p>
             </div>
           </div>
         </div>
@@ -305,15 +305,15 @@ export default function BirthdaysCenterClient() {
               }}
             />
           ) : (
-            <span className="text-xs text-white/70">Aucun serveur administrable</span>
+            <span className="text-xs text-[var(--text-muted)]">Aucun serveur administrable</span>
           )}
-          <button onClick={load} className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-[var(--panel-border)] text-white/70 hover:text-white transition-colors" title="Rafraîchir">
+          <button onClick={load} className="p-2 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors" title="Rafraîchir">
             <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
           </button>
           <button
             onClick={handleSave}
             disabled={saving || !selectedGuild}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-medium transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3 h-9 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-all disabled:opacity-50"
           >
             <Save className="w-3.5 h-3.5" />
             {saving ? "Enregistrement..." : "Sauvegarder"}
@@ -321,22 +321,22 @@ export default function BirthdaysCenterClient() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto os-scroll px-4 sm:px-6 py-6 pb-44 md:pb-44 space-y-6 [overscroll-behavior:contain]">
+      <div className="space-y-6">
         {!discordLoading && manageableGuilds.length === 0 && (
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-6 text-center text-sm text-zinc-400">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
             Connectez un serveur Discord où vous êtes administrateur.
           </div>
         )}
 
         {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-300 shrink-0 mt-0.5">
                 <Bot className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
-                <p className="mt-0.5 text-zinc-300">
+                <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-0.5 text-[var(--text-muted)]">
                   Invitez le bot sur « {selectedGuild.name} » pour synchroniser automatiquement les annonces d&apos;anniversaires sur Discord.
                 </p>
               </div>
@@ -345,7 +345,7 @@ export default function BirthdaysCenterClient() {
               href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium text-xs transition-colors shrink-0 shadow-lg shadow-[#5865F2]/25 cursor-pointer"
+              className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#5865F2] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#4752C4]"
             >
               Inviter le bot
             </a>
@@ -363,24 +363,24 @@ export default function BirthdaysCenterClient() {
           <>
             {overview && (overview.today.length > 0 || overview.upcoming.length > 0 || overview.total > 0) && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
-                  <p className="text-[11px] text-zinc-400">Enregistrés</p>
-                  <p className="mt-1 text-lg font-bold text-white">{overview.total}</p>
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                  <p className="text-xs text-[var(--text-muted)]">Enregistrés</p>
+                  <p className="mt-1 text-lg font-bold text-[var(--text-primary)]">{overview.total}</p>
                 </div>
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
-                  <p className="text-[11px] text-zinc-400">Aujourd&apos;hui</p>
-                  <p className="mt-1 text-lg font-bold text-white">
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                  <p className="text-xs text-[var(--text-muted)]">Aujourd&apos;hui</p>
+                  <p className="mt-1 text-lg font-bold text-[var(--text-primary)]">
                     {overview.today.length === 0 ? "—" : overview.today.map((t) => `<@${t.userId}>`).length}
                     {overview.today.length > 0 && (
-                      <span className="ml-2 text-[11px] font-normal text-zinc-500">
+                      <span className="ml-2 text-xs font-normal text-[var(--text-muted)]">
                         {overview.today.map((t) => (t.age !== null ? `${t.age} ans` : "")).filter(Boolean).join(", ")}
                       </span>
                     )}
                   </p>
                 </div>
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
-                  <p className="text-[11px] text-zinc-400">Prochain</p>
-                  <p className="mt-1 text-sm font-bold text-white">
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                  <p className="text-xs text-[var(--text-muted)]">Prochain</p>
+                  <p className="mt-1 text-sm font-bold text-[var(--text-primary)]">
                     {overview.upcoming[0]
                       ? `${overview.upcoming[0].day} ${MONTHS[overview.upcoming[0].month - 1]} (dans ${overview.upcoming[0].inDays} j)`
                       : "—"}
@@ -393,8 +393,8 @@ export default function BirthdaysCenterClient() {
               <Switch checked={config.enabled} onChange={(v) => patch("enabled", v)} label="Module actif" hint="Annonce quotidienne + rôle du jour." />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
-                  <label className="mb-1.5 block text-[11px] font-medium text-zinc-400">Salon d&apos;annonce</label>
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                  <label className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">Salon d&apos;annonce</label>
                   <ChannelPicker
                     value={config.announceChannelId ?? ""}
                     onChange={(id) => patch("announceChannelId", id || null)}
@@ -402,14 +402,14 @@ export default function BirthdaysCenterClient() {
                     emptyLabel="— Choisir —"
                   />
                 </div>
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
-                  <label className="mb-1 block text-[11px] font-medium text-zinc-400">Heure d&apos;annonce : {config.announceHour}h</label>
-                  <input type="range" min={0} max={23} value={config.announceHour} onChange={(e) => patch("announceHour", Number(e.target.value))} className="mt-2 w-full accent-[#5865F2]" />
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                  <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">Heure d&apos;annonce : {config.announceHour}h</label>
+                  <input type="range" min={0} max={23} value={config.announceHour} onChange={(e) => patch("announceHour", Number(e.target.value))} className="mt-2 w-full accent-emerald-500" />
                 </div>
               </div>
 
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
-                <label className="mb-1 block text-[11px] font-medium text-zinc-400">Rôle « Anniversaire » (attribué le jour J, retiré le lendemain)</label>
+              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">Rôle « Anniversaire » (attribué le jour J, retiré le lendemain)</label>
                 <RolePicker
                   value={config.birthdayRoleId}
                   onChange={(id) => patch("birthdayRoleId", id || null)}
@@ -420,33 +420,33 @@ export default function BirthdaysCenterClient() {
                   allowClear
                   size="sm"
                 />
-                <p className="mt-1 text-[10px] text-zinc-500">Le bot a besoin de la permission Gérer les rôles, et son rôle doit être au-dessus.</p>
+                <p className="mt-1 text-xs text-[var(--text-muted)]">Le bot a besoin de la permission Gérer les rôles, et son rôle doit être au-dessus.</p>
               </div>
 
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
-                <label className="mb-1 block text-[11px] font-medium text-zinc-400">Message ({config.message.length}/500)</label>
+              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">Message ({config.message.length}/500)</label>
                 <textarea
                   value={config.message}
                   onChange={(e) => patch("message", e.target.value.slice(0, 500))}
                   rows={2}
-                  className="w-full resize-y rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]/50"
+                  className="w-full resize-y rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]"
                 />
-                <p className="mt-1 text-[10px] text-zinc-500"><code className="rounded bg-black/30 px-1">{"{user}"}</code> = mention · <code className="rounded bg-black/30 px-1">{"{age}"}</code> = âge · <code className="rounded bg-black/30 px-1">{"{date}"}</code> = jj/mm</p>
+                <p className="mt-1 text-xs text-[var(--text-muted)]"><code className="rounded bg-[var(--surface-raised)]/40 px-1">{"{user}"}</code> = mention · <code className="rounded bg-[var(--surface-raised)]/40 px-1">{"{age}"}</code> = âge · <code className="rounded bg-[var(--surface-raised)]/40 px-1">{"{date}"}</code> = jj/mm</p>
               </div>
 
               <Switch checked={config.mentionUser} onChange={(v) => patch("mentionUser", v)} label="Mentionner le membre (ping)" hint="Sinon, son nom en gras sans notification." />
             </div>
 
             {overview && overview.upcoming.length > 0 && (
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] overflow-hidden">
+              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
                 <div className="border-b border-[var(--panel-border)] px-4 py-3">
-                  <p className="text-xs font-bold uppercase tracking-wide text-zinc-400">Prochains anniversaires (30 j)</p>
+                  <p className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">Prochains anniversaires (30 j)</p>
                 </div>
-                <div className="divide-y divide-white/5">
+                <div className="divide-y divide-[var(--panel-border)]">
                   {overview.upcoming.map((u) => (
                     <div key={u.userId} className="flex items-center justify-between gap-3 p-4 text-sm">
-                      <span className="font-semibold text-white"><code className="text-zinc-400">{u.userId}</code></span>
-                      <span className="text-[12px] text-zinc-300">{u.day} {MONTHS[u.month - 1]} <span className="text-zinc-500">· dans {u.inDays} j</span></span>
+                      <span className="font-semibold text-[var(--text-primary)]"><code className="text-[var(--text-muted)]">{u.userId}</code></span>
+                      <span className="text-[12px] text-[var(--text-muted)]">{u.day} {MONTHS[u.month - 1]} <span className="text-[var(--text-muted)]">· dans {u.inDays} j</span></span>
                     </div>
                   ))}
                 </div>

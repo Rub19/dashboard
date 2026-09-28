@@ -138,29 +138,29 @@ export default function BackupCompareClient() {
     ADDED: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
     MODIFIED: "bg-amber-500/20 text-amber-400 border-amber-500/30",
     REMOVED: "bg-rose-500/20 text-rose-400 border-rose-500/30",
-    UNCHANGED: "bg-neutral-800 text-neutral-400 border-neutral-700",
+    UNCHANGED: "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border-[var(--panel-border)]",
   };
   const STATUS_LABEL: Record<DiffStatus, string> = { ADDED: "🟢 AJOUTÉ", MODIFIED: "🟡 MODIFIÉ", REMOVED: "🔴 SUPPRIMÉ", UNCHANGED: "⚪ INCHANGÉ" };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
-          <Link href={`/discord/backups${guildQuery}`} className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors">
+          <Link href={`/discord/backups${guildQuery}`} className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
             <ArrowLeft className="w-4 h-4" /> Retour aux sauvegardes
           </Link>
-          <span className="text-xs text-neutral-500 flex items-center gap-1.5"><GitCompare className="w-3.5 h-3.5 text-indigo-400" /> Comparateur de diff</span>
+          <span className="text-xs text-[var(--text-muted)] flex items-center gap-1.5"><GitCompare className="w-3.5 h-3.5 text-emerald-300" /> Comparateur de diff</span>
         </div>
 
         {!isRealGuild && (
-          <div className="bg-neutral-900 border border-amber-500/30 rounded-2xl p-6 text-xs text-amber-300">
+          <div className="bg-[var(--surface-raised)]/40 border border-amber-500/30 rounded-2xl p-6 text-xs text-amber-300">
             Connecte un serveur avec le bot pour comparer des snapshots (aucune donnée de démonstration ici — un diff inventé n'aurait aucun sens).
           </div>
         )}
 
         {isRealGuild && (
           <>
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-6">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="w-full md:w-5/12 space-y-2">
                   <Select
@@ -175,7 +175,7 @@ export default function BackupCompareClient() {
                     }
                   />
                 </div>
-                <button onClick={compare} disabled={comparing} className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-neutral-800 border border-neutral-700 text-indigo-400 hover:bg-neutral-700 cursor-pointer disabled:opacity-50" title="Relancer la comparaison">
+                <button onClick={compare} disabled={comparing} className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-emerald-300 hover:bg-[var(--surface-raised)]/70 cursor-pointer disabled:opacity-50" title="Relancer la comparaison">
                   {comparing ? <RefreshCw className="w-5 h-5 animate-spin" /> : <ArrowRight className="w-5 h-5" />}
                 </button>
                 <div className="w-full md:w-5/12 space-y-2">
@@ -189,26 +189,26 @@ export default function BackupCompareClient() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-neutral-800">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[var(--panel-border)]">
                 {[
                   { icon: PlusCircle, label: "Ajoutés", value: result ? `+${result.summary.added}` : "—", cls: "bg-emerald-500/10 border-emerald-500/20", txt: "text-emerald-400" },
                   { icon: AlertCircle, label: "Modifiés", value: result ? `~${result.summary.modified}` : "—", cls: "bg-amber-500/10 border-amber-500/20", txt: "text-amber-400" },
                   { icon: MinusCircle, label: "Supprimés", value: result ? `-${result.summary.removed}` : "—", cls: "bg-rose-500/10 border-rose-500/20", txt: "text-rose-400" },
-                  { icon: CheckCircle2, label: "Identiques", value: result ? String(result.summary.unchanged) : "—", cls: "bg-neutral-950 border-neutral-800", txt: "text-neutral-300" },
+                  { icon: CheckCircle2, label: "Identiques", value: result ? String(result.summary.unchanged) : "—", cls: "bg-[var(--surface-raised)]/40 border-[var(--panel-border)]", txt: "text-[var(--text-muted)]" },
                 ].map((k) => {
                   const Icon = k.icon;
                   return (
                     <div key={k.label} className={cn("border rounded-xl p-3 flex items-center gap-3", k.cls)}>
                       <Icon className={cn("w-5 h-5 shrink-0", k.txt)} />
                       <div>
-                        <span className="text-xs text-neutral-400">{k.label}</span>
+                        <span className="text-xs text-[var(--text-muted)]">{k.label}</span>
                         <p className={cn("text-lg font-bold", k.txt)}>{k.value}</p>
                       </div>
                     </div>
                   );
                 })}
               </div>
-              {result && <p className="text-[11px] text-neutral-500">{result.backupAName} → {result.backupBName}</p>}
+              {result && <p className="text-xs text-[var(--text-muted)]">{result.backupAName} → {result.backupBName}</p>}
               {error && <p className="text-xs text-rose-300">{error}</p>}
             </div>
 
@@ -217,43 +217,43 @@ export default function BackupCompareClient() {
                 {([
                   ["ALL", "Tous", Layers], ["ROLES", "Rôles", Users], ["CATEGORIES", "Catégories", FolderTree], ["CHANNELS", "Salons", FolderTree], ["PERMISSIONS", "Permissions", Shield], ["ETHONE", "ETHONE", Sparkles],
                 ] as [Component, string, typeof Users][]).map(([id, label, Icon]) => (
-                  <button key={id} onClick={() => setComponentFilter(id)} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer", componentFilter === id ? "bg-indigo-600 text-white" : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white")}>
+                  <button key={id} onClick={() => setComponentFilter(id)} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer", componentFilter === id ? "bg-emerald-500 text-white" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-white")}>
                     <Icon className="w-3.5 h-3.5" /> {label}
                   </button>
                 ))}
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-neutral-400">Affichage :</span>
+                <span className="text-xs text-[var(--text-muted)]">Affichage :</span>
                 {([["CHANGES_ONLY", "Changements"], ["ALL", "Tout"]] as const).map(([id, label]) => (
-                  <button key={id} onClick={() => setFilterType(id)} className={cn("px-3 py-1 rounded text-xs font-medium transition-colors cursor-pointer", filterType === id ? "bg-neutral-800 text-white border border-neutral-700" : "text-neutral-400 hover:text-white")}>{label}</button>
+                  <button key={id} onClick={() => setFilterType(id)} className={cn("px-3 py-1 rounded text-xs font-medium transition-colors cursor-pointer", filterType === id ? "bg-[var(--surface-raised)]/40 text-white border border-[var(--panel-border)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>{label}</button>
                 ))}
               </div>
             </div>
 
             <div className="space-y-3">
-              {comparing && <p className="text-xs text-neutral-500">Comparaison en cours{backupB === "LIVE" ? " (capture du serveur live)" : ""}...</p>}
+              {comparing && <p className="text-xs text-[var(--text-muted)]">Comparaison en cours{backupB === "LIVE" ? " (capture du serveur live)" : ""}...</p>}
               {!comparing && result && items.length === 0 && (
-                <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-8 text-center text-xs text-neutral-500">
+                <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-8 text-center text-xs text-[var(--text-muted)]">
                   {filterType === "CHANGES_ONLY" ? "Aucune différence pour ce filtre — les deux sources sont identiques." : "Aucun élément."}
                 </div>
               )}
               {items.map((item) => (
-                <div key={`${item.component}-${item.id}`} className="bg-neutral-900 border border-neutral-800 rounded-xl p-4 transition-all hover:border-neutral-700 space-y-3">
+                <div key={`${item.component}-${item.id}`} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-4 transition-all hover:border-[var(--input-border-hover)] space-y-3">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-3 flex-wrap">
                       <span className={cn("px-2 py-0.5 rounded text-xs font-bold border", STATUS_BADGE[item.status])}>{STATUS_LABEL[item.status]}</span>
-                      <span className="font-semibold text-white text-sm">{item.name}</span>
-                      <span className="text-xs text-neutral-500">({item.type})</span>
+                      <span className="font-semibold text-[var(--text-primary)] text-sm">{item.name}</span>
+                      <span className="text-xs text-[var(--text-muted)]">({item.type})</span>
                     </div>
-                    {item.details && <span className="text-xs text-neutral-400">{item.details}</span>}
+                    {item.details && <span className="text-xs text-[var(--text-muted)]">{item.details}</span>}
                   </div>
                   {item.status === "MODIFIED" && item.changes && item.changes.length > 0 && (
                     <div className="space-y-1.5 pt-2 text-xs">
                       {item.changes.map((c, i) => (
                         <div key={i} className="grid grid-cols-1 sm:grid-cols-[140px_1fr_1fr] gap-2 items-start">
-                          <span className="text-neutral-500 font-medium font-mono">{c.field}</span>
-                          <div className="bg-neutral-950 p-2 rounded-lg border border-neutral-800/80 text-neutral-300 break-all">{fmtValue(c.before)}</div>
-                          <div className="bg-neutral-950 p-2 rounded-lg border border-neutral-800/80 text-indigo-300 font-medium break-all">{fmtValue(c.after)}</div>
+                          <span className="text-[var(--text-muted)] font-medium font-mono">{c.field}</span>
+                          <div className="bg-[var(--surface-raised)]/40 p-2 rounded-lg border border-[var(--panel-border)] text-[var(--text-muted)] break-all">{fmtValue(c.before)}</div>
+                          <div className="bg-[var(--surface-raised)]/40 p-2 rounded-lg border border-[var(--panel-border)] text-emerald-300 font-medium break-all">{fmtValue(c.after)}</div>
                         </div>
                       ))}
                     </div>

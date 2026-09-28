@@ -293,20 +293,20 @@ export default function EventDetailClient() {
   const startDate = new Date(event.startDate);
 
   if (loadState === "loading") {
-    return <div className="flex h-full items-center justify-center bg-[var(--bg-main)] text-sm text-slate-400">Chargement de l&apos;événement…</div>;
+    return <div className="flex h-full items-center justify-center bg-[var(--bg-main)] text-sm text-[var(--text-muted)]">Chargement de l&apos;événement…</div>;
   }
 
   if (loadState === "missing") {
     return (
       <div className="flex h-full items-center justify-center bg-[var(--bg-main)] p-6 text-center">
         <div className="max-w-md">
-          <h1 className="text-xl font-bold text-white">Événement introuvable</h1>
-          <p className="mt-2 text-sm text-slate-400">
+          <h1 className="text-xl font-bold text-[var(--text-primary)]">Événement introuvable</h1>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">
             Cet événement n&apos;existe pas, a été supprimé, ou le bot n&apos;est pas joignable sur ce serveur.
           </p>
           <Link
             href={`/discord/events${guildParam ? `?guildId=${guildParam}` : ""}`}
-            className="mt-6 inline-flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-white/[0.04] px-4 py-2 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/[0.08]"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-4 py-2 text-sm font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
           >
             <ArrowLeft className="h-4 w-4" />
             Retour aux événements
@@ -320,13 +320,13 @@ export default function EventDetailClient() {
     : 100;
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-44 selection:bg-indigo-500/30">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] pb-44">
       {/* Background glow */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
       </div>
 
       {/* Hero Banner Image */}
-      <div className="relative h-72 sm:h-96 w-full bg-slate-900 overflow-hidden">
+      <div className="relative h-72 sm:h-96 w-full bg-[var(--surface-raised)]/40 overflow-hidden">
         {event.imageUrl ? (
           <img
             src={event.imageUrl}
@@ -344,7 +344,7 @@ export default function EventDetailClient() {
         <div className="flex items-center justify-between mb-4">
           <Link
             href="/discord/events"
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md border border-[var(--panel-border)] text-xs font-semibold text-slate-300 transition-colors"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Retour à la liste
@@ -354,15 +354,15 @@ export default function EventDetailClient() {
           <div className="flex items-center gap-2">
             <Link
               href={`/discord/events/${eventId}/participants`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md border border-[var(--panel-border)] text-xs font-semibold text-slate-300 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
             >
-              <Users className="w-3.5 h-3.5 text-indigo-400" />
+              <Users className="w-3.5 h-3.5 text-emerald-400" />
               Participants ({event.stats.goingCount})
             </Link>
 
             <Link
               href={`/discord/events/${eventId}/analytics`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md border border-[var(--panel-border)] text-xs font-semibold text-slate-300 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
             >
               <BarChart2 className="w-3.5 h-3.5 text-emerald-400" />
               Analytics
@@ -370,20 +370,20 @@ export default function EventDetailClient() {
 
             <Link
               href={`/discord/events/${eventId}/settings`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md border border-[var(--panel-border)] text-xs font-semibold text-slate-300 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
             >
-              <Settings className="w-3.5 h-3.5 text-slate-400" />
+              <Settings className="w-3.5 h-3.5 text-[var(--text-muted)]" />
               Paramètres
             </Link>
           </div>
         </div>
 
         {/* Header Information Card */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-white/[0.03] border border-[var(--panel-border)] backdrop-blur-2xl shadow-2xl mb-8">
+        <div className="p-6 sm:p-8 rounded-3xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="flex-1">
               <div className="flex items-center gap-2.5 mb-3 flex-wrap">
-                <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
                   {event.emoji} {event.category}
                 </span>
 
@@ -392,24 +392,24 @@ export default function EventDetailClient() {
                   {event.status === "SCHEDULED" ? "Planifié sur Discord" : event.status}
                 </span>
 
-                <span className="text-xs text-slate-400">
-                  Organisé par <strong className="text-white">{event.organizer.username}</strong>
+                <span className="text-xs text-[var(--text-muted)]">
+                  Organisé par <strong className="text-[var(--text-primary)]">{event.organizer.username}</strong>
                 </span>
 
                 {isDemo && (
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">
                     Démo
                   </span>
                 )}
               </div>
 
-              <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+              <h1 className="text-2xl sm:text-4xl font-extrabold text-[var(--text-primary)] tracking-tight leading-tight">
                 {event.title}
               </h1>
 
-              <div className="flex items-center gap-6 mt-4 text-xs font-semibold text-slate-300 flex-wrap">
-                <span className="flex items-center gap-2 text-indigo-300">
-                  <Clock className="w-4 h-4 text-indigo-400" />
+              <div className="flex items-center gap-6 mt-4 text-xs font-semibold text-[var(--text-muted)] flex-wrap">
+                <span className="flex items-center gap-2 text-emerald-300">
+                  <Clock className="w-4 h-4 text-emerald-400" />
                   {startDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })} • {startDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
                 </span>
 
@@ -429,10 +429,10 @@ export default function EventDetailClient() {
                 { label: "Secondes", value: timeLeft.seconds },
               ].map((item, i) => (
                 <div key={i} className="text-center min-w-[55px]">
-                  <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] font-mono">
                     {String(item.value).padStart(2, "0")}
                   </div>
-                  <div className="text-[10px] text-slate-400 uppercase font-semibold">{item.label}</div>
+                  <div className="text-xs text-[var(--text-muted)] uppercase font-semibold">{item.label}</div>
                 </div>
               ))}
             </div>
@@ -460,7 +460,7 @@ export default function EventDetailClient() {
                 className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-60 ${
                   userRsvp === "MAYBE"
                     ? "bg-amber-500 text-white shadow-sm"
-                    : "bg-white/5 hover:bg-white/10 text-slate-300 border border-[var(--panel-border)]"
+                    : "bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)] border border-[var(--panel-border)]"
                 }`}
               >
                 Peut-être
@@ -472,7 +472,7 @@ export default function EventDetailClient() {
                 className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-60 ${
                   userRsvp === "NOT_GOING"
                     ? "bg-red-500 text-white"
-                    : "bg-white/5 hover:bg-white/10 text-slate-400 border border-[var(--panel-border)]"
+                    : "bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)] border border-[var(--panel-border)]"
                 }`}
               >
                 Refuser
@@ -485,8 +485,8 @@ export default function EventDetailClient() {
                 disabled={isCheckedIn || checkinPending}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 disabled:opacity-80 ${
                   isCheckedIn
-                    ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 cursor-default"
-                    : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm"
+                    ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 cursor-default"
+                    : "bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm"
                 }`}
               >
                 <Ticket className="w-4 h-4" />
@@ -495,7 +495,7 @@ export default function EventDetailClient() {
 
               <button
                 onClick={handleCopyLink}
-                className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 border border-[var(--panel-border)] transition-colors"
+                className="p-2.5 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)] border border-[var(--panel-border)] transition-colors"
                 title="Partager"
               >
                 {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
@@ -508,19 +508,19 @@ export default function EventDetailClient() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Main Description & Rules (8 Cols) */}
           <div className="lg:col-span-8 space-y-6">
-            <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
-              <h2 className="text-lg font-bold text-white mb-3">À Propos de l'Événement</h2>
-              <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
+            <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+              <h2 className="text-lg font-bold text-[var(--text-primary)] mb-3">À Propos de l'Événement</h2>
+              <p className="text-sm text-[var(--text-muted)] leading-relaxed whitespace-pre-wrap">
                 {event.description}
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
-              <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <Shield className="w-4 h-4 text-indigo-400" />
+            <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+              <h2 className="text-lg font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+                <Shield className="w-4 h-4 text-emerald-400" />
                 Règles & Accès
               </h2>
-              <ul className="space-y-2.5 text-xs text-slate-300">
+              <ul className="space-y-2.5 text-xs text-[var(--text-muted)]">
                 <li className="flex items-center gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>Tous les membres du serveur avec le rôle @Membre peuvent participer.</span>
@@ -540,48 +540,48 @@ export default function EventDetailClient() {
           {/* Right Sidebar Status (4 Cols) */}
           <div className="lg:col-span-4 space-y-6">
             {/* Capacity Card */}
-            <div className="p-5 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
-              <h3 className="text-sm font-bold text-white mb-3 flex items-center justify-between">
+            <div className="p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
+              <h3 className="text-sm font-bold text-[var(--text-primary)] mb-3 flex items-center justify-between">
                 <span>Inscriptions</span>
-                <Users className="w-4 h-4 text-indigo-400" />
+                <Users className="w-4 h-4 text-emerald-400" />
               </h3>
 
-              <div className="flex items-center justify-between text-xs text-slate-300 mb-2">
+              <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-2">
                 <span>Places occupées</span>
-                <span className="font-bold text-white">
+                <span className="font-bold text-[var(--text-primary)]">
                   {event.stats.goingCount} / {event.capacity.maxParticipants || "Illimité"}
                 </span>
               </div>
 
               {!event.capacity.unlimited && (
-                <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden mb-3">
+                <div className="w-full h-2 rounded-full bg-[var(--surface-raised)]/80 overflow-hidden mb-3">
                   <div
-                    className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+                    className="h-full bg-emerald-500 rounded-full transition-all duration-500"
                     style={{ width: `${fillRate}%` }}
                   />
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-2 text-center text-xs mt-4 pt-4 border-t border-[var(--panel-border)]">
-                <div className="p-2 rounded-xl bg-black/40">
-                  <span className="text-slate-400 block text-[10px]">Peut-être</span>
-                  <span className="text-white font-bold">{event.stats.maybeCount}</span>
+                <div className="p-2 rounded-xl bg-[var(--surface-raised)]/40">
+                  <span className="text-[var(--text-muted)] block text-xs">Peut-être</span>
+                  <span className="text-[var(--text-primary)] font-bold">{event.stats.maybeCount}</span>
                 </div>
-                <div className="p-2 rounded-xl bg-black/40">
-                  <span className="text-slate-400 block text-[10px]">File d'attente</span>
+                <div className="p-2 rounded-xl bg-[var(--surface-raised)]/40">
+                  <span className="text-[var(--text-muted)] block text-xs">File d'attente</span>
                   <span className="text-amber-400 font-bold">{event.stats.waitlistCount}</span>
                 </div>
               </div>
             </div>
 
             {/* Quick Bot Sync status */}
-            <div className="p-5 rounded-2xl bg-indigo-500/5 border border-indigo-500/20 backdrop-blur-xl">
-              <div className="flex items-center gap-2 mb-2 text-xs font-bold text-indigo-300">
+            <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
+              <div className="flex items-center gap-2 mb-2 text-xs font-bold text-emerald-300">
                 <Sparkles className="w-4 h-4" />
                 Discord Bot Synchronisé
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Les commandes <code className="px-1.5 py-0.5 rounded bg-black/60 text-indigo-300">/event info {event.id}</code> et <code className="px-1.5 py-0.5 rounded bg-black/60 text-indigo-300">/event rsvp</code> sont actives sur votre serveur.
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                Les commandes <code className="px-1.5 py-0.5 rounded bg-black/60 text-emerald-300">/event info {event.id}</code> et <code className="px-1.5 py-0.5 rounded bg-black/60 text-emerald-300">/event rsvp</code> sont actives sur votre serveur.
               </p>
             </div>
           </div>

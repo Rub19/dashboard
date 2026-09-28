@@ -319,10 +319,10 @@ export default function TicketDetailClient() {
 
   if (loading) {
     return (
-      <div className="flex min-h-full items-center justify-center bg-zinc-950 text-white">
+      <div className="flex min-h-full items-center justify-center bg-[var(--bg-surface-elevated)] text-[var(--text-primary)]">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
-          <p className="text-xs text-zinc-400">Chargement des détails du ticket #{ticketId}...</p>
+          <p className="text-xs text-[var(--text-muted)]">Chargement des détails du ticket #{ticketId}...</p>
         </div>
       </div>
     );
@@ -330,10 +330,10 @@ export default function TicketDetailClient() {
 
   if (!ticket) {
     return (
-      <div className="flex min-h-full flex-col items-center justify-center bg-zinc-950 text-white p-4">
-        <Ticket className="h-12 w-12 text-zinc-600 mb-3" />
+      <div className="flex min-h-full flex-col items-center justify-center bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] p-4">
+        <Ticket className="h-12 w-12 text-[var(--text-muted)] mb-3" />
         <h2 className="text-lg font-bold">Ticket introuvable</h2>
-        <p className="text-xs text-zinc-400 mt-1">Le ticket #{ticketId} n&apos;existe pas ou a été purgé.</p>
+        <p className="text-xs text-[var(--text-muted)] mt-1">Le ticket #{ticketId} n&apos;existe pas ou a été purgé.</p>
         <Link
           href={`/discord/tickets?guildId=${guildId}`}
           className="mt-4 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500 transition-all"
@@ -345,25 +345,25 @@ export default function TicketDetailClient() {
   }
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white px-4 sm:px-8 py-6 pb-36">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] px-4 sm:px-8 py-6 pb-36">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-5">
         <div className="flex items-center gap-3">
           <Link
             href={`/discord/tickets?guildId=${guildId}`}
-            className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-300 hover:text-white hover:bg-white/10 transition-all"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold font-mono tracking-tight text-white">#{ticket.id}</h1>
+              <h1 className="text-xl font-bold font-mono tracking-tight text-[var(--text-primary)]">#{ticket.id}</h1>
               <span className="rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 text-xs font-semibold">
                 {ticket.categoryName}
               </span>
             </div>
-            <p className="text-xs text-zinc-400 mt-0.5">
-              Ouvert par <strong className="text-white">{ticket.userTag}</strong> ({ticket.userId}) le{" "}
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+              Ouvert par <strong className="text-[var(--text-primary)]">{ticket.userTag}</strong> ({ticket.userId}) le{" "}
               {new Date(ticket.createdAt).toLocaleString("fr-FR")}
             </p>
           </div>
@@ -410,7 +410,7 @@ export default function TicketDetailClient() {
             <button
               onClick={handleUnclaim}
               disabled={actionLoading}
-              className="flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-800 px-3 text-xs font-medium text-zinc-200 hover:bg-zinc-700 transition-all cursor-pointer"
+              className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer"
             >
               <span>Libérer la prise en charge</span>
             </button>
@@ -436,7 +436,7 @@ export default function TicketDetailClient() {
             }}
             target={API_BASE ? "_blank" : undefined}
             rel="noopener noreferrer"
-            className="flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/10 transition-all"
+            className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all"
           >
             <Download className="h-3.5 w-3.5" />
             <span>Transcript</span>
@@ -470,8 +470,8 @@ export default function TicketDetailClient() {
         {/* Left Column (2/3): Request Info & Transcript */}
         <div className="lg:col-span-2 space-y-6">
           {/* Answers to Form Fields */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4 shadow-lg">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+            <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
               <FileText className="h-4 w-4 text-emerald-400" />
               <span>Formulaire de Demande Initiale</span>
             </h2>
@@ -479,35 +479,35 @@ export default function TicketDetailClient() {
             {ticket.answers && Object.keys(ticket.answers).length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                 {Object.entries(ticket.answers).map(([key, val]) => (
-                  <div key={key} className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3">
-                    <p className="text-[11px] font-semibold text-zinc-400 capitalize">{key}</p>
-                    <p className="text-xs font-medium text-zinc-100 mt-1 whitespace-pre-wrap">
+                  <div key={key} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+                    <p className="text-xs font-semibold text-[var(--text-muted)] capitalize">{key}</p>
+                    <p className="text-xs font-medium text-[var(--text-primary)] mt-1 whitespace-pre-wrap">
                       {String(val) || "N/A"}
                     </p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-zinc-500 italic">Aucune question spécifique configurée pour cette catégorie.</p>
+              <p className="text-xs text-[var(--text-muted)] italic">Aucune question spécifique configurée pour cette catégorie.</p>
             )}
           </div>
 
           {/* Quick Reply or Discord Channel Link */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-3">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
+              <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <MessageSquare className="h-4 w-4 text-teal-400" />
                 <span>Salon Discord Actif</span>
               </h2>
-              <span className="font-mono text-xs text-zinc-400">ID: {ticket.channelId}</span>
+              <span className="font-mono text-xs text-[var(--text-muted)]">ID: {ticket.channelId}</span>
             </div>
-            <p className="text-xs text-zinc-300">
+            <p className="text-xs text-[var(--text-muted)]">
               Le salon Discord est ouvert et synchronisé. Les messages y sont archivés en continu dans le transcript.
             </p>
             <div className="flex items-center gap-2 pt-1">
               <a
                 href={`discord://discord.com/channels/${guildId}/${ticket.channelId}`}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-indigo-500 transition-all"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-bold text-white hover:bg-emerald-600 transition-all"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
                 <span>Ouvrir dans l&apos;application Discord</span>
@@ -516,9 +516,9 @@ export default function TicketDetailClient() {
           </div>
 
           {/* Activity Timeline */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <Clock className="h-4 w-4 text-indigo-400" />
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+            <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+              <Clock className="h-4 w-4 text-emerald-400" />
               <span>Chronologie d&apos;Activité & Traçabilité</span>
             </h2>
 
@@ -527,15 +527,15 @@ export default function TicketDetailClient() {
                 ticket.activityTimeline.map((act: any) => (
                   <div key={act.id} className="relative text-xs space-y-0.5">
                     <span className="absolute -left-[19px] top-1 h-2 w-2 rounded-full bg-emerald-400" />
-                    <div className="flex items-center justify-between text-zinc-400 text-[11px]">
-                      <span className="font-semibold text-zinc-300">{act.actorTag}</span>
+                    <div className="flex items-center justify-between text-[var(--text-muted)] text-xs">
+                      <span className="font-semibold text-[var(--text-muted)]">{act.actorTag}</span>
                       <span>{new Date(act.timestamp).toLocaleTimeString("fr-FR")}</span>
                     </div>
-                    <p className="text-zinc-200">{act.description}</p>
+                    <p className="text-[var(--text-primary)]">{act.description}</p>
                   </div>
                 ))
               ) : (
-                <p className="text-xs text-zinc-500 italic">Aucun événement enregistré.</p>
+                <p className="text-xs text-[var(--text-muted)] italic">Aucun événement enregistré.</p>
               )}
             </div>
           </div>
@@ -544,10 +544,10 @@ export default function TicketDetailClient() {
         {/* Right Column (1/3): User Profile, Notes, Case Linking, Rating */}
         <div className="space-y-6">
           {/* User Card */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400">Demandeur</h2>
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Demandeur</h2>
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-emerald-400 text-sm border border-[var(--panel-border)] overflow-hidden">
+              <div className="h-12 w-12 rounded-full bg-[var(--surface-raised)]/50 flex items-center justify-center font-bold text-emerald-400 text-sm border border-[var(--panel-border)] overflow-hidden">
                 {ticket.userAvatar ? (
                   <img src={ticket.userAvatar} alt="" className="h-full w-full object-cover" />
                 ) : (
@@ -555,21 +555,21 @@ export default function TicketDetailClient() {
                 )}
               </div>
               <div>
-                <p className="font-bold text-white text-sm">{ticket.userTag}</p>
-                <p className="text-xs text-zinc-400 font-mono">{ticket.userId}</p>
+                <p className="font-bold text-[var(--text-primary)] text-sm">{ticket.userTag}</p>
+                <p className="text-xs text-[var(--text-muted)] font-mono">{ticket.userId}</p>
               </div>
             </div>
           </div>
 
           {/* Linked Moderation Case */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-3">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
                 <Scale className="h-3.5 w-3.5 text-orange-400" />
                 <span>Dossier de Modération</span>
               </h2>
               {ticket.relatedCaseId && (
-                <span className="rounded bg-orange-500/20 px-2 py-0.5 text-[10px] font-bold text-orange-300 border border-orange-500/30">
+                <span className="rounded bg-orange-500/20 px-2 py-0.5 text-xs font-bold text-orange-300 border border-orange-500/30">
                   Case #{ticket.relatedCaseId}
                 </span>
               )}
@@ -577,7 +577,7 @@ export default function TicketDetailClient() {
 
             {ticket.relatedCaseId ? (
               <div className="space-y-2">
-                <p className="text-xs text-zinc-300">
+                <p className="text-xs text-[var(--text-muted)]">
                   Ce ticket est rattaché à une sanction ou une enquête dans le Centre de Modération.
                 </p>
                 <Link
@@ -590,10 +590,10 @@ export default function TicketDetailClient() {
               </div>
             ) : (
               <div className="space-y-2">
-                <p className="text-xs text-zinc-400">Aucun dossier de sanction associé à ce ticket.</p>
+                <p className="text-xs text-[var(--text-muted)]">Aucun dossier de sanction associé à ce ticket.</p>
                 <button
                   onClick={() => setShowLinkCaseModal(true)}
-                  className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 py-1 text-xs text-zinc-300 hover:text-white transition-all cursor-pointer"
+                  className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2.5 py-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
                 >
                   + Lier une Case #
                 </button>
@@ -602,12 +602,12 @@ export default function TicketDetailClient() {
           </div>
 
           {/* Private Internal Notes */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
               <Lock className="h-3.5 w-3.5 text-amber-400" />
               <span>Notes Internes Staff (Privé)</span>
             </h2>
-            <p className="text-[11px] text-zinc-400">
+            <p className="text-xs text-[var(--text-muted)]">
               Visibles uniquement par les membres du staff autorisés. Non transmises au membre.
             </p>
 
@@ -618,7 +618,7 @@ export default function TicketDetailClient() {
                 onChange={(e) => setNoteContent(e.target.value)}
                 placeholder="Ajouter une note d'investigation..."
                 rows={2}
-                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 p-2.5 text-xs text-white placeholder-zinc-500 outline-none focus:border-emerald-500 resize-none"
+                className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] p-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/60 outline-none focus:border-emerald-500 resize-none"
               />
               <button
                 type="submit"
@@ -633,23 +633,23 @@ export default function TicketDetailClient() {
             <div className="space-y-2.5 pt-2 border-t border-[var(--panel-border)]">
               {ticket.notes && ticket.notes.length > 0 ? (
                 ticket.notes.map((n: any) => (
-                  <div key={n.id} className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 text-xs space-y-1">
-                    <div className="flex items-center justify-between text-[10px] text-zinc-400">
+                  <div key={n.id} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs space-y-1">
+                    <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                       <span className="font-bold text-amber-300">{n.authorTag}</span>
                       <span>{new Date(n.createdAt).toLocaleTimeString("fr-FR")}</span>
                     </div>
-                    <p className="text-zinc-200">{n.content}</p>
+                    <p className="text-[var(--text-primary)]">{n.content}</p>
                   </div>
                 ))
               ) : (
-                <p className="text-xs text-zinc-500 italic">Aucune note interne pour le moment.</p>
+                <p className="text-xs text-[var(--text-muted)] italic">Aucune note interne pour le moment.</p>
               )}
             </div>
           </div>
 
           {/* Satisfaction Rating (CSAT) */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-3">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
               <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
               <span>Avis Membre (CSAT)</span>
             </h2>
@@ -664,20 +664,20 @@ export default function TicketDetailClient() {
                         "h-4 w-4",
                         s <= ticket.rating.score
                           ? "text-yellow-400 fill-yellow-400"
-                          : "text-zinc-600"
+                          : "text-[var(--text-muted)]"
                       )}
                     />
                   ))}
-                  <span className="text-xs font-bold text-white ml-2">
+                  <span className="text-xs font-bold text-[var(--text-primary)] ml-2">
                     {ticket.rating.score}/5
                   </span>
                 </div>
                 {ticket.rating.comment && (
-                  <p className="text-xs text-zinc-300 italic">&ldquo;{ticket.rating.comment}&rdquo;</p>
+                  <p className="text-xs text-[var(--text-muted)] italic">&ldquo;{ticket.rating.comment}&rdquo;</p>
                 )}
               </div>
             ) : (
-              <p className="text-xs text-zinc-400">En attente de notation par l&apos;utilisateur après résolution.</p>
+              <p className="text-xs text-[var(--text-muted)]">En attente de notation par l&apos;utilisateur après résolution.</p>
             )}
           </div>
         </div>
@@ -685,28 +685,28 @@ export default function TicketDetailClient() {
 
       {/* MODAL: FERMETURE */}
       {showCloseModal && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
-            <h3 className="text-sm font-bold text-white">Clôturer le Ticket #{ticket.id}</h3>
-            <p className="text-xs text-zinc-400">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 p-4">
+          <div className="w-full max-w-md rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 space-y-4">
+            <h3 className="text-sm font-bold text-[var(--text-primary)]">Clôturer le Ticket #{ticket.id}</h3>
+            <p className="text-xs text-[var(--text-muted)]">
               La transcription complète sera générée et le salon Discord sera supprimé automatiquement.
             </p>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Raison de fermeture</label>
+              <label className="text-xs font-semibold text-[var(--text-muted)]">Raison de fermeture</label>
               <input
                 type="text"
                 value={closeReason}
                 onChange={(e) => setCloseReason(e.target.value)}
                 placeholder="Ex: Problème résolu, question traitée..."
-                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-emerald-500"
+                className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500"
               />
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setShowCloseModal(false)}
-                className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 cursor-pointer"
+                className="rounded-xl border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 cursor-pointer"
               >
                 Annuler
               </button>
@@ -724,28 +724,28 @@ export default function TicketDetailClient() {
 
       {/* MODAL: LIER CASE DE MODÉRATION */}
       {showLinkCaseModal && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
-            <h3 className="text-sm font-bold text-white">Lier un Dossier de Modération</h3>
-            <p className="text-xs text-zinc-400">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 p-4">
+          <div className="w-full max-w-md rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 space-y-4">
+            <h3 className="text-sm font-bold text-[var(--text-primary)]">Lier un Dossier de Modération</h3>
+            <p className="text-xs text-[var(--text-muted)]">
               Rattachez ce ticket au Case System de Moderation Center pour garder un suivi complet de la sanction.
             </p>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Numéro du Dossier (Case #)</label>
+              <label className="text-xs font-semibold text-[var(--text-muted)]">Numéro du Dossier (Case #)</label>
               <input
                 type="text"
                 value={caseIdToLink}
                 onChange={(e) => setCaseIdToLink(e.target.value)}
                 placeholder="Ex: 1, 2, 1842..."
-                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-orange-500 font-mono"
+                className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-orange-500 font-mono"
               />
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setShowLinkCaseModal(false)}
-                className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 cursor-pointer"
+                className="rounded-xl border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 cursor-pointer"
               >
                 Annuler
               </button>

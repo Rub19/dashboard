@@ -206,7 +206,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
   if (loading) {
     return (
       <div className="flex min-h-[450px] items-center justify-center">
-        <div className="flex items-center gap-3 text-zinc-400">
+        <div className="flex items-center gap-3 text-[var(--text-muted)]">
           <RefreshCw className="h-5 w-5 animate-spin text-emerald-400" />
           <span className="text-sm font-medium">Chargement du salon vocal...</span>
         </div>
@@ -216,13 +216,13 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
   if (!room) {
     return (
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-12 text-center">
+      <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-12 text-center">
         <AlertTriangle className="h-8 w-8 text-amber-400 mx-auto mb-3" />
-        <h3 className="text-base font-bold text-white">Salon vocal introuvable</h3>
-        <p className="text-xs text-zinc-400 mt-1 mb-4">Ce salon a peut-être été supprimé automatiquement à la fin de la session.</p>
+        <h3 className="text-base font-bold text-[var(--text-primary)]">Salon vocal introuvable</h3>
+        <p className="text-xs text-[var(--text-muted)] mt-1 mb-4">Ce salon a peut-être été supprimé automatiquement à la fin de la session.</p>
         <Link
           href={`/discord/voice?guildId=${guildId}`}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-800 text-xs font-semibold text-white hover:bg-zinc-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 text-xs font-semibold text-white hover:bg-[var(--surface-raised)]/70 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Retour aux Salons Vocaux</span>
@@ -241,30 +241,30 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
         <div>
           <Link
             href={`/discord/voice?guildId=${guildId}`}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Retour aux Salons Vocaux</span>
           </Link>
           <div className="flex items-center gap-3 mt-2">
-            <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+            <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)] flex items-center gap-2">
               <Radio className="h-6 w-6 text-emerald-400" />
               <span>{room.name}</span>
             </h1>
             {room.isLocked && (
-              <span className="flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20">
+              <span className="flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20">
                 <Lock className="h-3 w-3" />
                 Verrouillé
               </span>
             )}
             {room.status === "EMPTY_COUNTDOWN" && (
-              <span className="flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse">
+              <span className="flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse">
                 <Clock className="h-3 w-3" />
                 Compte à rebours de suppression
               </span>
             )}
           </div>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-[var(--text-muted)] mt-1">
             Propriétaire : <span className="text-amber-400 font-semibold">{room.ownerTag}</span> • Hub : {room.hubName || "Personal Voice"} • Débit : {Math.round(room.bitrate / 1000)} kbps
           </p>
         </div>
@@ -277,7 +277,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
               "flex h-9 px-3.5 items-center gap-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
               room.isLocked
                 ? "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20"
-                : "bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white"
+                : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-white"
             )}
           >
             {room.isLocked ? <Unlock className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5 text-rose-400" />}
@@ -289,7 +289,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
               setNewName(room.name);
               setIsRenameOpen(true);
             }}
-            className="flex h-9 px-3.5 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer"
+            className="flex h-9 px-3.5 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs font-bold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
           >
             <Edit2 className="h-3.5 w-3.5" />
             <span>Renommer</span>
@@ -300,7 +300,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
               setNewLimit(room.userLimit.toString());
               setIsLimitOpen(true);
             }}
-            className="flex h-9 px-3.5 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer"
+            className="flex h-9 px-3.5 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs font-bold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
           >
             <Users className="h-3.5 w-3.5" />
             <span>Limite ({room.userLimit > 0 ? room.userLimit : "∞"})</span>
@@ -318,46 +318,46 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/60 p-4">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Membres Présents</span>
+        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+          <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Membres Présents</span>
           <div className="mt-1 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-white">{room.currentUsers?.length || 0}</span>
-            <span className="text-xs text-zinc-400">/ {room.userLimit > 0 ? room.userLimit : "illimité"}</span>
+            <span className="text-2xl font-black text-[var(--text-primary)]">{room.currentUsers?.length || 0}</span>
+            <span className="text-xs text-[var(--text-muted)]">/ {room.userLimit > 0 ? room.userLimit : "illimité"}</span>
           </div>
         </div>
 
-        <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/60 p-4">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Whitelist</span>
+        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+          <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Whitelist</span>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-2xl font-black text-emerald-400">{whitelist.length}</span>
-            <span className="text-xs text-zinc-500">autorisés</span>
+            <span className="text-xs text-[var(--text-muted)]">autorisés</span>
           </div>
         </div>
 
-        <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/60 p-4">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Banlist</span>
+        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+          <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Banlist</span>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-2xl font-black text-rose-400">{banlist.length}</span>
-            <span className="text-xs text-zinc-500">interdits</span>
+            <span className="text-xs text-[var(--text-muted)]">interdits</span>
           </div>
         </div>
 
-        <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/60 p-4">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Qualité Audio</span>
+        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+          <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Qualité Audio</span>
           <div className="mt-1 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-indigo-400">{Math.round(room.bitrate / 1000)}</span>
-            <span className="text-xs text-zinc-500">kbps</span>
+            <span className="text-2xl font-black text-emerald-300">{Math.round(room.bitrate / 1000)}</span>
+            <span className="text-xs text-[var(--text-muted)]">kbps</span>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-zinc-800/80 pb-3">
+      <div className="flex items-center gap-2 border-b border-[var(--panel-border)] pb-3">
         <button
           onClick={() => setActiveTab("members")}
           className={cn(
             "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer",
-            activeTab === "members" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white"
+            activeTab === "members" ? "bg-[var(--surface-raised)]/40 text-white" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
         >
           Participants ({room.currentUsers?.length || 0})
@@ -366,7 +366,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
           onClick={() => setActiveTab("whitelist")}
           className={cn(
             "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer",
-            activeTab === "whitelist" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white"
+            activeTab === "whitelist" ? "bg-[var(--surface-raised)]/40 text-white" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
         >
           Whitelist ({whitelist.length})
@@ -375,7 +375,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
           onClick={() => setActiveTab("banlist")}
           className={cn(
             "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer",
-            activeTab === "banlist" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white"
+            activeTab === "banlist" ? "bg-[var(--surface-raised)]/40 text-white" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
         >
           Banlist ({banlist.length})
@@ -384,7 +384,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
           onClick={() => setActiveTab("timeline")}
           className={cn(
             "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer",
-            activeTab === "timeline" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white"
+            activeTab === "timeline" ? "bg-[var(--surface-raised)]/40 text-white" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
         >
           Historique & Timeline
@@ -394,9 +394,9 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
       {/* TAB: Members */}
       {activeTab === "members" && (
         <div className="space-y-4">
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 overflow-hidden">
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
             <table className="w-full text-left text-xs">
-              <thead className="bg-zinc-950/60 border-b border-zinc-800 text-zinc-400 font-semibold uppercase">
+              <thead className="bg-[var(--surface-raised)]/40 border-b border-[var(--panel-border)] text-[var(--text-muted)] font-semibold uppercase">
                 <tr>
                   <th className="p-3.5">Membre</th>
                   <th className="p-3.5">Rôle dans le salon</th>
@@ -405,24 +405,24 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
                   <th className="p-3.5 text-right">Modération</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
+              <tbody className="divide-y divide-[var(--panel-border)] text-[var(--text-muted)]">
                 {(room.currentUsers || []).map((user) => (
-                  <tr key={user.id} className="hover:bg-zinc-800/30 transition-colors">
-                    <td className="p-3.5 font-bold text-white flex items-center gap-2">
+                  <tr key={user.id} className="hover:bg-[var(--surface-raised)]/70 transition-colors">
+                    <td className="p-3.5 font-bold text-[var(--text-primary)] flex items-center gap-2">
                       <div className="h-2 w-2 rounded-full bg-emerald-400" />
                       <span>{user.tag}</span>
                     </td>
                     <td className="p-3.5">
                       {user.id === room.ownerId ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20">
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20">
                           <Crown className="h-3 w-3" />
                           Propriétaire
                         </span>
                       ) : (
-                        <span className="text-zinc-400">Participant</span>
+                        <span className="text-[var(--text-muted)]">Participant</span>
                       )}
                     </td>
-                    <td className="p-3.5 text-zinc-400">{new Date(user.joinedAt).toLocaleTimeString()}</td>
+                    <td className="p-3.5 text-[var(--text-muted)]">{new Date(user.joinedAt).toLocaleTimeString()}</td>
                     <td className="p-3.5">
                       <div className="flex items-center gap-2">
                         {user.isMuted ? (
@@ -431,7 +431,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
                           <span className="text-emerald-400 flex items-center gap-1"><Mic className="h-3 w-3" /> Micro actif</span>
                         )}
                         {user.isStreaming && (
-                          <span className="text-purple-400 flex items-center gap-1"><Tv className="h-3 w-3" /> En direct</span>
+                          <span className="text-emerald-300 flex items-center gap-1"><Tv className="h-3 w-3" /> En direct</span>
                         )}
                       </div>
                     </td>
@@ -440,13 +440,13 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
                         <div className="inline-flex items-center gap-2">
                           <button
                             onClick={() => handleAction("mute", !user.isMuted, user.id)}
-                            className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] font-semibold transition-colors cursor-pointer"
+                            className="px-2.5 py-1 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] text-xs font-semibold transition-colors cursor-pointer"
                           >
                             {user.isMuted ? "Démuter" : "Muter"}
                           </button>
                           <button
                             onClick={() => handleAction("kick", undefined, user.id)}
-                            className="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-[11px] font-semibold transition-colors cursor-pointer"
+                            className="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold transition-colors cursor-pointer"
                           >
                             Expulser
                           </button>
@@ -464,13 +464,13 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
       {/* TAB: Whitelist */}
       {activeTab === "whitelist" && (
         <div className="space-y-6">
-          <div className="rounded-2xl border border-emerald-500/20 bg-zinc-900/60 p-5 space-y-4">
+          <div className="rounded-2xl border border-emerald-500/20 bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Shield className="h-4 w-4 text-emerald-400" />
                 <span>Ajouter un membre en Whitelist</span>
               </h3>
-              <p className="text-xs text-zinc-400 mt-0.5">
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 Les membres en Whitelist peuvent toujours rejoindre le salon, même lorsqu'il est verrouillé.
               </p>
             </div>
@@ -480,7 +480,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
                 placeholder="ID ou nom Discord de l'utilisateur"
                 value={targetUserId}
                 onChange={(e) => setTargetUserId(e.target.value)}
-                className="h-10 px-4 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 flex-1"
+                className="h-10 px-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-emerald-500 flex-1"
               />
               <button
                 onClick={() => targetUserId.trim() && handleWhitelist(targetUserId.trim(), "add")}
@@ -493,23 +493,23 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
             </div>
           </div>
 
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
               Membres autorisés ({whitelist.length})
             </h4>
             {whitelist.length === 0 ? (
-              <p className="text-xs text-zinc-500 italic py-2">Aucun membre dans la liste blanche.</p>
+              <p className="text-xs text-[var(--text-muted)] italic py-2">Aucun membre dans la liste blanche.</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                 {whitelist.map((id) => (
                   <div
                     key={id}
-                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800/80 text-xs"
+                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs"
                   >
-                    <span className="font-mono text-zinc-300 font-semibold">{id}</span>
+                    <span className="font-mono text-[var(--text-muted)] font-semibold">{id}</span>
                     <button
                       onClick={() => handleWhitelist(id, "remove")}
-                      className="text-zinc-500 hover:text-rose-400 transition-colors p-1"
+                      className="text-[var(--text-muted)] hover:text-rose-400 transition-colors p-1"
                       title="Retirer"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -525,13 +525,13 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
       {/* TAB: Banlist */}
       {activeTab === "banlist" && (
         <div className="space-y-6">
-          <div className="rounded-2xl border border-rose-500/20 bg-zinc-900/60 p-5 space-y-4">
+          <div className="rounded-2xl border border-rose-500/20 bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <UserX className="h-4 w-4 text-rose-400" />
                 <span>Bannir un membre du salon</span>
               </h3>
-              <p className="text-xs text-zinc-400 mt-0.5">
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 Bannit le membre du salon vocal et l'expulse instantanément s'il est déjà connecté.
               </p>
             </div>
@@ -541,7 +541,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
                 placeholder="ID ou nom Discord de l'utilisateur"
                 value={targetUserId}
                 onChange={(e) => setTargetUserId(e.target.value)}
-                className="h-10 px-4 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500 flex-1"
+                className="h-10 px-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-rose-500 flex-1"
               />
               <button
                 onClick={() => targetUserId.trim() && handleBanlist(targetUserId.trim(), "add")}
@@ -554,23 +554,23 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
             </div>
           </div>
 
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
               Membres bannis ({banlist.length})
             </h4>
             {banlist.length === 0 ? (
-              <p className="text-xs text-zinc-500 italic py-2">Aucun membre dans la liste noire.</p>
+              <p className="text-xs text-[var(--text-muted)] italic py-2">Aucun membre dans la liste noire.</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                 {banlist.map((id) => (
                   <div
                     key={id}
-                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800/80 text-xs"
+                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs"
                   >
                     <span className="font-mono text-rose-300 font-semibold">{id}</span>
                     <button
                       onClick={() => handleBanlist(id, "remove")}
-                      className="text-zinc-500 hover:text-emerald-400 transition-colors p-1"
+                      className="text-[var(--text-muted)] hover:text-emerald-400 transition-colors p-1"
                       title="Débannir"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -585,17 +585,17 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
       {/* TAB: Timeline */}
       {activeTab === "timeline" && (
-        <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 space-y-4">
-          <h3 className="text-sm font-bold text-white">Événements du salon</h3>
-          <div className="relative border-l border-zinc-800 ml-3 space-y-4 pl-4">
+        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+          <h3 className="text-sm font-bold text-[var(--text-primary)]">Événements du salon</h3>
+          <div className="relative border-l border-[var(--panel-border)] ml-3 space-y-4 pl-4">
             {timeline.map((ev) => (
               <div key={ev.id} className="relative">
-                <div className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-indigo-500" />
-                <p className="text-xs text-white font-bold">{ev.type}</p>
-                <p className="text-[11px] text-zinc-400">
-                  Par <span className="text-zinc-300">{ev.actorTag}</span> • {new Date(ev.timestamp).toLocaleTimeString()}
+                <div className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                <p className="text-xs text-[var(--text-primary)] font-bold">{ev.type}</p>
+                <p className="text-xs text-[var(--text-muted)]">
+                  Par <span className="text-[var(--text-muted)]">{ev.actorTag}</span> • {new Date(ev.timestamp).toLocaleTimeString()}
                 </p>
-                {ev.details && <p className="text-xs text-zinc-500 mt-0.5">{ev.details}</p>}
+                {ev.details && <p className="text-xs text-[var(--text-muted)] mt-0.5">{ev.details}</p>}
               </div>
             ))}
           </div>
@@ -604,20 +604,20 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
       {/* Rename Modal */}
       {isRenameOpen && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl space-y-4">
-            <h3 className="text-base font-bold text-white">Renommer le salon vocal</h3>
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
+            <h3 className="text-base font-bold text-[var(--text-primary)]">Renommer le salon vocal</h3>
             <input
               type="text"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder="Nouveau nom"
-              className="w-full h-10 px-3.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-white focus:outline-none focus:border-emerald-500"
+              className="w-full h-10 px-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-emerald-500"
             />
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setIsRenameOpen(false)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
               >
                 Annuler
               </button>
@@ -637,9 +637,9 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
       {/* Limit Modal */}
       {isLimitOpen && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl space-y-4">
-            <h3 className="text-base font-bold text-white">Modifier la limite de membres</h3>
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
+            <h3 className="text-base font-bold text-[var(--text-primary)]">Modifier la limite de membres</h3>
             <input
               type="number"
               min={0}
@@ -647,12 +647,12 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
               value={newLimit}
               onChange={(e) => setNewLimit(e.target.value)}
               placeholder="0 pour illimité, max 99"
-              className="w-full h-10 px-3.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-white focus:outline-none focus:border-emerald-500"
+              className="w-full h-10 px-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-emerald-500"
             />
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setIsLimitOpen(false)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
               >
                 Annuler
               </button>

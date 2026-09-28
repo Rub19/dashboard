@@ -193,7 +193,7 @@ export default function VoiceSettingsClient() {
   if (loading) {
     return (
       <div className="flex min-h-[450px] items-center justify-center">
-        <div className="flex items-center gap-3 text-zinc-400">
+        <div className="flex items-center gap-3 text-[var(--text-muted)]">
           <RefreshCw className="h-5 w-5 animate-spin text-emerald-400" />
           <span className="text-sm font-medium">Chargement des paramètres...</span>
         </div>
@@ -208,16 +208,16 @@ export default function VoiceSettingsClient() {
         <div>
           <Link
             href={`/discord/voice${guildId ? `?guildId=${guildId}` : ""}`}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Retour aux Salons Vocaux</span>
           </Link>
-          <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2 mt-2">
+          <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)] flex items-center gap-2 mt-2">
             <Sliders className="h-6 w-6 text-emerald-400" />
             <span>Configuration Personal Voice</span>
           </h1>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-[var(--text-muted)] mt-1">
             Gérez le comportement des salons temporaires, canaux de création, délais de suppression et règles de gestion.
           </p>
         </div>
@@ -246,14 +246,14 @@ export default function VoiceSettingsClient() {
       </div>
 
       {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
           <div className="flex items-start gap-3">
-            <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-300 shrink-0 mt-0.5">
               <Bot className="h-5 w-5" />
             </div>
             <div>
-              <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
-              <p className="mt-0.5 text-zinc-300">
+              <p className="font-semibold text-[var(--text-primary)] text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+              <p className="mt-0.5 text-[var(--text-muted)]">
                 Invitez le bot sur « {selectedGuild.name} » pour activer les salons vocaux temporaires et le panneau de contrôle.
               </p>
             </div>
@@ -262,7 +262,7 @@ export default function VoiceSettingsClient() {
             href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-colors shrink-0"
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-600 transition-colors shrink-0"
           >
             Inviter le bot
           </a>
@@ -272,20 +272,20 @@ export default function VoiceSettingsClient() {
       {/* Grid Settings Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Section 1: Salons Personnels */}
-        <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-6 space-y-5 backdrop-blur-xl">
+        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
               <Radio className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white">Panneau & Salons Personnels</h2>
-              <p className="text-xs text-zinc-400">Expérience sans commande avec boutons et modals Discord</p>
+              <h2 className="text-sm font-bold text-[var(--text-primary)]">Panneau & Salons Personnels</h2>
+              <p className="text-xs text-[var(--text-muted)]">Expérience sans commande avec boutons et modals Discord</p>
             </div>
           </div>
 
           <div className="space-y-4 text-xs">
             <div>
-              <label className="block text-zinc-300 font-semibold mb-1">
+              <label className="block text-[var(--text-muted)] font-semibold mb-1">
                 Salon Textuel du Panneau de Création
               </label>
               <ChannelPicker
@@ -296,24 +296,24 @@ export default function VoiceSettingsClient() {
                 size="sm"
                 allowClear
               />
-              <span className="text-[11px] text-zinc-500 mt-1 block">
+              <span className="text-xs text-[var(--text-muted)] mt-1 block">
                 Salon où le bot publiera le message permanent avec le bouton "Créer mon salon".
               </span>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-zinc-300 font-semibold text-xs">
+                <label className="block text-[var(--text-muted)] font-semibold text-xs">
                   Catégorie Discord des Salons Créés
                 </label>
                 <button
                   type="button"
                   onClick={() => fetchCategories(true)}
                   disabled={loadingCategories}
-                  className="inline-flex items-center gap-1 text-[11px] text-zinc-400 hover:text-white transition-colors cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer disabled:opacity-50"
                   title="Rafraîchir les catégories Discord"
                 >
-                  <RefreshCw className={cn("h-3 w-3", loadingCategories && "animate-spin text-indigo-400")} />
+                  <RefreshCw className={cn("h-3 w-3", loadingCategories && "animate-spin text-emerald-300")} />
                   <span>Actualiser</span>
                 </button>
               </div>
@@ -335,16 +335,16 @@ export default function VoiceSettingsClient() {
                   placeholder="Laisser vide pour automatique, ou ID de catégorie (facultatif)"
                   value={settings.roomCategory || settings.defaultCategoryId || ""}
                   onChange={(e) => setSettings({ ...settings, roomCategory: e.target.value, defaultCategoryId: e.target.value })}
-                  className="w-full h-10 px-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-white placeholder-zinc-500 text-xs focus:outline-none focus:border-indigo-500"
+                  className="w-full h-10 px-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] text-xs focus:outline-none focus:border-[var(--input-border-hover)]"
                 />
               )}
-              <span className="text-[11px] text-zinc-400 mt-1.5 block">
+              <span className="text-xs text-[var(--text-muted)] mt-1.5 block">
                 Par défaut (recommandé), le bot place automatiquement le salon vocal dans la même catégorie que le salon de création (salon déclencheur Join-to-Create ou panneau). Vous pouvez aussi forcer une catégorie spécifique.
               </span>
             </div>
 
             <div>
-              <label className="block text-zinc-300 font-semibold mb-1">
+              <label className="block text-[var(--text-muted)] font-semibold mb-1">
                 Modèle de Nom par Défaut
               </label>
               <input
@@ -352,17 +352,17 @@ export default function VoiceSettingsClient() {
                 placeholder="ex: 🔊 Salon de {username}"
                 value={settings.defaultRoomNameTemplate || "🔊 Salon de {username}"}
                 onChange={(e) => setSettings({ ...settings, defaultRoomNameTemplate: e.target.value })}
-                className="w-full h-10 px-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 font-mono"
+                className="w-full h-10 px-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] font-mono"
               />
-              <span className="text-[11px] text-zinc-500 mt-1 block">
-                Variables disponibles : <code className="text-zinc-300">{"{user}"}</code>, <code className="text-zinc-300">{"{username}"}</code>, <code className="text-zinc-300">{"{displayName}"}</code>, <code className="text-zinc-300">{"{server}"}</code>
+              <span className="text-xs text-[var(--text-muted)] mt-1 block">
+                Variables disponibles : <code className="text-[var(--text-muted)]">{"{user}"}</code>, <code className="text-[var(--text-muted)]">{"{username}"}</code>, <code className="text-[var(--text-muted)]">{"{displayName}"}</code>, <code className="text-[var(--text-muted)]">{"{server}"}</code>
               </span>
             </div>
 
             <div className="flex items-center justify-between pt-2">
               <div>
-                <p className="font-semibold text-zinc-200">Panneau de Contrôle dans le Chat Vocal</p>
-                <p className="text-[11px] text-zinc-500">
+                <p className="font-semibold text-[var(--text-primary)]">Panneau de Contrôle dans le Chat Vocal</p>
+                <p className="text-xs text-[var(--text-muted)]">
                   Envoie automatiquement le panneau interactif dans le chat textuel du salon vocal dès sa création.
                 </p>
               </div>
@@ -370,27 +370,27 @@ export default function VoiceSettingsClient() {
                 type="checkbox"
                 checked={settings.sendControlPanelInRoom}
                 onChange={(e) => setSettings({ ...settings, sendControlPanelInRoom: e.target.checked })}
-                className="h-4 w-4 rounded accent-indigo-500 cursor-pointer"
+                className="h-4 w-4 rounded accent-emerald-500 cursor-pointer"
               />
             </div>
           </div>
         </div>
 
         {/* Section 2: Délais & Nettoyage */}
-        <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-6 space-y-5 backdrop-blur-xl">
+        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-5">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
               <Clock className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white">Nettoyage Automatique & Règles</h2>
-              <p className="text-xs text-zinc-400">Gestion de la fin de session et transfert de propriété</p>
+              <h2 className="text-sm font-bold text-[var(--text-primary)]">Nettoyage Automatique & Règles</h2>
+              <p className="text-xs text-[var(--text-muted)]">Gestion de la fin de session et transfert de propriété</p>
             </div>
           </div>
 
           <div className="space-y-4 text-xs">
             <div>
-              <label className="block text-zinc-300 font-semibold mb-1">
+              <label className="block text-[var(--text-muted)] font-semibold mb-1">
                 Délai de Grâce avant Suppression si Vide (secondes)
               </label>
               <Select
@@ -408,13 +408,13 @@ export default function VoiceSettingsClient() {
                   { id: "300", label: "5 minutes" },
                 ]}
               />
-              <span className="text-[11px] text-zinc-500 mt-1 block">
+              <span className="text-xs text-[var(--text-muted)] mt-1 block">
                 Si un membre se reconnecte pendant ce délai, la suppression est automatiquement annulée.
               </span>
             </div>
 
             <div>
-              <label className="block text-zinc-300 font-semibold mb-1">
+              <label className="block text-[var(--text-muted)] font-semibold mb-1">
                 Salons Simultanés Max par Utilisateur
               </label>
               <input
@@ -423,15 +423,15 @@ export default function VoiceSettingsClient() {
                 max={5}
                 value={settings.maxRoomsPerUser}
                 onChange={(e) => setSettings({ ...settings, maxRoomsPerUser: parseInt(e.target.value, 10) || 1 })}
-                className="w-full h-10 px-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:border-amber-500"
+                className="w-full h-10 px-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-primary)] focus:outline-none focus:border-amber-500"
               />
-              <span className="text-[11px] text-zinc-500 mt-1 block">
+              <span className="text-xs text-[var(--text-muted)] mt-1 block">
                 Règle anti-abus : 1 salon vocal actif par membre par défaut.
               </span>
             </div>
 
             <div>
-              <label className="block text-zinc-300 font-semibold mb-1">
+              <label className="block text-[var(--text-muted)] font-semibold mb-1">
                 Stratégie en cas de Départ du Propriétaire
               </label>
               <Select
@@ -449,7 +449,7 @@ export default function VoiceSettingsClient() {
             </div>
 
             <div>
-              <label className="block text-zinc-300 font-semibold mb-1">
+              <label className="block text-[var(--text-muted)] font-semibold mb-1">
                 Débit Audio par Défaut
               </label>
               <Select

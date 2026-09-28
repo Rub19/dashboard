@@ -227,7 +227,7 @@ export default function CaseDetailClient() {
 
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center bg-[var(--bg-main)] text-zinc-400">
+      <div className="h-full flex items-center justify-center bg-[var(--bg-main)] text-[var(--text-muted)]">
         <RefreshCw className="h-6 w-6 animate-spin text-orange-400" />
       </div>
     );
@@ -235,7 +235,7 @@ export default function CaseDetailClient() {
 
   if (!modCase) {
     return (
-      <div className="h-full flex flex-col items-center justify-center bg-[var(--bg-main)] text-zinc-400 gap-3">
+      <div className="h-full flex flex-col items-center justify-center bg-[var(--bg-main)] text-[var(--text-muted)] gap-3">
         <AlertCircle className="h-8 w-8 text-rose-500" />
         <p>Dossier introuvable ou inexistant.</p>
         <Link
@@ -249,37 +249,37 @@ export default function CaseDetailClient() {
   }
 
   return (
-    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-zinc-100 font-sans">
+    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)] font-sans">
       {/* HEADER */}
-      <header className="shrink-0 border-b border-[var(--panel-border)] bg-black/40 backdrop-blur-xl px-4 sm:px-6 py-3.5 z-20">
+      <header className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 sm:px-6 py-3.5 z-20">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link
               href={`/discord/moderation?guildId=${guildId}`}
-              className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 transition-all cursor-pointer"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold text-white font-mono">Case #{modCase.caseNumber}</h1>
+                <h1 className="text-base font-bold text-[var(--text-primary)] font-mono">Case #{modCase.caseNumber}</h1>
                 <span
                   className={cn(
-                    "text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border",
+                    "text-xs uppercase font-bold px-2 py-0.5 rounded-full border",
                     modCase.status === "ACTIVE"
                       ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
                       : modCase.status === "EXPIRED"
                       ? "bg-blue-500/10 text-blue-400 border-blue-500/30"
-                      : "bg-zinc-800 text-zinc-400 border-zinc-700"
+                      : "bg-[var(--surface-raised)] text-[var(--text-muted)] border-[var(--panel-border)]"
                   )}
                 >
                   {modCase.status}
                 </span>
-                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-orange-500/10 text-orange-300 border border-orange-500/20">
+                <span className="text-xs uppercase font-mono px-2 py-0.5 rounded bg-orange-500/10 text-orange-300 border border-orange-500/20">
                   {modCase.action}
                 </span>
               </div>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-[var(--text-muted)]">
                 Appliqué sur {modCase.userTag} par {modCase.moderatorTag} ({modCase.source})
               </p>
             </div>
@@ -302,36 +302,36 @@ export default function CaseDetailClient() {
         <div className="max-w-6xl mx-auto space-y-6">
 
           {/* FICHE RÉCAPITULATIVE */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <span className="text-[11px] text-zinc-500 uppercase font-semibold">Membre Sanctionné</span>
-              <p className="text-sm font-bold text-white mt-0.5">{modCase.userTag}</p>
-              <p className="text-[10px] font-mono text-zinc-500">{modCase.userId}</p>
+              <span className="text-xs text-[var(--text-muted)] uppercase font-semibold">Membre Sanctionné</span>
+              <p className="text-sm font-bold text-[var(--text-primary)] mt-0.5">{modCase.userTag}</p>
+              <p className="text-xs font-mono text-[var(--text-muted)]">{modCase.userId}</p>
             </div>
 
             <div>
-              <span className="text-[11px] text-zinc-500 uppercase font-semibold">Modérateur</span>
-              <p className="text-sm font-bold text-white mt-0.5">{modCase.moderatorTag}</p>
-              <p className="text-[10px] font-mono text-zinc-500">{modCase.source}</p>
+              <span className="text-xs text-[var(--text-muted)] uppercase font-semibold">Modérateur</span>
+              <p className="text-sm font-bold text-[var(--text-primary)] mt-0.5">{modCase.moderatorTag}</p>
+              <p className="text-xs font-mono text-[var(--text-muted)]">{modCase.source}</p>
             </div>
 
             <div>
-              <span className="text-[11px] text-zinc-500 uppercase font-semibold">Date d'Application</span>
-              <p className="text-sm font-bold text-white mt-0.5">
+              <span className="text-xs text-[var(--text-muted)] uppercase font-semibold">Date d'Application</span>
+              <p className="text-sm font-bold text-[var(--text-primary)] mt-0.5">
                 {new Date(modCase.createdAt).toLocaleDateString()}
               </p>
-              <p className="text-[10px] text-zinc-500">
+              <p className="text-xs text-[var(--text-muted)]">
                 {new Date(modCase.createdAt).toLocaleTimeString()}
               </p>
             </div>
 
             <div>
-              <span className="text-[11px] text-zinc-500 uppercase font-semibold">Durée & Expiration</span>
-              <p className="text-sm font-bold text-white mt-0.5">
+              <span className="text-xs text-[var(--text-muted)] uppercase font-semibold">Durée & Expiration</span>
+              <p className="text-sm font-bold text-[var(--text-primary)] mt-0.5">
                 {modCase.durationSeconds ? `${Math.round(modCase.durationSeconds / 60)} min` : "Permanent"}
               </p>
               {modCase.expiresAt && (
-                <p className="text-[10px] text-zinc-500">
+                <p className="text-xs text-[var(--text-muted)]">
                   Exp: {new Date(modCase.expiresAt).toLocaleTimeString()}
                 </p>
               )}
@@ -339,19 +339,19 @@ export default function CaseDetailClient() {
           </div>
 
           {/* MOTIF & CONTEXTE DU MESSAGE */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white">Motif de la Sanction</h3>
-            <p className="text-sm text-zinc-200 bg-black/30 p-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] font-sans">
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Motif de la Sanction</h3>
+            <p className="text-sm text-[var(--text-primary)] bg-[var(--surface-raised)]/40 p-3 rounded-xl border border-[var(--panel-border)] font-sans">
               {modCase.reason}
             </p>
 
             {modCase.metadata?.messageContent && (
               <div className="space-y-1 pt-2">
-                <span className="text-[11px] text-zinc-400 font-semibold flex items-center gap-1.5">
-                  <MessageSquare className="h-3.5 w-3.5 text-zinc-500" />
+                <span className="text-xs text-[var(--text-muted)] font-semibold flex items-center gap-1.5">
+                  <MessageSquare className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                   Contenu du message incriminé (#{modCase.metadata.channelName || "salon"}) :
                 </span>
-                <p className="text-xs font-mono text-amber-300/90 bg-black/50 p-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] break-all">
+                <p className="text-xs font-mono text-amber-300/90 bg-[var(--surface-raised)]/40 p-3 rounded-xl border border-[var(--panel-border)] break-all">
                   {modCase.metadata.messageContent}
                 </p>
               </div>
@@ -360,17 +360,17 @@ export default function CaseDetailClient() {
             {modCase.metadata?.revertedAt && (
               <div className="rounded-xl border border-green-500/20 bg-green-500/10 p-3 text-xs space-y-1">
                 <p className="font-bold text-green-300">Sanction Révoquée (Pardon)</p>
-                <p className="text-zinc-300">Par : {modCase.metadata.revertedBy}</p>
-                <p className="text-zinc-400">Motif de levée : {modCase.metadata.revertReason}</p>
+                <p className="text-[var(--text-muted)]">Par : {modCase.metadata.revertedBy}</p>
+                <p className="text-[var(--text-muted)]">Motif de levée : {modCase.metadata.revertReason}</p>
               </div>
             )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* PREUVES (EVIDENCE) */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] flex items-center gap-2">
                   <Paperclip className="h-3.5 w-3.5 text-orange-400" />
                   Preuves Attachées ({evidence.length})
                 </h3>
@@ -383,7 +383,7 @@ export default function CaseDetailClient() {
                   value={newEvidenceUrl}
                   onChange={(e) => setNewEvidenceUrl(e.target.value)}
                   placeholder="Lien URL de capture ou preuve (https://...)"
-                  className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none focus:border-orange-500"
+                  className="h-8 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-orange-500"
                 />
                 <div className="flex gap-2">
                   <input
@@ -391,12 +391,12 @@ export default function CaseDetailClient() {
                     value={newEvidenceContent}
                     onChange={(e) => setNewEvidenceContent(e.target.value)}
                     placeholder="Description ou note de preuve..."
-                    className="h-8 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none focus:border-orange-500"
+                    className="h-8 flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-orange-500"
                   />
                   <button
                     type="submit"
                     disabled={isAddingEvidence || (!newEvidenceUrl.trim() && !newEvidenceContent.trim())}
-                    className="h-8 px-3 rounded-lg bg-white/10 text-xs font-bold text-white hover:bg-white/20 disabled:opacity-50 cursor-pointer"
+                    className="h-8 px-3 rounded-xl bg-[var(--text-primary)]/10 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--text-primary)]/15 disabled:opacity-50 cursor-pointer"
                   >
                     Attacher
                   </button>
@@ -406,12 +406,12 @@ export default function CaseDetailClient() {
               {/* Liste des preuves */}
               <div className="space-y-2">
                 {evidence.length === 0 ? (
-                  <p className="text-xs text-zinc-500 italic">Aucune preuve rattachée à cette case.</p>
+                  <p className="text-xs text-[var(--text-muted)] italic">Aucune preuve rattachée à cette case.</p>
                 ) : (
                   evidence.map((ev) => (
                     <div
                       key={ev.id}
-                      className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 text-xs space-y-1"
+                      className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs space-y-1"
                     >
                       {ev.url && (
                         <a
@@ -424,8 +424,8 @@ export default function CaseDetailClient() {
                           <span>{ev.url}</span>
                         </a>
                       )}
-                      {ev.content && <p className="text-zinc-300">{ev.content}</p>}
-                      <p className="text-[10px] text-zinc-500">Par {ev.addedBy}</p>
+                      {ev.content && <p className="text-[var(--text-muted)]">{ev.content}</p>}
+                      <p className="text-xs text-[var(--text-muted)]">Par {ev.addedBy}</p>
                     </div>
                   ))
                 )}
@@ -433,9 +433,9 @@ export default function CaseDetailClient() {
             </div>
 
             {/* NOTES INTERNES STAFF */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] flex items-center gap-2">
                   <FileText className="h-3.5 w-3.5 text-amber-400" />
                   Notes Staff Privées ({notes.length})
                 </h3>
@@ -448,12 +448,12 @@ export default function CaseDetailClient() {
                   value={newNoteContent}
                   onChange={(e) => setNewNoteContent(e.target.value)}
                   placeholder="Ajouter un commentaire staff interne..."
-                  className="h-8 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none focus:border-orange-500"
+                  className="h-8 flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-orange-500"
                 />
                 <button
                   type="submit"
                   disabled={isAddingNote || !newNoteContent.trim()}
-                  className="h-8 px-3 rounded-lg bg-orange-600 text-xs font-bold text-white hover:bg-orange-500 disabled:opacity-50 cursor-pointer"
+                  className="h-8 px-3 rounded-xl bg-orange-600 text-xs font-bold text-white hover:bg-orange-500 disabled:opacity-50 cursor-pointer"
                 >
                   Ajouter
                 </button>
@@ -462,15 +462,15 @@ export default function CaseDetailClient() {
               {/* Liste des notes */}
               <div className="space-y-2 max-h-60 overflow-y-auto">
                 {notes.length === 0 ? (
-                  <p className="text-xs text-zinc-500 italic">Aucune note staff pour ce dossier.</p>
+                  <p className="text-xs text-[var(--text-muted)] italic">Aucune note staff pour ce dossier.</p>
                 ) : (
                   notes.map((n) => (
                     <div
                       key={n.id}
-                      className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 text-xs space-y-1"
+                      className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs space-y-1"
                     >
-                      <p className="text-zinc-200">{n.content}</p>
-                      <p className="text-[10px] text-zinc-500">
+                      <p className="text-[var(--text-primary)]">{n.content}</p>
+                      <p className="text-xs text-[var(--text-muted)]">
                         {n.authorTag} • {new Date(n.createdAt).toLocaleDateString()}
                       </p>
                     </div>
@@ -481,28 +481,28 @@ export default function CaseDetailClient() {
           </div>
 
           {/* CASES ASSOCIÉES (HISTORIQUE DE L'UTILISATEUR) */}
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
               Autres Sanctions Récemment Reçues par {modCase.userTag} ({relatedCases.length})
             </h3>
             {relatedCases.length === 0 ? (
-              <p className="text-xs text-zinc-500 italic">Aucune autre sanction au dossier de ce membre.</p>
+              <p className="text-xs text-[var(--text-muted)] italic">Aucune autre sanction au dossier de ce membre.</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {relatedCases.map((rc) => (
                   <Link
                     key={rc.id}
                     href={`/discord/moderation/cases/${rc.caseNumber}?guildId=${rc.guildId}`}
-                    className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 hover:border-[var(--input-border-hover)] transition-all space-y-1 block"
+                    className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 hover:border-[var(--input-border-hover)] transition-all space-y-1 block"
                   >
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-white font-mono">Case #{rc.caseNumber}</span>
-                      <span className="text-[10px] uppercase font-bold text-orange-400">
+                      <span className="font-bold text-[var(--text-primary)] font-mono">Case #{rc.caseNumber}</span>
+                      <span className="text-xs uppercase font-bold text-orange-400">
                         {rc.action}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-300 line-clamp-1">{rc.reason}</p>
-                    <span className="text-[10px] text-zinc-500">
+                    <p className="text-xs text-[var(--text-muted)] line-clamp-1">{rc.reason}</p>
+                    <span className="text-xs text-[var(--text-muted)]">
                       {new Date(rc.createdAt).toLocaleDateString()} • {rc.status}
                     </span>
                   </Link>
@@ -516,27 +516,27 @@ export default function CaseDetailClient() {
 
       {/* MODAL RÉVOCATION */}
       {isRevertOpen && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/70 animate-in fade-in">
+          <div className="w-full max-w-md rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
-              <h3 className="text-sm font-bold text-white">Révoquer la Case #{modCase.caseNumber}</h3>
-              <button onClick={() => setIsRevertOpen(false)} className="text-zinc-400 hover:text-white cursor-pointer">
+              <h3 className="text-sm font-bold text-[var(--text-primary)]">Révoquer la Case #{modCase.caseNumber}</h3>
+              <button onClick={() => setIsRevertOpen(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[var(--text-muted)]">
               Cette action annulera la sanction sur Discord et marquera le dossier comme révoqué avec traçabilité complète.
             </p>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-300">Motif de levée / pardon</label>
+              <label className="text-xs font-medium text-[var(--text-muted)]">Motif de levée / pardon</label>
               <textarea
                 rows={2}
                 value={revertReason}
                 onChange={(e) => setRevertReason(e.target.value)}
                 placeholder="Ex: Excuses sincères, sanction levée après vérification..."
-                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-2.5 text-xs text-white outline-none focus:border-orange-500 resize-none"
+                className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-orange-500 resize-none"
               />
             </div>
 
@@ -544,7 +544,7 @@ export default function CaseDetailClient() {
               <button
                 type="button"
                 onClick={() => setIsRevertOpen(false)}
-                className="h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 text-xs font-medium text-zinc-400 hover:text-white cursor-pointer"
+                className="h-8 rounded-xl border border-[var(--panel-border)] px-4 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
               >
                 Annuler
               </button>

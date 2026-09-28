@@ -223,7 +223,7 @@ export default function AfkCenterClient() {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
-        throw new Error(data?.error || `HTTP ${res.status}`);
+        throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
       }
       try {
         localStorage.setItem(localKey, JSON.stringify(config));
@@ -253,7 +253,7 @@ export default function AfkCenterClient() {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
-        throw new Error(data?.error || `HTTP ${res.status}`);
+        throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
       }
       success("Statut AFK retiré", "");
       load();

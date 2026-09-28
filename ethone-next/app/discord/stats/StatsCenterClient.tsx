@@ -15,6 +15,7 @@ import AnalyticsLineChart from "@/components/charts/AnalyticsLineChart";
 import StatsHeatmap from "./StatsHeatmap";
 import StatsMembersBoard from "./StatsMembersBoard";
 import { cn } from "@/lib/utils";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const PERIODS = [7, 30, 60, 90, 180, 365];
@@ -251,11 +252,14 @@ export default function StatsCenterClient() {
     setSaving(true);
     try {
       const res = await fetch(`${base}/config`, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ enabled }) });
-      if (!res.ok) throw new Error(String(res.status));
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
+      }
       success(enabled ? "Statistiques activées" : "Statistiques désactivées", enabled ? "Les données se collectent à partir de maintenant." : "La collecte est arrêtée ; l'historique est conservé.");
       await load();
-    } catch {
-      showError("Réglage non enregistré", "Le bot n'a pas répondu ou a refusé le changement.");
+    } catch (err) {
+      showError("Réglage non enregistré", errorReason(err, "Le bot n'a pas répondu ou a refusé le changement."));
     } finally {
       setSaving(false);
     }
@@ -266,11 +270,14 @@ export default function StatsCenterClient() {
     setSaving(true);
     try {
       const res = await fetch(`${base}/data`, { method: "DELETE", credentials: "include" });
-      if (!res.ok) throw new Error(String(res.status));
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
+      }
       success("Statistiques effacées", "L'historique de ce serveur a été supprimé.");
       await load();
-    } catch {
-      showError("Statistiques non effacées", "Le bot n'a pas répondu ou a refusé.");
+    } catch (err) {
+      showError("Statistiques non effacées", errorReason(err, "Le bot n'a pas répondu ou a refusé."));
     } finally {
       setSaving(false);
     }
@@ -281,10 +288,13 @@ export default function StatsCenterClient() {
     setMember(null);
     try {
       const res = await fetch(`${base}/member/${encodeURIComponent(id)}`, { credentials: "include" });
-      if (!res.ok) throw new Error(String(res.status));
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
+      }
       setMember((await res.json()) as MemberDetail);
-    } catch {
-      showError("Fiche indisponible", "Le bot n'a pas répondu.");
+    } catch (err) {
+      showError("Fiche indisponible", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setMemberLoading(false);
     }
@@ -300,10 +310,13 @@ export default function StatsCenterClient() {
     setChannel(null);
     try {
       const res = await fetch(`${base}/channel/${encodeURIComponent(id)}?days=${days}`, { credentials: "include" });
-      if (!res.ok) throw new Error(String(res.status));
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
+      }
       setChannel((await res.json()) as ChannelDetail);
-    } catch {
-      showError("Détail indisponible", "Le bot n'a pas répondu.");
+    } catch (err) {
+      showError("Détail indisponible", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setChannelLoading(false);
     }

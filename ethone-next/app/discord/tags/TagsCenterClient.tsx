@@ -174,7 +174,7 @@ export default function TagsCenterClient() {
         body: JSON.stringify({ content: editContent }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error || "");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       success(isNew ? "Tag créé" : "Tag modifié", `\`/tag get ${name}\` pour l'afficher.`);
       setEditName("");
       setEditContent("");
@@ -194,7 +194,7 @@ export default function TagsCenterClient() {
         credentials: "include",
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error || "delete failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       success("Tag supprimé", "");
       if (editName === name) {
         setEditName("");

@@ -131,13 +131,17 @@ export default function VoiceSettingsClient() {
           : [];
         setCategories(cats);
         if (notify) success("Catégories actualisées !");
+      } else if (notify) {
+        const errBody = await res.json().catch(() => null);
+        showError("Impossible d'actualiser les catégories.", formatApiError(errBody?.error, `Erreur HTTP ${res.status}`));
       }
     } catch {
-      // ignore
+      // Silencieux au chargement initial ; sur une actualisation demandée par l'utilisateur, on le signale.
+      if (notify) showError("Impossible d'actualiser les catégories.", "Le bot n'a pas répondu.");
     } finally {
       setLoadingCategories(false);
     }
-  }, [guildId, isBotPresent, success]);
+  }, [guildId, isBotPresent, success, showError]);
 
   const fetchSettings = useCallback(async () => {
     if (!BOT_API_URL || !guildId || !isBotPresent) {
@@ -176,7 +180,7 @@ export default function VoiceSettingsClient() {
       });
 
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "save failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
 
       success("Paramètres enregistrés avec succès !");
     } catch (err: any) {

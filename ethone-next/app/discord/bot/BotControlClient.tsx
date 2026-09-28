@@ -50,6 +50,7 @@ import ConfigurationGroup from "@/components/discord/bot-control/ConfigurationGr
 import { useAuth } from "@/components/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
+import { formatApiError, errorReason } from "@/lib/format-error";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 
 export type BotTab =
@@ -468,14 +469,18 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     async (patch: Record<string, unknown>) => {
       if (!settingsGuildId || !BOT_API_URL) return;
       try {
-        await fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/ai/settings`, {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/ai/settings`, {
           method: "PUT",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(patch),
         });
-      } catch {
-        toast?.error?.("Échec de la sauvegarde du réglage IA.");
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          throw new Error(formatApiError(data?.error, ""));
+        }
+      } catch (err) {
+        toast?.error?.(errorReason(err, "Échec de la sauvegarde du réglage IA."));
       }
     },
     [settingsGuildId, toast]
@@ -555,13 +560,13 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       });
       const data = await res.json().catch(() => null);
       if (!res.ok || data?.success === false) {
-        throw new Error(data?.error || `HTTP ${res.status}`);
+        throw new Error(formatApiError(data?.error, "Erreur lors de la mise à jour du module."));
       }
       const mod = modules.find((m) => m.id === moduleId);
       toast?.toggle?.(mod?.name || "Module", nextEnabled, `Module ${nextEnabled ? "activé" : "désactivé"} avec succès.`);
     } catch (err: any) {
       setModules(previousModules);
-      toast?.error?.(err?.message || "Erreur lors de la mise à jour du module.");
+      toast?.error?.(errorReason(err, "Erreur lors de la mise à jour du module."));
     } finally {
       setTogglingModuleId(null);
     }
@@ -677,11 +682,14 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ presetId }),
       });
-      if (!res.ok) throw new Error(String(res.status));
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(formatApiError(data?.error, ""));
+      }
       setActiveRolePreset(presetId);
       toast?.success?.(`Préset "${label}" appliqué avec succès.`);
-    } catch {
-      toast?.error?.("Échec de l'application du préset.");
+    } catch (err) {
+      toast?.error?.(errorReason(err, "Échec de l'application du préset."));
     } finally {
       setApplyingRolePreset(false);
     }
@@ -752,7 +760,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         setIntegrations((prev) => prev.map((i) => (i.id === id ? json.data : i)));
         toast?.success?.("Intégration testée avec succès.");
       } else {
-        toast?.error?.(json?.error || "Échec du test d'intégration.");
+        toast?.error?.(formatApiError(json?.error, "Échec du test d'intégration."));
       }
     } catch {
       toast?.error?.("Erreur réseau lors du test d'intégration.");
@@ -796,7 +804,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         setJobs((prev) => prev.map((j) => (j.id === jobId ? json.data : j)));
         toast?.success?.(`Tâche "${json.data.name}" exécutée avec succès.`);
       } else {
-        toast?.error?.(json?.error || "Échec de l'exécution de la tâche.");
+        toast?.error?.(formatApiError(json?.error, "Échec de l'exécution de la tâche."));
       }
     } catch {
       toast?.error?.("Erreur réseau lors de l'exécution de la tâche.");
@@ -841,12 +849,15 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
             prefixCommandsEnabled: botSettings.enablePrefix,
           }),
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          throw new Error(formatApiError(data?.error, ""));
+        }
       }
       (toast as any)?.success?.("Configuration opérationnelle enregistrée avec succès !") ||
       (toast as any)?.info?.("Configuration enregistrée !");
-    } catch {
-      (toast as any)?.error?.("Erreur lors de l'enregistrement.");
+    } catch (err) {
+      (toast as any)?.error?.(errorReason(err, "Erreur lors de l'enregistrement."));
     } finally {
       setSavingSettings(false);
     }
@@ -903,13 +914,13 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const handleOptimizeMemory = async () => {
     setOptimizingMemory(true);
     try {
-      if (!BOT_API_URL) throw new Error("no backend configured");
+      if (!BOT_API_URL) throw new Error("Bot injoignable : aucun backend configuré.");
       const res = await fetch(`${BOT_API_URL}/api/bot/performance/optimize`, {
         credentials: "include",
         method: "POST",
       });
-      const data = await res.json();
-      if (!res.ok || !data?.success) throw new Error("optimize failed");
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) throw new Error(formatApiError(data?.error, ""));
       const d = data.data;
       setPerfMetrics((prev) => ({
         ...prev,
@@ -922,8 +933,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       } else {
         (toast as any)?.info?.("Chiffres actualisés (GC non exposé sur ce process, aucune mémoire forcée à libérer).");
       }
-    } catch {
-      (toast as any)?.error?.("Erreur lors de l'optimisation.");
+    } catch (err) {
+      (toast as any)?.error?.(errorReason(err, "Erreur lors de l'optimisation."));
     } finally {
       setOptimizingMemory(false);
     }

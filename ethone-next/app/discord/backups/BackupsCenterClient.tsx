@@ -275,7 +275,7 @@ export default function BackupsCenterClient() {
     try {
       const res = await fetch(`${base}/${bkp.backupId}`, { method: "DELETE", credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error);
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       setBackups((prev) => prev.filter((b) => b.backupId !== bkp.backupId));
       success("Sauvegarde supprimée.");
       load();
@@ -310,7 +310,7 @@ export default function BackupsCenterClient() {
         body: JSON.stringify({ name: backupName, description: backupDesc, type, isProtected: backupProtect, includedComponents }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.backupId) throw new Error(data?.error || "create failed");
+      if (!res.ok || !data?.backupId) throw new Error(formatApiError(data?.error, ""));
       setShowCreateModal(false);
       success(`Snapshot « ${data.name} » créé (${(data.sizeBytes / 1024).toFixed(0)} Ko).`);
       load();
@@ -333,7 +333,7 @@ export default function BackupsCenterClient() {
         body: JSON.stringify({ safetyLevel: level, mode: "FULL", selectedComponents: bkp.includedComponents }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.counts) throw new Error(data?.error);
+      if (!res.ok || !data?.counts) throw new Error(formatApiError(data?.error, ""));
       setRestorePlan(data);
     } catch (e: any) {
       setRestorePlan(null);
@@ -421,7 +421,7 @@ export default function BackupsCenterClient() {
         body: JSON.stringify({ safetyLevel: restoreLevel, mode: "FULL", selectedComponents: bkp.includedComponents, confirmServerName }),
       });
       const job = await res.json().catch(() => null);
-      if (!res.ok || !job?.jobId) throw new Error(job?.error || "restore failed");
+      if (!res.ok || !job?.jobId) throw new Error(formatApiError(job?.error, ""));
       setRestoreJob(job);
       pollJob(job.jobId);
     } catch (e: any) {
@@ -441,7 +441,7 @@ export default function BackupsCenterClient() {
     try {
       const res = await fetch(`${base}/${bkp.backupId}/test`, { method: "POST", credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok || typeof data?.valid !== "boolean") throw new Error(data?.error);
+      if (!res.ok || typeof data?.valid !== "boolean") throw new Error(formatApiError(data?.error, ""));
       setTestResult(data);
     } catch (e: any) {
       toastError(formatApiError(e, "Échec du test d'intégrité."));

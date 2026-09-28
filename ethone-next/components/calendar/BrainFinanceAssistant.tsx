@@ -8,6 +8,7 @@ import { Icon } from "@/lib/icons";
 import { addBill, type Bill, toISODate } from "@/lib/bills-manager";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
+import { formatApiError } from "@/lib/format-error";
 
 import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
 
@@ -132,6 +133,9 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
       if (res.ok) {
         const data = await res.json();
         setAiAdvice(data?.response || data?.choices?.[0]?.message?.content || "Analyse financière indisponible.");
+      } else {
+        const errBody = await res.json().catch(() => null);
+        showError("Conseil IA temporairement indisponible.", formatApiError(errBody?.error, `Erreur HTTP ${res.status}`));
       }
     } catch {
       setAiAdvice("Conseil IA temporairement indisponible.");

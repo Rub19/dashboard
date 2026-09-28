@@ -15,5 +15,5 @@ export function cn(...inputs: ClassValue[]): string {
     .join(" ");
 }
 
-export { formatApiError, fetchJson } from "./format-error";
+export { formatApiError, fetchJson, errorReason } from "./format-error";
 

@@ -154,7 +154,7 @@ export default function InviteSettingsClient() {
       });
 
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "save failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
 
       success("Paramètres enregistrés", "La configuration d'Invite Tracker a été mise à jour.");
     } catch (err: any) {

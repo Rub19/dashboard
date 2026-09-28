@@ -314,7 +314,7 @@ export default function EconomyCenterClient() {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok || !data?.success) {
-        throw new Error(data?.error || `HTTP ${res.status}`);
+        throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
       }
       success("Bonus quotidien réclamé !", `+${data.amount} ${config.currencySymbol} ajoutés à votre solde.`);
       load();
@@ -342,7 +342,7 @@ export default function EconomyCenterClient() {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok || !data?.success) {
-        throw new Error(data?.error || `HTTP ${res.status}`);
+        throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
       }
       success("Rôle acheté avec succès !", `Vous avez obtenu le rôle "${itemLabel}".`);
       load();
@@ -367,7 +367,7 @@ export default function EconomyCenterClient() {
         body: JSON.stringify(config),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
       if (data?.config) setConfig(data.config);
       success("Configuration de l'économie enregistrée.");
     } catch (err: unknown) {
@@ -394,7 +394,7 @@ export default function EconomyCenterClient() {
         body: JSON.stringify(newItem),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
       if (data?.item) setShopItems((prev) => [...prev, data.item]);
       setNewItem({ roleId: "", label: "", price: 100, description: "" });
       success("Article ajouté à la boutique.");
@@ -410,7 +410,7 @@ export default function EconomyCenterClient() {
     try {
       const res = await fetch(`${base}/shop/${id}`, { method: "DELETE", credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
     } catch (err: unknown) {
       setShopItems(previous);
       toastError("Échec de la suppression", formatApiError(err, "Échec de la suppression de l'article."));

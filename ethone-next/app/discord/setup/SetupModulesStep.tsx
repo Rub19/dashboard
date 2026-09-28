@@ -5,6 +5,7 @@ import { useModuleStatus } from "@/lib/hooks/useModuleStatus";
 import { DISCORD_MODULES } from "@/lib/discord-modules";
 import { EthoneIcon } from "@/components/EthoneIcon";
 import { useToast } from "@/components/ToastProvider";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -58,12 +59,15 @@ export default function SetupModulesStep({ guildId }: { guildId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enabled: wanted }),
       });
-      if (!res.ok) throw new Error("refusé");
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
+      }
       const data = await res.json();
       if (data?.modules) setView(data.modules as Record<string, boolean>);
       success("Modules mis à jour", "Le bot applique ce choix tout de suite.");
-    } catch {
-      showError("Modules non modifiés", "Le bot n'a pas répondu ou a refusé le changement.");
+    } catch (err) {
+      showError("Modules non modifiés", errorReason(err, "Le bot n'a pas répondu ou a refusé le changement."));
     } finally {
       setBusy(false);
     }

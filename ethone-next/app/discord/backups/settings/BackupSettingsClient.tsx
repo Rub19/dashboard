@@ -121,7 +121,7 @@ export default function BackupSettingsClient() {
       const body = { ...settings, notifyChannelId: settings.notifyChannelId?.trim() || undefined };
       const res = await fetch(`${base}/settings`, { method: "PUT", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
       const data = await res.json().catch(() => null);
-      if (!res.ok || typeof data?.enabled !== "boolean") throw new Error(data?.error || "save failed");
+      if (!res.ok || typeof data?.enabled !== "boolean") throw new Error(formatApiError(data?.error, ""));
       setSettings({ ...DEFAULTS, ...data, notifyChannelId: data.notifyChannelId || "" });
       setDirty(false);
       success("Planification & rétention enregistrées.");

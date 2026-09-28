@@ -21,6 +21,8 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import { errorReason } from "@/lib/format-error";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -186,12 +188,12 @@ export default function RemindersCenterClient() {
         body: JSON.stringify({ in: fDelay, message: fMessage, channelId: fChannel, recurrence: fRecurrence }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error || "");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       success("Rappel programmé", `Le bot te mentionnera dans #${channelName(fChannel)}.`);
       setFMessage("");
       load();
     } catch (e) {
-      showError("Échec", e instanceof Error && e.message ? e.message : "Impossible de créer le rappel.");
+      showError("Échec", errorReason(e, "Impossible de créer le rappel."));
     } finally {
       setSaving(false);
     }
@@ -204,11 +206,14 @@ export default function RemindersCenterClient() {
         method: "DELETE",
         credentials: "include",
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
+      }
       success("Rappel annulé", "");
       load();
-    } catch {
-      showError("Échec", "Impossible d'annuler le rappel.");
+    } catch (err) {
+      showError("Échec", errorReason(err, "Impossible d'annuler le rappel."));
     }
   };
 

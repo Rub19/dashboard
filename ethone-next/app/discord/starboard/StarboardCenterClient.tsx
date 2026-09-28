@@ -311,7 +311,7 @@ export default function StarboardCenterClient() {
         }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "save failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       if (data?.config) {
         const merged = { ...DEFAULT_CONFIG, ...data.config, guildId: selectedGuild.id };
         setConfig(merged);

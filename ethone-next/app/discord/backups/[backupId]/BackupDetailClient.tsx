@@ -8,6 +8,7 @@ import { ArrowLeft, ShieldCheck, Download, RotateCcw, GitCompare, Lock, Unlock, 
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
+import { formatApiError, errorReason } from "@/lib/format-error";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -87,7 +88,7 @@ export default function BackupDetailClient() {
     try {
       const res = await fetch(`${base}/${backupId}`, { credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.snapshot) throw new Error(data?.error || "Sauvegarde introuvable");
+      if (!res.ok || !data?.snapshot) throw new Error(formatApiError(data?.error, "Sauvegarde introuvable"));
       setSnapshot(data.snapshot);
       setIntegrity(data.integrity || null);
       setError(null);
@@ -108,11 +109,14 @@ export default function BackupDetailClient() {
     setSnapshot({ ...snapshot, isProtected: next });
     try {
       const res = await fetch(`${base}/${snapshot.backupId}/protect`, { method: "PATCH", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify({ isProtected: next }) });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(formatApiError(data?.error, ""));
+      }
       success(next ? "Snapshot protégé." : "Protection retirée.");
-    } catch {
+    } catch (e: any) {
       setSnapshot({ ...snapshot, isProtected: !next });
-      toastError("Échec du changement de protection.");
+      toastError("Échec du changement de protection.", errorReason(e));
     }
   };
 

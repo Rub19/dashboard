@@ -39,6 +39,7 @@ import {
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
+import { formatApiError } from "@/lib/format-error";
 
 // Field palette definitions
 const FIELD_PALETTE = [
@@ -172,7 +173,7 @@ export default function FormBuilderClient() {
     try {
       const res = await fetch(formUrl, { credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.form) throw new Error(data?.error || "Formulaire introuvable");
+      if (!res.ok || !data?.form) throw new Error(formatApiError(data?.error, "Formulaire introuvable"));
       const f = data.form;
       setFormTitle(f.title || "");
       setFormDescription(f.description || "");
@@ -310,7 +311,7 @@ export default function FormBuilderClient() {
     try {
       const res = await fetch(formUrl, { method: "PUT", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify(buildPayload()) });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.form) throw new Error(data?.error || "save failed");
+      if (!res.ok || !data?.form) throw new Error(formatApiError(data?.error, "Le bot n'a pas répondu."));
       setFormVersion(data.form.version || formVersion);
       setDirty(false);
       success("Formulaire enregistré", `${fields.length} champ(s) sur ${sections.length} étape(s).`);
@@ -334,7 +335,7 @@ export default function FormBuilderClient() {
     try {
       const res = await fetch(`${formUrl}/publish`, { method: "POST", credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.form) throw new Error(data?.error || "publish failed");
+      if (!res.ok || !data?.form) throw new Error(formatApiError(data?.error, "Le bot n'a pas répondu."));
       setFormStatus(data.form.status || "PUBLISHED");
       setFormVersion(data.form.version || formVersion);
       success("Formulaire publié", "Publie maintenant le panneau Discord depuis Paramètres & Discord.");

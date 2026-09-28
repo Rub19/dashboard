@@ -13,6 +13,7 @@ import { confirmDialog } from "@/lib/confirmDialog";
 import { EthoneIcon } from "@/components/EthoneIcon";
 import PageHeader from "@/components/discord/PageHeader";
 import { cn } from "@/lib/utils";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const WELCOME_KEY = "ethone.secureRoles.welcomeSeen";
@@ -206,12 +207,12 @@ export default function SecureRolesCenterClient() {
     try {
       const res = await fetch(`${base}${path}`, { method, credentials: "include", headers: { "Content-Type": "application/json" }, body: body === undefined ? undefined : JSON.stringify(body) });
       const json = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(json?.error || String(res.status));
+      if (!res.ok) throw new Error(formatApiError(json?.error, ""));
       await load();
       success(okTitle, okText);
       return json;
     } catch (err) {
-      showError("Action impossible", err instanceof Error && err.message ? err.message : "Le bot n'a pas répondu.");
+      showError("Action impossible", errorReason(err, "Le bot n'a pas répondu."));
       return null;
     } finally {
       setBusy(null);

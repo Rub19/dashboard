@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.30.0 — 2026-09-28
+
+**Bot Discord en plein écran + erreurs plus claires**
+
+- Le Bot Discord s'ouvre désormais en plein écran par-dessus le dashboard (sans sidebar, barre du haut ni barre du bas), avec un bouton « Retour à ETHONE » en haut à gauche.
+- Cartes de modules et liste des serveurs redessinées : plus grandes, plus aérées, icône, description et bouton « Configurer » (inspiré de Sapphire).
+- Les erreurs affichent maintenant la vraie raison renvoyée par le bot (au lieu d'un message générique) sur une soixantaine de pages, et les échecs silencieux (RSVP d'événements, notes de formulaires, comportement IA du bot…) sont signalés.
+
 ## v1.29.4 — 2026-09-28
 
 **Présence du bot : le choix de profil est enfin pris en compte**

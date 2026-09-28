@@ -32,6 +32,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 import RolePicker from "@/components/discord/RolePicker";
+import { formatApiError } from "@/lib/format-error";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -185,6 +186,9 @@ export default function InvitesCenterClient() {
       if (res.ok) {
         success("Synchronisation effectuée", "Les invitations Discord ont été rafraîchies depuis l'API Gateway.");
         fetchAllData();
+      } else {
+        const errBody = await res.json().catch(() => null);
+        showError("Erreur de synchronisation", formatApiError(errBody?.error, `Erreur HTTP ${res.status}`));
       }
     } catch {
       showError("Erreur de synchronisation", "Impossible de contacter l'API du bot.");
@@ -220,6 +224,9 @@ export default function InvitesCenterClient() {
         setShowRewardModal(false);
         setNewRewardName("");
         fetchAllData();
+      } else {
+        const errBody = await res.json().catch(() => null);
+        showError("Impossible de créer la récompense.", formatApiError(errBody?.error, `Erreur HTTP ${res.status}`));
       }
     } catch {
       showError("Erreur", "Impossible de créer la récompense.");
@@ -232,7 +239,12 @@ export default function InvitesCenterClient() {
       return;
     }
     try {
-      await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/rewards/${id}`, { credentials: "include", method: "DELETE" });
+      const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/rewards/${id}`, { credentials: "include", method: "DELETE" });
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        showError("Impossible de supprimer la récompense.", formatApiError(errBody?.error, `Erreur HTTP ${res.status}`));
+        return;
+      }
       success("Récompense supprimée", "Le palier de parrainage a été retiré.");
       fetchAllData();
     } catch {

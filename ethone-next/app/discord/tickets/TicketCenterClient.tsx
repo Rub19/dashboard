@@ -434,7 +434,7 @@ export function TicketCenterClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec de la prise en charge");
+        throw new Error(formatApiError(data?.error, "Échec de la prise en charge"));
       }
       success("Ticket pris en charge", `Vous avez pris en charge le ticket #${ticket.id}.`);
       fetchAllData();
@@ -470,7 +470,7 @@ export function TicketCenterClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec mise à jour priorité");
+        throw new Error(formatApiError(data?.error, "Échec mise à jour priorité"));
       }
       info("Priorité modifiée", `Priorité passée à ${nextPriority} pour #${ticket.id}.`);
       fetchAllData();
@@ -500,7 +500,7 @@ export function TicketCenterClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec de la fermeture");
+        throw new Error(formatApiError(data?.error, "Échec de la fermeture"));
       }
       success("Ticket clôturé", `Le ticket #${ticketToClose.id} a été clôturé avec succès.`);
       setShowCloseModal(false);
@@ -537,7 +537,7 @@ export function TicketCenterClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec sauvegarde catégorie");
+        throw new Error(formatApiError(data?.error, "Échec sauvegarde catégorie"));
       }
       success("Catégorie enregistrée", `Catégorie "${payload.name}" mise à jour.`);
       setShowCategoryModal(false);
@@ -563,7 +563,7 @@ export function TicketCenterClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec suppression");
+        throw new Error(formatApiError(data?.error, "Échec suppression"));
       }
       success("Catégorie supprimée", "La catégorie a été retirée.");
       fetchAllData();
@@ -598,7 +598,7 @@ export function TicketCenterClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec sauvegarde panel");
+        throw new Error(formatApiError(data?.error, "Échec sauvegarde panel"));
       }
       success("Panel enregistré", `Panel "${payload.title}" mis à jour.`);
       setShowPanelModal(false);
@@ -630,7 +630,7 @@ export function TicketCenterClient() {
         body: JSON.stringify({ channelId: chId }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "Échec de publication");
+      if (!res.ok) throw new Error(formatApiError(data?.error, "Échec de publication"));
       success("Panel publié sur Discord !", `Le panneau interactif a été posté dans #${data.channelName || "salon"}.`);
       fetchAllData();
     } catch (err: any) {
@@ -694,7 +694,7 @@ export function TicketCenterClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec sauvegarde équipe");
+        throw new Error(formatApiError(data?.error, "Échec sauvegarde équipe"));
       }
       success("Équipe enregistrée", `Équipe "${payload.name}" mise à jour.`);
       setShowTeamModal(false);
@@ -1439,7 +1439,7 @@ export function TicketCenterClient() {
                     body: JSON.stringify(newRule),
                   });
                   const data = await res.json().catch(() => null);
-                  if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+                  if (!res.ok) throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
                   await fetchAllData();
                 } catch (err: unknown) {
                   showError("Erreur", formatApiError(err, "Impossible d'ajouter la règle d'automatisation."));
@@ -1489,7 +1489,7 @@ export function TicketCenterClient() {
                         });
                         if (!res.ok) {
                           const data = await res.json().catch(() => null);
-                          throw new Error(data?.error || `HTTP ${res.status}`);
+                          throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
                         }
                         await fetchAllData();
                       } catch (err: unknown) {

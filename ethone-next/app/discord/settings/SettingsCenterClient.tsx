@@ -12,6 +12,7 @@ import { MemberIdsInput, MultiRolePicker } from "@/components/discord/MultiPicke
 import { Field, Section, ToggleField, inputCls } from "@/components/discord/SettingsUI";
 import PageHeader from "@/components/discord/PageHeader";
 import Select from "@/components/ui/Select";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -133,11 +134,11 @@ export default function SettingsCenterClient() {
     try {
       const res = await fetch(base, { method: "PATCH", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(draft) });
       const json = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(json?.error || String(res.status));
+      if (!res.ok) throw new Error(formatApiError(json?.error, ""));
       await load();
       success("Paramètres enregistrés");
     } catch (err) {
-      showError("Enregistrement impossible", err instanceof Error && err.message ? err.message : "Le bot n'a pas répondu.");
+      showError("Enregistrement impossible", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setSaving(false);
     }
@@ -148,11 +149,11 @@ export default function SettingsCenterClient() {
     try {
       const res = await fetch(`${base}/emergency-test`, { method: "POST", credentials: "include" });
       const json = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(json?.error || String(res.status));
+      if (!res.ok) throw new Error(formatApiError(json?.error, ""));
       if (json.success) success("Test envoyé", `${json.channel ? "Message posté dans le salon d'alerte. " : "Aucun salon d'alerte disponible. "}${json.dms} message(s) privé(s) livré(s) sur ${json.contacts} contact(s).`);
       else showError("Personne n'a pu être prévenu", "Ni salon d'alerte utilisable, ni message privé possible : vérifiez les permissions du bot et les messages privés des contacts.");
     } catch (err) {
-      showError("Test impossible", err instanceof Error && err.message ? err.message : "Le bot n'a pas répondu.");
+      showError("Test impossible", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setTesting(false);
     }
@@ -163,11 +164,11 @@ export default function SettingsCenterClient() {
     try {
       const res = await fetch(`${base}/preview-messages`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ category: previewCategory || undefined }) });
       const json = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(json?.error || String(res.status));
+      if (!res.ok) throw new Error(formatApiError(json?.error, ""));
       if (json.dmClosed) showError("Messages privés fermés", "Le bot ne peut pas vous écrire : autorisez les messages privés des membres de ce serveur, puis réessayez.");
       else success("Messages envoyés", `${json.sent}/${json.total} message(s) reçus en message privé${json.failed ? ` (${json.failed} en échec)` : ""}.`);
     } catch (err) {
-      showError("Envoi impossible", err instanceof Error && err.message ? err.message : "Le bot n'a pas répondu.");
+      showError("Envoi impossible", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setPreviewing(false);
     }

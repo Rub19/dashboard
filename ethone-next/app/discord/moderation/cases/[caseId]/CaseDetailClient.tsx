@@ -17,6 +17,7 @@ import {
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
+import { formatApiError } from "@/lib/format-error";
 
 interface CaseEvidence {
   id: string;
@@ -144,6 +145,9 @@ export default function CaseDetailClient() {
         setNotes((prev) => [data.note, ...prev]);
         setNewNoteContent("");
         success("Note ajoutée", "La note staff a été enregistrée.");
+      } else {
+        const errBody = await res.json().catch(() => null);
+        showError("Erreur", formatApiError(errBody?.error, "Impossible d'ajouter la note."));
       }
     } catch {
       showError("Erreur", "Impossible d'ajouter la note.");
@@ -179,6 +183,9 @@ export default function CaseDetailClient() {
         setNewEvidenceUrl("");
         setNewEvidenceContent("");
         success("Preuve ajoutée", "L'élément de preuve est rattaché au dossier.");
+      } else {
+        const errBody = await res.json().catch(() => null);
+        showError("Erreur", formatApiError(errBody?.error, "Impossible d'ajouter la preuve."));
       }
     } catch {
       showError("Erreur", "Impossible d'ajouter la preuve.");
@@ -207,6 +214,9 @@ export default function CaseDetailClient() {
         success("Sanction révoquée", `La Case #${caseNumber} a été levée avec succès.`);
         setIsRevertOpen(false);
         fetchCaseDetails();
+      } else {
+        const errBody = await res.json().catch(() => null);
+        showError("Erreur", formatApiError(errBody?.error, "Échec de la révocation."));
       }
     } catch {
       showError("Erreur", "Échec de la révocation.");

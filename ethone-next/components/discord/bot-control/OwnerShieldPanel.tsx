@@ -30,6 +30,7 @@ import {
 import Card from "@/components/ui/Card";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 export interface OwnerShieldConfig {
   enabled: boolean;
@@ -154,7 +155,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         credentials: "include",
       });
 
-      if (!res.ok) throw new Error(String(res.status));
+      if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
       const json = await res.json();
       if (json.success && json.data) {
         if (json.data.config) {
@@ -167,7 +168,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         if (notify) success("Statut du Bouclier actualisé !");
       }
     } catch (err: any) {
-      if (notify) showError("Erreur de synchronisation", err.message);
+      if (notify) showError("Erreur de synchronisation", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -204,10 +205,10 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         setConfig(json.config);
         success("Configuration mise à jour !");
       } else {
-        throw new Error(json.error || "Erreur de configuration");
+        throw new Error(formatApiError(json?.error, "Erreur de configuration"));
       }
     } catch (err: any) {
-      showError("Échec de mise à jour", err.message);
+      showError("Échec de mise à jour", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setUpdatingConfig(false);
     }
@@ -229,10 +230,10 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         setConfig(json.config);
         success("Bouclier totalement désactivé", "Le bot n'interviendra plus lors des sanctions.");
       } else {
-        throw new Error(json.error);
+        throw new Error(formatApiError(json?.error, "Le bot a refusé l'action."));
       }
     } catch (err: any) {
-      showError("Erreur désactivation", err.message);
+      showError("Erreur désactivation", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setUpdatingConfig(false);
     }
@@ -254,10 +255,10 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         setConfig(json.config);
         success("Bouclier totalement réactivé", "Toutes les protections automatiques sont en service.");
       } else {
-        throw new Error(json.error);
+        throw new Error(formatApiError(json?.error, "Le bot a refusé l'action."));
       }
     } catch (err: any) {
-      showError("Erreur réactivation", err.message);
+      showError("Erreur réactivation", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setUpdatingConfig(false);
     }
@@ -281,10 +282,10 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         );
         success(json.message);
       } else {
-        throw new Error(json.error);
+        throw new Error(formatApiError(json?.error, "Le bot a refusé l'action."));
       }
     } catch (err: any) {
-      showError("Erreur modification serveur", err.message);
+      showError("Erreur modification serveur", errorReason(err, "Le bot n'a pas répondu."));
     }
   };
 
@@ -310,10 +311,10 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         }
         await fetchStatus(false);
       } else {
-        throw new Error(json.error || "Échec");
+        throw new Error(formatApiError(json?.error, "Échec"));
       }
     } catch (err: any) {
-      showError("Erreur lors du sauvetage", err.message);
+      showError("Erreur lors du sauvetage", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setActingGuildId(null);
     }
@@ -337,10 +338,10 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         success("⚡ Sauvetage global terminé !", json.message);
         await fetchStatus(false);
       } else {
-        throw new Error(json.error || "Échec");
+        throw new Error(formatApiError(json?.error, "Échec"));
       }
     } catch (err: any) {
-      showError("Erreur sauvetage global", err.message);
+      showError("Erreur sauvetage global", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setGlobalRescuing(false);
     }
@@ -363,10 +364,10 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         success("🧪 Simulation d'attaque réussie !", json.details || "Alerte de test envoyée en MP avec les boutons d'action.");
         await fetchStatus(false);
       } else {
-        throw new Error(json.error || "Échec");
+        throw new Error(formatApiError(json?.error, "Échec"));
       }
     } catch (err: any) {
-      showError("Erreur simulation", err.message);
+      showError("Erreur simulation", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setSimulating(false);
     }

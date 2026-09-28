@@ -10,6 +10,7 @@ import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import { cn } from "@/lib/utils";
 import Select from "@/components/ui/Select";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -94,7 +95,7 @@ export default function FormSettingsClient() {
     try {
       const res = await fetch(formUrl, { credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.form) throw new Error(data?.error || "Formulaire introuvable");
+      if (!res.ok || !data?.form) throw new Error(formatApiError(data?.error, "Formulaire introuvable"));
       const f = data.form;
       setFormTitle(f.title);
       setFormStatus(f.status);
@@ -130,7 +131,7 @@ export default function FormSettingsClient() {
     try {
       const res = await fetch(formUrl, { method: "PUT", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify({ panelConfig: panel, antiSpam, scoring, automations }) });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.form) throw new Error(data?.error || "save failed");
+      if (!res.ok || !data?.form) throw new Error(formatApiError(data?.error, "Le bot n'a pas répondu."));
       setDirty(false);
       success("Paramètres enregistrés", "Panneau, anti-spam, scoring et automations mis à jour sur le bot.");
       return true;
@@ -152,7 +153,7 @@ export default function FormSettingsClient() {
     try {
       const res = await fetch(`${formUrl}/panel/publish`, { method: "POST", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify({ channelId: panel.channelId.trim() }) });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.success) throw new Error(data?.error || "publish failed");
+      if (!res.ok || !data?.success) throw new Error(formatApiError(data?.error, "Le bot n'a pas pu poster dans ce salon."));
       setPanel((p) => (p ? { ...p, messageId: data.messageId } : p));
       success("Panneau publié", `Embed + bouton postés dans <#${panel.channelId}>.`);
     } catch (e: any) {

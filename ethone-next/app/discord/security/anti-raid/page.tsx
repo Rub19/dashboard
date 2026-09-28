@@ -586,7 +586,7 @@ export default function AntiRaidDashboardPage() {
             body: JSON.stringify({ active: targetState, reason: "Action manuelle depuis le Dashboard ETHONE" }),
           });
           const data = await res.json().catch(() => null);
-          if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+          if (!res.ok) throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
           setMetrics((prev) => ({
             ...prev,
             raidModeActive: data.raidModeActive,
@@ -627,7 +627,7 @@ export default function AntiRaidDashboardPage() {
             body: JSON.stringify({ active: targetState, reason: "Lockdown manuel déclenché depuis ETHONE" }),
           });
           const data = await res.json().catch(() => null);
-          if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+          if (!res.ok) throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
           setMetrics((prev) => ({
             ...prev,
             lockdownActive: data.lockdownActive,
@@ -655,7 +655,7 @@ export default function AntiRaidDashboardPage() {
         body: JSON.stringify({ seconds: 60 }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
       success("Mise en quarantaine effectuée", `${data.quarantinedCount} membres suspects ont été isolés.`);
     } catch (err: unknown) {
       showError("Échec de la quarantaine", formatApiError(err, "Impossible d'isoler les membres récents."));
@@ -696,7 +696,7 @@ export default function AntiRaidDashboardPage() {
           });
           if (!cfgRes.ok) {
             const errData = await cfgRes.json().catch(() => null);
-            throw new Error(errData?.error || `HTTP ${cfgRes.status}`);
+            throw new Error(formatApiError(errData?.error, `Erreur HTTP ${cfgRes.status}`));
           }
         }
       }
@@ -740,7 +740,7 @@ export default function AntiRaidDashboardPage() {
         });
         if (!res.ok) {
           const errData = await res.json().catch(() => null);
-          throw new Error(errData?.error || `HTTP ${res.status}`);
+          throw new Error(formatApiError(errData?.error, `Erreur HTTP ${res.status}`));
         }
       }
 

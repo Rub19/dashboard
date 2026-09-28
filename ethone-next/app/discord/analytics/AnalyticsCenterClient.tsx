@@ -27,6 +27,7 @@ import {
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -254,7 +255,10 @@ export default function AnalyticsCenterClient() {
         `${BOT_API_URL}/api/guilds/${selectedGuild.id}/analytics/export?period=${period}&format=csv`,
         { credentials: "include" }
       );
-      if (!res.ok) throw new Error("export");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(formatApiError(data?.error, ""));
+      }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -265,8 +269,8 @@ export default function AnalyticsCenterClient() {
       a.remove();
       URL.revokeObjectURL(url);
       showToast("Export CSV téléchargé.");
-    } catch {
-      showToast("Échec de l'export CSV — le bot est peut-être hors ligne.");
+    } catch (err) {
+      showToast(errorReason(err, "Échec de l'export CSV — le bot est peut-être hors ligne."));
     } finally {
       setExporting(false);
     }

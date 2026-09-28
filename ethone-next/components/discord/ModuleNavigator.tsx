@@ -134,97 +134,93 @@ export default function ModuleNavigator({
     return (
       <motion.div
         key={m.id}
-        role="button"
-        tabIndex={0}
-        onClick={() => onSelect(m.id)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onSelect(m.id);
-          }
-        }}
-        aria-pressed={current}
         aria-busy={isPending}
         animate={isPending && !prefersReducedMotion ? { opacity: [1, 0.55, 1] } : { opacity: 1 }}
         transition={isPending && !prefersReducedMotion ? { duration: 0.9, repeat: Infinity, ease: EASE_OUT } : { duration: 0.15, ease: EASE_OUT }}
         className={cn(
-          "group relative flex cursor-pointer items-start gap-3 overflow-hidden rounded-[var(--inset-radius)] border p-3 text-left transition-colors duration-150",
+          "group relative flex flex-col gap-3 overflow-hidden rounded-2xl border p-5 text-left transition-colors duration-150",
           current
-            ? "border-emerald-500/40 bg-emerald-500/[0.08] shadow-sm"
-            : isOn
-            ? "border-[var(--panel-border)] bg-emerald-500/[0.035] hover:border-[var(--input-border-hover)] hover:bg-emerald-500/[0.06]"
-            : "border-[var(--panel-border)] bg-white/[0.02] hover:border-[var(--input-border-hover)] hover:bg-white/[0.04]"
+            ? "border-emerald-500/40 bg-emerald-500/[0.07] shadow-sm"
+            : "border-[var(--panel-border)] bg-[var(--surface-raised)]/50 hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/80"
         )}
       >
-        {isOn && <span className="absolute left-0 top-2.5 bottom-2.5 w-0.5 rounded-full bg-emerald-400/80" />}
-        <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/5 bg-white/[0.04]", m.tint)}>
-          <Icon className="h-5 w-5" />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="flex flex-wrap items-center gap-1.5">
-            <span className={cn("block truncate text-xs font-semibold", current ? "text-white" : "text-zinc-200")}>{m.title}</span>
+        {isOn && <span className="absolute left-0 top-4 bottom-4 w-0.5 rounded-full bg-emerald-400/80" />}
+        <div className="flex items-start justify-between gap-3">
+          <span className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/5 bg-white/[0.05]", m.tint)}>
+            <Icon className="h-6 w-6" />
+          </span>
+          <span className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => toggleFavorite(m.id)}
+              aria-label={fav ? `Retirer ${m.title} des favoris` : `Ajouter ${m.title} aux favoris`}
+              aria-pressed={fav}
+              title={fav ? "Retirer des favoris" : "Épingler en haut"}
+              className={cn(
+                "flex h-7 w-7 items-center justify-center rounded-md transition-colors cursor-pointer",
+                fav ? "text-amber-300" : "text-zinc-600 opacity-0 hover:text-amber-300 group-hover:opacity-100 focus:opacity-100"
+              )}
+            >
+              <Star className="h-4 w-4" fill={fav ? "currentColor" : "none"} />
+            </button>
+            {hasStatus && onToggle && (
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isOn}
+                disabled={isPending}
+                aria-label={`${isOn ? "Désactiver" : "Activer"} ${m.title}`}
+                title={isPending ? "Envoi en cours…" : isOn ? "Désactiver ce module sur ce serveur" : "Activer ce module sur ce serveur"}
+                onClick={() => onToggle(m.id, !isOn)}
+                className={cn(
+                  "relative h-6 w-11 shrink-0 rounded-full transition-colors",
+                  isPending ? "cursor-wait opacity-60" : "cursor-pointer",
+                  isOn ? "bg-emerald-500" : "bg-white/15"
+                )}
+              >
+                <span className={cn("absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform", isOn ? "translate-x-5" : "translate-x-0")} />
+              </button>
+            )}
+          </span>
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h4 className="truncate text-base font-semibold text-white">{m.title}</h4>
             {hasStatus && (
               <Badge variant={isOn ? "success" : "offline"} dot size="sm" className="shrink-0">
                 {isOn ? "Activé" : "Désactivé"}
               </Badge>
             )}
-          </span>
-          <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-zinc-500">{m.description}</span>
-        </span>
-        <span className="flex shrink-0 flex-col items-center gap-1">
-          {hasStatus && onToggle && (
-            <button
-              type="button"
-              role="switch"
-              aria-checked={isOn}
-              disabled={isPending}
-              aria-label={`${isOn ? "Désactiver" : "Activer"} ${m.title}`}
-              title={isPending ? "Envoi en cours…" : isOn ? "Désactiver ce module sur ce serveur" : "Activer ce module sur ce serveur"}
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggle(m.id, !isOn);
-              }}
-              className={cn(
-                "relative h-5 w-9 shrink-0 rounded-full transition-colors",
-                isPending ? "cursor-wait opacity-60" : "cursor-pointer",
-                isOn ? "bg-emerald-500" : "bg-white/15"
-              )}
-            >
-              <span className={cn("absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform", isOn ? "translate-x-4" : "translate-x-0")} />
-            </button>
-          )}
+          </div>
+          <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-zinc-400">{m.description}</p>
+        </div>
+        <div className="flex items-center gap-2 pt-1">
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleFavorite(m.id);
-            }}
-            aria-label={fav ? `Retirer ${m.title} des favoris` : `Ajouter ${m.title} aux favoris`}
-            aria-pressed={fav}
-            title={fav ? "Retirer des favoris" : "Épingler en haut"}
+            onClick={() => onSelect(m.id)}
+            aria-pressed={current}
             className={cn(
-              "flex h-6 w-6 items-center justify-center rounded-md transition-colors cursor-pointer",
-              fav ? "text-amber-300" : "text-zinc-600 opacity-0 hover:text-amber-300 group-hover:opacity-100 focus:opacity-100"
+              "inline-flex h-9 cursor-pointer items-center rounded-lg px-4 text-sm font-semibold transition-colors",
+              current ? "bg-emerald-500/20 text-emerald-200" : "bg-white/[0.07] text-zinc-100 hover:bg-white/[0.13]"
             )}
           >
-            <Star className="h-3.5 w-3.5" fill={fav ? "currentColor" : "none"} />
+            {current ? "Configuration ouverte" : "Configurer"}
           </button>
           <Link
             href={m.href}
-            onClick={(e) => e.stopPropagation()}
             aria-label={`Ouvrir la page ${m.title}`}
             title="Ouvrir la page complète"
-            className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-600 opacity-0 transition-colors hover:text-white group-hover:opacity-100 focus:opacity-100"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-white/[0.07] hover:text-white"
           >
-            <ArrowUpRight className="h-3.5 w-3.5" />
+            <ArrowUpRight className="h-4 w-4" />
           </Link>
-        </span>
+        </div>
       </motion.div>
     );
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-sm">
           <Input
@@ -238,7 +234,7 @@ export default function ModuleNavigator({
           />
         </div>
         <p className="text-[11px] text-zinc-500">
-          {total} module{total > 1 ? "s" : ""} · clic = configuration rapide · <ArrowUpRight className="inline h-3 w-3 -translate-y-px" /> = page complète · <Star className="inline h-3 w-3 -translate-y-px" /> = favori
+          {total} module{total > 1 ? "s" : ""} · Configurer = configuration rapide · <ArrowUpRight className="inline h-3 w-3 -translate-y-px" /> = page complète · <Star className="inline h-3 w-3 -translate-y-px" /> = favori
         </p>
       </div>
 
@@ -256,17 +252,17 @@ export default function ModuleNavigator({
           <h3 className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-amber-300/90">
             <Star className="h-3.5 w-3.5" fill="currentColor" /> Favoris
           </h3>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">{favoriteModules.map(card)}</div>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{favoriteModules.map(card)}</div>
         </section>
       )}
 
       {sections.map((section) => (
         <section key={section.id}>
-          <div className="mb-2 flex items-baseline gap-2 border-b border-[var(--panel-border)]/60 pb-1.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-wider text-zinc-300">{section.label}</h3>
+          <div className="mb-3 flex items-baseline gap-2 border-b border-[var(--panel-border)]/60 pb-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200">{section.label}</h3>
             <span className="text-[11px] text-zinc-600">{section.hint}</span>
           </div>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">{section.items.map(card)}</div>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{section.items.map(card)}</div>
         </section>
       ))}
     </div>

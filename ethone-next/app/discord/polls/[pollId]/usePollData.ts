@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import { formatApiError } from "@/lib/format-error";
 
 export const POLL_BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -100,7 +101,7 @@ export function usePollData() {
       try {
         const pollRes = await fetch(base, { credentials: "include" });
         const pollJson = await pollRes.json().catch(() => ({}));
-        if (!pollRes.ok || !pollJson?.poll) throw new Error(pollJson?.error || "Sondage introuvable sur ce serveur.");
+        if (!pollRes.ok || !pollJson?.poll) throw new Error(formatApiError(pollJson?.error, "Sondage introuvable sur ce serveur."));
         const resultsRes = await fetch(`${base}/results`, { credentials: "include" });
         const resultsJson = resultsRes.ok ? await resultsRes.json().catch(() => null) : null;
         if (cancelled) return;

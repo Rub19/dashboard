@@ -189,7 +189,7 @@ export default function AntiNukePage() {
         body: JSON.stringify(clampedPatch),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "save failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       success("Anti-Nuke mis à jour", "Configuration synchronisée avec le bot.");
     } catch (err: any) {
       setConfig(config);
@@ -207,7 +207,7 @@ export default function AntiNukePage() {
         { method: "POST", credentials: "include" }
       );
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "resolve failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       setIncidents((prev) => prev.map((i) => (i.id === incidentId ? { ...i, status: "resolved" } : i)));
       setOpenCount((c) => Math.max(0, c - 1));
       success("Incident résolu");

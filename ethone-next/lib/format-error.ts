@@ -74,3 +74,16 @@ export async function fetchJson<T = any>(url: string, init?: RequestInit): Promi
   }
   return data as T;
 }
+
+/**
+ * Message affichable pour une erreur attrapée après un appel API : garde la raison renvoyée par le serveur
+ * (levée via `formatApiError`), mais retombe sur `fallback` pour les erreurs réseau natives
+ * (`TypeError: Failed to fetch`, en anglais) ou un message vide.
+ */
+export function errorReason(err: unknown, fallback: string): string;
+export function errorReason(err: unknown, fallback?: undefined): string | undefined;
+export function errorReason(err: unknown, fallback?: string): string | undefined {
+  if (err instanceof TypeError) return fallback;
+  if (err instanceof Error && err.message.trim()) return err.message;
+  return fallback;
+}

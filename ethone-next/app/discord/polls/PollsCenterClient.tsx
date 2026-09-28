@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Select from "@/components/ui/Select";
@@ -31,6 +31,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
+import { formatApiError } from "@/lib/format-error";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 
@@ -247,8 +248,11 @@ export default function PollsCenterClient() {
   }, [loadPolls]);
 
   // Envoie une action au bot pour un sondage. Bot injoignable : échec (jamais de faux succès local).
+  // Raison renvoyée par le bot lors du dernier échec de `pollAction` (affichée dans le toast d'erreur).
+  const actionError = useRef<string | undefined>(undefined);
   const pollAction = useCallback(
     async (poll: PollSummary, path: string, body?: Record<string, unknown>): Promise<boolean> => {
+      actionError.current = undefined;
       if (isDemo || !BOT_API_URL) return false;
       try {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/${poll.id}/${path}`, {
@@ -257,6 +261,10 @@ export default function PollsCenterClient() {
           credentials: "include",
           body: body ? JSON.stringify(body) : undefined,
         });
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          actionError.current = formatApiError(data?.error, "") || undefined;
+        }
         return res.ok;
       } catch {
         return false;
@@ -278,7 +286,7 @@ export default function PollsCenterClient() {
     const ok = await pollAction(poll, resume ? "resume" : "pause");
     if (!ok) {
       setPolls((prev) => prev.map((p) => (p.id === poll.id ? { ...p, status: poll.status } : p)));
-      showToast("Action impossible — réessayez.", "error");
+      toastError("Action impossible — réessayez.", actionError.current);
       return;
     }
     showToast(resume ? `Sondage "${poll.title}" réactivé.` : `Sondage "${poll.title}" mis en pause.`, "info");
@@ -289,7 +297,7 @@ export default function PollsCenterClient() {
     const ok = await pollAction(poll, "end");
     if (!ok) {
       setPolls((prev) => prev.map((p) => (p.id === poll.id ? { ...p, status: poll.status } : p)));
-      showToast("Impossible de clôturer le sondage.", "error");
+      toastError("Impossible de clôturer le sondage.", actionError.current);
       return;
     }
     showToast(`Sondage "${poll.title}" clôturé.`, "success");
@@ -302,7 +310,7 @@ export default function PollsCenterClient() {
     }
     const ok = await pollAction(poll, "duplicate");
     if (!ok) {
-      showToast("Impossible de dupliquer le sondage.", "error");
+      toastError("Impossible de dupliquer le sondage.", actionError.current);
       return;
     }
     showToast("Sondage dupliqué en brouillon !", "success");
@@ -319,7 +327,7 @@ export default function PollsCenterClient() {
       channelId: targetChannelId,
     });
     if (!ok) {
-      showToast("Échec du déploiement du panneau.", "error");
+      toastError("Échec du déploiement du panneau.", actionError.current);
       return;
     }
     const channelName = channels.find((c) => c.id === targetChannelId)?.name || targetChannelId;

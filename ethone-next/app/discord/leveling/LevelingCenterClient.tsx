@@ -30,6 +30,7 @@ import LevelingBoostsPanel from "./LevelingBoostsPanel";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import { cn } from "@/lib/utils";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -241,12 +242,15 @@ export default function LevelingCenterClient() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(patch),
       });
-      if (!res.ok) throw new Error("save failed");
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
+      }
       const data = await res.json();
       setConfig(data.config);
       success("Réglages du système de niveaux enregistrés.");
-    } catch {
-      toastError("Échec de l'enregistrement des réglages.");
+    } catch (err) {
+      toastError("Échec de l'enregistrement des réglages.", errorReason(err));
     } finally {
       setSavingConfig(false);
     }
@@ -272,7 +276,10 @@ export default function LevelingCenterClient() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ delta }),
       });
-      if (!res.ok) throw new Error("adjust failed");
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
+      }
       const data = await res.json();
       setMembers((prev) =>
         prev
@@ -282,8 +289,8 @@ export default function LevelingCenterClient() {
       );
       success(`XP de ${selectedMember.username} mis à jour (${isAdd ? "+" : "-"}${xpDelta} XP).`);
       setSelectedMember(null);
-    } catch {
-      toastError("Échec de la modification d'XP.");
+    } catch (err) {
+      toastError("Échec de la modification d'XP.", errorReason(err));
     } finally {
       setAdjustSubmitting(false);
     }
@@ -307,13 +314,16 @@ export default function LevelingCenterClient() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(newReward),
       });
-      if (!res.ok) throw new Error("save failed");
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
+      }
       const data = await res.json();
       setRewards((prev) => [...prev, data.reward].sort((a, b) => a.level - b.level));
       setNewReward({ level: 10, roleId: "", message: "" });
       success("Rôle récompense ajouté.");
-    } catch {
-      toastError("Échec de l'ajout du rôle récompense.");
+    } catch (err) {
+      toastError("Échec de l'ajout du rôle récompense.", errorReason(err));
     }
   };
 
@@ -322,10 +332,14 @@ export default function LevelingCenterClient() {
     setRewards((prev) => prev.filter((r) => r.id !== id));
     if (isDemo || !BOT_API_URL) return;
     try {
-      await fetch(`${base}/rewards/${id}`, { method: "DELETE", credentials: "include" });
-    } catch {
+      const res = await fetch(`${base}/rewards/${id}`, { method: "DELETE", credentials: "include" });
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
+      }
+    } catch (err) {
       setRewards(previous);
-      toastError("Échec de la suppression — la récompense a été restaurée.");
+      toastError("Échec de la suppression — la récompense a été restaurée.", errorReason(err));
     }
   };
 

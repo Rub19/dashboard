@@ -24,6 +24,7 @@ import DiscordIcon from "@/components/DiscordIcon";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import SetupModulesStep from "./SetupModulesStep";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -226,9 +227,11 @@ export default function SetupWizardClient() {
       const anyFailed = results.some((r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value.ok));
 
       if (anyFailed) {
+        const refused = results.find((r): r is PromiseFulfilledResult<Response> => r.status === "fulfilled" && !r.value.ok);
+        const reason = refused ? formatApiError((await refused.value.json().catch(() => null))?.error, "") : "";
         showError(
           "Sauvegarde partielle",
-          "Certains réglages n'ont pas pu être enregistrés. Vérifiez la connexion au bot et réessayez depuis les centres de modération/welcome."
+          `Certains réglages n'ont pas pu être enregistrés${reason ? ` (${reason})` : ""}. Vérifiez la connexion au bot et réessayez depuis les centres de modération/welcome.`
         );
       } else {
         success("Configuration terminée !", "Votre serveur est maintenant prêt à utiliser Etho.");

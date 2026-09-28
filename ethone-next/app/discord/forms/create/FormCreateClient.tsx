@@ -7,6 +7,7 @@ import { ArrowLeft, ArrowRight, CheckCircle2 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -145,7 +146,7 @@ export default function FormCreateClient() {
         }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.form?.id) throw new Error(data?.error || "create failed");
+      if (!res.ok || !data?.form?.id) throw new Error(formatApiError(data?.error, "Le bot n'a pas répondu."));
       success("Formulaire créé", `« ${data.form.title} » est en brouillon — configure ses champs.`);
       router.push(`/discord/forms/${data.form.id}?guildId=${guildId}`);
     } catch (e: any) {

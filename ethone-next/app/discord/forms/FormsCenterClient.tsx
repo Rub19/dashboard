@@ -26,6 +26,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
+import { formatApiError } from "@/lib/format-error";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 
@@ -211,14 +212,21 @@ export default function FormsCenterClient() {
     []
   );
 
+  // Raison renvoyée par le bot lors du dernier échec de `formAction` (affichée dans le toast d'erreur).
+  const actionError = useRef<string | undefined>(undefined);
   const formAction = useCallback(
     async (formId: string, path: string, method: "POST" | "DELETE" = "POST"): Promise<boolean> => {
+      actionError.current = undefined;
       if (isDemo || !BOT_API_URL) return false;
       try {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${currentGuildId}/forms/${formId}${path}`, {
           method,
           credentials: "include",
         });
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          actionError.current = formatApiError(data?.error, "") || undefined;
+        }
         return res.ok;
       } catch {
         return false;
@@ -273,7 +281,7 @@ export default function FormsCenterClient() {
       return;
     }
     const ok = await formAction(form.id, "/duplicate");
-    if (!ok) return void success("Échec", "Impossible de dupliquer le formulaire.");
+    if (!ok) return void showError("Impossible de dupliquer le formulaire.", actionError.current);
     success("Formulaire dupliqué", `"${form.title}" a été créé en brouillon.`);
     loadForms();
   };
@@ -288,7 +296,7 @@ export default function FormsCenterClient() {
     const ok = willPublish ? await formAction(formId, "/publish") : true;
     if (!ok) {
       saveFormsList(forms.map((f) => (f.id === formId ? { ...f, status: target.status } : f)));
-      success("Échec", "Impossible de publier le formulaire.");
+      showError("Impossible de publier le formulaire.", actionError.current);
       return;
     }
     success(
@@ -304,7 +312,7 @@ export default function FormsCenterClient() {
     const ok = await formAction(formId, "", "DELETE");
     if (!ok) {
       saveFormsList(snapshot);
-      success("Échec", "Impossible de supprimer le formulaire.");
+      showError("Impossible de supprimer le formulaire.", actionError.current);
       return;
     }
     success("Formulaire supprimé", "Le formulaire a été retiré.");

@@ -315,7 +315,7 @@ export default function GiveawaysCenterClient() {
         }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "Échec de la création");
+      if (!res.ok) throw new Error(formatApiError(data?.error, "Échec de la création"));
       setFormPrize("");
       setFormDesc("");
       setFormBannerUrl("");
@@ -337,7 +337,7 @@ export default function GiveawaysCenterClient() {
         credentials: "include",
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error);
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       success("Concours clôturé", "Le(s) gagnant(s) ont été tirés au sort.");
       await load();
     } catch (err) {
@@ -354,7 +354,7 @@ export default function GiveawaysCenterClient() {
         credentials: "include",
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.success) throw new Error(data?.error);
+      if (!res.ok || !data?.success) throw new Error(formatApiError(data?.error, ""));
       success("Concours annulé", `"${prize}" a été annulé.`);
       await load();
     } catch (err) {
@@ -373,7 +373,7 @@ export default function GiveawaysCenterClient() {
         body: JSON.stringify({ count }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error);
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       success("Nouveau tirage effectué", "Le(s) nouveau(x) gagnant(s) ont été annoncés sur Discord.");
       setRerollTarget(null);
       await load();
@@ -401,7 +401,7 @@ export default function GiveawaysCenterClient() {
         body: JSON.stringify({ minutes }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.success) throw new Error(data?.error || "Échec de la prolongation");
+      if (!res.ok || !data?.success) throw new Error(formatApiError(data?.error, "Échec de la prolongation"));
       success(
         "Concours prolongé",
         `"${extendTarget.prize}" a été prolongé de ${extendValue} ${extendUnit === "h" ? "heure(s)" : "jour(s)"}.`
@@ -446,7 +446,7 @@ export default function GiveawaysCenterClient() {
         }
       );
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.success) throw new Error(data?.error || "Échec de la disqualification");
+      if (!res.ok || !data?.success) throw new Error(formatApiError(data?.error, "Échec de la disqualification"));
       setParticipantsList((prev) => prev.filter((p) => p.userId !== userId));
       setGiveaways((prev) =>
         prev.map((g) =>

@@ -182,7 +182,7 @@ export default function HighlightsCenterClient() {
         body: JSON.stringify({ enabled: value }),
       });
       const body = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(body?.error || `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(formatApiError(body?.error, `Erreur HTTP ${res.status}`));
       success(value ? "Highlights réactivés" : "Highlights en pause", "Tes mots-clés sont conservés.");
     } catch (err: unknown) {
       showError("Échec de la sauvegarde", formatApiError(err, "Impossible de joindre le serveur du bot."));
@@ -216,7 +216,7 @@ export default function HighlightsCenterClient() {
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(body?.error || "add");
+        throw new Error(formatApiError(body?.error, ""));
       }
       setNewKeyword("");
       success("Mot-clé ajouté", `Tu seras notifié quand "${trimmed}" est mentionné.`);
@@ -238,7 +238,7 @@ export default function HighlightsCenterClient() {
         { method: "DELETE", credentials: "include" }
       );
       const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body?.error || "delete failed");
+      if (!res.ok) throw new Error(formatApiError(body?.error, ""));
     } catch (err: any) {
       showError("Échec de la suppression", formatApiError(err, "Impossible de joindre le serveur du bot."));
       load();
@@ -260,7 +260,7 @@ export default function HighlightsCenterClient() {
         body: JSON.stringify({ ignoredChannelIds: next }),
       });
       const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body?.error || "save failed");
+      if (!res.ok) throw new Error(formatApiError(body?.error, ""));
     } catch (err: any) {
       showError("Échec de la sauvegarde", formatApiError(err, "Impossible de joindre le serveur du bot."));
       load();
@@ -280,7 +280,7 @@ export default function HighlightsCenterClient() {
         body: JSON.stringify({ ignoredChannelIds: next }),
       });
       const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body?.error || "save failed");
+      if (!res.ok) throw new Error(formatApiError(body?.error, ""));
     } catch (err: any) {
       showError("Échec de la sauvegarde", formatApiError(err, "Impossible de joindre le serveur du bot."));
       load();

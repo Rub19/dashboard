@@ -256,7 +256,7 @@ export default function BirthdaysCenterClient() {
         }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "save failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       try {
         localStorage.setItem(localKey, JSON.stringify(config));
       } catch {}

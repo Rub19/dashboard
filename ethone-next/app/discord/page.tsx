@@ -957,7 +957,7 @@ export default function DiscordDashboardPage() {
         body: JSON.stringify({ active: next, reason: "Action manuelle depuis le Dashboard ETHONE" }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
       setGuildSettings((p) => ({ ...p, emergencyLockdown: Boolean(data?.lockdownActive) }));
       success(data?.lockdownActive ? "Lockdown activé" : "Lockdown levé", `${data?.affectedChannelsCount ?? 0} salon(s) concerné(s).`);
     } catch (e: any) {
@@ -1433,16 +1433,14 @@ export default function DiscordDashboardPage() {
                     <div
                       key={guild.id}
                       className={cn(
-                        "group/guild relative flex w-full items-stretch gap-1 rounded-[var(--inset-radius)] border transition-all duration-150",
+                        "group/guild relative flex w-full items-stretch gap-1 rounded-xl border transition-all duration-150",
                         isSelected
                           ? hasBot
-                            ? "border-emerald-500/40 bg-gradient-to-r from-emerald-500/15 to-[#5865F2]/10 shadow-md shadow-emerald-500/10"
-                            : "border-[#5865F2]/50 bg-[#5865F2]/15 shadow-md shadow-[#5865F2]/10"
+                            ? "border-emerald-500/40 bg-white/[0.08] shadow-sm"
+                            : "border-[#5865F2]/50 bg-[#5865F2]/15"
                           : botAbsent
-                          ? "border-dashed border-[var(--panel-border)] bg-transparent hover:border-[#5865F2]/40 hover:bg-white/[0.03]"
-                          : hasBot
-                          ? "border-emerald-500/20 bg-emerald-500/[0.04] hover:border-emerald-500/40 hover:bg-emerald-500/[0.08]"
-                          : "border-[var(--panel-border)] bg-white/[0.03] hover:border-[var(--input-border-hover)] hover:bg-white/[0.05]"
+                          ? "border-transparent bg-transparent opacity-70 hover:opacity-100 hover:bg-white/[0.04]"
+                          : "border-transparent bg-white/[0.03] hover:bg-white/[0.07]"
                       )}
                     >
                       {isSelected && <span className={cn("absolute left-0 top-1.5 bottom-1.5 w-1 rounded-full", hasBot ? "bg-emerald-400" : "bg-[#5865F2]")} />}
@@ -1451,15 +1449,15 @@ export default function DiscordDashboardPage() {
                           userSelectedRef.current = true;
                           setSelectedGuild(guild);
                         }}
-                        className="flex min-w-0 flex-1 items-center gap-2.5 p-2 text-left cursor-pointer"
+                        className="flex min-w-0 flex-1 items-center gap-3 p-2.5 text-left cursor-pointer"
                       >
                         <div className="relative shrink-0">
                           <div className={cn(
-                            "flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl border bg-zinc-800 font-bold text-xs text-white shadow-inner",
+                            "flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border bg-zinc-800 font-bold text-sm text-white shadow-inner",
                             hasBot ? "border-emerald-500/50" : botAbsent ? "border-[var(--panel-border)] opacity-60 grayscale-[35%]" : "border-[var(--panel-border)]"
                           )}>
                             {guild.iconUrl ? (
-                              <img src={guild.iconUrl} alt={guild.name} className="h-full w-full object-cover rounded-xl" />
+                              <img src={guild.iconUrl} alt={guild.name} className="h-full w-full object-cover rounded-full" />
                             ) : (
                               <span>{initials}</span>
                             )}
@@ -1475,7 +1473,7 @@ export default function DiscordDashboardPage() {
                         </div>
 
                         <div className="min-w-0 flex-1">
-                          <p className={cn("flex items-center gap-1 truncate text-xs font-semibold", botAbsent ? "text-zinc-400" : "text-white")}>
+                          <p className={cn("flex items-center gap-1 truncate text-sm font-semibold", botAbsent ? "text-zinc-400" : "text-white")}>
                             <span className="truncate">{guild.name}</span>
                             {isSelected && (
                               <Check className={cn("h-3 w-3 shrink-0", hasBot ? "text-emerald-400" : "text-[#8791ff]")} aria-label="Serveur sélectionné" />
@@ -1510,10 +1508,7 @@ export default function DiscordDashboardPage() {
 
                       <div className="flex shrink-0 items-center pr-2">
                         {hasBot ? (
-                          <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold text-emerald-300">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            ACTIF
-                          </span>
+                          <ChevronRight className={cn("h-4 w-4 transition-transform group-hover/guild:translate-x-0.5", isSelected ? "text-emerald-300" : "text-zinc-500")} aria-label="Bot actif" />
                         ) : botPresenceKnown ? (
                           <a
                             href={`${BOT_INVITE_URL}&guild_id=${guild.id}`}
@@ -1521,9 +1516,9 @@ export default function DiscordDashboardPage() {
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             title="Inviter le bot sur ce serveur"
-                            className="inline-flex items-center gap-1 rounded-lg border border-[#5865F2]/40 bg-[#5865F2]/15 px-2 py-1 text-[10px] font-semibold text-[#a9b2ff] transition-colors hover:bg-[#5865F2] hover:text-white"
+                            className="inline-flex h-7 items-center gap-1 rounded-lg px-2 text-[11px] font-semibold text-zinc-400 transition-colors hover:bg-[#5865F2] hover:text-white"
                           >
-                            <Plus className="h-3 w-3" />
+                            <Plus className="h-4 w-4" />
                             Ajouter
                           </a>
                         ) : null}

@@ -644,6 +644,9 @@ export default function MusicCenterClient() {
         setNewPlaylistName("");
         setIsNewPlaylistOpen(false);
         success("Playlist créée", `Playlist "${data.playlist.name}" enregistrée.`);
+      } else {
+        const errBody = await res.json().catch(() => null);
+        showError("Erreur", formatApiError(errBody?.error, "Impossible de créer la playlist."));
       }
     } catch {
       showError("Erreur", "Impossible de créer la playlist.");

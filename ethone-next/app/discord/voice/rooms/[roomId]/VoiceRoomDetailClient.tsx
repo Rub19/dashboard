@@ -28,6 +28,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import { confirmDialog } from "@/lib/confirmDialog";
+import { formatApiError } from "@/lib/format-error";
 
 interface RoomUser {
   id: string;
@@ -125,6 +126,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
   // Execute quick action
   const handleAction = async (action: string, value?: any, targetUser?: string) => {
+    let reason: string | undefined;
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/rooms/${roomId}/action`, {
         credentials: "include",
@@ -141,15 +143,18 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
         await fetchData();
         return;
       }
+      const errBody = await res.json().catch(() => null);
+      reason = formatApiError(errBody?.error, "") || undefined;
     } catch {
       // réseau : traité ci-dessous
     }
     // Aucune modification locale simulée : si le bot n'a pas appliqué l'action, on le dit.
-    showError("Action non appliquée", "Le bot n'a pas répondu ou a refusé l'action. Rien n'a été modifié.");
+    showError("Action non appliquée", reason || "Le bot n'a pas répondu ou a refusé l'action. Rien n'a été modifié.");
   };
 
   // Whitelist manipulation
   const handleWhitelist = async (userId: string, action: "add" | "remove") => {
+    let reason: string | undefined;
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/rooms/${roomId}/whitelist`, {
         credentials: "include",
@@ -163,10 +168,12 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
         await fetchData();
         return;
       }
+      const errBody = await res.json().catch(() => null);
+      reason = formatApiError(errBody?.error, "") || undefined;
     } catch {
       // réseau : traité ci-dessous
     }
-    showError("Whitelist non modifiée", "Le bot n'a pas répondu ou a refusé la modification.");
+    showError("Whitelist non modifiée", reason || "Le bot n'a pas répondu ou a refusé la modification.");
   };
 
   // Banlist manipulation
@@ -174,6 +181,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
     if (action === "add" && !(await confirmDialog(`Bannir « ${userId} » du salon vocal et l'expulser immédiatement s'il est connecté ?`, { tone: "danger" }))) {
       return;
     }
+    let reason: string | undefined;
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/rooms/${roomId}/banlist`, {
         credentials: "include",
@@ -187,10 +195,12 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
         await fetchData();
         return;
       }
+      const errBody = await res.json().catch(() => null);
+      reason = formatApiError(errBody?.error, "") || undefined;
     } catch {
       // réseau : traité ci-dessous
     }
-    showError("Banlist non modifiée", "Le bot n'a pas répondu ou a refusé la modification.");
+    showError("Banlist non modifiée", reason || "Le bot n'a pas répondu ou a refusé la modification.");
   };
 
   if (loading) {

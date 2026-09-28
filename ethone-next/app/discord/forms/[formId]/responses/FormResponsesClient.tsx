@@ -15,6 +15,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -160,11 +161,14 @@ export default function FormResponsesClient() {
             decisionReason: reason,
           }),
         });
-        if (!res.ok) throw new Error();
-      } catch {
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          throw new Error(formatApiError(data?.error, ""));
+        }
+      } catch (err) {
         setResponses((rs) => rs.map((r) => (r.id === rid ? { ...r, status: prevStatus } : r)));
         setActiveResponse((prev) => (prev ? { ...prev, status: prevStatus } : null));
-        showError("Impossible de mettre à jour le statut.");
+        showError("Impossible de mettre à jour le statut.", errorReason(err));
         return;
       }
     }
@@ -188,13 +192,20 @@ export default function FormResponsesClient() {
 
     if (!isDemo && BOT_API_URL) {
       try {
-        await fetch(`${base}/responses/${rid}/notes`, {
+        const res = await fetch(`${base}/responses/${rid}/notes`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify({ authorId: profile?.user?.id, authorTag: profile?.user?.username, content }),
         });
-      } catch {}
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          throw new Error(formatApiError(data?.error, ""));
+        }
+      } catch (err) {
+        showError("Note non enregistrée", errorReason(err, "Le bot n'a pas répondu."));
+        return;
+      }
     }
     success("Note ajoutée", "Commentaire privé enregistré dans l'historique staff.");
   };

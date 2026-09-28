@@ -48,6 +48,7 @@ import { cn, fetchJson } from "@/lib/utils";
 import Select from "@/components/ui/Select";
 import { GuildSelector } from "@/components/GuildSelector";
 import InfractionsPanel from "./InfractionsPanel";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 // ==========================================
 // TYPES AUTOMOD
@@ -776,11 +777,14 @@ export default function AutoModCommandCenterPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
       });
-      if (!res.ok) throw new Error("Échec de la révocation");
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
+      }
       success("Strikes révoqués", `Tous les strikes actifs de ${userId} ont été effacés.`);
       handleInspectUser(userId);
-    } catch {
-      showError("Erreur", "Impossible de révoquer les strikes sur le bot.");
+    } catch (err) {
+      showError("Erreur", errorReason(err, "Impossible de révoquer les strikes sur le bot."));
     }
   };
 
@@ -810,11 +814,12 @@ export default function AutoModCommandCenterPage() {
         setEditingRule(null);
         setIsCreatingRule(false);
       } else {
-        throw new Error("Échec API");
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
       }
-    } catch {
+    } catch (err) {
       // Le formulaire reste ouvert : rien n'a été enregistré sur le bot.
-      showError("Règle non enregistrée", "Le bot n'a pas répondu ou a refusé la règle. Rien n'a été modifié.");
+      showError("Règle non enregistrée", errorReason(err, "Le bot n'a pas répondu ou a refusé la règle. Rien n'a été modifié."));
     }
   };
 
@@ -825,11 +830,14 @@ export default function AutoModCommandCenterPage() {
         credentials: "include",
         method: "DELETE",
       });
-      if (!res.ok) throw new Error("Suppression refusée");
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
+      }
       setRules(rules.filter((r) => r.id !== ruleId));
       success("Règle supprimée", "La règle a été retirée du moteur.");
-    } catch {
-      showError("Règle non supprimée", "Le bot n'a pas répondu ou a refusé la suppression.");
+    } catch (err) {
+      showError("Règle non supprimée", errorReason(err, "Le bot n'a pas répondu ou a refusé la suppression."));
     }
   };
 

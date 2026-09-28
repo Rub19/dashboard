@@ -37782,6 +37782,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_29_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_29_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_29_4_de);
 
+const v1_30_0_fr: ChangelogEntry = {
+  version: "v1.30.0",
+  date: "2026-09-28",
+  title: "Bot Discord en plein écran + erreurs plus claires",
+  items: [
+    "Le Bot Discord s'ouvre désormais en plein écran par-dessus le dashboard (sans sidebar, barre du haut ni barre du bas), avec un bouton « Retour à ETHONE » en haut à gauche.",
+    "Cartes de modules et liste des serveurs redessinées : plus grandes, plus aérées, icône, description et bouton « Configurer » (inspiré de Sapphire).",
+    "Les erreurs affichent maintenant la vraie raison renvoyée par le bot (au lieu d'un message générique) sur une soixantaine de pages, et les échecs silencieux (RSVP d'événements, notes de formulaires, comportement IA du bot…) sont signalés.",
+  ],
+};
+
+const v1_30_0_en: ChangelogEntry = {
+  version: "v1.30.0",
+  date: "2026-09-28",
+  title: "Full-screen Discord bot + clearer errors",
+  items: [
+    "The Discord bot now opens full screen over the dashboard (no sidebar, top bar or bottom bar), with a \"Back to ETHONE\" button at the top left.",
+    "Module cards and the server list were redesigned: bigger, roomier, with icon, description and a \"Configure\" button (Sapphire-inspired).",
+    "Errors now show the real reason returned by the bot instead of a generic message across about sixty pages, and silent failures (event RSVPs, form notes, bot AI behavior…) are now reported.",
+  ],
+};
+
+const v1_30_0_es: ChangelogEntry = {
+  version: "v1.30.0",
+  date: "2026-09-28",
+  title: "Bot de Discord a pantalla completa + errores más claros",
+  items: [
+    "El bot de Discord se abre ahora a pantalla completa sobre el dashboard (sin barra lateral, barra superior ni inferior), con un botón «Volver a ETHONE» arriba a la izquierda.",
+    "Tarjetas de módulos y lista de servidores rediseñadas: más grandes y espaciadas, con icono, descripción y botón «Configurar» (inspirado en Sapphire).",
+    "Los errores muestran ahora el motivo real devuelto por el bot en lugar de un mensaje genérico en unas sesenta páginas, y los fallos silenciosos se notifican.",
+  ],
+};
+
+const v1_30_0_de: ChangelogEntry = {
+  version: "v1.30.0",
+  date: "2026-09-28",
+  title: "Discord-Bot im Vollbild + klarere Fehler",
+  items: [
+    "Der Discord-Bot öffnet sich jetzt im Vollbild über dem Dashboard (ohne Seitenleiste, obere und untere Leiste), mit einem Button „Zurück zu ETHONE“ oben links.",
+    "Modulkarten und Serverliste wurden neu gestaltet: größer, luftiger, mit Symbol, Beschreibung und „Konfigurieren“-Button (inspiriert von Sapphire).",
+    "Fehler zeigen jetzt auf rund sechzig Seiten den echten vom Bot gemeldeten Grund statt einer generischen Meldung, und stille Fehlschläge werden gemeldet.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_30_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_30_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_30_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_30_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -100,7 +100,7 @@ export default function TicketDetailClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec de la prise en charge");
+        throw new Error(formatApiError(data?.error, "Échec de la prise en charge"));
       }
       success("Ticket pris en charge", "Vous êtes désormais assigné à ce ticket.");
       fetchTicket();
@@ -129,7 +129,7 @@ export default function TicketDetailClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec de l'abandon de prise en charge");
+        throw new Error(formatApiError(data?.error, "Échec de l'abandon de prise en charge"));
       }
       info("Prise en charge abandonnée", "Le ticket est de nouveau ouvert à tous.");
       fetchTicket();
@@ -160,7 +160,7 @@ export default function TicketDetailClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec ajout de note");
+        throw new Error(formatApiError(data?.error, "Échec ajout de note"));
       }
       success("Note ajoutée", "La note interne a été enregistrée.");
       setNoteContent("");
@@ -190,7 +190,7 @@ export default function TicketDetailClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec de la fermeture");
+        throw new Error(formatApiError(data?.error, "Échec de la fermeture"));
       }
       success("Ticket clôturé", "Le ticket a été fermé avec succès.");
       setShowCloseModal(false);
@@ -219,7 +219,7 @@ export default function TicketDetailClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec de la réouverture");
+        throw new Error(formatApiError(data?.error, "Échec de la réouverture"));
       }
       success("Ticket réouvert", "Le ticket a été rouvert avec succès.");
       fetchTicket();
@@ -249,7 +249,7 @@ export default function TicketDetailClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec liaison avec le cas");
+        throw new Error(formatApiError(data?.error, "Échec liaison avec le cas"));
       }
       success("Cas de modération lié", `Liaison effectuée avec le Dossier #${caseIdToLink}.`);
       setShowLinkCaseModal(false);
@@ -279,7 +279,7 @@ export default function TicketDetailClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec modification priorité");
+        throw new Error(formatApiError(data?.error, "Échec modification priorité"));
       }
       fetchTicket();
     } catch (err: any) {
@@ -307,7 +307,7 @@ export default function TicketDetailClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error || "Échec modification statut");
+        throw new Error(formatApiError(data?.error, "Échec modification statut"));
       }
       fetchTicket();
     } catch (err: any) {

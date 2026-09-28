@@ -7,6 +7,7 @@ import { confirmDialog } from "@/lib/confirmDialog";
 import { Field, NumberField, Switch, ToggleField, inputCls } from "@/components/discord/SettingsUI";
 import { cn } from "@/lib/utils";
 import Select from "@/components/ui/Select";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -205,12 +206,12 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
     try {
       const res = await fetch(base, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) });
       const json = await res.json().catch(() => null);
-      if (!res.ok || !json?.config) throw new Error(json?.error || String(res.status));
+      if (!res.ok || !json?.config) throw new Error(formatApiError(json?.error, ""));
       onConfigChange(json.config as Config);
       success(okTitle, okText);
       return true;
     } catch (err) {
-      showError("Enregistrement impossible", err instanceof Error && err.message ? err.message : "Le bot n'a pas répondu.");
+      showError("Enregistrement impossible", errorReason(err, "Le bot n'a pas répondu."));
       return false;
     } finally {
       setBusy(false);

@@ -275,7 +275,7 @@ export default function CommandsCenterClient() {
         body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.command) throw new Error(data?.error || "create failed");
+      if (!res.ok || !data?.command) throw new Error(formatApiError(data?.error, ""));
       setCommands((prev) => [data.command, ...prev]);
       resetBuilder();
       setActiveTab("catalog");
@@ -294,7 +294,7 @@ export default function CommandsCenterClient() {
     try {
       const res = await fetch(`${base}/${cmd.id}/toggle`, { method: "POST", credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.command) throw new Error(data?.error);
+      if (!res.ok || !data?.command) throw new Error(formatApiError(data?.error, ""));
       setCommands((prev) => prev.map((c) => (c.id === cmd.id ? data.command : c)));
     } catch (err: any) {
       setCommands(previous);
@@ -310,7 +310,7 @@ export default function CommandsCenterClient() {
     try {
       const res = await fetch(`${base}/${cmd.id}`, { method: "DELETE", credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error);
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       success(`Commande /${cmd.name} supprimée.`);
     } catch (err: any) {
       setCommands(previous);
@@ -326,7 +326,7 @@ export default function CommandsCenterClient() {
     try {
       const res = await fetch(`${base}/${cmd.id}/duplicate`, { method: "POST", credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.command) throw new Error(data?.error);
+      if (!res.ok || !data?.command) throw new Error(formatApiError(data?.error, ""));
       setCommands((prev) => [data.command, ...prev]);
       success(`Commande dupliquée : /${data.command.name}.`);
     } catch (err: any) {
@@ -348,7 +348,7 @@ export default function CommandsCenterClient() {
         body: JSON.stringify({ templateName }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.command) throw new Error(data?.error || "template failed");
+      if (!res.ok || !data?.command) throw new Error(formatApiError(data?.error, ""));
       setCommands((prev) => [data.command, ...prev]);
       setActiveTab("catalog");
       success(`Commande /${data.command.name} créée depuis le template.`);
@@ -389,7 +389,7 @@ export default function CommandsCenterClient() {
         body: JSON.stringify({ args: {} }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !Array.isArray(data?.previews)) throw new Error(data?.error || "test failed");
+      if (!res.ok || !Array.isArray(data?.previews)) throw new Error(formatApiError(data?.error, ""));
       setSimOutput(data.previews.length > 0 ? data.previews : localPreview(found));
     } catch (err: any) {
       setSimOutput({ error: err?.message || "Échec de la simulation côté bot." });

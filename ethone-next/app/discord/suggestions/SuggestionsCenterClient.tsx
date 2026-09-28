@@ -358,7 +358,7 @@ export default function SuggestionsCenterClient() {
         body: JSON.stringify({ status: newStatus, staffResponse: staffReplyText.trim() || undefined }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.suggestion) throw new Error(data?.error || "save failed");
+      if (!res.ok || !data?.suggestion) throw new Error(formatApiError(data?.error, ""));
       patchLocal(selected.id, data.suggestion);
       success(`Suggestion #${selected.numericId} : statut « ${STATUS_META[newStatus].label} » publié sur Discord.`);
     } catch (e: any) {
@@ -383,7 +383,7 @@ export default function SuggestionsCenterClient() {
         body: JSON.stringify({ priority }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "priority failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       patchLocal(selected.id, { priority });
     } catch (e: any) {
       toastError(formatApiError(e, "Échec du changement de priorité."));
@@ -405,7 +405,7 @@ export default function SuggestionsCenterClient() {
         body: JSON.stringify({ content: commentText.trim() }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.suggestion) throw new Error(data?.error || "comment failed");
+      if (!res.ok || !data?.suggestion) throw new Error(formatApiError(data?.error, ""));
       patchLocal(selected.id, data.suggestion);
       setCommentText("");
       success("Commentaire staff publié.");
@@ -428,7 +428,7 @@ export default function SuggestionsCenterClient() {
     try {
       const res = await fetch(`${base}/${s.id}`, { method: "DELETE", credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "delete failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
     } catch (e: any) {
       // Rollback : on remet la suggestion dans la liste
       setSuggestions((prev) => {
@@ -458,7 +458,7 @@ export default function SuggestionsCenterClient() {
         body: JSON.stringify({ title: newTitle.trim(), description: newDescription.trim(), category: newCategory }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.suggestion) throw new Error(data?.error || "create failed");
+      if (!res.ok || !data?.suggestion) throw new Error(formatApiError(data?.error, ""));
       setSuggestions((prev) => {
         const next = [data.suggestion, ...prev];
         setOverview(computeOverview(next));
@@ -487,7 +487,7 @@ export default function SuggestionsCenterClient() {
         body: JSON.stringify(patch),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "save failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       success("Paramètres des suggestions enregistrés.");
     } catch (e: any) {
       setConfig(previous);

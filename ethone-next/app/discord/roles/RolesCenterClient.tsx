@@ -31,6 +31,7 @@ import { CardSkeleton } from "@/components/ui/Skeleton";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import Select from "@/components/ui/Select";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -286,7 +287,7 @@ export default function RolesCenterClient() {
         body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.panel) throw new Error(data?.error || "save failed");
+      if (!res.ok || !data?.panel) throw new Error(formatApiError(data?.error, ""));
       setPanels((prev) => (prev.some((x) => x.id === data.panel.id) ? prev.map((x) => (x.id === data.panel.id ? data.panel : x)) : [data.panel, ...prev]));
       resetBuilder();
       setActiveTab("panels");
@@ -316,7 +317,7 @@ export default function RolesCenterClient() {
         body: JSON.stringify({ channelId }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "publish failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       success("Panneau publié sur Discord.");
       load();
     } catch (err: any) {
@@ -335,7 +336,7 @@ export default function RolesCenterClient() {
     try {
       const res = await fetch(`${base}/panels/${p.id}/sync`, { method: "POST", credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "sync failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       success(data?.message || "Panneau synchronisé avec Discord.");
       load();
     } catch (err: any) {
@@ -353,7 +354,7 @@ export default function RolesCenterClient() {
     try {
       const res = await fetch(`${base}/panels/${p.id}/duplicate`, { method: "POST", credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.panel) throw new Error(data?.error || "duplicate failed");
+      if (!res.ok || !data?.panel) throw new Error(formatApiError(data?.error, ""));
       setPanels((prev) => [data.panel, ...prev]);
       success("Panneau dupliqué (brouillon).");
     } catch (err: any) {
@@ -371,10 +372,13 @@ export default function RolesCenterClient() {
     if (isDemo) return;
     try {
       const res = await fetch(`${base}/panels/${p.id}?deleteMessage=${deleteMessage}`, { method: "DELETE", credentials: "include" });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
+      }
       success("Panneau supprimé.");
-    } catch {
-      toastError("Échec de la suppression — rechargez la page.");
+    } catch (err) {
+      toastError("Échec de la suppression — rechargez la page.", errorReason(err));
       load();
     }
   };
@@ -392,7 +396,7 @@ export default function RolesCenterClient() {
         body: JSON.stringify(next),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.config) throw new Error(data?.error || "save failed");
+      if (!res.ok || !data?.config) throw new Error(formatApiError(data?.error, ""));
       setAutoRole(data.config);
       success("Auto-rôles à l'arrivée enregistrés.");
     } catch (err: any) {

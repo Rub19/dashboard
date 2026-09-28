@@ -276,7 +276,7 @@ export default function StickyCenterClient() {
         }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "save failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       success("Sticky synchronisé", "Le message a été (re)positionné dans le salon.");
       setDraft(null);
       load();
@@ -295,7 +295,7 @@ export default function StickyCenterClient() {
         credentials: "include",
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "delete failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       success("Sticky retiré", `Le message ne sera plus fixé dans #${channelName(channelId)}.`);
       if (draft?.channelId === channelId) setDraft(null);
       load();
@@ -312,7 +312,7 @@ export default function StickyCenterClient() {
         credentials: "include",
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "repost failed");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       success("Republié", `Le sticky a été renvoyé en bas de #${channelName(channelId)}.`);
       load();
     } catch (err: any) {

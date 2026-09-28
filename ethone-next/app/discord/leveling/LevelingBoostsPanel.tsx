@@ -8,6 +8,7 @@ import { Field, Switch, inputCls } from "@/components/discord/SettingsUI";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { cn } from "@/lib/utils";
 import Select from "@/components/ui/Select";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -105,12 +106,12 @@ export default function LevelingBoostsPanel({ guildId, boosts, disabled, onChang
     try {
       const res = await fetch(url, { method, credentials: "include", headers: { "Content-Type": "application/json" }, body: body === undefined ? undefined : JSON.stringify(body) });
       const json = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(json?.error || String(res.status));
+      if (!res.ok) throw new Error(formatApiError(json?.error, ""));
       await onChanged();
       success(okTitle, okText);
       return json;
     } catch (err) {
-      showError("Action impossible", err instanceof Error && err.message ? err.message : "Le bot n'a pas répondu.");
+      showError("Action impossible", errorReason(err, "Le bot n'a pas répondu."));
       return null;
     } finally {
       setBusy(false);
@@ -140,10 +141,10 @@ export default function LevelingBoostsPanel({ guildId, boosts, disabled, onChang
       const qs = new URLSearchParams({ userId: pvUser.trim(), scope: pvScope, ...(pvChannel ? { channelId: pvChannel } : {}) });
       const res = await fetch(`${base}/preview?${qs}`, { credentials: "include" });
       const json = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(json?.error || String(res.status));
+      if (!res.ok) throw new Error(formatApiError(json?.error, ""));
       setPreview(json as Preview);
     } catch (err) {
-      showError("Simulation impossible", err instanceof Error && err.message ? err.message : "Le bot n'a pas répondu.");
+      showError("Simulation impossible", errorReason(err, "Le bot n'a pas répondu."));
     }
   };
 

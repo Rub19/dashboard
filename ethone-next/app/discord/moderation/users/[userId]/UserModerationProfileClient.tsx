@@ -30,6 +30,7 @@ import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGui
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -243,8 +244,8 @@ export default function UserModerationProfileClient() {
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Erreur lors de l'application de la sanction");
+        const err = await res.json().catch(() => null);
+        throw new Error(formatApiError(err?.error, "Erreur lors de l'application de la sanction"));
       }
 
       const data = await res.json();
@@ -255,7 +256,7 @@ export default function UserModerationProfileClient() {
       setConfirmDangerous(false);
       fetchData();
     } catch (err: any) {
-      showError("Échec de l'action", err.message || "Impossible d'appliquer la sanction.");
+      showError("Échec de l'action", errorReason(err, "Impossible d'appliquer la sanction."));
     } finally {
       setIsSubmittingAction(false);
     }
@@ -284,10 +285,11 @@ export default function UserModerationProfileClient() {
         setNewNoteContent("");
         fetchData();
       } else {
-        throw new Error("Erreur serveur");
+        const errBody = await res.json().catch(() => null);
+        throw new Error(formatApiError(errBody?.error, ""));
       }
-    } catch {
-      showError("Erreur", "Impossible d'enregistrer la note staff.");
+    } catch (err) {
+      showError("Erreur", errorReason(err, "Impossible d'enregistrer la note staff."));
     } finally {
       setIsSubmittingNote(false);
     }
@@ -314,11 +316,11 @@ export default function UserModerationProfileClient() {
         setRevertReason("");
         fetchData();
       } else {
-        const err = await res.json();
-        throw new Error(err.error || "Erreur révocation");
+        const err = await res.json().catch(() => null);
+        throw new Error(formatApiError(err?.error, "Erreur révocation"));
       }
     } catch (err: any) {
-      showError("Échec du pardon", err.message || "Impossible de révoquer la sanction.");
+      showError("Échec du pardon", errorReason(err, "Impossible de révoquer la sanction."));
     } finally {
       setIsSubmittingRevert(false);
     }

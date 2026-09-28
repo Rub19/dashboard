@@ -19,6 +19,7 @@ import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_API_URL =
   process.env.NEXT_PUBLIC_DISCORD_BOT_API_URL ||
@@ -112,7 +113,7 @@ export default function PollSettingsClient() {
     fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/${encodeURIComponent(pollId)}`, { credentials: "include" })
       .then(async (res) => {
         const data = await res.json().catch(() => ({}));
-        if (!res.ok || !data?.poll) throw new Error(data?.error || "Sondage introuvable.");
+        if (!res.ok || !data?.poll) throw new Error(formatApiError(data?.error, "Sondage introuvable."));
         return data.poll;
       })
       .then((poll) => {
@@ -161,7 +162,7 @@ export default function PollSettingsClient() {
         }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error || "Le bot a refusé les modifications.");
+      if (!res.ok) throw new Error(formatApiError(data?.error, "Le bot a refusé les modifications."));
       showToast("Paramètres du sondage enregistrés.", "success");
     } catch (e) {
       showToast(e instanceof Error ? e.message : "Enregistrement impossible.", "error");
@@ -179,7 +180,7 @@ export default function PollSettingsClient() {
         credentials: "include",
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error || "Réinitialisation impossible.");
+      if (!res.ok) throw new Error(formatApiError(data?.error, "Réinitialisation impossible."));
       showToast(data.removed > 0 ? `${data.removed} vote(s) supprimé(s).` : "Ce scrutin ne contenait aucun vote.", "info");
     } catch (e) {
       showToast(e instanceof Error ? e.message : "Réinitialisation impossible.", "error");
@@ -195,7 +196,7 @@ export default function PollSettingsClient() {
         credentials: "include",
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error || "Suppression impossible.");
+      if (!res.ok) throw new Error(formatApiError(data?.error, "Suppression impossible."));
       showToast("Sondage supprimé.", "success");
       router.push(`/discord/polls?guildId=${guildParam}`);
     } catch (e) {

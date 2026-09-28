@@ -8,6 +8,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import Select from "@/components/ui/Select";
 import { cn } from "@/lib/utils";
+import { formatApiError } from "@/lib/format-error";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -104,7 +105,7 @@ export default function BackupCompareClient() {
         body: JSON.stringify({ backupAId: backupA, backupBId: backupB }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.summary) throw new Error(data?.error || "compare failed");
+      if (!res.ok || !data?.summary) throw new Error(formatApiError(data?.error, "Échec de la comparaison."));
       setResult(data);
     } catch (e: any) {
       setResult(null);

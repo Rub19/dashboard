@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useToast } from "@/components/ToastProvider";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { POLL_BOT_API_URL, STATUS_LABELS, usePollData } from "./usePollData";
+import { formatApiError } from "@/lib/format-error";
 
 const ACTIONS: Record<string, Array<{ path: string; label: string; confirm?: string }>> = {
   DRAFT: [{ path: "publish", label: "Publier" }],
@@ -33,7 +34,7 @@ export default function PollDetailClient() {
     try {
       const res = await fetch(`${POLL_BOT_API_URL}/api/guilds/${guildId}/polls/${encodeURIComponent(pollId)}/${action.path}`, { method: "POST", credentials: "include" });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || data?.success === false) throw new Error(data?.error || "Action refusée par le bot.");
+      if (!res.ok || data?.success === false) throw new Error(formatApiError(data?.error, "Action refusée par le bot."));
       success(action.label, "Fait.");
       reload();
     } catch (e) {

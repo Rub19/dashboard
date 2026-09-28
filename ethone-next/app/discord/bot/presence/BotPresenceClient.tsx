@@ -41,6 +41,7 @@ import {
   Zap,
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
+import { formatApiError } from "@/lib/format-error";
 import { cn } from "@/lib/utils";
 import Select from "@/components/ui/Select";
 
@@ -309,7 +310,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
           toast.warning("Limite Discord Gateway atteinte (max 5 / minute). Patientez quelques secondes.");
           setRateLimited(true);
         } else {
-          toast.error(json?.error || "Erreur lors de l'application de la présence");
+          toast.error(formatApiError(json?.error, "Erreur lors de l'application de la présence"));
         }
       }
     } catch {
@@ -453,7 +454,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         toast.success("Nom d'utilisateur du bot mis à jour avec succès !");
         setIdentity((prev) => ({ ...prev, username: editUsername.trim() }));
       } else {
-        toast.error(json?.error || "Impossible de changer le nom (limite Discord: 2/2h).");
+        toast.error(formatApiError(json?.error, "Impossible de changer le nom (limite Discord: 2/2h)."));
       }
     } catch {
       toast.info("Simulation : Nom d'utilisateur mis à jour.");
@@ -488,7 +489,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         setIdentity((prev) => ({ ...prev, avatarUrl: json.avatarUrl || prev.avatarUrl }));
         setNewAvatarFile(null);
       } else {
-        toast.error(json?.error || "Impossible de changer l'avatar (limite Discord: 2/1h).");
+        toast.error(formatApiError(json?.error, "Impossible de changer l'avatar (limite Discord: 2/1h)."));
       }
     } catch {
       toast.error("Erreur réseau lors du téléversement de l'avatar.");

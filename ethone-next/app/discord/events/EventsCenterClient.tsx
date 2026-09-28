@@ -31,6 +31,7 @@ import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGui
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 import { useToast } from "@/components/ToastProvider";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -207,8 +208,11 @@ export default function EventsCenterClient() {
     loadEvents();
   }, [loadEvents]);
 
+  // Raison renvoyée par le bot lors du dernier échec de `eventAction` (affichée dans le toast d'erreur).
+  const actionError = useRef<string | undefined>(undefined);
   const eventAction = useCallback(
     async (eventId: string, path: string, method: "POST" | "DELETE" = "POST", body?: Record<string, unknown>): Promise<boolean> => {
+      actionError.current = undefined;
       if (isDemo || !BOT_API_URL || !currentGuildId) return false;
       try {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${currentGuildId}/events/${eventId}${path}`, {
@@ -217,6 +221,10 @@ export default function EventsCenterClient() {
           credentials: "include",
           body: body ? JSON.stringify(body) : undefined,
         });
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          actionError.current = formatApiError(data?.error, "") || undefined;
+        }
         return res.ok;
       } catch {
         return false;
@@ -285,7 +293,7 @@ export default function EventsCenterClient() {
       setEvents((prev) =>
         prev.map((ev) => (ev.id === eventId ? { ...ev, stats: { ...ev.stats, goingCount: Math.max(0, ev.stats.goingCount - 1) } } : ev))
       );
-      showError("Inscription impossible — réessaie.");
+      showError("Inscription impossible — réessaie.", actionError.current);
     } else {
       success("Inscription confirmée.");
     }
@@ -293,7 +301,7 @@ export default function EventsCenterClient() {
 
   const handleDuplicateEvent = async (event: EventItem) => {
     const ok = await eventAction(event.id, "/duplicate");
-    if (!ok) return void showError("Impossible de dupliquer l'événement.");
+    if (!ok) return void showError("Impossible de dupliquer l'événement.", actionError.current);
     success(`"${event.title}" dupliqué en brouillon.`);
     if (!isDemo) loadEvents();
   };
@@ -305,7 +313,7 @@ export default function EventsCenterClient() {
     const ok = await eventAction(event.id, "", "DELETE");
     if (!ok) {
       setEvents(snapshot);
-      showError("Impossible d'annuler l'événement.");
+      showError("Impossible d'annuler l'événement.", actionError.current);
     } else {
       success(`"${event.title}" annulé.`);
     }

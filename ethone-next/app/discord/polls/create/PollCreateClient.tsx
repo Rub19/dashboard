@@ -25,6 +25,7 @@ import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_API_URL =
   process.env.NEXT_PUBLIC_DISCORD_BOT_API_URL ||
@@ -281,7 +282,7 @@ export default function PollCreateClient() {
         body: JSON.stringify(body),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || data?.success === false) throw new Error(data?.error || `Erreur ${res.status}`);
+      if (!res.ok || data?.success === false) throw new Error(formatApiError(data?.error, `Erreur ${res.status}`));
       return data;
     };
     try {

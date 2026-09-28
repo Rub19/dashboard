@@ -10,6 +10,7 @@ import { useToast } from "@/components/ToastProvider";
 import Link from "next/link";
 import FlowAutomations from "@/components/FlowAutomations";
 import Button from "@/components/ui/Button";
+import { errorReason } from "@/lib/format-error";
 
 const WIDGET_ICONS: Record<string, string> = {
   notes: "notebook-pen",
@@ -195,7 +196,7 @@ function StatCard({
 
 export default function SystemPage() {
   const i18n = useI18n();
-  const { success } = useToast();
+  const { success, error: showError } = useToast();
   const { items: spaces } = useUserData("space");
   const { items: flows, create: createFlow, update: updateFlow } = useUserData("flow");
   const [activeSpace, setActiveSpace] = useLocalStorage<string>("ethone-active-workspace", "personal");
@@ -235,8 +236,8 @@ export default function SystemPage() {
         await createFlow(i18n(id), "", { templateId: id, workspaceId: id }, 1);
       }
       success(i18n("started", "Démarré"));
-    } catch {
-      // toast handled by hook? no, useToast not in useUserData
+    } catch (err) {
+      showError("Impossible de démarrer l'espace de travail.", errorReason(err));
     }
   }
 

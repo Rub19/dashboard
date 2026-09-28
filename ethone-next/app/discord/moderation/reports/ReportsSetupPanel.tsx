@@ -7,6 +7,7 @@ import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import Select from "@/components/ui/Select";
 import { cn } from "@/lib/utils";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -96,12 +97,12 @@ export default function ReportsSetupPanel({ guildId }: { guildId: string }) {
     try {
       const res = await fetch(`${base}${path}`, { method, credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || String(res.status));
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       if (data?.config) setConfig(data.config as ReportsConfig);
       success(okTitle, okText);
       return true;
     } catch (err) {
-      showError("Action impossible", err instanceof Error && err.message ? err.message : "Le bot n'a pas répondu.");
+      showError("Action impossible", errorReason(err, "Le bot n'a pas répondu."));
       return false;
     } finally {
       setBusy(false);

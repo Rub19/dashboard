@@ -35,6 +35,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import { cn } from "@/lib/utils";
+import { formatApiError, errorReason } from "@/lib/format-error";
 import Select from "@/components/ui/Select";
 
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -289,7 +290,7 @@ export default function AiCenterClient() {
   const put = async (path: string, body: unknown) => {
     const res = await fetch(`${base}${path}`, { method: "PUT", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
     const data = await res.json().catch(() => null);
-    if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+    if (!res.ok) throw new Error(formatApiError(data?.error, `Erreur HTTP ${res.status}`));
     return data;
   };
 
@@ -313,7 +314,7 @@ export default function AiCenterClient() {
       });
       const res = await fetch(`${base}/publish`, { method: "POST", credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok || typeof data?.version !== "number") throw new Error(data?.error || "publish failed");
+      if (!res.ok || typeof data?.version !== "number") throw new Error(formatApiError(data?.error, "Échec de la publication."));
       setSettings((s) => ({ ...s, publishedVersion: data.version, lastPublishedAt: data.publishedAt }));
       setDirty(false);
       success(`Version v${data.version} publiée sur le bot.`);
@@ -337,7 +338,7 @@ export default function AiCenterClient() {
     try {
       const res = await fetch(`${base}/test`, { method: "POST", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify({ query: playQuery }) });
       const data = await res.json().catch(() => null);
-      if (!res.ok || typeof data?.answer !== "string") throw new Error(data?.error || "test failed");
+      if (!res.ok || typeof data?.answer !== "string") throw new Error(formatApiError(data?.error, "Le playground a échoué."));
       setPlayResult(data);
     } catch (err: any) {
       toastError(err?.message || "Le playground a échoué.");
@@ -355,7 +356,7 @@ export default function AiCenterClient() {
     try {
       const res = await fetch(`${base}/knowledge`, { method: "POST", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify({ title: newKnTitle, type: newKnType, content: newKnContent, scope: "GLOBAL" }) });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.id) throw new Error(data?.error || "create failed");
+      if (!res.ok || !data?.id) throw new Error(formatApiError(data?.error, "Échec de l'ajout de la source."));
       setKnowledgeList((prev) => [data, ...prev]);
       setShowAddKnowledgeModal(false);
       setNewKnTitle("");
@@ -372,10 +373,13 @@ export default function AiCenterClient() {
     if (isDemo) return;
     try {
       const res = await fetch(`${base}/knowledge/${id}`, { method: "DELETE", credentials: "include" });
-      if (!res.ok) throw new Error();
-    } catch {
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(formatApiError(data?.error, ""));
+      }
+    } catch (e: any) {
       setKnowledgeList(previous);
-      toastError("Échec de la suppression — la source a été restaurée.");
+      toastError("Échec de la suppression — la source a été restaurée.", errorReason(e));
     }
   };
 
@@ -410,7 +414,7 @@ export default function AiCenterClient() {
     try {
       const res = await fetch(`${base}/memory/user/${id}`, { method: "DELETE", credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error);
+      if (!res.ok) throw new Error(formatApiError(data?.error, "Échec de la purge."));
       success(`${data?.removedCount ?? 0} conversation(s) supprimée(s) pour cet utilisateur.`);
       setUserToForgetId("");
     } catch (e: any) {

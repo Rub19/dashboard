@@ -607,7 +607,7 @@ export function WelcomeCenterClient() {
         body: JSON.stringify(payload),
       });
       const d = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(d?.error || "Échec de la sauvegarde");
+      if (!res.ok) throw new Error(formatApiError(d?.error, "Échec de la sauvegarde"));
       setConfig(d.config);
       success("Modifications enregistrées", "La configuration de bienvenue a été synchronisée.");
     } catch (err: any) {
@@ -632,7 +632,7 @@ export function WelcomeCenterClient() {
         body: JSON.stringify(flowData),
       });
       const saved = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(saved?.error || "Échec de sauvegarde onboarding");
+      if (!res.ok) throw new Error(formatApiError(saved?.error, "Échec de sauvegarde onboarding"));
       setOnboarding(saved?.flow || flowData);
       success("Onboarding mis à jour", "Le parcours d'onboarding a été enregistré.");
     } catch (err: any) {
@@ -680,7 +680,7 @@ export function WelcomeCenterClient() {
         body: JSON.stringify(verifData),
       });
       const saved = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(saved?.error || "Échec de sauvegarde vérification");
+      if (!res.ok) throw new Error(formatApiError(saved?.error, "Échec de sauvegarde vérification"));
       setVerification(verifData);
       success("Vérification enregistrée", "Les réglages de vérification ont été appliqués.");
     } catch (err: any) {
@@ -705,7 +705,7 @@ export function WelcomeCenterClient() {
         body: JSON.stringify({ templateId }),
       });
       const d = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(d?.error || "Échec d'application du template");
+      if (!res.ok) throw new Error(formatApiError(d?.error, "Échec d'application du template"));
       setConfig(d.config);
       success("Template appliqué", `Le modèle "${d.templateName || "modèle"}" est désormais actif.`);
     } catch (err: any) {
@@ -730,7 +730,7 @@ export function WelcomeCenterClient() {
         body: JSON.stringify({ type: testType, target: testTarget }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || "Échec du test");
+      if (!res.ok) throw new Error(formatApiError(data?.error, "Échec du test"));
       success(
         "Test envoyé avec succès !",
         testTarget === "dm"

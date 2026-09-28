@@ -6,6 +6,7 @@ import ChannelPicker from "@/components/discord/ChannelPicker";
 import Select from "@/components/ui/Select";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { cn } from "@/lib/utils";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 export interface VoiceHubItem {
   id: string;
@@ -74,12 +75,12 @@ export default function VoiceHubsPanel({ guildId, hubs, onChanged }: Props) {
     try {
       const res = await fetch(`${base}${path}`, { method, credentials: "include", headers: { "Content-Type": "application/json" }, body: body === undefined ? undefined : JSON.stringify(body) });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || String(res.status));
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       await onChanged();
       success(okTitle, okText);
       return true;
     } catch (err) {
-      showError("Action impossible", err instanceof Error && err.message ? err.message : "Le bot n'a pas répondu.");
+      showError("Action impossible", errorReason(err, "Le bot n'a pas répondu."));
       return false;
     } finally {
       setBusy(false);

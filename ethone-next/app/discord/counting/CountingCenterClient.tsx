@@ -12,6 +12,7 @@ import { confirmDialog } from "@/lib/confirmDialog";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import PageHeader from "@/components/discord/PageHeader";
 import { cn } from "@/lib/utils";
+import { formatApiError, errorReason } from "@/lib/format-error";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -125,11 +126,11 @@ export default function CountingCenterClient() {
         body: JSON.stringify(patch),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || String(res.status));
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       setOverview({ config: data.config, leaderboard: data.leaderboard });
       success("Comptage mis à jour", "Le bot applique ce réglage tout de suite.");
     } catch (err) {
-      showError("Réglage non enregistré", err instanceof Error && err.message ? err.message : "Le bot n'a pas répondu.");
+      showError("Réglage non enregistré", errorReason(err, "Le bot n'a pas répondu."));
     } finally {
       setSaving(false);
     }
@@ -141,11 +142,11 @@ export default function CountingCenterClient() {
     try {
       const res = await fetch(`${base}/reset`, { method: "POST", credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error("refusé");
+      if (!res.ok) throw new Error(formatApiError(data?.error, ""));
       setOverview({ config: data.config, leaderboard: data.leaderboard });
       success("Compteur remis à zéro", "Le prochain nombre est 1.");
-    } catch {
-      showError("Compteur non remis à zéro", "Le bot n'a pas répondu ou a refusé.");
+    } catch (err) {
+      showError("Compteur non remis à zéro", errorReason(err, "Le bot n'a pas répondu ou a refusé."));
     } finally {
       setSaving(false);
     }

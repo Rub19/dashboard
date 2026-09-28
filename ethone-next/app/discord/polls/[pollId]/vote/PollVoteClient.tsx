@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useToast } from "@/components/ToastProvider";
 import { POLL_BOT_API_URL, usePollData } from "../usePollData";
+import { formatApiError } from "@/lib/format-error";
 
 /** Vote depuis le web : le bot enregistre le vote au nom du compte Discord connecté (jamais un identifiant saisi). */
 export default function PollVoteClient() {
@@ -53,7 +54,7 @@ export default function PollVoteClient() {
           body: JSON.stringify({ selections: { [question.id]: choices[question.id] } }),
         });
         const data = await res.json().catch(() => ({}));
-        if (!res.ok || data?.success === false) throw new Error(data?.error || "Le bot a refusé ce vote.");
+        if (!res.ok || data?.success === false) throw new Error(formatApiError(data?.error, "Le bot a refusé ce vote."));
       }
       setDone(true);
       success("Vote enregistré", "Merci pour votre participation.");

@@ -19,6 +19,8 @@ import {
   Shield,
 } from "@/components/icons/ph";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useToast } from "@/components/ToastProvider";
+import { formatApiError, errorReason } from "@/lib/format-error";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -127,6 +129,7 @@ function mapEvent(raw: Record<string, any>, id: string): EventDetailData {
 export default function EventDetailClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
+  const { error: showError } = useToast();
   const eventId = usePathSegment("events");
   const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
   const base = `${BOT_API_URL}/api/guilds/${guildParam}/events/${eventId}`;
@@ -228,10 +231,14 @@ export default function EventDetailClient() {
           status,
         }),
       });
-      if (!res.ok) throw new Error("rsvp failed");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(formatApiError(data?.error, ""));
+      }
       await loadEvent();
-    } catch {
+    } catch (err) {
       // Roll back the optimistic update if the real RSVP didn't take.
+      showError("Inscription impossible — réessaie.", errorReason(err));
       setUserRsvp(previousRsvp);
       setEvent((prev) => ({ ...prev, stats: previousStats }));
     } finally {
@@ -260,9 +267,13 @@ export default function EventDetailClient() {
           method: "MANUAL_STAFF",
         }),
       });
-      if (!res.ok) throw new Error("checkin failed");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(formatApiError(data?.error, ""));
+      }
       await loadEvent();
-    } catch {
+    } catch (err) {
+      showError("Présence non enregistrée", errorReason(err, "Le bot n'a pas répondu."));
       setIsCheckedIn(false);
       setEvent((prev) => ({
         ...prev,

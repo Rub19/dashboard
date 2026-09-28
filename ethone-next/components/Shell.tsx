@@ -2,6 +2,9 @@
 
 import { type ReactNode } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ArrowLeft } from "@/components/icons/ph";
 import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import PresenceProvider from "@/components/PresenceProvider";
 import { ShortcutsProvider } from "@/components/ShortcutsProvider";
@@ -40,6 +43,60 @@ const ShortcutsOverlay = dynamic(() => import("@/components/ShortcutsOverlay"), 
 const KeyboardShortcuts = dynamic(() => import("@/components/KeyboardShortcuts"), { ssr: false });
 
 export default function Shell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  // Le Bot Discord s'ouvre en plein écran par-dessus le dashboard : ni sidebar, ni barre du haut, ni barre du bas.
+  const discordFullscreen = pathname === "/discord" || (pathname?.startsWith("/discord/") ?? false);
+
+  if (discordFullscreen) {
+    return (
+      <WindowManagerProvider>
+        <NativeIntegration />
+        <ContextMenuProvider>
+          <PublicProfileProvider>
+            <PresenceProvider>
+              <ShortcutsProvider>
+                <SkipLink />
+                <ProfileSync />
+                <div data-v8-shell data-discord-fullscreen className="flex h-dvh max-h-dvh w-screen max-w-full flex-col overflow-clip bg-[var(--background)]">
+                  <CommandPalette />
+                  <DocumentMetadata />
+                  <CosmicBackground />
+                  <RefreshSpinner />
+                  <VisualHaptics />
+                  <header className="relative z-10 flex h-12 shrink-0 items-center gap-3 border-b border-[var(--panel-border)]/60 px-4">
+                    <Link
+                      href="/"
+                      className="inline-flex h-9 items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3.5 text-xs font-semibold text-[var(--text-primary)] transition-all hover:border-[var(--accent-primary)]/50 hover:bg-[var(--accent-primary)]/10 active:scale-95"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      Retour à ETHONE
+                    </Link>
+                    <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Bot Discord</span>
+                  </header>
+                  <PrivacyShield>
+                    <main
+                      data-v8-main
+                      id="main-content"
+                      className="relative z-0 flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden bg-transparent [overscroll-behavior:contain]"
+                      tabIndex={-1}
+                    >
+                      <ActivityJournalProvider>
+                        <PageTransition>{children}</PageTransition>
+                        <AutomationRuntime />
+                      </ActivityJournalProvider>
+                    </main>
+                  </PrivacyShield>
+                </div>
+                <ShortcutsOverlay />
+                <KeyboardShortcuts />
+              </ShortcutsProvider>
+            </PresenceProvider>
+          </PublicProfileProvider>
+        </ContextMenuProvider>
+      </WindowManagerProvider>
+    );
+  }
+
   return (
     <WindowManagerProvider>
       <NativeIntegration />

@@ -20,6 +20,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ReportsSetupPanel from "./ReportsSetupPanel";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -173,6 +174,9 @@ export default function ReportsCenterClient() {
       if (res.ok) {
         success("Pris en charge", "Le signalement vous a été assigné.");
         fetchReports();
+      } else {
+        const errBody = await res.json().catch(() => null);
+        showError("Erreur", formatApiError(errBody?.error, "Impossible d'assigner le signalement."));
       }
     } catch {
       showError("Erreur", "Impossible d'assigner le signalement.");
@@ -202,6 +206,9 @@ export default function ReportsCenterClient() {
         setDismissingReport(null);
         setDismissReason("");
         fetchReports();
+      } else {
+        const errBody = await res.json().catch(() => null);
+        showError("Erreur", formatApiError(errBody?.error, "Impossible de classer le signalement."));
       }
     } catch {
       showError("Erreur", "Impossible de classer le signalement.");
@@ -236,6 +243,9 @@ export default function ReportsCenterClient() {
         setNewReportTargetId("");
         setNewReportReason("");
         fetchReports();
+      } else {
+        const errBody = await res.json().catch(() => null);
+        showError("Erreur", formatApiError(errBody?.error, "Impossible de consigner le signalement."));
       }
     } catch {
       showError("Erreur", "Impossible de consigner le signalement.");

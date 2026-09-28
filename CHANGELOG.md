@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.2 — 2026-09-28
+
+**Contrôle du bot : plus de faux succès**
+
+- Le bouton « Purger Cache » ne faisait rien de réel et annonçait toujours un succès : il est retiré.
+- « Redémarrer PM2 » et « Mettre à Jour » affichent maintenant la vraie réponse du bot : la mise à jour à distance n'est pas prise en charge (il faut se connecter au VPS), le message d'erreur le dit clairement au lieu d'annoncer un faux succès.
+
 ## v1.37.1 — 2026-09-28
 
 **Invitations : bouton de synchronisation**

@@ -34,7 +34,6 @@ import {
   Terminal,
   Ticket,
   Timer,
-  Trash2,
   UserPlus,
   Users,
   Wifi,
@@ -146,7 +145,6 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const currentUser = auth.user;
   const [restartingBot, setRestartingBot] = useState(false);
   const [updatingBot, setUpdatingBot] = useState(false);
-  const [clearingCache, setClearingCache] = useState(false);
   const [ownerLogs, setOwnerLogs] = useState<any[]>([]);
   const [ownerPanelOpen, setOwnerPanelOpen] = useState(false);
 
@@ -188,12 +186,17 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     if (!await confirmDialog("⚠️ Confirmation Propriétaire : Êtes-vous sûr de vouloir redémarrer le bot Discord à distance ?")) return;
     setRestartingBot(true);
     try {
-      await fetch(`${BOT_API_URL}/api/bot/restart`, {
+      const res = await fetch(`${BOT_API_URL}/api/bot/restart`, {
         credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason: "Dashboard Remote Owner Restart", email: "rub19.mailpro@gmail.com" }),
-      }).catch(() => null);
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) {
+        toast?.error?.(formatApiError(data?.error, `Échec de la commande de redémarrage (HTTP ${res.status}).`));
+        return;
+      }
 
       if (currentUser?.id) {
         try {
@@ -222,12 +225,17 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const handleRemoteUpdate = async () => {
     setUpdatingBot(true);
     try {
-      await fetch(`${BOT_API_URL}/api/bot/update`, {
+      const res = await fetch(`${BOT_API_URL}/api/bot/update`, {
         credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason: "Dashboard Remote Owner Update", email: "rub19.mailpro@gmail.com" }),
-      }).catch(() => null);
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) {
+        toast?.error?.(formatApiError(data?.error, `Mise à jour à distance non disponible (HTTP ${res.status}). Utilise « git pull » puis « pm2 restart » sur le VPS.`));
+        return;
+      }
 
       if (currentUser?.id) {
         try {
@@ -250,33 +258,6 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       toast?.error?.("Erreur réseau.");
     } finally {
       setUpdatingBot(false);
-    }
-  };
-
-  const handleClearCache = async () => {
-    setClearingCache(true);
-    try {
-      if (currentUser?.id) {
-        try {
-          await supabase.from("ethone_bot_owner_actions").insert({
-            user_id: currentUser.id,
-            user_email: "rub19.mailpro@gmail.com",
-            action: "CLEAR_CACHE",
-            status: "SUCCESS",
-            details: { type: "CACHE_PURGE" },
-          });
-        } catch {}
-      }
-
-      toast?.success?.("🧹 Le cache mémoire RAM et les compteurs temporaires ont été vidés avec succès !");
-      setOwnerLogs((prev) => [
-        { action: "CLEAR_CACHE", created_at: new Date().toISOString(), status: "SUCCESS" },
-        ...prev,
-      ]);
-    } catch {
-      toast?.error?.("Erreur réseau.");
-    } finally {
-      setClearingCache(false);
     }
   };
 
@@ -1561,16 +1542,6 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 >
                   <RefreshCw className={cn("w-3.5 h-3.5", updatingBot && "animate-spin")} />
                   <span>{updatingBot ? "Mise à jour..." : "Mettre à Jour"}</span>
-                </button>
-
-                <button
-                  onClick={handleClearCache}
-                  disabled={clearingCache}
-                  className="px-3 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-[var(--text-primary)] text-xs font-semibold flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
-                  title="Vider les compteurs et le cache"
-                >
-                  <Trash2 className="w-3.5 h-3.5 text-amber-400" />
-                  <span>{clearingCache ? "Purge..." : "Purger Cache"}</span>
                 </button>
 
                 <button

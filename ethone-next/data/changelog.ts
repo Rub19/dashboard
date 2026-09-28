@@ -38745,6 +38745,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_1_de);
 
+const v1_37_2_fr: ChangelogEntry = {
+  version: "v1.37.2",
+  date: "2026-09-28",
+  title: "Contrôle du bot : plus de faux succès",
+  items: [
+    "Le bouton « Purger Cache » ne faisait rien de réel et annonçait toujours un succès : il est retiré.",
+    "« Redémarrer PM2 » et « Mettre à Jour » affichent maintenant la vraie réponse du bot : la mise à jour à distance n'est pas prise en charge (il faut se connecter au VPS), le message d'erreur le dit clairement au lieu d'annoncer un faux succès.",
+  ],
+};
+
+const v1_37_2_en: ChangelogEntry = {
+  version: "v1.37.2",
+  date: "2026-09-28",
+  title: "Bot control: no more fake success",
+  items: [
+    "The \"Clear Cache\" button did nothing real and always claimed success: it has been removed.",
+    "\"Restart PM2\" and \"Update\" now show the bot's real response: remote update isn't supported (you must connect to the VPS), and the error message now says so instead of claiming a fake success.",
+  ],
+};
+
+const v1_37_2_es: ChangelogEntry = {
+  version: "v1.37.2",
+  date: "2026-09-28",
+  title: "Control del bot: sin falsos éxitos",
+  items: [
+    "El botón «Purgar caché» no hacía nada real y siempre anunciaba éxito: se ha eliminado.",
+    "«Reiniciar PM2» y «Actualizar» muestran ahora la respuesta real del bot.",
+  ],
+};
+
+const v1_37_2_de: ChangelogEntry = {
+  version: "v1.37.2",
+  date: "2026-09-28",
+  title: "Bot-Steuerung: kein falscher Erfolg mehr",
+  items: [
+    "Der Button „Cache leeren“ tat nichts Echtes und meldete immer Erfolg: er wurde entfernt.",
+    "„PM2 neu starten“ und „Aktualisieren“ zeigen jetzt die echte Antwort des Bots.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

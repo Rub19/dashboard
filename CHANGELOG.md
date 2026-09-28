@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.3 — 2026-09-28
+
+**AutoMod natif Discord : le bouton d'activation marche vraiment**
+
+- L'activation/désactivation d'une règle AutoMod native accepte maintenant qu'on ne précise pas l'état voulu : le bot bascule alors l'état actuel, comme les autres interrupteurs du dashboard.
+
 ## v1.37.2 — 2026-09-28
 
 **Contrôle du bot : plus de faux succès**

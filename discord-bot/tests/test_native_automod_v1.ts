@@ -168,6 +168,10 @@ const keywordRule = {
   assert((await nativeAutomodService.toggle(guild, created.id, true)).enabled === true, 'toggle: réactivation');
   const bad = await rejects(nativeAutomodService.toggle(guild, created.id, 'yes' as any));
   assert(!!bad && bad.includes('vrai ou faux'), 'toggle: valeur non booléenne refusée');
+  const flipped = await nativeAutomodService.toggle(guild, created.id, undefined as any);
+  assert(flipped.enabled === false, 'toggle: valeur omise -> bascule l\'état actuel (était true)');
+  const flippedBack = await nativeAutomodService.toggle(guild, created.id, undefined as any);
+  assert(flippedBack.enabled === true, 'toggle: nouvelle bascule -> revient à true');
 
   const u = await nativeAutomodService.update(guild, created.id, { keywords: ['nouveau'], name: 'Renommée' });
   assert(u.name === 'Renommée' && u.triggerMetadata.keywordFilter.join() === 'nouveau' && u.actions.length === 3, 'update: patch partiel fusionné avec la règle existante');

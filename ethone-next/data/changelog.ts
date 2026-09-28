@@ -38790,6 +38790,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_2_de);
 
+const v1_37_3_fr: ChangelogEntry = {
+  version: "v1.37.3",
+  date: "2026-09-28",
+  title: "AutoMod natif Discord : le bouton d'activation marche vraiment",
+  items: [
+    "L'activation/désactivation d'une règle AutoMod native accepte maintenant qu'on ne précise pas l'état voulu : le bot bascule alors l'état actuel, comme les autres interrupteurs du dashboard.",
+  ],
+};
+
+const v1_37_3_en: ChangelogEntry = {
+  version: "v1.37.3",
+  date: "2026-09-28",
+  title: "Discord native AutoMod: the toggle button actually works",
+  items: [
+    "Toggling a native AutoMod rule now accepts an omitted target state: the bot then flips the current state, like the other switches in the dashboard.",
+  ],
+};
+
+const v1_37_3_es: ChangelogEntry = {
+  version: "v1.37.3",
+  date: "2026-09-28",
+  title: "AutoMod nativo de Discord: el interruptor funciona de verdad",
+  items: [
+    "Activar o desactivar una regla de AutoMod nativa ahora acepta omitir el estado deseado: el bot invierte el estado actual.",
+  ],
+};
+
+const v1_37_3_de: ChangelogEntry = {
+  version: "v1.37.3",
+  date: "2026-09-28",
+  title: "Nativer Discord-AutoMod: der Schalter funktioniert wirklich",
+  items: [
+    "Das Umschalten einer nativen AutoMod-Regel akzeptiert jetzt einen weggelassenen Zielzustand: der Bot kehrt dann den aktuellen Zustand um.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

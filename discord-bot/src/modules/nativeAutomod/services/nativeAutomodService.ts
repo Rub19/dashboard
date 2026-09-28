@@ -375,12 +375,21 @@ export const nativeAutomodService = {
     }
   },
 
-  async toggle(guild: Guild, ruleId: string, enabled: boolean, reason?: string): Promise<NativeRuleView> {
-    if (typeof enabled !== 'boolean') throw new NativeAutomodError("L'état « activé » doit être vrai ou faux.");
+  /** `enabled` omis (ex. bouton « Activer / désactiver » générique de l'app iOS) : on inverse l'état actuel plutôt que d'exiger la valeur cible. */
+  async toggle(guild: Guild, ruleId: string, enabled: boolean | undefined, reason?: string): Promise<NativeRuleView> {
     assertBotPermissions(guild, false);
     try {
-      return toView(await guild.autoModerationRules.edit(ruleId, { enabled, reason }));
+      let target = enabled;
+      if (target === undefined) {
+        const current = (await fetchRules(guild)).find((r) => r.id === ruleId);
+        if (!current) throw new NativeAutomodError('Règle introuvable.', 404);
+        target = !current.enabled;
+      } else if (typeof target !== 'boolean') {
+        throw new NativeAutomodError("L'état « activé » doit être vrai ou faux.");
+      }
+      return toView(await guild.autoModerationRules.edit(ruleId, { enabled: target, reason }));
     } catch (err) {
+      if (err instanceof NativeAutomodError) throw err;
       throw mapDiscordError(err);
     }
   },

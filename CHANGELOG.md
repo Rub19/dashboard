@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.32.0 — 2026-09-28
+
+**Bot Discord : réglages des modules épurés + choix du serveur façon Sapphire**
+
+- Tous les panneaux de réglages rapides des modules (sécurité, commandes, niveaux, tickets, musique, etc.) suivent le nouveau style épuré : un seul niveau de carte, textes lisibles, boutons et arrondis cohérents.
+- Choix du serveur : lignes plus grandes façon Sapphire ; les serveurs sans le bot sont grisés avec un « + » pour l'inviter, ceux avec le bot restent en normal avec une flèche.
+
 ## v1.31.4 — 2026-09-28
 
 **Avatar d'Etho enfin animé + choix du serveur simplifié**

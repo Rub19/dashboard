@@ -38154,6 +38154,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_31_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_31_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_31_4_de);
 
+const v1_32_0_fr: ChangelogEntry = {
+  version: "v1.32.0",
+  date: "2026-09-28",
+  title: "Bot Discord : réglages des modules épurés + choix du serveur façon Sapphire",
+  items: [
+    "Tous les panneaux de réglages rapides des modules (sécurité, commandes, niveaux, tickets, musique, etc.) suivent le nouveau style épuré : un seul niveau de carte, textes lisibles, boutons et arrondis cohérents.",
+    "Choix du serveur : lignes plus grandes façon Sapphire ; les serveurs sans le bot sont grisés avec un « + » pour l'inviter, ceux avec le bot restent en normal avec une flèche.",
+  ],
+};
+
+const v1_32_0_en: ChangelogEntry = {
+  version: "v1.32.0",
+  date: "2026-09-28",
+  title: "Discord bot: cleaner module settings + Sapphire-style server picker",
+  items: [
+    "All quick module settings panels (security, commands, levels, tickets, music, etc.) follow the new clean style: a single card level, readable text, consistent buttons and radii.",
+    "Server picker: bigger Sapphire-style rows; servers without the bot are dimmed with a \"+\" to invite it, servers with the bot stay normal with an arrow.",
+  ],
+};
+
+const v1_32_0_es: ChangelogEntry = {
+  version: "v1.32.0",
+  date: "2026-09-28",
+  title: "Bot de Discord: ajustes de módulos más limpios + selector estilo Sapphire",
+  items: [
+    "Todos los paneles de ajustes rápidos de los módulos siguen el nuevo estilo limpio: un solo nivel de tarjeta, textos legibles, botones y radios coherentes.",
+    "Selector de servidor: filas más grandes al estilo Sapphire; los servidores sin el bot aparecen atenuados con un «+» para invitarlo.",
+  ],
+};
+
+const v1_32_0_de: ChangelogEntry = {
+  version: "v1.32.0",
+  date: "2026-09-28",
+  title: "Discord-Bot: aufgeräumte Modul-Einstellungen + Serverauswahl im Sapphire-Stil",
+  items: [
+    "Alle Schnelleinstellungs-Panels der Module folgen dem neuen, aufgeräumten Stil: eine Kartenebene, lesbare Texte, einheitliche Buttons und Radien.",
+    "Serverauswahl: größere Zeilen im Sapphire-Stil; Server ohne Bot sind abgedunkelt mit „+“ zum Einladen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_32_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_32_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_32_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_32_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

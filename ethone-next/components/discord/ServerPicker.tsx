@@ -38,7 +38,7 @@ function Avatar({ guild, dim }: { guild: DiscordGuild; dim?: boolean }) {
   return (
     <span
       className={cn(
-        "flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--surface-raised)] text-sm font-bold text-[var(--text-primary)]",
+        "flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--surface-raised)] text-base font-bold text-[var(--text-primary)]",
         dim && "grayscale"
       )}
     >
@@ -69,7 +69,7 @@ export default function ServerPicker({
   const q = query.trim().toLowerCase();
   const visible = useMemo(() => (q ? guilds.filter((g) => g.name.toLowerCase().includes(q)) : guilds), [guilds, q]);
 
-  const rowClass = "flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.04]";
+  const rowClass = "flex w-full items-center gap-4 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-white/[0.05]";
 
   return (
     <div className="flex min-h-[calc(100dvh-3rem)] w-full items-center justify-center px-4 py-10">
@@ -150,7 +150,7 @@ export default function ServerPicker({
           ) : visible.length === 0 ? (
             <p className="px-6 py-8 text-center text-sm text-[var(--text-muted)]">Aucun serveur ne correspond.</p>
           ) : (
-            <ul className="max-h-[min(60vh,520px)] divide-y divide-[var(--panel-border)] overflow-y-auto">
+            <ul className="max-h-[min(60vh,520px)] space-y-1 overflow-y-auto p-2">
               {visible.map((guild) => {
                 const absent = botPresenceKnown && !botGuildIds.has(guild.id);
                 return (
@@ -161,17 +161,17 @@ export default function ServerPicker({
                         target="_blank"
                         rel="noopener noreferrer"
                         title="Inviter le bot sur ce serveur"
-                        className={cn(rowClass, "opacity-60 hover:opacity-100")}
+                        className={cn(rowClass, "opacity-45 hover:opacity-90")}
                       >
                         <Avatar guild={guild} dim />
-                        <span className="min-w-0 flex-1 truncate text-sm font-semibold text-[var(--text-muted)]">{guild.name}</span>
-                        <Plus className="h-4 w-4 shrink-0 text-[var(--text-muted)]" aria-label="Ajouter le bot" />
+                        <span className="min-w-0 flex-1 truncate text-base font-medium text-[var(--text-muted)]">{guild.name}</span>
+                        <Plus className="h-5 w-5 shrink-0 text-[var(--text-muted)]" aria-label="Ajouter le bot" />
                       </a>
                     ) : (
                       <button type="button" onClick={() => onPick(guild)} className={cn(rowClass, "cursor-pointer")}>
                         <Avatar guild={guild} />
-                        <span className="min-w-0 flex-1 truncate text-sm font-semibold text-[var(--text-primary)]">{guild.name}</span>
-                        <ChevronRight className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
+                        <span className="min-w-0 flex-1 truncate text-base font-medium text-[var(--text-primary)]">{guild.name}</span>
+                        <ChevronRight className="h-5 w-5 shrink-0 text-[var(--text-primary)]" />
                       </button>
                     )}
                   </li>

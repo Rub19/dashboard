@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, TextChannel } fr
 import { Command, CommandContext } from '../../../types/command.js';
 import { starboardStorage } from '../storage/starboardStorage.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
+import { SLASH_DESTINATION_TYPES } from '../../../utils/channelSend.js';
 
 /** Valide un emoji : unicode simple OU emoji custom `<:name:id>` / `<a:name:id>`. */
 function normalizeEmoji(raw: string): string | null {
@@ -31,7 +32,7 @@ export const starboardCommand: Command = {
           opt
             .setName('salon')
             .setDescription('Salon où republier les messages étoilés')
-            .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+            .addChannelTypes(...SLASH_DESTINATION_TYPES)
             .setRequired(true)
         )
         .addIntegerOption((opt) =>
@@ -54,7 +55,7 @@ export const starboardCommand: Command = {
           opt
             .setName('salon')
             .setDescription('Nouveau salon')
-            .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+            .addChannelTypes(...SLASH_DESTINATION_TYPES)
             .setRequired(true)
         )
     )

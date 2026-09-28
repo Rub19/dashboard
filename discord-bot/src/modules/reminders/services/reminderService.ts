@@ -5,6 +5,7 @@ import { Reminder, ReminderRecurrence } from '../types/reminder.js';
 import { logger } from '../../../utils/logger.js';
 import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 type SendableChannel = TextChannel | NewsChannel | ThreadChannel;
 
@@ -54,14 +55,8 @@ class ReminderService {
   }
 
   private isSendable(channel: unknown): channel is SendableChannel {
-    return (
-      !!channel &&
-      typeof channel === 'object' &&
-      'isTextBased' in channel &&
-      typeof (channel as { isTextBased: () => boolean }).isTextBased === 'function' &&
-      (channel as { isTextBased: () => boolean }).isTextBased() &&
-      'send' in channel
-    );
+    // Texte, annonces, threads, forums (15) et médias (16).
+    return isSendableTarget(channel);
   }
 
   private buildEmbed(reminder: Reminder): EmbedBuilder {
@@ -118,7 +113,11 @@ class ReminderService {
     try {
       const channel = await this.client.channels.fetch(reminder.channelId).catch(() => null);
       if (this.isSendable(channel)) {
-        await channel.send({ content, embeds: [embed], allowedMentions: { users: [reminder.userId] } });
+        await sendToConfiguredChannel(
+          channel,
+          { content, embeds: [embed], allowedMentions: { users: [reminder.userId] } },
+          { postTitle: '⏰ Rappel' }
+        );
         return true;
       }
     } catch (err) {

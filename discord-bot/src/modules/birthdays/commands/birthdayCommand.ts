@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, TextChannel } fr
 import { Command, CommandContext } from '../../../types/command.js';
 import { birthdayStorage, daysUntil } from '../storage/birthdayStorage.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
+import { SLASH_DESTINATION_TYPES } from '../../../utils/channelSend.js';
 
 const MONTHS_FR = [
   'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
@@ -34,7 +35,7 @@ export const birthdayCommand: Command = {
         .setName('config')
         .setDescription('[Admin] Réglages du module anniversaires')
         .addChannelOption((o) =>
-          o.setName('salon').setDescription('Salon d\'annonce').addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+          o.setName('salon').setDescription('Salon d\'annonce').addChannelTypes(...SLASH_DESTINATION_TYPES)
         )
         .addIntegerOption((o) => o.setName('heure').setDescription('Heure d\'annonce (0-23)').setMinValue(0).setMaxValue(23))
         .addRoleOption((o) => o.setName('role').setDescription('Rôle attribué le jour J (retiré le lendemain)'))

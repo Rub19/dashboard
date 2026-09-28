@@ -5,12 +5,14 @@ import {
   Guild,
   PermissionFlagsBits,
   TextChannel,
+  GuildBasedChannel,
   Webhook,
 } from 'discord.js';
 import { AuditEvent, AuditModule, AuditSeverity, AuditSettings, ChannelLogThreshold, LogCategoryKey } from '../types/auditEvent.js';
 import { DEFAULT_CATEGORY_NAME, categoryKeyOf, sanitizeWebhookName } from './logCategories.js';
 import { auditRepository } from '../storage/auditRepository.js';
 import { logger } from '../../../utils/logger.js';
+import { canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 import { baseEmbed } from '../../../utils/embeds.js';
 
 const WEBHOOK_NAME = 'ETHONE Logs';
@@ -76,15 +78,18 @@ export class DiscordLogService {
       if (!targetChannel) return { ok: false, reason: 'no_channel', name };
 
       const me = guild.members.me;
-      if (!me || !targetChannel.permissionsFor(me)?.has(PermissionFlagsBits.SendMessages)) {
+      if (!me || !canBotSendTo(targetChannel, me)) {
         return { ok: false, reason: 'no_permission', name, channelId: targetChannel.id };
       }
 
       const embed = this.createEmbed(event);
 
       // Livraison via webhook (username = nom de la catégorie) sauf si explicitement désactivé.
-      if (config.useWebhooks !== false) {
-        const webhook = await this.getWebhook(targetChannel, me);
+      // (salons texte uniquement : threads / forums / médias reçoivent le message via le bot)
+      const webhookCapable =
+        targetChannel.type === ChannelType.GuildText || targetChannel.type === ChannelType.GuildAnnouncement;
+      if (config.useWebhooks !== false && webhookCapable) {
+        const webhook = await this.getWebhook(targetChannel as TextChannel, me);
         if (webhook) {
           let fallback = false;
           await webhook
@@ -99,13 +104,13 @@ export class DiscordLogService {
               logger.warn('[Logs] Envoi webhook échoué, fallback bot :', err);
               this.webhookCache.delete(targetChannel.id);
               fallback = true;
-              await targetChannel.send({ embeds: [embed], allowedMentions: { parse: [] } }).catch(() => {});
+              await sendToConfiguredChannel(targetChannel, { embeds: [embed], allowedMentions: { parse: [] } }).catch(() => {});
             });
           return { ok: true, name, channelId: targetChannel.id, via: fallback ? 'bot' : 'webhook' };
         }
       }
 
-      await targetChannel.send({ embeds: [embed], allowedMentions: { parse: [] } });
+      await sendToConfiguredChannel(targetChannel, { embeds: [embed], allowedMentions: { parse: [] } }, { postTitle: name });
       return { ok: true, name, channelId: targetChannel.id, via: 'bot' };
     } catch (err) {
       logger.error('Erreur dans DiscordLogService.dispatchToDiscord :', err);
@@ -143,7 +148,7 @@ export class DiscordLogService {
     }
   }
 
-  private static resolveChannel(guild: Guild, event: AuditEvent, config: AuditSettings, force = false): TextChannel | null {
+  private static resolveChannel(guild: Guild, event: AuditEvent, config: AuditSettings, force = false): GuildBasedChannel | null {
     const routing = config.routing;
     let channelId: string | null | undefined = null;
     let threshold: ChannelLogThreshold = 'IMPORTANT';
@@ -180,7 +185,7 @@ export class DiscordLogService {
     if (!channelId) return null;
 
     const channel = guild.channels.cache.get(channelId);
-    if (channel && channel.type === ChannelType.GuildText) return channel as TextChannel;
+    if (channel && isSendableTarget(channel)) return channel;
     return null;
   }
 

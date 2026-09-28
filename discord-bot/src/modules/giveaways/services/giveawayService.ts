@@ -21,6 +21,7 @@ import { logger } from '../../../utils/logger.js';
 import { baseEmbed, noticeEmbed } from '../../../utils/embeds.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { formatString, getTranslation, SupportedLanguage } from '../../../utils/i18n.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 class GiveawayService {
   /**
@@ -73,14 +74,22 @@ class GiveawayService {
 
     // Envoi du message sur Discord
     try {
-      const channel = client.channels.cache.get(data.channelId) as TextChannel | undefined;
-      if (channel && channel.type === ChannelType.GuildText) {
+      const channel = client.channels.cache.get(data.channelId) ?? (await client.channels.fetch(data.channelId).catch(() => null));
+      if (channel && isSendableTarget(channel)) {
         const embed = this.buildGiveawayEmbed(giveaway, language);
         const row = this.buildActionRow(giveaway, language);
-        const message = await channel.send({ embeds: [embed], components: [row] });
+        const message = await sendToConfiguredChannel(
+          channel,
+          { embeds: [embed], components: [row] },
+          { postTitle: `🎁 ${giveaway.prize}` }
+        );
 
         giveaway.messageId = message.id;
-        giveawayStorage.update(giveaway.id, { messageId: message.id });
+        // Salon Forum/Média : le message vit dans le post créé → on y rattache le giveaway
+        // (mise à jour de l'embed, annonce des gagnants).
+        const actualChannelId = message.channelId || data.channelId;
+        giveaway.channelId = actualChannelId;
+        giveawayStorage.update(giveaway.id, { messageId: message.id, channelId: actualChannelId });
       }
     } catch (err) {
       logger.error('Erreur lors de l’envoi de l’embed de giveaway :', err);
@@ -352,8 +361,9 @@ class GiveawayService {
 
     try {
       const language = guildConfigService.getConfig(giveaway.guildId).language;
-      const channel = client.channels.cache.get(giveaway.channelId) as TextChannel | undefined;
-      if (channel) {
+      const channel = (client.channels.cache.get(giveaway.channelId) ??
+        (await client.channels.fetch(giveaway.channelId).catch(() => null))) as TextChannel | undefined;
+      if (channel && 'messages' in channel) {
         const message = await channel.messages.fetch(giveaway.messageId).catch(() => null);
         if (message) {
           const embed = this.buildGiveawayEmbed(giveaway, language);
@@ -431,17 +441,18 @@ class GiveawayService {
     await this.updateMessage(client, giveawayId);
 
     // Annonce dans le salon
-    const channel = guild.channels.cache.get(giveaway.channelId) as TextChannel | undefined;
-    if (channel) {
+    const channel = (guild.channels.cache.get(giveaway.channelId) ??
+      (await client.channels.fetch(giveaway.channelId).catch(() => null))) as TextChannel | undefined;
+    if (channel && isSendableTarget(channel)) {
       if (selectedWinners.length > 0) {
         const mentions = selectedWinners.map((id) => `<@${id}>`).join(' ');
-        await channel.send({
+        await sendToConfiguredChannel(channel, {
           // Les mentions restent dans `content` : dans un embed elles ne notifieraient personne.
           content: mentions,
           embeds: [noticeEmbed('success', formatString(t.giveaway_announce_winners, { mentions, prize: giveaway.prize }), { title: 'Tirage terminé', icon: 'giveaway' })],
         }).catch(() => {});
       } else {
-        await channel.send({
+        await sendToConfiguredChannel(channel, {
           embeds: [noticeEmbed('warning', formatString(t.giveaway_announce_no_winner, { prize: giveaway.prize }), { title: 'Tirage terminé', icon: 'giveaway' })],
         }).catch(() => {});
       }

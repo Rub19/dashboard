@@ -4,6 +4,7 @@ import { giveawayStorage } from '../../modules/giveaways/storage/giveawayStorage
 import { giveawayService } from '../../modules/giveaways/services/giveawayService.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError } from '../utils/routeError.js';
+import { DESTINATION_CHANNEL_TYPES } from '../../utils/channelSend.js';
 
 export function createGiveawayRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -23,8 +24,8 @@ export function createGiveawayRouter(discordClient: Client) {
       return;
     }
     const channels = guild.channels.cache
-      .filter((c) => c.type === ChannelType.GuildText || c.type === ChannelType.GuildAnnouncement)
-      .map((c) => ({ id: c.id, name: c.name }))
+      .filter((c) => DESTINATION_CHANNEL_TYPES.includes(c.type))
+      .map((c) => ({ id: c.id, name: c.name, type: c.type }))
       .sort((a, b) => a.name.localeCompare(b.name));
     res.json({ channels });
   });

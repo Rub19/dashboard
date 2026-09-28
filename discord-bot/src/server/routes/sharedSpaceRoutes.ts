@@ -1,9 +1,11 @@
 import express, { Request, Response } from 'express';
 import { ChannelType, Client } from 'discord.js';
+import { DESTINATION_CHANNEL_TYPES } from '../../utils/channelSend.js';
 
 export interface PickableChannel {
   id: string;
   name: string;
+  type?: number;
 }
 
 // Pure so it's testable without an Express request — {channels: []} when
@@ -12,8 +14,8 @@ export function listPickableChannels(discordClient: Client, guildId: string): Pi
   const guild = discordClient.guilds.cache.get(guildId);
   if (!guild) return [];
   return guild.channels.cache
-    .filter((c) => c.type === ChannelType.GuildText || c.type === ChannelType.GuildAnnouncement)
-    .map((c) => ({ id: c.id, name: c.name }))
+    .filter((c) => DESTINATION_CHANNEL_TYPES.includes(c.type))
+    .map((c) => ({ id: c.id, name: c.name, type: c.type }))
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 

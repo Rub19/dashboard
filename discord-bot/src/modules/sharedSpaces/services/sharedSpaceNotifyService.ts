@@ -1,6 +1,7 @@
 import { ChannelType, Client, Guild, PermissionFlagsBits, TextChannel, Webhook } from 'discord.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 const WEBHOOK_NAME = 'ETHONE Espaces';
 
@@ -30,11 +31,11 @@ export class SharedSpaceNotifyService {
       if (!guild) return false;
 
       const channel = guild.channels.cache.get(payload.channelId);
-      if (!channel || channel.type !== ChannelType.GuildText) return false;
+      if (!channel || !isSendableTarget(channel) || channel.type === ChannelType.GuildVoice) return false;
       const textChannel = channel as TextChannel;
 
       const me = guild.members.me;
-      if (!me || !textChannel.permissionsFor(me)?.has(PermissionFlagsBits.SendMessages)) return false;
+      if (!me || !canBotSendTo(channel, me)) return false;
 
       const kindLabel = KIND_LABEL[payload.kind] || payload.kind;
       const actionLabel = ACTION_LABEL[payload.action] || payload.action;
@@ -42,7 +43,8 @@ export class SharedSpaceNotifyService {
         `**${kindLabel}** ${actionLabel} dans **${payload.spaceName}** par ${payload.actorName}\n> ${payload.title}`
       );
 
-      const webhook = await this.getWebhook(textChannel, me);
+      // Webhook : salons texte uniquement (threads / forums / médias → message du bot).
+      const webhook = channel.type === ChannelType.GuildText ? await this.getWebhook(textChannel, me) : null;
       if (webhook) {
         await webhook
           .send({
@@ -54,12 +56,12 @@ export class SharedSpaceNotifyService {
           .catch(async (err) => {
             logger.warn('[SharedSpaces] Envoi webhook échoué, fallback bot :', err);
             this.webhookCache.delete(textChannel.id);
-            await textChannel.send({ embeds: [embed], allowedMentions: { parse: [] } }).catch(() => {});
+            await sendToConfiguredChannel(channel, { embeds: [embed], allowedMentions: { parse: [] } }).catch(() => {});
           });
         return true;
       }
 
-      await textChannel.send({ embeds: [embed], allowedMentions: { parse: [] } });
+      await sendToConfiguredChannel(channel, { embeds: [embed], allowedMentions: { parse: [] } }, { postTitle: payload.spaceName });
       return true;
     } catch (err) {
       logger.error('Erreur dans SharedSpaceNotifyService.notify :', err);

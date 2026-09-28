@@ -3,6 +3,7 @@ import { ChannelType, Client, PermissionFlagsBits } from 'discord.js';
 import { starboardStorage } from '../../modules/starboard/storage/starboardStorage.js';
 import { StarboardConfigSchema } from '../../modules/starboard/types/starboard.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { DESTINATION_CHANNEL_TYPES, canBotSendTo } from '../../utils/channelSend.js';
 
 /**
  * API Dashboard du module Starboard.
@@ -53,13 +54,14 @@ export function createStarboardRouter(discordClient: Client) {
     }
     const botMember = guild.members.me;
     const channels = guild.channels.cache
-      .filter((c) => c.type === ChannelType.GuildText || c.type === ChannelType.GuildAnnouncement)
+      .filter((c) => DESTINATION_CHANNEL_TYPES.includes(c.type))
       .map((c) => {
         const perms = botMember && 'permissionsFor' in c ? c.permissionsFor(botMember) : null;
         return {
           id: c.id,
           name: c.name,
-          canSend: perms?.has(PermissionFlagsBits.SendMessages) ?? false,
+          type: c.type,
+          canSend: canBotSendTo(c, botMember),
           canEmbed: perms?.has(PermissionFlagsBits.EmbedLinks) ?? false,
         };
       })

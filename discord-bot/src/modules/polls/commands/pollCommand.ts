@@ -9,6 +9,7 @@ import { pollService } from '../services/pollService.js';
 import { pollResultService } from '../services/pollResultService.js';
 import { discordPollPanel } from '../ui/discordPollPanel.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 export const pollCommand: Command = {
   name: 'poll',
@@ -30,7 +31,13 @@ export const pollCommand: Command = {
           opt
             .setName('channel')
             .setDescription('Salon de destination')
-            .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+            .addChannelTypes(
+              ChannelType.GuildText,
+              ChannelType.GuildAnnouncement,
+              ChannelType.GuildForum,
+              ChannelType.GuildMedia,
+              ChannelType.PublicThread
+            )
             .setRequired(false)
         )
     )
@@ -135,7 +142,7 @@ export const pollCommand: Command = {
         channel = ctx.interaction.options.getChannel('channel') || ctx.channel;
       }
 
-      if (!channel || !channel.isTextBased() || !('send' in channel)) {
+      if (!channel || !isSendableTarget(channel)) {
         await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.poll_invalid_channel)], ephemeral: true });
         return;
       }
@@ -143,7 +150,7 @@ export const pollCommand: Command = {
       const embed = discordPollPanel.buildPanelEmbed(poll);
       const rows = discordPollPanel.buildPanelActionRows(poll);
 
-      await (channel as any).send({ embeds: [embed], components: rows });
+      await sendToConfiguredChannel(channel, { embeds: [embed], components: rows }, { postTitle: poll.title });
       await ctx.reply({
         embeds: [ctx.createEmbed('success').setDescription(formatString(t.poll_panel_published, { title: poll.title, channel: `<#${channel.id}>` }))],
         ephemeral: true,

@@ -134,10 +134,24 @@ export interface ChannelPermissionOverride {
   deny: string[];
 }
 
+export interface ForumPostItem {
+  id: string;
+  name: string;
+  type: number; // 11 = PublicThread
+  parentId: string;
+  appliedTags: string[];
+}
+
+export interface ForumTagItem {
+  id: string;
+  name: string;
+  emoji: string | null;
+}
+
 export interface ChannelItem {
   id: string;
   name: string;
-  type: number; // 0 = Text, 2 = Voice, 4 = Category, 5 = Announcement, 13 = Stage, 15 = Forum
+  type: number; // 0 = Text, 2 = Voice, 4 = Category, 5 = Announcement, 13 = Stage, 15 = Forum, 16 = Media
   parentId: string | null;
   position: number;
   topic?: string | null;
@@ -146,6 +160,9 @@ export interface ChannelItem {
   bitrate?: number;
   userLimit?: number;
   permissionOverwritesCount: number;
+  /** Forum (15) / Média (16) uniquement. */
+  posts?: ForumPostItem[];
+  availableTags?: ForumTagItem[];
 }
 
 export interface CategoryTreeItem {

@@ -3,6 +3,7 @@ import { voiceRepository } from '../storage/voiceRepository.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 export class VoiceAutomationService {
   public static async dispatch(
@@ -34,12 +35,12 @@ export class VoiceAutomationService {
           }
         } else if (rule.action === 'SEND_MESSAGE' && rule.targetChannelId && rule.messageTemplate) {
           const textChan = guild.channels.cache.get(rule.targetChannelId);
-          if (textChan && 'send' in textChan) {
+          if (textChan && isSendableTarget(textChan)) {
             const formatted = rule.messageTemplate
               .replace('{user}', context.member ? '<@' + context.member.id + '>' : 'Utilisateur')
               .replace('{username}', context.member?.user.username || 'Utilisateur')
               .replace('{room}', context.roomName || 'Salon vocal');
-            await (textChan as any).send({ embeds: [noticeEmbed('info', formatted, { title: 'Salon vocal', icon: 'voice' })] }).catch(() => null);
+            await sendToConfiguredChannel(textChan, { embeds: [noticeEmbed('info', formatted, { title: 'Salon vocal', icon: 'voice' })] }, { postTitle: 'Salon vocal' }).catch(() => null);
           }
         } else if (rule.action === 'LOG_AUDIT') {
           logService.emit({

@@ -10,6 +10,7 @@ import {
   THRESHOLD_LABELS,
   type LogBucket,
 } from '../interactions/logsInteractionHandler.js';
+import { SLASH_DESTINATION_TYPES, canBotSendTo } from '../../../utils/channelSend.js';
 
 const BUCKET_CHOICES = (Object.keys(LOG_BUCKETS) as LogBucket[]).map((b) => ({
   name: `${LOG_BUCKETS[b].emoji} ${LOG_BUCKETS[b].label}`,
@@ -59,7 +60,7 @@ export const logsCommand: Command = {
           o
             .setName('salon')
             .setDescription('Le salon qui recevra tous les journaux')
-            .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+            .addChannelTypes(...SLASH_DESTINATION_TYPES)
             .setRequired(true)
         )
     )
@@ -74,7 +75,7 @@ export const logsCommand: Command = {
           o
             .setName('salon')
             .setDescription('Salon de destination (vide = retirer)')
-            .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+            .addChannelTypes(...SLASH_DESTINATION_TYPES)
             .setRequired(false)
         )
     )
@@ -128,7 +129,7 @@ export const logsCommand: Command = {
     if (sub === 'channel') {
       const channel = ctx.interaction.options.getChannel('salon', true) as TextChannel;
       const me = guild.members.me;
-      if (me && !channel.permissionsFor(me).has(['SendMessages', 'EmbedLinks'])) {
+      if (me && (!canBotSendTo(channel, me) || !channel.permissionsFor(me)?.has('EmbedLinks'))) {
         await ctx.reply({
           embeds: [
             ctx

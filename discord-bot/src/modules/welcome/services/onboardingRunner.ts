@@ -28,6 +28,7 @@ import { guildConfigService } from '../../../services/guildConfigService.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 /**
  * Moteur d'Onboarding : présente au membre, étape par étape, le parcours configuré sur le dashboard
@@ -233,9 +234,9 @@ export class OnboardingRunner {
     }
     if (flow.channelId) {
       const channel = member.guild.channels.cache.get(flow.channelId);
-      if (channel && channel.isTextBased() && 'send' in channel) {
+      if (channel && isSendableTarget(channel)) {
         try {
-          await channel.send({ ...payload, content: `<@${member.id}>`, allowedMentions: { users: [member.id] } });
+          await sendToConfiguredChannel(channel, { ...payload, content: `<@${member.id}>`, allowedMentions: { users: [member.id] } }, { postTitle: `Onboarding ${member.displayName}` });
           return 'channel';
         } catch (err) {
           logger.warn(`[Onboarding] Envoi dans le salon impossible (guild ${member.guild.id}) :`, err);

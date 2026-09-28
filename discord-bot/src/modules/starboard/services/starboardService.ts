@@ -10,10 +10,12 @@ import {
   NewsChannel,
   ThreadChannel,
   PermissionFlagsBits,
+  Guild,
 } from 'discord.js';
 import { starboardStorage } from '../storage/starboardStorage.js';
-import { StarboardConfig } from '../types/starboard.js';
+import { StarboardConfig, StarboardEntry } from '../types/starboard.js';
 import { logger } from '../../../utils/logger.js';
+import { canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 type StarboardTextChannel = TextChannel | NewsChannel | ThreadChannel;
 
@@ -43,6 +45,21 @@ class StarboardService {
       typeof (channel as { isTextBased: () => boolean }).isTextBased === 'function' &&
       (channel as { isTextBased: () => boolean }).isTextBased()
     );
+  }
+
+  /**
+   * Salon (ou post de forum) qui contient le message starboard d'une entrée. Pour un starboard
+   * Forum/Média, chaque message vit dans son propre post (`starboardChannelId`).
+   */
+  private async messageHost(
+    guild: Guild,
+    entry: StarboardEntry,
+    config: StarboardConfig
+  ): Promise<StarboardTextChannel | null> {
+    const id = entry.starboardChannelId ?? config.channelId;
+    if (!id) return null;
+    const ch = await guild.channels.fetch(id).catch(() => null);
+    return this.isTextChannel(ch) ? ch : null;
   }
 
   /** Décompte fiable des réactions valides sur le message source. */
@@ -127,7 +144,7 @@ class StarboardService {
     const starboardChannel = await message.guild.channels
       .fetch(config.channelId)
       .catch(() => null);
-    if (!this.isTextChannel(starboardChannel)) {
+    if (!starboardChannel || !isSendableTarget(starboardChannel)) {
       logger.warn(`[Starboard] Salon ${config.channelId} introuvable ou non textuel (guilde ${guildId}).`);
       return;
     }
@@ -135,7 +152,8 @@ class StarboardService {
     const me = message.guild.members.me;
     if (
       me &&
-      !starboardChannel.permissionsFor(me).has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])
+      (!canBotSendTo(starboardChannel, me) ||
+        !starboardChannel.permissionsFor(me)?.has(PermissionFlagsBits.EmbedLinks))
     ) {
       logger.warn(`[Starboard] Permissions insuffisantes dans #${starboardChannel.name} (guilde ${guildId}).`);
       return;
@@ -151,6 +169,7 @@ class StarboardService {
         sourceChannelId: message.channel.id,
         sourceMessageId: message.id,
         starboardMessageId: null,
+        starboardChannelId: null,
         authorId: message.author.id,
         starCount: 0,
         starrerIds: [],
@@ -161,7 +180,8 @@ class StarboardService {
     // Sous le seuil : retirer l'entrée du starboard si demandé.
     if (count < config.threshold) {
       if (entry.starboardMessageId && config.removeBelowThreshold) {
-        await starboardChannel.messages.delete(entry.starboardMessageId).catch(() => {});
+        const host = await this.messageHost(message.guild, entry, config);
+        await host?.messages.delete(entry.starboardMessageId).catch(() => {});
         starboardStorage.upsertEntry({ ...entry, starboardMessageId: null, starCount: count, starrerIds: ids });
       } else {
         starboardStorage.upsertEntry({ ...entry, starCount: count, starrerIds: ids });
@@ -174,7 +194,8 @@ class StarboardService {
 
     // Édition si le message starboard existe encore.
     if (entry.starboardMessageId) {
-      const posted = await starboardChannel.messages.fetch(entry.starboardMessageId).catch(() => null);
+      const host = await this.messageHost(message.guild, entry, config);
+      const posted = await host?.messages.fetch(entry.starboardMessageId).catch(() => null);
       if (posted) {
         await posted.edit({ content: header, embeds: [embed] }).catch(() => {});
         starboardStorage.upsertEntry({ ...entry, starCount: count, starrerIds: ids });
@@ -183,8 +204,11 @@ class StarboardService {
     }
 
     // Sinon : nouvelle publication.
-    const sent = await starboardChannel
-      .send({ content: header, embeds: [embed] })
+    const sent = await sendToConfiguredChannel(
+      starboardChannel,
+      { content: header, embeds: [embed] },
+      { postTitle: `⭐ ${message.author.displayName ?? message.author.username}` }
+    )
       .catch((err) => {
         logger.error(`[Starboard] Échec de publication (guilde ${guildId}) :`, err);
         return null;
@@ -193,6 +217,7 @@ class StarboardService {
     starboardStorage.upsertEntry({
       ...entry,
       starboardMessageId: sent?.id ?? entry.starboardMessageId ?? null,
+      starboardChannelId: sent ? sent.channelId : entry.starboardChannelId,
       starCount: count,
       starrerIds: ids,
     });
@@ -265,10 +290,8 @@ class StarboardService {
 
     const config = starboardStorage.getConfig(guildId);
     if (entry.starboardMessageId && config.channelId) {
-      const channel = await message.guild!.channels.fetch(config.channelId).catch(() => null);
-      if (this.isTextChannel(channel)) {
-        await channel.messages.delete(entry.starboardMessageId).catch(() => {});
-      }
+      const host = await this.messageHost(message.guild!, entry, config);
+      await host?.messages.delete(entry.starboardMessageId).catch(() => {});
     }
     starboardStorage.deleteEntry(guildId, message.id);
   }

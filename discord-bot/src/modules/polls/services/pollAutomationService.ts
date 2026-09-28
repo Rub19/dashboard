@@ -4,6 +4,7 @@ import { ticketService } from '../../tickets/services/ticketService.js';
 import { logger } from '../../../utils/logger.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { getTranslation } from '../../../utils/i18n.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 export class PollAutomationService {
   private client: Client | null = null;
@@ -85,8 +86,8 @@ export class PollAutomationService {
     if (!this.client) return false;
     try {
       const channel = await this.client.channels.fetch(channelId).catch(() => null);
-      if (channel && channel.isTextBased() && 'send' in channel) {
-        await (channel as any).send(content);
+      if (channel && isSendableTarget(channel)) {
+        await sendToConfiguredChannel(channel, content, { postTitle: 'Sondage' });
         return true;
       }
       return false;

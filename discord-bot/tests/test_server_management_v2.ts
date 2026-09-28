@@ -262,10 +262,33 @@ async function runTests() {
   // ========================================================
   // Test 3: Channel Tree Builder
   // ========================================================
-  const tree = ServerChannelService.getChannelTree(mockClient, 'guild_123');
+  const tree = await ServerChannelService.getChannelTree(mockClient, 'guild_123');
   assert(tree.categories.length === 1, 'Channel Tree found 1 category');
   assert(tree.categories[0].channels.length === 3, 'Category has 3 child channels');
   assert(tree.categories[0].channels[0].name === 'général', 'General channel is correctly placed in category');
+
+  // Test 3b: forum channel exposes active posts (newest first) + tags; fetch failure yields no posts
+  const forum: any = {
+    id: 'chan_forum', name: 'suggestions', type: ChannelType.GuildForum, position: 0, rawPosition: 0, parentId: null,
+    availableTags: [{ id: 'tag1', name: 'Idée', emoji: { name: '💡' } }],
+  };
+  const mkPost = (id: string, ts: number) => ({ id, name: `post ${id}`, parentId: 'chan_forum', appliedTags: ['tag1'], createdTimestamp: ts });
+  const forumGuild: any = {
+    channels: {
+      cache: new Collection([[forum.id, forum]]),
+      fetchActiveThreads: async () => ({ threads: new Collection([['p1', mkPost('p1', 1)], ['p2', mkPost('p2', 2)]]) }),
+    },
+  };
+  const forumClient: any = { guilds: { cache: new Collection([['g_forum', forumGuild]]) } };
+  const forumTree = await ServerChannelService.getChannelTree(forumClient, 'g_forum');
+  const forumItem: any = forumTree.orphanChannels[0];
+  assert(forumItem?.type === ChannelType.GuildForum, 'Forum channel is included in the tree');
+  assert(forumItem?.posts?.map((p: any) => p.id).join() === 'p2,p1', 'Forum posts sorted newest first');
+  assert(forumItem?.posts?.[0]?.type === 11 && forumItem.posts[0].parentId === 'chan_forum', 'Forum post shape is {id,name,type:11,parentId,appliedTags}');
+  assert(forumItem?.availableTags?.[0]?.emoji === '💡', 'Forum availableTags exposed');
+  forumGuild.channels.fetchActiveThreads = async () => { throw new Error('boom'); };
+  const failTree = await ServerChannelService.getChannelTree(forumClient, 'g_forum');
+  assert((failTree.orphanChannels[0] as any).posts.length === 0, 'Post fetch failure yields no posts, tree still returned');
 
   // ========================================================
   // Test 4: Role Hierarchy & Bot Boundary

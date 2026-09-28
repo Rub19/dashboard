@@ -10,6 +10,7 @@ import {
   GuildMember,
   PartialGuildMember,
   TextChannel,
+  GuildBasedChannel,
   User,
 } from 'discord.js';
 import {
@@ -27,6 +28,7 @@ import { OnboardingService } from './onboardingService.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 class WelcomeService {
   public getConfig(guildId: string): FullWelcomeConfig {
@@ -135,14 +137,14 @@ class WelcomeService {
 
     // 8. Résolution du salon de bienvenue
     const channel = this.resolveChannel(guild, welcomeConfig.channelId);
-    if (!channel || !channel.permissionsFor(guild.members.me!)?.has('SendMessages')) {
+    if (!channel || !canBotSendTo(channel, guild.members.me)) {
       logger.warn(`[Welcome] Aucun salon valide trouvé ou permissions manquantes sur ${guild.name}.`);
       return;
     }
 
     // 9. Envoi dans le salon textuel
     ctx.channelId = channel.id;
-    await this.sendMessage(channel, welcomeConfig, ctx, member.user.displayAvatarURL({ size: 256 }));
+    await this.sendMessage(channel, welcomeConfig, ctx, member.user.displayAvatarURL({ size: 256 }), `Bienvenue ${ctx.displayName}`);
 
     // 10. Enregistrement Analytics & Audit Center
     welcomeRepository.recordEvent({
@@ -179,7 +181,7 @@ class WelcomeService {
     }
 
     const channel = this.resolveChannel(guild, goodbyeConfig.channelId);
-    if (!channel || !channel.permissionsFor(guild.members.me!)?.has('SendMessages')) {
+    if (!channel || !canBotSendTo(channel, guild.members.me)) {
       return;
     }
 
@@ -197,7 +199,7 @@ class WelcomeService {
     };
 
     const avatarUrl = member.user?.displayAvatarURL({ size: 256 }) || guild.iconURL() || '';
-    await this.sendMessage(channel, goodbyeConfig, ctx, avatarUrl);
+    await this.sendMessage(channel, goodbyeConfig, ctx, avatarUrl, `Au revoir ${ctx.displayName}`);
 
     welcomeRepository.recordEvent({
       guildId: member.guild.id,
@@ -253,7 +255,7 @@ class WelcomeService {
     }
 
     const channel = this.resolveChannel(guild, messageConf.channelId);
-    if (!channel || !channel.permissionsFor(guild.members.me!)?.has('SendMessages')) {
+    if (!channel || !canBotSendTo(channel, guild.members.me)) {
       throw new Error('Salon textuel introuvable ou permissions d’envoi insuffisantes.');
     }
 
@@ -339,10 +341,11 @@ class WelcomeService {
   // Envoi effectif Discord (Message + Embed + Image + Boutons)
   // ==========================================
   private async sendMessage(
-    channel: TextChannel,
+    channel: GuildBasedChannel,
     config: WelcomeMessageConfig | GoodbyeMessageConfig,
     ctx: VariableContext,
-    avatarUrl: string
+    avatarUrl: string,
+    postTitle?: string
   ): Promise<void> {
     const files: AttachmentBuilder[] = [];
 
@@ -431,7 +434,7 @@ class WelcomeService {
       }
     }
 
-    await channel.send(payload);
+    await sendToConfiguredChannel(channel, payload, { postTitle });
   }
 
   // ==========================================
@@ -493,11 +496,12 @@ class WelcomeService {
     }
   }
 
-  private resolveChannel(guild: Guild, channelId: string | null): TextChannel | null {
+  private resolveChannel(guild: Guild, channelId: string | null): GuildBasedChannel | null {
     if (channelId) {
+      // Texte, annonces, threads, forums (15) et médias (16) configurés depuis le dashboard.
       const found = guild.channels.cache.get(channelId);
-      if (found && found.type === ChannelType.GuildText) {
-        return found as TextChannel;
+      if (found && isSendableTarget(found)) {
+        return found;
       }
     }
 

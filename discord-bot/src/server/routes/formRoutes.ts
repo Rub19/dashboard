@@ -7,6 +7,7 @@ import { DiscordFormSchema } from '../../modules/forms/types/index.js';
 import { requireStringParam } from '../utils/params.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError, handleClientError } from '../utils/routeError.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../utils/channelSend.js';
 
 export function createFormRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -314,15 +315,16 @@ export function createFormRouter(client: Client): Router {
 
     try {
       const channel = await client.channels.fetch(targetChannelId).catch(() => null);
-      if (!channel || !channel.isTextBased() || !('send' in channel)) {
-        return res.status(400).json({ success: false, error: 'Salon Discord textuel introuvable ou inaccessible' });
+      if (!channel || !isSendableTarget(channel)) {
+        return res.status(400).json({ success: false, error: 'Salon Discord introuvable ou inaccessible' });
       }
 
       const embed = discordFormPanel.buildPanelEmbed(form);
       const row = discordFormPanel.buildPanelActionRow(form);
-      const sent = await (channel as any).send({ embeds: [embed], components: [row] });
+      const sent = await sendToConfiguredChannel(channel, { embeds: [embed], components: [row] }, { postTitle: form.title });
 
-      form.panelConfig.channelId = targetChannelId;
+      // Forum/média : le panneau vit dans le post créé.
+      form.panelConfig.channelId = sent.channelId || targetChannelId;
       form.panelConfig.messageId = sent.id;
       formRepository.saveForm(form);
 

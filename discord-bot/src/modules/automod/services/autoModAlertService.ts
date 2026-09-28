@@ -5,6 +5,7 @@ import { logger } from '../../../utils/logger.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 interface AlertParams {
   guild: Guild;
@@ -72,10 +73,10 @@ export class AutoModAlertService {
     // 1. Envoi dans le salon d'alerte configuré
     if (config.alertChannelId) {
       const channel = guild.channels.cache.get(config.alertChannelId);
-      if (channel && channel.isTextBased()) {
+      if (channel && isSendableTarget(channel)) {
         try {
           const mention = config.staffMentionRoleId ? `<@&${config.staffMentionRoleId}> ` : '';
-          await (channel as TextChannel).send({
+          await sendToConfiguredChannel(channel, {
             content: mention ? `${mention}🚨 **Alerte AutoMod**` : undefined,
             embeds: [embed],
           });

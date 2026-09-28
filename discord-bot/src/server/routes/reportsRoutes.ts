@@ -5,6 +5,7 @@ import { reportsStorage } from '../../modules/reports/storage/reportsStorage.js'
 import { reportsService } from '../../modules/reports/services/reportsService.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleClientError } from '../utils/routeError.js';
+import { isSendableTarget } from '../../utils/channelSend.js';
 
 const snowflake = z.string().regex(/^\d{5,25}$/);
 
@@ -29,7 +30,7 @@ export function createReportSystemRouter(client: Client) {
     }
     const guild = client.guilds.cache.get(guildId);
     // Salon et rôle doivent exister sur CE serveur : jamais un identifiant quelconque.
-    if (parsed.data.channelId && !guild?.channels.cache.get(parsed.data.channelId)?.isTextBased()) {
+    if (parsed.data.channelId && !isSendableTarget(guild?.channels.cache.get(parsed.data.channelId))) {
       res.status(400).json({ error: 'Salon introuvable sur ce serveur' });
       return;
     }

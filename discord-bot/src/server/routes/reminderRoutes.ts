@@ -3,6 +3,7 @@ import { ChannelType, Client } from 'discord.js';
 import { reminderStorage } from '../../modules/reminders/storage/reminderStorage.js';
 import { parseDuration } from '../../modules/reminders/services/reminderService.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { DESTINATION_CHANNEL_TYPES } from '../../utils/channelSend.js';
 
 const MAX_PER_USER = 25;
 
@@ -29,8 +30,8 @@ export function createReminderRouter(client: Client) {
       return;
     }
     const channels = guild.channels.cache
-      .filter((c) => c.type === ChannelType.GuildText || c.type === ChannelType.GuildAnnouncement)
-      .map((c) => ({ id: c.id, name: c.name }))
+      .filter((c) => DESTINATION_CHANNEL_TYPES.includes(c.type))
+      .map((c) => ({ id: c.id, name: c.name, type: c.type }))
       .sort((a, b) => a.name.localeCompare(b.name));
     res.json({ channels });
   });

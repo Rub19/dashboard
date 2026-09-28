@@ -6,6 +6,7 @@ import { logger } from '../../../utils/logger.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 interface AlertParams {
   guild: Guild;
@@ -58,12 +59,12 @@ class RaidAlertService {
     // 1. Envoyer dans le salon d'alerte configuré
     if (config.alerts.channelId) {
       const channel = guild.channels.cache.get(config.alerts.channelId);
-      if (channel && channel.isTextBased()) {
+      if (channel && isSendableTarget(channel)) {
         try {
           const mention = config.alerts.mentionRoleId
             ? `<@&${config.alerts.mentionRoleId}> `
             : '';
-          await (channel as TextChannel).send({
+          await sendToConfiguredChannel(channel, {
             content: mention ? `${mention}${t.antiraid_alert_ping}` : undefined,
             embeds: [embed],
           });

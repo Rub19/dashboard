@@ -11,6 +11,7 @@ import { ServerSettingsService } from '../../modules/server/services/serverSetti
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { logStorage } from '../../modules/logs/storage/logStorage.js';
 import { logger } from '../../utils/logger.js';
+import { handleRouteError } from '../utils/routeError.js';
 
 export function createServerRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -112,14 +113,13 @@ export function createServerRouter(client: Client): Router {
   });
 
   // 7. GET /channels
-  router.get('/channels', (req: Request, res: Response) => {
+  router.get('/channels', async (req: Request, res: Response) => {
     try {
       const guildId = req.params.guildId as string;
-      const tree = ServerChannelService.getChannelTree(client, guildId);
+      const tree = await ServerChannelService.getChannelTree(client, guildId);
       res.json(tree);
-    } catch (err: any) {
-      logger.error('Erreur server/channels :', err);
-      res.status(500).json({ error: 'Erreur serveur' });
+    } catch (err: unknown) {
+      handleRouteError(err, res, 'Erreur serveur');
     }
   });
 

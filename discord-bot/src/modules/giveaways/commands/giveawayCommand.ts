@@ -9,6 +9,7 @@ import { giveawayService } from '../services/giveawayService.js';
 import { giveawayStorage } from '../storage/giveawayStorage.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
+import { SLASH_DESTINATION_TYPES } from '../../../utils/channelSend.js';
 
 export const giveawayCommand: Command = {
   name: 'giveaway',
@@ -45,7 +46,7 @@ export const giveawayCommand: Command = {
           opt
             .setName('salon')
             .setDescription('Salon dans lequel publier le giveaway')
-            .addChannelTypes(ChannelType.GuildText)
+            .addChannelTypes(...SLASH_DESTINATION_TYPES)
             .setRequired(false)
         )
     )
@@ -122,7 +123,7 @@ export const giveawayCommand: Command = {
       const targetChannel =
         interaction.options.getChannel('salon') || interaction.channel;
 
-      if (!targetChannel || targetChannel.type !== ChannelType.GuildText) {
+      if (!targetChannel || !(SLASH_DESTINATION_TYPES as readonly number[]).includes(targetChannel.type)) {
         await ctx.reply({
           embeds: [ctx.createEmbed('error').setDescription(t.giveaway_invalid_channel)],
           ephemeral: true,

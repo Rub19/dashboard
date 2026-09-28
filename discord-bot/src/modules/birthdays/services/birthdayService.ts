@@ -4,6 +4,7 @@ import { birthdayStorage } from '../storage/birthdayStorage.js';
 import { BirthdayConfig } from '../types/birthday.js';
 import { logger } from '../../../utils/logger.js';
 import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 type SendableChannel = TextChannel | NewsChannel | ThreadChannel;
 
@@ -30,14 +31,8 @@ class BirthdayService {
   }
 
   private isSendable(c: unknown): c is SendableChannel {
-    return (
-      !!c &&
-      typeof c === 'object' &&
-      'isTextBased' in c &&
-      typeof (c as { isTextBased: () => boolean }).isTextBased === 'function' &&
-      (c as { isTextBased: () => boolean }).isTextBased() &&
-      'send' in c
-    );
+    // Texte, annonces, threads, forums (15) et médias (16).
+    return isSendableTarget(c);
   }
 
   async tick(): Promise<{ announced: number }> {
@@ -117,12 +112,15 @@ class BirthdayService {
       .setTitle('🎂 Anniversaire du jour')
       .setDescription(lines.join('\n'));
 
-    await channel
-      .send({
+    await sendToConfiguredChannel(
+      channel,
+      {
         content: config.mentionUser ? celebrants.map((c) => `<@${c.userId}>`).join(' ') : undefined,
         embeds: [embed],
         allowedMentions: { users: config.mentionUser ? celebrants.map((c) => c.userId) : [] },
-      })
+      },
+      { postTitle: '🎂 Anniversaire du jour' }
+    )
       .catch((err) => {
         logger.error(`[Birthdays] Envoi échoué (guilde ${guildId}) :`, err);
       });

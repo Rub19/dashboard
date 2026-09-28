@@ -26,6 +26,7 @@ import type { ModerationReport } from '../../moderation/types/report.js';
 import type { CaseAction } from '../../moderation/types/case.js';
 import { baseEmbed, noticeEmbed } from '../../../utils/embeds.js';
 import { logger } from '../../../utils/logger.js';
+import { isForumLike, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 const OPEN: ModerationReport['status'][] = ['NEW', 'REVIEWING', 'ESCALATED'];
 const MAX_SHOWN = 4;
@@ -76,7 +77,7 @@ class ReportsService {
     if (target.id === reporter.id) return { ok: false, error: 'Tu ne peux pas te signaler toi-même.' };
     if (target.bot) return { ok: false, error: 'Les bots ne peuvent pas être signalés ici : préviens l’équipe directement.' };
     const channel = guild.channels.cache.get(conf.channelId);
-    if (!channel || !channel.isTextBased()) return { ok: false, error: 'Le salon des signalements est introuvable : l’équipe doit le reconfigurer.' };
+    if (!channel || !isSendableTarget(channel)) return { ok: false, error: 'Le salon des signalements est introuvable : l’équipe doit le reconfigurer.' };
     const wait = reportsStorage.checkAndStamp(guild.id, reporter.id, conf.cooldownSeconds);
     if (wait > 0) return { ok: false, error: `Patiente encore ${wait} s avant un nouveau signalement.` };
 
@@ -153,20 +154,33 @@ class ReportsService {
   public async post(guild: Guild, userId: string, isNew = false): Promise<void> {
     const conf = reportsStorage.getConfig(guild.id);
     const channel = conf.channelId ? guild.channels.cache.get(conf.channelId) : null;
-    if (!channel || !channel.isTextBased()) return;
+    if (!channel || !isSendableTarget(channel)) return;
     const payload = await this.render(guild, userId);
     const existing = reportsStorage.getThread(guild.id, userId);
-    if (existing && existing.channelId === channel.id) {
-      const message = await channel.messages.fetch(existing.messageId).catch(() => null);
+    // Salon Forum/Média : chaque membre signalé a son propre post (existing.channelId = le post).
+    let host: any = null;
+    if (existing) {
+      if (existing.channelId === channel.id) host = channel;
+      else if (isForumLike(channel)) {
+        const post = await guild.channels.fetch(existing.channelId).catch(() => null);
+        if (post?.isThread() && post.parentId === channel.id) host = post;
+      }
+    }
+    if (host && 'messages' in host) {
+      const message = await host.messages.fetch(existing!.messageId).catch(() => null);
       if (message) {
         await message.edit(payload);
-        if (isNew && conf.pingStaff && conf.staffRoleId) await channel.send({ content: `<@&${conf.staffRoleId}> nouveau signalement ci-dessus.`, allowedMentions: { roles: [conf.staffRoleId] } }).catch(() => undefined);
+        if (isNew && conf.pingStaff && conf.staffRoleId) await host.send({ content: `<@&${conf.staffRoleId}> nouveau signalement ci-dessus.`, allowedMentions: { roles: [conf.staffRoleId] } }).catch(() => undefined);
         return;
       }
     }
     const content = isNew && conf.pingStaff && conf.staffRoleId ? `<@&${conf.staffRoleId}>` : undefined;
-    const sent = await channel.send({ ...payload, content, allowedMentions: content ? { roles: [conf.staffRoleId!] } : { parse: [] } });
-    reportsStorage.setThread({ guildId: guild.id, reportedUserId: userId, channelId: channel.id, messageId: sent.id });
+    const sent = await sendToConfiguredChannel(
+      channel,
+      { ...payload, content, allowedMentions: content ? { roles: [conf.staffRoleId!] } : { parse: [] } },
+      { postTitle: `Signalement — ${guild.members?.cache?.get(userId)?.user?.tag ?? userId}` }
+    );
+    reportsStorage.setThread({ guildId: guild.id, reportedUserId: userId, channelId: sent.channelId ?? channel.id, messageId: sent.id });
   }
 
   private openReports(guildId: string, userId: string): ModerationReport[] {
@@ -286,7 +300,7 @@ class ReportsService {
       });
       channelId = channel.id;
       created = true;
-    } else if (!guild.channels.cache.get(channelId)?.isTextBased()) {
+    } else if (!isSendableTarget(guild.channels.cache.get(channelId))) {
       throw new Error('Salon introuvable ou non textuel.');
     }
     reportsStorage.updateConfig(guild.id, { enabled: true, channelId, ...(opts.staffRoleId !== undefined ? { staffRoleId: opts.staffRoleId } : {}) });

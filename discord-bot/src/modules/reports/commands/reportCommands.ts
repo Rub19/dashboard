@@ -4,6 +4,7 @@ import { reportsStorage } from '../storage/reportsStorage.js';
 import { reportsService } from '../services/reportsService.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
+import { SLASH_DESTINATION_TYPES } from '../../../utils/channelSend.js';
 
 /**
  * /report — user (signaler un membre avec un motif), setup (installation en un clic, Gérer le serveur) et status. Les menus
@@ -28,7 +29,7 @@ export const reportCommand: Command = {
       s
         .setName('setup')
         .setDescription('Installe le système de signalement (Gérer le serveur)')
-        .addChannelOption((o) => o.setName('salon').setDescription('Salon de l’équipe (créé si absent)').addChannelTypes(ChannelType.GuildText))
+        .addChannelOption((o) => o.setName('salon').setDescription('Salon de l’équipe (créé si absent)').addChannelTypes(...SLASH_DESTINATION_TYPES))
         .addRoleOption((o) => o.setName('equipe').setDescription('Rôle de l’équipe de modération'))
     )
     .addSubcommand((s) => s.setName('status').setDescription('Réglages actuels (Gérer le serveur)')),

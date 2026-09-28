@@ -6,6 +6,7 @@ import { logger } from '../../utils/logger.js';
 import { BotJobSchedulerService } from '../../modules/botControl/services/botJobSchedulerService.js';
 import { noticeEmbed } from '../../utils/embeds.js';
 import { isModuleEnabled } from '../../services/moduleRegistry.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../utils/channelSend.js';
 
 export class EventsSchedulerService {
   private client?: Client;
@@ -185,8 +186,8 @@ export class EventsSchedulerService {
     if (event.discordPanelChannelId) {
       try {
         const channel = await this.client.channels.fetch(event.discordPanelChannelId).catch(() => null);
-        if (channel && channel.isTextBased()) {
-          await (channel as TextChannel).send({ embeds: [noticeEmbed('info', content.replace(/^⏰\s*/, ''), { title: 'Rappel d\u2019événement', icon: 'event' })] });
+        if (channel && isSendableTarget(channel)) {
+          await sendToConfiguredChannel(channel, { embeds: [noticeEmbed('info', content.replace(/^⏰\s*/, ''), { title: 'Rappel d\u2019événement', icon: 'event' })] }, { postTitle: `Rappel : ${event.title}` });
         }
       } catch (err) {
         logger.error(`[EventsSchedulerService] Erreur lors de l'envoi du rappel sur channel ${event.discordPanelChannelId}:`, err);

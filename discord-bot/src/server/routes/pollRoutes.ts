@@ -9,6 +9,7 @@ import { DiscordPoll, DiscordPollSchema } from '../../modules/polls/types/index.
 import { requireStringParam } from '../utils/params.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError } from '../utils/routeError.js';
+import { DESTINATION_CHANNEL_TYPES, isSendableTarget, sendToConfiguredChannel } from '../../utils/channelSend.js';
 
 export function createPollRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -23,8 +24,8 @@ export function createPollRouter(client: Client): Router {
       return;
     }
     const channels = guild.channels.cache
-      .filter((c) => c.type === ChannelType.GuildText || c.type === ChannelType.GuildAnnouncement)
-      .map((c) => ({ id: c.id, name: c.name }))
+      .filter((c) => DESTINATION_CHANNEL_TYPES.includes(c.type))
+      .map((c) => ({ id: c.id, name: c.name, type: c.type }))
       .sort((a, b) => a.name.localeCompare(b.name));
     res.json({ success: true, channels });
   });
@@ -412,17 +413,21 @@ export function createPollRouter(client: Client): Router {
 
     try {
       const channel = await client.channels.fetch(targetChannelId);
-      if (!channel || !channel.isTextBased() || !('send' in channel)) {
-        return res.status(400).json({ success: false, error: 'Salon Discord textuel invalide ou inaccessible.' });
+      if (!channel || !isSendableTarget(channel)) {
+        return res.status(400).json({ success: false, error: 'Salon Discord invalide ou inaccessible.' });
       }
 
       const embed = discordPollPanel.buildPanelEmbed(poll);
       const rows = discordPollPanel.buildPanelActionRows(poll);
 
-      const msg = await (channel as any).send({ embeds: [embed], components: rows });
+      const msg = await sendToConfiguredChannel(
+        channel,
+        { embeds: [embed], components: rows },
+        { postTitle: poll.title }
+      );
 
-      // Update poll panel config messageId
-      poll.panelConfig.channelId = targetChannelId;
+      // Update poll panel config messageId (forum/média : le message vit dans le post créé)
+      poll.panelConfig.channelId = msg.channelId || targetChannelId;
       poll.panelConfig.messageId = msg.id;
       pollRepository.savePoll(poll);
 

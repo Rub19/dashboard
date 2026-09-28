@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.33.1 — 2026-09-28
+
+**Bot : forums et salons média Discord pris en charge**
+
+- Le bot peut désormais envoyer ses messages dans un salon forum ou média : il crée un post (avec tag si le forum l'exige) au lieu d'échouer, et écrit directement dans un post existant. Concerne l'accueil et les départs, les logs et alertes de modération, les giveaways, les sondages, les anniversaires, le starboard, les suggestions, les rappels, les niveaux, les signalements, les formulaires et l'onboarding.
+- Le dashboard liste les forums avec leurs posts actifs et leurs tags dans les sélecteurs de salons, et les commandes qui demandent un salon de destination acceptent forums, salons média et fils.
+
 ## v1.33.0 — 2026-09-28
 
 **Bot Discord : vraie interface (barre latérale) + salons forum**

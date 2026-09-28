@@ -3,6 +3,7 @@ import { ModerationCase } from '../types/case.js';
 import { moderationRepository } from '../storage/moderationRepository.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed, successEmbed } from '../../../utils/embeds.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 export class ModerationLogger {
   public static async logCase(discordClient: Client, modCase: ModerationCase): Promise<void> {
@@ -14,7 +15,7 @@ export class ModerationLogger {
       if (!guild) return;
 
       const channel = guild.channels.cache.get(settings.logChannelId);
-      if (!channel || !channel.isTextBased()) return;
+      if (!channel || !isSendableTarget(channel)) return;
 
       let color: number = Colors.Orange;
       if (modCase.action === 'BAN' || modCase.action === 'SOFTBAN') color = Colors.Red;
@@ -52,7 +53,7 @@ export class ModerationLogger {
         });
       }
 
-      await (channel as TextChannel).send({ embeds: [embed] });
+      await sendToConfiguredChannel(channel, { embeds: [embed] });
     } catch (err) {
       logger.error('[ModerationLogger] Erreur envoi log case :', err);
     }
@@ -72,7 +73,7 @@ export class ModerationLogger {
       if (!guild) return;
 
       const channel = guild.channels.cache.get(settings.logChannelId);
-      if (!channel || !channel.isTextBased()) return;
+      if (!channel || !isSendableTarget(channel)) return;
 
       const embed = successEmbed({ footerText: `Case #${modCase.caseNumber} • Révocation` })
         .setTitle(`↩️ Révocation — Case #${modCase.caseNumber} (${modCase.action})`)
@@ -84,7 +85,7 @@ export class ModerationLogger {
           { name: 'Motif de révocation', value: revertReason || 'Aucun motif spécifié', inline: true }
         );
 
-      await (channel as TextChannel).send({ embeds: [embed] });
+      await sendToConfiguredChannel(channel, { embeds: [embed] });
     } catch (err) {
       logger.error('[ModerationLogger] Erreur envoi log revert :', err);
     }

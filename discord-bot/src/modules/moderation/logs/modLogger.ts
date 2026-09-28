@@ -1,19 +1,20 @@
-import { EmbedBuilder, Guild, TextChannel, ChannelType, User } from 'discord.js';
+import { EmbedBuilder, Guild, GuildBasedChannel, ChannelType, User } from 'discord.js';
 import { Sanction } from '../types/sanction.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 export class ModLogger {
-  private static getLogChannel(guild: Guild): TextChannel | null {
+  private static getLogChannel(guild: Guild): GuildBasedChannel | null {
     const modConfig = sanctionService.getConfig(guild.id);
 
     // 1. Salon explicitement configuré
     if (modConfig.modLogChannelId) {
       const ch = guild.channels.cache.get(modConfig.modLogChannelId);
-      if (ch && ch.type === ChannelType.GuildText) return ch as TextChannel;
+      if (ch && isSendableTarget(ch)) return ch;
     }
 
     // 2. Fallback automatique sur un salon nommé 'mod-logs', 'logs', ou 'audit'
@@ -23,13 +24,13 @@ export class ModLogger {
         (c.name.includes('mod-log') || c.name.includes('logs') || c.name.includes('audit'))
     );
 
-    return (fallback as TextChannel) || null;
+    return fallback || null;
   }
 
   public static async logSanction(guild: Guild, sanction: Sanction): Promise<void> {
     try {
       const channel = this.getLogChannel(guild);
-      if (!channel || !channel.permissionsFor(guild.members.me!)?.has('SendMessages')) {
+      if (!channel || !canBotSendTo(channel, guild.members.me)) {
         return;
       }
 
@@ -100,7 +101,7 @@ export class ModLogger {
         .setFooter({ text: formatString(t.modlog_footer, { botName: guildConfig.botName }) })
         .setTimestamp(new Date(sanction.timestamp));
 
-      await channel.send({ embeds: [embed] });
+      await sendToConfiguredChannel(channel, { embeds: [embed] });
     } catch (err) {
       logger.error('Erreur lors du logging de modération :', err);
     }
@@ -115,7 +116,7 @@ export class ModLogger {
   ): Promise<void> {
     try {
       const channel = this.getLogChannel(guild);
-      if (!channel || !channel.permissionsFor(guild.members.me!)?.has('SendMessages')) {
+      if (!channel || !canBotSendTo(channel, guild.members.me)) {
         return;
       }
 
@@ -139,7 +140,7 @@ export class ModLogger {
         ]);
       }
 
-      await channel.send({ embeds: [embed] });
+      await sendToConfiguredChannel(channel, { embeds: [embed] });
     } catch (err) {
       logger.error('Erreur lors du logging AutoMod :', err);
     }

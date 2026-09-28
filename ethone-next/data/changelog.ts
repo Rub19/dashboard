@@ -38285,6 +38285,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_33_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_33_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_33_0_de);
 
+const v1_33_1_fr: ChangelogEntry = {
+  version: "v1.33.1",
+  date: "2026-09-28",
+  title: "Bot : forums et salons média Discord pris en charge",
+  items: [
+    "Le bot peut désormais envoyer ses messages dans un salon forum ou média : il crée un post (avec tag si le forum l'exige) au lieu d'échouer, et écrit directement dans un post existant. Concerne l'accueil et les départs, les logs et alertes de modération, les giveaways, les sondages, les anniversaires, le starboard, les suggestions, les rappels, les niveaux, les signalements, les formulaires et l'onboarding.",
+    "Le dashboard liste les forums avec leurs posts actifs et leurs tags dans les sélecteurs de salons, et les commandes qui demandent un salon de destination acceptent forums, salons média et fils.",
+  ],
+};
+
+const v1_33_1_en: ChangelogEntry = {
+  version: "v1.33.1",
+  date: "2026-09-28",
+  title: "Bot: Discord forum and media channels supported",
+  items: [
+    "The bot can now send its messages to a forum or media channel: it creates a post (with a tag if the forum requires one) instead of failing, and writes directly into an existing post. Covers welcome/goodbye, moderation logs and alerts, giveaways, polls, birthdays, starboard, suggestions, reminders, levels, reports, forms and onboarding.",
+    "The dashboard lists forums with their active posts and tags in channel pickers, and commands that ask for a destination channel now accept forums, media channels and threads.",
+  ],
+};
+
+const v1_33_1_es: ChangelogEntry = {
+  version: "v1.33.1",
+  date: "2026-09-28",
+  title: "Bot: canales de foro y multimedia de Discord admitidos",
+  items: [
+    "El bot ya puede enviar mensajes a un canal de foro o multimedia: crea una publicación (con etiqueta si el foro la exige) en lugar de fallar, y escribe directamente en una publicación existente.",
+    "El dashboard lista los foros con sus publicaciones activas y etiquetas en los selectores de canales, y los comandos con canal de destino aceptan foros, canales multimedia e hilos.",
+  ],
+};
+
+const v1_33_1_de: ChangelogEntry = {
+  version: "v1.33.1",
+  date: "2026-09-28",
+  title: "Bot: Discord-Forum- und Medienkanäle werden unterstützt",
+  items: [
+    "Der Bot kann seine Nachrichten jetzt an einen Forum- oder Medienkanal senden: Er erstellt einen Beitrag (mit Tag, falls das Forum einen verlangt) statt zu scheitern und schreibt direkt in bestehende Beiträge.",
+    "Das Dashboard listet Foren mit ihren aktiven Beiträgen und Tags in den Kanalauswahlen, und Befehle mit Zielkanal akzeptieren Foren, Medienkanäle und Threads.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_33_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_33_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_33_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_33_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

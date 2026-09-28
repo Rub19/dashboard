@@ -17,6 +17,7 @@ import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { logger } from '../../../utils/logger.js';
 import { buildLevelUpEmbed, buildRewardEmbed } from './levelMessages.js';
 import type { LevelingConfig } from '../types/levelingConfig.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 const VOICE_TICK_MS = 60_000;
 
@@ -182,8 +183,8 @@ class LevelingService {
         return true;
       }
       const target = type === 'same_channel' ? sameChannel : member.guild.channels.cache.get(specificChannelId ?? '');
-      if (target && target.isTextBased() && 'send' in target) {
-        await target.send({ embeds: [embed] });
+      if (target && isSendableTarget(target)) {
+        await sendToConfiguredChannel(target, { embeds: [embed] }, { postTitle: '🎉 Niveau supérieur' });
         return true;
       }
     } catch (err) {

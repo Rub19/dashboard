@@ -4,6 +4,7 @@ import { CaseAction } from '../types/case.js';
 import { moderationRepository } from '../storage/moderationRepository.js';
 import { securityEventBus } from '../../automod/services/securityEventBus.js';
 import { logger } from '../../../utils/logger.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 interface ModActionRecord {
   moderatorId: string;
@@ -106,7 +107,7 @@ export class StaffAbuseDetector {
     if (!guild) return;
 
     const channel = guild.channels.cache.get(settings.logChannelId);
-    if (!channel || !channel.isTextBased()) return;
+    if (!channel || !isSendableTarget(channel)) return;
 
     const embed = baseEmbed('default', { color: Colors.DarkRed, footerText: 'Staff Abuse Guard • ETHONE Security' })
       .setTitle('🚨 ALERTE SÉCURITÉ STAFF — Activité de Modération Anormale')
@@ -119,7 +120,7 @@ export class StaffAbuseDetector {
         { name: 'Recommandation', value: 'Vérifier si le compte du modérateur est compromis.', inline: true }
       );
 
-    await (channel as TextChannel).send({
+    await sendToConfiguredChannel(channel, {
       content: '@everyone 🚨 **ALERTE SÉCURITÉ MODÉRATION**',
       embeds: [embed],
     }).catch(() => {});

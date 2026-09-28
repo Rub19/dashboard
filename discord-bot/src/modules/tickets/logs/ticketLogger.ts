@@ -3,19 +3,20 @@ import {
   ChannelType,
   EmbedBuilder,
   Guild,
-  TextChannel,
+  GuildBasedChannel,
   User,
 } from 'discord.js';
 import { Ticket } from '../types/ticket.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 export class TicketLogger {
-  private static getLogChannel(guild: Guild, configuredLogChannelId?: string | null): TextChannel | null {
+  private static getLogChannel(guild: Guild, configuredLogChannelId?: string | null): GuildBasedChannel | null {
     if (configuredLogChannelId) {
       const ch = guild.channels.cache.get(configuredLogChannelId);
-      if (ch && ch.type === ChannelType.GuildText) return ch as TextChannel;
+      if (ch && isSendableTarget(ch)) return ch;
     }
 
     const fallback = guild.channels.cache.find(
@@ -24,7 +25,7 @@ export class TicketLogger {
         (c.name.includes('ticket-log') || c.name.includes('mod-log') || c.name.includes('audit'))
     );
 
-    return (fallback as TextChannel) || null;
+    return fallback || null;
   }
 
   public static async logEvent(
@@ -37,7 +38,7 @@ export class TicketLogger {
   ): Promise<void> {
     try {
       const channel = this.getLogChannel(guild, logChannelId);
-      if (!channel || !channel.permissionsFor(guild.members.me!)?.has('SendMessages')) {
+      if (!channel || !canBotSendTo(channel, guild.members.me)) {
         return;
       }
 
@@ -54,7 +55,7 @@ export class TicketLogger {
         payload.files = [attachment];
       }
 
-      await channel.send(payload);
+      await sendToConfiguredChannel(channel, payload, { postTitle: title });
     } catch (err) {
       logger.error('Erreur lors du logging Ticket :', err);
     }

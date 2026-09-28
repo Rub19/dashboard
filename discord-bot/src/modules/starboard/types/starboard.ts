@@ -45,6 +45,8 @@ export const StarboardEntrySchema = z.object({
   sourceMessageId: z.string(),
   /** Message posté par le bot dans le salon starboard. `null` tant que sous le seuil. */
   starboardMessageId: z.string().nullable().default(null),
+  /** Salon/post qui contient ce message (≠ salon configuré si le starboard est un Forum/Média). */
+  starboardChannelId: z.string().nullable().default(null),
   authorId: z.string(),
   /** Décompte de ⭐ au dernier rafraîchissement. */
   starCount: z.number().int().min(0).default(0),

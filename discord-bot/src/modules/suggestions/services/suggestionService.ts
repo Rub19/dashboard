@@ -15,6 +15,7 @@ import { logger } from '../../../utils/logger.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { formatString, getTranslation, SupportedLanguage } from '../../../utils/i18n.js';
 import { baseEmbed, noticeEmbed } from '../../../utils/embeds.js';
+import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
 
 export class SuggestionService {
   /**
@@ -176,16 +177,27 @@ export class SuggestionService {
     });
 
     try {
-      const channel = client.channels.cache.get(config.channelId) as TextChannel | undefined;
-      if (channel && channel.type === ChannelType.GuildText) {
+      const channel = client.channels.cache.get(config.channelId);
+      if (channel && isSendableTarget(channel)) {
         const embed = this.buildEmbed(suggestion, language);
         const row = this.buildActionRow(suggestion, language);
-        const message = await channel.send({ embeds: [embed], components: [row] });
+        const message = await sendToConfiguredChannel(
+          channel,
+          { embeds: [embed], components: [row] },
+          { postTitle: `#${suggestion.numericId} ${suggestion.title}` }
+        );
 
         suggestion.messageId = message.id;
 
-        // Création automatique de thread si activé
-        if (config.autoThread) {
+        // Salon Forum/Média : le message vit dans le post créé (qui sert déjà de fil de discussion).
+        const inNewPost = message.channelId && message.channelId !== config.channelId;
+        if (inNewPost) {
+          suggestion.channelId = message.channelId;
+          suggestion.threadId = message.channelId;
+        }
+
+        // Création automatique de thread si activé (impossible dans un thread / un post de forum)
+        if (config.autoThread && !inNewPost && channel.type !== ChannelType.PublicThread && channel.type !== ChannelType.PrivateThread) {
           try {
             const thread = await message.startThread({
               name: formatString(t.suggest_thread_name, { numericId: suggestion.numericId, title: suggestion.title.substring(0, 50) }),
@@ -199,6 +211,7 @@ export class SuggestionService {
 
         suggestionStorage.update(suggestion.id, {
           messageId: suggestion.messageId,
+          channelId: suggestion.channelId,
           threadId: suggestion.threadId,
         });
       }
@@ -236,8 +249,9 @@ export class SuggestionService {
 
     try {
       const language = guildConfigService.getConfig(suggestion.guildId).language;
-      const channel = client.channels.cache.get(suggestion.channelId) as TextChannel | undefined;
-      if (channel) {
+      const channel = (client.channels.cache.get(suggestion.channelId) ??
+        (await client.channels.fetch(suggestion.channelId).catch(() => null))) as TextChannel | undefined;
+      if (channel && 'messages' in channel) {
         const message = await channel.messages.fetch(suggestion.messageId).catch(() => null);
         if (message) {
           const embed = this.buildEmbed(suggestion, language);

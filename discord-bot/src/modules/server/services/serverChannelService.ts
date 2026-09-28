@@ -9,7 +9,7 @@ import {
   PermissionsBitField,
   PermissionFlagsBits,
 } from 'discord.js';
-import { ChannelItem, CategoryTreeItem, ChannelTreeData, ChannelPermissionOverride } from '../types/index.js';
+import { ForumPostItem, ChannelItem, CategoryTreeItem, ChannelTreeData, ChannelPermissionOverride } from '../types/index.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -17,9 +17,41 @@ export class ServerChannelService {
   /**
    * Builds the channel hierarchy tree grouped by categories.
    */
-  public static getChannelTree(client: Client, guildId: string): ChannelTreeData {
+  public static async getChannelTree(client: Client, guildId: string): Promise<ChannelTreeData> {
     const guild = client.guilds.cache.get(guildId);
     if (!guild) return { categories: [], orphanChannels: [] };
+
+    // Posts actifs des forums/médias : un seul fetch, jamais bloquant pour l'endpoint.
+    const postsByForum = new Map<string, ForumPostItem[]>();
+    try {
+      const { threads } = await guild.channels.fetchActiveThreads();
+      const byForum = new Map<string, Array<{ ts: number; post: ForumPostItem }>>();
+      for (const t of threads.values()) {
+        if (!t.parentId) continue;
+        const parent = guild.channels.cache.get(t.parentId);
+        if (!parent || (parent.type !== ChannelType.GuildForum && parent.type !== ChannelType.GuildMedia)) continue;
+        const list = byForum.get(t.parentId) ?? [];
+        list.push({
+          ts: t.createdTimestamp ?? 0,
+          post: {
+            id: t.id,
+            name: t.name,
+            type: ChannelType.PublicThread,
+            parentId: t.parentId,
+            appliedTags: [...(t.appliedTags ?? [])],
+          },
+        });
+        byForum.set(t.parentId, list);
+      }
+      for (const [forumId, list] of byForum) {
+        list.sort((a, b) => b.ts - a.ts);
+        postsByForum.set(forumId, list.slice(0, 100).map((x) => x.post));
+      }
+    } catch (err) {
+      logger.warn('Impossible de récupérer les posts de forum actifs :', err);
+      postsByForum.clear();
+    }
+    const mapItem = (ch: any) => this.mapChannelItem(ch, postsByForum);
 
     const categories: CategoryTreeItem[] = [];
     const orphanChannels: ChannelItem[] = [];
@@ -34,7 +66,7 @@ export class ServerChannelService {
       const children = guild.channels.cache
         .filter((ch) => ch.parentId === cat.id && (ch.type as any) !== ChannelType.GuildCategory)
         .sort((a: any, b: any) => (a.rawPosition ?? a.position ?? 0) - (b.rawPosition ?? b.position ?? 0))
-        .map((ch) => this.mapChannelItem(ch));
+        .map(mapItem);
 
       categories.push({
         id: cat.id,
@@ -49,14 +81,25 @@ export class ServerChannelService {
       .filter((ch) => !ch.parentId && (ch.type as any) !== ChannelType.GuildCategory)
       .sort((a: any, b: any) => (a.rawPosition ?? a.position ?? 0) - (b.rawPosition ?? b.position ?? 0))
       .forEach((ch) => {
-        orphanChannels.push(this.mapChannelItem(ch));
+        orphanChannels.push(mapItem(ch));
       });
 
     return { categories, orphanChannels };
   }
 
-  private static mapChannelItem(ch: any): ChannelItem {
+  private static mapChannelItem(ch: any, postsByForum?: Map<string, ForumPostItem[]>): ChannelItem {
+    const isForum = ch.type === ChannelType.GuildForum || ch.type === ChannelType.GuildMedia;
     return {
+      ...(isForum
+        ? {
+            posts: postsByForum?.get(ch.id) ?? [],
+            availableTags: (ch.availableTags ?? []).map((t: any) => ({
+              id: t.id,
+              name: t.name,
+              emoji: t.emoji?.name ?? null,
+            })),
+          }
+        : {}),
       id: ch.id,
       name: ch.name,
       type: ch.type,

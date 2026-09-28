@@ -11,6 +11,7 @@ import { logger } from '../../utils/logger.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError, handleClientError, clientErrorMessage } from '../utils/routeError.js';
+import { DESTINATION_CHANNEL_TYPES, canBotSendTo } from '../../utils/channelSend.js';
 
 export function createWelcomeRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -193,13 +194,14 @@ export function createWelcomeRouter(discordClient: Client) {
 
     const botMember = guild.members.me;
     const channels = guild.channels.cache
-      .filter((c) => c.type === ChannelType.GuildText)
+      .filter((c) => DESTINATION_CHANNEL_TYPES.includes(c.type))
       .map((c) => {
-        const perms = botMember ? c.permissionsFor(botMember) : null;
+        const perms = botMember && 'permissionsFor' in c ? c.permissionsFor(botMember) : null;
         return {
           id: c.id,
           name: c.name,
-          canSend: perms?.has(PermissionFlagsBits.SendMessages) ?? false,
+          type: c.type,
+          canSend: canBotSendTo(c, botMember),
           canEmbed: perms?.has(PermissionFlagsBits.EmbedLinks) ?? false,
           canAttach: perms?.has(PermissionFlagsBits.AttachFiles) ?? false,
         };

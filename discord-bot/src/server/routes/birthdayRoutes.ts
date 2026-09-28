@@ -3,6 +3,7 @@ import { ChannelType, Client } from 'discord.js';
 import { birthdayStorage } from '../../modules/birthdays/storage/birthdayStorage.js';
 import { BirthdayConfigSchema } from '../../modules/birthdays/types/birthday.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { DESTINATION_CHANNEL_TYPES } from '../../utils/channelSend.js';
 
 /**
  * API Dashboard du module Birthdays.
@@ -49,8 +50,8 @@ export function createBirthdayRouter(client: Client) {
       return;
     }
     const channels = guild.channels.cache
-      .filter((c) => c.type === ChannelType.GuildText || c.type === ChannelType.GuildAnnouncement)
-      .map((c) => ({ id: c.id, name: c.name }))
+      .filter((c) => DESTINATION_CHANNEL_TYPES.includes(c.type))
+      .map((c) => ({ id: c.id, name: c.name, type: c.type }))
       .sort((a, b) => a.name.localeCompare(b.name));
     const botHighest = guild.members.me?.roles.highest.position ?? 0;
     const roles = guild.roles.cache

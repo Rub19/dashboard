@@ -17,6 +17,7 @@ import type { AuditChannelRouting, AuditSettings, ChannelLogThreshold } from '..
 import { baseEmbed, noticeEmbed } from '../../../utils/embeds.js';
 import { logger } from '../../../utils/logger.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
+import { SLASH_DESTINATION_TYPES } from '../../../utils/channelSend.js';
 
 /**
  * `auditRepository.updateConfig` fusionne `routing` au runtime, mais son type
@@ -116,7 +117,7 @@ export function buildLogsPanel(guild: Guild, activeBucket: LogBucket = 'general'
   const channelSelect = new ChannelSelectMenuBuilder()
     .setCustomId(`logs_pick:${activeBucket}`)
     .setPlaceholder(`Salon pour « ${LOG_BUCKETS[activeBucket].label} »`)
-    .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+    .addChannelTypes(...SLASH_DESTINATION_TYPES)
     .setMinValues(0)
     .setMaxValues(1);
 

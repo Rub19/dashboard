@@ -1,6 +1,6 @@
 import { Client, Events, AuditLogEvent, GuildMember, Role } from 'discord.js';
 import { isModuleEnabled } from '../services/moduleRegistry.js';
-import { recordDeparture, clearDeparture } from '../services/departedGuilds.js';
+import { recordDeparture, scheduleDepartureRestart } from '../services/departedGuilds.js';
 import { logService } from '../modules/logs/services/logService.js';
 import { onInteractionCreate } from '../events/interactionCreate.js';
 import { onMessageCreate } from '../events/messageCreate.js';
@@ -276,11 +276,13 @@ export function registerEvents(client: Client): void {
   client.on(Events.GuildUpdate, (oldGuild, newGuild) => handleGuildUpdate(oldGuild, newGuild));
   // Nouveau serveur : socle actif, tout le reste désactivé, panneau de configuration rapide posté
   client.on(Events.GuildCreate, (guild) => {
-    clearDeparture(guild.id);
+    // Le bot revient sur un serveur qu'il vient de quitter : la purge en attente reste programmée (départ propre, config remise à zéro).
     guildSetupService.provision(guild).catch((err) => logger.error('[Setup] Initialisation du serveur impossible :', err));
   });
   client.on(Events.GuildDelete, (guild) => {
+    if (guild.available === false) return; // panne Discord, pas un départ : rien à effacer
     recordDeparture(guild.id, guild.name || guild.id);
+    scheduleDepartureRestart();
     ownerShieldService.handleGuildDelete(guild);
   });
 

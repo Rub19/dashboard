@@ -55,5 +55,26 @@ await guildSetupService.handle({
 } as any);
 ok(replied !== null && enabledIds().length === reg.CORE_MODULE_IDS.length, 'un membre sans « Gérer le serveur » est refusé et rien ne change');
 
+console.log('\nArrivée du bot : initialisation silencieuse');
+{
+  const sent: unknown[] = [];
+  const fakeChannel = { type: 0, isTextBased: () => true, send: async (o: unknown) => { sent.push(o); }, permissionsFor: () => ({ has: () => true }) };
+  const mkGuild = (id: string, joinedTimestamp: number) =>
+    ({ id, name: `Serveur ${id}`, joinedTimestamp, systemChannel: fakeChannel, channels: { cache: { find: () => fakeChannel } }, members: { me: {} } }) as any;
+
+  const fresh = mkGuild('g-neuf', Date.now());
+  await guildSetupService.provision(fresh);
+  const freshOn = reg.MODULES.filter((m) => reg.isModuleEnabled('g-neuf', m.id)).map((m) => m.id).sort();
+  ok(JSON.stringify(freshOn) === JSON.stringify([...reg.CORE_MODULE_IDS].sort()), 'un serveur neuf démarre avec le seul socle actif');
+  ok(sent.length === 0, 'aucun message n’est posté dans le serveur à l’arrivée du bot');
+
+  await guildSetupService.provision(mkGuild('g-ajoute-hors-ligne', Date.now() - 3 * 86_400_000));
+  ok(!reg.isModuleEnabled('g-ajoute-hors-ligne', 'security') && !reg.isModuleEnabled('g-ajoute-hors-ligne', 'ai'), 'ajouté il y a quelques jours (bot hors ligne) : initialisé aussi');
+
+  await guildSetupService.provision(mkGuild('g-ancien', Date.parse('2026-01-01T00:00:00Z')));
+  ok(reg.isModuleEnabled('g-ancien', 'economy') && !guildSetupService.isKnown('g-ancien'), 'un serveur ancien (déjà couvert par la migration) n’est pas touché');
+  ok(sent.length === 0, 'toujours aucun message envoyé');
+}
+
 console.log(fail ? `\n${fail} échec(s)` : '\nTout est bon');
 process.exit(fail ? 1 : 0);

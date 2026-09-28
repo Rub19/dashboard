@@ -3,8 +3,8 @@ import path from 'path';
 import { logger } from '../utils/logger.js';
 
 /**
- * Serveurs que le bot a quittés (ou dont il a été expulsé). Leurs données sont conservées 30 jours (au cas où le bot revient),
- * puis purgées au démarrage suivant par `bootstrap/purgeDeparted.ts`, avec une archive restaurable.
+ * Serveurs que le bot a quittés (ou dont il a été expulsé/banni). Leur configuration est effacée au démarrage suivant par
+ * `bootstrap/purgeDeparted.ts` (archive restaurable à la main dans data/departed/).
  */
 export interface DepartedGuild {
   name: string;
@@ -40,7 +40,21 @@ export function recordDeparture(guildId: string, name: string, at: Date = new Da
   if (all[guildId]) return;
   all[guildId] = { name, departedAt: at.toISOString() };
   saveDeparted(all);
-  logger.warn(`[Departed] Serveur quitté : « ${name} » (${guildId}). Ses données seront purgées dans 30 jours si le bot ne revient pas.`);
+  logger.warn(`[Departed] Serveur quitté : « ${name} » (${guildId}). Sa configuration sera effacée au prochain démarrage (dans quelques secondes).`);
+}
+
+let resetTimer: NodeJS.Timeout | null = null;
+
+/**
+ * La purge s'exécute au chargement du bot (avant que les dépôts JSON ne soient lus, sinon ils réécriraient les données effacées).
+ * Après un départ (expulsion, bannissement, retrait), le bot se relance donc peu après ; pm2 le redémarre aussitôt.
+ */
+export function scheduleDepartureRestart(delayMs = 20_000): void {
+  if (resetTimer) return;
+  resetTimer = setTimeout(() => {
+    logger.warn('[Departed] Redémarrage pour effacer la configuration des serveurs quittés.');
+    process.exit(0);
+  }, delayMs);
 }
 
 /** Le bot est revenu sur ce serveur : on annule la purge. */

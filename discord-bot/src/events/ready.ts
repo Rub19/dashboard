@@ -15,6 +15,7 @@ import { backupService } from '../modules/backup/services/backupService.js';
 import { aiService } from '../modules/ai/services/aiService.js';
 import { runModuleMigrations } from '../services/moduleMigrations.js';
 import { clearDeparture } from '../services/departedGuilds.js';
+import { guildSetupService } from '../services/guildSetupService.js';
 import { initializePanelState } from '../services/panelStateService.js';
 import { statsCollector } from '../modules/stats/services/statsCollector.js';
 import { statrolesEngine } from '../modules/statroles/services/statrolesEngine.js';
@@ -167,6 +168,8 @@ export async function onReady(client: Client<true>) {
   initializePanelState(client);
   // Serveurs revenus pendant que le bot était arrêté : leur purge programmée est annulée.
   for (const guild of client.guilds.cache.values()) clearDeparture(guild.id);
+  // Serveurs ajoutés pendant que le bot était arrêté : initialisés « tout éteint », en silence.
+  for (const guild of client.guilds.cache.values()) void guildSetupService.provision(guild).catch((err) => logger.warn('[Setup] Initialisation impossible :', err));
 
   // Statistiques : reprise des sessions vocales en cours et crédit périodique
   statsCollector.init(client);

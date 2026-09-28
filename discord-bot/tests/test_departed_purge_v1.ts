@@ -36,7 +36,7 @@ ok(Object.keys(loadDeparted()).length === 2, 'deux départs enregistrés');
 recordDeparture(OLD, 'autre nom', new Date(now));
 ok(loadDeparted()[OLD].name === 'Ancien serveur', 'un départ déjà noté n’est pas réécrit');
 
-const r = purgeDepartedGuilds(data, now);
+const r = purgeDepartedGuilds(data, now, 30);
 ok(r.purged.length === 1 && r.purged[0] === OLD, 'seul le serveur parti depuis plus de 30 jours est purgé');
 ok(!(OLD in read('a_keyed.json')) && STAY in read('a_keyed.json'), 'objet indexé par serveur : entrée retirée, les autres gardées');
 ok(read('b_array.json').length === 2 && !read('b_array.json').some((i: any) => i.guildId === OLD), 'tableau : éléments du serveur retirés, ceux du serveur récent gardés');
@@ -51,8 +51,12 @@ ok(!(OLD in loadDeparted()) && NEW in loadDeparted(), 'le serveur purgé sort de
 
 clearDeparture(NEW);
 ok(!(NEW in loadDeparted()), 'le retour du bot annule la purge');
-ok(purgeDepartedGuilds(data, now).purged.length === 0, 'rien à purger ensuite');
+ok(purgeDepartedGuilds(data, now, 30).purged.length === 0, 'rien à purger ensuite');
 ok(scrubJson('texte', new Set([OLD])).value === 'texte', 'contenu non JSON-objet : inchangé');
+
+// Comportement en production : la rétention par défaut est 0 (effacement au prochain démarrage, juste après le départ).
+const { DEPARTED_RETENTION_DAYS } = await import('../src/bootstrap/purgeDeparted.js');
+ok(DEPARTED_RETENTION_DAYS === 0, 'rétention par défaut = 0 jour (reset immédiat au redémarrage suivant)');
 
 console.log(fail ? `\n${fail} échec(s)` : '\nTout est bon');
 process.exit(fail ? 1 : 0);

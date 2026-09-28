@@ -8,7 +8,7 @@ import { logger } from '../utils/logger.js';
  * entrées supprimées à sa prochaine sauvegarde. Les entrées retirées sont archivées dans data/departed/<serveur>-<date>.json
  * (restaurables à la main).
  */
-export const DEPARTED_RETENTION_DAYS = 30;
+export const DEPARTED_RETENTION_DAYS = 0;
 const SKIP_FILES = new Set(['departed_guilds.json', 'module_migrations.json']);
 
 type Json = unknown;

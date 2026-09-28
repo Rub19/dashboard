@@ -77,6 +77,7 @@ import { useModuleStatus } from "@/lib/hooks/useModuleStatus";
 import ServerPicker from "@/components/discord/ServerPicker";
 import ModuleNavigator, { type NavigatorCategory, type NavigatorModule } from "@/components/discord/ModuleNavigator";
 import HubSidebar, { type HubView } from "@/components/discord/HubSidebar";
+import ServerOverview from "@/components/discord/ServerOverview";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const PICKED_STORAGE_KEY = "ethone:discord:picked";
@@ -1280,7 +1281,7 @@ export default function DiscordDashboardPage() {
           </header>
 
           <div ref={contentRef} className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden [overscroll-behavior:contain]">
-            <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
+            <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
               {(botAuthRequired || botAbsent) && (
                 <div className="mb-6 space-y-3">
                   {botAuthRequired && (
@@ -1315,7 +1316,9 @@ export default function DiscordDashboardPage() {
                   <h1 className="text-2xl font-bold text-[var(--text-primary)]">{userName ? `Bienvenue ${userName},` : "Bienvenue,"}</h1>
                   <p className="mt-1 text-sm text-[var(--text-muted)]">Retrouve les pages les plus utilisées ci-dessous.</p>
 
-                  <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <ServerOverview guildId={selectedGuild.id} activeModules={activeModuleCount} totalModules={totalModuleCount} />
+
+                  <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                     {HOME_CARDS.map((c) => {
                       const Icon = MODULE_ICONS[c.id];
                       return (

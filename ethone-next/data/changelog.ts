@@ -38647,6 +38647,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_36_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_36_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_36_1_de);
 
+const v1_37_0_fr: ChangelogEntry = {
+  version: "v1.37.0",
+  date: "2026-09-28",
+  title: "Bot 100 % silencieux à l'arrivée + reset au départ + en-tête du bot",
+  items: [
+    "Quand le bot rejoint un serveur, il n'envoie plus aucun message : tous les modules sont désactivés (seuls modération, musique, rappels et tags restent, sans action automatique). Les serveurs ajoutés pendant que le bot était hors ligne sont aussi initialisés à zéro au démarrage. La configuration se fait sur le dashboard ou avec /setup.",
+    "Si le bot est expulsé, banni ou retiré d'un serveur, la configuration de ce serveur est effacée (archive restaurable à la main) : à son retour, c'est un départ de zéro.",
+    "Le service d'alerte d'urgence n'envoie plus de messages privés de sa propre initiative (seulement pour le bouton « test » du dashboard).",
+    "Nouvel en-tête du Bot Discord : bouton « Retour à ETHONE » plus grand, identité du bot (Etho) et infos en direct (statut, uptime, latence Discord, nombre de serveurs, latence de l'API).",
+    "Accueil du Bot Discord : aperçu chiffré du serveur (membres, salons, rôles, modules actifs, commandes) et mise en page plus large.",
+  ],
+};
+
+const v1_37_0_en: ChangelogEntry = {
+  version: "v1.37.0",
+  date: "2026-09-28",
+  title: "Bot fully silent on join + reset on leave + bot header",
+  items: [
+    "When the bot joins a server it no longer sends any message: every module is disabled (only moderation, music, reminders and tags remain, with no automatic action). Servers added while the bot was offline are also reset at startup. Configure from the dashboard or with /setup.",
+    "If the bot is kicked, banned or removed from a server, that server's configuration is erased (archive restorable by hand): when it returns, it starts from scratch.",
+    "The emergency alert service no longer sends DMs on its own initiative (only for the dashboard \"test\" button).",
+    "New Discord bot header: bigger \"Back to ETHONE\" button, bot identity (Etho) and live info (status, uptime, Discord latency, server count, API latency).",
+    "Discord bot home: server overview numbers (members, channels, roles, active modules, commands) and a wider layout.",
+  ],
+};
+
+const v1_37_0_es: ChangelogEntry = {
+  version: "v1.37.0",
+  date: "2026-09-28",
+  title: "Bot totalmente silencioso al llegar + reinicio al salir + cabecera del bot",
+  items: [
+    "Al unirse a un servidor el bot ya no envía ningún mensaje: todos los módulos quedan desactivados. Configúralo desde el dashboard o con /setup.",
+    "Si el bot es expulsado, baneado o retirado de un servidor, se borra la configuración de ese servidor.",
+    "El servicio de alertas de emergencia ya no envía mensajes privados por iniciativa propia.",
+    "Nueva cabecera del bot de Discord: botón «Volver a ETHONE» más grande, identidad del bot e información en directo (estado, uptime, latencia, servidores).",
+    "Inicio del bot de Discord: resumen numérico del servidor y diseño más ancho.",
+  ],
+};
+
+const v1_37_0_de: ChangelogEntry = {
+  version: "v1.37.0",
+  date: "2026-09-28",
+  title: "Bot beim Beitritt komplett still + Reset beim Verlassen + Bot-Kopfzeile",
+  items: [
+    "Tritt der Bot einem Server bei, sendet er keine Nachricht mehr: alle Module sind deaktiviert. Konfiguration im Dashboard oder mit /setup.",
+    "Wird der Bot gekickt, gebannt oder entfernt, wird die Konfiguration dieses Servers gelöscht.",
+    "Der Notfall-Alarmdienst sendet keine privaten Nachrichten mehr aus eigener Initiative.",
+    "Neue Kopfzeile des Discord-Bots: größerer „Zurück zu ETHONE“-Button, Bot-Identität und Live-Infos (Status, Uptime, Latenz, Server).",
+    "Startseite des Discord-Bots: Serverübersicht mit Zahlen und breiteres Layout.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

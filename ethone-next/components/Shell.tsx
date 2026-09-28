@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowLeft } from "@/components/icons/ph";
+import BotStatusStrip from "@/components/discord/BotStatusStrip";
 import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import PresenceProvider from "@/components/PresenceProvider";
 import { ShortcutsProvider } from "@/components/ShortcutsProvider";
@@ -63,21 +64,33 @@ export default function Shell({ children }: { children: ReactNode }) {
                   <CosmicBackground />
                   <RefreshSpinner />
                   <VisualHaptics />
-                  <header className="relative z-10 flex h-12 shrink-0 items-center gap-3 border-b border-[var(--panel-border)]/60 px-4">
+                  <header className="relative z-10 flex h-16 shrink-0 items-center gap-4 border-b border-[var(--panel-border)]/60 px-4 pt-1 sm:px-6">
                     <Link
                       href="/"
                       onClick={() => {
-                        // Le prochain accès au Bot Discord repart du choix de serveur.
                         try {
                           sessionStorage.removeItem("ethone:discord:picked");
-                        } catch {}
+                        } catch {
+                          // stockage indisponible : le choix du serveur sera simplement conservé
+                        }
                       }}
-                      className="inline-flex h-9 items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3.5 text-xs font-semibold text-[var(--text-primary)] transition-all hover:border-[var(--accent-primary)]/50 hover:bg-[var(--accent-primary)]/10 active:scale-95"
+                      className="inline-flex h-11 items-center gap-2.5 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-5 text-sm font-semibold text-[var(--text-primary)] transition-all hover:border-[var(--accent-primary)]/50 hover:bg-[var(--accent-primary)]/10 active:scale-95"
                     >
-                      <ArrowLeft className="h-4 w-4" />
+                      <ArrowLeft className="h-5 w-5" />
                       Retour à ETHONE
                     </Link>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Bot Discord</span>
+                    <span aria-hidden className="hidden h-6 w-px bg-[var(--panel-border)] sm:block" />
+                    <div className="flex items-center gap-2.5">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/branding/etho-avatar.gif" alt="" className="h-8 w-8 rounded-full object-cover" />
+                      <div className="leading-tight">
+                        <p className="text-sm font-bold text-[var(--text-primary)]">Etho</p>
+                        <p className="hidden text-xs text-[var(--text-muted)] sm:block">Console du bot</p>
+                      </div>
+                    </div>
+                    <div className="ml-auto">
+                      <BotStatusStrip />
+                    </div>
                   </header>
                   <PrivacyShield>
                     <main

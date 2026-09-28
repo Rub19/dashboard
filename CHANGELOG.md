@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.0 — 2026-09-28
+
+**Bot 100 % silencieux à l'arrivée + reset au départ + en-tête du bot**
+
+- Quand le bot rejoint un serveur, il n'envoie plus aucun message : tous les modules sont désactivés (seuls modération, musique, rappels et tags restent, sans action automatique). Les serveurs ajoutés pendant que le bot était hors ligne sont aussi initialisés à zéro au démarrage. La configuration se fait sur le dashboard ou avec /setup.
+- Si le bot est expulsé, banni ou retiré d'un serveur, la configuration de ce serveur est effacée (archive restaurable à la main) : à son retour, c'est un départ de zéro.
+- Le service d'alerte d'urgence n'envoie plus de messages privés de sa propre initiative (seulement pour le bouton « test » du dashboard).
+- Nouvel en-tête du Bot Discord : bouton « Retour à ETHONE » plus grand, identité du bot (Etho) et infos en direct (statut, uptime, latence Discord, nombre de serveurs, latence de l'API).
+- Accueil du Bot Discord : aperçu chiffré du serveur (membres, salons, rôles, modules actifs, commandes) et mise en page plus large.
+
 ## v1.36.1 — 2026-09-28
 
 **Pages de détail : plus de chargement infini**

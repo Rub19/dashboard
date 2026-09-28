@@ -469,6 +469,8 @@ export function startWebServer(client: Client): http.Server {
       status: 'ok',
       botOnline: client.isReady(),
       uptimeMs: client.uptime,
+      pingMs: Number.isFinite(client.ws.ping) && client.ws.ping >= 0 ? Math.round(client.ws.ping) : null,
+      guildCount: client.guilds.cache.size,
       version: '1.0.0',
     });
   });

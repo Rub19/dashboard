@@ -61,6 +61,8 @@ const GROUPS: Array<{ id: 'protect' | 'community'; placeholder: string; moduleId
 ];
 
 const DASHBOARD_URL = 'https://ethone.dev/discord/setup';
+/** Serveurs rejoints à partir de cette date : initialisés « tout éteint » s'ils n'ont aucun enregistrement. */
+const PROVISION_SINCE = Date.parse('2026-09-25T00:00:00Z');
 
 export const guildSetupService = {
   isKnown(guildId: string): boolean {
@@ -76,33 +78,19 @@ export const guildSetupService = {
     persist();
   },
 
-  /** Nouveau serveur : socle actif, tout le reste désactivé, panneau posté. Sans effet sur un serveur déjà connu. */
+  /**
+   * Serveur sans enregistrement : socle seulement (modération, musique, rappels, tags), tout le reste désactivé. AUCUN message
+   * n'est posté ni envoyé en privé : la configuration se fait sur le dashboard ou avec /setup. Les serveurs rejoints avant
+   * `PROVISION_SINCE` ont déjà été mis à zéro par la migration « tout éteint » : on n'y touche pas.
+   */
   async provision(guild: Guild): Promise<void> {
     if (records[guild.id]) return;
-    // Un « guildCreate » peut aussi arriver pour un serveur ancien qui redevient disponible : on ne touche qu'aux serveurs rejoints très récemment.
-    const joinedRecently = guild.joinedTimestamp ? Date.now() - guild.joinedTimestamp < 5 * 60_000 : false;
-    if (!joinedRecently) return;
+    if ((guild.joinedTimestamp ?? 0) < PROVISION_SINCE) return;
 
     records[guild.id] = { status: 'pending', at: new Date().toISOString() };
     persist();
     applyModuleSelection(guild.id, CORE_MODULE_IDS, 'DISCORD_COMMAND');
-    logger.success(`[Setup] Serveur « ${guild.name} » initialisé : socle actif, autres modules désactivés.`);
-
-    const me = guild.members.me;
-    const channel =
-      (guild.systemChannel && me && guild.systemChannel.permissionsFor(me)?.has([PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks]) ? guild.systemChannel : null) ||
-      guild.channels.cache.find(
-        (c) => c.type === ChannelType.GuildText && !!me && !!c.permissionsFor(me)?.has([PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])
-      );
-    if (!channel || !channel.isTextBased()) {
-      logger.warn(`[Setup] Aucun salon où poster la configuration rapide sur « ${guild.name} » : /setup la relancera.`);
-      return;
-    }
-    try {
-      await channel.send(this.buildPanel(guild.id, true));
-    } catch (err) {
-      logger.warn(`[Setup] Envoi du panneau impossible sur « ${guild.name} » :`, err);
-    }
+    logger.success(`[Setup] Serveur « ${guild.name} » initialisé en silence : socle actif, autres modules désactivés.`);
   },
 
   /** Panneau de configuration rapide (embed + menus + préréglages). */

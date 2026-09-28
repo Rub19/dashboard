@@ -124,7 +124,7 @@ export function buildEmergencyEmbed(guild: Guild, issues: EmergencyIssue[], test
   return baseEmbed(test ? 'info' : 'error').setTitle(test ? '🧪 Test des contacts d’urgence' : '🚨 Problème sérieux détecté').setDescription(body.slice(0, 3800)).setFooter({ text: `${guild.name} · ETHONE` });
 }
 
-/** Envoie l'alerte : message dans le salon (avec mentions) + message privé à chaque contact. Renvoie ce qui a réellement été livré. */
+/** Envoie l'alerte : message dans le salon (avec mentions). Aucun message privé n'est envoyé de la propre initiative du bot : seulement pour le test demandé depuis le dashboard. */
 export async function notify(guild: Guild, issues: EmergencyIssue[], test = false): Promise<{ channel: boolean; dms: number; contacts: number }> {
   const contacts = await resolveContacts(guild);
   const embed = buildEmergencyEmbed(guild, issues, test);
@@ -140,7 +140,7 @@ export async function notify(guild: Guild, issues: EmergencyIssue[], test = fals
   }
 
   let dms = 0;
-  for (const id of contacts.userIds.slice(0, MAX_DM)) {
+  for (const id of test ? contacts.userIds.slice(0, MAX_DM) : []) {
     const user = await guild.client.users.fetch(id).catch(() => null);
     if (user && (await user.send({ embeds: [embed] }).then(() => true).catch(() => false))) dms++;
   }

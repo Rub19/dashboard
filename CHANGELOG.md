@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.36.1 — 2026-09-28
+
+**Pages de détail : plus de chargement infini**
+
+- Les pages d'un cas de modération et d'un sondage restaient bloquées sur un indicateur de chargement quand l'adresse n'indiquait pas de serveur. Elles affichent maintenant un état clair (dossier introuvable, ou demande de choisir un serveur).
+
 ## v1.36.0 — 2026-09-28
 
 **Toutes les sous-pages du Bot Discord au nouveau style**

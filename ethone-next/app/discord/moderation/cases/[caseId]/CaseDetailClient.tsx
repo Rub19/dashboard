@@ -92,7 +92,10 @@ export default function CaseDetailClient() {
   const [isSubmittingRevert, setIsSubmittingRevert] = useState(false);
 
   const fetchCaseDetails = useCallback(async () => {
-    if (!guildId || !caseNumber) return;
+    if (!guildId || !caseNumber) {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     try {
       if (BOT_API_URL) {

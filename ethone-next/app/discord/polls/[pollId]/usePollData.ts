@@ -95,7 +95,11 @@ export function usePollData() {
       setError("L'API du bot n'est pas configurée pour ce déploiement.");
       return;
     }
-    if (!guildId || !pollId) return;
+    if (!guildId || !pollId) {
+      setLoading(false);
+      setError("Aucun serveur sélectionné : ouvre ce sondage depuis la liste des sondages.");
+      return;
+    }
     let cancelled = false;
     setLoading(true);
     const base = `${POLL_BOT_API_URL}/api/guilds/${encodeURIComponent(guildId)}/polls/${encodeURIComponent(pollId)}`;

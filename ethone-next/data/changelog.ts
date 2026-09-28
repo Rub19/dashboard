@@ -38606,6 +38606,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_36_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_36_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_36_0_de);
 
+const v1_36_1_fr: ChangelogEntry = {
+  version: "v1.36.1",
+  date: "2026-09-28",
+  title: "Pages de détail : plus de chargement infini",
+  items: [
+    "Les pages d'un cas de modération et d'un sondage restaient bloquées sur un indicateur de chargement quand l'adresse n'indiquait pas de serveur. Elles affichent maintenant un état clair (dossier introuvable, ou demande de choisir un serveur).",
+  ],
+};
+
+const v1_36_1_en: ChangelogEntry = {
+  version: "v1.36.1",
+  date: "2026-09-28",
+  title: "Detail pages: no more endless loading",
+  items: [
+    "The moderation case and poll detail pages stayed stuck on a loading indicator when the URL had no server. They now show a clear state (case not found, or ask to pick a server).",
+  ],
+};
+
+const v1_36_1_es: ChangelogEntry = {
+  version: "v1.36.1",
+  date: "2026-09-28",
+  title: "Páginas de detalle: sin carga infinita",
+  items: [
+    "Las páginas de un caso de moderación y de una encuesta se quedaban cargando sin servidor en la dirección. Ahora muestran un estado claro.",
+  ],
+};
+
+const v1_36_1_de: ChangelogEntry = {
+  version: "v1.36.1",
+  date: "2026-09-28",
+  title: "Detailseiten: kein endloses Laden mehr",
+  items: [
+    "Die Detailseiten eines Moderationsfalls und einer Umfrage blieben ohne Server in der Adresse im Ladezustand hängen. Jetzt zeigen sie einen klaren Zustand.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_36_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_36_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_36_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_36_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

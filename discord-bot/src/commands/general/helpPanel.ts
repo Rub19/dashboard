@@ -14,7 +14,7 @@ import { Command } from '../../types/command.js';
 import { GuildConfig } from '../../types/guildConfig.js';
 import { guildConfigService } from '../../services/guildConfigService.js';
 import { config } from '../../config.js';
-import { BRAND_COLORS } from '../../utils/embeds.js';
+import { BRAND_RED, icon } from '../../utils/v2.js';
 import { container, footer, sectionWithThumbnail, separator, text, V2_FLAGS } from '../../utils/components.js';
 import { formatString, getTranslation, type TranslationDictionary } from '../../utils/i18n.js';
 
@@ -102,6 +102,23 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
   },
 ];
 
+/** Icône d'application (bot-icons) de chaque catégorie ; repli Unicode = `emoji`. */
+const CATEGORY_ICONS: Record<string, string> = {
+  ai: 'ai',
+  moderation: 'moderation',
+  security: 'security',
+  leveling: 'level',
+  community: 'giveaway',
+  voice_music: 'music',
+  support: 'ticket',
+  admin: 'logs',
+  general: 'ethone',
+};
+
+export function catEmoji(cat: HelpCategoryMeta): string {
+  return icon(CATEGORY_ICONS[cat.id] ?? cat.id, cat.emoji);
+}
+
 const CATEGORY_TEXT_KEYS: Record<string, { name: keyof TranslationDictionary; description: keyof TranslationDictionary }> = {
   ai: { name: 'help_cat_ai_name', description: 'help_cat_ai_desc' },
   moderation: { name: 'help_cat_moderation_name', description: 'help_cat_moderation_desc' },
@@ -177,7 +194,7 @@ export class HelpPanel {
     const prefix = guildConfig.prefix || '!';
     const isHome = categoryKey === 'home';
     const parts: Parameters<typeof container>[1] = [];
-    let color: number = BRAND_COLORS.primary;
+    let color: number = BRAND_RED;
 
     if (isHome) {
       parts.push(
@@ -194,7 +211,7 @@ export class HelpPanel {
         text(
           HELP_CATEGORIES.map((cat) => {
             const n = resolveCategoryCommands(cat, commands).length;
-            return `${cat.emoji} **${localizeCategory(cat, t).name}** — ${formatString(n > 1 ? t.help_cmd_count_other : t.help_cmd_count_one, { count: n })}`;
+            return `${catEmoji(cat)} **${localizeCategory(cat, t).name}** — ${formatString(n > 1 ? t.help_cmd_count_other : t.help_cmd_count_one, { count: n })}`;
           }).join('\n'),
         ),
         separator(false),
@@ -209,7 +226,7 @@ export class HelpPanel {
       parts.push(
         sectionWithThumbnail(
           [
-            `## ${cat.emoji} ${localizedCat.name}`,
+            `## ${catEmoji(cat)} ${localizedCat.name}`,
             `*${localizedCat.description}*`,
             formatString(t.help_module_subtitle, { index: (idx >= 0 ? idx : 0) + 1, total: HELP_CATEGORIES.length, count: categoryCommands.length }),
           ],
@@ -244,7 +261,7 @@ export class HelpPanel {
           ...HELP_CATEGORIES.map((c) =>
             new StringSelectMenuOptionBuilder()
               .setLabel(`${localizeCategory(c, t).name} (${resolveCategoryCommands(c, commands).length})`)
-              .setEmoji(c.emoji)
+              .setEmoji(catEmoji(c))
               .setValue(c.id)
               .setDescription(localizeCategory(c, t).description.slice(0, 95))
               .setDefault(categoryKey === c.id),

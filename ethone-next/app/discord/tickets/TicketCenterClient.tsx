@@ -38,6 +38,7 @@ import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 import Select from "@/components/ui/Select";
+import { errorReason } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -84,6 +85,8 @@ export interface TicketItem {
   id: string;
   guildId: string;
   channelId: string;
+  /** Mode forum : le ticket est un post de forum (channelId = id du post). */
+  mode?: "channel" | "forum";
   userId: string;
   userTag: string;
   userAvatar?: string | null;
@@ -241,6 +244,9 @@ export function TicketCenterClient() {
   const [discordCats, setDiscordCats] = useState<Array<{ id: string; name: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  // Mode forum : choix du mode en attente tant qu'aucun forum n'est sélectionné (le bot refuse un mode forum sans forum).
+  const [modeDraft, setModeDraft] = useState<"channel" | "forum" | null>(null);
+  const [forumTagsLoading, setForumTagsLoading] = useState(false);
 
   // Filtres Explorer
   const [searchQuery, setSearchQuery] = useState("");
@@ -641,10 +647,10 @@ export function TicketCenterClient() {
   };
 
   // Sauvegarde Config globale
-  const handleSaveConfig = async (newCfg: any) => {
+  const handleSaveConfig = async (newCfg: any): Promise<boolean> => {
     if (!API_BASE) {
       showError("Bot injoignable", "Rien n'a été enregistré.");
-      return;
+      return false;
     }
     try {
       setActionLoading(true);
@@ -660,10 +666,38 @@ export function TicketCenterClient() {
       }
       success("Configuration enregistrée", "Les paramètres du système de tickets ont été appliqués.");
       setConfig((p: any) => ({ ...p, ...newCfg }));
+      return true;
     } catch (err: any) {
       showError("Erreur", formatApiError(err, "Impossible d'enregistrer la configuration"));
+      return false;
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  // Mode forum : crée les tags Ouvert / En cours / Résolu / Fermé dans le forum et enregistre leurs ids.
+  const handleCreateForumTags = async () => {
+    if (!API_BASE || !config.forumChannelId) return;
+    try {
+      setForumTagsLoading(true);
+      const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/config/forum-tags`, {
+        credentials: "include",
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ forumChannelId: config.forumChannelId }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(formatApiError(data?.error, "Échec de la création des tags"));
+      setConfig((p: any) => ({ ...p, ...data.config }));
+      if (Array.isArray(data.skipped) && data.skipped.length > 0) {
+        showError("Forum presque plein", "Discord limite un forum à 20 tags : certains tags de statut n'ont pas pu être créés.");
+      } else {
+        success("Tags de statut prêts", "Ouvert, En cours, Résolu et Fermé sont disponibles dans le forum.");
+      }
+    } catch (err: unknown) {
+      showError("Erreur", errorReason(err, "Impossible de créer les tags de statut"));
+    } finally {
+      setForumTagsLoading(false);
     }
   };
 
@@ -1694,6 +1728,67 @@ export function TicketCenterClient() {
                 />
                 <p className="text-[10px] text-zinc-400 mt-1">Variables : {"{username}"}, {"{count}"}, {"{category}"}</p>
               </div>
+
+              <div>
+                <label className="text-xs font-semibold text-zinc-300">Mode</label>
+                <Select
+                  value={modeDraft ?? (config.mode === "forum" ? "forum" : "channel")}
+                  onChange={(v) => {
+                    if (v === "forum") {
+                      // Sans forum choisi, on attend la sélection avant d'enregistrer.
+                      if (config.forumChannelId) handleSaveConfig({ mode: "forum" });
+                      else setModeDraft("forum");
+                    } else {
+                      setModeDraft(null);
+                      handleSaveConfig({ mode: "channel" });
+                    }
+                  }}
+                  className="mt-1"
+                  aria-label="Mode des tickets"
+                  options={[
+                    { id: "channel", label: "Salons privés" },
+                    { id: "forum", label: "Forum Discord" },
+                  ]}
+                />
+                {(modeDraft ?? config.mode) === "forum" ? (
+                  <div className="mt-3 space-y-3">
+                    <div>
+                      <label className="text-xs font-semibold text-zinc-300">Forum des tickets</label>
+                      <ChannelPicker
+                        value={config.forumChannelId || ""}
+                        onChange={async (id, ch) => {
+                          if (!id || ch?.isPost) return;
+                          if (await handleSaveConfig({ mode: "forum", forumChannelId: id, forumTagIds: {} })) setModeDraft(null);
+                        }}
+                        guildId={currentGuildId}
+                        filterTypes={[15]}
+                        placeholder="Sélectionner un forum…"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={handleCreateForumTags}
+                        disabled={!config.forumChannelId || forumTagsLoading || actionLoading}
+                        className="flex h-8 items-center gap-1 rounded-lg bg-emerald-600 px-3 text-xs font-bold text-white hover:bg-emerald-500 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Créer les tags de statut
+                      </button>
+                      <span className="text-[11px] text-zinc-400">
+                        {config.forumTagIds && Object.values(config.forumTagIds).filter(Boolean).length > 0
+                          ? `${Object.values(config.forumTagIds).filter(Boolean).length}/4 tags liés`
+                          : "Aucun tag lié"}
+                      </span>
+                    </div>
+                  </div>
+                ) : null}
+                <p className="text-[10px] text-zinc-400 mt-2">
+                  {(modeDraft ?? config.mode) === "forum"
+                    ? "Chaque ticket devient un post du forum, avec le message d'accueil et les boutons. Le tag de statut (Ouvert, En cours, Résolu, Fermé) suit le ticket ; à la fermeture le post est verrouillé et archivé, pas supprimé. Le bot a besoin de créer des posts et de gérer les fils dans ce forum. Les posts sont visibles par tous ceux qui ont accès au forum."
+                    : "Chaque ticket ouvre un salon privé, supprimé à la fermeture."}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -1705,7 +1800,9 @@ export function TicketCenterClient() {
           <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
             <h3 className="text-sm font-bold text-white">Clôturer le Ticket #{ticketToClose.id}</h3>
             <p className="text-xs text-zinc-400">
-              Un transcript HTML/JSON sera automatiquement archivé et le salon Discord sera supprimé dans 5 secondes.
+              {config.mode === "forum" || ticketToClose.mode === "forum"
+                ? "Un transcript HTML/JSON sera automatiquement archivé et le post du forum sera verrouillé et archivé."
+                : "Un transcript HTML/JSON sera automatiquement archivé et le salon Discord sera supprimé dans 5 secondes."}
             </p>
 
             <div className="space-y-1.5">

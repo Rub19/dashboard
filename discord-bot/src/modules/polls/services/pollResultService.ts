@@ -120,7 +120,10 @@ export class PollResultService {
       pollId: poll.id,
       title: poll.title,
       status: poll.status,
-      totalVotes: votes.length,
+      // Natif : Discord ne donne que des décomptes par réponse (stockés dans options[].votesCount), pas de votes individuels.
+      totalVotes: poll.native
+        ? poll.questions.reduce((n, q) => n + q.options.reduce((m, o) => m + (o.votesCount || 0), 0), 0)
+        : votes.length,
       totalVoters: uniqueParticipants,
       uniqueParticipants,
       totalWeightedVotes: votes.length,

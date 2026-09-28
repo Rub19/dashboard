@@ -1,4 +1,5 @@
 import { Client, TextChannel } from 'discord.js';
+import { resolveTicketChannel } from './ticketForum.js';
 import { Ticket, TicketPriority, TicketStatus } from '../types/ticket.js';
 import { TicketTrigger } from '../types/automation.js';
 import { ticketRepository } from '../storage/ticketRepository.js';
@@ -60,7 +61,7 @@ export class TicketAutomationEngine {
         if (rule.actions.sendDiscordMessage && discordClient) {
           try {
             const guild = discordClient.guilds.cache.get(ticket.guildId);
-            const channel = guild?.channels.cache.get(ticket.channelId) as TextChannel | undefined;
+            const channel = (await resolveTicketChannel(guild, ticket)) as TextChannel | undefined;
             if (channel) {
               await channel.send(rule.actions.sendDiscordMessage);
             }

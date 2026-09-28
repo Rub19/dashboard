@@ -711,6 +711,7 @@ export class TicketRepository {
         transcriptChannelId: null,
         namingFormat: 'ticket-{username}',
         embedColor: '#5865F2',
+        mode: 'channel',
       };
       this.configs.set(guildId, cfg);
       this.saveConfigs();

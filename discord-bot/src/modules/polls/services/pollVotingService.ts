@@ -82,6 +82,10 @@ export class PollVotingService {
       return { success: false, error: 'Sondage introuvable.' };
     }
 
+    if (poll.native) {
+      return { success: false, error: 'Sondage natif Discord : votez directement sur le message dans Discord.' };
+    }
+
     if (poll.status !== 'ACTIVE') {
       return { success: false, error: 'Ce sondage n\'est pas actif actuellement.' };
     }

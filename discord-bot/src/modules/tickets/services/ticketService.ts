@@ -11,6 +11,7 @@ import {
   GuildMember,
   PermissionFlagsBits,
   TextChannel,
+  ThreadChannel,
   User,
 } from 'discord.js';
 import { Ticket, TicketPriority, TicketStatus } from '../types/ticket.js';
@@ -26,6 +27,19 @@ import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
 import { analyticsService } from '../../analytics/services/analyticsService.js';
+import { canBotSendTo } from '../../../utils/channelSend.js';
+import {
+  applyTicketStatusTag,
+  archiveForumPost,
+  buildForumPostName,
+  isForumTicket,
+  pickOpenTagIds,
+  reopenForumPost,
+  resolveConfiguredForum,
+  resolveTicketChannel,
+  statusToTagKey,
+  TicketStatusTagKey,
+} from './ticketForum.js';
 
 class TicketService {
   private discordClient: Client | null = null;
@@ -79,89 +93,11 @@ class TicketService {
       const totalTickets = ticketRepository.reserveTicketNumber(guild.id);
       const ticketId = `TICKET-${totalTickets.toString().padStart(4, '0')}`;
 
-      // Détermination du nom de salon
-      const cleanUsername = user.username.toLowerCase().replace(/[^a-z0-9]/g, '');
-      const channelName = (config.namingFormat || 'ticket-{username}')
-        .replace('{username}', cleanUsername)
-        .replace('{id}', totalTickets.toString())
-        .replace('{ticketId}', ticketId)
-        .slice(0, 32);
-
-      // Calcul des permissions du salon
-      const permissionOverwrites: any[] = [
-        {
-          id: guild.roles.everyone.id,
-          deny: [PermissionFlagsBits.ViewChannel],
-        },
-        {
-          id: user.id,
-          allow: [
-            PermissionFlagsBits.ViewChannel,
-            PermissionFlagsBits.SendMessages,
-            PermissionFlagsBits.AttachFiles,
-            PermissionFlagsBits.EmbedLinks,
-            PermissionFlagsBits.ReadMessageHistory,
-          ],
-        },
-        {
-          id: guild.members.me!.id,
-          allow: [
-            PermissionFlagsBits.ViewChannel,
-            PermissionFlagsBits.SendMessages,
-            PermissionFlagsBits.ManageChannels,
-            PermissionFlagsBits.EmbedLinks,
-            PermissionFlagsBits.AttachFiles,
-            PermissionFlagsBits.ReadMessageHistory,
-          ],
-        },
-      ];
-
-      // Ajout des rôles staff configurés
-      if (category.supportRoleIds && category.supportRoleIds.length > 0) {
-        for (const roleId of category.supportRoleIds) {
-          permissionOverwrites.push({
-            id: roleId,
-            allow: [
-              PermissionFlagsBits.ViewChannel,
-              PermissionFlagsBits.SendMessages,
-              PermissionFlagsBits.AttachFiles,
-              PermissionFlagsBits.EmbedLinks,
-              PermissionFlagsBits.ReadMessageHistory,
-            ],
-          });
-        }
-      }
-
-      // Ajout des rôles d'équipe si une équipe est assignée
-      if (category.assignedTeamId) {
-        const team = ticketRepository.getTeams(guild.id).find((t) => t.id === category.assignedTeamId);
-        if (team && team.roleIds) {
-          for (const roleId of team.roleIds) {
-            if (!permissionOverwrites.some((po) => po.id === roleId)) {
-              permissionOverwrites.push({
-                id: roleId,
-                allow: [
-                  PermissionFlagsBits.ViewChannel,
-                  PermissionFlagsBits.SendMessages,
-                  PermissionFlagsBits.AttachFiles,
-                  PermissionFlagsBits.EmbedLinks,
-                  PermissionFlagsBits.ReadMessageHistory,
-                ],
-              });
-            }
-          }
-        }
-      }
-
-      // Création du salon Discord
-      const parentId = category.discordCategoryId || undefined;
-      const channel = await guild.channels.create({
-        name: `🎫・${channelName}`,
-        type: ChannelType.GuildText,
-        parent: parentId,
-        permissionOverwrites,
-        topic: `Ticket ${ticketId} • Demandeur : ${user.tag} (${user.id}) • Catégorie : ${category.name}`,
-      });
+      // Création du salon privé (mode "channel") ou du post de forum (mode "forum")
+      const forumMode = config.mode === 'forum';
+      const channel = forumMode
+        ? await this.createForumPost(guild, user, category, ticketId, formAnswers, config)
+        : await this.createPrivateChannel(guild, user, category, ticketId, totalTickets, config);
 
       const now = new Date().toISOString();
 
@@ -170,6 +106,7 @@ class TicketService {
         id: ticketId,
         guildId: guild.id,
         channelId: channel.id,
+        ...(forumMode ? { threadId: channel.id, mode: 'forum' as const } : {}),
         userId: user.id,
         userTag: user.tag,
         userAvatar: user.displayAvatarURL(),
@@ -208,7 +145,7 @@ class TicketService {
       analyticsService.recordTicketCreated(guild.id);
 
       // Envoi du message de bienvenue et panel de contrôles
-      await this.sendTicketChannelPanel(channel, ticket, category, user);
+      if (!forumMode) await this.sendTicketChannelPanel(channel as TextChannel, ticket, category, user);
 
       // Exécution des règles d'automatisation
       ticket = await TicketAutomationEngine.executeTrigger(this.discordClient, 'TICKET_CREATED', ticket);
@@ -246,6 +183,152 @@ class TicketService {
     }
   }
 
+  // --- Création du support Discord du ticket ---
+
+  /** Mode historique : salon textuel privé (permissions par salon). */
+  private async createPrivateChannel(
+    guild: Guild,
+    user: User,
+    category: TicketCategory,
+    ticketId: string,
+    totalTickets: number,
+    config: TicketGlobalConfig
+  ): Promise<TextChannel> {
+    // Détermination du nom de salon
+    const cleanUsername = user.username.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const channelName = (config.namingFormat || 'ticket-{username}')
+      .replace('{username}', cleanUsername)
+      .replace('{id}', totalTickets.toString())
+      .replace('{ticketId}', ticketId)
+      .slice(0, 32);
+
+    // Calcul des permissions du salon
+    const permissionOverwrites: any[] = [
+      {
+        id: guild.roles.everyone.id,
+        deny: [PermissionFlagsBits.ViewChannel],
+      },
+      {
+        id: user.id,
+        allow: [
+          PermissionFlagsBits.ViewChannel,
+          PermissionFlagsBits.SendMessages,
+          PermissionFlagsBits.AttachFiles,
+          PermissionFlagsBits.EmbedLinks,
+          PermissionFlagsBits.ReadMessageHistory,
+        ],
+      },
+      {
+        id: guild.members.me!.id,
+        allow: [
+          PermissionFlagsBits.ViewChannel,
+          PermissionFlagsBits.SendMessages,
+          PermissionFlagsBits.ManageChannels,
+          PermissionFlagsBits.EmbedLinks,
+          PermissionFlagsBits.AttachFiles,
+          PermissionFlagsBits.ReadMessageHistory,
+        ],
+      },
+    ];
+
+    // Ajout des rôles staff configurés
+    if (category.supportRoleIds && category.supportRoleIds.length > 0) {
+      for (const roleId of category.supportRoleIds) {
+        permissionOverwrites.push({
+          id: roleId,
+          allow: [
+            PermissionFlagsBits.ViewChannel,
+            PermissionFlagsBits.SendMessages,
+            PermissionFlagsBits.AttachFiles,
+            PermissionFlagsBits.EmbedLinks,
+            PermissionFlagsBits.ReadMessageHistory,
+          ],
+        });
+      }
+    }
+
+    // Ajout des rôles d'équipe si une équipe est assignée
+    if (category.assignedTeamId) {
+      const team = ticketRepository.getTeams(guild.id).find((t) => t.id === category.assignedTeamId);
+      if (team && team.roleIds) {
+        for (const roleId of team.roleIds) {
+          if (!permissionOverwrites.some((po) => po.id === roleId)) {
+            permissionOverwrites.push({
+              id: roleId,
+              allow: [
+                PermissionFlagsBits.ViewChannel,
+                PermissionFlagsBits.SendMessages,
+                PermissionFlagsBits.AttachFiles,
+                PermissionFlagsBits.EmbedLinks,
+                PermissionFlagsBits.ReadMessageHistory,
+              ],
+            });
+          }
+        }
+      }
+    }
+
+    // Création du salon Discord
+    const parentId = category.discordCategoryId || undefined;
+    const channel = await guild.channels.create({
+      name: `🎫・${channelName}`,
+      type: ChannelType.GuildText,
+      parent: parentId,
+      permissionOverwrites,
+      topic: `Ticket ${ticketId} • Demandeur : ${user.tag} (${user.id}) • Catégorie : ${category.name}`,
+    });
+    return channel;
+  }
+
+  /** Mode forum : un post par ticket, message d'accueil + boutons en premier message, tag "Ouvert". */
+  private async createForumPost(
+    guild: Guild,
+    user: User,
+    category: TicketCategory,
+    ticketId: string,
+    formAnswers: Record<string, any>,
+    config: TicketGlobalConfig
+  ): Promise<ThreadChannel> {
+    const forum = await resolveConfiguredForum(guild, config.forumChannelId);
+    if (!canBotSendTo(forum, guild.members.me)) {
+      throw new Error('Le bot ne peut pas créer de posts dans le forum de tickets (permissions manquantes).');
+    }
+
+    // Rôles support à prévenir : ceux de la catégorie + ceux de l'équipe assignée.
+    const roleIds = new Set<string>(category.supportRoleIds ?? []);
+    if (category.assignedTeamId) {
+      const team = ticketRepository.getTeams(guild.id).find((t) => t.id === category.assignedTeamId);
+      for (const roleId of team?.roleIds ?? []) roleIds.add(roleId);
+    }
+
+    const draft = {
+      id: ticketId,
+      priority: category.defaultPriority || 'NORMAL',
+      status: 'OPEN',
+      answers: formAnswers,
+    } as Ticket;
+    const message = this.buildTicketPanelMessage(guild, draft, category, user);
+    const mentions = [...roleIds].map((id) => `<@&${id}>`).join(' ');
+
+    const thread: ThreadChannel = await forum.threads.create({
+      name: buildForumPostName(ticketId, formAnswers, category.name),
+      message: {
+        ...message,
+        content: mentions ? `${message.content} ${mentions}` : message.content,
+        allowedMentions: { users: [user.id], roles: [...roleIds] },
+      },
+      appliedTags: pickOpenTagIds(forum, config.forumTagIds),
+      reason: `Ticket ${ticketId} • ${user.tag}`,
+    });
+
+    try {
+      await thread.members.add(user.id);
+    } catch (err) {
+      logger.warn(`[TicketService] Ajout du demandeur au post ${thread.id} impossible :`, err);
+    }
+    return thread;
+  }
+
   // --- Envoi du panel interactif dans le salon Discord ---
 
   private async sendTicketChannelPanel(
@@ -254,6 +337,16 @@ class TicketService {
     category: TicketCategory,
     user: User
   ): Promise<void> {
+    await channel.send(this.buildTicketPanelMessage(channel.guild, ticket, category, user));
+  }
+
+  /** Message d'accueil + boutons de contrôle (identique en salon privé et en post de forum). */
+  private buildTicketPanelMessage(
+    guild: Guild,
+    ticket: Ticket,
+    category: TicketCategory,
+    user: User
+  ) {
     const welcomeTemplate =
       category.welcomeMessage ||
       'Bonjour {user} ! Merci d’avoir contacté l’équipe d’assistance.\nUn membre du support va prendre en charge votre demande #{ticketId} sous peu.';
@@ -264,7 +357,7 @@ class TicketService {
       .replace('{ticketId}', ticket.id)
       .replace('{category}', category.name)
       .replace('{team}', category.assignedTeamId || 'Support')
-      .replace('{server}', channel.guild.name);
+      .replace('{server}', guild.name);
 
     const embed = new EmbedBuilder()
       .setColor(category.color as `#${string}` || '#5865F2')
@@ -317,14 +410,26 @@ class TicketService {
         .setStyle(ButtonStyle.Secondary)
     );
 
-    await channel.send({
+    return {
       content: `<@${user.id}>`,
       embeds: [embed],
       components: [row1],
-    });
+    };
   }
 
   // --- Gestion du Cycle de Vie ---
+
+  /** Mode forum : aligne le tag de statut du post sur le statut du ticket. Sans effet en salon privé. */
+  private async syncForumTag(ticket: Ticket, key: TicketStatusTagKey): Promise<void> {
+    if (!isForumTicket(ticket) || !this.discordClient) return;
+    try {
+      const guild = this.discordClient.guilds.cache.get(ticket.guildId);
+      const thread = await resolveTicketChannel(guild, ticket);
+      if (thread) await applyTicketStatusTag(thread, ticketRepository.getConfig(ticket.guildId).forumTagIds, key);
+    } catch (err) {
+      logger.warn(`[TicketService] Tag de statut non appliqué sur ${ticket.id} :`, err);
+    }
+  }
 
   public async claimTicket(
     guildId: string,
@@ -352,7 +457,7 @@ class TicketService {
     if (this.discordClient) {
       try {
         const guild = this.discordClient.guilds.cache.get(guildId);
-        const channel = guild?.channels.cache.get(ticket.channelId) as TextChannel | undefined;
+        const channel = (await resolveTicketChannel(guild, ticket)) as TextChannel | undefined;
         if (channel) {
           await channel.send({
             embeds: [baseEmbed('info').setDescription(`🙋 **${staffUser.tag}** a pris en charge ce ticket.`)],
@@ -360,6 +465,7 @@ class TicketService {
         }
       } catch {}
     }
+    await this.syncForumTag(ticket, 'inProgress');
 
     logService.emit({
       guildId,
@@ -393,6 +499,7 @@ class TicketService {
     });
 
     ticketRepository.saveTicket(ticket);
+    await this.syncForumTag(ticket, 'open');
     return ticket;
   }
 
@@ -423,6 +530,7 @@ class TicketService {
     });
 
     ticketRepository.saveTicket(ticket);
+    if (target.staffId && target.staffTag) await this.syncForumTag(ticket, 'inProgress');
     return ticket;
   }
 
@@ -470,6 +578,7 @@ class TicketService {
     });
 
     ticketRepository.saveTicket(ticket);
+    await this.syncForumTag(ticket, statusToTagKey(status));
     return ticket;
   }
 
@@ -533,7 +642,8 @@ class TicketService {
       throw new Error('Ce ticket est déjà fermé.');
     }
 
-    const channel = guild.channels.cache.get(ticket.channelId) as TextChannel | undefined;
+    const channel = (await resolveTicketChannel(guild, ticket)) as TextChannel | undefined;
+    const forumPost = isForumTicket(ticket);
 
     // Génération du transcript
     let transcriptPath: string | null = null;
@@ -576,17 +686,33 @@ class TicketService {
     // Envoi de la notification et demande d'avis
     if (channel) {
       try {
-        const embed = baseEmbed('error', { footerText: 'Le salon sera supprimé automatiquement dans 5 secondes.' })
+        const embed = baseEmbed('error', {
+          footerText: forumPost
+            ? 'Ce post est archivé et verrouillé.'
+            : 'Le salon sera supprimé automatiquement dans 5 secondes.',
+        })
           .setTitle(`🔒 Ticket Fermé • ${ticket.id}`)
           .setDescription(`Ce ticket a été clôturé par **${closedBy.tag}**.\n**Motif** : ${reason}`);
 
         await channel.send({ embeds: [embed] });
 
         // Suppression différée du salon Discord (5 secondes pour laisser lire)
-        setTimeout(() => {
-          channel.delete(`Fermeture ticket ${ticket.id} par ${closedBy.tag}`).catch(() => {});
-        }, 5000);
+        if (!forumPost) {
+          setTimeout(() => {
+            channel.delete(`Fermeture ticket ${ticket.id} par ${closedBy.tag}`).catch(() => {});
+          }, 5000);
+        }
       } catch {}
+
+      // Mode forum : tag "Fermé" puis verrouillage + archivage natifs (le post reste consultable).
+      if (forumPost) {
+        try {
+          await applyTicketStatusTag(channel, ticketRepository.getConfig(guild.id).forumTagIds, 'closed');
+        } catch (err) {
+          logger.warn(`[TicketService] Tag "Fermé" non appliqué sur ${ticket.id} :`, err);
+        }
+        await archiveForumPost(channel, `Fermeture ticket ${ticket.id} par ${closedBy.tag}`);
+      }
     }
 
     return ticket;
@@ -614,6 +740,19 @@ class TicketService {
     });
 
     ticketRepository.saveTicket(ticket);
+
+    // Mode forum : le post est archivé + verrouillé à la fermeture -> on le rouvre et on remet le tag "Ouvert".
+    if (isForumTicket(ticket)) {
+      try {
+        const thread = await resolveTicketChannel(guild, ticket);
+        if (thread) {
+          await reopenForumPost(thread, `Réouverture ticket ${ticket.id} par ${reopenedBy.tag}`);
+          await applyTicketStatusTag(thread, ticketRepository.getConfig(guild.id).forumTagIds, 'open');
+        }
+      } catch (err) {
+        logger.warn(`[TicketService] Réouverture du post de ${ticket.id} impossible :`, err);
+      }
+    }
     return ticket;
   }
 

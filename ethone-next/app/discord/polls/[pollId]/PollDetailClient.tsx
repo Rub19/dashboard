@@ -26,6 +26,7 @@ export default function PollDetailClient() {
   const { success, error: toastError } = useToast();
   const [busy, setBusy] = useState(false);
   const guildQuery = guildId ? `?guildId=${guildId}` : "";
+  const isNative = poll?.native === true;
 
   const runAction = async (action: { path: string; label: string; confirm?: string }) => {
     if (!guildId || !POLL_BOT_API_URL) return;
@@ -83,6 +84,9 @@ export default function PollDetailClient() {
         <header className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-6">
           <div className="flex flex-wrap items-center gap-2 text-[11px]">
             <span className="rounded-md bg-white/[0.06] px-2 py-0.5 text-zinc-300">{poll.category}</span>
+            {poll.native && (
+              <span className="rounded-md bg-sky-500/15 px-2 py-0.5 font-semibold text-sky-300" title="Vote et affichage gérés par Discord">Natif</span>
+            )}
             <span className="rounded-md bg-white/[0.06] px-2 py-0.5 font-mono text-zinc-400">{poll.type}</span>
             <span className={`rounded-md px-2 py-0.5 font-semibold ${status.tone}`}>{status.label}</span>
           </div>
@@ -93,13 +97,17 @@ export default function PollDetailClient() {
             <Link href={`/discord/polls/${encodeURIComponent(pollId)}/results${guildQuery}`} className="rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-indigo-500">
               Résultats détaillés
             </Link>
-            <Link href={`/discord/polls/${encodeURIComponent(pollId)}/settings${guildQuery}`} className="rounded-lg border border-white/10 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/5">
-              Réglages
-            </Link>
-            <button type="button" onClick={copyVoteLink} className="cursor-pointer rounded-lg border border-white/10 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/5">
-              Copier le lien de vote
-            </button>
-            {(ACTIONS[poll.status] ?? []).map((a) => (
+            {!isNative && (
+              <Link href={`/discord/polls/${encodeURIComponent(pollId)}/settings${guildQuery}`} className="rounded-lg border border-white/10 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/5">
+                Réglages
+              </Link>
+            )}
+            {!isNative && (
+              <button type="button" onClick={copyVoteLink} className="cursor-pointer rounded-lg border border-white/10 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/5">
+                Copier le lien de vote
+              </button>
+            )}
+            {(ACTIONS[poll.status] ?? []).filter((a) => !isNative || a.path === "end").map((a) => (
               <button
                 key={a.path}
                 type="button"
@@ -115,10 +123,15 @@ export default function PollDetailClient() {
 
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
+            // Natif : Discord ne fournit que les décomptes par réponse (pas de participants ni de participation).
             ["Votes", results ? String(results.totalVotes) : "—"],
-            ["Participants", results ? String(results.uniqueParticipants) : "—"],
-            ["Participation", results && results.serverMemberCount > 0 ? `${results.participationRate} %` : "—"],
-            ["Anonymat", poll.anonymity],
+            ...(isNative
+              ? [["Mode", poll.type === "MULTIPLE_CHOICE" ? "Choix multiple" : "Choix unique"]]
+              : [
+                  ["Participants", results ? String(results.uniqueParticipants) : "—"],
+                  ["Participation", results && results.serverMemberCount > 0 ? `${results.participationRate} %` : "—"],
+                  ["Anonymat", poll.anonymity],
+                ]),
           ].map(([label, value]) => (
             <div key={label} className="rounded-xl border border-[var(--panel-border)] bg-white/[0.02] p-4">
               <p className="text-[11px] text-zinc-500">{label}</p>

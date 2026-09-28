@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.34.0 — 2026-09-28
+
+**Nouveautés Discord : sondages natifs, tickets en forum, panneaux V2**
+
+- Sondages natifs Discord : nouvelle commande /poll create avec l'option « natif » (jusqu'à 10 réponses, durée jusqu'à 32 jours, choix multiple). Le dashboard a un interrupteur « Sondage natif Discord », un badge « Natif », les votes en direct et un bouton pour terminer le sondage.
+- Tickets en forum : un ticket peut être un post de forum Discord, avec des tags de statut (Ouvert, En cours, Résolu, Fermé) qui suivent la prise en charge. Mode et création des tags dans les réglages des tickets du dashboard.
+- Aide et /bot (info, statut, ping) passent en composants V2 avec les icônes d'Etho importées comme emojis d'application.
+- Avatar d'Etho plus fluide (72 images, environ 50 images par seconde).
+
 ## v1.33.1 — 2026-09-28
 
 **Bot : forums et salons média Discord pris en charge**

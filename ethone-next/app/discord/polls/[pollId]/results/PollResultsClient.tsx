@@ -60,12 +60,15 @@ export default function PollResultsClient() {
         ) : (
           <>
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {[
-                ["Votes", String(results.totalVotes)],
-                ["Participants", String(results.uniqueParticipants)],
-                ["Participation", results.serverMemberCount > 0 ? `${results.participationRate} %` : "—"],
-                ["Quorum", QUORUM_LABELS[results.quorumStatus] ?? "Sans quorum"],
-              ].map(([label, value]) => (
+              {(poll.native
+                ? [["Votes", String(results.totalVotes)], ["Sondage", "Natif Discord"]]
+                : [
+                    ["Votes", String(results.totalVotes)],
+                    ["Participants", String(results.uniqueParticipants)],
+                    ["Participation", results.serverMemberCount > 0 ? `${results.participationRate} %` : "—"],
+                    ["Quorum", QUORUM_LABELS[results.quorumStatus] ?? "Sans quorum"],
+                  ]
+              ).map(([label, value]) => (
                 <div key={label} className="rounded-xl border border-[var(--panel-border)] bg-white/[0.02] p-4">
                   <p className="text-[11px] text-zinc-500">{label}</p>
                   <p className="mt-1 text-lg font-semibold">{value}</p>

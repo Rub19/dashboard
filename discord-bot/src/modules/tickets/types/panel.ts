@@ -30,6 +30,17 @@ export const TicketGlobalConfigSchema = z.object({
   transcriptChannelId: z.string().nullable().default(null),
   namingFormat: z.string().default('ticket-{username}'),
   embedColor: z.string().default('#5865F2'),
+  // Mode forum : un post de forum Discord par ticket (tags de statut). 'channel' = comportement historique.
+  mode: z.enum(['channel', 'forum']).default('channel'),
+  forumChannelId: z.string().nullable().optional(),
+  forumTagIds: z
+    .object({
+      open: z.string().optional(),
+      inProgress: z.string().optional(),
+      resolved: z.string().optional(),
+      closed: z.string().optional(),
+    })
+    .optional(),
 });
 
 export type TicketGlobalConfig = z.infer<typeof TicketGlobalConfigSchema>;

@@ -71,6 +71,10 @@ export class PollRepository {
     return this.polls.filter((p) => p.guildId === guildId);
   }
 
+  public getAllPolls(): DiscordPoll[] {
+    return [...this.polls];
+  }
+
   public getPollById(guildId: string, pollId: string): DiscordPoll | null {
     return this.polls.find((p) => p.guildId === guildId && p.id === pollId) || null;
   }
@@ -109,6 +113,10 @@ export class PollRepository {
       id: newId,
       title: newTitle || `${original.title} (Copie)`,
       status: 'DRAFT',
+      // Une copie d'un sondage natif redevient un brouillon classique (le message Discord d'origine ne se réutilise pas).
+      native: false,
+      messageId: undefined,
+      channelId: undefined,
       questions: original.questions.map((q) => ({
         ...q,
         options: q.options.map((o) => ({ ...o, votesCount: 0, points: 0 })),

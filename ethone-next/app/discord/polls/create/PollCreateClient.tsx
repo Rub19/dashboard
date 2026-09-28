@@ -75,6 +75,12 @@ export default function PollCreateClient() {
   const [category, setCategory] = useState("Communauté");
   const [pollType, setPollType] = useState<string>("SINGLE_CHOICE");
   const [durationHours, setDurationHours] = useState(48);
+  // Sondage natif Discord : message `poll` géré par Discord (simple : pas de quorum, pondération, vote secret…).
+  const [nativeMode, setNativeMode] = useState(false);
+  const [allowMultiselect, setAllowMultiselect] = useState(false);
+  const NATIVE_MAX_HOURS = 768; // 32 jours
+  const NATIVE_MAX_ANSWERS = 10;
+  const DESTINATION_TYPES = [0, 5, 15, 16]; // texte, annonces, forum, média
 
   // Channels state
   const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
@@ -226,6 +232,10 @@ export default function PollCreateClient() {
   };
 
   const handleAddOption = (qId: string) => {
+    if (nativeMode && (questions.find((q) => q.id === qId)?.options.length ?? 0) >= NATIVE_MAX_ANSWERS) {
+      showToast(`Un sondage natif accepte ${NATIVE_MAX_ANSWERS} réponses au maximum.`, "error");
+      return;
+    }
     setQuestions((prev) =>
       prev.map((q) => {
         if (q.id !== qId) return q;
@@ -266,6 +276,24 @@ export default function PollCreateClient() {
       showToast("Choisis d'abord un serveur où le bot est présent.", "error");
       return;
     }
+    if (nativeMode) {
+      const first = questions[0];
+      if (!first || first.options.length < 2 || first.options.some((o) => !o.label.trim())) {
+        showToast("Un sondage natif a besoin d'au moins 2 réponses non vides.", "error");
+        setActiveTab("questions");
+        return;
+      }
+      if (!targetChannel) {
+        showToast("Choisis le salon où publier le sondage.", "error");
+        setActiveTab("general");
+        return;
+      }
+      if (!Number.isFinite(durationHours) || durationHours < 1 || durationHours > NATIVE_MAX_HOURS) {
+        showToast(`La durée d'un sondage natif est comprise entre 1 et ${NATIVE_MAX_HOURS} heures.`, "error");
+        setActiveTab("general");
+        return;
+      }
+    }
     if (publish && !targetChannel) {
       showToast("Choisis le salon où publier le sondage.", "error");
       setActiveTab("general");
@@ -286,6 +314,27 @@ export default function PollCreateClient() {
       return data;
     };
     try {
+      if (nativeMode) {
+        // Publié tout de suite par le bot via le sondage natif Discord (pas de brouillon).
+        const first = questions[0]!;
+        await call(base, {
+          native: true,
+          title: title.trim(),
+          type: allowMultiselect ? "MULTIPLE_CHOICE" : "SINGLE_CHOICE",
+          allowMultiselect,
+          durationHours: Math.round(durationHours),
+          channelId: targetChannel,
+          questions: [
+            {
+              title: title.trim(),
+              options: first.options.map((o) => ({ label: o.label.trim(), emoji: o.emoji })),
+            },
+          ],
+        });
+        showToast("Sondage natif publié dans Discord.", "success");
+        router.push(`/discord/polls?guildId=${guildParam}`);
+        return;
+      }
       const created = await call(base, {
         title: title.trim(),
         description: description.trim(),
@@ -384,7 +433,8 @@ export default function PollCreateClient() {
             </button>
             <button
               onClick={() => handleSave(false)}
-              disabled={isSubmitting}
+              disabled={isSubmitting || nativeMode}
+              title={nativeMode ? "Un sondage natif est publié immédiatement (pas de brouillon)." : undefined}
               className="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-2.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all disabled:opacity-50"
             >
               <Save className="h-3.5 w-3.5" />
@@ -405,11 +455,13 @@ export default function PollCreateClient() {
         <div className="mb-6 flex overflow-x-auto border-b border-zinc-800 pb-2">
           {[
             { id: "general", label: "Général & Scrutin", icon: Vote },
-            { id: "questions", label: "Questions & Options", icon: Layers },
+            { id: "questions", label: nativeMode ? "Réponses" : "Questions & Options", icon: Layers },
             { id: "eligibility", label: "Éligibilité & Pondération", icon: ShieldCheck },
             { id: "quorum", label: "Quorum & Confidentialité", icon: Sparkles },
             { id: "panel", label: "Panneau Discord & Preview", icon: Eye },
-          ].map((tab) => {
+          ]
+            .filter((tab) => !nativeMode || tab.id === "general" || tab.id === "questions")
+            .map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
@@ -434,22 +486,48 @@ export default function PollCreateClient() {
         {activeTab === "general" && (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div className="space-y-6 lg:col-span-2">
+              <label
+                className={cn(
+                  "flex cursor-pointer items-start gap-3 rounded-2xl border p-5 backdrop-blur-xl transition-colors",
+                  nativeMode ? "border-sky-500/50 bg-sky-500/10" : "border-zinc-800/80 bg-zinc-900/40 hover:border-zinc-700"
+                )}
+              >
+                <input
+                  type="checkbox"
+                  checked={nativeMode}
+                  onChange={(e) => {
+                    setNativeMode(e.target.checked);
+                    setActiveTab("general");
+                    if (e.target.checked && durationHours > NATIVE_MAX_HOURS) setDurationHours(24);
+                  }}
+                  className="mt-0.5 h-4 w-4 cursor-pointer accent-sky-500"
+                />
+                <span>
+                  <span className="block text-sm font-bold text-white">Sondage natif Discord</span>
+                  <span className="mt-1 block text-xs text-zinc-400">
+                    Utilise le sondage intégré de Discord : simple et fiable, mais sans quorum, pondération, vote secret, éligibilité ni décisions automatiques (10 réponses max, 32 jours max).
+                  </span>
+                </span>
+              </label>
+
               <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl">
                 <h3 className="text-base font-bold text-white mb-4">Informations Générales</h3>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-xs font-medium text-zinc-300 mb-1.5">
-                      Titre du Sondage <span className="text-rose-400">*</span>
+                      {nativeMode ? "Question du sondage" : "Titre du Sondage"} <span className="text-rose-400">*</span>
                     </label>
                     <input
                       type="text"
-                      placeholder="Ex: Élection du Représentant de Communauté 2026"
+                      maxLength={nativeMode ? 300 : undefined}
+                      placeholder={nativeMode ? "Ex: Quel jeu pour la soirée de vendredi ?" : "Ex: Élection du Représentant de Communauté 2026"}
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
                     />
                   </div>
 
+                  {!nativeMode && (
                   <div>
                     <label className="block text-xs font-medium text-zinc-300 mb-1.5">
                       Description explicative
@@ -462,8 +540,10 @@ export default function PollCreateClient() {
                       className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
                     />
                   </div>
+                  )}
 
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {!nativeMode && (
                     <div>
                       <label className="block text-xs font-medium text-zinc-300 mb-1.5">
                         Catégorie
@@ -475,6 +555,7 @@ export default function PollCreateClient() {
                         className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
                       />
                     </div>
+                    )}
 
                     <div>
                       <label className="block text-xs font-medium text-zinc-300 mb-1.5">
@@ -483,6 +564,7 @@ export default function PollCreateClient() {
                       <input
                         type="number"
                         min={1}
+                        max={nativeMode ? NATIVE_MAX_HOURS : undefined}
                         value={durationHours}
                         onChange={(e) => setDurationHours(Number(e.target.value))}
                         className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
@@ -512,16 +594,32 @@ export default function PollCreateClient() {
                       onChange={(id) => setTargetChannel(id)}
                       channels={channels}
                       guildId={guildParam}
+                      filterTypes={DESTINATION_TYPES}
                       placeholder="Sélectionner un salon ou saisir un ID..."
                     />
                     <p className="text-[11px] text-zinc-500 mt-1">
-                      Le salon textuel où le bot publiera le message interactif avec les boutons de vote.
+                      {nativeMode
+                        ? "Le salon (texte, annonces, forum ou média) où le bot publiera le sondage natif."
+                        : "Le salon textuel où le bot publiera le message interactif avec les boutons de vote."}
                     </p>
                   </div>
                 </div>
               </div>
 
+              {nativeMode && (
+                <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-xl">
+                  <input
+                    type="checkbox"
+                    checked={allowMultiselect}
+                    onChange={(e) => setAllowMultiselect(e.target.checked)}
+                    className="h-4 w-4 cursor-pointer accent-sky-500"
+                  />
+                  <span className="text-xs font-semibold text-white">Autoriser plusieurs réponses</span>
+                </label>
+              )}
+
               {/* Voting Type Selection */}
+              {!nativeMode && (
               <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl">
                 <h3 className="text-base font-bold text-white mb-2">Mode de Scrutin & Mécanique de Vote</h3>
                 <p className="text-xs text-zinc-400 mb-4">
@@ -561,6 +659,7 @@ export default function PollCreateClient() {
                   })}
                 </div>
               </div>
+              )}
             </div>
 
             {/* Quick Summary Sidebar */}
@@ -582,7 +681,7 @@ export default function PollCreateClient() {
                   </div>
                   <div className="flex justify-between border-b border-zinc-800 pb-2">
                     <span className="text-zinc-500">Type de scrutin :</span>
-                    <span className="font-semibold text-indigo-400">{pollType}</span>
+                    <span className="font-semibold text-indigo-400">{nativeMode ? "Natif Discord" : pollType}</span>
                   </div>
                   <div className="flex justify-between border-b border-zinc-800 pb-2">
                     <span className="text-zinc-500">Durée :</span>
@@ -607,11 +706,14 @@ export default function PollCreateClient() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-white">Questions & Options du Sondage</h3>
+                <h3 className="text-base font-bold text-white">{nativeMode ? "Réponses du sondage natif" : "Questions & Options du Sondage"}</h3>
                 <p className="text-xs text-zinc-400">
-                  Définissez l'intitulé des questions, le nombre minimal/maximal de choix et personnalisez chaque option.
+                  {nativeMode
+                    ? `De 2 à ${NATIVE_MAX_ANSWERS} réponses (55 caractères max chacune, emoji facultatif). La question est le titre saisi dans l'onglet Général.`
+                    : "Définissez l'intitulé des questions, le nombre minimal/maximal de choix et personnalisez chaque option."}
                 </p>
               </div>
+              {!nativeMode && (
               <button
                 onClick={handleAddQuestion}
                 className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-indigo-500"
@@ -619,13 +721,15 @@ export default function PollCreateClient() {
                 <Plus className="h-3.5 w-3.5" />
                 Ajouter une question
               </button>
+              )}
             </div>
 
-            {questions.map((q, qIndex) => (
+            {(nativeMode ? questions.slice(0, 1) : questions).map((q, qIndex) => (
               <div
                 key={q.id}
                 className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl"
               >
+                {!nativeMode && (
                 <div className="flex items-center justify-between gap-4 mb-4">
                   <div className="flex items-center gap-2">
                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500/20 text-xs font-bold text-indigo-400">
@@ -641,7 +745,9 @@ export default function PollCreateClient() {
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
+                )}
 
+                {!nativeMode && (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-4">
                   <div>
                     <label className="block text-xs font-medium text-zinc-300 mb-1">
@@ -704,6 +810,7 @@ export default function PollCreateClient() {
                     </div>
                   </div>
                 </div>
+                )}
 
                 {/* Options List */}
                 <div className="space-y-2 mb-4">
@@ -736,6 +843,7 @@ export default function PollCreateClient() {
                       <input
                         type="text"
                         placeholder="Libellé de l'option"
+                        maxLength={nativeMode ? 55 : undefined}
                         value={opt.label}
                         onChange={(e) =>
                           setQuestions((prev) =>
@@ -754,6 +862,7 @@ export default function PollCreateClient() {
                         className="flex-1 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-white focus:outline-none"
                       />
 
+                      {!nativeMode && (
                       <input
                         type="text"
                         placeholder="Description optionnelle"
@@ -774,6 +883,7 @@ export default function PollCreateClient() {
                         }
                         className="flex-1 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-300 focus:outline-none"
                       />
+                      )}
 
                       <button
                         onClick={() => handleRemoveOption(q.id, opt.id)}

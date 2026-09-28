@@ -9,7 +9,21 @@ import { pollService } from '../services/pollService.js';
 import { pollResultService } from '../services/pollResultService.js';
 import { discordPollPanel } from '../ui/discordPollPanel.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
-import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
+import { SLASH_DESTINATION_TYPES, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
+import { nativePollService, nativeIncompatibilityError, toPollEmoji, validateNativeInput, NATIVE_MAX_HOURS } from '../services/nativePollService.js';
+import { DiscordPollSchema } from '../types/index.js';
+
+/** "🍕 Pizza; Burger; 🥗 Salade" -> réponses, l'emoji de tête (facultatif) est détecté. */
+export function parseSlashAnswers(raw: string): Array<{ text: string; emoji?: string }> {
+  return raw
+    .split(/[;|]/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) => {
+      const m = part.match(/^(\S+)\s+(.+)$/);
+      return m && toPollEmoji(m[1]) ? { emoji: m[1], text: m[2]!.trim() } : { text: part };
+    });
+}
 
 export const pollCommand: Command = {
   name: 'poll',
@@ -20,6 +34,33 @@ export const pollCommand: Command = {
     .setName('poll')
     .setDescription('Gestion avancée des sondages et votes communautaires')
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+    .addSubcommand((sub) =>
+      sub
+        .setName('create')
+        .setDescription('Créer et publier un sondage (classique ou natif Discord)')
+        .addStringOption((opt) => opt.setName('question').setDescription('Question du sondage').setMaxLength(300).setRequired(true))
+        .addStringOption((opt) =>
+          opt.setName('answers').setDescription('Réponses séparées par « ; » (2 à 10, emoji facultatif en tête : 🍕 Pizza; Burger)').setRequired(true)
+        )
+        .addBooleanOption((opt) =>
+          opt.setName('natif').setDescription('Utiliser le sondage natif de Discord (simple, sans quorum ni pondération)').setRequired(false)
+        )
+        .addIntegerOption((opt) =>
+          opt.setName('duration').setDescription(`Durée en heures (1–${NATIVE_MAX_HOURS}, défaut 24)`).setMinValue(1).setMaxValue(NATIVE_MAX_HOURS).setRequired(false)
+        )
+        .addBooleanOption((opt) => opt.setName('multiselect').setDescription('Autoriser plusieurs réponses').setRequired(false))
+        .addChannelOption((opt) =>
+          opt
+            .setName('channel')
+            .setDescription('Salon de destination (défaut : ce salon)')
+            .addChannelTypes(...SLASH_DESTINATION_TYPES)
+            .setRequired(false)
+        )
+        .addIntegerOption((opt) =>
+          opt.setName('quorum').setDescription('Classique uniquement : nombre minimal de participants').setMinValue(1).setRequired(false)
+        )
+        .addBooleanOption((opt) => opt.setName('secret').setDescription('Classique uniquement : vote anonyme').setRequired(false))
+    )
     .addSubcommand((sub) =>
       sub
         .setName('panel')
@@ -86,6 +127,89 @@ export const pollCommand: Command = {
     // "panel"/"end" ci-dessous) peuvent dépasser la fenêtre de 3s de Discord et invalider le token
     // d'interaction ("Unknown interaction" / 10062) si on ne le fait pas.
     await ctx.deferReply();
+
+    if (subcommand === 'create') {
+      const i = ctx.isSlash ? ctx.interaction : null;
+      if (!i) {
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Utilise la commande slash `/poll create`.')], ephemeral: true });
+        return;
+      }
+      const question = i.options.getString('question', true).trim();
+      const answers = parseSlashAnswers(i.options.getString('answers', true));
+      const natif = i.options.getBoolean('natif') ?? false;
+      const durationHours = i.options.getInteger('duration') ?? 24;
+      const multiselect = i.options.getBoolean('multiselect') ?? false;
+      const quorum = i.options.getInteger('quorum');
+      const secret = i.options.getBoolean('secret') ?? false;
+      const channel: any = i.options.getChannel('channel') || ctx.channel;
+      const fail = (msg: string) => ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(msg)], ephemeral: true });
+
+      if (!channel || !isSendableTarget(channel)) return void (await fail(t.poll_invalid_channel));
+      const invalid = validateNativeInput({ question, answers, durationHours });
+      if (invalid) return void (await fail(invalid));
+
+      if (natif) {
+        const conflict = nativeIncompatibilityError({ quorum: quorum !== null, secret });
+        if (conflict) return void (await fail(conflict));
+        const created = await nativePollService.create(ctx.client, {
+          guildId,
+          channelId: channel.id,
+          question,
+          answers,
+          durationHours,
+          multiselect,
+          creatorId: ctx.user.id,
+          creatorTag: ctx.user.username,
+        });
+        if (!created.success) return void (await fail(created.error || 'Erreur inconnue.'));
+        await ctx.reply({
+          embeds: [ctx.createEmbed('success').setDescription(`Sondage natif publié dans <#${created.poll!.channelId}> (ID \`${created.poll!.id}\`).`)],
+          ephemeral: true,
+        });
+        return;
+      }
+
+      const now = new Date().toISOString();
+      const uid = (p: string) => `${p}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+      const type = multiselect ? 'MULTIPLE_CHOICE' : 'SINGLE_CHOICE';
+      const parsed = DiscordPollSchema.safeParse({
+        id: uid('poll'),
+        guildId,
+        title: question.slice(0, 200),
+        type,
+        status: 'ACTIVE',
+        creatorId: ctx.user.id,
+        creatorTag: ctx.user.username,
+        anonymity: secret ? 'ANONYMOUS' : 'PUBLIC',
+        quorum: quorum ? { enabled: true, minParticipantsCount: quorum } : {},
+        questions: [
+          {
+            id: uid('q'),
+            title: question,
+            type,
+            maxSelections: multiselect ? answers.length : 1,
+            options: answers.map((a) => ({ id: uid('opt'), label: a.text, emoji: a.emoji ?? '' })),
+          },
+        ],
+        panelConfig: { channelId: channel.id, embedTitle: `📊 ${question}`.slice(0, 256) },
+        startsAt: now,
+        endsAt: new Date(Date.now() + durationHours * 3600_000).toISOString(),
+        createdAt: now,
+        updatedAt: now,
+      });
+      if (!parsed.success) return void (await fail(`Sondage invalide : ${parsed.error.issues[0]?.message}`));
+      const poll = pollRepository.savePoll(parsed.data);
+      const msg = await sendToConfiguredChannel(
+        channel,
+        { embeds: [discordPollPanel.buildPanelEmbed(poll)], components: discordPollPanel.buildPanelActionRows(poll) },
+        { postTitle: poll.title }
+      );
+      poll.panelConfig.channelId = msg.channelId || channel.id;
+      poll.panelConfig.messageId = msg.id;
+      pollRepository.savePoll(poll);
+      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(`Sondage publié dans <#${poll.panelConfig.channelId}> (ID \`${poll.id}\`).`)], ephemeral: true });
+      return;
+    }
 
     if (subcommand === 'list') {
       const polls = pollRepository.getPolls(guildId);

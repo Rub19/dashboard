@@ -46,6 +46,9 @@ export const TicketSchema = z.object({
   id: z.string(), // e.g. TICKET-101 or #1842
   guildId: z.string(),
   channelId: z.string(),
+  // Mode forum : channelId = id du post (thread) ; absent = ticket en salon privé.
+  threadId: z.string().nullable().optional(),
+  mode: z.enum(['channel', 'forum']).optional(),
   userId: z.string(),
   userTag: z.string(),
   userAvatar: z.string().nullable().optional(),

@@ -5,6 +5,7 @@ import {
 import { pollRepository } from '../storage/pollRepository.js';
 import { pollResultService } from './pollResultService.js';
 import { pollAutomationService } from './pollAutomationService.js';
+import { nativePollService, NATIVE_POLL_LOCKED_ERROR } from './nativePollService.js';
 
 export class PollService {
   /**
@@ -13,6 +14,7 @@ export class PollService {
   public publishPoll(guildId: string, pollId: string): { success: boolean; poll?: DiscordPoll; error?: string } {
     const poll = pollRepository.getPollById(guildId, pollId);
     if (!poll) return { success: false, error: 'Sondage introuvable.' };
+    if (poll.native) return { success: false, error: NATIVE_POLL_LOCKED_ERROR };
 
     poll.status = 'ACTIVE';
     poll.startsAt = new Date().toISOString();
@@ -28,6 +30,7 @@ export class PollService {
   public pausePoll(guildId: string, pollId: string): { success: boolean; poll?: DiscordPoll; error?: string } {
     const poll = pollRepository.getPollById(guildId, pollId);
     if (!poll) return { success: false, error: 'Sondage introuvable.' };
+    if (poll.native) return { success: false, error: NATIVE_POLL_LOCKED_ERROR };
 
     poll.status = 'PAUSED';
     poll.updatedAt = new Date().toISOString();
@@ -42,6 +45,7 @@ export class PollService {
   public resumePoll(guildId: string, pollId: string): { success: boolean; poll?: DiscordPoll; error?: string } {
     const poll = pollRepository.getPollById(guildId, pollId);
     if (!poll) return { success: false, error: 'Sondage introuvable.' };
+    if (poll.native) return { success: false, error: NATIVE_POLL_LOCKED_ERROR };
 
     poll.status = 'ACTIVE';
     poll.updatedAt = new Date().toISOString();
@@ -61,6 +65,14 @@ export class PollService {
   }> {
     const poll = pollRepository.getPollById(guildId, pollId);
     if (!poll) return { success: false, error: 'Sondage introuvable.' };
+
+    // Sondage natif : on le clôture côté Discord (`poll.end()`), pas d'automatisations ni de quorum.
+    if (poll.native) {
+      const ended = await nativePollService.end(client, guildId, pollId);
+      return ended.success
+        ? { success: true, poll: ended.poll, results: pollResultService.calculateResults(ended.poll!) }
+        : { success: false, error: ended.error };
+    }
 
     poll.status = 'ENDED';
     poll.endedAt = new Date().toISOString();
@@ -88,6 +100,7 @@ export class PollService {
   public extendPoll(guildId: string, pollId: string, extraHours: number): { success: boolean; poll?: DiscordPoll; error?: string } {
     const poll = pollRepository.getPollById(guildId, pollId);
     if (!poll) return { success: false, error: 'Sondage introuvable.' };
+    if (poll.native) return { success: false, error: NATIVE_POLL_LOCKED_ERROR };
 
     const currentEnd = poll.endsAt ? new Date(poll.endsAt).getTime() : Date.now();
     const newEnd = new Date(currentEnd + extraHours * 3600000).toISOString();

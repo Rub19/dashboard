@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { Message, TextChannel } from 'discord.js';
+import { Collection, Message } from 'discord.js';
 import { Ticket } from '../types/ticket.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -14,7 +14,8 @@ export class TranscriptService {
   }
 
   public static async generateTranscript(
-    channel: TextChannel,
+    // Salon textuel ou post de forum : seul messages.fetch est utilisé.
+    channel: { messages: { fetch(options: { limit: number }): Promise<Collection<string, Message>> } },
     ticket: Ticket
   ): Promise<{ filePath: string; html: string; txt: string; json: string }> {
     this.ensureDir();

@@ -43,7 +43,13 @@ const BOT_API_URL =
 
 function mapPoll(raw: Record<string, unknown>): PollSummary {
   const r = raw as Record<string, any>;
+  // Sondage natif Discord : le décompte stocké par le bot (options[].votesCount) fait foi.
+  const nativeAnswers = r.native
+    ? ((r.questions?.[0]?.options ?? []) as any[]).map((o) => ({ label: String(o.label ?? ""), emoji: String(o.emoji ?? ""), votes: Number(o.votesCount ?? 0) }))
+    : undefined;
   return {
+    native: r.native === true,
+    nativeAnswers,
     id: String(r.id ?? r.pollId ?? ""),
     title: String(r.title ?? "Sondage"),
     description: String(r.description ?? ""),
@@ -52,7 +58,7 @@ function mapPoll(raw: Record<string, unknown>): PollSummary {
     status: (r.status ?? "DRAFT") as PollSummary["status"],
     anonymity: (r.anonymity ?? "PUBLIC") as PollSummary["anonymity"],
     resultsVisibility: (r.resultsVisibility ?? "LIVE") as PollSummary["resultsVisibility"],
-    totalVotes: Number(r.totalVotes ?? r.stats?.totalVotes ?? 0),
+    totalVotes: nativeAnswers ? nativeAnswers.reduce((n, a) => n + a.votes, 0) : Number(r.totalVotes ?? r.stats?.totalVotes ?? 0),
     uniqueVoters: Number(r.uniqueVoters ?? r.stats?.uniqueVoters ?? 0),
     participationRate: Number(r.participationRate ?? r.stats?.participationRate ?? 0),
     questionsCount: Number(r.questionsCount ?? (Array.isArray(r.questions) ? r.questions.length : 0)),
@@ -65,6 +71,9 @@ function mapPoll(raw: Record<string, unknown>): PollSummary {
 }
 
 export interface PollSummary {
+  /** Sondage natif Discord (vote géré par Discord, décompte rafraîchi par le bot). */
+  native?: boolean;
+  nativeAnswers?: { label: string; emoji: string; votes: number }[];
   id: string;
   title: string;
   description: string;
@@ -301,6 +310,7 @@ export default function PollsCenterClient() {
       return;
     }
     showToast(`Sondage "${poll.title}" clôturé.`, "success");
+    if (poll.native) void loadPolls(); // décompte final figé par le bot
   };
 
   const handleDuplicate = async (poll: PollSummary) => {
@@ -576,6 +586,14 @@ export default function PollsCenterClient() {
                           {typeCfg.label}
                         </span>
 
+                        {poll.native && (
+                          <span
+                            className="rounded-full border border-sky-500/30 bg-sky-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-sky-400"
+                            title="Sondage natif Discord : vote et affichage gérés par Discord"
+                          >
+                            Natif
+                          </span>
+                        )}
                         <span className="rounded-full border border-zinc-800 bg-zinc-800/50 px-2.5 py-0.5 text-[10px] text-zinc-400">
                           {poll.category}
                         </span>
@@ -618,6 +636,23 @@ export default function PollsCenterClient() {
                     </p>
 
                     {/* Progress Bar / Stats */}
+                    {poll.native ? (
+                      <div className="mt-4 rounded-xl border border-zinc-800/50 bg-black/30 p-3 space-y-1.5">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-zinc-400 font-medium flex items-center gap-1.5">
+                            <Users className="h-3.5 w-3.5 text-sky-400" />
+                            Votes Discord
+                          </span>
+                          <span className="font-bold text-white">{poll.totalVotes}</span>
+                        </div>
+                        {(poll.nativeAnswers ?? []).map((a, i) => (
+                          <div key={i} className="flex items-center justify-between gap-2 text-[11px] text-zinc-300">
+                            <span className="truncate">{a.emoji} {a.label}</span>
+                            <span className="font-semibold text-white">{a.votes}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
                     <div className="mt-4 rounded-xl border border-zinc-800/50 bg-black/30 p-3">
                       <div className="flex items-center justify-between text-xs mb-1.5">
                         <span className="text-zinc-400 font-medium flex items-center gap-1.5">
@@ -650,6 +685,7 @@ export default function PollsCenterClient() {
                         </div>
                       )}
                     </div>
+                    )}
                   </div>
 
                   {/* Card Bottom Meta & Actions */}
@@ -676,6 +712,7 @@ export default function PollsCenterClient() {
                         <Settings className="h-3.5 w-3.5" />
                       </Link>
 
+                      {!poll.native && (
                       <button
                         onClick={() => handleCopyLink(poll.id)}
                         className="inline-flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:text-white hover:bg-zinc-800"
@@ -683,7 +720,9 @@ export default function PollsCenterClient() {
                       >
                         <Copy className="h-3.5 w-3.5" />
                       </button>
+                      )}
 
+                      {!poll.native && (
                       <button
                         onClick={() => setDeployModalPoll(poll)}
                         className="inline-flex items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-2 text-indigo-400 hover:bg-indigo-500 hover:text-white"
@@ -691,8 +730,9 @@ export default function PollsCenterClient() {
                       >
                         <Send className="h-3.5 w-3.5" />
                       </button>
+                      )}
 
-                      {poll.status !== "ENDED" && (
+                      {poll.status !== "ENDED" && !poll.native && (
                         <button
                           onClick={() => handleTogglePause(poll)}
                           className="inline-flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:text-amber-400 hover:bg-zinc-800"

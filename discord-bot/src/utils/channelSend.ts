@@ -80,11 +80,11 @@ function deriveTitle(payload: ChannelSendPayload): string {
 function toStarterMessage(payload: ChannelSendPayload): Record<string, any> {
   if (typeof payload === 'string') return { content: payload };
   const msg: Record<string, any> = {};
-  for (const key of ['content', 'embeds', 'components', 'files', 'allowedMentions', 'stickers', 'flags'] as const) {
+  for (const key of ['content', 'embeds', 'components', 'files', 'allowedMentions', 'stickers', 'flags', 'poll'] as const) {
     if (payload[key] !== undefined) msg[key] = payload[key];
   }
   // Un post doit contenir au moins quelque chose.
-  if (!msg.content && !msg.embeds?.length && !msg.files?.length && !msg.components?.length) msg.content = '​';
+  if (!msg.content && !msg.embeds?.length && !msg.files?.length && !msg.components?.length && !msg.poll) msg.content = '​';
   return msg;
 }
 

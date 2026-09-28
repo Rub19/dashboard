@@ -38330,6 +38330,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_33_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_33_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_33_1_de);
 
+const v1_34_0_fr: ChangelogEntry = {
+  version: "v1.34.0",
+  date: "2026-09-28",
+  title: "Nouveautés Discord : sondages natifs, tickets en forum, panneaux V2",
+  items: [
+    "Sondages natifs Discord : nouvelle commande /poll create avec l'option « natif » (jusqu'à 10 réponses, durée jusqu'à 32 jours, choix multiple). Le dashboard a un interrupteur « Sondage natif Discord », un badge « Natif », les votes en direct et un bouton pour terminer le sondage.",
+    "Tickets en forum : un ticket peut être un post de forum Discord, avec des tags de statut (Ouvert, En cours, Résolu, Fermé) qui suivent la prise en charge. Mode et création des tags dans les réglages des tickets du dashboard.",
+    "Aide et /bot (info, statut, ping) passent en composants V2 avec les icônes d'Etho importées comme emojis d'application.",
+    "Avatar d'Etho plus fluide (72 images, environ 50 images par seconde).",
+  ],
+};
+
+const v1_34_0_en: ChangelogEntry = {
+  version: "v1.34.0",
+  date: "2026-09-28",
+  title: "Discord news: native polls, forum tickets, V2 panels",
+  items: [
+    "Native Discord polls: new /poll create command with the \"native\" option (up to 10 answers, up to 32 days, multiple choice). The dashboard has a \"Native Discord poll\" switch, a \"Native\" badge, live votes and an end button.",
+    "Forum tickets: a ticket can be a Discord forum post, with status tags (Open, In progress, Resolved, Closed) that follow the handling. Mode and tag creation in the dashboard ticket settings.",
+    "Help and /bot (info, status, ping) now use Components V2 with Etho's icons imported as application emojis.",
+    "Smoother Etho avatar (72 frames, about 50 frames per second).",
+  ],
+};
+
+const v1_34_0_es: ChangelogEntry = {
+  version: "v1.34.0",
+  date: "2026-09-28",
+  title: "Novedades de Discord: encuestas nativas, tickets en foro, paneles V2",
+  items: [
+    "Encuestas nativas de Discord: nuevo comando /poll create con la opción «natif» (hasta 10 respuestas, hasta 32 días, opción múltiple), con interruptor en el dashboard.",
+    "Tickets en foro: un ticket puede ser una publicación de foro con etiquetas de estado (Abierto, En curso, Resuelto, Cerrado).",
+    "La ayuda y /bot pasan a componentes V2 con los iconos de Etho como emojis de aplicación.",
+    "Avatar de Etho más fluido (72 fotogramas).",
+  ],
+};
+
+const v1_34_0_de: ChangelogEntry = {
+  version: "v1.34.0",
+  date: "2026-09-28",
+  title: "Discord-Neuheiten: native Umfragen, Forum-Tickets, V2-Panels",
+  items: [
+    "Native Discord-Umfragen: neuer Befehl /poll create mit der Option „natif“ (bis zu 10 Antworten, bis zu 32 Tage, Mehrfachauswahl), mit Schalter im Dashboard.",
+    "Forum-Tickets: Ein Ticket kann ein Discord-Forumbeitrag sein, mit Status-Tags (Offen, In Bearbeitung, Gelöst, Geschlossen).",
+    "Hilfe und /bot verwenden jetzt Components V2 mit Ethos Icons als Application-Emojis.",
+    "Flüssigerer Etho-Avatar (72 Bilder).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_34_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_34_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_34_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_34_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

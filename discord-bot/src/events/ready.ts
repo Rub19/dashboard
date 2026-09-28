@@ -22,6 +22,7 @@ import { initialize as initEmergency } from '../modules/health/services/emergenc
 import { levelingService } from '../modules/leveling/services/levelingService.js';
 import { initialize as initSecureRoles } from '../modules/secureroles/services/secureRolesService.js';
 import { logger } from '../utils/logger.js';
+import { syncAppEmojis } from '../services/appEmojis.js';
 
 const BOT_SITE_URL = 'https://discord.ethone.dev';
 const BOT_DISPLAY_NAME = 'Etho';
@@ -159,6 +160,7 @@ export async function onReady(client: Client<true>) {
 
   void syncBotBio(client);
   void syncBotProfile(client);
+  void syncAppEmojis(client).catch((err) => logger.warn('[Émojis] Synchronisation des émojis d\'application impossible :', err));
 
   // Migrations uniques de modules (ex. XP désactivé partout), avant tout démarrage de module
   runModuleMigrations(client);

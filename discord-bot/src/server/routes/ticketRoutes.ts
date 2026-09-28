@@ -12,6 +12,8 @@ import {
 } from 'discord.js';
 import { ticketService } from '../../modules/tickets/services/ticketService.js';
 import { TicketPriority, TicketStatus } from '../../modules/tickets/types/ticket.js';
+import { TicketGlobalConfigSchema } from '../../modules/tickets/types/panel.js';
+import { ensureTicketForumTags, resolveConfiguredForum } from '../../modules/tickets/services/ticketForum.js';
 import { logger } from '../../utils/logger.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
@@ -520,7 +522,19 @@ export function createTicketRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     try {
       const current = ticketService.getConfig(guildId);
+      const forumPatch = TicketGlobalConfigSchema.pick({ mode: true, forumChannelId: true, forumTagIds: true })
+        .partial()
+        .parse(req.body ?? {});
       const updated = { ...current, ...req.body, guildId };
+      // Autre forum : les ids de tags de l'ancien ne valent plus rien.
+      if (forumPatch.forumChannelId !== undefined && forumPatch.forumChannelId !== current.forumChannelId && forumPatch.forumTagIds === undefined) {
+        updated.forumTagIds = undefined;
+      }
+      if (updated.mode === 'forum') {
+        const guild = discordClient.guilds.cache.get(guildId);
+        if (guild) await resolveConfiguredForum(guild, updated.forumChannelId);
+        else if (!updated.forumChannelId) throw new Error('Sélectionnez le forum des tickets.');
+      }
       ticketService.saveConfig(guildId, updated);
       emitConfigUpdated('tickets', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
@@ -528,6 +542,28 @@ export function createTicketRouter(discordClient: Client) {
       handleClientError(err, res, 'Données invalides');
     }
   };
+
+  // Mode forum : crée (si absents) les tags Ouvert / En cours / Résolu / Fermé et enregistre leurs ids.
+  router.post('/config/forum-tags', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    try {
+      const guild = discordClient.guilds.cache.get(guildId);
+      if (!guild) {
+        res.status(404).json({ error: 'Serveur Discord introuvable' });
+        return;
+      }
+      const current = ticketService.getConfig(guildId);
+      const forumChannelId = typeof req.body?.forumChannelId === 'string' ? req.body.forumChannelId : current.forumChannelId;
+      const forum = await resolveConfiguredForum(guild, forumChannelId);
+      const { ids, created, skipped } = await ensureTicketForumTags(forum);
+      const updated = { ...current, forumChannelId: forum.id, forumTagIds: ids };
+      ticketService.saveConfig(guildId, updated);
+      emitConfigUpdated('tickets', guildId, updated, 'DASHBOARD', req.user?.id);
+      res.json({ success: true, config: updated, created, skipped });
+    } catch (err: any) {
+      handleClientError(err, res, 'Impossible de créer les tags de statut (permission « Gérer le salon » requise sur le forum).');
+    }
+  });
 
   router.patch('/config', handleUpdateConfig);
   router.put('/config', handleUpdateConfig);

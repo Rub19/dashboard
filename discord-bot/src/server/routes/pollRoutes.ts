@@ -9,11 +9,13 @@ import { DiscordPoll, DiscordPollSchema } from '../../modules/polls/types/index.
 import { requireStringParam } from '../utils/params.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError } from '../utils/routeError.js';
+import { nativePollService, nativeIncompatibilityError, NATIVE_POLL_LOCKED_ERROR } from '../../modules/polls/services/nativePollService.js';
 import { DESTINATION_CHANNEL_TYPES, isSendableTarget, sendToConfiguredChannel } from '../../utils/channelSend.js';
 
 export function createPollRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
   discordPollPanel.initialize(client);
+  nativePollService.start(client); // suivi (décompte + fin) des sondages natifs Discord
 
   // GET /api/guilds/:guildId/polls/channels — Salons texte pour le dashboard
   router.get('/channels', (req: Request, res: Response): void => {
@@ -68,10 +70,54 @@ export function createPollRouter(client: Client): Router {
   });
 
   // POST /api/guilds/:guildId/polls
-  router.post('/', (req: Request, res: Response) => {
+  router.post('/', async (req: Request, res: Response) => {
     const guildId = requireStringParam(req.params.guildId, 'guildId');
     const body = req.body || {};
     const user = (req as any).user || { id: 'admin', username: 'DashboardAdmin' };
+
+    // Sondage natif Discord : publié tout de suite via le champ `poll` du message (pas de brouillon).
+    if (body.native === true) {
+      const q = Array.isArray(body.questions) ? body.questions : [];
+      const opts: any[] = Array.isArray(q[0]?.options) ? q[0].options : [];
+      const answers = opts.map((o) => ({ text: String(o?.label ?? ''), emoji: o?.emoji }));
+      const el = body.eligibility || {};
+      const incompatible = nativeIncompatibilityError({
+        quorum: !!body.quorum?.enabled,
+        secret: !!body.anonymity && body.anonymity !== 'PUBLIC',
+        weights: (Array.isArray(body.roleWeights) && body.roleWeights.length > 0) || body.type === 'WEIGHTED_VOTE' || opts.some((o) => o?.weight !== undefined && Number(o.weight) !== 1),
+        eligibility: Number(el.minAccountAgeDays) > 0 || Number(el.minGuildMembershipDays) > 0 || ['allowedRoleIds', 'forbiddenRoleIds', 'specificUserIds'].some((k) => Array.isArray(el[k]) && el[k].length > 0),
+        automations: Array.isArray(body.automations) && body.automations.length > 0,
+        resultsVisibility: !!body.resultsVisibility && body.resultsVisibility !== 'LIVE',
+        multipleQuestions: q.length > 1,
+        type: body.type,
+      });
+      if (incompatible) {
+        res.status(400).json({ success: false, error: incompatible });
+        return;
+      }
+      const hours = body.durationHours ?? (body.endsAt ? Math.ceil((new Date(body.endsAt).getTime() - Date.now()) / 3600_000) : 24);
+      try {
+        const created = await nativePollService.create(client, {
+          guildId,
+          channelId: String(body.channelId || body.panelConfig?.channelId || ''),
+          question: String(q[0]?.title ?? body.title ?? ''),
+          answers,
+          durationHours: Number(hours),
+          multiselect: body.allowMultiselect === true || body.type === 'MULTIPLE_CHOICE',
+          creatorId: body.creatorId || user.id,
+          creatorTag: body.creatorTag || user.username,
+        });
+        if (!created.success) {
+          res.status(400).json({ success: false, error: created.error });
+          return;
+        }
+        emitConfigUpdated('polls', guildId, created.poll, 'DASHBOARD', req.user?.id);
+        res.json({ success: true, poll: created.poll });
+      } catch (err: any) {
+        handleRouteError(err, res, 'Erreur serveur', { success: false });
+      }
+      return;
+    }
 
     const uid = (prefix: string) => `${prefix}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
     const type = body.type || 'SINGLE_CHOICE';
@@ -174,6 +220,9 @@ export function createPollRouter(client: Client): Router {
       guildId: existing.guildId,
       creatorId: existing.creatorId,
       creatorTag: existing.creatorTag,
+      native: existing.native,
+      messageId: existing.messageId,
+      channelId: existing.channelId,
       createdAt: existing.createdAt,
       updatedAt: new Date().toISOString(),
     });
@@ -404,6 +453,9 @@ export function createPollRouter(client: Client): Router {
     const poll = pollRepository.getPollById(guildId, pollId);
     if (!poll) {
       return res.status(404).json({ success: false, error: 'Sondage introuvable.' });
+    }
+    if (poll.native) {
+      return res.status(400).json({ success: false, error: NATIVE_POLL_LOCKED_ERROR });
     }
 
     const targetChannelId = channelId || poll.panelConfig.channelId;

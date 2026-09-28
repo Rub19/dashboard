@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageActionRowComponentBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
-import { HelpPanel, HELP_CATEGORIES, getCommandSubcommandNames, localizeCategory } from './helpPanel.js';
+import { HelpPanel, HELP_CATEGORIES, catEmoji, getCommandSubcommandNames, localizeCategory } from './helpPanel.js';
 import { formatString, getTranslation } from '../../utils/i18n.js';
 import { container, footer, sectionWithThumbnail, separator, text } from '../../utils/components.js';
 import { BRAND_COLORS } from '../../utils/embeds.js';
@@ -76,7 +76,7 @@ export const helpCommand: Command = {
         const cat = HELP_CATEGORIES.find((c) => c.commandNames.includes(cmd.name));
         const card = container(cat?.color ?? BRAND_COLORS.info, [
           sectionWithThumbnail(
-            [`## 📖 /${cmd.name}`, cmd.description || t.help_no_description, `-# ${cat ? `${cat.emoji} ${localizeCategory(cat, t).name}` : cmd.category || t.help_default_category}`],
+            [`## 📖 /${cmd.name}`, cmd.description || t.help_no_description, `-# ${cat ? `${catEmoji(cat)}${localizeCategory(cat, t).name}` : cmd.category || t.help_default_category}`],
             ctx.client.user?.displayAvatarURL() || 'https://ethone.dev/icons/ethone-icon-512.png?v=r2',
             cmd.name,
           ),
@@ -86,7 +86,7 @@ export const helpCommand: Command = {
           separator(false),
           new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
             new ButtonBuilder().setCustomId('help_btn_home').setLabel(t.help_btn_catalogue).setEmoji('📚').setStyle(ButtonStyle.Primary),
-            ...(cat ? [new ButtonBuilder().setCustomId(`help_btn_nav:${cat.id}`).setLabel(localizeCategory(cat, t).name).setEmoji(cat.emoji).setStyle(ButtonStyle.Secondary)] : []),
+            ...(cat ? [new ButtonBuilder().setCustomId(`help_btn_nav:${cat.id}`).setLabel(localizeCategory(cat, t).name).setEmoji(catEmoji(cat)).setStyle(ButtonStyle.Secondary)] : []),
           ),
           footer(`${ctx.guildConfig.botName} · ${t.help_card_footer}`),
         ]);

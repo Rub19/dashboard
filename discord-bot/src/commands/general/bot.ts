@@ -2,11 +2,13 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  EmbedBuilder,
+  ContainerBuilder,
   SlashCommandBuilder,
 } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { formatString, getTranslation } from '../../utils/i18n.js';
+import { container, footer, sectionWithThumbnail, separator, text } from '../../utils/components.js';
+import { BRAND_RED, icon, v2Container } from '../../utils/v2.js';
 
 function formatUptime(seconds: number, dayUnit: string): string {
   const d = Math.floor(seconds / (3600 * 24));
@@ -90,88 +92,55 @@ export const botCommand: Command = {
         .setEmoji('💬')
     );
 
+    const field = (name: string, value: string) => text(`**${name}**
+${value}`);
+    const send = (card: ContainerBuilder) => ctx.reply({ components: [card], componentsV2: true });
+
     switch (subcommand) {
       case 'ping': {
         const start = Date.now();
         await ctx.deferReply();
         const latency = Date.now() - start;
-
-        const embed = ctx
-          .createEmbed('info')
-          .setTitle(t.bot_ping_title)
-          .setDescription(formatString(t.bot_ping_desc, { ws: wsPing, latency }))
-          .setTimestamp();
-
-        await ctx.reply({ embeds: [embed], components: [actionRow] });
+        await send(v2Container(`${icon('info', '🏓')} ${t.bot_ping_title}`, [text(formatString(t.bot_ping_desc, { ws: wsPing, latency })), separator(false), actionRow]));
         break;
       }
 
       case 'info': {
-        const embed = ctx
-          .createEmbed('default')
-          .setTitle(`🤖 ${ctx.guildConfig.botName} • Bot Control Center`)
-          .setDescription(formatString(t.bot_info_long_desc, { botName: ctx.guildConfig.botName }))
-          .addFields(
-            {
-              name: t.bot_field_version,
-              value: t.bot_field_version_value,
-              inline: true,
-            },
-            {
-              name: t.bot_field_global_stats,
-              value: formatString(t.bot_global_stats_value, { guilds: guildCount, users: userCount }),
-              inline: true,
-            },
-            {
-              name: t.bot_field_availability,
-              value: formatString(t.bot_availability_value, { uptime: formattedUptime, ws: wsPing }),
-              inline: true,
-            },
-            {
-              name: t.bot_field_config,
-              value: formatString(t.bot_config_value, {
-                prefix: ctx.guildConfig.prefix,
-                visibility: ctx.guildConfig.responseVisibility === 'EPHEMERAL' ? t.bot_visibility_private : t.bot_visibility_public,
-                style: ctx.guildConfig.botPersonality || 'FRIENDLY',
-              }),
-              inline: false,
-            }
-          )
-          .setThumbnail(client.user?.displayAvatarURL() || null);
-
-        await ctx.reply({ embeds: [embed], components: [actionRow] });
+        const visibility = ctx.guildConfig.responseVisibility === 'EPHEMERAL' ? t.bot_visibility_private : t.bot_visibility_public;
+        await send(
+          container(BRAND_RED, [
+            sectionWithThumbnail(
+              [`## ${icon('ethone', '🤖')} ${ctx.guildConfig.botName} • Bot Control Center`, formatString(t.bot_info_long_desc, { botName: ctx.guildConfig.botName })],
+              client.user?.displayAvatarURL() || 'https://ethone.dev/icons/ethone-icon-512.png?v=r2',
+              ctx.guildConfig.botName,
+            ),
+            separator(),
+            field(t.bot_field_version, t.bot_field_version_value),
+            field(t.bot_field_global_stats, formatString(t.bot_global_stats_value, { guilds: guildCount, users: userCount })),
+            field(t.bot_field_availability, formatString(t.bot_availability_value, { uptime: formattedUptime, ws: wsPing })),
+            separator(false),
+            field(t.bot_field_config, formatString(t.bot_config_value, { prefix: ctx.guildConfig.prefix, visibility, style: ctx.guildConfig.botPersonality || 'FRIENDLY' })),
+            separator(false),
+            actionRow,
+          ]),
+        );
         break;
       }
 
       case 'status':
       default: {
-        const embed = ctx
-          .createEmbed('success')
-          .setTitle(`${t.bot_status_title} • ${ctx.guildConfig.botName}`)
-          .setDescription(t.bot_status_desc)
-          .addFields(
-            {
-              name: t.bot_field_subsystems,
-              value: formatString(t.bot_subsystems_value, { ws: wsPing, style: ctx.guildConfig.botPersonality || 'FRIENDLY' }),
-              inline: false,
-            },
-            {
-              name: t.bot_field_memory,
-              value: formatString(t.bot_memory_value, { used: heapUsedMb, total: heapTotalMb, rss: rssMb, uptime: formattedUptime }),
-              inline: true,
-            },
-            {
-              name: t.bot_field_load,
-              value: formatString(t.bot_load_value, { guilds: guildCount, users: userCount }),
-              inline: true,
-            }
-          )
-          .setFooter({
-            text: `${ctx.guildConfig.botName} • ${t.bot_footer_control} • ethone.dev/discord/bot`,
-            iconURL: client.user?.displayAvatarURL(),
-          });
-
-        await ctx.reply({ embeds: [embed], components: [actionRow] });
+        await send(
+          v2Container(`${icon('success', '✅')} ${t.bot_status_title} • ${ctx.guildConfig.botName}`, [
+            text(t.bot_status_desc),
+            separator(false),
+            field(t.bot_field_subsystems, formatString(t.bot_subsystems_value, { ws: wsPing, style: ctx.guildConfig.botPersonality || 'FRIENDLY' })),
+            field(t.bot_field_memory, formatString(t.bot_memory_value, { used: heapUsedMb, total: heapTotalMb, rss: rssMb, uptime: formattedUptime })),
+            field(t.bot_field_load, formatString(t.bot_load_value, { guilds: guildCount, users: userCount })),
+            separator(false),
+            actionRow,
+            footer(`${ctx.guildConfig.botName} • ${t.bot_footer_control} • ethone.dev/discord/bot`),
+          ]),
+        );
         break;
       }
     }

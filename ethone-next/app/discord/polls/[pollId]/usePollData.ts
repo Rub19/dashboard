@@ -34,6 +34,8 @@ export interface PollData {
   resultsVisibility: string;
   questions: PollQuestion[];
   endsAt?: string;
+  /** Sondage natif Discord : vote géré par Discord, décompte rafraîchi par le bot. */
+  native?: boolean;
 }
 export interface OptionResult {
   optionId: string;

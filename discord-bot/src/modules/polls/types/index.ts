@@ -178,6 +178,12 @@ export const DiscordPollSchema = z.object({
     buttonText: 'Voter',
     showLiveResultsButton: true,
   }),
+  /** Sondage natif Discord (message `poll`) : le vote et l'affichage sont gérés par Discord, le bot ne stocke que le décompte. */
+  native: z.boolean().default(false),
+  /** Sondage natif : message Discord qui porte le sondage (dans le post pour un forum/média). */
+  messageId: z.string().optional(),
+  channelId: z.string().optional(),
+  allowMultiselect: z.boolean().default(false),
   startsAt: z.string().optional(),
   endsAt: z.string().optional(),
   createdAt: z.string(),

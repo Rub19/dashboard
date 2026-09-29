@@ -12,7 +12,8 @@ import {
 } from 'discord.js';
 import { ticketService } from '../../modules/tickets/services/ticketService.js';
 import { TicketPriority, TicketStatus } from '../../modules/tickets/types/ticket.js';
-import { TicketGlobalConfigSchema } from '../../modules/tickets/types/panel.js';
+import { TicketGlobalConfigSchema, TicketPanelSchema } from '../../modules/tickets/types/panel.js';
+import { TicketCategorySchema } from '../../modules/tickets/types/category.js';
 import { ensureTicketForumTags, resolveConfiguredForum } from '../../modules/tickets/services/ticketForum.js';
 import { logger } from '../../utils/logger.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
@@ -321,10 +322,14 @@ export function createTicketRouter(discordClient: Client) {
 
   router.post('/categories', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
+    const parsed = TicketCategorySchema.safeParse({ ...req.body, guildId });
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.issues[0]?.message || 'Catégorie invalide.' });
+      return;
+    }
     try {
-      const categoryData = { ...req.body, guildId };
-      ticketService.saveCategory(categoryData);
-      res.json({ success: true, category: categoryData });
+      ticketService.saveCategory(parsed.data);
+      res.json({ success: true, category: parsed.data });
     } catch (err: any) {
       handleClientError(err, res, 'Données invalides');
     }
@@ -346,10 +351,14 @@ export function createTicketRouter(discordClient: Client) {
 
   router.post('/panels', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
+    const parsed = TicketPanelSchema.safeParse({ ...req.body, guildId });
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.issues[0]?.message || 'Panneau invalide.' });
+      return;
+    }
     try {
-      const panelData = { ...req.body, guildId };
-      ticketService.savePanel(panelData);
-      res.json({ success: true, panel: panelData });
+      ticketService.savePanel(parsed.data);
+      res.json({ success: true, panel: parsed.data });
     } catch (err: any) {
       handleClientError(err, res, 'Données invalides');
     }

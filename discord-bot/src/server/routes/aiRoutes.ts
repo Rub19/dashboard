@@ -1,10 +1,51 @@
 import { Router, Request, Response } from 'express';
 import { Client } from 'discord.js';
+import { z } from 'zod';
 import { aiService } from '../../modules/ai/services/aiService.js';
 import { aiRepository } from '../../modules/ai/storage/aiRepository.js';
 import { logger } from '../../utils/logger.js';
 import { requireStringParam } from '../utils/params.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+
+const PersonalitySchema = z
+  .object({
+    name: z.string().max(80),
+    description: z.string().max(500),
+    avatarUrl: z.string().url().max(1000),
+    tone: z.enum(['FRIENDLY', 'PROFESSIONAL', 'CASUAL', 'FUNNY', 'CONCISE', 'DETAILED', 'TECHNICAL', 'CUSTOM']),
+    sliders: z.object({
+      friendly: z.number().min(0).max(100),
+      humor: z.number().min(0).max(100),
+      formality: z.number().min(0).max(100),
+      verbosity: z.number().min(0).max(100),
+      creativity: z.number().min(0).max(100),
+    }),
+    systemInstructions: z.string().max(4000),
+    language: z.enum(['auto', 'fr', 'en', 'de', 'es', 'it', 'custom']),
+    replyInUserLanguage: z.boolean(),
+  })
+  .partial();
+
+const ToolsSchema = z
+  .object({
+    readKnowledge: z.boolean(),
+    readAllowedChannels: z.boolean(),
+    createThreads: z.boolean(),
+    sendMessages: z.boolean(),
+    ticketHandoff: z.boolean(),
+    summarizeChannels: z.boolean(),
+    moderationAssist: z.boolean(),
+  })
+  .partial();
+
+const KnowledgeSchema = z.object({
+  title: z.string().min(1).max(200),
+  type: z.enum(['TEXT', 'FAQ', 'DOC', 'URL', 'DISCORD']).optional(),
+  content: z.string().min(1).max(50000),
+  scope: z.enum(['GLOBAL', 'CHANNEL', 'ROLE', 'ASSISTANT']).optional(),
+  allowedChannelIds: z.array(z.string().max(64)).max(100).optional(),
+  allowedRoleIds: z.array(z.string().max(64)).max(100).optional(),
+});
 
 export function createAiRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -34,9 +75,14 @@ export function createAiRouter(client: Client): Router {
   });
 
   router.put('/personality', (req: Request, res: Response) => {
+    const parsed = PersonalitySchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.issues[0]?.message || 'Personnalité invalide.' });
+      return;
+    }
     try {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
-      const updated = aiService.updatePersonality(guildId, req.body);
+      const updated = aiService.updatePersonality(guildId, parsed.data);
       emitConfigUpdated('ai', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json(updated.personality);
     } catch (err: any) {
@@ -159,13 +205,14 @@ export function createAiRouter(client: Client): Router {
   });
 
   router.post('/knowledge', (req: Request, res: Response) => {
+    const parsed = KnowledgeSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.issues[0]?.message || 'Source de connaissance invalide.' });
+      return;
+    }
+    const { title, type, content, scope, allowedChannelIds, allowedRoleIds } = parsed.data;
     try {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
-      const { title, type, content, scope, allowedChannelIds, allowedRoleIds } = req.body;
-
-      if (!title || !content) {
-        return res.status(400).json({ error: 'Titre et contenu requis' });
-      }
 
       const source = aiRepository.saveKnowledgeSource({
         id: `kn-${Date.now().toString(36)}`,
@@ -216,9 +263,14 @@ export function createAiRouter(client: Client): Router {
   });
 
   router.put('/tools', (req: Request, res: Response) => {
+    const parsed = ToolsSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.issues[0]?.message || 'Permissions invalides.' });
+      return;
+    }
     try {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
-      const updated = aiService.updateTools(guildId, req.body);
+      const updated = aiService.updateTools(guildId, parsed.data);
       emitConfigUpdated('ai', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json(updated.tools);
     } catch (err: any) {

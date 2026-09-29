@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, RefreshCw, X } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
@@ -10,8 +11,11 @@ import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import { subscribeGuildLive } from "@/lib/guildLive";
 import { confirmDialog } from "@/lib/confirmDialog";
 import PageHeader from "@/components/discord/PageHeader";
-import AnalyticsBarChart from "@/components/charts/AnalyticsBarChart";
-import AnalyticsLineChart from "@/components/charts/AnalyticsLineChart";
+
+// recharts (via ces 2 composants) chargé à la demande : les stats arrivent après un fetch réseau, donc
+// le graphique n'est jamais nécessaire au premier rendu.
+const AnalyticsBarChart = dynamic(() => import("@/components/charts/AnalyticsBarChart"), { ssr: false });
+const AnalyticsLineChart = dynamic(() => import("@/components/charts/AnalyticsLineChart"), { ssr: false });
 import StatsHeatmap from "./StatsHeatmap";
 import StatsMembersBoard from "./StatsMembersBoard";
 import { cn } from "@/lib/utils";

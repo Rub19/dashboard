@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "@/components/icons/ph";
+import { Icon } from "@/lib/icons";
 import Select, { type SelectOption } from "@/components/ui/Select";
 import {
   CalendarDate,
@@ -233,19 +234,12 @@ export function Calendar({
                 <div className="mt-0.5 flex max-w-full items-center justify-center gap-0.5 overflow-hidden">
                   {marker.logos && marker.logos.length > 0 ? (
                     <>
-                      {marker.logos.slice(0, 2).map((logoUrl, i) => (
+                      {marker.logos.slice(0, 2).map((logoName, i) => (
                         <div
                           key={i}
                           className="flex h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 items-center justify-center rounded-full bg-black/70 border border-[var(--input-border-hover)] p-0.5 shadow-xs"
                         >
-                          <img
-                            src={logoUrl}
-                            alt=""
-                            className="h-full w-full object-contain"
-                            onError={(e) => {
-                              (e.target as HTMLElement).style.display = "none";
-                            }}
-                          />
+                          <Icon name={logoName} pack="brand" className="h-full w-full text-white" />
                         </div>
                       ))}
                       {marker.logos.length > 2 && (

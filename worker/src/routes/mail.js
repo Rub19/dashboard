@@ -94,7 +94,7 @@ function firstRow(response) {
 async function resolveAliasForUser(env, auth, body) {
   const requestedAliasId = safeText(body.alias_id, 64);
   if (requestedAliasId) {
-    const response = await supabaseRequest(env, `/rest/v1/ethone_mail_aliases?id=eq.${requestedAliasId}&user_id=eq.${auth.userId}&limit=1`, {
+    const response = await supabaseRequest(env, `/rest/v1/ethone_mail_aliases?id=eq.${encodeURIComponent(requestedAliasId)}&user_id=eq.${auth.userId}&limit=1`, {
       method: "GET",
       headers: { "Accept": "application/vnd.pgrst.object+json" },
       maxBytes: 4096
@@ -231,7 +231,7 @@ export async function mailSendRoute({ request, env, auth }) {
 
   // Delete the draft if it was sent.
   if (draftId) {
-    await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${draftId}&user_id=eq.${auth.userId}&folder=eq.drafts`, {
+    await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${encodeURIComponent(draftId)}&user_id=eq.${auth.userId}&folder=eq.drafts`, {
       method: "DELETE",
       maxBytes: 2048
     }).catch(() => null);
@@ -241,7 +241,7 @@ export async function mailSendRoute({ request, env, auth }) {
 
   // Update thread counters.
   if (threadId) {
-    await supabaseRequest(env, `/rest/v1/ethone_mail_threads?id=eq.${threadId}&user_id=eq.${auth.userId}`, {
+    await supabaseRequest(env, `/rest/v1/ethone_mail_threads?id=eq.${encodeURIComponent(threadId)}&user_id=eq.${auth.userId}`, {
       method: "PATCH",
       headers: { "Prefer": "return=minimal" },
       body: {
@@ -290,7 +290,7 @@ export async function mailThreadRoute({ request, env, auth }) {
   const threadId = safeText(url.searchParams.get("thread_id"), 64);
   if (!threadId) throw httpError("INVALID_PARAMETER", 400, { detail: "thread_id" });
 
-  const response = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?user_id=eq.${auth.userId}&thread_id=eq.${threadId}&deleted_at=is.null&order=received_at.asc`, {
+  const response = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?user_id=eq.${auth.userId}&thread_id=eq.${encodeURIComponent(threadId)}&deleted_at=is.null&order=received_at.asc`, {
     method: "GET",
     maxBytes: 65536
   });
@@ -356,7 +356,7 @@ export async function mailLabelsRoute({ request, env, auth }) {
     const body = await request.json().catch(() => ({}));
     const labelId = safeText(body.id, 64);
     if (!labelId) throw httpError("INVALID_PARAMETER", 400, { detail: "id" });
-    await supabaseRequest(env, `/rest/v1/ethone_mail_labels?id=eq.${labelId}&user_id=eq.${auth.userId}`, { method: "DELETE", maxBytes: 2048 });
+    await supabaseRequest(env, `/rest/v1/ethone_mail_labels?id=eq.${encodeURIComponent(labelId)}&user_id=eq.${auth.userId}`, { method: "DELETE", maxBytes: 2048 });
     return { data: { deleted: true } };
   }
 
@@ -385,7 +385,7 @@ export async function mailLabelsRoute({ request, env, auth }) {
   if (!ids.length || !label) throw httpError("INVALID_PARAMETER", 400, { detail: "ids or label" });
 
   for (const id of ids) {
-    const current = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${id}&user_id=eq.${auth.userId}&select=labels`, {
+    const current = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${encodeURIComponent(id)}&user_id=eq.${auth.userId}&select=labels`, {
       method: "GET",
       headers: { "Accept": "application/vnd.pgrst.object+json" },
       maxBytes: 2048
@@ -419,7 +419,7 @@ export async function mailDraftsRoute({ request, env, auth }) {
     const body = await request.json().catch(() => ({}));
     const id = safeText(body.id, 64);
     if (!id) throw httpError("INVALID_PARAMETER", 400, { detail: "id" });
-    await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${id}&user_id=eq.${auth.userId}&folder=eq.drafts`, { method: "DELETE", maxBytes: 2048 });
+    await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${encodeURIComponent(id)}&user_id=eq.${auth.userId}&folder=eq.drafts`, { method: "DELETE", maxBytes: 2048 });
     return { data: { deleted: true } };
   }
 
@@ -437,7 +437,7 @@ export async function mailDraftsRoute({ request, env, auth }) {
   if (!alias) throw httpError("SERVICE_ERROR", 500, { detail: "alias" });
 
   if (id) {
-    const existing = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${id}&user_id=eq.${auth.userId}&folder=eq.drafts&limit=1`, {
+    const existing = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${encodeURIComponent(id)}&user_id=eq.${auth.userId}&folder=eq.drafts&limit=1`, {
       method: "GET",
       headers: { "Accept": "application/vnd.pgrst.object+json" },
       maxBytes: 4096
@@ -573,7 +573,7 @@ export async function mailSignaturesRoute({ request, env, auth }) {
     const body = await request.json().catch(() => ({}));
     const id = safeText(body.id, 64);
     if (!id) throw httpError("INVALID_PARAMETER", 400, { detail: "id" });
-    await supabaseRequest(env, `/rest/v1/ethone_mail_signatures?id=eq.${id}&user_id=eq.${auth.userId}`, { method: "DELETE", maxBytes: 2048 });
+    await supabaseRequest(env, `/rest/v1/ethone_mail_signatures?id=eq.${encodeURIComponent(id)}&user_id=eq.${auth.userId}`, { method: "DELETE", maxBytes: 2048 });
     return { data: { deleted: true } };
   }
 
@@ -584,20 +584,20 @@ export async function mailSignaturesRoute({ request, env, auth }) {
 
   const id = safeText(body.id, 64);
   if (id) {
-    await supabaseRequest(env, `/rest/v1/ethone_mail_signatures?id=eq.${id}&user_id=eq.${auth.userId}`, {
+    await supabaseRequest(env, `/rest/v1/ethone_mail_signatures?id=eq.${encodeURIComponent(id)}&user_id=eq.${auth.userId}`, {
       method: "PATCH",
       headers: { "Prefer": "return=minimal" },
       body: { name, content },
       maxBytes: 4096
     });
     if (body.is_default === true) {
-      await supabaseRequest(env, `/rest/v1/ethone_mail_signatures?user_id=eq.${auth.userId}&id=neq.${id}&is_default=eq.true`, {
+      await supabaseRequest(env, `/rest/v1/ethone_mail_signatures?user_id=eq.${auth.userId}&id=neq.${encodeURIComponent(id)}&is_default=eq.true`, {
         method: "PATCH",
         headers: { "Prefer": "return=minimal" },
         body: { is_default: false },
         maxBytes: 2048
       }).catch(() => null);
-      await supabaseRequest(env, `/rest/v1/ethone_mail_signatures?id=eq.${id}&user_id=eq.${auth.userId}`, {
+      await supabaseRequest(env, `/rest/v1/ethone_mail_signatures?id=eq.${encodeURIComponent(id)}&user_id=eq.${auth.userId}`, {
         method: "PATCH",
         headers: { "Prefer": "return=minimal" },
         body: { is_default: true },
@@ -842,7 +842,7 @@ export async function mailBulkActionRoute({ request, env, auth }) {
       await updateMailMessage(env, id, auth.userId, { is_important: action === "important" }).catch(() => null);
     } else if (action === "label" || action === "unlabel") {
       if (!target) continue;
-      const current = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${id}&user_id=eq.${auth.userId}&select=labels`, {
+      const current = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${encodeURIComponent(id)}&user_id=eq.${auth.userId}&select=labels`, {
         method: "GET",
         headers: { "Accept": "application/vnd.pgrst.object+json" },
         maxBytes: 2048

@@ -1,11 +1,55 @@
 import { Router, Request, Response } from 'express';
 import { Client } from 'discord.js';
+import { z } from 'zod';
 import { inviteRepository } from '../../modules/invites/storage/inviteRepository.js';
 import { inviteSnapshotService } from '../../modules/invites/services/inviteSnapshotService.js';
 import { logger } from '../../utils/logger.js';
 import { requireStringParam } from '../utils/params.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError } from '../utils/routeError.js';
+
+const RewardSchema = z.object({
+  name: z.string().max(80).optional(),
+  requiredValidInvites: z.number().int().min(1).max(100000).optional(),
+  roleId: z.string().max(64).optional(),
+  roleName: z.string().max(100).optional(),
+  xpAmount: z.number().int().min(0).max(1000000).optional(),
+  message: z.string().max(500).optional(),
+});
+
+const CampaignSchema = z.object({
+  name: z.string().max(100).optional(),
+  description: z.string().max(500).optional(),
+  startDate: z.string().max(40).optional(),
+  endDate: z.string().max(40).optional(),
+  inviteTarget: z.number().int().min(1).max(1000000).optional(),
+  rewards: z.array(z.string().max(200)).max(50).optional(),
+});
+
+const SettingsSchema = z
+  .object({
+    enabled: z.boolean(),
+    trackBots: z.boolean(),
+    trackVanity: z.boolean(),
+    retentionTracking: z.boolean(),
+    riskSensitivity: z.enum(['low', 'standard', 'high']),
+    suspiciousThresholds: z.object({
+      minAccountAgeHours: z.number().min(0).max(8760),
+      burstMaxJoins: z.number().int().min(1).max(1000),
+      burstWindowSeconds: z.number().int().min(1).max(86400),
+    }),
+    rewardsEnabled: z.boolean(),
+    notificationChannel: z.string().max(64).optional(),
+    notificationEvents: z.object({
+      onValidJoin: z.boolean(),
+      onSuspiciousJoin: z.boolean(),
+      onReward: z.boolean(),
+      onLeave: z.boolean(),
+    }),
+    notificationMessageTemplate: z.string().max(2000),
+    dataRetentionDays: z.number().int().min(1).max(3650),
+  })
+  .partial();
 
 export function createInviteRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -160,9 +204,14 @@ export function createInviteRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/invites/rewards
   router.post('/rewards', (req: Request, res: Response) => {
+    const parsed = RewardSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.issues[0]?.message || 'Récompense invalide.' });
+      return;
+    }
+    const { name, requiredValidInvites, roleId, roleName, xpAmount, message } = parsed.data;
     try {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
-      const { name, requiredValidInvites, roleId, roleName, xpAmount, message } = req.body;
 
       const reward = inviteRepository.saveReward({
         id: `rew_${Date.now()}`,
@@ -208,9 +257,14 @@ export function createInviteRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/invites/campaigns
   router.post('/campaigns', (req: Request, res: Response) => {
+    const parsed = CampaignSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.issues[0]?.message || 'Campagne invalide.' });
+      return;
+    }
+    const { name, description, startDate, endDate, inviteTarget, rewards } = parsed.data;
     try {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
-      const { name, description, startDate, endDate, inviteTarget, rewards } = req.body;
 
       const campaign = inviteRepository.saveCampaign({
         id: `camp_${Date.now()}`,
@@ -246,9 +300,14 @@ export function createInviteRouter(client: Client): Router {
 
   // PUT /api/guilds/:guildId/invites/settings
   router.put('/settings', (req: Request, res: Response) => {
+    const parsed = SettingsSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.issues[0]?.message || 'Réglages invalides.' });
+      return;
+    }
     try {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
-      const updated = inviteRepository.updateSettings(guildId, req.body);
+      const updated = inviteRepository.updateSettings(guildId, parsed.data);
       emitConfigUpdated('invites', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, settings: updated });
     } catch (err: any) {

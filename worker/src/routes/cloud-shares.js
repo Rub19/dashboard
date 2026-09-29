@@ -46,6 +46,24 @@ function safeSlug(value) {
   return slug;
 }
 
+/**
+ * Vue publique d'un fichier partagé : uniquement ce qu'un visiteur anonyme a besoin de voir avant de
+ * télécharger. La ligne Supabase brute (`ethone_files.*`) contient aussi `user_id`, `drive_file_id` et
+ * `drive_client_id` — des identifiants internes du propriétaire, jamais destinés à quitter le serveur.
+ */
+function publicFileView(file = {}) {
+  return {
+    name: String(file.name || "(Sans titre)").slice(0, 500),
+    size: Math.max(0, Number(file.size) || 0),
+    mimeType: String(file.mime_type || "application/octet-stream").slice(0, 120),
+    isFolder: file.is_folder === true,
+    thumbnailLink: file.thumbnail_link || null,
+    webViewLink: file.web_view_link || null,
+    iconUrl: file.icon_url || null,
+    brain_summary: file.brain_summary || null
+  };
+}
+
 export async function cloudSharesCreateRoute({ request, env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
   const body = await readJsonBody(request, 5);
@@ -74,7 +92,7 @@ export async function cloudShareResolveRoute({ url, env }) {
   const slug = queryText(url, "slug", { pattern: /^[a-zA-Z0-9_-]{12,64}$/ });
   const password = queryText(url, "password", { required: false, max: 200 });
   const { share, file } = await getShareBySlug(env, slug, password);
-  return { data: { share: { ...share, fileId: undefined }, file } };
+  return { data: { share: { ...share, fileId: undefined }, file: publicFileView(file) } };
 }
 
 export async function cloudShareDownloadRoute({ url, env }) {
@@ -135,7 +153,7 @@ export async function cloudDropResolveRoute({ url, env }) {
   const slug = queryText(url, "slug", { pattern: /^[a-zA-Z0-9_-]{12,64}$/ });
   const password = queryText(url, "password", { required: false, max: 200 });
   const drop = await getDropBySlug(env, slug, password);
-  return { data: { drop } };
+  return { data: { drop: { ...drop, userId: undefined } } };
 }
 
 export async function cloudDropRevokeRoute({ url, env, auth }) {

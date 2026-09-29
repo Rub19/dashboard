@@ -184,25 +184,17 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
               className="group flex shrink-0 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 py-1.5 text-xs text-white hover:border-purple-500/40 hover:bg-purple-500/10 transition-all active:scale-95 cursor-pointer shadow-xs"
             >
               {pick.logo ? (
-                <img
-                  src={pick.logo}
-                  alt=""
-                  className="h-3.5 w-3.5 object-contain opacity-90 group-hover:scale-110 transition-transform"
-                  onError={(e) => {
-                    const target = e.target as HTMLElement;
-                    target.style.display = "none";
-                    const fallback = target.nextElementSibling as HTMLElement;
-                    if (fallback) fallback.style.display = "block";
-                  }}
+                <Icon
+                  name={pick.logo}
+                  pack="brand"
+                  className="h-3.5 w-3.5 text-white opacity-90 group-hover:scale-110 transition-transform"
                 />
-              ) : null}
-              <Icon
-                name={pick.icon || "receipt"}
-                className={cn(
-                  "h-3.5 w-3.5 text-white opacity-90 group-hover:scale-110 transition-transform",
-                  pick.logo ? "hidden" : "block"
-                )}
-              />
+              ) : (
+                <Icon
+                  name={pick.icon || "receipt"}
+                  className="h-3.5 w-3.5 text-white opacity-90 group-hover:scale-110 transition-transform"
+                />
+              )}
               <span className="font-medium text-[11px]">{pick.label}</span>
               <span className="text-[10px] font-mono font-bold text-zinc-400">
                 {pick.amount}{pick.currency}

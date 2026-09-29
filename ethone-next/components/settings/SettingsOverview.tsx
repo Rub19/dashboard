@@ -9,7 +9,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useSound } from "@/lib/sound";
 import { USER_STATUS_CONFIG } from "@/lib/settings";
 import { cn } from "@/lib/utils";
-import { CHANGELOG } from "@/data/changelog";
+import { useLatestVersion } from "@/lib/hooks/useLatestVersion";
 import { useSyncStore } from "@/lib/stores/sync";
 
 interface SettingsOverviewProps {
@@ -22,6 +22,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
   const { settings } = useSettings();
   const { ambientSound } = useSound();
   const { displayName, avatarUrl, email, initials } = useUserIdentity();
+  const latestVersion = useLatestVersion();
 
   const userStatus = USER_STATUS_CONFIG[settings.status] || USER_STATUS_CONFIG.online;
   const syncStatus = useSyncStore((s) => s.status);
@@ -123,7 +124,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
                   {displayName}
                 </h2>
                 <span className="rounded-full bg-[var(--accent-primary)]/15 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
-                  ETHONE Control Center · {CHANGELOG[0]?.version || "v1.24.0"}
+                  ETHONE Control Center · {latestVersion}
                 </span>
               </div>
               <p className="truncate text-xs text-[var(--text-muted)]">

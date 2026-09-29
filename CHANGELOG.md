@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.20 — 2026-09-29
+
+**Sécurité + performance : audit complet worker/bot/dashboard**
+
+- Sécurité : un lien de partage/dépôt public ne renvoie plus l'identifiant interne du propriétaire ni les identifiants Google Drive internes du fichier.
+- Sécurité : plusieurs requêtes mail (labels, brouillons, signatures) échappent maintenant correctement les identifiants avant de les insérer dans les filtres de base de données.
+- Sécurité : les réglages IA (personnalité, outils, base de connaissances), les catégories/panneaux de tickets et les récompenses/campagnes/réglages de parrainage sont maintenant validés avant d'être enregistrés.
+- Performance : les pages Calendrier, Réglages et Statistiques ne chargent plus plusieurs mégaoctets de données inutiles (pack d'icônes de marques, historique complet du changelog, bibliothèque de graphiques) avant le premier affichage.
+
 ## v1.37.19 — 2026-09-29
 
 **iOS : listes imbriquées débloquées (Owner Shield, rotation)**

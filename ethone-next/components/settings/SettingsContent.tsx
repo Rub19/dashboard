@@ -8,7 +8,7 @@ import { Icon } from "@/lib/icons";
 import { DEFAULTS, USER_STATUS_CONFIG } from "@/lib/settings";
 import { subscribePush, unsubscribePush } from "@/lib/push";
 import { useSyncStore } from "@/lib/stores/sync";
-import { CHANGELOG } from "@/data/changelog";
+import { useLatestVersion } from "@/lib/hooks/useLatestVersion";
 import {
   BUILT_IN_PRESETS,
   applyPreset,
@@ -739,6 +739,7 @@ export default function SettingsContent({
   const { settings } = useSettings();
   const i18n = useI18n();
   const form = useSettingsForm();
+  const latestVersion = useLatestVersion();
 
   const makeOptions = useCallback(
     (list: { id: string; label: string }[], i18nKeys?: boolean): { id: string; label: string }[] => {
@@ -1446,7 +1447,7 @@ export default function SettingsContent({
                 <p className="text-xs text-[var(--text-muted)]">
                   {i18n("aboutVersionLine", "Version {{version}} (Turbopack / Next.js 16.3.3)").replace(
                     "{{version}}",
-                    CHANGELOG[0]?.version || "v1.24.0"
+                    latestVersion
                   )}
                 </p>
               </div>

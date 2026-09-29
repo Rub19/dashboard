@@ -39549,6 +39549,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_19_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_19_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_19_de);
 
+const v1_37_20_fr: ChangelogEntry = {
+  version: "v1.37.20",
+  date: "2026-09-29",
+  title: "Sécurité + performance : audit complet worker/bot/dashboard",
+  items: [
+    "Sécurité : un lien de partage/dépôt public ne renvoie plus l'identifiant interne du propriétaire ni les identifiants Google Drive internes du fichier.",
+    "Sécurité : plusieurs requêtes mail (labels, brouillons, signatures) échappent maintenant correctement les identifiants avant de les insérer dans les filtres de base de données.",
+    "Sécurité : les réglages IA (personnalité, outils, base de connaissances), les catégories/panneaux de tickets et les récompenses/campagnes/réglages de parrainage sont maintenant validés avant d'être enregistrés.",
+    "Performance : les pages Calendrier, Réglages et Statistiques ne chargent plus plusieurs mégaoctets de données inutiles (pack d'icônes de marques, historique complet du changelog, bibliothèque de graphiques) avant le premier affichage.",
+  ],
+};
+
+const v1_37_20_en: ChangelogEntry = {
+  version: "v1.37.20",
+  date: "2026-09-29",
+  title: "Security + performance: full worker/bot/dashboard audit",
+  items: [
+    "Security: a public share/drop link no longer returns the owner's internal id or the file's internal Google Drive identifiers.",
+    "Security: several mail requests (labels, drafts, signatures) now properly escape ids before inserting them into database filters.",
+    "Security: AI settings (personality, tools, knowledge base), ticket categories/panels, and invite rewards/campaigns/settings are now validated before being saved.",
+    "Performance: the Calendar, Settings and Stats pages no longer load several megabytes of unnecessary data (brand icon pack, full changelog history, chart library) before first paint.",
+  ],
+};
+
+const v1_37_20_es: ChangelogEntry = {
+  version: "v1.37.20",
+  date: "2026-09-29",
+  title: "Seguridad + rendimiento: auditoría completa",
+  items: [
+    "Seguridad: un enlace público de compartición ya no expone el id interno del propietario ni los identificadores internos de Google Drive.",
+    "Seguridad: varias solicitudes de correo ahora escapan correctamente los ids antes de insertarlos en filtros de base de datos.",
+    "Seguridad: los ajustes de IA, las categorías/paneles de tickets y las recompensas/campañas de invitación ahora se validan antes de guardarse.",
+    "Rendimiento: las páginas de Calendario, Ajustes y Estadísticas ya no cargan varios megabytes de datos innecesarios antes de la primera carga.",
+  ],
+};
+
+const v1_37_20_de: ChangelogEntry = {
+  version: "v1.37.20",
+  date: "2026-09-29",
+  title: "Sicherheit + Performance: vollständiges Audit",
+  items: [
+    "Sicherheit: ein öffentlicher Freigabe-Link gibt nicht mehr die interne Besitzer-ID oder interne Google-Drive-Kennungen preis.",
+    "Sicherheit: mehrere Mail-Routen escapen IDs jetzt korrekt vor der Einfügung in Datenbankfilter.",
+    "Sicherheit: KI-Einstellungen, Ticket-Kategorien/Panels und Einladungs-Belohnungen/Kampagnen werden jetzt vor dem Speichern validiert.",
+    "Performance: Kalender-, Einstellungen- und Statistik-Seiten laden nicht mehr mehrere Megabyte unnötiger Daten vor der ersten Anzeige.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_20_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_20_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_20_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_20_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

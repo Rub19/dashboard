@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { LineChart as LineChartIcon, Gamepad2, Receipt, CheckCircle2, Timer, ArrowRight } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useTasks } from "@/lib/hooks/useTasks";
@@ -16,10 +17,14 @@ import {
   tasksStats,
   focusHistoryByDay,
 } from "@/lib/analytics";
-import AnalyticsBarChart from "@/components/charts/AnalyticsBarChart";
-import AnalyticsLineChart from "@/components/charts/AnalyticsLineChart";
-import AnalyticsDonutChart from "@/components/charts/AnalyticsDonutChart";
 import { useChartPalette } from "@/components/charts/useChartPalette";
+
+// recharts (via ces 3 composants) est chargé à la demande : les graphiques ne sont jamais nécessaires
+// avant l'hydratation initiale (plusieurs états doivent d'abord se résoudre), donc les embarquer dans
+// le bundle de départ de /analytics n'apportait rien qu'un First Load JS plus gros.
+const AnalyticsBarChart = dynamic(() => import("@/components/charts/AnalyticsBarChart"), { ssr: false });
+const AnalyticsLineChart = dynamic(() => import("@/components/charts/AnalyticsLineChart"), { ssr: false });
+const AnalyticsDonutChart = dynamic(() => import("@/components/charts/AnalyticsDonutChart"), { ssr: false });
 
 const CATEGORY_LABELS: Record<BillCategory, string> = {
   housing: "Logement",

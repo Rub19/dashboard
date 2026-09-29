@@ -530,6 +530,35 @@ test("mail.labels CRUD", async () => {
   assert.equal(state["ethone_mail_labels"].length, 0);
 });
 
+// The `id` value used to be interpolated raw into the PostgREST filter string (`?id=eq.${id}&...`).
+// An id containing "&" would split into an extra, attacker-controlled query parameter instead of being
+// part of the id itself. Regression test: a crafted id must be treated as one opaque literal value —
+// it must NOT match the real label — proving encodeURIComponent() is now applied before interpolation.
+test("mail.labels delete treats an id containing '&' as a literal value, not a filter-injection vector", async () => {
+  const state = {};
+  const env = makeEnv(state);
+
+  const createRes = await invoke("/api/mail/labels", {
+    method: "POST",
+    env,
+    headers: jsonHeaders(),
+    body: JSON.stringify({ name: "Personal", color: "#00ff00" })
+  });
+  const label = (await payload(createRes)).data;
+
+  const craftedId = `${label.id}&user_id=neq.${USER_ID}`;
+  const deleteRes = await invoke("/api/mail/labels", {
+    method: "DELETE",
+    env,
+    headers: jsonHeaders(),
+    body: JSON.stringify({ id: craftedId })
+  });
+  assert.equal(deleteRes.status, 200);
+  const deleted = await payload(deleteRes);
+  assert.equal(deleted.data.deleted, true, "the route call itself should still succeed (DELETE is a no-op match)");
+  assert.equal(state["ethone_mail_labels"].length, 1, "the real label must survive an id crafted to break out of its filter");
+});
+
 test("mail.rules CRUD", async () => {
   const state = {};
   const env = makeEnv(state);

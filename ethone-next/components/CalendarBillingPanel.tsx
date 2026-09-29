@@ -204,22 +204,10 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
                     style={{ backgroundColor: brand.bgColor || "#18181b" }}
                   >
                     {brand.logo ? (
-                      <img
-                        src={brand.logo}
-                        alt=""
-                        className="h-5 w-5 object-contain"
-                        onError={(e) => {
-                          const target = e.target as HTMLElement;
-                          target.style.display = "none";
-                          const fallback = target.nextElementSibling as HTMLElement;
-                          if (fallback) fallback.style.display = "block";
-                        }}
-                      />
-                    ) : null}
-                    <Icon
-                      name={brand.icon || "receipt"}
-                      className={cn("h-5 w-5 text-white", brand.logo ? "hidden" : "block")}
-                    />
+                      <Icon name={brand.logo} pack="brand" className="h-5 w-5 text-white" />
+                    ) : (
+                      <Icon name={brand.icon || "receipt"} className="h-5 w-5 text-white" />
+                    )}
                   </div>
 
                   <div className="min-w-0 flex-1">

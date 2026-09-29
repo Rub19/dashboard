@@ -188,7 +188,7 @@ export function storeMailMessage(env, message) {
 export function updateMailMessage(env, messageId, userId, patch) {
   const origin = projectOrigin(env);
   if (!origin || !messageId || !userId) return Promise.resolve(null);
-  return supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${messageId}&user_id=eq.${userId}`, {
+  return supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${encodeURIComponent(messageId)}&user_id=eq.${userId}`, {
     method: "PATCH",
     headers: { "Prefer": "return=minimal" },
     body: patch,

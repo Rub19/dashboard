@@ -1,9 +1,8 @@
-import { icons as simpleIcons } from "@iconify-json/simple-icons";
-
 export type BrandMeta = {
   name: string;
   icon: string;
   color: string;
+  /** Nom d'icône du pack "simple-icons" (ex. "openai"), rendu via <Icon pack="brand">. */
   logo: string;
   bgColor?: string;
   defaultAmount?: number;
@@ -11,15 +10,14 @@ export type BrandMeta = {
   category?: "subscriptions" | "housing" | "utilities" | "leisure" | "other";
 };
 
-export function getLocalBrandLogo(iconName: string, color: string = "#ffffff"): string {
-  try {
-    const iconData = (simpleIcons.icons as Record<string, { body?: string }>)?.[iconName];
-    if (!iconData?.body) return "";
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">${iconData.body.replace(/currentColor/g, color)}</svg>`;
-    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-  } catch {
-    return "";
-  }
+/**
+ * Retourne le nom d'icône "simple-icons" à donner à <Icon name={...} pack="brand">, qui charge le
+ * pack (~4.6MB) à la demande. `simple-icons` était auparavant importé statiquement ici pour précalculer
+ * un SVG en data URI par marque au chargement du module — ça embarquait les 4.6MB dans le bundle de
+ * chaque page utilisant BILL_BRANDS (ex. /calendar), même sans jamais afficher de logo.
+ */
+export function getLocalBrandLogo(iconName: string, _color?: string): string {
+  return iconName;
 }
 
 export const BILL_BRANDS: Record<string, BrandMeta> = {

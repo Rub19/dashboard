@@ -2,9 +2,48 @@ import assert from "node:assert/strict";
 import test, { beforeEach } from "node:test";
 import { clearCache } from "../src/utils/cache.js";
 import { createShare, getShareBySlug, incrementDropFileCount, incrementShareDownload } from "../src/services/cloud-shares-client.js";
+import { cloudDropResolveRoute, cloudShareResolveRoute } from "../src/routes/cloud-shares.js";
 import { json, testEnv } from "./helpers.mjs";
 
 beforeEach(() => clearCache());
+
+// cloudShareResolveRoute is public/unauthenticated (anyone with the slug can call it) — it must never
+// leak the owning user's id or the Google Drive internal file/client ids from the raw Supabase row.
+test("cloudShareResolveRoute never exposes user_id or drive identifiers to an anonymous visitor", async () => {
+  const fetchImpl = async (input) => {
+    const url = new URL(String(input));
+    if (url.pathname === "/rest/v1/ethone_file_shares") {
+      return json([{
+        id: "share-1", file_id: "file-1", slug: "abc123slugslug", visibility: "public",
+        download_count: 0, max_downloads: 0, drive_client_id: "client-9",
+        ethone_files: {
+          id: "file-1", user_id: "owner-secret-uuid", drive_file_id: "drive-file-secret",
+          drive_client_id: "client-9", name: "photo.png", mime_type: "image/png", size: 1024
+        }
+      }]);
+    }
+    return json([]);
+  };
+  const env = testEnv({ __TEST_FETCH__: fetchImpl });
+  const url = new URL("https://worker.test/api/cloud/shares/resolve?slug=abc123slugslug");
+  const result = await cloudShareResolveRoute({ url, env });
+  const serialized = JSON.stringify(result.data);
+  assert.ok(!serialized.includes("owner-secret-uuid"), "user_id leaked to an anonymous share visitor");
+  assert.ok(!serialized.includes("drive-file-secret"), "drive_file_id leaked to an anonymous share visitor");
+  assert.equal(result.data.file.name, "photo.png");
+  assert.equal(result.data.file.mimeType, "image/png");
+});
+
+test("cloudDropResolveRoute never exposes the drop owner's user_id to an anonymous visitor", async () => {
+  const fetchImpl = async () => json([{
+    id: "drop-1", user_id: "owner-secret-uuid", slug: "dropslugslugslug",
+    visibility: "public", title: "Drop", file_count: 0
+  }]);
+  const env = testEnv({ __TEST_FETCH__: fetchImpl });
+  const url = new URL("https://worker.test/api/cloud/drops/resolve?slug=dropslugslugslug");
+  const result = await cloudDropResolveRoute({ url, env });
+  assert.ok(!JSON.stringify(result.data).includes("owner-secret-uuid"), "user_id leaked to an anonymous drop visitor");
+});
 
 // Regression coverage for the same safeText(value, maximum) misuse fixed
 // across this file: `safeText(slug, "", 64)` silently queried `slug=eq.`

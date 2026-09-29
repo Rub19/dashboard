@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.21 — 2026-09-29
+
+**iOS : 3 listes imbriquées de plus débloquées**
+
+- Erreurs, Événements et Performance (Centre de contrôle du bot) étaient vides depuis toujours à cause de la même limite de nesting déjà corrigée pour Owner Shield et la rotation — maintenant interactives, avec un bouton « Marquer résolue » pour les erreurs.
+
 ## v1.37.20 — 2026-09-29
 
 **Sécurité + performance : audit complet worker/bot/dashboard**

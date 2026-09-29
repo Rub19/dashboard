@@ -39602,6 +39602,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_20_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_20_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_20_de);
 
+const v1_37_21_fr: ChangelogEntry = {
+  version: "v1.37.21",
+  date: "2026-09-29",
+  title: "iOS : 3 listes imbriquées de plus débloquées",
+  items: [
+    "Erreurs, Événements et Performance (Centre de contrôle du bot) étaient vides depuis toujours à cause de la même limite de nesting déjà corrigée pour Owner Shield et la rotation — maintenant interactives, avec un bouton « Marquer résolue » pour les erreurs.",
+  ],
+};
+
+const v1_37_21_en: ChangelogEntry = {
+  version: "v1.37.21",
+  date: "2026-09-29",
+  title: "iOS: 3 more nested lists unlocked",
+  items: [
+    "Errors, Events and Performance (Bot Control Center) had always been empty because of the same nesting limitation already fixed for Owner Shield and rotation — now interactive, with a \"Mark resolved\" action on errors.",
+  ],
+};
+
+const v1_37_21_es: ChangelogEntry = {
+  version: "v1.37.21",
+  date: "2026-09-29",
+  title: "iOS: 3 listas anidadas más desbloqueadas",
+  items: [
+    "Errores, Eventos y Rendimiento (Centro de control del bot) llevaban siempre vacíos por la misma limitación de anidamiento — ahora interactivos.",
+  ],
+};
+
+const v1_37_21_de: ChangelogEntry = {
+  version: "v1.37.21",
+  date: "2026-09-29",
+  title: "iOS: 3 weitere verschachtelte Listen verfügbar",
+  items: [
+    "Fehler, Ereignisse und Performance (Bot-Kontrollzentrum) waren wegen derselben Verschachtelungs-Einschränkung immer leer — jetzt interaktiv.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_21_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

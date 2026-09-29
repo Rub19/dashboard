@@ -252,14 +252,15 @@ enum AdminCatalog {
               // les mêmes que le toggle "Mode Maintenance" du site (qui s'est avéré local-only, jamais envoyé ici).
               configs: [.init(title: "Réglages du bot", get: "/settings", put: "/settings")],
               lists: [
-                .init(title: "Commandes", path: "/commands"), .init(title: "Événements", path: "/events"),
+                .init(title: "Commandes", path: "/commands"), .init(title: "Événements", path: "/events", key: "data.topEvents"),
                 .init(title: "Tâches planifiées", path: "/jobs", rowActions: [.init(title: "Lancer maintenant", path: "/jobs/{id}/run", symbol: "play.fill")]),
-                // Pas d'action « Marquer résolue » ici : /errors renvoie {data:{fingerprints,incidents}}, deux
-                // niveaux de nesting que `key:` ne peut pas atteindre (même limite que /rotation et /status plus
-                // haut) — le bouton ne se serait jamais affiché, aucune ligne n'étant jamais listée.
-                .init(title: "Erreurs", path: "/errors"),
+                // /errors renvoie {data:{fingerprints,incidents}} — atteint via la clé à point "data.fingerprints"
+                // (un fingerprint = un type d'erreur dédupliqué, ce que POST /errors/{fingerprint}/resolve cible).
+                .init(title: "Erreurs", path: "/errors", key: "data.fingerprints", idKey: "fingerprint", rowActions: [
+                  .init(title: "Marquer résolue", path: "/errors/{id}/resolve", symbol: "checkmark.circle.fill"),
+                ]),
                 .init(title: "Intégrations", path: "/integrations", rowActions: [.init(title: "Tester", path: "/integrations/{id}/test", symbol: "checkmark.seal.fill")]),
-                .init(title: "Performance", path: "/performance"), .init(title: "Télémétrie", path: "/telemetry"),
+                .init(title: "Performance", path: "/performance", key: "data.points"), .init(title: "Télémétrie", path: "/telemetry"),
                 .init(title: "IA (usage)", path: "/ai"), .init(title: "Sécurité du bot", path: "/security"),
               ],
               actions: [

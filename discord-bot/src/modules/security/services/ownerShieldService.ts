@@ -660,7 +660,9 @@ export class OwnerShieldService {
       }
     }
 
-    // C. Restauration automatique des rôles retirés (Snapshot)
+    // C. Détection de rôles retirés (Snapshot) — n'agit plus tout seul : signale et attend un clic sur
+    // le bouton "👑 Rétablir Tout" (déjà envoyé ci-dessous, géré par handleButtonInteraction). Sur demande
+    // explicite du propriétaire : aucune initiative du bot sans confirmation.
     const removedRoles = oldMember.roles.cache.filter((r) => !newMember.roles.cache.has(r.id) && !mutePatterns.test(r.name));
     if (this.config.autoRestoreRoles && removedRoles.size > 0 && (botMember?.permissions.has(PermissionFlagsBits.ManageRoles) || botMember?.permissions.has(PermissionFlagsBits.Administrator))) {
       const restorableRoles = removedRoles.filter((r) => r.position < botHighest && !r.managed);
@@ -669,28 +671,34 @@ export class OwnerShieldService {
         try {
           const modInfo = await this.findModeratorFromAuditLogs(guild, newMember.id, AuditLogEvent.MemberRoleUpdate);
 
-          await newMember.roles.add(restorableRoles, "⚡ Protection Suprême de l'Owner : Restauration automatique des rôles");
-          logger.success(`[OwnerShield] ✅ Rôles restaurés à l'Owner sur "${guild.name}" !`);
           this.addInterception(
             guild,
             'ROLES_RESTORED',
-            `Rôles restaurés automatiquement (${restorableRoles.map((r) => r.name).join(', ')})`,
+            `Rôles retirés détectés, en attente de confirmation (${restorableRoles.map((r) => r.name).join(', ')})`,
             true,
             modInfo || undefined
           );
 
+          const alertPayload = {
+            embeds: [
+              this.alertEmbed('warning', '🛡️ Rôles retirés — Confirmation requise', `Vos rôles **${restorableRoles.map((r) => r.name).join(', ')}** vous ont été retirés sur **${guild.name}**.\n\n⚡ **Cliquez sur "Rétablir Tout" ci-dessous pour les récupérer.**`, [
+                modInfo && ['👮 Auteur', `${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)`],
+              ]),
+            ],
+            components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
+          };
           if (this.config.dmAlerts) {
-            await newMember.send({
-              embeds: [
-                this.alertEmbed('success', '🛡️ Rôles restaurés — Protection Suprême', `Vos rôles **${restorableRoles.map((r) => r.name).join(', ')}** vous avaient été retirés sur **${guild.name}**.\n\n⚡ **Le bot vous les a immédiatement réattribués !**`, [
-                  modInfo && ['👮 Auteur', `${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)`],
-                ]),
-              ],
-              components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
-            }).catch(() => null);
+            await newMember.send(alertPayload).catch(async () => {
+              // L'Owner n'est pas joignable en MP (DMs fermés) : on prévient l'admin/owner réel du serveur
+              // plutôt que de laisser le bot agir seul ou l'incident passer inaperçu.
+              const guildOwner = await guild.fetchOwner().catch(() => null);
+              if (guildOwner && guildOwner.id !== newMember.id) {
+                await guildOwner.send(alertPayload).catch(() => null);
+              }
+            });
           }
         } catch (err: any) {
-          logger.error(`[OwnerShield] Erreur restauration rôles:`, err);
+          logger.error(`[OwnerShield] Erreur signalement rôles retirés:`, err);
         }
       }
     } else if (newMember.roles.cache.size > 1) {

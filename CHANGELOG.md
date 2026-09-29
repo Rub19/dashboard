@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.18 — 2026-09-29
+
+**Sécurité : correction de la vulnérabilité undici (DoS)**
+
+- Corrigé une vulnérabilité modérée (déni de service) dans undici, dépendance transitive de discord.js, en forçant la version corrigée.
+
 ## v1.37.17 — 2026-09-29
 
 **/summarize respecte la visibilité du serveur, erreurs silencieuses journalisées**

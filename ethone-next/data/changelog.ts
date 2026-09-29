@@ -39467,6 +39467,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_17_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_17_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_17_de);
 
+const v1_37_18_fr: ChangelogEntry = {
+  version: "v1.37.18",
+  date: "2026-09-29",
+  title: "Sécurité : correction de la vulnérabilité undici (DoS)",
+  items: [
+    "Corrigé une vulnérabilité modérée (déni de service) dans undici, dépendance transitive de discord.js, en forçant la version corrigée.",
+  ],
+};
+
+const v1_37_18_en: ChangelogEntry = {
+  version: "v1.37.18",
+  date: "2026-09-29",
+  title: "Security: fixed the undici DoS vulnerability",
+  items: [
+    "Fixed a moderate-severity denial-of-service vulnerability in undici, a transitive dependency of discord.js, by pinning the patched version.",
+  ],
+};
+
+const v1_37_18_es: ChangelogEntry = {
+  version: "v1.37.18",
+  date: "2026-09-29",
+  title: "Seguridad: vulnerabilidad undici corregida",
+  items: [
+    "Corregida una vulnerabilidad de denegación de servicio (moderada) en undici, dependencia transitiva de discord.js.",
+  ],
+};
+
+const v1_37_18_de: ChangelogEntry = {
+  version: "v1.37.18",
+  date: "2026-09-29",
+  title: "Sicherheit: undici-Schwachstelle behoben",
+  items: [
+    "Eine mittelschwere DoS-Schwachstelle in undici, einer transitiven Abhängigkeit von discord.js, wurde behoben.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_18_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_18_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_18_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_18_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

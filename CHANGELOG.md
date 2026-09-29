@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.9 — 2026-09-29
+
+**Centre de contrôle : synchro Supabase temps réel**
+
+- Le bot écrit désormais sa télémétrie (uptime, ping, serveurs, présence, commandes, erreurs, usage IA, audit sécurité) dans Supabase toutes les 30s, avec RLS restreignant la lecture au propriétaire au niveau de la base de données.
+- Le Centre de contrôle lit cette table en temps réel (abonnement realtime) au lieu d'appeler l'API REST du bot pour ces données — l'accès est vérifié par la base plutôt que par du code React.
+- Correction : la barre de recherche du haut pouvait chevaucher les icônes de droite à certaines largeurs de fenêtre (centrage en grille au lieu d'un positionnement absolu sur toute la barre).
+
 ## v1.37.8 — 2026-09-29
 
 **Centre de contrôle : accès réservé et en-tête non fixe**

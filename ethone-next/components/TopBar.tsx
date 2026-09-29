@@ -375,12 +375,16 @@ function TopBar() {
           shrink-0 de largeurs très inégales (gauche : juste le toggle + fil d'Ariane ; droite :
           pills système + barre d'outils + profil) — il se centrait donc dans l'espace RESTANT
           entre les deux, pas sur la page, et dérivait vers la gauche à mesure que la colonne de
-          droite s'élargit (Dynamic Island même souci, voir plus bas). Positionné en absolute et
-          centré sur toute la largeur de la barre, il reste au vrai centre quel que soit le
-          déséquilibre des colonnes voisines. */}
-      <div className="@container relative pointer-events-auto hidden h-14 w-full items-center justify-between gap-3 md:flex">
+          droite s'élargit (Dynamic Island même souci, voir plus bas). Un centrage en absolute sur
+          toute la largeur de la barre corrigeait la dérive mais chevauchait la colonne de droite à
+          certaines largeurs de fenêtre (elle ignore la largeur réelle des colonnes voisines) — grille
+          à 3 colonnes (1fr / auto / 1fr) à la place : centrage vrai ET plus jamais de chevauchement,
+          la grille réserve la place de chaque colonne au lieu de l'ignorer.
+          `min-w-0` sur les colonnes 1fr : sans lui, leur contenu (fil d'Ariane, barre d'outils) forcerait
+          la piste à dépasser 1fr et grignoterait la colonne centrale au lieu de simplement tronquer. */}
+      <div className="@container relative pointer-events-auto hidden h-14 w-full grid-cols-[1fr_auto_1fr] items-center gap-3 md:grid">
         {/* Gauche : bouton de barre latérale + fil d'Ariane */}
-        <div className="flex min-w-0 shrink-0 items-center gap-2.5">
+        <div className="flex min-w-0 items-center gap-2.5">
           <SidebarTopToggle />
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)] max-w-[140px] sm:max-w-[200px] lg:max-w-[260px]">
             <Link
@@ -396,15 +400,15 @@ function TopBar() {
           </nav>
         </div>
 
-        {/* Centre : champ de recherche, vraiment centré sur la barre (indépendant des colonnes voisines) */}
-        <div className="pointer-events-none absolute left-1/2 top-1/2 w-full max-w-[480px] -translate-x-1/2 -translate-y-1/2 px-2">
-          <div className="pointer-events-auto">
+        {/* Centre : champ de recherche */}
+        <div className="flex items-center justify-center px-2">
+          <div className="w-[480px] max-w-full">
             <CommandBarTrigger variant="field" />
           </div>
         </div>
 
         {/* Droite : état du système (très grands écrans), capsule d'outils, profil */}
-        <div className="flex shrink-0 items-center justify-end gap-2">
+        <div className="flex min-w-0 items-center justify-end gap-2">
           {/* Les pastilles ne s'affichent que si la barre est assez large pour ne jamais chevaucher la recherche centrée. */}
           <div className="hidden @min-[1750px]:flex @min-[2250px]:hidden">
             <SystemStatusPills compact />

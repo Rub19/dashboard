@@ -39056,6 +39056,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_8_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_8_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_8_de);
 
+const v1_37_9_fr: ChangelogEntry = {
+  version: "v1.37.9",
+  date: "2026-09-29",
+  title: "Centre de contrôle : synchro Supabase temps réel",
+  items: [
+    "Le bot écrit désormais sa télémétrie (uptime, ping, serveurs, présence, commandes, erreurs, usage IA, audit sécurité) dans Supabase toutes les 30s, avec RLS restreignant la lecture au propriétaire au niveau de la base de données.",
+    "Le Centre de contrôle lit cette table en temps réel (abonnement realtime) au lieu d'appeler l'API REST du bot pour ces données — l'accès est vérifié par la base plutôt que par du code React.",
+    "Correction : la barre de recherche du haut pouvait chevaucher les icônes de droite à certaines largeurs de fenêtre (centrage en grille au lieu d'un positionnement absolu sur toute la barre).",
+  ],
+};
+
+const v1_37_9_en: ChangelogEntry = {
+  version: "v1.37.9",
+  date: "2026-09-29",
+  title: "Bot Control Center: realtime Supabase sync",
+  items: [
+    "The bot now writes its telemetry (uptime, ping, servers, presence, commands, errors, AI usage, security audit) to Supabase every 30s, with RLS restricting reads to the owner at the database level.",
+    "The Bot Control Center now reads this table in realtime instead of calling the bot's REST API for this data — access is enforced by the database rather than by React code.",
+    "Fixed: the top search bar could overlap the right-side icons at certain window widths (grid-based centering instead of absolute positioning across the whole bar).",
+  ],
+};
+
+const v1_37_9_es: ChangelogEntry = {
+  version: "v1.37.9",
+  date: "2026-09-29",
+  title: "Centro de control: sincronización Supabase en tiempo real",
+  items: [
+    "El bot ahora escribe su telemetría (uptime, ping, servidores, presencia, comandos, errores, uso de IA, auditoría de seguridad) en Supabase cada 30s, con RLS restringiendo la lectura al propietario a nivel de base de datos.",
+    "El Centro de control lee ahora esta tabla en tiempo real en lugar de llamar a la API REST del bot para estos datos.",
+    "Corregido: la barra de búsqueda superior podía superponerse con los iconos de la derecha en ciertos anchos de ventana.",
+  ],
+};
+
+const v1_37_9_de: ChangelogEntry = {
+  version: "v1.37.9",
+  date: "2026-09-29",
+  title: "Bot-Kontrollzentrum: Echtzeit-Supabase-Sync",
+  items: [
+    "Der Bot schreibt seine Telemetrie (Uptime, Ping, Server, Präsenz, Befehle, Fehler, KI-Nutzung, Sicherheitsaudit) jetzt alle 30s in Supabase, mit RLS, die Lesezugriff auf Datenbankebene auf den Eigentümer beschränkt.",
+    "Das Bot-Kontrollzentrum liest diese Tabelle jetzt in Echtzeit, anstatt die REST-API des Bots dafür aufzurufen.",
+    "Behoben: Die obere Suchleiste konnte sich bei bestimmten Fensterbreiten mit den rechten Symbolen überschneiden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_9_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_9_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_9_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_9_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

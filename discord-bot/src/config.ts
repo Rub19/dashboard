@@ -48,6 +48,12 @@ const envSchema = z.object({
   // Voir discord-bot/lavalink/yt-resolver/README.md.
   YT_RESOLVER_URL: z.string().optional().default(''),
   YT_RESOLVER_TOKEN: z.string().optional().default(''),
+  // Optionnel — écriture de la télémétrie (uptime, ping, serveurs, présence) dans Supabase
+  // pour le Centre de contrôle du dashboard (table ethone_bot_telemetry, RLS = owner only).
+  // Clé service_role (jamais la clé anon) : elle seule peut écrire, la RLS bloque le reste.
+  // Vide = fonctionnalité désactivée (le dashboard retombe sur l'API REST du bot).
+  SUPABASE_URL: z.string().optional().default(''),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().optional().default(''),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -94,4 +100,6 @@ export const config = {
   },
   ytResolverUrl: parsed.data.YT_RESOLVER_URL.replace(/\/+$/, ''),
   ytResolverToken: parsed.data.YT_RESOLVER_TOKEN,
+  supabaseUrl: parsed.data.SUPABASE_URL,
+  supabaseServiceRoleKey: parsed.data.SUPABASE_SERVICE_ROLE_KEY,
 };

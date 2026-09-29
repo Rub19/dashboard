@@ -1036,154 +1036,139 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       .catch(() => {});
   }, []);
 
-  // Fetch real data from bot backend API
+  // Applique une ligne ethone_bot_telemetry (Supabase, RLS owner only) au state — utilisé par
+  // le chargement initial et par l'abonnement realtime, pour ne jamais dupliquer la logique.
+  const applyTelemetryRow = useCallback((row: any) => {
+    if (!row) return;
+    const status = row.status || {};
+    setBotCore((prev: any) => ({
+      ...prev,
+      uptimeSeconds: status.uptimeSeconds ?? prev.uptimeSeconds,
+      pingMs: status.pingMs ?? prev.pingMs,
+      version: status.version || prev.version,
+      guildCount: status.guildCount ?? prev.guildCount,
+      userCount: status.userCount ?? prev.userCount,
+      shardsCount: status.shardsCount ?? prev.shardsCount,
+      status: row.presence?.status ?? prev.status,
+      activity: row.presence?.activity ?? prev.activity,
+      gatewayConnected: status.online ?? prev.gatewayConnected,
+    }));
+    if (status.memory) {
+      setPerfMetrics((prev) => ({
+        ...prev,
+        heapUsedMb: status.memory.heapUsedMb ?? prev.heapUsedMb,
+        heapTotalMb: status.memory.heapTotalMb ?? prev.heapTotalMb,
+        rssMb: status.memory.rssMb ?? prev.rssMb,
+        cpuUsagePercent: status.cpuPercent ?? prev.cpuUsagePercent,
+        eventLoopLagMs: status.eventLoopDelayMs ?? prev.eventLoopLagMs,
+        eventsPerMinute: status.throughput?.eventsPerMinute ?? prev.eventsPerMinute,
+        commandsPerMinute: status.throughput?.commandsPerMinute ?? prev.commandsPerMinute,
+        dbQueriesPerMinute: status.throughput?.dbQueriesPerMinute ?? prev.dbQueriesPerMinute,
+        aiTokensPerMinute: status.throughput?.aiTokensPerMinute ?? prev.aiTokensPerMinute,
+      }));
+    }
+    if (Array.isArray(row.subsystems) && row.subsystems.length > 0) {
+      const labels: Record<string, string> = {
+        gateway: "Gateway WebSocket",
+        restApi: "Discord REST API",
+        database: "Configuration DB",
+        cache: "Cache Mémoire",
+        eventBus: "Realtime Sync Bus",
+        jobScheduler: "Gestionnaire de Tâches",
+        aiProvider: "Fournisseur IA",
+        storage: "Stockage",
+        voiceEngine: "Moteur audio (Lavalink)",
+      };
+      setSubsystems(row.subsystems.map((s: any) => ({ id: s.id, name: labels[s.id] || s.id, status: s.status })));
+    }
+    if (Array.isArray(row.servers) && row.servers.length > 0) {
+      setServers(
+        row.servers.map((g: any) => ({
+          id: g.id,
+          name: g.name,
+          icon: g.icon || null,
+          memberCount: typeof g.memberCount === "number" ? g.memberCount : 0,
+          owner: "Staff",
+          status: "connected",
+        }))
+      );
+    }
+    if (Array.isArray(row.commands)) {
+      setCommands(row.commands);
+    }
+    if (row.errors && Array.isArray(row.errors.incidents)) {
+      setErrors(row.errors.incidents);
+    }
+    const a = row.ai_usage;
+    if (a && Object.keys(a).length > 0) {
+      setAiTelemetry((prev) => ({
+        ...prev,
+        dailyRequests: a.requests24h ?? prev.dailyRequests,
+        dailyTokens: a.totalTokens24h ?? prev.dailyTokens,
+        activeModel: a.activeModel ? `${a.provider ? a.provider + " · " : ""}${a.activeModel}` : a.provider || prev.activeModel,
+        avgLatencyMs: a.avgInferenceLatencyMs ?? prev.avgLatencyMs,
+        successRate: a.successRate ?? prev.successRate,
+        estimatedCostUsd: a.estimatedCostTodayUsd ?? prev.estimatedCostUsd,
+        dailyBudgetUsd: a.dailyBudgetUsd ?? prev.dailyBudgetUsd,
+        budgetUsedPercent: a.budgetUsedPercent ?? prev.budgetUsedPercent,
+      }));
+    }
+    const s = row.security;
+    if (s && Object.keys(s).length > 0) {
+      setSecurityAudit({
+        score: s.score ?? 100,
+        intents: s.intents || { guildMembers: false, messageContent: false, guildPresences: false },
+        adminGuildsCount: s.adminGuildsCount ?? 0,
+        suspiciousRoleCreations24h: s.suspiciousRoleCreations24h ?? 0,
+        unauthorizedAttempts24h: s.unauthorizedAttempts24h ?? 0,
+      });
+    }
+  }, []);
+
+  // Télémétrie, présence et liste de serveurs : lues depuis Supabase (table ethone_bot_telemetry,
+  // écrite par le bot, RLS = owner only) plutôt que via l'API REST du bot — l'accès est ainsi
+  // vérifié par la base de données elle-même, pas par un check isOwner répété côté React.
+  // Chargement initial + abonnement realtime (le bot écrit toutes les ~30s).
+  useEffect(() => {
+    if (!isOwner) return;
+    let cancelled = false;
+    void supabase
+      .from("ethone_bot_telemetry")
+      .select("*")
+      .eq("id", "global")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled && data) applyTelemetryRow(data);
+      });
+    const channel = supabase
+      .channel("ethone_bot_telemetry_global")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "ethone_bot_telemetry", filter: "id=eq.global" },
+        (payload) => applyTelemetryRow(payload.new)
+      )
+      .subscribe();
+    return () => {
+      cancelled = true;
+      channel?.unsubscribe();
+    };
+  }, [isOwner, applyTelemetryRow]);
+
+  // Bouton "Actualiser" : redemande la ligne Supabase tout de suite au lieu d'attendre le
+  // prochain tick du bot (~30s) ou l'événement realtime. Tout (overview/présence/serveurs/
+  // commandes/erreurs/IA/sécurité) vient maintenant de ethone_bot_telemetry.
   const fetchData = useCallback(async () => {
     try {
       setRefreshing(true);
-      const [overviewRes, presenceRes, serversRes, commandsRes, errorsRes, aiRes, securityRes] = await Promise.allSettled([
-        fetch(`${BOT_API_URL}/api/bot/overview`, { credentials: "include" }).then((r) => r.json()),
-        fetch(`${BOT_API_URL}/api/bot/presence`, { credentials: "include" }).then((r) => r.json()),
-        fetch(`${BOT_API_URL}/api/bot/presence/servers`, { credentials: "include" }).then((r) => r.json()),
-        fetch(`${BOT_API_URL}/api/bot/commands`, { credentials: "include" }).then((r) => r.json()),
-        fetch(`${BOT_API_URL}/api/bot/errors`, { credentials: "include" }).then((r) => r.json()),
-        fetch(`${BOT_API_URL}/api/bot/ai`, { credentials: "include" }).then((r) => r.json()),
-        fetch(`${BOT_API_URL}/api/bot/security`, { credentials: "include" }).then((r) => r.json()),
-      ]);
-
-      if (overviewRes.status === "fulfilled" && overviewRes.value?.success) {
-        // GET /api/bot/overview returns { globalStatus, snapshot, recentIncidents, topErrors }
-        // (see botControlRoutes.ts / botTelemetryService.ts) — uptime/version live under
-        // globalStatus, ping/guild/user counts live under snapshot (not top-level, and not
-        // under a "telemetry" key).
-        const o = overviewRes.value.data;
-        if (o) {
-          const globalStatus = o.globalStatus;
-          const snapshot = o.snapshot;
-          setBotCore((prev: any) => ({
-            ...prev,
-            uptimeSeconds: globalStatus?.uptimeSeconds ?? prev.uptimeSeconds,
-            pingMs: snapshot?.latency?.currentPingMs ?? prev.pingMs,
-            version: globalStatus?.version || prev.version,
-            guildCount: snapshot?.guildsCount ?? prev.guildCount,
-            userCount: snapshot?.cachedUsersCount ?? prev.userCount,
-            shardsCount: snapshot?.shardsCount ?? prev.shardsCount,
-          }));
-          if (snapshot?.memory) {
-            setPerfMetrics((prev) => ({
-              ...prev,
-              heapUsedMb: snapshot.memory.heapUsedMb ?? prev.heapUsedMb,
-              heapTotalMb: snapshot.memory.heapTotalMb ?? prev.heapTotalMb,
-              rssMb: snapshot.memory.rssMb ?? prev.rssMb,
-              cpuUsagePercent: snapshot.cpuPercent ?? prev.cpuUsagePercent,
-              eventLoopLagMs: snapshot.eventLoopDelayMs ?? prev.eventLoopLagMs,
-              eventsPerMinute: snapshot.throughput?.eventsPerMinute ?? prev.eventsPerMinute,
-              commandsPerMinute: snapshot.throughput?.commandsPerMinute ?? prev.commandsPerMinute,
-              dbQueriesPerMinute: snapshot.throughput?.dbQueriesPerMinute ?? prev.dbQueriesPerMinute,
-              aiTokensPerMinute: snapshot.throughput?.aiTokensPerMinute ?? prev.aiTokensPerMinute,
-            }));
-          }
-          if (globalStatus?.subsystems) {
-            const labels: Record<string, string> = {
-              gateway: "Gateway WebSocket",
-              restApi: "Discord REST API",
-              database: "Configuration DB",
-              cache: "Cache Mémoire",
-              eventBus: "Realtime Sync Bus",
-              jobScheduler: "Gestionnaire de Tâches",
-              aiProvider: "Fournisseur IA",
-              storage: "Stockage",
-              voiceEngine: "Moteur audio (Lavalink)",
-            };
-            setSubsystems(
-              Object.entries(globalStatus.subsystems).map(([id, status]) => ({
-                id,
-                name: labels[id] || id,
-                status,
-              }))
-            );
-          }
-        }
-      }
-
-      if (presenceRes.status === "fulfilled" && presenceRes.value?.success) {
-        const p = presenceRes.value.data?.state;
-        if (p) {
-          setBotCore((prev: any) => ({
-            ...prev,
-            status: p.status,
-            activity: p.activity,
-            gatewayConnected: p.gatewayConnected ?? true,
-          }));
-        }
-      }
-
-      if (serversRes.status === "fulfilled" && serversRes.value?.success) {
-        const s = serversRes.value.data;
-        if (Array.isArray(s) && s.length > 0) {
-          setServers(
-            s.map((g: any) => ({
-              id: g.guildId,
-              name: g.guildName,
-              icon: g.icon || null,
-              memberCount: typeof g.memberCount === "number" ? g.memberCount : 0,
-              owner: g.owner || "Staff",
-              botJoinedAt: g.updatedAt,
-              status: "connected",
-            }))
-          );
-        }
-      }
-
-      if (commandsRes.status === "fulfilled" && commandsRes.value?.success) {
-        const c = commandsRes.value.data;
-        if (Array.isArray(c)) {
-          setCommands(c);
-        }
-      }
-
-      if (errorsRes.status === "fulfilled" && errorsRes.value?.success) {
-        const e = errorsRes.value.data?.incidents;
-        if (Array.isArray(e)) {
-          setErrors(e);
-        }
-      }
-
-      if (aiRes.status === "fulfilled" && aiRes.value?.success) {
-        const a = aiRes.value.data;
-        if (a) {
-          setAiTelemetry((prev) => ({
-            ...prev,
-            dailyRequests: a.requests24h ?? prev.dailyRequests,
-            dailyTokens: a.totalTokens24h ?? prev.dailyTokens,
-            activeModel: a.activeModel ? `${a.provider ? a.provider + " · " : ""}${a.activeModel}` : a.provider || prev.activeModel,
-            avgLatencyMs: a.avgInferenceLatencyMs ?? prev.avgLatencyMs,
-            successRate: a.successRate ?? prev.successRate,
-            estimatedCostUsd: a.estimatedCostTodayUsd ?? prev.estimatedCostUsd,
-            dailyBudgetUsd: a.dailyBudgetUsd ?? prev.dailyBudgetUsd,
-            budgetUsedPercent: a.budgetUsedPercent ?? prev.budgetUsedPercent,
-          }));
-        }
-      }
-
-      if (securityRes.status === "fulfilled" && securityRes.value?.success) {
-        const s = securityRes.value.data;
-        if (s) {
-          setSecurityAudit({
-            score: s.score ?? 100,
-            intents: s.intents || { guildMembers: false, messageContent: false, guildPresences: false },
-            adminGuildsCount: s.adminGuildsCount ?? 0,
-            suspiciousRoleCreations24h: s.suspiciousRoleCreations24h ?? 0,
-            unauthorizedAttempts24h: s.unauthorizedAttempts24h ?? 0,
-          });
-        }
-      }
+      const { data } = await supabase.from("ethone_bot_telemetry").select("*").eq("id", "global").maybeSingle();
+      if (data) applyTelemetryRow(data);
     } catch {
       // Mode tolérant
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [applyTelemetryRow]);
 
   useEffect(() => {
     fetchData();

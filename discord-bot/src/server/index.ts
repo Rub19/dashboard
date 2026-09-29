@@ -70,6 +70,7 @@ import { createGuildAuthMiddleware } from './middleware/guildAuth.js';
 import { requireSharedSpacesKey } from './middleware/internalAuth.js';
 import { rateLimit } from './middleware/antiAbuseMiddleware.js';
 import { BotTelemetryService } from '../modules/botControl/services/botTelemetryService.js';
+import { startBotTelemetrySync } from '../modules/botControl/services/botTelemetrySyncService.js';
 
 export function startWebServer(client: Client): http.Server {
   const app = express();
@@ -462,6 +463,9 @@ export function startWebServer(client: Client): http.Server {
 
   // Scheduler des salons compteurs (tick 5 min)
   serverStatsService.initialize(client);
+
+  // Synchro Supabase de la télémétrie (Centre de contrôle du dashboard, RLS owner only)
+  startBotTelemetrySync(client);
 
   // Route de santé de l'API
   app.get('/api/health', (req: Request, res: Response) => {

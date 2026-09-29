@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.14 — 2026-09-29
+
+**Top albums Last.fm**
+
+- La carte Last.fm avait déjà Top artistes et Top titres (avec sélecteur de période) — il manquait juste Top albums, maintenant ajouté à côté.
+
 ## v1.37.13 — 2026-09-29
 
 **Auto-rôles avancés + correction de la rotation de présence**

@@ -72,3 +72,14 @@ export async function getTopArtists(env, username, period = "7day", limit = 20, 
     profileUrl: safePublicUrl(value.url, ["last.fm"])
   })));
 }
+
+export async function getTopAlbums(env, username, period = "7day", limit = 20, apiKeyOverride) {
+  const response = await lastFmRequest(env, "user.gettopalbums", username, { period, limit, apiKeyOverride });
+  return Object.freeze(toArray(response.data?.topalbums?.album).slice(0, limit).map((value) => Object.freeze({
+    name: safeText(value.name, 160),
+    artist: safeText(value.artist?.name || value.artist?.["#text"], 160),
+    playCount: safeNumber(value.playcount, 0, 1000000000),
+    artworkUrl: imageUrl(value.image),
+    profileUrl: safePublicUrl(value.url, ["last.fm"])
+  })));
+}

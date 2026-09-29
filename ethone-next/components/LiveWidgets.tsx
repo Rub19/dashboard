@@ -207,6 +207,7 @@ export default function LiveWidgets({
     setLastfmPeriod,
     lastfmTopArtists,
     lastfmTopTracks,
+    lastfmTopAlbums,
     steam,
     steamRecentGames,
     steamOwnedGames,
@@ -437,6 +438,31 @@ export default function LiveWidgets({
                       {String(t.name ?? "—")} <span className="text-[var(--text-muted)]">— {String(t.artist ?? "—")}</span>
                     </span>
                     <span className="text-[10px] text-[var(--text-muted)]">{Number(t.playCount ?? 0)}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-xs text-[var(--text-muted)]">{i18n("noResults")}</p>
+            )}
+          </div>
+
+          <div>
+            <p className="mb-1 text-xs font-medium text-[var(--text-muted)]">{i18n("topAlbums")}</p>
+            {lastfmTopAlbums && lastfmTopAlbums.length > 0 ? (
+              <ul className="space-y-1.5">
+                {lastfmTopAlbums.slice(0, 5).map((al, i) => (
+                  <li key={i} className="flex items-center gap-2 text-sm">
+                    <SafeImage
+                      src={String(al.artworkUrl)}
+                      alt=""
+                      size={24}
+                      className="h-6 w-6 rounded object-cover"
+                      iconClassName="h-3 w-3"
+                    />
+                    <span className="min-w-0 flex-1 truncate">
+                      {String(al.name ?? "—")} <span className="text-[var(--text-muted)]">— {String(al.artist ?? "—")}</span>
+                    </span>
+                    <span className="text-[10px] text-[var(--text-muted)]">{Number(al.playCount ?? 0)}</span>
                   </li>
                 ))}
               </ul>

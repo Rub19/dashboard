@@ -39299,6 +39299,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_13_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_13_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_13_de);
 
+const v1_37_14_fr: ChangelogEntry = {
+  version: "v1.37.14",
+  date: "2026-09-29",
+  title: "Top albums Last.fm",
+  items: [
+    "La carte Last.fm avait déjà Top artistes et Top titres (avec sélecteur de période) — il manquait juste Top albums, maintenant ajouté à côté.",
+  ],
+};
+
+const v1_37_14_en: ChangelogEntry = {
+  version: "v1.37.14",
+  date: "2026-09-29",
+  title: "Last.fm top albums",
+  items: [
+    "The Last.fm card already had Top artists and Top tracks (with a period selector) — only Top albums was missing, now added alongside them.",
+  ],
+};
+
+const v1_37_14_es: ChangelogEntry = {
+  version: "v1.37.14",
+  date: "2026-09-29",
+  title: "Álbumes principales de Last.fm",
+  items: [
+    "La tarjeta de Last.fm ya tenía Artistas principales y Canciones principales — solo faltaban los Álbumes principales, ahora añadidos.",
+  ],
+};
+
+const v1_37_14_de: ChangelogEntry = {
+  version: "v1.37.14",
+  date: "2026-09-29",
+  title: "Last.fm Top-Alben",
+  items: [
+    "Die Last.fm-Karte hatte bereits Top-Künstler und Top-Titel — nur Top-Alben fehlten, jetzt ergänzt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_14_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_14_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_14_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_14_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

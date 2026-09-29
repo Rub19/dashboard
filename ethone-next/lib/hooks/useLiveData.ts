@@ -209,6 +209,7 @@ export function useLiveData(pollMs = 60000) {
   const [lastfmPeriod, setLastfmPeriod] = useState<LastfmPeriod>("7day");
   const [lastfmTopArtists, setLastfmTopArtists] = useState<ApiData[] | null>(null);
   const [lastfmTopTracks, setLastfmTopTracks] = useState<ApiData[] | null>(null);
+  const [lastfmTopAlbums, setLastfmTopAlbums] = useState<ApiData[] | null>(null);
   const [steamRecentGames, setSteamRecentGames] = useState<ApiData[] | null>(null);
   const [steamOwnedGames, setSteamOwnedGames] = useState<ApiData[] | null>(null);
   const [steamAchievements, setSteamAchievements] = useState<ApiData[] | null>(null);
@@ -277,6 +278,12 @@ export function useLiveData(pollMs = 60000) {
 
   const lastfmTopTracksPath = liveLastfmUsername
     ? `/api/lastfm/top-tracks?username=${encodeURIComponent(liveLastfmUsername)}&period=${encodeURIComponent(
+        lastfmPeriod
+      )}&limit=10`
+    : null;
+
+  const lastfmTopAlbumsPath = liveLastfmUsername
+    ? `/api/lastfm/top-albums?username=${encodeURIComponent(liveLastfmUsername)}&period=${encodeURIComponent(
         lastfmPeriod
       )}&limit=10`
     : null;
@@ -359,6 +366,7 @@ export function useLiveData(pollMs = 60000) {
           lf,
           lfArt,
           lfTrk,
+          lfAlb,
           tw,
           mc,
           st,
@@ -386,6 +394,7 @@ export function useLiveData(pollMs = 60000) {
           lastfmPath ? fetchOptional(lastfmPath) : Promise.resolve(null),
           lastfmTopArtistsPath ? fetchOptional(lastfmTopArtistsPath) : Promise.resolve(null),
           lastfmTopTracksPath ? fetchOptional(lastfmTopTracksPath) : Promise.resolve(null),
+          lastfmTopAlbumsPath ? fetchOptional(lastfmTopAlbumsPath) : Promise.resolve(null),
           twitchPath ? fetchOptional(twitchPath) : Promise.resolve(null),
           minecraftPath ? fetchOptional(minecraftPath) : Promise.resolve(null),
           steamPath ? fetchOptional(steamPath) : Promise.resolve(null),
@@ -506,6 +515,10 @@ export function useLiveData(pollMs = 60000) {
           const d = lfTrk.value;
           setLastfmTopTracks(Array.isArray(d) ? (d as ApiData[]) : null);
         }
+        if (lfAlb.status === "fulfilled") {
+          const d = lfAlb.value;
+          setLastfmTopAlbums(Array.isArray(d) ? (d as ApiData[]) : null);
+        }
         if (tw.status === "fulfilled") setTwitch(tw.value);
         if (mc.status === "fulfilled") {
           const d = mc.value;
@@ -591,6 +604,7 @@ export function useLiveData(pollMs = 60000) {
     lastfmPath,
     lastfmTopArtistsPath,
     lastfmTopTracksPath,
+    lastfmTopAlbumsPath,
     twitchPath,
     steamPath,
     steamRecentGamesPath,
@@ -1027,6 +1041,7 @@ export function useLiveData(pollMs = 60000) {
     setLastfmPeriod,
     lastfmTopArtists,
     lastfmTopTracks,
+    lastfmTopAlbums,
     steam,
     steamRecentGames,
     steamOwnedGames,

@@ -28,6 +28,7 @@ const ROUTE_CASES = Object.freeze([
   ["Last.fm recent", "/api/lastfm/recent-tracks?username=ethone&limit=5", (data) => data[0].playing === true],
   ["Last.fm artists", "/api/lastfm/top-artists?username=ethone&period=7day&limit=5", (data) => data[0].name === "Artist"],
   ["Last.fm tracks", "/api/lastfm/top-tracks?username=ethone&period=7day&limit=5", (data) => data[0].name === "Top Track"],
+  ["Last.fm albums", "/api/lastfm/top-albums?username=ethone&period=7day&limit=5", (data) => data[0].name === "Top Album" && data[0].artist === "Artist"],
   ["Lanyard", "/api/lanyard/presence?userId=123456789012345678", (data) => data.spotify.playing === true],
   ["Now playing Last.fm", "/api/now-playing?source=lastfm&username=ethone", (data) => data.source === "lastfm" && data.playing === true],
   ["Now playing Lanyard", "/api/now-playing?source=lanyard&userId=123456789012345678", (data) => data.source === "lanyard" && data.playing === true],

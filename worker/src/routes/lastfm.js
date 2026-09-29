@@ -1,5 +1,5 @@
 import { assertAllowedQuery, PATTERNS, queryInteger, queryText } from "../middleware/validation.js";
-import { getRecentTracks, getTopArtists, getTopTracks } from "../services/lastfm-client.js";
+import { getRecentTracks, getTopAlbums, getTopArtists, getTopTracks } from "../services/lastfm-client.js";
 import { getUserProviderCredential } from "../services/supabase-client.js";
 import { cachedLoad } from "../utils/cache.js";
 import { routeResult } from "../utils/response.js";
@@ -24,7 +24,9 @@ export async function lastFmRoute({ env, url, route, auth }) {
     ? async () => getRecentTracks(env, username, limit, await ownKey(env, auth))
     : route.action === "top-artists"
       ? async () => getTopArtists(env, username, period, limit, await ownKey(env, auth))
-      : async () => getTopTracks(env, username, period, limit, await ownKey(env, auth));
+      : route.action === "top-albums"
+        ? async () => getTopAlbums(env, username, period, limit, await ownKey(env, auth))
+        : async () => getTopTracks(env, username, period, limit, await ownKey(env, auth));
   const result = await cachedLoad(key, ttl, loader);
   return routeResult(result.data, { source: "lastfm", cached: result.cached });
 }

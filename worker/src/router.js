@@ -187,6 +187,7 @@ export const ROUTES = Object.freeze([
   route("lastfm.recent-tracks", "/api/lastfm/recent-tracks", lastFmRoute, { public: true, service: "lastfm", action: "recent-tracks", rateLimit: "edge" }),
   route("lastfm.top-artists", "/api/lastfm/top-artists", lastFmRoute, { public: true, service: "lastfm", action: "top-artists", rateLimit: "edge" }),
   route("lastfm.top-tracks", "/api/lastfm/top-tracks", lastFmRoute, { public: true, service: "lastfm", action: "top-tracks", rateLimit: "edge" }),
+  route("lastfm.top-albums", "/api/lastfm/top-albums", lastFmRoute, { public: true, service: "lastfm", action: "top-albums", rateLimit: "edge" }),
   route("lanyard.presence", "/api/lanyard/presence", lanyardRoute, { public: true, service: "lanyard", rateLimit: "edge" }),
   route("now-playing", "/api/now-playing", nowPlayingRoute, { public: true, service: "nowplaying", rateLimit: "edge" }),
   route("bluesky.profile", "/api/bluesky/profile", blueskyProfileRoute, { public: true, service: "bluesky", rateLimit: "edge" }),

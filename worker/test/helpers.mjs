@@ -144,6 +144,7 @@ export function providerFetch(counter = { calls: 0 }) {
       const method = url.searchParams.get("method");
       if (method === "user.getrecenttracks") return json({ recenttracks: { track: [{ name: "Track", artist: { "#text": "Artist" }, album: { "#text": "Album" }, "@attr": { nowplaying: "true" } }] } });
       if (method === "user.gettopartists") return json({ topartists: { artist: [{ name: "Artist", playcount: "12" }] } });
+      if (method === "user.gettopalbums") return json({ topalbums: { album: [{ name: "Top Album", artist: { name: "Artist" }, playcount: "9" }] } });
       return json({ toptracks: { track: [{ name: "Top Track", artist: { name: "Artist" }, playcount: "15" }] } });
     }
     if (url.hostname === "api.lanyard.rest") return json({ success: true, data: { discord_status: "online", listening_to_spotify: true, discord_user: { id: "123456789012345678", username: "ethone" }, activities: [], spotify: { track_id: "track", song: "Song", artist: "Artist", album: "Album", album_art_url: "https://i.scdn.co/image/test", timestamps: { start: 100, end: 200 } } } });

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test, { beforeEach } from "node:test";
 import { clearCache } from "../src/utils/cache.js";
-import { getRecentTracks, getTopArtists, getTopTracks } from "../src/services/lastfm-client.js";
+import { getRecentTracks, getTopAlbums, getTopArtists, getTopTracks } from "../src/services/lastfm-client.js";
 import { getNowPlaying } from "../src/services/now-playing-client.js";
 import { invoke, json, payload, testEnv } from "./helpers.mjs";
 
@@ -16,7 +16,9 @@ function singletonFetch(method, singleValue) {
     const url = new URL(String(input));
     if (url.hostname !== "ws.audioscrobbler.com") throw new Error(`Unexpected destination: ${url.href}`);
     assert.equal(url.searchParams.get("method"), method);
-    return json({ [method === "user.getrecenttracks" ? "recenttracks" : method === "user.gettoptracks" ? "toptracks" : "topartists"]: { [method === "user.gettopartists" ? "artist" : "track"]: singleValue } });
+    const outerKey = method === "user.getrecenttracks" ? "recenttracks" : method === "user.gettoptracks" ? "toptracks" : method === "user.gettopalbums" ? "topalbums" : "topartists";
+    const innerKey = method === "user.gettopartists" ? "artist" : method === "user.gettopalbums" ? "album" : "track";
+    return json({ [outerKey]: { [innerKey]: singleValue } });
   };
 }
 
@@ -46,6 +48,16 @@ test("getTopArtists does not crash when Last.fm returns a single artist as a bar
   const artists = await getTopArtists(env, "ethone", "7day", 1);
   assert.equal(artists.length, 1);
   assert.equal(artists[0].name, "Solo Artist");
+});
+
+test("getTopAlbums does not crash when Last.fm returns a single album as a bare object", async () => {
+  const env = testEnv({
+    __TEST_FETCH__: singletonFetch("user.gettopalbums", { name: "Solo Album", artist: { name: "Solo Artist" }, playcount: "4" })
+  });
+  const albums = await getTopAlbums(env, "ethone", "7day", 1);
+  assert.equal(albums.length, 1);
+  assert.equal(albums[0].name, "Solo Album");
+  assert.equal(albums[0].artist, "Solo Artist");
 });
 
 test("getRecentTracks still handles the normal array shape", async () => {

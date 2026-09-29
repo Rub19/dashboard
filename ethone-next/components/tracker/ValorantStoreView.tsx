@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchWorker } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import { Clock, Coins, Info, Percent, RefreshCw, Search, SearchX, ShoppingBag, Sparkles } from "@/components/icons/ph";
+import { ChevronDown, Clock, Coins, Info, Percent, RefreshCw, Search, SearchX, ShoppingBag, Sparkles } from "@/components/icons/ph";
 import Badge from "@/components/ui/Badge";
 import Input from "@/components/ui/Input";
 import AnimatedFilterTabs, { type AnimatedFilterTab } from "@/components/ui/AnimatedFilterTabs";
@@ -49,6 +49,13 @@ const SORT_TABS: AnimatedFilterTab[] = [
   { id: "recent", label: "Récents" },
   { id: "az", label: "A-Z" },
 ];
+
+type CategoryFilter = "all" | "vct";
+/** valorant-api.com ne renvoie ni catégorie ni date de sortie par bundle — seul le nom permet de repérer les
+ * bundles esport (ils contiennent tous "VCT" ou "Champions", ex. "VCT 2024", "Champions 2023"). */
+function isVctBundle(name: string): boolean {
+  return /\bVCT\b|Champions \d{4}/i.test(name);
+}
 
 function formatVp(value: number): string {
   return `${value.toLocaleString("fr-FR")} VP`;
@@ -256,6 +263,10 @@ export default function ValorantStoreView() {
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortMode>("recent");
+  const [category, setCategory] = useState<CategoryFilter>("all");
+  // Replié par défaut : c'est le catalogue COMPLET (tous les bundles jamais sortis, pas "la boutique actuelle"),
+  // pas quelque chose à afficher en permanence en plein écran.
+  const [catalogueOpen, setCatalogueOpen] = useState(false);
   const [now, setNow] = useState(() => Date.now());
 
   const load = useCallback(async () => {
@@ -295,13 +306,24 @@ export default function ValorantStoreView() {
   // Ordre "Récents" = ordre renvoyé par l'API inversé (le plus récent en premier, déjà le comportement d'origine) ;
   // "A-Z" = tri alphabétique. Pas de tri par prix/réduction/popularité : le catalogue (valorant-api.com) ne fournit
   // aucune de ces données par bundle — les ajouter inventerait une information qui n'existe pas côté Riot.
+  const vctCount = useMemo(() => (catalogue || []).filter((b) => isVctBundle(b.displayName)).length, [catalogue]);
+
+  const CATEGORY_TABS: AnimatedFilterTab[] = useMemo(
+    () => [
+      { id: "all", label: "Tous", count: catalogue?.length },
+      { id: "vct", label: "VCT / Champions", count: vctCount },
+    ],
+    [catalogue, vctCount]
+  );
+
   const filteredCatalogue = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const list = (catalogue || []).slice().reverse();
+    let list = (catalogue || []).slice().reverse();
+    if (category === "vct") list = list.filter((b) => isVctBundle(b.displayName));
     const filtered = q ? list.filter((b) => b.displayName.toLowerCase().includes(q)) : list;
     if (sort === "az") return filtered.slice().sort((a, b) => a.displayName.localeCompare(b.displayName, "fr"));
     return filtered;
-  }, [catalogue, query, sort]);
+  }, [catalogue, query, sort, category]);
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col gap-6 overflow-y-auto p-1 pr-2">
@@ -353,45 +375,66 @@ export default function ValorantStoreView() {
       </section>
 
       <section className="space-y-3" aria-labelledby="catalogue-title">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 id="catalogue-title" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
-            <ShoppingBag className="h-3.5 w-3.5" />
-            Catalogue des bundles {catalogue ? `(${filteredCatalogue.length})` : ""}
-          </h2>
-          <div className="flex flex-wrap items-center gap-2">
-            <AnimatedFilterTabs tabs={SORT_TABS} activeId={sort} onChange={(id) => setSort(id as SortMode)} />
-            <div className="w-full max-w-xs sm:w-56">
-              <Input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Rechercher un bundle…"
-                aria-label="Rechercher un bundle"
-                icon="search"
-                clearable
-                inputSize="compact"
-              />
+        <button
+          type="button"
+          onClick={() => setCatalogueOpen((v) => !v)}
+          className="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3.5 text-left transition-colors hover:border-[var(--accent-primary)]/30"
+          aria-expanded={catalogueOpen}
+        >
+          <span className="flex items-center gap-2">
+            <ShoppingBag className="h-4 w-4 text-[var(--muted)]" />
+            <span>
+              <span id="catalogue-title" className="block text-sm font-bold text-[var(--text-primary)]">
+                Catalogue complet {catalogue ? `(${catalogue.length})` : ""}
+              </span>
+              <span className="block text-[11px] text-[var(--muted)]">
+                Tous les bundles déjà sortis dans le jeu — pas la boutique actuelle, qui est la section « À la une » ci-dessus.
+              </span>
+            </span>
+          </span>
+          <ChevronDown className={cn("h-4 w-4 shrink-0 text-[var(--muted)] transition-transform", catalogueOpen && "rotate-180")} />
+        </button>
+
+        {catalogueOpen && (
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <AnimatedFilterTabs tabs={CATEGORY_TABS} activeId={category} onChange={(id) => setCategory(id as CategoryFilter)} />
+              <div className="flex flex-wrap items-center gap-2">
+                <AnimatedFilterTabs tabs={SORT_TABS} activeId={sort} onChange={(id) => setSort(id as SortMode)} />
+                <div className="w-full max-w-xs sm:w-56">
+                  <Input
+                    type="search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Rechercher un bundle…"
+                    aria-label="Rechercher un bundle"
+                    icon="search"
+                    clearable
+                    inputSize="compact"
+                  />
+                </div>
+              </div>
             </div>
+            {catalogueError && (
+              <p role="alert" className="flex items-center gap-2 text-sm text-rose-300">
+                <Info className="h-4 w-4 shrink-0" />
+                {catalogueError}
+              </p>
+            )}
+            {catalogue === null && !catalogueError && <CatalogueSkeleton />}
+            {catalogue && filteredCatalogue.length === 0 && (
+              <p className="v8-panel flex items-center gap-2 rounded-2xl p-4 text-sm text-[var(--muted)]">
+                <SearchX className="h-4 w-4 shrink-0" />
+                Aucun bundle ne correspond à « {query} ».
+              </p>
+            )}
+            <ul className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6">
+              {filteredCatalogue.map((bundle) => (
+                <CatalogueCard key={bundle.uuid} bundle={bundle} />
+              ))}
+            </ul>
           </div>
-        </div>
-        {catalogueError && (
-          <p role="alert" className="flex items-center gap-2 text-sm text-rose-300">
-            <Info className="h-4 w-4 shrink-0" />
-            {catalogueError}
-          </p>
         )}
-        {catalogue === null && !catalogueError && <CatalogueSkeleton />}
-        {catalogue && filteredCatalogue.length === 0 && (
-          <p className="v8-panel flex items-center gap-2 rounded-2xl p-4 text-sm text-[var(--muted)]">
-            <SearchX className="h-4 w-4 shrink-0" />
-            Aucun bundle ne correspond à « {query} ».
-          </p>
-        )}
-        <ul className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6">
-          {filteredCatalogue.map((bundle) => (
-            <CatalogueCard key={bundle.uuid} bundle={bundle} />
-          ))}
-        </ul>
       </section>
 
       <p className="flex items-start gap-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-[11px] leading-relaxed text-[var(--muted)]">

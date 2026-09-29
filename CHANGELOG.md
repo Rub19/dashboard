@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.10 — 2026-09-29
+
+**Boutique Valorant repensée + pastille de statut en double**
+
+- Boutique Valorant : le catalogue complet (tous les bundles jamais sortis) est maintenant replié par défaut, clairement distingué de la boutique actuelle (« À la une »), avec un onglet VCT / Champions dédié.
+- Menu profil : retiré la pastille de statut en double sur l'avatar (le sélecteur de statut juste en dessous l'indique déjà).
+
 ## v1.37.9 — 2026-09-29
 
 **Centre de contrôle : synchro Supabase temps réel**

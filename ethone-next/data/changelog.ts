@@ -39105,6 +39105,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_9_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_9_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_9_de);
 
+const v1_37_10_fr: ChangelogEntry = {
+  version: "v1.37.10",
+  date: "2026-09-29",
+  title: "Boutique Valorant repensée + pastille de statut en double",
+  items: [
+    "Boutique Valorant : le catalogue complet (tous les bundles jamais sortis) est maintenant replié par défaut, clairement distingué de la boutique actuelle (« À la une »), avec un onglet VCT / Champions dédié.",
+    "Menu profil : retiré la pastille de statut en double sur l'avatar (le sélecteur de statut juste en dessous l'indique déjà).",
+  ],
+};
+
+const v1_37_10_en: ChangelogEntry = {
+  version: "v1.37.10",
+  date: "2026-09-29",
+  title: "Redesigned Valorant store + duplicate status dot",
+  items: [
+    "Valorant store: the full catalogue (every bundle ever released) now collapses by default, clearly separated from the current storefront (\"Featured\"), with a dedicated VCT / Champions tab.",
+    "Profile menu: removed the duplicate status dot on the avatar (the status selector right below already shows it).",
+  ],
+};
+
+const v1_37_10_es: ChangelogEntry = {
+  version: "v1.37.10",
+  date: "2026-09-29",
+  title: "Tienda de Valorant rediseñada + punto de estado duplicado",
+  items: [
+    "Tienda de Valorant: el catálogo completo (todos los paquetes publicados alguna vez) ahora se contrae por defecto, claramente separado de la tienda actual (\"Destacados\"), con una pestaña VCT / Champions dedicada.",
+    "Menú de perfil: eliminado el punto de estado duplicado en el avatar.",
+  ],
+};
+
+const v1_37_10_de: ChangelogEntry = {
+  version: "v1.37.10",
+  date: "2026-09-29",
+  title: "Überarbeiteter Valorant-Shop + doppelter Statuspunkt",
+  items: [
+    "Valorant-Shop: Der vollständige Katalog (alle jemals veröffentlichten Bundles) ist jetzt standardmäßig eingeklappt, klar getrennt vom aktuellen Shop (\"Im Angebot\"), mit einem eigenen VCT/Champions-Tab.",
+    "Profilmenü: doppelten Statuspunkt auf dem Avatar entfernt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_10_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_10_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_10_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_10_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

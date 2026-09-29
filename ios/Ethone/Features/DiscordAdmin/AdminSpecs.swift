@@ -247,28 +247,57 @@ enum AdminCatalog {
 
     static let bot: [AdminModuleSpec] = [
         .init(id: "control", title: "Centre de contrôle", symbol: "gauge.high", group: groups[5], scope: .bot, base: "bot",
+              // Réglages bot-wide (maintenance/logLevel/limites) réellement persistés côté bot (configService), pas
+              // les mêmes que le toggle "Mode Maintenance" du site (qui s'est avéré local-only, jamais envoyé ici).
+              configs: [.init(title: "Réglages du bot", get: "/settings", put: "/settings")],
               lists: [
                 .init(title: "Commandes", path: "/commands"), .init(title: "Événements", path: "/events"),
                 .init(title: "Tâches planifiées", path: "/jobs", rowActions: [.init(title: "Lancer maintenant", path: "/jobs/{id}/run", symbol: "play.fill")]),
                 .init(title: "Erreurs", path: "/errors", idKey: "fingerprint", rowActions: [.init(title: "Marquer résolue", path: "/errors/{id}/resolve", symbol: "checkmark.circle.fill")]),
                 .init(title: "Intégrations", path: "/integrations", rowActions: [.init(title: "Tester", path: "/integrations/{id}/test", symbol: "checkmark.seal.fill")]),
                 .init(title: "Performance", path: "/performance"), .init(title: "Télémétrie", path: "/telemetry"),
-                .init(title: "IA (usage)", path: "/ai"), .init(title: "Sécurité du bot", path: "/security"), .init(title: "Réglages du bot", path: "/settings"),
+                .init(title: "IA (usage)", path: "/ai"), .init(title: "Sécurité du bot", path: "/security"),
               ],
               actions: [
+                .init(title: "Lancer les diagnostics", path: "/diagnostics/run", symbol: "stethoscope"),
                 .init(title: "Optimiser les performances", path: "/performance/optimize", symbol: "speedometer"),
                 .init(title: "Redémarrer le bot", path: "/restart", destructive: true, symbol: "restart.circle.fill"),
                 .init(title: "Mettre à jour le bot", path: "/update", destructive: true, symbol: "arrow.down.circle.fill"),
               ]),
         .init(id: "presence", title: "Présence du bot", symbol: "person.wave.2.fill", group: groups[5], scope: .bot, base: "bot/presence", overview: "/",
+              configs: [
+                .init(title: "Rotation automatique", get: "/rotation", put: "/rotation"),
+                // GET renvoie l'identité complète (username/avatarUrl/tag/…) mais chaque PUT n'a qu'un seul champ
+                // réel côté bot (route dédiée par champ) : les autres clés éventuellement modifiées sont ignorées
+                // sans erreur côté serveur, pas envoyées ailleurs.
+                .init(title: "Identité — nom d'utilisateur", get: "/identity", put: "/identity/username"),
+                .init(title: "Identité — avatar (URL)", get: "/identity", put: "/identity/avatar"),
+              ],
               lists: [
-                .init(title: "Rotation", path: "/rotation"), .init(title: "Planning", path: "/schedule"),
+                // Objet {enabled, intervalSeconds, order, activities: […]}, pas un tableau : "activities" est la
+                // seule clé qui en est un (la liste plantait silencieusement avant, faute de `key`).
+                .init(title: "Activités de rotation", path: "/rotation", key: "activities"),
+                .init(title: "Planning", path: "/schedule"),
                 .init(title: "Profils", path: "/profiles", rowActions: [.init(title: "Appliquer", path: "/profiles/{id}/apply", symbol: "checkmark.circle.fill")]),
-                .init(title: "Serveurs", path: "/servers"), .init(title: "Identité", path: "/identity"), .init(title: "Historique", path: "/history"),
+                .init(title: "Serveurs", path: "/servers"), .init(title: "Historique", path: "/history"),
+              ],
+              actions: [
+                .init(title: "Activer le mode maintenance", path: "/maintenance",
+                      body: ["enabled": .bool(true)], symbol: "wrench.and.screwdriver.fill"),
+                .init(title: "Désactiver le mode maintenance", path: "/maintenance",
+                      body: ["enabled": .bool(false)], symbol: "wrench.and.screwdriver"),
               ]),
         .init(id: "owner-shield", title: "Owner Shield", symbol: "shield.lefthalf.filled.badge.checkmark", group: groups[5], scope: .bot, base: "bot/owner-shield", overview: "/status",
               configs: [.init(title: "Réglages", get: "/config", put: "/config", method: "POST")],
+              lists: [
+                .init(title: "Serveurs protégés", path: "/status", key: "guilds", idKey: "guildId", rowActions: [
+                  .init(title: "Activer / désactiver ici", path: "/guilds/{id}/toggle", symbol: "power"),
+                ]),
+                .init(title: "Historique d'interception", path: "/status", key: "history"),
+              ],
               actions: [
+                .init(title: "Activer la défense automatique", path: "/toggle", body: ["enabled": .bool(true)], symbol: "bolt.shield.fill"),
+                .init(title: "Désactiver la défense automatique", path: "/toggle", body: ["enabled": .bool(false)], symbol: "bolt.slash.fill"),
                 .init(title: "Activer partout", path: "/enable-all", symbol: "checkmark.shield.fill"),
                 .init(title: "Désactiver partout", path: "/disable-all", destructive: true, symbol: "xmark.shield.fill"),
               ]),

@@ -1235,6 +1235,31 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     );
   }, [modules, searchQuery]);
 
+  // Le Centre de contrôle expose de la télémétrie réelle (serveurs, présence, sous-systèmes) : les fetch vers
+  // /api/bot/* sont déjà bloqués côté serveur (requireBotOwner) pour un non-propriétaire, mais la page essayait
+  // quand même de s'afficher (vide/cassée) au lieu de refuser clairement l'accès. Tant que l'auth n'est pas
+  // résolue, on n'affiche rien plutôt que de flasher ce message par erreur.
+  if (auth.loading) {
+    return <div className="h-full bg-[var(--bg-main)]" />;
+  }
+  if (!isOwner) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-3 bg-[var(--bg-main)] px-6 text-center">
+        <ShieldAlert className="h-10 w-10 text-[var(--text-muted)]" />
+        <h1 className="text-lg font-bold text-[var(--text-primary)]">Accès réservé au propriétaire</h1>
+        <p className="max-w-sm text-sm text-[var(--text-muted)]">
+          Le Centre de contrôle du bot (télémétrie, redémarrage, mise à jour) n&apos;est visible que par le propriétaire du bot.
+        </p>
+        <Link
+          href="/discord"
+          className="mt-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-2 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]/70"
+        >
+          Retour au Discord Hub
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] font-sans pb-44 md:pb-44">
       {/* TOP COMPACT SYNC BAR */}
@@ -1281,8 +1306,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       </div>
 
       {/* Header */}
-      {/* Fond 100% opaque (pas de /NN) : évite le contenu qui défile en surimpression derrière l'en-tête sticky. */}
-      <div className="border-b border-[var(--panel-border)] bg-[var(--bg-main)] sticky top-0 z-30">
+      {/* Plus sticky : défile avec la page au lieu de rester épinglé (demandé après plusieurs allers-retours sur le bug d'opacité). */}
+      <div className="border-b border-[var(--panel-border)] bg-[var(--bg-main)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-5">
             {/* Left: Identity & Status */}

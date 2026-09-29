@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.8 — 2026-09-29
+
+**Centre de contrôle : accès réservé et en-tête non fixe**
+
+- Sécurité : le Centre de contrôle du bot refuse maintenant clairement l'accès (écran dédié) à qui n'est pas le propriétaire, au lieu d'essayer d'afficher la page avec des données vides.
+- L'en-tête n'est plus épinglé en haut au scroll : il défile avec la page.
+- Bot : le texte de présence Discord affichait parfois le modèle brut (ex. « {guildCount} serveur(s) ») au lieu du nombre réel dans le dashboard, à cause de la rotation automatique qui ne résolvait pas les variables avant de les exposer.
+
 ## v1.37.7 — 2026-09-29
 
 **Nom du bot invisible dans le Centre de contrôle**

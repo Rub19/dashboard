@@ -39007,6 +39007,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_7_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_7_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_7_de);
 
+const v1_37_8_fr: ChangelogEntry = {
+  version: "v1.37.8",
+  date: "2026-09-29",
+  title: "Centre de contrôle : accès réservé et en-tête non fixe",
+  items: [
+    "Sécurité : le Centre de contrôle du bot refuse maintenant clairement l'accès (écran dédié) à qui n'est pas le propriétaire, au lieu d'essayer d'afficher la page avec des données vides.",
+    "L'en-tête n'est plus épinglé en haut au scroll : il défile avec la page.",
+    "Bot : le texte de présence Discord affichait parfois le modèle brut (ex. « {guildCount} serveur(s) ») au lieu du nombre réel dans le dashboard, à cause de la rotation automatique qui ne résolvait pas les variables avant de les exposer.",
+  ],
+};
+
+const v1_37_8_en: ChangelogEntry = {
+  version: "v1.37.8",
+  date: "2026-09-29",
+  title: "Bot Control Center: restricted access and non-sticky header",
+  items: [
+    "Security: the Bot Control Center now clearly refuses access (dedicated screen) to anyone who isn't the owner, instead of trying to render the page with empty data.",
+    "The header no longer stays pinned at the top while scrolling: it scrolls with the page.",
+    "Bot: the Discord presence text sometimes showed the raw template (e.g. \"{guildCount} server(s)\") instead of the real count in the dashboard, because the auto-rotation never resolved the variables before exposing them.",
+  ],
+};
+
+const v1_37_8_es: ChangelogEntry = {
+  version: "v1.37.8",
+  date: "2026-09-29",
+  title: "Centro de control: acceso restringido y encabezado no fijo",
+  items: [
+    "Seguridad: el Centro de control del bot ahora rechaza claramente el acceso (pantalla dedicada) a quien no sea el propietario, en lugar de intentar mostrar la página con datos vacíos.",
+    "El encabezado ya no queda fijado arriba al desplazarse: se desplaza con la página.",
+    "Bot: el texto de presencia de Discord a veces mostraba la plantilla sin resolver (ej. «{guildCount} servidor(es)») en lugar del número real en el panel, porque la rotación automática nunca resolvía las variables antes de exponerlas.",
+  ],
+};
+
+const v1_37_8_de: ChangelogEntry = {
+  version: "v1.37.8",
+  date: "2026-09-29",
+  title: "Bot-Kontrollzentrum: eingeschränkter Zugriff und nicht fixierte Kopfzeile",
+  items: [
+    "Sicherheit: Das Bot-Kontrollzentrum verweigert jetzt jedem, der nicht der Eigentümer ist, klar den Zugriff (eigener Bildschirm), anstatt die Seite mit leeren Daten anzuzeigen.",
+    "Die Kopfzeile bleibt beim Scrollen nicht mehr oben fixiert: sie scrollt mit der Seite.",
+    "Bot: Der Discord-Präsenztext zeigte im Dashboard manchmal die unaufgelöste Vorlage (z. B. „{guildCount} Server“) anstelle der tatsächlichen Zahl, da die automatische Rotation die Variablen nie auflöste, bevor sie angezeigt wurden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_8_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_8_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_8_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_8_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

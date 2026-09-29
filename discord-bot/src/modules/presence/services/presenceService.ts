@@ -107,9 +107,22 @@ export class PresenceService {
       this.currentPresetIndex = (this.currentPresetIndex + 1) % this.rotationPresets.length;
       const nextActivity = this.rotationPresets[this.currentPresetIndex];
       this.applyToGateway(this.currentState.status, nextActivity);
-      this.currentState.activity = { ...nextActivity };
+      this.currentState.activity = this.resolveActivity(nextActivity);
       this.rotationsExecutedCount++;
     }, intervalSeconds * 1000);
+  }
+
+  /**
+   * Résout {guildCount}/{ping}/etc. dans le nom ET l'état d'une activité, pour que ce qui est
+   * stocké dans currentState (donc exposé au dashboard) ne garde jamais un template brut —
+   * seul applyToGateway() résolvait jusqu'ici, uniquement pour l'appel à Discord.
+   */
+  private resolveActivity(activity: BotActivity): BotActivity {
+    return {
+      ...activity,
+      name: this.parseDynamicVariables(activity.name),
+      state: activity.state ? this.parseDynamicVariables(activity.state) : activity.state,
+    };
   }
 
   /**
@@ -254,7 +267,7 @@ export class PresenceService {
 
     this.currentState = {
       status,
-      activity: { ...activity },
+      activity: this.resolveActivity(activity),
       updatedAt: new Date().toISOString(),
       actor,
       source,

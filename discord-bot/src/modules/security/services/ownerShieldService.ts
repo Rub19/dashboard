@@ -521,18 +521,18 @@ export class OwnerShieldService {
       // Identifier le modérateur via Audit Logs
       const modInfo = await this.findModeratorFromAuditLogs(guild, ownerUser.id, AuditLogEvent.MemberBanAdd);
 
-      // Débannir instantanément l'Owner
-      await guild.bans.remove(ownerUser.id, "⚡ Protection Suprême de l'Owner : Débannissement automatique instantané");
-      logger.success(`[OwnerShield] ✅ Owner débanni avec succès de "${guild.name}" !`);
+      // Ne débannit plus tout seul : signale et attend un clic sur "Rétablir Tout" (rescueOwner gère déjà
+      // le débannissement), comme les autres interceptions. Sur demande explicite du propriétaire : aucune
+      // initiative du bot sans confirmation.
       this.addInterception(
         guild,
         'BAN_REMOVED',
-        `Owner débanni instantanément de ${guild.name}` + (modInfo ? ` (banni par ${modInfo.moderatorTag})` : ''),
+        `Bannissement détecté, en attente de confirmation sur ${guild.name}` + (modInfo ? ` (banni par ${modInfo.moderatorTag})` : ''),
         true,
         modInfo || undefined
       );
 
-      // Générer une invitation de secours
+      // Générer une invitation de secours pour permettre de rejoindre une fois débanni
       const inviteUrl = await this.generateEmergencyInvite(guild);
 
       // Envoyer un DM d'alerte à l'Owner si activé
@@ -540,10 +540,10 @@ export class OwnerShieldService {
         try {
           await ownerUser.send({
             embeds: [
-              this.alertEmbed('success', "🛡️ Bannissement bloqué — Protection Suprême", `Une tentative de bannissement a été effectuée à votre encontre sur **${guild.name}**.\n\n⚡ **Le bot vous a automatiquement et immédiatement débanni !**`, [
+              this.alertEmbed('warning', '🛡️ Bannissement détecté — Confirmation requise', `Une tentative de bannissement a été effectuée à votre encontre sur **${guild.name}**.\n\n⚡ **Cliquez sur "Rétablir Tout" ci-dessous pour être débanni.**`, [
                 modInfo && ['👮 Auteur', `${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)`],
                 modInfo && ['📝 Raison', modInfo.reason || '—'],
-                ['🔗 Réintégrer le serveur', inviteUrl ? inviteUrl : "Activez une permission d'invitation sur le bot pour recevoir un lien direct."],
+                ['🔗 Réintégrer le serveur (une fois débanni)', inviteUrl ? inviteUrl : "Activez une permission d'invitation sur le bot pour recevoir un lien direct."],
               ]),
             ],
             components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
@@ -552,20 +552,8 @@ export class OwnerShieldService {
           logger.warn(`[OwnerShield] Impossible d'envoyer un DM à l'Owner:`, dmErr);
         }
       }
-
-      // Audit Log interne (sauf si mode furtif)
-      if (!this.config.stealthMode) {
-        logService.emit({
-          guildId: guild.id,
-          module: 'SECURITY',
-          type: 'OWNER_SHIELD_AUTO_UNBAN',
-          actor: { id: botMember.id, tag: botMember.user.tag },
-          target: { id: ownerUser.id, tag: ownerUser.tag, name: ownerUser.tag, type: 'USER' },
-          reason: "Protection Suprême de l'Owner : Annulation immédiate d'un bannissement" + (modInfo ? ` (initié par ${modInfo.moderatorTag})` : ''),
-        });
-      }
     } catch (err: any) {
-      logger.error(`[OwnerShield] Erreur lors de l'débannissement automatique:`, err);
+      logger.error(`[OwnerShield] Erreur lors du signalement de bannissement:`, err);
       this.addInterception(guild, 'BAN_REMOVED', `Erreur: ${err.message}`, false);
     }
   }
@@ -747,34 +735,39 @@ export class OwnerShieldService {
     const hasDeafPerm = botMember?.permissions.has(PermissionFlagsBits.DeafenMembers) || botMember?.permissions.has(PermissionFlagsBits.Administrator);
     const hasMovePerm = botMember?.permissions.has(PermissionFlagsBits.MoveMembers) || botMember?.permissions.has(PermissionFlagsBits.Administrator);
 
-    // Mute Serveur Vocal
-    if (this.config.autoVoiceUnmute && newState.serverMute && hasMutePerm) {
-      logger.warn(`[OwnerShield] 🚨 MUTE VOCAL SERVEUR DÉTECTÉ SUR L'OWNER sur "${guild.name}" !`);
+    // Mute / Assourdissement Serveur Vocal — ne démute/dé-sourdit plus tout seul : signale et attend un
+    // clic sur "Rétablir Tout" (rescueOwner gère déjà le démutage vocal + dé-sourding ensemble), comme les
+    // autres interceptions. Sur demande explicite du propriétaire : aucune initiative du bot sans confirmation.
+    const voiceMuteDetected = this.config.autoVoiceUnmute && newState.serverMute && hasMutePerm;
+    const voiceDeafenDetected = this.config.autoVoiceUndeafen && newState.serverDeaf && hasDeafPerm;
+    if (voiceMuteDetected || voiceDeafenDetected) {
+      const labels = [voiceMuteDetected && 'muet', voiceDeafenDetected && 'sourd'].filter(Boolean).join(' et ');
+      logger.warn(`[OwnerShield] 🚨 MISE EN SOURDINE VOCALE (${labels}) DÉTECTÉE SUR L'OWNER sur "${guild.name}" !`);
       try {
         const modInfo = await this.findModeratorFromAuditLogs(guild, member.id, AuditLogEvent.MemberUpdate);
 
-        await newState.setMute(false, "⚡ Protection Suprême de l'Owner : Démutage vocal automatique");
-        logger.success(`[OwnerShield] ✅ Owner démuté vocalement sur "${guild.name}" !`);
         this.addInterception(
           guild,
           'MUTE_REMOVED',
-          `Démutage vocal automatique sur ${guild.name}` + (modInfo ? ` (muté par ${modInfo.moderatorTag})` : ''),
+          `Mise en sourdine vocale (${labels}) détectée, en attente de confirmation sur ${guild.name}` + (modInfo ? ` (par ${modInfo.moderatorTag})` : ''),
           true,
           modInfo || undefined
         );
-      } catch (err: any) {
-        logger.error(`[OwnerShield] Erreur démutage vocal:`, err);
-        this.addInterception(guild, 'MUTE_REMOVED', `Erreur démutage vocal: ${err.message}`, false);
-      }
-    }
 
-    // Assourdissement Serveur Vocal
-    if (this.config.autoVoiceUndeafen && newState.serverDeaf && hasDeafPerm) {
-      try {
-        await newState.setDeaf(false, "⚡ Protection Suprême de l'Owner : Dé-sourding vocal automatique");
-        logger.success(`[OwnerShield] ✅ Owner dé-sourdi vocalement sur "${guild.name}" !`);
+        if (this.config.dmAlerts) {
+          await this.notifyOwnerOrGuildOwner(guild, member, {
+            embeds: [
+              this.alertEmbed('warning', '🛡️ Mise en sourdine vocale détectée — Confirmation requise', `Vous avez été mis ${labels} sur le vocal de **${guild.name}**.\n\n⚡ **Cliquez sur "Rétablir Tout" ci-dessous pour retirer la sourdine.**`, [
+                modInfo && ['👮 Auteur', `${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)`],
+                modInfo && ['📝 Raison', modInfo.reason || '—'],
+              ]),
+            ],
+            components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
+          });
+        }
       } catch (err: any) {
-        logger.error(`[OwnerShield] Erreur dé-sourding vocal:`, err);
+        logger.error(`[OwnerShield] Erreur signalement sourdine vocale:`, err);
+        this.addInterception(guild, 'MUTE_REMOVED', `Erreur signalement sourdine vocale: ${err.message}`, false);
       }
     }
 

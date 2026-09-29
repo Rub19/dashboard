@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.15 — 2026-09-29
+
+**Owner Shield : plus d'action automatique sur bannissement et sourdine vocale**
+
+- Le bot ne se débannit plus ni ne se démute/dé-sourdit plus vocalement tout seul quand l'owner est visé — il signale l'incident par MP avec le bouton « Rétablir Tout » et attend une confirmation, comme pour le timeout, les rôles mute et le pseudo.
+
 ## v1.37.14 — 2026-09-29
 
 **Top albums Last.fm**

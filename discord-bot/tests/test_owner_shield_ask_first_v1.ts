@@ -65,4 +65,52 @@ assert.equal(addedRoles, null, 'le bot ne doit PAS avoir rappelé roles.add() to
 assert.ok(sentPayload, "le bot doit quand même avoir envoyé un MP de signalement");
 console.log('  ✅ rôle retiré de l’owner : aucune restauration automatique, juste un signalement MP');
 
+// Bannissement de l'owner : le bot ne doit plus se débannir lui-même — juste signaler + attendre le bouton.
+let bansRemoveCalled = false;
+let banDmPayload: unknown = null;
+const banGuild = {
+  id: 'guild_ban',
+  name: 'Serveur ban',
+  members: { me: { id: 'bot_1', user: { tag: 'Bot#0001' }, permissions: botPermissions } },
+  bans: { remove: async () => { bansRemoveCalled = true; } },
+  fetchOwner: async () => ({ id: 'real_guild_owner', send: async () => null }),
+} as any;
+const banOwnerUser = { id: OWNER_ID, tag: 'Owner#0001', send: async (payload: unknown) => { banDmPayload = payload; } } as any;
+
+await ownerShieldService.handleGuildBanAdd({ guild: banGuild, user: banOwnerUser } as any);
+
+assert.equal(bansRemoveCalled, false, 'le bot ne doit PAS avoir rappelé guild.bans.remove() tout seul');
+assert.ok(banDmPayload, 'le bot doit quand même avoir envoyé un MP de signalement pour le bannissement');
+console.log('  ✅ bannissement de l’owner : aucun débannissement automatique, juste un signalement MP');
+
+// Mute/assourdissement vocal de l'owner : le bot ne doit plus se démuter/dé-sourdir lui-même.
+let setMuteCalled = false;
+let setDeafCalled = false;
+let voiceDmPayload: unknown = null;
+const voiceGuild = {
+  id: 'guild_voice',
+  name: 'Serveur vocal',
+  members: { me: { roles: { highest: { position: 10 } }, permissions: botPermissions } },
+  fetchOwner: async () => ({ id: 'real_guild_owner', send: async () => null }),
+} as any;
+const voiceMember = { id: OWNER_ID, guild: voiceGuild, send: async (payload: unknown) => { voiceDmPayload = payload; } } as any;
+const oldVoiceState = { channelId: null, channel: null, guild: voiceGuild, member: voiceMember } as any;
+const newVoiceState = {
+  channelId: 'vc_1',
+  channel: { name: 'Vocal 1' },
+  guild: voiceGuild,
+  member: voiceMember,
+  serverMute: true,
+  serverDeaf: true,
+  setMute: async () => { setMuteCalled = true; },
+  setDeaf: async () => { setDeafCalled = true; },
+} as any;
+
+await ownerShieldService.handleVoiceStateUpdate(oldVoiceState, newVoiceState);
+
+assert.equal(setMuteCalled, false, 'le bot ne doit PAS avoir rappelé setMute(false) tout seul');
+assert.equal(setDeafCalled, false, 'le bot ne doit PAS avoir rappelé setDeaf(false) tout seul');
+assert.ok(voiceDmPayload, 'le bot doit quand même avoir envoyé un MP de signalement pour la sourdine vocale');
+console.log('  ✅ mise en sourdine vocale de l’owner : aucun démutage/dé-sourding automatique, juste un signalement MP');
+
 console.log('\nTout est bon');

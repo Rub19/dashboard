@@ -39340,6 +39340,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_14_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_14_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_14_de);
 
+const v1_37_15_fr: ChangelogEntry = {
+  version: "v1.37.15",
+  date: "2026-09-29",
+  title: "Owner Shield : plus d'action automatique sur bannissement et sourdine vocale",
+  items: [
+    "Le bot ne se débannit plus ni ne se démute/dé-sourdit plus vocalement tout seul quand l'owner est visé — il signale l'incident par MP avec le bouton « Rétablir Tout » et attend une confirmation, comme pour le timeout, les rôles mute et le pseudo.",
+  ],
+};
+
+const v1_37_15_en: ChangelogEntry = {
+  version: "v1.37.15",
+  date: "2026-09-29",
+  title: "Owner Shield: no more auto-action on ban and voice mute",
+  items: [
+    "The bot no longer auto-unbans or auto-unmutes/undeafens itself when the owner is targeted — it now reports the incident by DM with the \"Restore Everything\" button and waits for confirmation, matching timeout, mute roles and nickname.",
+  ],
+};
+
+const v1_37_15_es: ChangelogEntry = {
+  version: "v1.37.15",
+  date: "2026-09-29",
+  title: "Owner Shield: ya no actúa solo ante baneo o silencio de voz",
+  items: [
+    "El bot ya no se desbanea ni se quita el silencio de voz automáticamente cuando el propietario es el objetivo — ahora avisa por MD con el botón «Restaurar todo» y espera confirmación.",
+  ],
+};
+
+const v1_37_15_de: ChangelogEntry = {
+  version: "v1.37.15",
+  date: "2026-09-29",
+  title: "Owner Shield: keine automatische Aktion mehr bei Bann und Stummschaltung",
+  items: [
+    "Der Bot entbannt oder entstummt sich nicht mehr automatisch selbst, wenn der Owner betroffen ist — er meldet den Vorfall jetzt per DM mit dem Button „Alles wiederherstellen“ und wartet auf Bestätigung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_15_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_15_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_15_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_15_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

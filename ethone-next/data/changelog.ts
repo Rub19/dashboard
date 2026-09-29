@@ -39150,6 +39150,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_10_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_10_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_10_de);
 
+const v1_37_11_fr: ChangelogEntry = {
+  version: "v1.37.11",
+  date: "2026-09-29",
+  title: "Auto-rôles : filtrage des règles, délai et synchronisation",
+  items: [
+    "Auto-rôles à l'arrivée : nouvelle option pour attendre que le membre passe le filtrage des règles (Rules Screening) avant d'attribuer les rôles.",
+    "Nouveau délai réglable avant attribution (utile contre les raids).",
+    "Nouveau bouton « Synchroniser maintenant » : rattrape les membres déjà présents qui n'ont pas encore les rôles configurés, avec le nombre de membres concernés affiché.",
+  ],
+};
+
+const v1_37_11_en: ChangelogEntry = {
+  version: "v1.37.11",
+  date: "2026-09-29",
+  title: "Auto-roles: rules screening, delay and sync",
+  items: [
+    "Join auto-roles: new option to wait for the member to pass Discord's Rules Screening before assigning roles.",
+    "New adjustable delay before assignment (useful against raids).",
+    "New \"Sync now\" button: catches up existing members who are still missing the configured roles, with a live count shown.",
+  ],
+};
+
+const v1_37_11_es: ChangelogEntry = {
+  version: "v1.37.11",
+  date: "2026-09-29",
+  title: "Autorroles: filtrado de reglas, retraso y sincronización",
+  items: [
+    "Autorroles de bienvenida: nueva opción para esperar a que el miembro pase el filtrado de reglas de Discord antes de asignar roles.",
+    "Nuevo retraso ajustable antes de la asignación (útil contra raids).",
+    "Nuevo botón \"Sincronizar ahora\": pone al día a los miembros ya presentes a los que aún les faltan los roles configurados.",
+  ],
+};
+
+const v1_37_11_de: ChangelogEntry = {
+  version: "v1.37.11",
+  date: "2026-09-29",
+  title: "Auto-Rollen: Regelprüfung, Verzögerung und Synchronisierung",
+  items: [
+    "Beitritts-Auto-Rollen: neue Option, um zu warten, bis das Mitglied Discords Regelprüfung (Rules Screening) besteht, bevor Rollen zugewiesen werden.",
+    "Neue einstellbare Verzögerung vor der Zuweisung (nützlich gegen Raids).",
+    "Neuer Button „Jetzt synchronisieren“: holt bereits vorhandene Mitglieder nach, denen die konfigurierten Rollen noch fehlen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_11_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_11_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_11_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_11_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

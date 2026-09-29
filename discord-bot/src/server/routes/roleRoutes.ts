@@ -16,7 +16,26 @@ export function createRoleRouter(discordClient: Client) {
   router.get('/autorole', rateLimit('READ'), async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const config = autoRoleService.getConfig(guildId);
-    res.json({ config });
+    const guild = discordClient.guilds.cache.get(guildId);
+    const missingCount = guild ? await autoRoleService.countMissing(guild) : 0;
+    res.json({ config, missingCount });
+  });
+
+  // Synchronisation manuelle : attribue les rôles configurés à tous les membres existants qui ne les ont pas.
+  router.post('/autorole/sync', rateLimit('SENSITIVE', { byGuild: true, actionName: 'autorole_sync' }), async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const guild = discordClient.guilds.cache.get(guildId);
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable ou bot non connecté' });
+      return;
+    }
+    try {
+      const result = await autoRoleService.syncGuild(guild);
+      emitConfigUpdated('autorole', guildId, autoRoleService.getConfig(guildId), 'DASHBOARD', req.user?.id);
+      res.json({ success: true, ...result });
+    } catch (err: any) {
+      handleRouteError(err, res, 'Erreur serveur');
+    }
   });
 
   router.patch(

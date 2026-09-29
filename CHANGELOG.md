@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.11 — 2026-09-29
+
+**Auto-rôles : filtrage des règles, délai et synchronisation**
+
+- Auto-rôles à l'arrivée : nouvelle option pour attendre que le membre passe le filtrage des règles (Rules Screening) avant d'attribuer les rôles.
+- Nouveau délai réglable avant attribution (utile contre les raids).
+- Nouveau bouton « Synchroniser maintenant » : rattrape les membres déjà présents qui n'ont pas encore les rôles configurés, avec le nombre de membres concernés affiché.
+
 ## v1.37.10 — 2026-09-29
 
 **Boutique Valorant repensée + pastille de statut en double**

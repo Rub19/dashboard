@@ -31,6 +31,7 @@ import { handleVoiceStateUpdate } from '../modules/logs/events/voiceLogs.js';
 import { voiceStayService } from '../modules/music/services/voiceStayService.js';
 import { handleGuildUpdate } from '../modules/logs/events/serverLogs.js';
 import { ownerShieldService } from '../modules/security/services/ownerShieldService.js';
+import { autoRoleService } from '../modules/roles/services/autoRoleService.js';
 import { antiNukeService } from '../modules/security/services/antiNukeService.js';
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
 import { autoModService } from '../modules/automod/services/autoModService.js';
@@ -170,6 +171,10 @@ export function registerEvents(client: Client): void {
     if (moduleOn(newMember.guild.id, 'automod')) autoModService.handleMemberProfile(newMember);
     ownerShieldService.handleGuildMemberUpdate(oldMember as GuildMember, newMember);
     void guardSecureRoles(oldMember as GuildMember, newMember).catch((err) => logger.warn('[SecureRoles] garde-fou :', err?.message));
+    // Auto-Role "attendre le filtrage des règles" : reprend l'attribution une fois `pending` passé à false.
+    if (moduleOn(newMember.guild.id, 'roles') && (oldMember as GuildMember).pending && !newMember.pending) {
+      void autoRoleService.handleScreeningPassed(newMember).catch((err) => logger.warn('[AutoRole] filtrage des règles :', err?.message));
+    }
   });
   client.on(Events.GuildBanAdd, (ban) => {
     handleGuildBanAdd(ban);

@@ -65,18 +65,51 @@ class AutoRoleService {
   }
 
   public async assignOnJoin(member: GuildMember): Promise<string[]> {
-    const guild = member.guild;
-    const config = this.getConfig(guild.id);
-
-    if (!config.enabled || !config.roleIds || config.roleIds.length === 0) {
-      return [];
-    }
+    const config = this.getConfig(member.guild.id);
+    if (!config.enabled || !config.roleIds || config.roleIds.length === 0) return [];
 
     // Filtre bots vs humains
     const isBot = member.user.bot;
     if (isBot && !config.applyToBots) return [];
     if (!isBot && !config.applyToHumans) return [];
 
+    // En attente du filtrage des règles : rien maintenant, handleScreeningPassed() prend le relais
+    // quand pending passe à false (guildMemberUpdate).
+    if (config.waitForScreening && member.pending) return [];
+
+    if (config.delaySeconds > 0) {
+      setTimeout(() => {
+        void this.applyRoles(member).catch(() => null);
+      }, config.delaySeconds * 1000).unref();
+      return [];
+    }
+
+    return this.applyRoles(member);
+  }
+
+  /** Reprend l'attribution une fois le filtrage des règles validé (pending: true -> false). */
+  public async handleScreeningPassed(member: GuildMember): Promise<string[]> {
+    const config = this.getConfig(member.guild.id);
+    if (!config.enabled || !config.waitForScreening || !config.roleIds || config.roleIds.length === 0) return [];
+    const isBot = member.user.bot;
+    if (isBot && !config.applyToBots) return [];
+    if (!isBot && !config.applyToHumans) return [];
+
+    if (config.delaySeconds > 0) {
+      setTimeout(() => {
+        void this.applyRoles(member).catch(() => null);
+      }, config.delaySeconds * 1000).unref();
+      return [];
+    }
+    return this.applyRoles(member);
+  }
+
+  /** Applique les rôles configurés à un membre donné qui les manque (rejoue enabled/roleIds : peut avoir
+   * changé pendant un délai programmé). */
+  private async applyRoles(member: GuildMember): Promise<string[]> {
+    const guild = member.guild;
+    const config = this.getConfig(guild.id);
+    if (!config.enabled || !config.roleIds || config.roleIds.length === 0) return [];
     const botMember = guild.members.me;
     if (!botMember || !botMember.permissions.has(PermissionFlagsBits.ManageRoles)) {
       logger.warn(`[AutoRole] Permission ManageRoles manquante sur le serveur ${guild.name}.`);
@@ -120,6 +153,65 @@ class AutoRoleService {
     }
 
     return assignedNames;
+  }
+
+  /** Nombre de membres concernés (humains/bots selon la config) qui n'ont aucun des rôles configurés. */
+  public async countMissing(guild: GuildMember['guild']): Promise<number> {
+    const config = this.getConfig(guild.id);
+    if (!config.enabled || config.roleIds.length === 0) return 0;
+    const members = await guild.members.fetch().catch(() => null);
+    if (!members) return 0;
+    let missing = 0;
+    for (const member of members.values()) {
+      if (member.user.bot && !config.applyToBots) continue;
+      if (!member.user.bot && !config.applyToHumans) continue;
+      if (!config.roleIds.some((id) => member.roles.cache.has(id))) missing++;
+    }
+    return missing;
+  }
+
+  /** "Sync now" : attribue les rôles configurés à tous les membres existants qui ne les ont pas déjà. */
+  public async syncGuild(guild: GuildMember['guild']): Promise<{ updated: number; total: number }> {
+    const config = this.getConfig(guild.id);
+    if (!config.enabled || config.roleIds.length === 0) return { updated: 0, total: 0 };
+    const botMember = guild.members.me;
+    if (!botMember?.permissions.has(PermissionFlagsBits.ManageRoles)) return { updated: 0, total: 0 };
+    const botHighest = botMember.roles.highest.position;
+    const assignableRoleIds = config.roleIds.filter((id) => {
+      const role = guild.roles.cache.get(id);
+      return role && !role.managed && role.id !== guild.id && role.position < botHighest;
+    });
+    if (assignableRoleIds.length === 0) return { updated: 0, total: 0 };
+
+    const members = await guild.members.fetch().catch(() => null);
+    if (!members) return { updated: 0, total: 0 };
+
+    let updated = 0;
+    for (const member of members.values()) {
+      if (member.user.bot && !config.applyToBots) continue;
+      if (!member.user.bot && !config.applyToHumans) continue;
+      const missing = assignableRoleIds.filter((id) => !member.roles.cache.has(id));
+      if (missing.length === 0) continue;
+      try {
+        await member.roles.add(missing, 'Synchronisation manuelle des rôles automatiques (Auto-Role)');
+        updated++;
+      } catch (err) {
+        logger.error(`[AutoRole] Échec de synchro pour ${member.user.tag} :`, err);
+      }
+    }
+
+    this.updateConfig(guild.id, { lastSyncAt: new Date().toISOString() });
+    if (updated > 0) {
+      await logService.log(guild, {
+        category: 'members',
+        type: 'MEMBER_UPDATE',
+        title: '🔁 Auto-Rôles synchronisés',
+        description: `Synchronisation manuelle : ${updated} membre(s) sur ${members.size} ont reçu les rôles manquants.`,
+        color: '#8B5CF6',
+        fields: [{ name: 'Membres mis à jour', value: `${updated} / ${members.size}`, inline: true }],
+      });
+    }
+    return { updated, total: members.size };
   }
 }
 

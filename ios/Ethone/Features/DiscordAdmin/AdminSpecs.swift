@@ -200,14 +200,15 @@ enum AdminCatalog {
                 .init(title: "Audit Discord", path: "/audit"),
               ]),
         .init(id: "roles", title: "Rôles à réaction et autorôles", symbol: "person.2.badge.gearshape.fill", group: groups[3], overview: nil,
+              configs: [.init(title: "Autorôle", get: "/autorole", put: "/autorole", method: "PATCH")],
               lists: [
-                .init(title: "Autorôle", path: "/autorole"),
                 .init(title: "Panneaux", path: "/panels", rowActions: [
                     .init(title: "Synchroniser", path: "/panels/{id}/sync", symbol: "arrow.triangle.2.circlepath"),
                     .init(title: "Dupliquer", path: "/panels/{id}/duplicate", symbol: "plus.square.on.square"),
                     .init(title: "Supprimer", path: "/panels/{id}", method: "DELETE", destructive: true, symbol: "trash"),
                 ]),
-              ]),
+              ],
+              actions: [.init(title: "Synchroniser l'autorôle maintenant", path: "/autorole/sync", symbol: "arrow.triangle.2.circlepath")]),
         .init(id: "backups", title: "Sauvegardes", symbol: "externaldrive.fill.badge.timemachine", group: groups[3],
               configs: [.init(title: "Réglages", get: "/settings", put: "/settings")],
               lists: [.init(title: "Sauvegardes", path: "/", key: "backups", idKey: "id", rowActions: [

@@ -86,6 +86,9 @@ interface AutoRoleConfig {
   roleIds: string[];
   applyToHumans: boolean;
   applyToBots: boolean;
+  waitForScreening: boolean;
+  delaySeconds: number;
+  lastSyncAt: string | null;
 }
 
 const STYLE_CLS: Record<ItemStyle, string> = {
@@ -166,8 +169,10 @@ export default function RolesCenterClient() {
   const [loading, setLoading] = useState(false);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [panels, setPanels] = useState<RolePanel[]>(DEMO_PANELS);
-  const [autoRole, setAutoRole] = useState<AutoRoleConfig>({ enabled: false, roleIds: [], applyToHumans: true, applyToBots: false });
+  const [autoRole, setAutoRole] = useState<AutoRoleConfig>({ enabled: false, roleIds: [], applyToHumans: true, applyToBots: false, waitForScreening: false, delaySeconds: 0, lastSyncAt: null });
   const [savingAutoRole, setSavingAutoRole] = useState(false);
+  const [missingCount, setMissingCount] = useState(0);
+  const [syncing, setSyncing] = useState(false);
   const [busyPanelId, setBusyPanelId] = useState<string | null>(null);
 
   // Publish modal state
@@ -191,7 +196,7 @@ export default function RolesCenterClient() {
     if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
       setIsDemo(false);
       setPanels([]);
-      setAutoRole({ enabled: false, roleIds: [], applyToHumans: true, applyToBots: false });
+      setAutoRole({ enabled: false, roleIds: [], applyToHumans: true, applyToBots: false, waitForScreening: false, delaySeconds: 0, lastSyncAt: null });
       setHasLoadedOnce(true);
       return;
     }
@@ -215,6 +220,7 @@ export default function RolesCenterClient() {
       setIsDemo(false);
       setPanels(panelsData.panels);
       if (autoRes.ok && autoData?.config) setAutoRole(autoData.config);
+      if (autoRes.ok && typeof autoData?.missingCount === "number") setMissingCount(autoData.missingCount);
     } catch {
       setIsDemo(true);
     } finally {
@@ -403,6 +409,28 @@ export default function RolesCenterClient() {
       toastError(err?.message || "Échec de l'enregistrement.");
     } finally {
       setSavingAutoRole(false);
+    }
+  };
+
+  const handleSyncNow = async () => {
+    if (isDemo) {
+      toastError("Bot injoignable", "Rien n'a été synchronisé.");
+      return;
+    }
+    setSyncing(true);
+    try {
+      const res = await fetch(`${base}/autorole/sync`, { method: "POST", credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) throw new Error(formatApiError(data?.error, ""));
+      success(
+        "Synchronisation terminée",
+        data.updated > 0 ? `${data.updated} membre(s) sur ${data.total} ont reçu les rôles manquants.` : "Tous les membres avaient déjà leurs rôles."
+      );
+      void load();
+    } catch (err: any) {
+      toastError(err?.message || "Échec de la synchronisation.");
+    } finally {
+      setSyncing(false);
     }
   };
 
@@ -767,6 +795,45 @@ export default function RolesCenterClient() {
                 <span className="text-[var(--text-muted)]">Bots</span>
                 <input type="checkbox" checked={autoRole.applyToBots} onChange={(e) => saveAutoRole({ ...autoRole, applyToBots: e.target.checked })} className="w-4 h-4 rounded text-amber-500" />
               </label>
+              <label className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] cursor-pointer">
+                <span className="text-[var(--text-muted)]">Attendre le filtrage des règles</span>
+                <input type="checkbox" checked={autoRole.waitForScreening} onChange={(e) => saveAutoRole({ ...autoRole, waitForScreening: e.target.checked })} className="w-4 h-4 rounded text-amber-500" />
+              </label>
+              <label className="flex items-center justify-between gap-2 p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)]">
+                <span className="text-[var(--text-muted)]">Délai avant attribution (s)</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={86400}
+                  value={autoRole.delaySeconds}
+                  onChange={(e) => setAutoRole({ ...autoRole, delaySeconds: Number(e.target.value) })}
+                  onBlur={() => saveAutoRole(autoRole)}
+                  className="w-16 rounded-lg bg-[var(--panel-bg)] border border-[var(--panel-border)] px-2 py-1 text-right font-mono text-[var(--text-primary)]"
+                />
+              </label>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[var(--panel-border)] text-xs">
+              <div className="text-[var(--text-muted)]">
+                {missingCount > 0 ? (
+                  <span>
+                    <span className="font-semibold text-amber-400">{missingCount}</span> membre(s) déjà présent(s) n&apos;ont pas encore ces rôles.
+                  </span>
+                ) : (
+                  <span>Tous les membres concernés ont déjà leurs rôles.</span>
+                )}
+                {autoRole.lastSyncAt && (
+                  <span className="block text-[10px] mt-0.5">Dernière synchro : {new Date(autoRole.lastSyncAt).toLocaleString("fr-FR")}</span>
+                )}
+              </div>
+              <button
+                onClick={() => void handleSyncNow()}
+                disabled={syncing || !autoRole.enabled || autoRole.roleIds.length === 0}
+                className="px-4 h-9 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] hover:border-amber-500/40 text-xs font-semibold cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+              >
+                <RefreshCw className={cn("w-3.5 h-3.5", syncing && "animate-spin")} />
+                {syncing ? "Synchronisation…" : "Synchroniser maintenant"}
+              </button>
             </div>
           </div>
         )}

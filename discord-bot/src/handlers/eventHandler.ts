@@ -28,6 +28,9 @@ import {
   handleChannelUpdate,
 } from '../modules/logs/events/channelLogs.js';
 import { handleVoiceStateUpdate } from '../modules/logs/events/voiceLogs.js';
+import { handleEmojiCreate, handleEmojiDelete } from '../modules/logs/events/emojiLogs.js';
+import { handleThreadCreate, handleThreadDelete } from '../modules/logs/events/threadLogs.js';
+import { handleInviteCreateLog, handleInviteDeleteLog } from '../modules/logs/events/inviteLogs.js';
 import { voiceStayService } from '../modules/music/services/voiceStayService.js';
 import { handleGuildUpdate } from '../modules/logs/events/serverLogs.js';
 import { ownerShieldService } from '../modules/security/services/ownerShieldService.js';
@@ -149,10 +152,18 @@ export function registerEvents(client: Client): void {
   // Invite Tracker Events
   client.on(Events.InviteCreate, (invite) => {
     if (moduleOn(invite.guild?.id, 'invites')) inviteSnapshotService.handleInviteCreate(invite);
+    void handleInviteCreateLog(invite);
   });
   client.on(Events.InviteDelete, (invite) => {
     if (moduleOn(invite.guild?.id, 'invites')) inviteSnapshotService.handleInviteDelete(invite);
+    void handleInviteDeleteLog(invite);
   });
+
+  // Logs : Emojis & Fils
+  client.on(Events.GuildEmojiCreate, (emoji) => void handleEmojiCreate(emoji));
+  client.on(Events.GuildEmojiDelete, (emoji) => void handleEmojiDelete(emoji));
+  client.on(Events.ThreadCreate, (thread, newlyCreated) => void handleThreadCreate(thread, newlyCreated));
+  client.on(Events.ThreadDelete, (thread) => void handleThreadDelete(thread));
 
   // Logs : Messages
   client.on(Events.MessageDelete, (message) => {

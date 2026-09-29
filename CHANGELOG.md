@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.12 — 2026-09-29
+
+**Journal d'audit : 3 catégories de plus + filtres d'exclusion**
+
+- Nouvelles catégories de logs avec salon dédié : Emojis, Fils de discussion, Invitations — chacune avec ses vrais événements Discord (création/suppression).
+- Nouveaux réglages : ignorer des salons, des rôles ou des utilisateurs (aucune action les concernant n'est journalisée), et bascule « Utiliser des webhooks ».
+
 ## v1.37.11 — 2026-09-29
 
 **Auto-rôles : filtrage des règles, délai et synchronisation**

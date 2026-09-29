@@ -39199,6 +39199,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_11_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_11_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_11_de);
 
+const v1_37_12_fr: ChangelogEntry = {
+  version: "v1.37.12",
+  date: "2026-09-29",
+  title: "Journal d'audit : 3 catégories de plus + filtres d'exclusion",
+  items: [
+    "Nouvelles catégories de logs avec salon dédié : Emojis, Fils de discussion, Invitations — chacune avec ses vrais événements Discord (création/suppression).",
+    "Nouveaux réglages : ignorer des salons, des rôles ou des utilisateurs (aucune action les concernant n'est journalisée), et bascule « Utiliser des webhooks ».",
+  ],
+};
+
+const v1_37_12_en: ChangelogEntry = {
+  version: "v1.37.12",
+  date: "2026-09-29",
+  title: "Audit log: 3 more categories + ignore filters",
+  items: [
+    "New log categories with their own channel: Emojis, Threads, Invites — each backed by real Discord events (create/delete).",
+    "New settings: ignore channels, roles, or users (no action involving them gets logged), and a \"Use webhooks\" toggle.",
+  ],
+};
+
+const v1_37_12_es: ChangelogEntry = {
+  version: "v1.37.12",
+  date: "2026-09-29",
+  title: "Registro de auditoría: 3 categorías más + filtros de exclusión",
+  items: [
+    "Nuevas categorías de registro con su propio canal: Emojis, Hilos, Invitaciones — cada una respaldada por eventos reales de Discord.",
+    "Nuevos ajustes: ignorar canales, roles o usuarios, y un interruptor \"Usar webhooks\".",
+  ],
+};
+
+const v1_37_12_de: ChangelogEntry = {
+  version: "v1.37.12",
+  date: "2026-09-29",
+  title: "Audit-Log: 3 weitere Kategorien + Ignorier-Filter",
+  items: [
+    "Neue Log-Kategorien mit eigenem Kanal: Emojis, Threads, Einladungen — jeweils mit echten Discord-Ereignissen hinterlegt.",
+    "Neue Einstellungen: Kanäle, Rollen oder Benutzer ignorieren, sowie ein Schalter „Webhooks verwenden“.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_12_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_12_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_12_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_12_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

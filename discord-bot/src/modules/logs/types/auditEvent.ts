@@ -16,6 +16,9 @@ export const AuditModuleSchema = z.enum([
   'AUTOMOD',
   'SECURITY',
   'SYSTEM',
+  'EMOJIS',
+  'THREADS',
+  'INVITES',
 ]);
 export type AuditModule = z.infer<typeof AuditModuleSchema>;
 
@@ -30,7 +33,7 @@ export interface AuditActor {
 
 export interface AuditTarget {
   id: string;
-  type: 'USER' | 'CHANNEL' | 'ROLE' | 'SERVER' | 'MESSAGE' | 'WEBHOOK' | 'EMOJI' | 'CONFIG' | 'CASE' | 'INCIDENT';
+  type: 'USER' | 'CHANNEL' | 'ROLE' | 'SERVER' | 'MESSAGE' | 'WEBHOOK' | 'EMOJI' | 'CONFIG' | 'CASE' | 'INCIDENT' | 'THREAD' | 'INVITE';
   name: string;
   tag?: string;
   avatar?: string | null;
@@ -112,6 +115,12 @@ export interface AuditSettings {
   webhookNames?: Partial<Record<LogCategoryKey, string>>;
   /** Salon dédié par catégorie ; sinon le routage général s'applique. */
   categoryChannels?: Partial<Record<LogCategoryKey, string | null>>;
+  /** Aucune action dans ces salons n'est journalisée. */
+  ignoreChannelIds?: string[];
+  /** Aucune action d'un membre ayant l'un de ces rôles n'est journalisée. */
+  ignoreRoleIds?: string[];
+  /** Aucune action de ces utilisateurs n'est journalisée. */
+  ignoreUserIds?: string[];
   retentionDays: number; // 7, 30, 90, 180, 365, 0 (forever)
   notificationRules: AuditNotificationRule[];
   privacy: {

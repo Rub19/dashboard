@@ -16,12 +16,21 @@ import { canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../.
 import { baseEmbed } from '../../../utils/embeds.js';
 import { isModuleEnabled } from '../../../services/moduleRegistry.js';
 
+/** Salon/rôle/utilisateur ignoré (réglages « Ignorer… ») : aucun log, quel que soit le routage. Fonction pure,
+ * extraite de la classe pour être testable sans dépendre du client Discord. */
+export function isLogIgnored(event: Pick<AuditEvent, 'channel' | 'actor'>, config: Pick<AuditSettings, 'ignoreChannelIds' | 'ignoreUserIds' | 'ignoreRoleIds'>): boolean {
+  if (event.channel?.id && config.ignoreChannelIds?.includes(event.channel.id)) return true;
+  if (event.actor?.id && config.ignoreUserIds?.includes(event.actor.id)) return true;
+  if (config.ignoreRoleIds?.length && event.actor?.roleIds?.some((r) => config.ignoreRoleIds!.includes(r))) return true;
+  return false;
+}
+
 const WEBHOOK_NAME = 'ETHONE Logs';
 
 /** Résultat d'une livraison (utilisé par le message de test du dashboard). */
 export interface DeliveryResult {
   ok: boolean;
-  reason?: 'bot_offline' | 'guild_not_found' | 'disabled' | 'no_channel' | 'no_permission' | 'error';
+  reason?: 'bot_offline' | 'guild_not_found' | 'disabled' | 'no_channel' | 'no_permission' | 'ignored' | 'error';
   name: string;
   channelId?: string;
   via?: 'webhook' | 'bot';
@@ -75,6 +84,8 @@ export class DiscordLogService {
       const name = this.webhookNameFor(config, key);
       // Module « Journal d'audit » coupé (hub / dashboard / /module) : aucun message dans les salons de logs (sauf test manuel).
       if ((!config.enabled || !isModuleEnabled(event.guildId, 'logs')) && !force) return { ok: false, reason: 'disabled', name };
+
+      if (!force && isLogIgnored(event, config)) return { ok: false, reason: 'ignored', name };
 
       const targetChannel = this.resolveChannel(guild, event, config, force);
       if (!targetChannel) return { ok: false, reason: 'no_channel', name };
@@ -211,7 +222,7 @@ export class DiscordLogService {
     const iconMap: Record<AuditModule, string> = {
       MEMBERS: '👤', MESSAGES: '💬', ROLES: '🎭', CHANNELS: '📁', SERVER: '🌐',
       VOICE: '🔊', WEBHOOKS: '🔗', BOTS: '🤖', MODERATION: '👮', AUTOMOD: '⚡',
-      SECURITY: '🛡️', SYSTEM: '⚙️',
+      SECURITY: '🛡️', SYSTEM: '⚙️', EMOJIS: '😀', THREADS: '🧵', INVITES: '📨',
     };
 
     const prettyType = event.type.replace(/_/g, ' ').toLowerCase().replace(/^./, (c) => c.toUpperCase());

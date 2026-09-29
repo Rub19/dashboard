@@ -15,6 +15,9 @@ export const LOG_CATEGORY_KEYS: LogCategoryKey[] = [
   'WEBHOOKS',
   'BOTS',
   'SYSTEM',
+  'EMOJIS',
+  'THREADS',
+  'INVITES',
 ];
 
 /** Nom affiché du webhook par défaut : court, en minuscules (« vocals », « mod »…). */
@@ -32,6 +35,9 @@ export const DEFAULT_CATEGORY_NAME: Record<LogCategoryKey, string> = {
   WEBHOOKS: 'webhooks',
   BOTS: 'bots',
   SYSTEM: 'system',
+  EMOJIS: 'emojis',
+  THREADS: 'threads',
+  INVITES: 'invites',
 };
 
 export function isLogCategoryKey(value: unknown): value is LogCategoryKey {

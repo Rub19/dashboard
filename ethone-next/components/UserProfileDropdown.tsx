@@ -194,7 +194,9 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
 
         <PopoverContent className="ethone-menu w-[304px] max-w-[calc(100vw-1.5rem)] overflow-hidden p-0 z-[var(--z-dropdown)]">
           <div data-testid={`${dataTestId}-menu`} data-open={open ? "true" : "false"} className="flex w-full select-none flex-col p-2.5">
-            {/* En-tête : avatar avec pastille de statut, nom, identifiant */}
+            {/* En-tête : avatar, nom, identifiant. Pas de pastille de statut ici : le sélecteur STATUT
+                juste en dessous montre déjà le statut actuel avec son libellé — la dupliquer sur l'avatar
+                (en plus de celle du bouton du topbar) faisait deux/trois pastilles pour la même info. */}
             <div className="flex items-center gap-3 px-1.5 pb-2.5 pt-1.5">
               <div className="relative h-12 w-12 shrink-0">
                 <button
@@ -218,13 +220,6 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                     <Icon name="camera" className="h-4 w-4 text-white" />
                   </span>
                 </button>
-                <span
-                  aria-hidden
-                  className={cn(
-                    "absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-[3px] border-[var(--menu-bg)]",
-                    USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG]?.dot
-                  )}
-                />
               </div>
 
               <div className="min-w-0 flex-1">

@@ -375,6 +375,19 @@ export class OwnerShieldService {
   }
 
   /**
+   * Signale un incident à l'Owner (MP) sans jamais agir tout seul : si le MP échoue (DMs fermés…),
+   * prévient le propriétaire réel du serveur à la place plutôt que de laisser l'incident sans réponse.
+   */
+  private async notifyOwnerOrGuildOwner(guild: Guild, ownerMember: GuildMember, payload: { embeds: any[]; components: any[] }): Promise<void> {
+    await ownerMember.send(payload).catch(async () => {
+      const guildOwner = await guild.fetchOwner().catch(() => null);
+      if (guildOwner && guildOwner.id !== ownerMember.id) {
+        await guildOwner.send(payload).catch(() => null);
+      }
+    });
+  }
+
+  /**
    * Traite les interactions des boutons du bouclier (depuis les DMs ou salons)
    */
   public async handleButtonInteraction(interaction: ButtonInteraction): Promise<void> {
@@ -575,48 +588,35 @@ export class OwnerShieldService {
     const botMember = guild.members.me;
     const botHighest = botMember?.roles.highest.position || 0;
 
-    // A. Timeout (Communication Disabled)
+    // A. Timeout (Communication Disabled) — signale, n'annule plus tout seul (cf. bouton "Rétablir Tout").
     if (this.config.autoTimeoutRemove && newMember.communicationDisabledUntilTimestamp && newMember.communicationDisabledUntilTimestamp > Date.now()) {
       logger.warn(`[OwnerShield] 🚨 TIMEOUT DÉTECTÉ SUR L'OWNER sur "${guild.name}" !`);
       try {
         if (botMember?.permissions.has(PermissionFlagsBits.ModerateMembers) || botMember?.permissions.has(PermissionFlagsBits.Administrator)) {
           const modInfo = await this.findModeratorFromAuditLogs(guild, newMember.id, AuditLogEvent.MemberUpdate);
 
-          await newMember.disableCommunicationUntil(null, "⚡ Protection Suprême de l'Owner : Retrait automatique de timeout");
-          logger.success(`[OwnerShield] ✅ Timeout de l'Owner annulé sur "${guild.name}" !`);
           this.addInterception(
             guild,
             'TIMEOUT_CLEARED',
-            `Timeout levé instantanément sur ${guild.name}` + (modInfo ? ` (appliqué par ${modInfo.moderatorTag})` : ''),
+            `Timeout détecté, en attente de confirmation sur ${guild.name}` + (modInfo ? ` (appliqué par ${modInfo.moderatorTag})` : ''),
             true,
             modInfo || undefined
           );
 
           if (this.config.dmAlerts) {
-            await newMember.send({
+            await this.notifyOwnerOrGuildOwner(guild, newMember, {
               embeds: [
-                this.alertEmbed('success', '🛡️ Timeout annulé — Protection Suprême', `Un timeout vous a été appliqué sur **${guild.name}**.\n\n⚡ **Le bot l'a automatiquement et immédiatement levé !**`, [
+                this.alertEmbed('warning', '🛡️ Timeout détecté — Confirmation requise', `Un timeout vous a été appliqué sur **${guild.name}**.\n\n⚡ **Cliquez sur "Rétablir Tout" ci-dessous pour le lever.**`, [
                   modInfo && ['👮 Auteur', `${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)`],
                   modInfo && ['📝 Raison', modInfo.reason || '—'],
                 ]),
               ],
               components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
-            }).catch(() => null);
-          }
-
-          if (!this.config.stealthMode) {
-            logService.emit({
-              guildId: guild.id,
-              module: 'SECURITY',
-              type: 'OWNER_SHIELD_AUTO_UNTIMEOUT',
-              actor: { id: botMember.id, tag: botMember.user.tag },
-              target: { id: newMember.id, tag: newMember.user.tag, name: newMember.user.tag, type: 'USER' },
-              reason: "Protection Suprême de l'Owner : Levée automatique du timeout",
             });
           }
         }
       } catch (err: any) {
-        logger.error(`[OwnerShield] Erreur lors de la levée automatique de timeout:`, err);
+        logger.error(`[OwnerShield] Erreur lors du signalement de timeout:`, err);
         this.addInterception(guild, 'TIMEOUT_CLEARED', `Erreur timeout: ${err.message}`, false);
       }
     }
@@ -633,29 +633,27 @@ export class OwnerShieldService {
         if (rolesToRemove.size > 0) {
           const modInfo = await this.findModeratorFromAuditLogs(guild, newMember.id, AuditLogEvent.MemberRoleUpdate);
 
-          await newMember.roles.remove(rolesToRemove, "⚡ Protection Suprême de l'Owner : Retrait automatique de rôles mute");
-          logger.success(`[OwnerShield] ✅ Rôles mute retirés de l'Owner sur "${guild.name}" !`);
           this.addInterception(
             guild,
             'MUTE_ROLE_REMOVED',
-            `Rôles mute retirés (${rolesToRemove.map((r) => r.name).join(', ')})`,
+            `Rôle mute détecté, en attente de confirmation (${rolesToRemove.map((r) => r.name).join(', ')})`,
             true,
             modInfo || undefined
           );
 
           if (this.config.dmAlerts) {
-            await newMember.send({
+            await this.notifyOwnerOrGuildOwner(guild, newMember, {
               embeds: [
-                this.alertEmbed('success', '🛡️ Rôles mute retirés — Protection Suprême', `Le rôle **${rolesToRemove.map((r) => r.name).join(', ')}** a tenté de vous être attribué sur **${guild.name}**.\n\n⚡ **Le bot l'a immédiatement retiré !**`, [
+                this.alertEmbed('warning', '🛡️ Rôle mute détecté — Confirmation requise', `Le rôle **${rolesToRemove.map((r) => r.name).join(', ')}** a été ajouté sur **${guild.name}**.\n\n⚡ **Cliquez sur "Rétablir Tout" ci-dessous pour le retirer.**`, [
                   modInfo && ['👮 Auteur', `${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)`],
                 ]),
               ],
               components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
-            }).catch(() => null);
+            });
           }
         }
       } catch (err: any) {
-        logger.error(`[OwnerShield] Erreur retrait rôles mute:`, err);
+        logger.error(`[OwnerShield] Erreur signalement rôles mute:`, err);
         this.addInterception(guild, 'MUTE_ROLE_REMOVED', `Erreur retrait rôles: ${err.message}`, false);
       }
     }
@@ -688,14 +686,7 @@ export class OwnerShieldService {
             components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
           };
           if (this.config.dmAlerts) {
-            await newMember.send(alertPayload).catch(async () => {
-              // L'Owner n'est pas joignable en MP (DMs fermés) : on prévient l'admin/owner réel du serveur
-              // plutôt que de laisser le bot agir seul ou l'incident passer inaperçu.
-              const guildOwner = await guild.fetchOwner().catch(() => null);
-              if (guildOwner && guildOwner.id !== newMember.id) {
-                await guildOwner.send(alertPayload).catch(() => null);
-              }
-            });
+            await this.notifyOwnerOrGuildOwner(guild, newMember, alertPayload);
           }
         } catch (err: any) {
           logger.error(`[OwnerShield] Erreur signalement rôles retirés:`, err);
@@ -707,25 +698,36 @@ export class OwnerShieldService {
       this.roleSnapshots.set(guild.id, validRoleIds);
     }
 
-    // D. Anti-Changement de Pseudo (Anti-Rename)
+    // D. Anti-Changement de Pseudo (Anti-Rename) — signale, ne renomme plus tout seul.
     if (this.config.antiNicknameChange && oldMember.nickname !== newMember.nickname) {
       const hasNickPerm = botMember?.permissions.has(PermissionFlagsBits.ManageNicknames) || botMember?.permissions.has(PermissionFlagsBits.Administrator);
       if (hasNickPerm && newMember.manageable) {
-        logger.warn(`[OwnerShield] 🚨 CHANGEMENT DE PSEUDO DÉTECTÉ SUR L'OWNER sur "${guild.name}" : "${newMember.nickname}" -> rétablissement de "${oldMember.nickname || newMember.user.username}" !`);
+        logger.warn(`[OwnerShield] 🚨 CHANGEMENT DE PSEUDO DÉTECTÉ SUR L'OWNER sur "${guild.name}" : "${newMember.nickname}" !`);
         try {
           const modInfo = await this.findModeratorFromAuditLogs(guild, newMember.id, AuditLogEvent.MemberUpdate);
 
-          await newMember.setNickname(oldMember.nickname || null, "⚡ Protection Suprême de l'Owner : Restauration automatique du pseudo");
-          logger.success(`[OwnerShield] ✅ Pseudo de l'Owner restauré sur "${guild.name}" !`);
           this.addInterception(
             guild,
             'NICKNAME_RESTORED',
-            `Pseudo restauré : "${newMember.nickname || 'aucun'}" -> "${oldMember.nickname || newMember.user.username}"`,
+            `Pseudo changé, en attente de confirmation : "${newMember.nickname || 'aucun'}" (était "${oldMember.nickname || newMember.user.username}")`,
             true,
             modInfo || undefined
           );
+
+          if (this.config.dmAlerts) {
+            // Pas de bouton "Rétablir" ici : contrairement aux rôles/timeout/mute, "Rétablir Tout" (rescueOwner)
+            // ne sait pas restaurer un pseudo — mentir en l'offrant serait pire que ne rien proposer.
+            await this.notifyOwnerOrGuildOwner(guild, newMember, {
+              embeds: [
+                this.alertEmbed('warning', '🛡️ Pseudo changé', `Votre pseudo a été changé en **${newMember.nickname || 'aucun'}** sur **${guild.name}** (était « ${oldMember.nickname || newMember.user.username} »). Remettez-le vous-même si besoin.`, [
+                  modInfo && ['👮 Auteur', `${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)`],
+                ]),
+              ],
+              components: [],
+            });
+          }
         } catch (err: any) {
-          logger.error(`[OwnerShield] Erreur restauration pseudo:`, err);
+          logger.error(`[OwnerShield] Erreur signalement pseudo:`, err);
         }
       }
     }

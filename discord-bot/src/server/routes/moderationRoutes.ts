@@ -10,7 +10,7 @@ import {
   StandardReasonSchema,
 } from '../../modules/moderation/types/case.js';
 import { logger } from '../../utils/logger.js';
-import { handleRouteError } from '../utils/routeError.js';
+import { handleClientError, handleRouteError } from '../utils/routeError.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
@@ -543,7 +543,7 @@ export function createModerationRouter(discordClient: Client) {
 
       res.json({ success: true, report });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Erreur création signalement' });
+      handleClientError(err, res, 'Erreur création signalement');
     }
   });
 

@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.16 — 2026-09-29
+
+**Sécurité : signalements de modération**
+
+- La création d'un signalement ne renvoie plus le message d'erreur brut du serveur au dashboard en cas d'échec inattendu — seules les erreurs de validation restent affichées, le reste est journalisé côté serveur.
+
 ## v1.37.15 — 2026-09-29
 
 **Owner Shield : plus d'action automatique sur bannissement et sourdine vocale**

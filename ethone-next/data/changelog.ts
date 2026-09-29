@@ -39381,6 +39381,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_15_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_15_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_15_de);
 
+const v1_37_16_fr: ChangelogEntry = {
+  version: "v1.37.16",
+  date: "2026-09-29",
+  title: "Sécurité : signalements de modération",
+  items: [
+    "La création d'un signalement ne renvoie plus le message d'erreur brut du serveur au dashboard en cas d'échec inattendu — seules les erreurs de validation restent affichées, le reste est journalisé côté serveur.",
+  ],
+};
+
+const v1_37_16_en: ChangelogEntry = {
+  version: "v1.37.16",
+  date: "2026-09-29",
+  title: "Security: moderation reports",
+  items: [
+    "Creating a report no longer returns the raw server error message to the dashboard on an unexpected failure — only validation errors are still shown, everything else is logged server-side instead.",
+  ],
+};
+
+const v1_37_16_es: ChangelogEntry = {
+  version: "v1.37.16",
+  date: "2026-09-29",
+  title: "Seguridad: informes de moderación",
+  items: [
+    "Crear un informe ya no devuelve el mensaje de error bruto del servidor al dashboard en caso de fallo inesperado.",
+  ],
+};
+
+const v1_37_16_de: ChangelogEntry = {
+  version: "v1.37.16",
+  date: "2026-09-29",
+  title: "Sicherheit: Moderationsmeldungen",
+  items: [
+    "Das Erstellen einer Meldung gibt bei einem unerwarteten Fehler nicht mehr die rohe Server-Fehlermeldung an das Dashboard zurück.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_16_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_16_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_16_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_16_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

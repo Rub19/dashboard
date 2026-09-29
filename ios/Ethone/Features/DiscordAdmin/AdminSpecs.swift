@@ -278,9 +278,8 @@ enum AdminCatalog {
                 .init(title: "Identité — avatar (URL)", get: "/identity", put: "/identity/avatar"),
               ],
               lists: [
-                // Pas de liste "Activités de rotation" séparée : /rotation renvoie {data:{…,activities:[…]}},
-                // et `key:` ne cherche qu'à un seul niveau (il faudrait atteindre data.activities, deux niveaux).
-                // Le tableau reste visible (nombre d'éléments) dans le réglage "Rotation automatique" ci-dessus.
+                // /rotation renvoie {data:{…,activities:[…]}} — atteint via la clé à point "data.activities".
+                .init(title: "Activités de rotation", path: "/rotation", key: "data.activities"),
                 .init(title: "Planning", path: "/schedule"),
                 .init(title: "Profils", path: "/profiles", rowActions: [.init(title: "Appliquer", path: "/profiles/{id}/apply", symbol: "checkmark.circle.fill")]),
                 .init(title: "Serveurs", path: "/servers"), .init(title: "Historique", path: "/history"),
@@ -291,12 +290,16 @@ enum AdminCatalog {
                 .init(title: "Désactiver le mode maintenance", path: "/maintenance",
                       body: ["enabled": .bool(false)], symbol: "wrench.and.screwdriver"),
               ]),
-        // Pas de liste "Serveurs protégés"/"Historique" : /status renvoie {data:{…,guilds:[…],history:[…]}} —
-        // deux niveaux de nesting, que `key:` (un seul niveau) ne peut pas atteindre. Elles resteraient visibles
-        // en lecture seule (compteurs) dans la vue d'ensemble par défaut de ce module ; le détachement par
-        // serveur (POST /guilds/{id}/toggle) reste site-only tant qu'il n'y a pas de vraie liste pour le piloter.
+        // /status renvoie {data:{…,guilds:[…],history:[…]}} — deux niveaux de nesting, atteints via
+        // les clés à point "data.guilds"/"data.history" (firstArray les descend maintenant).
         .init(id: "owner-shield", title: "Owner Shield", symbol: "shield.lefthalf.filled.badge.checkmark", group: groups[5], scope: .bot, base: "bot/owner-shield", overview: "/status",
               configs: [.init(title: "Réglages", get: "/config", put: "/config", method: "POST")],
+              lists: [
+                .init(title: "Serveurs protégés", path: "/status", key: "data.guilds", idKey: "guildId", rowActions: [
+                  .init(title: "Basculer la protection", path: "/guilds/{id}/toggle", symbol: "shield.lefthalf.filled"),
+                ]),
+                .init(title: "Historique", path: "/status", key: "data.history"),
+              ],
               actions: [
                 .init(title: "Activer la défense automatique", path: "/toggle", body: ["enabled": .bool(true)], symbol: "bolt.shield.fill"),
                 .init(title: "Désactiver la défense automatique", path: "/toggle", body: ["enabled": .bool(false)], symbol: "bolt.slash.fill"),

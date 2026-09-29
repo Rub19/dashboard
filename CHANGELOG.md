@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.19 — 2026-09-29
+
+**iOS : listes imbriquées débloquées (Owner Shield, rotation)**
+
+- Le moteur générique iOS peut maintenant lire des réponses imbriquées sur deux niveaux — les listes « Serveurs protégés » et « Historique » d'Owner Shield, ainsi que « Activités de rotation », sont de nouveau interactives (elles étaient limitées à un simple compteur en lecture seule).
+
 ## v1.37.18 — 2026-09-29
 
 **Sécurité : correction de la vulnérabilité undici (DoS)**

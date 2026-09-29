@@ -29,11 +29,27 @@ extension JSONValue {
         }
     }
 
-    /// Premier tableau d'une réponse : la réponse elle-même, la clé demandée, une clé usuelle, ou n'importe quelle clé tableau.
+    /// Descend un chemin `"data.guilds"` (séparé par des points) dans des objets imbriqués ; `nil` si un
+    /// segment intermédiaire n'est pas un objet ou si la clé finale est absente.
+    private func value(atPath path: String) -> JSONValue? {
+        var current = self
+        for segment in path.split(separator: ".") {
+            guard case .object(let dictionary) = current, let next = dictionary[String(segment)] else { return nil }
+            current = next
+        }
+        return current
+    }
+
+    /// Premier tableau d'une réponse : la réponse elle-même, la clé demandée (chemin à points possible,
+    /// ex. `"data.guilds"`, pour les réponses imbriquées sur deux niveaux), une clé usuelle, ou n'importe
+    /// quelle clé tableau.
     static func firstArray(in response: JSONValue, key: String? = nil) -> [JSONValue]? {
         if let array = response.arrayValue { return array }
         guard case .object(let dictionary) = response else { return nil }
-        if let key, let array = dictionary[key]?.arrayValue { return array }
+        if let key {
+            if let array = dictionary[key]?.arrayValue { return array }
+            if key.contains("."), let array = response.value(atPath: key)?.arrayValue { return array }
+        }
         for usual in ["items", "list", "entries", "data", "results", "rows"] {
             if let array = dictionary[usual]?.arrayValue { return array }
         }
@@ -64,8 +80,8 @@ enum AdminText {
         return result.prefix(1).uppercased() + result.dropFirst()
     }
 
-    static let titleKeys = ["title", "name", "label", "prize", "userTag", "tag", "username", "displayName", "command", "question", "topic", "preview", "id"]
-    static let subtitleKeys = ["status", "type", "category", "description", "userTag", "authorTag", "channelName", "action", "level", "xp", "balance", "score", "count", "enabled", "secured", "value"]
+    static let titleKeys = ["title", "name", "label", "prize", "userTag", "tag", "username", "displayName", "guildName", "command", "question", "topic", "preview", "text", "id"]
+    static let subtitleKeys = ["status", "type", "category", "description", "userTag", "authorTag", "channelName", "action", "level", "xp", "balance", "score", "count", "weight", "enabled", "secured", "isIgnored", "value"]
 
     static func title(of item: JSONValue) -> String {
         guard case .object(let dictionary) = item else { return item.displayText }

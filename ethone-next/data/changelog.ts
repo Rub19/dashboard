@@ -39508,6 +39508,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_18_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_18_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_18_de);
 
+const v1_37_19_fr: ChangelogEntry = {
+  version: "v1.37.19",
+  date: "2026-09-29",
+  title: "iOS : listes imbriquées débloquées (Owner Shield, rotation)",
+  items: [
+    "Le moteur générique iOS peut maintenant lire des réponses imbriquées sur deux niveaux — les listes « Serveurs protégés » et « Historique » d'Owner Shield, ainsi que « Activités de rotation », sont de nouveau interactives (elles étaient limitées à un simple compteur en lecture seule).",
+  ],
+};
+
+const v1_37_19_en: ChangelogEntry = {
+  version: "v1.37.19",
+  date: "2026-09-29",
+  title: "iOS: nested lists unlocked (Owner Shield, rotation)",
+  items: [
+    "The generic iOS engine can now read two-level nested responses — Owner Shield's \"Protected servers\" and \"History\" lists, plus \"Rotation activities\", are interactive again (previously stuck as a read-only counter).",
+  ],
+};
+
+const v1_37_19_es: ChangelogEntry = {
+  version: "v1.37.19",
+  date: "2026-09-29",
+  title: "iOS: listas anidadas desbloqueadas (Owner Shield, rotación)",
+  items: [
+    "El motor genérico de iOS ahora puede leer respuestas anidadas en dos niveles — las listas de Owner Shield y de rotación vuelven a ser interactivas.",
+  ],
+};
+
+const v1_37_19_de: ChangelogEntry = {
+  version: "v1.37.19",
+  date: "2026-09-29",
+  title: "iOS: verschachtelte Listen wieder verfügbar (Owner Shield, Rotation)",
+  items: [
+    "Die generische iOS-Engine kann jetzt zweistufig verschachtelte Antworten lesen — die Owner-Shield- und Rotations-Listen sind wieder interaktiv.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_19_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_19_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_19_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_19_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

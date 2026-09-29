@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.13 — 2026-09-29
+
+**Auto-rôles avancés + correction de la rotation de présence**
+
+- Auto-rôles : rôles séparés pour les bots (avec leur propre délai), exclusion de rôles de la synchronisation, synchronisation programmée automatique, et rôles supplémentaires par utilisateur.
+- Corrigé : deux systèmes de rotation d'activité tournaient en parallèle sans coordination (un ancien, codé en dur, jamais nettoyé) — supprimé, il n'y en a plus qu'un.
+- Corrigé : la rotation d'activité ne survivait pas à un redémarrage du bot (réactivée manuellement à chaque fois) — elle est maintenant sauvegardée et reprend automatiquement.
+- Corrigé : après avoir quitté le mode maintenance, les boutons Online/Idle/DND restaient bloqués sur l'ancienne activité au lieu de reprendre la rotation immédiatement.
+- Sécurité : la configuration de rotation envoyée depuis le dashboard est maintenant validée (types, tailles, valeurs) avant d'être enregistrée.
+
 ## v1.37.12 — 2026-09-29
 
 **Journal d'audit : 3 catégories de plus + filtres d'exclusion**

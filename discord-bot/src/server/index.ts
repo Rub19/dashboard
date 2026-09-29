@@ -53,6 +53,7 @@ import { createBirthdayRouter } from './routes/birthdayRoutes.js';
 import { createTagRouter } from './routes/tagRoutes.js';
 import { createServerStatsRouter } from './routes/serverStatsRoutes.js';
 import { serverStatsService } from '../modules/serverStats/services/serverStatsService.js';
+import { autoRoleService } from '../modules/roles/services/autoRoleService.js';
 import { createHighlightsRouter } from './routes/highlightsRoutes.js';
 import { birthdayService } from '../modules/birthdays/services/birthdayService.js';
 import { createEventRouter } from './routes/events.js';
@@ -463,6 +464,9 @@ export function startWebServer(client: Client): http.Server {
 
   // Scheduler des salons compteurs (tick 5 min)
   serverStatsService.initialize(client);
+
+  // Synchronisation programmée des Auto-Rôles (vérifie chaque heure les serveurs dus)
+  autoRoleService.initialize(client);
 
   // Synchro Supabase de la télémétrie (Centre de contrôle du dashboard, RLS owner only)
   startBotTelemetrySync(client);

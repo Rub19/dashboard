@@ -81,6 +81,11 @@ interface RolePanel {
   updatedAt: string;
 }
 
+interface UserRoleOverride {
+  userId: string;
+  roleIds: string[];
+}
+
 interface AutoRoleConfig {
   enabled: boolean;
   roleIds: string[];
@@ -89,7 +94,35 @@ interface AutoRoleConfig {
   waitForScreening: boolean;
   delaySeconds: number;
   lastSyncAt: string | null;
+  useSeparateBotRoles: boolean;
+  botRoleIds: string[];
+  botDelaySeconds: number;
+  excludeFromSyncRoleIds: string[];
+  scheduledSyncEnabled: boolean;
+  scheduledSyncIntervalHours: number;
+  lastScheduledSyncAt: string | null;
+  userOverrides: UserRoleOverride[];
+  removeUserFromListAfterAssignment: boolean;
 }
+
+const AUTO_ROLE_DEFAULTS: AutoRoleConfig = {
+  enabled: false,
+  roleIds: [],
+  applyToHumans: true,
+  applyToBots: false,
+  waitForScreening: false,
+  delaySeconds: 0,
+  lastSyncAt: null,
+  useSeparateBotRoles: false,
+  botRoleIds: [],
+  botDelaySeconds: 0,
+  excludeFromSyncRoleIds: [],
+  scheduledSyncEnabled: false,
+  scheduledSyncIntervalHours: 24,
+  lastScheduledSyncAt: null,
+  userOverrides: [],
+  removeUserFromListAfterAssignment: true,
+};
 
 const STYLE_CLS: Record<ItemStyle, string> = {
   Primary: "bg-[#5865F2] text-white",
@@ -169,10 +202,13 @@ export default function RolesCenterClient() {
   const [loading, setLoading] = useState(false);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [panels, setPanels] = useState<RolePanel[]>(DEMO_PANELS);
-  const [autoRole, setAutoRole] = useState<AutoRoleConfig>({ enabled: false, roleIds: [], applyToHumans: true, applyToBots: false, waitForScreening: false, delaySeconds: 0, lastSyncAt: null });
+  const [autoRole, setAutoRole] = useState<AutoRoleConfig>(AUTO_ROLE_DEFAULTS);
   const [savingAutoRole, setSavingAutoRole] = useState(false);
   const [missingCount, setMissingCount] = useState(0);
   const [syncing, setSyncing] = useState(false);
+  const [autoRoleSubTab, setAutoRoleSubTab] = useState<"options" | "users" | "bots" | "sync">("options");
+  const [overrideUserInput, setOverrideUserInput] = useState("");
+  const [overrideRoleInput, setOverrideRoleInput] = useState("");
   const [busyPanelId, setBusyPanelId] = useState<string | null>(null);
 
   // Publish modal state
@@ -196,7 +232,7 @@ export default function RolesCenterClient() {
     if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
       setIsDemo(false);
       setPanels([]);
-      setAutoRole({ enabled: false, roleIds: [], applyToHumans: true, applyToBots: false, waitForScreening: false, delaySeconds: 0, lastSyncAt: null });
+      setAutoRole(AUTO_ROLE_DEFAULTS);
       setHasLoadedOnce(true);
       return;
     }
@@ -786,55 +822,226 @@ export default function RolesCenterClient() {
                 <Plus className="w-3.5 h-3.5" /> Ajouter
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-[var(--panel-border)] text-xs">
-              <label className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] cursor-pointer">
-                <span className="text-[var(--text-muted)]">Membres humains</span>
-                <input type="checkbox" checked={autoRole.applyToHumans} onChange={(e) => saveAutoRole({ ...autoRole, applyToHumans: e.target.checked })} className="w-4 h-4 rounded text-amber-500" />
-              </label>
-              <label className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] cursor-pointer">
-                <span className="text-[var(--text-muted)]">Bots</span>
-                <input type="checkbox" checked={autoRole.applyToBots} onChange={(e) => saveAutoRole({ ...autoRole, applyToBots: e.target.checked })} className="w-4 h-4 rounded text-amber-500" />
-              </label>
-              <label className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] cursor-pointer">
-                <span className="text-[var(--text-muted)]">Attendre le filtrage des règles</span>
-                <input type="checkbox" checked={autoRole.waitForScreening} onChange={(e) => saveAutoRole({ ...autoRole, waitForScreening: e.target.checked })} className="w-4 h-4 rounded text-amber-500" />
-              </label>
-              <label className="flex items-center justify-between gap-2 p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)]">
-                <span className="text-[var(--text-muted)]">Délai avant attribution (s)</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={86400}
-                  value={autoRole.delaySeconds}
-                  onChange={(e) => setAutoRole({ ...autoRole, delaySeconds: Number(e.target.value) })}
-                  onBlur={() => saveAutoRole(autoRole)}
-                  className="w-16 rounded-lg bg-[var(--panel-bg)] border border-[var(--panel-border)] px-2 py-1 text-right font-mono text-[var(--text-primary)]"
-                />
-              </label>
+            {/* Sous-onglets : Options / Rôles par utilisateur / Rôles des bots / Synchronisation */}
+            <div className="flex gap-1 rounded-xl bg-[var(--panel-bg)] p-1 text-xs border-t border-[var(--panel-border)] mt-1">
+              {([
+                ["options", "Options"],
+                ["users", "Rôles par utilisateur"],
+                ["bots", "Rôles des bots"],
+                ["sync", "Synchronisation"],
+              ] as const).map(([id, label]) => (
+                <button
+                  key={id}
+                  onClick={() => setAutoRoleSubTab(id)}
+                  className={cn(
+                    "flex-1 rounded-lg px-2 py-1.5 font-semibold cursor-pointer transition-colors",
+                    autoRoleSubTab === id ? "bg-[var(--surface-raised)] text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[var(--panel-border)] text-xs">
-              <div className="text-[var(--text-muted)]">
-                {missingCount > 0 ? (
-                  <span>
-                    <span className="font-semibold text-amber-400">{missingCount}</span> membre(s) déjà présent(s) n&apos;ont pas encore ces rôles.
-                  </span>
-                ) : (
-                  <span>Tous les membres concernés ont déjà leurs rôles.</span>
-                )}
-                {autoRole.lastSyncAt && (
-                  <span className="block text-[10px] mt-0.5">Dernière synchro : {new Date(autoRole.lastSyncAt).toLocaleString("fr-FR")}</span>
+            {autoRoleSubTab === "options" && (
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <label className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] cursor-pointer">
+                  <span className="text-[var(--text-muted)]">Membres humains</span>
+                  <input type="checkbox" checked={autoRole.applyToHumans} onChange={(e) => saveAutoRole({ ...autoRole, applyToHumans: e.target.checked })} className="w-4 h-4 rounded text-amber-500" />
+                </label>
+                <label className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] cursor-pointer">
+                  <span className="text-[var(--text-muted)]">Attendre le filtrage des règles</span>
+                  <input type="checkbox" checked={autoRole.waitForScreening} onChange={(e) => saveAutoRole({ ...autoRole, waitForScreening: e.target.checked })} className="w-4 h-4 rounded text-amber-500" />
+                </label>
+                <label className="col-span-2 flex items-center justify-between gap-2 p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)]">
+                  <span className="text-[var(--text-muted)]">Délai avant attribution — membres humains (s)</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={86400}
+                    value={autoRole.delaySeconds}
+                    onChange={(e) => setAutoRole({ ...autoRole, delaySeconds: Number(e.target.value) })}
+                    onBlur={() => saveAutoRole(autoRole)}
+                    className="w-16 rounded-lg bg-[var(--panel-bg)] border border-[var(--panel-border)] px-2 py-1 text-right font-mono text-[var(--text-primary)]"
+                  />
+                </label>
+              </div>
+            )}
+
+            {autoRoleSubTab === "users" && (
+              <div className="space-y-3 text-xs">
+                <p className="text-[var(--text-muted)]">Attribue des rôles supplémentaires à des membres précis, en plus des rôles ci-dessus.</p>
+                <div className="space-y-2">
+                  {autoRole.userOverrides.length === 0 && <p className="text-[var(--text-muted)]">Aucun utilisateur ajouté.</p>}
+                  {autoRole.userOverrides.map((o) => (
+                    <div key={o.userId} className="p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className="font-mono text-[var(--text-primary)] block truncate">{o.userId}</span>
+                        <span className="text-[var(--text-muted)] block truncate">{o.roleIds.map((r) => `@${r}`).join(", ")}</span>
+                      </div>
+                      <button
+                        onClick={() => saveAutoRole({ ...autoRole, userOverrides: autoRole.userOverrides.filter((x) => x.userId !== o.userId) })}
+                        className="shrink-0 text-[var(--text-muted)] hover:text-rose-400 cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <div className="space-y-2 rounded-xl border border-dashed border-[var(--panel-border)] p-3">
+                  <input
+                    type="text"
+                    value={overrideUserInput}
+                    onChange={(e) => setOverrideUserInput(e.target.value)}
+                    placeholder="ID de l'utilisateur"
+                    className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 text-[var(--text-primary)] outline-none"
+                  />
+                  <RolePicker value={overrideRoleInput} onChange={(id) => setOverrideRoleInput(id)} guildId={currentGuildId} placeholder="Rôle à attribuer..." size="sm" />
+                  <button
+                    onClick={() => {
+                      const uid = overrideUserInput.trim();
+                      if (!/^\d{15,22}$/.test(uid) || !overrideRoleInput) {
+                        toastError("Renseigne un ID utilisateur et un rôle valides.");
+                        return;
+                      }
+                      const existing = autoRole.userOverrides.find((o) => o.userId === uid);
+                      const nextOverrides = existing
+                        ? autoRole.userOverrides.map((o) => (o.userId === uid ? { ...o, roleIds: [...new Set([...o.roleIds, overrideRoleInput])] } : o))
+                        : [...autoRole.userOverrides, { userId: uid, roleIds: [overrideRoleInput] }];
+                      saveAutoRole({ ...autoRole, userOverrides: nextOverrides });
+                      setOverrideUserInput("");
+                      setOverrideRoleInput("");
+                    }}
+                    className="w-full h-9 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold cursor-pointer flex items-center justify-center gap-1"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Ajouter
+                  </button>
+                </div>
+                <label className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] cursor-pointer">
+                  <span className="text-[var(--text-muted)]">Retirer de la liste une fois le rôle attribué</span>
+                  <input type="checkbox" checked={autoRole.removeUserFromListAfterAssignment} onChange={(e) => saveAutoRole({ ...autoRole, removeUserFromListAfterAssignment: e.target.checked })} className="w-4 h-4 rounded text-amber-500" />
+                </label>
+              </div>
+            )}
+
+            {autoRoleSubTab === "bots" && (
+              <div className="space-y-3 text-xs">
+                <label className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] cursor-pointer">
+                  <span className="text-[var(--text-muted)]">Attribuer les rôles automatiques aux bots</span>
+                  <input type="checkbox" checked={autoRole.applyToBots} onChange={(e) => saveAutoRole({ ...autoRole, applyToBots: e.target.checked })} className="w-4 h-4 rounded text-amber-500" />
+                </label>
+                <label className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] cursor-pointer">
+                  <span className="text-[var(--text-muted)]">Utiliser des rôles différents pour les bots</span>
+                  <input type="checkbox" checked={autoRole.useSeparateBotRoles} onChange={(e) => saveAutoRole({ ...autoRole, useSeparateBotRoles: e.target.checked })} className="w-4 h-4 rounded text-amber-500" />
+                </label>
+                {autoRole.useSeparateBotRoles && (
+                  <>
+                    <div className="space-y-2">
+                      {autoRole.botRoleIds.length === 0 && <p className="text-[var(--text-muted)]">Aucun rôle spécifique aux bots.</p>}
+                      {autoRole.botRoleIds.map((rid) => (
+                        <div key={rid} className="p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] flex items-center justify-between">
+                          <span className="font-mono text-[var(--text-primary)]">@{rid}</span>
+                          <button onClick={() => saveAutoRole({ ...autoRole, botRoleIds: autoRole.botRoleIds.filter((x) => x !== rid) })} className="text-[var(--text-muted)] hover:text-rose-400 cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      ))}
+                    </div>
+                    <RolePicker
+                      value=""
+                      onChange={(id) => id && !autoRole.botRoleIds.includes(id) && saveAutoRole({ ...autoRole, botRoleIds: [...autoRole.botRoleIds, id] })}
+                      guildId={currentGuildId}
+                      placeholder="Ajouter un rôle pour les bots..."
+                      size="sm"
+                    />
+                    <label className="flex items-center justify-between gap-2 p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)]">
+                      <span className="text-[var(--text-muted)]">Délai avant attribution — bots (s)</span>
+                      <input
+                        type="number"
+                        min={0}
+                        max={86400}
+                        value={autoRole.botDelaySeconds}
+                        onChange={(e) => setAutoRole({ ...autoRole, botDelaySeconds: Number(e.target.value) })}
+                        onBlur={() => saveAutoRole(autoRole)}
+                        className="w-16 rounded-lg bg-[var(--panel-bg)] border border-[var(--panel-border)] px-2 py-1 text-right font-mono text-[var(--text-primary)]"
+                      />
+                    </label>
+                  </>
                 )}
               </div>
-              <button
-                onClick={() => void handleSyncNow()}
-                disabled={syncing || !autoRole.enabled || autoRole.roleIds.length === 0}
-                className="px-4 h-9 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] hover:border-amber-500/40 text-xs font-semibold cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
-              >
-                <RefreshCw className={cn("w-3.5 h-3.5", syncing && "animate-spin")} />
-                {syncing ? "Synchronisation…" : "Synchroniser maintenant"}
-              </button>
-            </div>
+            )}
+
+            {autoRoleSubTab === "sync" && (
+              <div className="space-y-3 text-xs">
+                <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)]">
+                  <div className="text-[var(--text-muted)]">
+                    {missingCount > 0 ? (
+                      <span><span className="font-semibold text-amber-400">{missingCount}</span> membre(s) déjà présent(s) n&apos;ont pas encore ces rôles.</span>
+                    ) : (
+                      <span>Tous les membres concernés ont déjà leurs rôles.</span>
+                    )}
+                    {autoRole.lastSyncAt && (
+                      <span className="block text-[10px] mt-0.5">Dernière synchro manuelle : {new Date(autoRole.lastSyncAt).toLocaleString("fr-FR")}</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => void handleSyncNow()}
+                    disabled={syncing || !autoRole.enabled || autoRole.roleIds.length === 0}
+                    className="px-4 h-9 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] hover:border-amber-500/40 font-semibold cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    <RefreshCw className={cn("w-3.5 h-3.5", syncing && "animate-spin")} />
+                    {syncing ? "Synchronisation…" : "Synchroniser maintenant"}
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="font-bold text-[var(--text-primary)]">Exclure des rôles de la synchronisation</p>
+                  <p className="text-[var(--text-muted)]">Ces rôles ne sont jamais rattrapés par "Sync now" ou la synchro programmée, même s&apos;ils sont configurés ci-dessus.</p>
+                  <div className="flex flex-wrap gap-2">
+                    {autoRole.excludeFromSyncRoleIds.map((rid) => (
+                      <span key={rid} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-1 font-mono">
+                        @{rid}
+                        <button onClick={() => saveAutoRole({ ...autoRole, excludeFromSyncRoleIds: autoRole.excludeFromSyncRoleIds.filter((x) => x !== rid) })} className="text-[var(--text-muted)] hover:text-rose-400 cursor-pointer">
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  <div className="max-w-xs">
+                    <RolePicker
+                      value=""
+                      onChange={(id) => id && !autoRole.excludeFromSyncRoleIds.includes(id) && saveAutoRole({ ...autoRole, excludeFromSyncRoleIds: [...autoRole.excludeFromSyncRoleIds, id] })}
+                      guildId={currentGuildId}
+                      placeholder="Ajouter un rôle à exclure..."
+                      size="sm"
+                    />
+                  </div>
+                </div>
+
+                <label className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] cursor-pointer">
+                  <span>
+                    <span className="block font-bold text-[var(--text-primary)]">Synchronisation programmée</span>
+                    <span className="block text-[var(--text-muted)]">Relance "Sync now" automatiquement toutes les N heures.</span>
+                  </span>
+                  <input type="checkbox" checked={autoRole.scheduledSyncEnabled} onChange={(e) => saveAutoRole({ ...autoRole, scheduledSyncEnabled: e.target.checked })} className="w-4 h-4 rounded text-amber-500 shrink-0" />
+                </label>
+                {autoRole.scheduledSyncEnabled && (
+                  <label className="flex items-center justify-between gap-2 p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)]">
+                    <span className="text-[var(--text-muted)]">Intervalle (heures)</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={168}
+                      value={autoRole.scheduledSyncIntervalHours}
+                      onChange={(e) => setAutoRole({ ...autoRole, scheduledSyncIntervalHours: Number(e.target.value) })}
+                      onBlur={() => saveAutoRole(autoRole)}
+                      className="w-16 rounded-lg bg-[var(--panel-bg)] border border-[var(--panel-border)] px-2 py-1 text-right font-mono text-[var(--text-primary)]"
+                    />
+                  </label>
+                )}
+                {autoRole.lastScheduledSyncAt && (
+                  <p className="text-[10px] text-[var(--text-muted)]">Dernière synchro programmée : {new Date(autoRole.lastScheduledSyncAt).toLocaleString("fr-FR")}</p>
+                )}
+              </div>
+            )}
           </div>
         )}
 

@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { Client } from 'discord.js';
+import { z } from 'zod';
 import { PresenceService } from '../../modules/presence/services/presenceService.js';
 import { ActivityRotationEngine } from '../../modules/presence/services/activityRotationEngine.js';
 import { PresenceSchedulerService } from '../../modules/presence/services/presenceSchedulerService.js';
@@ -19,6 +20,8 @@ export function createPresenceRouter(client: Client): Router {
 
   presenceService.initialize(client);
   identityService.initialize(client);
+  // Reprend la rotation d'activité si elle était activée avant le redémarrage (config persistée).
+  rotationEngine.resumeIfEnabled();
 
   // Guild-level in-memory preferred profile storage
   const guildPreferences = new Map<string, string>();
@@ -95,9 +98,30 @@ export function createPresenceRouter(client: Client): Router {
   });
 
   // 4. POST /api/bot/presence/rotation
+  const RotationActivityItemSchema = z.object({
+    id: z.string().min(1).max(64),
+    type: z.enum(['Playing', 'Streaming', 'Listening', 'Watching', 'Competing']),
+    text: z.string().min(1).max(128),
+    url: z.string().url().max(512).optional(),
+    weight: z.number().int().min(1).max(1000).optional(),
+  });
+  const RotationConfigSchema = z
+    .object({
+      enabled: z.boolean(),
+      intervalSeconds: z.number().int().min(30).max(86400),
+      order: z.enum(['sequential', 'random', 'weighted']),
+      activities: z.array(RotationActivityItemSchema).max(50),
+    })
+    .partial();
+
   router.post('/rotation', (req: Request, res: Response) => {
+    const parsed = RotationConfigSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ success: false, error: parsed.error.issues[0]?.message || 'Configuration de rotation invalide.' });
+      return;
+    }
     try {
-      const updated = rotationEngine.updateConfig(req.body);
+      const updated = rotationEngine.updateConfig(parsed.data);
       res.json({ success: true, data: updated });
     } catch (err: any) {
       handleClientError(err, res, 'Requête invalide', { success: false });

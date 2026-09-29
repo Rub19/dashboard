@@ -39244,6 +39244,61 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_12_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_12_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_12_de);
 
+const v1_37_13_fr: ChangelogEntry = {
+  version: "v1.37.13",
+  date: "2026-09-29",
+  title: "Auto-rôles avancés + correction de la rotation de présence",
+  items: [
+    "Auto-rôles : rôles séparés pour les bots (avec leur propre délai), exclusion de rôles de la synchronisation, synchronisation programmée automatique, et rôles supplémentaires par utilisateur.",
+    "Corrigé : deux systèmes de rotation d'activité tournaient en parallèle sans coordination (un ancien, codé en dur, jamais nettoyé) — supprimé, il n'y en a plus qu'un.",
+    "Corrigé : la rotation d'activité ne survivait pas à un redémarrage du bot (réactivée manuellement à chaque fois) — elle est maintenant sauvegardée et reprend automatiquement.",
+    "Corrigé : après avoir quitté le mode maintenance, les boutons Online/Idle/DND restaient bloqués sur l'ancienne activité au lieu de reprendre la rotation immédiatement.",
+    "Sécurité : la configuration de rotation envoyée depuis le dashboard est maintenant validée (types, tailles, valeurs) avant d'être enregistrée.",
+  ],
+};
+
+const v1_37_13_en: ChangelogEntry = {
+  version: "v1.37.13",
+  date: "2026-09-29",
+  title: "Advanced auto-roles + presence rotation fix",
+  items: [
+    "Auto-roles: separate roles for bots (with their own delay), excluding roles from sync, automatic scheduled sync, and extra per-user roles.",
+    "Fixed: two activity rotation systems were running in parallel with no coordination (one legacy, hardcoded, never cleaned up) — removed, now there's only one.",
+    "Fixed: activity rotation didn't survive a bot restart (had to be manually re-enabled every time) — it's now saved and resumes automatically.",
+    "Fixed: after leaving maintenance mode, the Online/Idle/DND buttons stayed stuck on the old activity instead of resuming rotation immediately.",
+    "Security: rotation config sent from the dashboard is now validated (types, sizes, values) before being saved.",
+  ],
+};
+
+const v1_37_13_es: ChangelogEntry = {
+  version: "v1.37.13",
+  date: "2026-09-29",
+  title: "Autorroles avanzados + corrección de la rotación de presencia",
+  items: [
+    "Autorroles: roles separados para bots (con su propio retraso), exclusión de roles de la sincronización, sincronización programada automática y roles adicionales por usuario.",
+    "Corregido: dos sistemas de rotación de actividad funcionaban en paralelo sin coordinación — eliminado, ahora solo hay uno.",
+    "Corregido: la rotación de actividad no sobrevivía a un reinicio del bot — ahora se guarda y se reanuda automáticamente.",
+    "Corregido: tras salir del modo mantenimiento, los botones Online/Idle/DND se quedaban con la actividad antigua.",
+  ],
+};
+
+const v1_37_13_de: ChangelogEntry = {
+  version: "v1.37.13",
+  date: "2026-09-29",
+  title: "Erweiterte Auto-Rollen + Präsenzrotation behoben",
+  items: [
+    "Auto-Rollen: separate Rollen für Bots (mit eigener Verzögerung), Ausschluss von Rollen aus der Synchronisierung, automatische geplante Synchronisierung und zusätzliche Rollen pro Benutzer.",
+    "Behoben: Zwei Aktivitätsrotationssysteme liefen unkoordiniert parallel — entfernt, jetzt gibt es nur noch eines.",
+    "Behoben: Die Aktivitätsrotation überstand keinen Bot-Neustart — sie wird jetzt gespeichert und automatisch fortgesetzt.",
+    "Behoben: Nach Verlassen des Wartungsmodus blieben die Online/Idle/DND-Buttons an der alten Aktivität hängen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_13_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_13_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_13_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_13_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

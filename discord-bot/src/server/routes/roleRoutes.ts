@@ -30,7 +30,7 @@ export function createRoleRouter(discordClient: Client) {
       return;
     }
     try {
-      const result = await autoRoleService.syncGuild(guild);
+      const result = await autoRoleService.manualSync(guild);
       emitConfigUpdated('autorole', guildId, autoRoleService.getConfig(guildId), 'DASHBOARD', req.user?.id);
       res.json({ success: true, ...result });
     } catch (err: any) {

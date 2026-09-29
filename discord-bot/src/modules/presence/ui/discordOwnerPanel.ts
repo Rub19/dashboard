@@ -151,15 +151,18 @@ export class DiscordOwnerPanel {
 
     const customId = interaction.customId;
 
-    if (customId === 'owner_presence_set_online') {
+    if (customId === 'owner_presence_set_online' || customId === 'owner_presence_set_idle' || customId === 'owner_presence_set_dnd') {
+      const status = customId === 'owner_presence_set_online' ? 'online' : customId === 'owner_presence_set_idle' ? 'idle' : 'dnd';
       const current = presenceService.getCurrentState();
-      presenceService.updatePresence('online', current.activity, 'Bot Owner (Discord DM)');
-    } else if (customId === 'owner_presence_set_idle') {
-      const current = presenceService.getCurrentState();
-      presenceService.updatePresence('idle', current.activity, 'Bot Owner (Discord DM)');
-    } else if (customId === 'owner_presence_set_dnd') {
-      const current = presenceService.getCurrentState();
-      presenceService.updatePresence('dnd', current.activity, 'Bot Owner (Discord DM)');
+      // Sortir de la maintenance (ou de tout override figé) réattribue une vraie activité tout de suite —
+      // sans ça, ces boutons ne faisaient que changer le point de statut en gardant le texte figé
+      // (ex. « Watching ETHONE: Maintenance en cours ») jusqu'au prochain tick de rotation.
+      if (current.source === 'maintenance' && rotationEngine.getConfig().enabled) {
+        presenceService.updatePresence(status, current.activity, 'Bot Owner (Discord DM)');
+        rotationEngine.executeNextRotation();
+      } else {
+        presenceService.updatePresence(status, current.activity, 'Bot Owner (Discord DM)');
+      }
     } else if (customId === 'owner_presence_toggle_rot') {
       const cfg = rotationEngine.getConfig();
       if (cfg.enabled) {

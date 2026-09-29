@@ -253,7 +253,10 @@ enum AdminCatalog {
               lists: [
                 .init(title: "Commandes", path: "/commands"), .init(title: "Événements", path: "/events"),
                 .init(title: "Tâches planifiées", path: "/jobs", rowActions: [.init(title: "Lancer maintenant", path: "/jobs/{id}/run", symbol: "play.fill")]),
-                .init(title: "Erreurs", path: "/errors", idKey: "fingerprint", rowActions: [.init(title: "Marquer résolue", path: "/errors/{id}/resolve", symbol: "checkmark.circle.fill")]),
+                // Pas d'action « Marquer résolue » ici : /errors renvoie {data:{fingerprints,incidents}}, deux
+                // niveaux de nesting que `key:` ne peut pas atteindre (même limite que /rotation et /status plus
+                // haut) — le bouton ne se serait jamais affiché, aucune ligne n'étant jamais listée.
+                .init(title: "Erreurs", path: "/errors"),
                 .init(title: "Intégrations", path: "/integrations", rowActions: [.init(title: "Tester", path: "/integrations/{id}/test", symbol: "checkmark.seal.fill")]),
                 .init(title: "Performance", path: "/performance"), .init(title: "Télémétrie", path: "/telemetry"),
                 .init(title: "IA (usage)", path: "/ai"), .init(title: "Sécurité du bot", path: "/security"),
@@ -274,9 +277,9 @@ enum AdminCatalog {
                 .init(title: "Identité — avatar (URL)", get: "/identity", put: "/identity/avatar"),
               ],
               lists: [
-                // Objet {enabled, intervalSeconds, order, activities: […]}, pas un tableau : "activities" est la
-                // seule clé qui en est un (la liste plantait silencieusement avant, faute de `key`).
-                .init(title: "Activités de rotation", path: "/rotation", key: "activities"),
+                // Pas de liste "Activités de rotation" séparée : /rotation renvoie {data:{…,activities:[…]}},
+                // et `key:` ne cherche qu'à un seul niveau (il faudrait atteindre data.activities, deux niveaux).
+                // Le tableau reste visible (nombre d'éléments) dans le réglage "Rotation automatique" ci-dessus.
                 .init(title: "Planning", path: "/schedule"),
                 .init(title: "Profils", path: "/profiles", rowActions: [.init(title: "Appliquer", path: "/profiles/{id}/apply", symbol: "checkmark.circle.fill")]),
                 .init(title: "Serveurs", path: "/servers"), .init(title: "Historique", path: "/history"),
@@ -287,14 +290,12 @@ enum AdminCatalog {
                 .init(title: "Désactiver le mode maintenance", path: "/maintenance",
                       body: ["enabled": .bool(false)], symbol: "wrench.and.screwdriver"),
               ]),
+        // Pas de liste "Serveurs protégés"/"Historique" : /status renvoie {data:{…,guilds:[…],history:[…]}} —
+        // deux niveaux de nesting, que `key:` (un seul niveau) ne peut pas atteindre. Elles resteraient visibles
+        // en lecture seule (compteurs) dans la vue d'ensemble par défaut de ce module ; le détachement par
+        // serveur (POST /guilds/{id}/toggle) reste site-only tant qu'il n'y a pas de vraie liste pour le piloter.
         .init(id: "owner-shield", title: "Owner Shield", symbol: "shield.lefthalf.filled.badge.checkmark", group: groups[5], scope: .bot, base: "bot/owner-shield", overview: "/status",
               configs: [.init(title: "Réglages", get: "/config", put: "/config", method: "POST")],
-              lists: [
-                .init(title: "Serveurs protégés", path: "/status", key: "guilds", idKey: "guildId", rowActions: [
-                  .init(title: "Activer / désactiver ici", path: "/guilds/{id}/toggle", symbol: "power"),
-                ]),
-                .init(title: "Historique d'interception", path: "/status", key: "history"),
-              ],
               actions: [
                 .init(title: "Activer la défense automatique", path: "/toggle", body: ["enabled": .bool(true)], symbol: "bolt.shield.fill"),
                 .init(title: "Désactiver la défense automatique", path: "/toggle", body: ["enabled": .bool(false)], symbol: "bolt.slash.fill"),

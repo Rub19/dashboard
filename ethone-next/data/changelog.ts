@@ -39422,6 +39422,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_16_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_16_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_16_de);
 
+const v1_37_17_fr: ChangelogEntry = {
+  version: "v1.37.17",
+  date: "2026-09-29",
+  title: "/summarize respecte la visibilité du serveur, erreurs silencieuses journalisées",
+  items: [
+    "/summarize forçait toujours une réponse privée, contrairement à /ask et /imagine — il respecte maintenant le réglage de visibilité du serveur.",
+    "Une dizaine d'échecs silencieux (Anti-Raid, AutoMod, tickets, cases de modération, bienvenue, nettoyage au démarrage) sont maintenant journalisés au lieu de disparaître sans trace.",
+  ],
+};
+
+const v1_37_17_en: ChangelogEntry = {
+  version: "v1.37.17",
+  date: "2026-09-29",
+  title: "/summarize respects server visibility, silent failures now logged",
+  items: [
+    "/summarize always forced a private reply, unlike /ask and /imagine — it now respects the server's visibility setting.",
+    "About a dozen silent failures (Anti-Raid, AutoMod, tickets, moderation cases, welcome, startup cleanup) are now logged instead of vanishing without a trace.",
+  ],
+};
+
+const v1_37_17_es: ChangelogEntry = {
+  version: "v1.37.17",
+  date: "2026-09-29",
+  title: "/summarize respeta la visibilidad del servidor, fallos silenciosos registrados",
+  items: [
+    "/summarize siempre forzaba una respuesta privada — ahora respeta la visibilidad configurada por el servidor.",
+    "Una decena de fallos silenciosos ahora quedan registrados en los logs.",
+  ],
+};
+
+const v1_37_17_de: ChangelogEntry = {
+  version: "v1.37.17",
+  date: "2026-09-29",
+  title: "/summarize respektiert Server-Sichtbarkeit, stille Fehler werden protokolliert",
+  items: [
+    "/summarize erzwang immer eine private Antwort — respektiert jetzt die Sichtbarkeitseinstellung des Servers.",
+    "Rund ein Dutzend stille Fehler werden jetzt protokolliert, statt spurlos zu verschwinden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_37_17_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_37_17_en);
+CHANGELOG_BY_LANG.es.unshift(v1_37_17_es);
+CHANGELOG_BY_LANG.de.unshift(v1_37_17_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

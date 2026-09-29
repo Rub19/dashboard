@@ -97,7 +97,9 @@ class RaidActionService {
                 reason,
                 source: 'ANTI_RAID',
               });
-            } catch {}
+            } catch (err) {
+              logger.warn(`[RaidActionService] Échec création du case QUARANTINE pour ${member.user.tag}:`, err);
+            }
             return true;
           }
           break;
@@ -118,7 +120,9 @@ class RaidActionService {
                 durationSeconds: 15 * 60,
                 source: 'ANTI_RAID',
               });
-            } catch {}
+            } catch (err) {
+              logger.warn(`[RaidActionService] Échec création du case TIMEOUT pour ${member.user.tag}:`, err);
+            }
             return true;
           }
           break;
@@ -138,7 +142,9 @@ class RaidActionService {
                 reason,
                 source: 'ANTI_RAID',
               });
-            } catch {}
+            } catch (err) {
+              logger.warn(`[RaidActionService] Échec création du case KICK pour ${member.user.tag}:`, err);
+            }
             return true;
           }
           break;
@@ -161,7 +167,9 @@ class RaidActionService {
                 reason,
                 source: 'ANTI_RAID',
               });
-            } catch {}
+            } catch (err) {
+              logger.warn(`[RaidActionService] Échec création du case BAN pour ${member.user.tag}:`, err);
+            }
             return true;
           }
           break;
@@ -249,7 +257,9 @@ class RaidActionService {
               SendMessages: null,
             });
             unlocked++;
-          } catch {}
+          } catch (err) {
+            logger.error(`[RaidActionService] Erreur release lockdown salon ${channel.name}:`, err);
+          }
         }
       }
     }

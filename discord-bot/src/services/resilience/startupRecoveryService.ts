@@ -78,7 +78,9 @@ export class StartupRecoveryService {
             try {
               fs.unlinkSync(path.join(dataDir, file));
               cleaned++;
-            } catch {}
+            } catch (err) {
+              logger.warn(`[StartupRecovery] Échec suppression du fichier temporaire ${file} :`, err);
+            }
           }
         }
       }

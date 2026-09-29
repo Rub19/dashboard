@@ -275,7 +275,9 @@ export class TicketRepository {
               t.channelId === ticketId ||
               t.id.replace('#', '').toLowerCase() === ticketId.replace('#', '').toLowerCase())
         );
-      } catch {}
+      } catch (err) {
+        logger.error('Erreur relecture tickets.json (fallback getTicketById) :', err);
+      }
     }
 
     return match || null;

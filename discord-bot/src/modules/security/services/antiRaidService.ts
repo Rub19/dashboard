@@ -113,19 +113,25 @@ class AntiRaidService {
         case 'kick':
           try {
             await member.kick('Raid massif détecté (Anti-Raid)');
-          } catch {}
+          } catch (err) {
+            logger.error('[AntiRaid] Échec expulsion pendant un raid :', err);
+          }
           break;
 
         case 'ban':
           try {
             await member.ban({ reason: 'Raid massif détecté (Anti-Raid)' });
-          } catch {}
+          } catch (err) {
+            logger.error('[AntiRaid] Échec bannissement pendant un raid :', err);
+          }
           break;
 
         case 'timeout':
           try {
             await member.timeout(10 * 60 * 1000, 'Raid massif détecté (Anti-Raid)');
-          } catch {}
+          } catch (err) {
+            logger.error('[AntiRaid] Échec timeout pendant un raid :', err);
+          }
           break;
 
         case 'alert':

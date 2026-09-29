@@ -88,7 +88,9 @@ export class ActionEngine {
           }
         });
         executed.push('WARN');
-      } catch {}
+      } catch (err) {
+        logger.error('[ActionEngine] Échec avertissement :', err);
+      }
     }
 
     // 4. TIMEOUT
@@ -107,7 +109,9 @@ export class ActionEngine {
       try {
         await raidActionService.executeMemberAction(member, 'QUARANTINE', `[AutoMod] ${reason}`);
         executed.push('QUARANTINE');
-      } catch {}
+      } catch (err) {
+        logger.error('[ActionEngine] Échec quarantaine :', err);
+      }
     }
 
     // 6. KICK
@@ -138,7 +142,9 @@ export class ActionEngine {
           await textChannel.permissionOverwrites.edit(guild.roles.everyone, { SendMessages: false });
           executed.push('LOCK_CHANNEL');
         }
-      } catch {}
+      } catch (err) {
+        logger.error('[ActionEngine] Échec verrouillage salon :', err);
+      }
     }
 
     // Enregistrer chaque sanction disciplinaire dans le Case System du Moderation Center
@@ -162,7 +168,9 @@ export class ActionEngine {
               messageContent: message.content,
             },
           });
-        } catch {}
+        } catch (err) {
+          logger.error(`[ActionEngine] Échec création du case ${act} :`, err);
+        }
       }
     }
 

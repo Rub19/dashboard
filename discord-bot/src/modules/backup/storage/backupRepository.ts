@@ -37,7 +37,9 @@ export class BackupRepository {
       if (fs.existsSync(`${this.backupsFile}.tmp`)) fs.unlinkSync(`${this.backupsFile}.tmp`);
       if (fs.existsSync(`${this.settingsFile}.tmp`)) fs.unlinkSync(`${this.settingsFile}.tmp`);
       if (fs.existsSync(`${this.jobsFile}.tmp`)) fs.unlinkSync(`${this.jobsFile}.tmp`);
-    } catch {}
+    } catch (err) {
+      logger.warn('[BackupRepository] Échec nettoyage des fichiers .tmp orphelins :', err);
+    }
 
     try {
       if (fs.existsSync(this.backupsFile)) {

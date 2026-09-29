@@ -32,7 +32,9 @@ export const summarizeCommand: Command = {
         (ctx.args[0] ? parseInt(ctx.args[0], 10) : null) ||
         20;
 
-      await ctx.deferReply({ ephemeral: true });
+      // Pas d'ephemeral forcé ici : comme /ask et /imagine, le résumé respecte la visibilité
+      // choisie par le serveur (responseVisibility) au lieu d'être toujours privé.
+      await ctx.deferReply();
 
       const channel = ctx.channel;
       if (!channel || !('messages' in channel)) {

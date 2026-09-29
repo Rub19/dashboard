@@ -463,7 +463,9 @@ class TicketService {
             embeds: [baseEmbed('info').setDescription(`🙋 **${staffUser.tag}** a pris en charge ce ticket.`)],
           });
         }
-      } catch {}
+      } catch (err) {
+        logger.warn(`[TicketService] Notification de prise en charge non envoyée pour ${ticket.id} :`, err);
+      }
     }
     await this.syncForumTag(ticket, 'inProgress');
 
@@ -702,7 +704,9 @@ class TicketService {
             channel.delete(`Fermeture ticket ${ticket.id} par ${closedBy.tag}`).catch(() => {});
           }, 5000);
         }
-      } catch {}
+      } catch (err) {
+        logger.warn(`[TicketService] Notification de fermeture non envoyée pour ${ticket.id} :`, err);
+      }
 
       // Mode forum : tag "Fermé" puis verrouillage + archivage natifs (le post reste consultable).
       if (forumPost) {

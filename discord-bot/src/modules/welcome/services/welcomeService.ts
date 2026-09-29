@@ -452,7 +452,9 @@ class WelcomeService {
       if (btn.emoji) {
         try {
           builder.setEmoji(btn.emoji);
-        } catch {}
+        } catch (err) {
+          logger.warn(`[Welcome] Emoji de bouton invalide ("${btn.emoji}") sur ${guildId} :`, err);
+        }
       }
 
       if (btn.action === 'URL' && btn.target) {

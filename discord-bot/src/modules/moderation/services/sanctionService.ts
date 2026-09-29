@@ -47,10 +47,7 @@ export class SanctionService {
     }
 
     // 1. Récupérer le membre ou l'utilisateur cible
-    let targetMember: GuildMember | null = null;
-    try {
-      targetMember = await guild.members.fetch(params.userId).catch(() => null);
-    } catch {}
+    const targetMember: GuildMember | null = await guild.members.fetch(params.userId).catch(() => null);
 
     let targetUserTag = params.userTag;
     if (!targetUserTag) {

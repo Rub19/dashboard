@@ -12,6 +12,7 @@ import { ModerationLogger } from './moderationLogger.js';
 import { StaffAbuseDetector } from './staffAbuseDetector.js';
 import { logService } from '../../logs/services/logService.js';
 import { analyticsWriteBuffer } from '../../analytics/storage/analyticsWriteBuffer.js';
+import { logger } from '../../../utils/logger.js';
 
 export class CaseService {
   public static createCase(
@@ -151,12 +152,19 @@ export class CaseService {
       const guild = discordClient.guilds.cache.get(guildId);
       if (guild) {
         if (updated.action === 'TIMEOUT') {
-          guild.members.fetch(updated.userId).then((m) => m?.timeout(null, `Révocation Case #${caseNumber}`)).catch(() => {});
+          guild.members
+            .fetch(updated.userId)
+            .then((m) => m?.timeout(null, `Révocation Case #${caseNumber}`))
+            .catch((err) => logger.warn(`[CaseService] Échec levée du timeout Discord pour la Case #${caseNumber} :`, err));
         } else if (updated.action === 'BAN') {
-          guild.bans.remove(updated.userId, `Révocation Case #${caseNumber}`).catch(() => {});
+          guild.bans
+            .remove(updated.userId, `Révocation Case #${caseNumber}`)
+            .catch((err) => logger.warn(`[CaseService] Échec débannissement Discord pour la Case #${caseNumber} :`, err));
         }
       }
-    } catch {}
+    } catch (err) {
+      logger.warn(`[CaseService] Échec de la révocation Discord pour la Case #${caseNumber} :`, err);
+    }
 
     // Journalisation
     ModerationLogger.logRevert(discordClient, updated, revertedBy.tag, revertReason);

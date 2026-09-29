@@ -104,6 +104,8 @@ export class AutoModAlertService {
         channelId,
         channelName,
       });
-    } catch {}
+    } catch (err) {
+      logger.error('[AutoModAlertService] Échec journalisation alerte dans les logs de modération :', err);
+    }
   }
 }

@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.37.17 — 2026-09-29
+
+**/summarize respecte la visibilité du serveur, erreurs silencieuses journalisées**
+
+- /summarize forçait toujours une réponse privée, contrairement à /ask et /imagine — il respecte maintenant le réglage de visibilité du serveur.
+- Une dizaine d'échecs silencieux (Anti-Raid, AutoMod, tickets, cases de modération, bienvenue, nettoyage au démarrage) sont maintenant journalisés au lieu de disparaître sans trace.
+
 ## v1.37.16 — 2026-09-29
 
 **Sécurité : signalements de modération**

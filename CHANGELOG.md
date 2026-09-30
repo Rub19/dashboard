@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.38.2 — 2026-09-30
+
+**Sécurité : dépendance brace-expansion**
+
+- Corrigé deux vulnérabilités modérées (déni de service) dans brace-expansion, une dépendance transitive des outils de développement (eslint).
+
 ## v1.38.1 — 2026-09-30
 
 **Motion System : Accueil / Tableau de bord**

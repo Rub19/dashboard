@@ -39737,6 +39737,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_38_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_38_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_38_1_de);
 
+const v1_38_2_fr: ChangelogEntry = {
+  version: "v1.38.2",
+  date: "2026-09-30",
+  title: "Sécurité : dépendance brace-expansion",
+  items: [
+    "Corrigé deux vulnérabilités modérées (déni de service) dans brace-expansion, une dépendance transitive des outils de développement (eslint).",
+  ],
+};
+
+const v1_38_2_en: ChangelogEntry = {
+  version: "v1.38.2",
+  date: "2026-09-30",
+  title: "Security: brace-expansion dependency",
+  items: [
+    "Fixed two moderate-severity denial-of-service vulnerabilities in brace-expansion, a transitive dev-tooling dependency (eslint).",
+  ],
+};
+
+const v1_38_2_es: ChangelogEntry = {
+  version: "v1.38.2",
+  date: "2026-09-30",
+  title: "Seguridad: dependencia brace-expansion",
+  items: [
+    "Corregidas dos vulnerabilidades moderadas de denegación de servicio en brace-expansion.",
+  ],
+};
+
+const v1_38_2_de: ChangelogEntry = {
+  version: "v1.38.2",
+  date: "2026-09-30",
+  title: "Sicherheit: brace-expansion-Abhängigkeit",
+  items: [
+    "Zwei mittelschwere DoS-Schwachstellen in brace-expansion behoben.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_38_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_38_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_38_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_38_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

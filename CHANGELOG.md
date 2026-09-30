@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.38.1 — 2026-09-30
+
+**Motion System : Accueil / Tableau de bord**
+
+- Le système de réduction des animations respecte enfin les deux réglages existants à la fois (préférence du système ET réglage ETHONE), au lieu d'ignorer ce dernier sur certains écrans.
+- Cartes et widgets du tableau de bord ont désormais le même effet de profondeur/lueur au survol que le reste de l'interface.
+- Suppression d'une animation de grille qui n'avait plus aucun effet visible (dette de code).
+
 ## v1.38.0 — 2026-09-30
 
 **ETHONE Motion System + refonte Connexion/Auth**

@@ -2,11 +2,11 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { EASE_OUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/lib/icons";
-import { useSettings } from "@/components/SettingsProvider";
+import { useMotionPref } from "@/lib/hooks/useMotionPref";
 
 export type SortableWidgetProps = {
   id: string;
@@ -32,9 +32,7 @@ export default function SortableWidget({
     isDragging,
   } = useSortable({ id, disabled: !customizing });
 
-  const { settings } = useSettings();
-  const osReducedMotion = useReducedMotion();
-  const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
+  const { reduced: skipEntranceAnimation } = useMotionPref();
 
   const style = {
     transform: CSS.Transform.toString(transform),

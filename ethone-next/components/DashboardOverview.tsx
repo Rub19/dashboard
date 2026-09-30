@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import {
   LayoutGrid,
   Search,
@@ -62,17 +61,6 @@ const ConnectionCardsWidget = dynamic(() => import("@/components/ConnectionCards
 type SectionDef = { id: string; label: string; icon: string };
 
 const homeCardClass = "h-full min-h-0";
-
-const gridVariants = {
-  hidden: { opacity: 1 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.04,
-      delayChildren: 0.04,
-    },
-  },
-};
 
 const WIDGET_COL_SPAN: Record<string, string> = {
   hero: "col-span-12 lg:col-span-8",
@@ -642,7 +630,7 @@ export default function DashboardOverview() {
                     className={cn(
                       "flex items-center gap-1 rounded-[var(--inset-radius)] border px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
                       layoutLocked
-                        ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
+                        ? "border-[var(--warning)]/40 bg-[var(--warning)]/10 text-[var(--warning)]"
                         : "border-[var(--panel-border)] text-[var(--text-muted)] hover:text-white"
                     )}
                     title="Verrouiller la disposition"
@@ -715,10 +703,7 @@ export default function DashboardOverview() {
               onDragEnd={handleDragEnd}
             >
               <SortableContext items={visibleIds} strategy={rectSortingStrategy}>
-                <motion.div
-                  initial="hidden"
-                  animate="visible"
-                  variants={gridVariants}
+                <div
                   data-home-grid
                   className={cn("grid w-full h-auto auto-rows-auto grid-cols-12", densityGap)}
                 >
@@ -745,7 +730,7 @@ export default function DashboardOverview() {
                       </WidgetContainer>
                     </SortableWidget>
                   ))}
-                </motion.div>
+                </div>
               </SortableContext>
             </DndContext>
           )}

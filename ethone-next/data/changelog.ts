@@ -39690,6 +39690,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_38_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_38_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_38_0_de);
 
+const v1_38_1_fr: ChangelogEntry = {
+  version: "v1.38.1",
+  date: "2026-09-30",
+  title: "Motion System : Accueil / Tableau de bord",
+  items: [
+    "Le système de réduction des animations respecte enfin les deux réglages existants à la fois (préférence du système ET réglage ETHONE), au lieu d'ignorer ce dernier sur certains écrans.",
+    "Cartes et widgets du tableau de bord ont désormais le même effet de profondeur/lueur au survol que le reste de l'interface.",
+    "Suppression d'une animation de grille qui n'avait plus aucun effet visible (dette de code).",
+  ],
+};
+
+const v1_38_1_en: ChangelogEntry = {
+  version: "v1.38.1",
+  date: "2026-09-30",
+  title: "Motion System: Home / Dashboard",
+  items: [
+    "The reduced-motion check now respects both existing settings at once (OS preference AND the ETHONE toggle), instead of missing the latter on some screens.",
+    "Dashboard cards and widgets now share the same depth/glow hover effect as the rest of the interface.",
+    "Removed a grid animation that no longer had any visible effect (dead code).",
+  ],
+};
+
+const v1_38_1_es: ChangelogEntry = {
+  version: "v1.38.1",
+  date: "2026-09-30",
+  title: "Motion System: Inicio / Panel",
+  items: [
+    "La comprobación de movimiento reducido ahora respeta ambos ajustes a la vez.",
+    "Las tarjetas y widgets del panel comparten ahora el mismo efecto de profundidad/brillo al pasar el cursor.",
+  ],
+};
+
+const v1_38_1_de: ChangelogEntry = {
+  version: "v1.38.1",
+  date: "2026-09-30",
+  title: "Motion System: Start / Dashboard",
+  items: [
+    "Die Reduced-Motion-Prüfung berücksichtigt jetzt beide Einstellungen gleichzeitig.",
+    "Dashboard-Karten und -Widgets haben jetzt denselben Tiefen-/Glow-Hover-Effekt wie der Rest der Oberfläche.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_38_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_38_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_38_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_38_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

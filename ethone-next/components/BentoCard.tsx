@@ -40,7 +40,7 @@ function BentoCard({
       data-context-menu="bento"
       onPointerDown={hapticLightImpact}
       className={cn(
-        "group v8-panel relative flex w-full flex-col p-4 transition-[border-color,box-shadow] duration-200 hover:border-[var(--accent-primary)]/20",
+        "group v8-panel relative flex w-full flex-col p-4 transition-[border-color,box-shadow] duration-200 [transition-timing-function:var(--ease-snap)] hover:border-[var(--accent-primary)]/25 hover:shadow-[var(--panel-shadow),var(--shadow-glow)]",
         "h-full min-h-0 w-full",
         className
       )}

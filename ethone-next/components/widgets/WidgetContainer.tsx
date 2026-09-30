@@ -121,7 +121,7 @@ export default function WidgetContainer({
   return (
     <div
       className={cn(
-        "group relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/70 bg-[var(--panel-bg)]/80 backdrop-blur-xl shadow-xs transition-[border-color,box-shadow] duration-200 hover:border-[var(--accent-primary)]/20",
+        "group relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/70 bg-[var(--panel-bg)]/80 backdrop-blur-xl shadow-xs transition-[border-color,box-shadow] duration-200 [transition-timing-function:var(--ease-snap)] hover:border-[var(--accent-primary)]/25 hover:shadow-[var(--shadow-glow)]",
         className
       )}
     >
@@ -139,7 +139,7 @@ export default function WidgetContainer({
           </span>
           {manifest?.realtime && (
             <span
-              className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.7)]"
+              className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--success)] shadow-[0_0_5px_var(--success)]"
               title="Flux en temps réel actif"
             />
           )}

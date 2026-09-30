@@ -13,6 +13,7 @@ import BentoCard from "@/components/BentoCard";
 import LiveClock from "@/components/LiveClock";
 import { cn } from "@/lib/utils";
 import MarkdownContent from "@/components/MarkdownContent";
+import { Skeleton } from "@/components/ui/Skeleton";
 import type { CloudDashboard, NowPlaying } from "@/lib/hooks/useDashboard";
 
 function formatStorage(bytes = 0) {
@@ -260,14 +261,11 @@ const HeroBriefingCard = memo(function HeroBriefingCard({
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {loading
             ? Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="v8-inset flex animate-pulse items-center gap-2 p-2"
-                >
-                  <div className="h-7 w-7 rounded-lg bg-[var(--text-primary)]/10" />
+                <div key={i} className="v8-inset flex items-center gap-2 p-2">
+                  <Skeleton className="h-7 w-7 shrink-0 rounded-lg" />
                   <div className="min-w-0 flex-1 space-y-1.5">
-                    <div className="h-4 w-8 rounded bg-[var(--text-primary)]/10" />
-                    <div className="h-2 w-12 rounded bg-[var(--text-primary)]/10" />
+                    <Skeleton className="h-4 w-8" />
+                    <Skeleton className="h-2 w-12" />
                   </div>
                 </div>
               ))

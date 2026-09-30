@@ -17,8 +17,7 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "@/lib/utils";
-
-const EASE_OUT = [0.16, 1, 0.3, 1] as const;
+import { EASE_SNAP } from "@/lib/ease";
 
 type IslandContextValue = {
   view: string | null;
@@ -26,16 +25,18 @@ type IslandContextValue = {
 
 const IslandContext = createContext<IslandContextValue | null>(null);
 
-// Shell physics: ultra smooth spring with subtle inertia and organic damping
-const SHELL_SPRING = {
+// Deliberately distinct from the shared SPRING_PANEL/SPRING_SWAP (same
+// stiffness/damping family, heavier mass) — this shell and its content are
+// tuned together as a pair for the pill's specific inertia feel. Kept local
+// rather than folded into lib/ease.ts's general-purpose springs.
+const ISLAND_SHELL_SPRING = {
   type: "spring",
   stiffness: 280,
   damping: 28,
   mass: 0.7,
 } as const;
 
-// Content spring: synchronized with shell
-const CONTENT_SPRING = {
+const ISLAND_CONTENT_SPRING = {
   type: "spring",
   stiffness: 300,
   damping: 28,
@@ -111,10 +112,10 @@ function Slot({
               opacity: 0,
               scale: 0.96,
               y: -3,
-              transition: { duration: 0.1, ease: EASE_OUT },
+              transition: { duration: 0.1, ease: EASE_SNAP },
             }
       }
-      transition={reduce ? { duration: 0.12 } : CONTENT_SPRING}
+      transition={reduce ? { duration: 0.12 } : ISLAND_CONTENT_SPRING}
       style={{ transformOrigin: "top center", willChange: "transform, opacity" }}
       className={cn("flex items-center justify-center", className)}
     >
@@ -171,7 +172,7 @@ export function DynamicIsland({
               }
         }
         whileTap={reduce ? undefined : { scale: 0.98 }}
-        transition={reduce ? { duration: 0 } : SHELL_SPRING}
+        transition={reduce ? { duration: 0 } : ISLAND_SHELL_SPRING}
         style={{ borderRadius: RADIUS }}
         onClick={onClick}
         onMouseEnter={onMouseEnter}

@@ -6,10 +6,10 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { updatePassword } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ToastProvider";
-import FlatCard from "@/components/FlatCard";
-import { Icon } from "@/lib/icons";
-import Input from "@/components/Input";
-import FormField from "@/components/FormField";
+import AuthCardShell from "@/components/auth/AuthCardShell";
+import AuthInputField from "@/components/auth/AuthInputField";
+import Button from "@/components/ui/Button";
+import { Lock, Loader2 } from "@/components/icons/ph";
 import { required, passwordStrength, match, validate } from "@/lib/form-validation";
 
 export default function ResetPasswordPage() {
@@ -60,57 +60,44 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll">
-        <div className="flex min-h-full w-full items-center justify-center p-4">
-          <div className="w-full max-w-md space-y-6 lg:max-w-lg">
-            <h1 className="text-2xl font-bold">{i18n("resetPasswordTitle")}</h1>
-            <FlatCard>
+    <div className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden bg-[var(--bg-main)] p-4 text-[var(--text-primary)]">
+      <AuthCardShell title={i18n("resetPasswordTitle")}>
         {!session ? (
-          <div className="flex items-center gap-3 text-[var(--muted)]">
-            <Icon name="loader" className="h-5 w-5 animate-spin" />
+          <div className="flex items-center justify-center gap-3 text-[var(--text-muted)]">
+            <Loader2 className="h-5 w-5 animate-spin" />
             <p className="text-sm">{i18n("loading")}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <p className="break-words text-xs text-[var(--muted)]">{i18n("passwordRequirement")}</p>
-            <FormField label={i18n("newPassword")}>
-              <Input
-                id="reset-password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={12}
-                inputSize="large"
-                className="w-full"
-              />
-            </FormField>
-            <FormField label={i18n("confirmPassword")}>
-              <Input
-                id="reset-confirm"
-                type="password"
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                required
-                minLength={12}
-                inputSize="large"
-                className="w-full"
-              />
-            </FormField>
-            <button
-              type="submit"
-              disabled={loading || !password || !confirm}
-              className="rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:opacity-90 disabled:opacity-50"
-            >
-              {loading ? i18n("updating") : i18n("updatePassword")}
-            </button>
+            <p className="text-xs text-[var(--text-muted)]">{i18n("passwordRequirement")}</p>
+            <AuthInputField
+              id="reset-password"
+              label={i18n("newPassword")}
+              type="password"
+              autoComplete="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={12}
+              leftIcon={<Lock className="h-4 w-4" />}
+            />
+            <AuthInputField
+              id="reset-confirm"
+              label={i18n("confirmPassword")}
+              type="password"
+              autoComplete="new-password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+              minLength={12}
+              leftIcon={<Lock className="h-4 w-4" />}
+            />
+            <Button type="submit" variant="primary" isLoading={loading} disabled={!password || !confirm} className="h-12 w-full rounded-2xl text-sm">
+              {i18n("updatePassword")}
+            </Button>
           </form>
         )}
-      </FlatCard>
-          </div>
-        </div>
-      </div>
+      </AuthCardShell>
     </div>
   );
 }

@@ -29,7 +29,7 @@ const variantClass: Record<ButtonVariant, string> = {
   primary: cn(
     "border border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--accent-contrast)]",
     "shadow-[0_0_12px_var(--glow-color)]",
-    "hover:brightness-110",
+    "hover:brightness-110 hover:shadow-[0_0_20px_var(--glow-color)]",
   ),
   secondary: cn(
     "border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-primary)]",
@@ -108,7 +108,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         onClick={handleClick}
         className={cn(
           "relative inline-flex items-center justify-center whitespace-nowrap font-semibold",
-          "transition-all duration-150 ease-out",
+          "transition-all duration-150 [transition-timing-function:var(--ease-snap)]",
           "focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/60 focus-visible:outline-none",
           "active:scale-[0.97] active:brightness-95",
           "disabled:cursor-not-allowed disabled:opacity-55 disabled:saturate-0 disabled:shadow-none",

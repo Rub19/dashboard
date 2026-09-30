@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.38.0 — 2026-09-30
+
+**ETHONE Motion System + refonte Connexion/Auth**
+
+- Nouveau système de motion partagé (durées, easing, springs, variantes réutilisables) qui remplace les animations bricolées au cas par cas dans le code.
+- Connexion, inscription, vérification en deux étapes, récupération et réinitialisation du mot de passe entièrement repensées avec une carte partagée, des transitions cohérentes et des couleurs qui s'adaptent enfin à tous les thèmes (au lieu d'un vert vif figé).
+- Cartes et boutons ont un effet de profondeur et de lueur au survol, cohérent avec le thème actif.
+
 ## v1.37.21 — 2026-09-29
 
 **iOS : 3 listes imbriquées de plus débloquées**

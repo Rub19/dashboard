@@ -39643,6 +39643,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_37_21_en);
 CHANGELOG_BY_LANG.es.unshift(v1_37_21_es);
 CHANGELOG_BY_LANG.de.unshift(v1_37_21_de);
 
+const v1_38_0_fr: ChangelogEntry = {
+  version: "v1.38.0",
+  date: "2026-09-30",
+  title: "ETHONE Motion System + refonte Connexion/Auth",
+  items: [
+    "Nouveau système de motion partagé (durées, easing, springs, variantes réutilisables) qui remplace les animations bricolées au cas par cas dans le code.",
+    "Connexion, inscription, vérification en deux étapes, récupération et réinitialisation du mot de passe entièrement repensées avec une carte partagée, des transitions cohérentes et des couleurs qui s'adaptent enfin à tous les thèmes (au lieu d'un vert vif figé).",
+    "Cartes et boutons ont un effet de profondeur et de lueur au survol, cohérent avec le thème actif.",
+  ],
+};
+
+const v1_38_0_en: ChangelogEntry = {
+  version: "v1.38.0",
+  date: "2026-09-30",
+  title: "ETHONE Motion System + Login/Auth redesign",
+  items: [
+    "New shared motion system (durations, easing, springs, reusable variants) replacing animations that used to be hand-rolled per component.",
+    "Login, register, two-step verification, password recovery and reset fully redesigned with a shared card shell, consistent transitions, and colors that now actually adapt to every theme (instead of a hardcoded bright green).",
+    "Cards and buttons now have a depth/glow hover effect that matches the active theme.",
+  ],
+};
+
+const v1_38_0_es: ChangelogEntry = {
+  version: "v1.38.0",
+  date: "2026-09-30",
+  title: "ETHONE Motion System + rediseño de Login/Auth",
+  items: [
+    "Nuevo sistema de movimiento compartido (duraciones, easing, springs, variantes reutilizables).",
+    "Login, registro, verificación en dos pasos, recuperación y restablecimiento de contraseña rediseñados con una tarjeta compartida y colores que ahora se adaptan a todos los temas.",
+  ],
+};
+
+const v1_38_0_de: ChangelogEntry = {
+  version: "v1.38.0",
+  date: "2026-09-30",
+  title: "ETHONE Motion System + Login/Auth-Redesign",
+  items: [
+    "Neues gemeinsames Motion-System (Dauern, Easing, Springs, wiederverwendbare Varianten).",
+    "Login, Registrierung, Zwei-Schritt-Verifizierung, Passwort-Wiederherstellung und -Reset komplett überarbeitet mit einer gemeinsamen Karte und Farben, die sich jetzt an jedes Theme anpassen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_38_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_38_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_38_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_38_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

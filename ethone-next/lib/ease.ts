@@ -9,6 +9,19 @@ export const EASE_DRAWER = [0.25, 1, 0.5, 1] as const;
 /** CSS string form of EASE_OUT for inline style transitions. */
 export const EASE_OUT_CSS = "cubic-bezier(0.25, 1, 0.5, 1)";
 
+/** Mirrors --ease-snap in globals.css. Canonical export for the curve several
+ * components (DynamicIsland, the login card) previously hardcoded locally. */
+export const EASE_SNAP = [0.16, 1, 0.3, 1] as const;
+export const EASE_SNAP_CSS = "cubic-bezier(0.16, 1, 0.3, 1)";
+
+/** Shared duration scale, in seconds, for framer-motion `transition.duration`.
+ * Replaces the ad hoc 0.12/0.18/0.3 literals scattered across call sites. */
+export const DURATION_INSTANT = 0.1;
+export const DURATION_FAST = 0.15;
+export const DURATION_BASE = 0.2;
+export const DURATION_SLOW = 0.3;
+export const DURATION_DELIBERATE = 0.5;
+
 /** Press feedback on buttons and other tappable surfaces. */
 export const SPRING_PRESS = {
   type: "spring",
@@ -56,4 +69,13 @@ export const SPRING_GLIDE = {
   stiffness: 420,
   damping: 38,
   mass: 0.5,
+} as const;
+
+/** Snappy layoutId glides — active-tab pills and similar small indicators
+ * that need a faster response than SPRING_LAYOUT. Matches the spring
+ * AnimatedFilterTabs previously defined inline. */
+export const SPRING_PILL = {
+  type: "spring",
+  stiffness: 450,
+  damping: 35,
 } as const;

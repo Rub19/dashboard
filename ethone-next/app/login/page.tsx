@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback, useMemo, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -15,17 +15,22 @@ import {
   signInWithPasskey,
   signUpWithPassword,
 } from "@/lib/auth";
-import BrandMark from "@/components/BrandMark";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Switch from "@/components/Switch";
+import Button from "@/components/ui/Button";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import GithubIcon from "@/components/icons/GithubIcon";
 import DiscordIcon from "@/components/DiscordIcon";
 import { triggerHaptic } from "@/lib/haptics";
 import AuthInputField from "@/components/auth/AuthInputField";
+import AuthCardShell from "@/components/auth/AuthCardShell";
+import AuthHeroPanel from "@/components/auth/AuthHeroPanel";
 import OtpCodeInput from "@/components/auth/OtpCodeInput";
 import PasswordStrengthMeter from "@/components/auth/PasswordStrengthMeter";
 import TurnstileWidget, { type TurnstileWidgetHandle } from "@/components/auth/TurnstileWidget";
+import { stepEnter } from "@/lib/motion-variants";
+import { SPRING_PILL } from "@/lib/ease";
+import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import {
   Mail,
   Lock,
@@ -36,28 +41,11 @@ import {
   Check,
   KeyRound,
   AlertCircle,
-  Loader2,
   ChevronLeft,
-  Sparkles,
   ShieldCheck,
-  StickyNote,
-  ListChecks,
-  CalendarDays,
-  Wallet,
-  Music2,
-  Brain,
 } from "@/components/icons/ph";
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
-
-const HERO_FEATURES = [
-  { icon: StickyNote, labelKey: "loginFeatureNotes", fallback: "Notes" },
-  { icon: ListChecks, labelKey: "loginFeatureTasks", fallback: "Tâches" },
-  { icon: CalendarDays, labelKey: "loginFeatureCalendar", fallback: "Calendrier" },
-  { icon: Wallet, labelKey: "loginFeatureFinances", fallback: "Finances" },
-  { icon: Music2, labelKey: "loginFeatureMusic", fallback: "Musique" },
-  { icon: Brain, labelKey: "loginFeatureLocalAi", fallback: "IA locale" },
-] as const;
 
 type AuthMode = "password" | "otp" | "register";
 type OtpStep = "email" | "code";
@@ -103,7 +91,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { success } = useToast();
   const { session, loading: authLoading, signInOtp, verifyOtp } = useAuth();
-  const reduced = !!useReducedMotion();
+  const { reduced } = useMotionPref();
 
   const [mode, setMode] = useState<AuthMode>("password");
   const [otpStep, setOtpStep] = useState<OtpStep>("email");
@@ -393,702 +381,511 @@ export default function LoginPage() {
   }, [mode, otpStep, maskedEmail, i18n]);
 
   return (
-    <div className="relative flex min-h-dvh w-full overflow-hidden bg-[var(--bg-main,#0E1015)] text-white selection:bg-[var(--accent-primary,#C1234F)]/30 selection:text-white">
+    <div className="relative flex min-h-dvh w-full overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)] selection:bg-[var(--accent-primary)]/30 selection:text-[var(--text-primary)]">
       {/* Language switcher — pinned to the actual top-right corner of the
           viewport at every breakpoint (the one place a locale switcher is
-          expected, and never in visual competition with either column).
-          Previous attempts tried to pair it with the hero logo via
-          justify-between, but on a ~1000px-wide hero half that put ~900px
-          of empty space between the two, which still read as two
-          disconnected floating elements rather than one header. */}
+          expected, and never in visual competition with either column). */}
       <div className="absolute right-4 top-4 z-50 sm:right-6 sm:top-6">
         <LanguageSwitcher />
       </div>
 
-      {/* Left side: Premium OS Hero Presentation (Desktop only) */}
-      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden p-10 lg:flex xl:p-14 select-none">
-        {/* Faint dot grid — gives the empty field some texture without competing with the text */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.15]"
-          style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
-          }}
-        />
-
-        {/* Ambient Radial Lighting — slow drifting glow instead of static, to fill the negative space with gentle motion */}
-        <motion.div
-          className="pointer-events-none absolute -left-20 -top-20 h-[36rem] w-[36rem] rounded-full bg-[var(--accent-primary,#C1234F)]/[0.05] blur-[140px]"
-          animate={reduced ? undefined : { x: [0, 40, 0], y: [0, 30, 0] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="pointer-events-none absolute -bottom-20 -right-20 h-[36rem] w-[36rem] rounded-full bg-[var(--accent-secondary,#E03365)]/[0.04] blur-[140px]"
-          animate={reduced ? undefined : { x: [0, -30, 0], y: [0, -40, 0] }}
-          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="pointer-events-none absolute left-1/3 top-1/2 h-[26rem] w-[26rem] -translate-y-1/2 rounded-full bg-white/[0.02] blur-[130px]"
-          animate={reduced ? undefined : { scale: [1, 1.12, 1], opacity: [0.6, 1, 0.6] }}
-          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-        />
-
-        {/* Brand Header */}
-        <div className="z-10 flex items-center gap-3">
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] bg-white/[0.04] border border-[var(--panel-border)] shadow-lg">
-            <BrandMark size={28} />
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl font-bold tracking-tight text-white font-mono">ETHONE</span>
-            <span className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent-primary,#C1234F)]">
-              OS
-            </span>
-          </div>
-        </div>
-
-        {/* Main Hero Content */}
-        <div className="z-10 max-w-lg space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--panel-border)] bg-white/[0.03] px-3.5 py-1 text-[11px] font-medium tracking-wide text-zinc-300 backdrop-blur-md">
-            <Sparkles className="h-3.5 w-3.5 text-[var(--accent-primary,#C1234F)]" />
-            <span>{i18n("loginHeroBadge", "Environnement personnel unifié")}</span>
-          </div>
-
-          <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl xl:text-6xl leading-[1.1]">
-            {i18n("loginHeroHeadlineLine1", "Votre espace,")} <br />
-            <span className="bg-gradient-to-r from-[var(--accent-primary,#C1234F)] via-[#E03365] to-rose-400 bg-clip-text text-transparent">
-              {i18n("loginHeroHeadlineLine2", "réinventé pour vous.")}
-            </span>
-          </h1>
-
-          <p className="text-base text-zinc-400 font-light leading-relaxed">
-            {i18n("loginHeroDescription", "Notes, tâches, calendrier, finances, musique, fichiers et IA locale réunis dans un système fluide et instantané.")}
-          </p>
-
-          <div className="grid grid-cols-3 gap-2.5 pt-2">
-            {HERO_FEATURES.map(({ icon: Icon, labelKey, fallback }) => (
-              <div
-                key={labelKey}
-                className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] px-3 py-2.5 backdrop-blur-md"
-              >
-                <Icon className="h-4 w-4 shrink-0 text-[var(--accent-primary,#C1234F)]" />
-                <span className="truncate text-[12.5px] font-medium text-zinc-300">{i18n(labelKey, fallback)}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* System Status Pill */}
-        <div className="z-10 flex items-center gap-3 text-xs text-zinc-400">
-          <div className="flex items-center gap-2 rounded-full border border-[var(--panel-border)] bg-white/[0.03] px-3.5 py-1.5 backdrop-blur-md">
-            <span className="relative flex h-2 w-2">
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_5px_var(--glow-color)]" />
-            </span>
-            <span className="font-mono text-[11px] text-zinc-300">{i18n("loginStatusOperational", "ETHONE Cloud & IA opérationnels")}</span>
-          </div>
-        </div>
-      </div>
+      <AuthHeroPanel />
 
       {/* Right side: Auth Form Card */}
       <div className="relative flex flex-1 items-center justify-center p-4 sm:p-8 lg:w-1/2">
-        <div className="relative w-full max-w-[440px]">
-          {/* Main Glass Card */}
-          <motion.div
-            initial={reduced ? undefined : { opacity: 0, y: 16, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card,#13161E)]/90 p-6 sm:p-9 shadow-2xl backdrop-blur-2xl"
-          >
-            {/* Top Card Icon & Title */}
-            <div className="text-center space-y-3">
-              <motion.div
-                animate={
-                  isSuccess
-                    ? { scale: [1, 1.1, 1], rotate: [0, 5, 0] }
-                    : isLoading
-                    ? { scale: [1, 1.04, 1] }
-                    : {}
-                }
-                transition={{ duration: 0.6, repeat: isLoading ? Infinity : 0 }}
-                className={cn(
-                  "mx-auto flex h-14 w-14 items-center justify-center rounded-[var(--inset-radius)] border transition-all duration-300 shadow-lg",
-                  isSuccess
-                    ? "border-emerald-400/50 bg-emerald-500/20 text-emerald-300 shadow-emerald-500/20"
-                    : "border-[var(--panel-border)] bg-white/[0.04] text-white shadow-black/40"
-                )}
-              >
-                {isSuccess ? (
-                  <Check className="h-7 w-7 text-emerald-400" />
-                ) : (
-                  <BrandMark size={36} />
-                )}
-              </motion.div>
+        <AuthCardShell
+          icon={isSuccess ? <Check className="h-7 w-7 text-[var(--success)]" /> : undefined}
+          title={headerTitle}
+          subtitle={headerSubtitle}
+        >
+          {/* Mode Selector Tabs (only when in root mode or register) */}
+          {!(mode === "otp" && otpStep === "code") && (
+            <div className="mb-5">
+              <div className="relative grid grid-cols-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-1 shadow-inner">
+                {(["password", "otp", "register"] as AuthMode[]).map((m) => {
+                  const active = mode === m;
+                  const label =
+                    m === "password"
+                      ? i18n("tabPassword", "Mot de passe")
+                      : m === "otp"
+                      ? i18n("tabOtp", "Code OTP")
+                      : i18n("tabRegister", "S'inscrire");
 
-              <div>
-                <h2 className="text-2xl font-bold tracking-tight text-white">
-                  {headerTitle}
-                </h2>
-                <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
-                  {headerSubtitle}
-                </p>
+                  return (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => {
+                        triggerHaptic("light");
+                        setModeAndReset(m);
+                      }}
+                      disabled={isLoading}
+                      aria-pressed={active}
+                      className={cn(
+                        "relative z-10 select-none rounded-lg py-2 text-xs font-medium transition-colors cursor-pointer",
+                        active
+                          ? "text-[var(--text-primary)] font-semibold"
+                          : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                      )}
+                    >
+                      {active && (
+                        <motion.span
+                          layoutId="activeAuthTab"
+                          transition={SPRING_PILL}
+                          className="absolute inset-0 z-0 rounded-[var(--inset-radius)] bg-white/10 border border-[var(--panel-border)] shadow-sm"
+                        />
+                      )}
+                      <span className="relative z-10">{label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
+          )}
 
-            {/* Mode Selector Tabs (only when in root mode or register) */}
-            {!(mode === "otp" && otpStep === "code") && (
-              <div className="mt-6">
-                <div className="relative grid grid-cols-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-1 shadow-inner">
-                  {(["password", "otp", "register"] as AuthMode[]).map((m) => {
-                    const active = mode === m;
-                    const label =
-                      m === "password"
-                        ? i18n("tabPassword", "Mot de passe")
-                        : m === "otp"
-                        ? i18n("tabOtp", "Code OTP")
-                        : i18n("tabRegister", "S'inscrire");
-
-                    return (
-                      <button
-                        key={m}
-                        type="button"
-                        onClick={() => {
-                          triggerHaptic("light");
-                          setModeAndReset(m);
-                        }}
-                        disabled={isLoading}
-                        aria-pressed={active}
-                        className={cn(
-                          "relative z-10 select-none rounded-lg py-2 text-xs font-medium transition-colors cursor-pointer",
-                          active
-                            ? "text-white font-semibold"
-                            : "text-zinc-400 hover:text-white"
-                        )}
-                      >
-                        {active && (
-                          <motion.span
-                            layoutId="activeAuthTab"
-                            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                            className="absolute inset-0 z-0 rounded-[var(--inset-radius)] bg-white/10 border border-[var(--panel-border)] shadow-sm"
-                          />
-                        )}
-                        <span className="relative z-10">{label}</span>
-                      </button>
-                    );
-                  })}
+          {/* Error Notification Banner */}
+          <AnimatePresence mode="wait">
+            {error && (
+              <motion.div
+                key="error"
+                role="alert"
+                initial={{ opacity: 0, height: 0, y: -4 }}
+                animate={{ opacity: 1, height: "auto", y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -4 }}
+                transition={{ duration: 0.16 }}
+                className="mb-4 overflow-hidden"
+              >
+                <div className="flex items-start gap-2.5 rounded-[var(--inset-radius)] border border-[var(--danger)]/20 bg-[var(--danger)]/10 p-3.5 text-xs text-[var(--danger)]">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span className="leading-snug">{error}</span>
                 </div>
-              </div>
+              </motion.div>
             )}
+          </AnimatePresence>
 
-            {/* Error Notification Banner */}
-            <AnimatePresence mode="wait">
-              {error && (
-                <motion.div
-                  key="error"
-                  role="alert"
-                  initial={{ opacity: 0, height: 0, y: -4 }}
-                  animate={{ opacity: 1, height: "auto", y: 0 }}
-                  exit={{ opacity: 0, height: 0, y: -4 }}
-                  transition={{ duration: 0.16, ease: "easeOut" }}
-                  className="mt-4 overflow-hidden"
-                >
-                  <div className="flex items-start gap-2.5 rounded-[var(--inset-radius)] border border-rose-500/20 bg-rose-500/10 p-3.5 text-xs text-rose-300">
-                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-400" />
-                    <span className="leading-snug">{error}</span>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+          {/* Dynamic Form Content */}
+          <AnimatePresence mode="wait" initial={false}>
+            {/* 1. PASSWORD LOGIN FLOW */}
+            {mode === "password" && (
+              <motion.form
+                key="password-flow"
+                onSubmit={handlePasswordLogin}
+                variants={stepEnter}
+                initial={reduced ? "animate" : "initial"}
+                animate="animate"
+                exit="exit"
+                className="space-y-4"
+              >
+                <AuthInputField
+                  id="login-email"
+                  label={i18n("fieldEmail", "Adresse e-mail")}
+                  type="email"
+                  autoComplete="email"
+                  placeholder="nom@exemple.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading || isSuccess}
+                  leftIcon={<Mail className="h-4 w-4" />}
+                  ref={emailInputRef}
+                />
 
-            {/* Dynamic Form Content */}
-            <div className="mt-5">
-              <AnimatePresence mode="wait" initial={false}>
-                {/* 1. PASSWORD LOGIN FLOW */}
-                {mode === "password" && (
-                  <motion.form
-                    key="password-flow"
-                    onSubmit={handlePasswordLogin}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                    className="space-y-4"
-                  >
-                    <AuthInputField
-                      id="login-email"
-                      label={i18n("fieldEmail", "Adresse e-mail")}
-                      type="email"
-                      autoComplete="email"
-                      placeholder="nom@exemple.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={isLoading || isSuccess}
-                      leftIcon={<Mail className="h-4 w-4" />}
-                      ref={emailInputRef}
-                    />
-
-                    <AuthInputField
-                      id="login-password"
-                      label={i18n("tabPassword", "Mot de passe")}
-                      type={showPassword ? "text" : "password"}
-                      autoComplete="current-password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      disabled={isLoading || isSuccess}
-                      leftIcon={<Lock className="h-4 w-4" />}
-                      rightElement={
-                        <button
-                          type="button"
-                          onClick={() => {
-                            triggerHaptic("light");
-                            setShowPassword((v) => !v);
-                          }}
-                          className="text-zinc-400 hover:text-white transition-colors p-1"
-                          aria-label={i18n("togglePasswordVisibility", "Afficher ou masquer le mot de passe")}
-                        >
-                          {showPassword ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                        </button>
-                      }
-                    />
-
-                    <div className="flex items-center justify-between pt-0.5 text-xs text-zinc-400">
-                      <Switch
-                        id="remember-me-toggle"
-                        checked={rememberMe}
-                        onChange={setRememberMe}
-                        label={i18n("rememberMe", "Rester connecté")}
-                        size="md"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => router.push("/password-recovery")}
-                        className="text-xs text-zinc-400 hover:text-[var(--accent-primary,#C1234F)] transition-colors"
-                      >
-                        {i18n("forgotPassword", "Mot de passe oublié ?")}
-                      </button>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isLoading || isSuccess}
-                      className={cn(
-                        "mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold text-white shadow-lg transition-all duration-150 active:scale-[0.98] cursor-pointer",
-                        isSuccess
-                          ? "bg-emerald-500 shadow-emerald-500/30"
-                          : "bg-[var(--accent-primary,#C1234F)] hover:brightness-110 shadow-[0_4px_20px_var(--glow-color,rgba(193,35,79,0.3))]",
-                        isLoading && "opacity-80"
-                      )}
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>{i18n("loginSubmitLoading", "Connexion en cours...")}</span>
-                        </>
-                      ) : isSuccess ? (
-                        <>
-                          <Check className="h-4 w-4" />
-                          <span>{i18n("loginSubmitSuccess", "Connecté !")}</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>{i18n("loginSubmit", "Se connecter")}</span>
-                          <ArrowRight className="h-4 w-4" />
-                        </>
-                      )}
-                    </button>
-                  </motion.form>
-                )}
-
-                {/* 2. OTP FLOW (EMAIL STEP) */}
-                {mode === "otp" && otpStep === "email" && (
-                  <motion.form
-                    key="otp-email-flow"
-                    onSubmit={handleSendOtp}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                    className="space-y-4"
-                  >
-                    <AuthInputField
-                      id="otp-email"
-                      label={i18n("fieldEmail", "Adresse e-mail")}
-                      type="email"
-                      autoComplete="email"
-                      placeholder="nom@exemple.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={isLoading || isSuccess}
-                      leftIcon={<Mail className="h-4 w-4" />}
-                      ref={emailInputRef}
-                    />
-
-                    <div className="pt-0.5">
-                      <Switch
-                        id="remember-me-otp"
-                        checked={rememberMe}
-                        onChange={setRememberMe}
-                        label={i18n("rememberMeDevice", "Rester connecté sur cet appareil")}
-                        size="md"
-                      />
-                    </div>
-
-                    {TURNSTILE_SITE_KEY && (
-                      <TurnstileWidget
-                        ref={otpTurnstileRef}
-                        siteKey={TURNSTILE_SITE_KEY}
-                        action="login_otp"
-                        onToken={setOtpTurnstileToken}
-                        onExpire={() => setOtpTurnstileToken("")}
-                      />
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={isLoading || isSuccess}
-                      className={cn(
-                        "mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold text-white shadow-lg transition-all duration-150 active:scale-[0.98] cursor-pointer",
-                        "bg-[var(--accent-primary,#C1234F)] hover:brightness-110 shadow-[0_4px_20px_var(--glow-color,rgba(193,35,79,0.3))]",
-                        isLoading && "opacity-80"
-                      )}
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>{i18n("otpSendLoading", "Envoi du code...")}</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>{i18n("otpSend", "Recevoir le code de connexion")}</span>
-                          <ArrowRight className="h-4 w-4" />
-                        </>
-                      )}
-                    </button>
-                  </motion.form>
-                )}
-
-                {/* 3. OTP FLOW (CODE VERIFICATION STEP) */}
-                {mode === "otp" && otpStep === "code" && (
-                  <motion.div
-                    key="otp-code-flow"
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                    className="space-y-5"
-                  >
-                    <OtpCodeInput
-                      value={code}
-                      onChange={setCode}
-                      onComplete={handleVerifyOtp}
-                      disabled={isLoading || isSuccess}
-                      error={!!error}
-                      state={authState}
-                    />
-
-                    {/* Le widget doit rester monté à cette étape : « Renvoyer le code » a besoin d'un jeton anti-robot tout neuf (un jeton ne sert qu'une fois). */}
-                    {TURNSTILE_SITE_KEY && (
-                      <TurnstileWidget
-                        ref={otpTurnstileRef}
-                        siteKey={TURNSTILE_SITE_KEY}
-                        action="login_otp"
-                        onToken={setOtpTurnstileToken}
-                        onExpire={() => setOtpTurnstileToken("")}
-                      />
-                    )}
-
-                    <div className="flex items-center justify-between text-xs pt-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          triggerHaptic("light");
-                          setOtpStep("email");
-                          setCode("");
-                          setError(null);
-                        }}
-                        disabled={isLoading}
-                        className="flex items-center gap-1 text-zinc-400 hover:text-white transition-colors cursor-pointer"
-                      >
-                        <ChevronLeft className="h-3.5 w-3.5" />
-                        <span>{i18n("otpEditEmail", "Modifier l'adresse")}</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={handleSendOtp}
-                        disabled={isLoading || resendIn > 0}
-                        className={cn(
-                          "transition-colors cursor-pointer",
-                          resendIn > 0
-                            ? "text-zinc-500 cursor-not-allowed"
-                            : "text-[var(--accent-primary,#C1234F)] hover:brightness-110 font-medium"
-                        )}
-                      >
-                        {resendIn > 0 ? `${i18n("otpResendPrefix", "Renvoyer")} (${resendIn}s)` : i18n("otpResend", "Renvoyer le code")}
-                      </button>
-                    </div>
-
+                <AuthInputField
+                  id="login-password"
+                  label={i18n("tabPassword", "Mot de passe")}
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading || isSuccess}
+                  leftIcon={<Lock className="h-4 w-4" />}
+                  rightElement={
                     <button
                       type="button"
-                      onClick={() => handleVerifyOtp()}
-                      disabled={isLoading || isSuccess || code.length !== 6}
-                      className={cn(
-                        "mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold text-white shadow-lg transition-all duration-150 active:scale-[0.98] cursor-pointer",
-                        isSuccess
-                          ? "bg-emerald-500 shadow-emerald-500/30"
-                          : "bg-[var(--accent-primary,#C1234F)] hover:brightness-110 shadow-[0_4px_20px_var(--glow-color,rgba(193,35,79,0.3))]",
-                        (isLoading || code.length !== 6) && "opacity-60 cursor-not-allowed"
-                      )}
+                      onClick={() => {
+                        triggerHaptic("light");
+                        setShowPassword((v) => !v);
+                      }}
+                      className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1"
+                      aria-label={i18n("togglePasswordVisibility", "Afficher ou masquer le mot de passe")}
                     >
-                      {authState === "verifying" ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>{i18n("otpVerifyLoading", "Vérification du code...")}</span>
-                        </>
-                      ) : isSuccess ? (
-                        <>
-                          <Check className="h-4 w-4" />
-                          <span>{i18n("otpVerifySuccess", "Code accepté !")}</span>
-                        </>
-                      ) : (
-                        <>
-                          <ShieldCheck className="h-4 w-4" />
-                          <span>{i18n("otpVerify", "Valider le code")}</span>
-                        </>
-                      )}
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
-                  </motion.div>
-                )}
+                  }
+                />
 
-                {/* 4. REGISTER FLOW */}
-                {mode === "register" && (
-                  <motion.form
-                    key="register-flow"
-                    onSubmit={handleRegister}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                    className="space-y-3.5"
-                  >
-                    <AuthInputField
-                      id="register-username"
-                      label={i18n("fieldUsername", "Nom d'utilisateur")}
-                      type="text"
-                      autoComplete="username"
-                      placeholder="alex2026"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      disabled={isLoading || isSuccess}
-                      leftIcon={<User className="h-4 w-4" />}
-                    />
-
-                    <AuthInputField
-                      id="register-email"
-                      label={i18n("fieldEmail", "Adresse e-mail")}
-                      type="email"
-                      autoComplete="email"
-                      placeholder="nom@exemple.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={isLoading || isSuccess}
-                      leftIcon={<Mail className="h-4 w-4" />}
-                    />
-
-                    <div className="space-y-1.5">
-                      <AuthInputField
-                        id="register-password"
-                        label={i18n("tabPassword", "Mot de passe")}
-                        type={showPassword ? "text" : "password"}
-                        autoComplete="new-password"
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        disabled={isLoading || isSuccess}
-                        leftIcon={<Lock className="h-4 w-4" />}
-                        rightElement={
-                          <button
-                            type="button"
-                            onClick={() => {
-                              triggerHaptic("light");
-                              setShowPassword((v) => !v);
-                            }}
-                            className="text-zinc-400 hover:text-white transition-colors p-1"
-                            aria-label={i18n("togglePasswordVisibility", "Afficher ou masquer le mot de passe")}
-                          >
-                            {showPassword ? (
-                              <EyeOff className="h-4 w-4" />
-                            ) : (
-                              <Eye className="h-4 w-4" />
-                            )}
-                          </button>
-                        }
-                      />
-                      {password ? (
-                        <PasswordStrengthMeter password={password} />
-                      ) : (
-                        <p className="pt-1 text-[11px] text-zinc-500">{i18n("passwordRequirement")}</p>
-                      )}
-                    </div>
-
-                    <AuthInputField
-                      id="register-confirm-password"
-                      label={i18n("fieldConfirmPassword", "Confirmer le mot de passe")}
-                      type="password"
-                      autoComplete="new-password"
-                      placeholder="••••••••"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      disabled={isLoading || isSuccess}
-                      leftIcon={<Lock className="h-4 w-4" />}
-                    />
-
-                    {TURNSTILE_SITE_KEY && (
-                      <TurnstileWidget
-                        ref={registerTurnstileRef}
-                        siteKey={TURNSTILE_SITE_KEY}
-                        action="signup"
-                        onToken={setRegisterTurnstileToken}
-                        onExpire={() => setRegisterTurnstileToken("")}
-                      />
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={isLoading || isSuccess}
-                      className={cn(
-                        "mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold text-white shadow-lg transition-all duration-150 active:scale-[0.98] cursor-pointer",
-                        isSuccess
-                          ? "bg-emerald-500 shadow-emerald-500/30"
-                          : "bg-[var(--accent-primary,#C1234F)] hover:brightness-110 shadow-[0_4px_20px_var(--glow-color,rgba(193,35,79,0.3))]",
-                        isLoading && "opacity-80"
-                      )}
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>{i18n("registerSubmitLoading", "Création en cours...")}</span>
-                        </>
-                      ) : isSuccess ? (
-                        <>
-                          <Check className="h-4 w-4" />
-                          <span>{i18n("registerSubmitSuccess", "Espace créé !")}</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>{i18n("registerSubmit", "Créer mon espace ETHONE")}</span>
-                          <ArrowRight className="h-4 w-4" />
-                        </>
-                      )}
-                    </button>
-                  </motion.form>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Social Authentication & Alternative Methods (only in login modes) */}
-            {mode !== "register" && !(mode === "otp" && otpStep === "code") && (
-              <div className="mt-6 space-y-4">
-                <div className="relative flex items-center">
-                  <div className="flex-1 border-t border-[var(--panel-border)]" />
-                  <span className="px-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
-                    {i18n("orContinueWith", "ou continuer avec")}
-                  </span>
-                  <div className="flex-1 border-t border-[var(--panel-border)]" />
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="flex items-center justify-between pt-0.5 text-xs text-[var(--text-muted)]">
+                  <Switch
+                    id="remember-me-toggle"
+                    checked={rememberMe}
+                    onChange={setRememberMe}
+                    label={i18n("rememberMe", "Rester connecté")}
+                    size="md"
+                  />
                   <button
                     type="button"
-                    onClick={() => handleOAuth("google")}
-                    disabled={isLoading || isSuccess}
-                    className="flex h-11 items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.035] px-2.5 text-xs font-medium text-white transition-all duration-150 hover:bg-white/[0.07] hover:border-[var(--input-border-hover)] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                    onClick={() => router.push("/password-recovery")}
+                    className="text-xs text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors"
                   >
-                    {oauthLoading === "google" ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <GoogleIcon className="h-4 w-4 shrink-0" />
-                    )}
-                    <span className="truncate">Google</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleOAuth("github")}
-                    disabled={isLoading || isSuccess}
-                    className="flex h-11 items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.035] px-2.5 text-xs font-medium text-white transition-all duration-150 hover:bg-white/[0.07] hover:border-[var(--input-border-hover)] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
-                  >
-                    {oauthLoading === "github" ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <GithubIcon className="h-4 w-4 text-white shrink-0" />
-                    )}
-                    <span className="truncate">GitHub</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleOAuth("discord")}
-                    disabled={isLoading || isSuccess}
-                    className="flex h-11 items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.035] px-2.5 text-xs font-medium text-white transition-all duration-150 hover:bg-[#5865F2]/20 hover:border-[#5865F2]/50 hover:text-[#5865F2] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
-                  >
-                    {oauthLoading === "discord" ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <DiscordIcon className="h-4 w-4 shrink-0 text-[#5865F2]" />
-                    )}
-                    <span className="truncate">Discord</span>
+                    {i18n("forgotPassword", "Mot de passe oublié ?")}
                   </button>
                 </div>
 
-                {passkeyReady && (
-                  <button
-                    type="button"
-                    onClick={handlePasskey}
-                    disabled={isLoading || isSuccess}
-                    className="flex h-11 w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] px-4 text-xs font-medium text-zinc-300 transition-all duration-150 hover:bg-white/[0.06] hover:text-white active:scale-[0.98] disabled:opacity-50 cursor-pointer"
-                  >
-                    <KeyRound className="h-4 w-4 text-[var(--accent-primary,#C1234F)]" />
-                    <span>{i18n("passkeyLogin", "Se connecter avec une clé de sécurité (Passkey)")}</span>
-                  </button>
-                )}
-              </div>
+                <Button
+                  type="submit"
+                  variant={isSuccess ? "success" : "primary"}
+                  isLoading={isLoading}
+                  disabled={isSuccess}
+                  className="mt-2 h-12 w-full rounded-2xl text-sm"
+                  rightIcon={!isLoading && !isSuccess ? <ArrowRight className="h-4 w-4" /> : undefined}
+                  leftIcon={isSuccess ? <Check className="h-4 w-4" /> : undefined}
+                >
+                  {isLoading
+                    ? i18n("loginSubmitLoading", "Connexion en cours...")
+                    : isSuccess
+                    ? i18n("loginSubmitSuccess", "Connecté !")
+                    : i18n("loginSubmit", "Se connecter")}
+                </Button>
+              </motion.form>
             )}
 
-            {/* Bottom Footer Switcher */}
-            <div className="mt-6 text-center text-xs text-zinc-400">
-              {mode === "register" ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    triggerHaptic("light");
-                    setModeAndReset("password");
-                  }}
-                  disabled={isLoading}
-                  className="text-[var(--accent-primary,#C1234F)] hover:brightness-110 font-medium transition-colors cursor-pointer"
+            {/* 2. OTP FLOW (EMAIL STEP) */}
+            {mode === "otp" && otpStep === "email" && (
+              <motion.form
+                key="otp-email-flow"
+                onSubmit={handleSendOtp}
+                variants={stepEnter}
+                initial={reduced ? "animate" : "initial"}
+                animate="animate"
+                exit="exit"
+                className="space-y-4"
+              >
+                <AuthInputField
+                  id="otp-email"
+                  label={i18n("fieldEmail", "Adresse e-mail")}
+                  type="email"
+                  autoComplete="email"
+                  placeholder="nom@exemple.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading || isSuccess}
+                  leftIcon={<Mail className="h-4 w-4" />}
+                  ref={emailInputRef}
+                />
+
+                <div className="pt-0.5">
+                  <Switch
+                    id="remember-me-otp"
+                    checked={rememberMe}
+                    onChange={setRememberMe}
+                    label={i18n("rememberMeDevice", "Rester connecté sur cet appareil")}
+                    size="md"
+                  />
+                </div>
+
+                {TURNSTILE_SITE_KEY && (
+                  <TurnstileWidget
+                    ref={otpTurnstileRef}
+                    siteKey={TURNSTILE_SITE_KEY}
+                    action="login_otp"
+                    onToken={setOtpTurnstileToken}
+                    onExpire={() => setOtpTurnstileToken("")}
+                  />
+                )}
+
+                <Button
+                  type="submit"
+                  variant="primary"
+                  isLoading={isLoading}
+                  disabled={isSuccess}
+                  className="mt-2 h-12 w-full rounded-2xl text-sm"
+                  rightIcon={!isLoading ? <ArrowRight className="h-4 w-4" /> : undefined}
                 >
-                  {i18n("alreadyHaveAccount", "Déjà un compte ? Se connecter")}
-                </button>
-              ) : (
-                <button
+                  {isLoading ? i18n("otpSendLoading", "Envoi du code...") : i18n("otpSend", "Recevoir le code de connexion")}
+                </Button>
+              </motion.form>
+            )}
+
+            {/* 3. OTP FLOW (CODE VERIFICATION STEP) */}
+            {mode === "otp" && otpStep === "code" && (
+              <motion.div
+                key="otp-code-flow"
+                variants={stepEnter}
+                initial={reduced ? "animate" : "initial"}
+                animate="animate"
+                exit="exit"
+                className="space-y-5"
+              >
+                <OtpCodeInput
+                  value={code}
+                  onChange={setCode}
+                  onComplete={handleVerifyOtp}
+                  disabled={isLoading || isSuccess}
+                  error={!!error}
+                  state={authState}
+                />
+
+                {/* Le widget doit rester monté à cette étape : « Renvoyer le code » a besoin d'un jeton anti-robot tout neuf (un jeton ne sert qu'une fois). */}
+                {TURNSTILE_SITE_KEY && (
+                  <TurnstileWidget
+                    ref={otpTurnstileRef}
+                    siteKey={TURNSTILE_SITE_KEY}
+                    action="login_otp"
+                    onToken={setOtpTurnstileToken}
+                    onExpire={() => setOtpTurnstileToken("")}
+                  />
+                )}
+
+                <div className="flex items-center justify-between text-xs pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic("light");
+                      setOtpStep("email");
+                      setCode("");
+                      setError(null);
+                    }}
+                    disabled={isLoading}
+                    className="flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                    <span>{i18n("otpEditEmail", "Modifier l'adresse")}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSendOtp}
+                    disabled={isLoading || resendIn > 0}
+                    className={cn(
+                      "transition-colors cursor-pointer",
+                      resendIn > 0
+                        ? "text-[var(--text-muted)] opacity-60 cursor-not-allowed"
+                        : "text-[var(--accent-primary)] hover:brightness-110 font-medium"
+                    )}
+                  >
+                    {resendIn > 0 ? `${i18n("otpResendPrefix", "Renvoyer")} (${resendIn}s)` : i18n("otpResend", "Renvoyer le code")}
+                  </button>
+                </div>
+
+                <Button
                   type="button"
-                  onClick={() => {
-                    triggerHaptic("light");
-                    setModeAndReset("register");
-                  }}
-                  disabled={isLoading}
-                  className="text-zinc-400 hover:text-[var(--accent-primary,#C1234F)] transition-colors cursor-pointer"
+                  onClick={() => handleVerifyOtp()}
+                  variant={isSuccess ? "success" : "primary"}
+                  isLoading={authState === "verifying"}
+                  disabled={isSuccess || code.length !== 6}
+                  className="mt-2 h-12 w-full rounded-2xl text-sm"
+                  leftIcon={isSuccess ? <Check className="h-4 w-4" /> : !isLoading ? <ShieldCheck className="h-4 w-4" /> : undefined}
                 >
-                  {i18n("noAccountYet", "Pas encore de compte ?")}{" "}
-                  <span className="text-[var(--accent-primary,#C1234F)] font-medium">{i18n("createAccount", "Créer un compte")}</span>
-                </button>
+                  {authState === "verifying"
+                    ? i18n("otpVerifyLoading", "Vérification du code...")
+                    : isSuccess
+                    ? i18n("otpVerifySuccess", "Code accepté !")
+                    : i18n("otpVerify", "Valider le code")}
+                </Button>
+              </motion.div>
+            )}
+
+            {/* 4. REGISTER FLOW */}
+            {mode === "register" && (
+              <motion.form
+                key="register-flow"
+                onSubmit={handleRegister}
+                variants={stepEnter}
+                initial={reduced ? "animate" : "initial"}
+                animate="animate"
+                exit="exit"
+                className="space-y-3.5"
+              >
+                <AuthInputField
+                  id="register-username"
+                  label={i18n("fieldUsername", "Nom d'utilisateur")}
+                  type="text"
+                  autoComplete="username"
+                  placeholder="alex2026"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={isLoading || isSuccess}
+                  leftIcon={<User className="h-4 w-4" />}
+                />
+
+                <AuthInputField
+                  id="register-email"
+                  label={i18n("fieldEmail", "Adresse e-mail")}
+                  type="email"
+                  autoComplete="email"
+                  placeholder="nom@exemple.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading || isSuccess}
+                  leftIcon={<Mail className="h-4 w-4" />}
+                />
+
+                <div className="space-y-1.5">
+                  <AuthInputField
+                    id="register-password"
+                    label={i18n("tabPassword", "Mot de passe")}
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="new-password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading || isSuccess}
+                    leftIcon={<Lock className="h-4 w-4" />}
+                    rightElement={
+                      <button
+                        type="button"
+                        onClick={() => {
+                          triggerHaptic("light");
+                          setShowPassword((v) => !v);
+                        }}
+                        className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1"
+                        aria-label={i18n("togglePasswordVisibility", "Afficher ou masquer le mot de passe")}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    }
+                  />
+                  {password ? (
+                    <PasswordStrengthMeter password={password} />
+                  ) : (
+                    <p className="pt-1 text-[11px] text-[var(--text-muted)]">{i18n("passwordRequirement")}</p>
+                  )}
+                </div>
+
+                <AuthInputField
+                  id="register-confirm-password"
+                  label={i18n("fieldConfirmPassword", "Confirmer le mot de passe")}
+                  type="password"
+                  autoComplete="new-password"
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  disabled={isLoading || isSuccess}
+                  leftIcon={<Lock className="h-4 w-4" />}
+                />
+
+                {TURNSTILE_SITE_KEY && (
+                  <TurnstileWidget
+                    ref={registerTurnstileRef}
+                    siteKey={TURNSTILE_SITE_KEY}
+                    action="signup"
+                    onToken={setRegisterTurnstileToken}
+                    onExpire={() => setRegisterTurnstileToken("")}
+                  />
+                )}
+
+                <Button
+                  type="submit"
+                  variant={isSuccess ? "success" : "primary"}
+                  isLoading={isLoading}
+                  disabled={isSuccess}
+                  className="mt-3 h-12 w-full rounded-2xl text-sm"
+                  leftIcon={isSuccess ? <Check className="h-4 w-4" /> : undefined}
+                >
+                  {isLoading
+                    ? i18n("registerSubmitLoading", "Création en cours...")
+                    : isSuccess
+                    ? i18n("registerSubmitSuccess", "Espace créé !")
+                    : i18n("registerSubmit", "Créer mon espace ETHONE")}
+                </Button>
+              </motion.form>
+            )}
+          </AnimatePresence>
+
+          {/* Social Authentication & Alternative Methods (only in login modes) */}
+          {mode !== "register" && !(mode === "otp" && otpStep === "code") && (
+            <div className="mt-6 space-y-4">
+              <div className="relative flex items-center">
+                <div className="flex-1 border-t border-[var(--panel-border)]" />
+                <span className="px-3 text-[11px] font-medium text-[var(--text-muted)] uppercase tracking-wider">
+                  {i18n("orContinueWith", "ou continuer avec")}
+                </span>
+                <div className="flex-1 border-t border-[var(--panel-border)]" />
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  isLoading={oauthLoading === "google"}
+                  disabled={isLoading || isSuccess}
+                  onClick={() => handleOAuth("google")}
+                  leftIcon={<GoogleIcon className="h-4 w-4 shrink-0" />}
+                  className="h-11 rounded-[var(--inset-radius)]"
+                >
+                  Google
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="secondary"
+                  isLoading={oauthLoading === "github"}
+                  disabled={isLoading || isSuccess}
+                  onClick={() => handleOAuth("github")}
+                  leftIcon={<GithubIcon className="h-4 w-4 shrink-0" />}
+                  className="h-11 rounded-[var(--inset-radius)]"
+                >
+                  GitHub
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="secondary"
+                  isLoading={oauthLoading === "discord"}
+                  disabled={isLoading || isSuccess}
+                  onClick={() => handleOAuth("discord")}
+                  leftIcon={<DiscordIcon className="h-4 w-4 shrink-0 text-[#5865F2]" />}
+                  className="h-11 rounded-[var(--inset-radius)] hover:bg-[#5865F2]/20 hover:border-[#5865F2]/50 hover:text-[#5865F2]"
+                >
+                  Discord
+                </Button>
+              </div>
+
+              {passkeyReady && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={isLoading || isSuccess}
+                  onClick={handlePasskey}
+                  className="h-11 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)]"
+                  leftIcon={<KeyRound className="h-4 w-4 text-[var(--accent-primary)]" />}
+                >
+                  {i18n("passkeyLogin", "Se connecter avec une clé de sécurité (Passkey)")}
+                </Button>
               )}
             </div>
-          </motion.div>
-        </div>
+          )}
+
+          {/* Bottom Footer Switcher */}
+          <div className="mt-6 text-center text-xs text-[var(--text-muted)]">
+            {mode === "register" ? (
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic("light");
+                  setModeAndReset("password");
+                }}
+                disabled={isLoading}
+                className="text-[var(--accent-primary)] hover:brightness-110 font-medium transition-colors cursor-pointer"
+              >
+                {i18n("alreadyHaveAccount", "Déjà un compte ? Se connecter")}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic("light");
+                  setModeAndReset("register");
+                }}
+                disabled={isLoading}
+                className="text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors cursor-pointer"
+              >
+                {i18n("noAccountYet", "Pas encore de compte ?")}{" "}
+                <span className="text-[var(--accent-primary)] font-medium">{i18n("createAccount", "Créer un compte")}</span>
+              </button>
+            )}
+          </div>
+        </AuthCardShell>
       </div>
     </div>
   );

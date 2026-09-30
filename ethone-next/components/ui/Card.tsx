@@ -20,8 +20,8 @@ const variantClass: Record<CardVariant, string> = {
     "border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] text-[var(--text-primary)] shadow-sm",
   interactive:
     "border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-primary)] shadow-sm " +
-    "transition-[color,background-color,border-color,box-shadow,transform] duration-200 ease-out " +
-    "hover:border-[var(--accent-primary)]/20 hover:bg-[var(--text-primary)]/[0.04] hover:shadow-md hover:-translate-y-0.5 " +
+    "transition-[color,background-color,border-color,box-shadow,transform] duration-200 [transition-timing-function:var(--ease-snap)] " +
+    "hover:border-[var(--accent-primary)]/25 hover:bg-[var(--text-primary)]/[0.04] hover:shadow-[var(--panel-shadow),var(--shadow-glow)] hover:-translate-y-0.5 " +
     "active:scale-[0.99]",
   widget:
     "border border-[var(--panel-border)] bg-[var(--panel-bg)]/90 text-[var(--text-primary)] shadow-sm",

@@ -6,9 +6,10 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { resetPassword } from "@/lib/auth";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
-import FlatCard from "@/components/FlatCard";
-import Input from "@/components/Input";
-import FormField from "@/components/FormField";
+import AuthCardShell from "@/components/auth/AuthCardShell";
+import AuthInputField from "@/components/auth/AuthInputField";
+import Button from "@/components/ui/Button";
+import { Mail, Check } from "@/components/icons/ph";
 import TurnstileWidget, { type TurnstileWidgetHandle } from "@/components/auth/TurnstileWidget";
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
@@ -50,50 +51,40 @@ export default function PasswordRecoveryPage() {
   }
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll">
-        <div className="flex min-h-full w-full items-center justify-center p-4">
-          <div className="w-full max-w-md space-y-6 lg:max-w-lg">
-            <h1 className="text-2xl font-bold">{i18n("passwordRecoveryTitle")}</h1>
-            <FlatCard>
-              {sent ? (
-                <p className="break-words text-sm text-[var(--accent-primary)]">{i18n("recoverySent")}</p>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <FormField label={i18n("email")}>
-                    <Input
-                      id="recovery-email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder={i18n("emailPlaceholder")}
-                      required
-                      inputSize="large"
-                      className="w-full"
-                    />
-                  </FormField>
-                  {TURNSTILE_SITE_KEY && (
-                    <TurnstileWidget
-                      ref={turnstileRef}
-                      siteKey={TURNSTILE_SITE_KEY}
-                      action="reset_password"
-                      onToken={setTurnstileToken}
-                      onExpire={() => setTurnstileToken("")}
-                    />
-                  )}
-                  <button
-                    type="submit"
-                    disabled={loading || !email}
-                    className="rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:opacity-90 disabled:opacity-50"
-                  >
-                    {loading ? i18n("sending") : i18n("send")}
-                  </button>
-                </form>
-              )}
-            </FlatCard>
-          </div>
-        </div>
-      </div>
+    <div className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden bg-[var(--bg-main)] p-4 text-[var(--text-primary)]">
+      <AuthCardShell
+        icon={sent ? <Check className="h-7 w-7 text-[var(--success)]" /> : undefined}
+        title={i18n("passwordRecoveryTitle")}
+        subtitle={sent ? i18n("recoverySent") : undefined}
+      >
+        {!sent && (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <AuthInputField
+              id="recovery-email"
+              label={i18n("email")}
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={i18n("emailPlaceholder")}
+              required
+              leftIcon={<Mail className="h-4 w-4" />}
+            />
+            {TURNSTILE_SITE_KEY && (
+              <TurnstileWidget
+                ref={turnstileRef}
+                siteKey={TURNSTILE_SITE_KEY}
+                action="reset_password"
+                onToken={setTurnstileToken}
+                onExpire={() => setTurnstileToken("")}
+              />
+            )}
+            <Button type="submit" variant="primary" isLoading={loading} disabled={!email} className="h-12 w-full rounded-2xl text-sm">
+              {i18n("send")}
+            </Button>
+          </form>
+        )}
+      </AuthCardShell>
     </div>
   );
 }

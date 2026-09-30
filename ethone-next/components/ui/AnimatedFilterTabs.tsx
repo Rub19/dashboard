@@ -3,6 +3,7 @@
 import { useId } from "react";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+import { SPRING_PILL } from "@/lib/ease";
 
 export type AnimatedFilterTab = {
   id: string;
@@ -48,7 +49,7 @@ export default function AnimatedFilterTabs({
                 layoutId={pillLayoutId}
                 initial={false}
                 className="absolute inset-0 rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 shadow-[0_0_12px_var(--glow-color)] -z-10"
-                transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                transition={SPRING_PILL}
               />
             )}
             {tab.icon && <span className="relative z-10">{tab.icon}</span>}

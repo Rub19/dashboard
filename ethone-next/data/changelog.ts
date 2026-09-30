@@ -39778,6 +39778,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_38_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_38_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_38_2_de);
 
+const v1_38_3_fr: ChangelogEntry = {
+  version: "v1.38.3",
+  date: "2026-09-30",
+  title: "Motion System : Brain",
+  items: [
+    "Les onglets de Brain (Conversation/Briefing/Mémoire/Automatisations/Diagnostics) ont maintenant un indicateur glissant animé au lieu d'un changement instantané.",
+    "Changer d'onglet fait maintenant une vraie transition de contenu, au lieu d'un remplacement brutal.",
+    "Les lignes d'automatisations et de diagnostics réagissent maintenant au survol, comme le reste de l'interface.",
+  ],
+};
+
+const v1_38_3_en: ChangelogEntry = {
+  version: "v1.38.3",
+  date: "2026-09-30",
+  title: "Motion System: Brain",
+  items: [
+    "Brain's tabs (Conversation/Briefing/Memory/Automations/Diagnostics) now have an animated sliding indicator instead of an instant swap.",
+    "Switching tabs now has a real content transition instead of an abrupt replacement.",
+    "Automation and diagnostics rows now respond on hover, matching the rest of the interface.",
+  ],
+};
+
+const v1_38_3_es: ChangelogEntry = {
+  version: "v1.38.3",
+  date: "2026-09-30",
+  title: "Motion System: Brain",
+  items: [
+    "Las pestañas de Brain ahora tienen un indicador deslizante animado.",
+    "Cambiar de pestaña ahora tiene una transición real en lugar de un cambio brusco.",
+  ],
+};
+
+const v1_38_3_de: ChangelogEntry = {
+  version: "v1.38.3",
+  date: "2026-09-30",
+  title: "Motion System: Brain",
+  items: [
+    "Die Brain-Tabs haben jetzt einen animierten Gleitindikator.",
+    "Der Tab-Wechsel hat jetzt einen echten Übergang statt eines abrupten Wechsels.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_38_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_38_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_38_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_38_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

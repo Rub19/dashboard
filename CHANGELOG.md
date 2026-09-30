@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.38.3 — 2026-09-30
+
+**Motion System : Brain**
+
+- Les onglets de Brain (Conversation/Briefing/Mémoire/Automatisations/Diagnostics) ont maintenant un indicateur glissant animé au lieu d'un changement instantané.
+- Changer d'onglet fait maintenant une vraie transition de contenu, au lieu d'un remplacement brutal.
+- Les lignes d'automatisations et de diagnostics réagissent maintenant au survol, comme le reste de l'interface.
+
 ## v1.38.2 — 2026-09-30
 
 **Sécurité : dépendance brace-expansion**

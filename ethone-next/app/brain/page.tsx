@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useBrain } from "@/lib/hooks/useBrain";
 import { useMail } from "@/lib/hooks/useMail";
 import { usePresence } from "@/components/PresenceProvider";
@@ -12,6 +13,9 @@ import BrainBriefingPanel from "@/components/BrainBriefingPanel";
 import BrainMemoryPanel from "@/components/brain/BrainMemoryPanel";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import { SPRING_PILL } from "@/lib/ease";
+import { stepEnter } from "@/lib/motion-variants";
+import { useMotionPref } from "@/lib/hooks/useMotionPref";
 
 type BrainView = "chat" | "briefing" | "memory" | "automations" | "diagnostics";
 
@@ -47,6 +51,7 @@ export default function BrainPage() {
   const [activeView, setActiveView] = useState<BrainView>("chat");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [contextOpen, setContextOpen] = useState(false);
+  const { reduced } = useMotionPref();
 
   // Sync with Presence & Dynamic Island
   useEffect(() => {
@@ -124,14 +129,21 @@ export default function BrainPage() {
                 type="button"
                 onClick={() => setActiveView(tab.id)}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-xl px-3 py-1 text-xs font-semibold transition-all",
+                  "relative flex items-center gap-1.5 rounded-xl px-3 py-1 text-xs font-semibold transition-colors",
                   activeView === tab.id
-                    ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
+                    ? "text-[var(--accent-contrast)]"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]/40"
                 )}
               >
-                <Icon name={tab.icon} className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">{tab.label}</span>
+                {activeView === tab.id && (
+                  <motion.span
+                    layoutId="activeBrainTab"
+                    transition={SPRING_PILL}
+                    className="absolute inset-0 z-0 rounded-xl bg-[var(--accent-primary)] shadow-sm"
+                  />
+                )}
+                <Icon name={tab.icon} className="relative z-10 h-3.5 w-3.5" />
+                <span className="relative z-10 hidden sm:inline">{tab.label}</span>
               </button>
             ))}
           </div>
@@ -148,6 +160,15 @@ export default function BrainPage() {
 
         {/* View Switcher Container */}
         <div className="min-h-0 flex-1 overflow-hidden">
+        <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={activeView}
+          variants={stepEnter}
+          initial={reduced ? "animate" : "initial"}
+          animate="animate"
+          exit="exit"
+          className="h-full min-h-0"
+        >
           {activeView === "chat" && (
             <BrainChat
               brain={brain}
@@ -181,7 +202,7 @@ export default function BrainPage() {
                 {brain.automations.map((rule) => (
                   <div
                     key={rule.id}
-                    className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4"
+                    className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 transition-[border-color,box-shadow] duration-200 [transition-timing-function:var(--ease-snap)] hover:border-[var(--accent-primary)]/25 hover:shadow-[var(--shadow-glow)]"
                   >
                     <div>
                       <p className="text-xs font-bold text-[var(--text-primary)]">
@@ -224,7 +245,7 @@ export default function BrainPage() {
                 {brain.providers.map((p) => (
                   <div
                     key={p.id}
-                    className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4"
+                    className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 transition-[border-color,box-shadow] duration-200 [transition-timing-function:var(--ease-snap)] hover:border-[var(--accent-primary)]/25 hover:shadow-[var(--shadow-glow)]"
                   >
                     <div>
                       <p className="text-xs font-bold text-[var(--text-primary)]">{p.label}</p>
@@ -244,6 +265,8 @@ export default function BrainPage() {
               </div>
             </div>
           )}
+        </motion.div>
+        </AnimatePresence>
         </div>
       </main>
 

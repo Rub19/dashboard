@@ -98,12 +98,12 @@ function Slot({
       initial={
         reduce
           ? { opacity: 0 }
-          : { opacity: 0, scale: 0.96, y: -4 }
+          : { opacity: 0, scale: 0.96, y: -4, filter: "blur(6px)" }
       }
       animate={
         reduce
           ? { opacity: 1 }
-          : { opacity: 1, scale: 1, y: 0 }
+          : { opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }
       }
       exit={
         reduce
@@ -112,6 +112,7 @@ function Slot({
               opacity: 0,
               scale: 0.96,
               y: -3,
+              filter: "blur(4px)",
               transition: { duration: 0.1, ease: EASE_SNAP },
             }
       }
@@ -129,6 +130,8 @@ export interface DynamicIslandProps extends Omit<HTMLMotionProps<"div">, "onDrag
   view: string | null;
   /** Compact pill content, shown when no view is active. */
   compact?: ReactNode;
+  /** Changes when the compact content switches to another integration (re-plays its transition). */
+  compactKey?: string;
   /** DynamicIslandView elements. */
   children?: ReactNode;
   className?: string;
@@ -138,6 +141,7 @@ export interface DynamicIslandProps extends Omit<HTMLMotionProps<"div">, "onDrag
 export function DynamicIsland({
   view,
   compact,
+  compactKey,
   children,
   className,
   progressPercent,
@@ -168,7 +172,7 @@ export function DynamicIsland({
             ? undefined
             : {
                 scale: expanded ? 1 : 1.02,
-                boxShadow: "0 12px 36px -4px rgba(0,0,0,0.6), 0 0 28px -4px var(--glow-color)",
+                boxShadow: "0 14px 40px -8px rgba(0,0,0,0.65)",
               }
         }
         whileTap={reduce ? undefined : { scale: 0.98 }}
@@ -179,9 +183,9 @@ export function DynamicIsland({
         onMouseLeave={onMouseLeave}
         className={cn(
           "relative inline-flex items-start justify-center overflow-hidden",
-          "border border-[var(--panel-border)]/[0.22] bg-[var(--bg-main)]/90 text-[var(--text-primary)]",
-          "shadow-[0_8px_32px_-4px_rgba(0,0,0,0.55),0_0_20px_-6px_var(--glow-color)] backdrop-blur-[var(--panel-blur)]",
-          "cursor-pointer pointer-events-auto select-none transition-colors duration-200",
+          "border border-[var(--panel-border)]/[0.22] bg-[var(--bg-main)]/90 text-[var(--text-primary)] hover:border-[var(--text-primary)]/20",
+          "shadow-[0_8px_32px_-6px_rgba(0,0,0,0.55)] backdrop-blur-[var(--panel-blur)]",
+          "cursor-pointer pointer-events-auto select-none transition-colors duration-300",
           "before:pointer-events-none before:absolute before:inset-0 before:z-10 before:rounded-[inherit]",
           "before:bg-gradient-to-b before:from-[var(--text-primary)]/[0.06] before:to-transparent",
           className,
@@ -192,7 +196,7 @@ export function DynamicIsland({
           <AnimatePresence mode="popLayout" initial={false}>
             {!expanded && compact ? (
               <Slot
-                keyId="compact"
+                keyId={`compact-${compactKey ?? ""}`}
                 className="h-10 min-w-[130px] gap-2.5 px-3.5 py-0 text-xs font-medium"
               >
                 {compact}
@@ -240,7 +244,7 @@ export function DynamicIslandView({
   return (
     <AnimatePresence mode="popLayout" initial={false}>
       {active ? (
-        <Slot keyId={id} data-testid={testId} className={cn("px-5 py-4", className)}>
+        <Slot keyId={id} data-testid={testId} className={cn("island-stagger px-5 py-4", className)}>
           {children}
         </Slot>
       ) : null}

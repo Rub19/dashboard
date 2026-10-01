@@ -14,10 +14,14 @@ export type IslandView =
   | "notification"
   | "timer"
   | "call"
-  | "system";
+  | "system"
+  | "network"
+  | "battery";
 
 export const ISLAND_VIEW_PRIORITY: Record<IslandView, number> = {
   system: 8,
+  network: 8,
+  battery: 7,
   call: 7,
   notification: 6,
   mail: 6,

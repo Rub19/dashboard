@@ -220,6 +220,15 @@ html[data-color-scheme="light"] {
 .ethone-toolbar button:focus-visible,
 .ethone-toolbar a:focus-visible { outline: none; box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-primary) 55%, transparent) !important; }
 
+/* Dynamic Island ouverte : le contenu de la vue (en-tête, pochette, contrôles…) entre en cascade. */
+.island-stagger > * > * { animation: console-rise 0.42s var(--ease-snap) backwards; }
+.island-stagger > * > :nth-child(2) { animation-delay: 0.04s; }
+.island-stagger > * > :nth-child(3) { animation-delay: 0.08s; }
+.island-stagger > * > :nth-child(4) { animation-delay: 0.12s; }
+.island-stagger > * > :nth-child(n + 5) { animation-delay: 0.16s; }
+@media (prefers-reduced-motion: reduce) { .island-stagger > * > * { animation: none; } }
+[data-reduced-motion="true"] .island-stagger > * > * { animation: none !important; }
+
 /* Barre du bas : pastille « Opérationnel » qui respire. */
 @keyframes status-breathe {
   0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 45%, transparent); }

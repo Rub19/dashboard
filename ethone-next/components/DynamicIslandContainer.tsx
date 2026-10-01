@@ -46,6 +46,10 @@ function viewLabel(view: IslandView, i18n: (key: string, fallback?: string) => s
       return i18n("mail", "Mail");
     case "notification":
       return i18n("notification", "Notification");
+    case "network":
+      return i18n("network", "Réseau");
+    case "battery":
+      return i18n("battery", "Batterie");
     default:
       return "";
   }
@@ -100,7 +104,7 @@ function SpotifyCompact({
             className={cn(
               "h-6 w-6 shrink-0 rounded-lg object-cover bg-[var(--surface-raised)] transition-all duration-200",
               isPlaying
-                ? "ring-1 ring-[var(--accent-primary)]/60 shadow-[0_0_8px_var(--glow-color)]"
+                ? "ring-1 ring-[var(--accent-primary)]/60"
                 : "ring-1 ring-[var(--panel-border)]"
             )}
             iconClassName="h-3.5 w-3.5 text-[var(--accent-primary)]"
@@ -129,7 +133,7 @@ function SpotifyCompact({
         barWidth={2}
         gap={1.5}
         minHeight={0.25}
-        className="h-3.5 w-5 shrink-0 opacity-95 drop-shadow-[0_0_4px_var(--glow-color)]"
+        className="h-3.5 w-5 shrink-0 opacity-95"
         color="var(--accent-primary)"
         seed={trackTitle}
       />
@@ -155,8 +159,9 @@ function IslandBubble({
   const buttonClass = cn(
     "relative flex shrink-0 items-center justify-center rounded-full transition-all",
     size === "md" ? "h-8 w-8" : "h-7 w-7",
+    "active:scale-90",
     active
-      ? "bg-[var(--text-primary)]/[0.12] text-[var(--text-primary)] ring-1 ring-[var(--text-primary)]/20 shadow-[0_0_12px_var(--glow-color)]"
+      ? "text-[var(--text-primary)]"
       : "bg-[var(--text-primary)]/[0.05] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.1] hover:text-[var(--text-primary)]",
     view === "spotify" && !active && "text-[var(--accent-primary)] hover:text-[var(--accent-primary)]",
     view === "pomodoro" && !active && "text-[var(--accent-primary)] hover:text-[var(--accent-primary)]",
@@ -181,16 +186,27 @@ function IslandBubble({
       <Icon name="envelope-simple" pack="phosphor" className={iconClass} />
     ) : view === "notification" ? (
       <Icon name="bell" pack="phosphor" className={iconClass} />
+    ) : view === "network" ? (
+      <Icon name="wifi-high" pack="phosphor" className={iconClass} />
+    ) : view === "battery" ? (
+      <Icon name="battery-charging" pack="phosphor" className={iconClass} />
     ) : (
       <Icon name="sparkles" pack="phosphor" className={iconClass} />
     );
 
   return (
     <button type="button" onClick={onClick} className={buttonClass} aria-label={view}>
+      {active && (
+        <motion.span
+          layoutId="island-bubble-active"
+          transition={{ type: "spring", stiffness: 450, damping: 35 }}
+          className="absolute inset-0 rounded-full bg-[var(--text-primary)]/[0.12] ring-1 ring-[var(--text-primary)]/20"
+        />
+      )}
       {pulse && view === "pomodoro" && (
         <span className="absolute inset-0 rounded-full bg-[var(--accent)]/20 animate-ping" />
       )}
-      {icon}
+      <span className="relative">{icon}</span>
     </button>
   );
 }
@@ -222,6 +238,10 @@ function IslandExpandedHeader({
       <Icon name="envelope-simple" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
     ) : selected === "notification" ? (
       <Icon name="bell" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+    ) : selected === "network" ? (
+      <Icon name="wifi-high" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
+    ) : selected === "battery" ? (
+      <Icon name="battery-charging" pack="phosphor" className="h-3.5 w-3.5 text-[var(--success)]" />
     ) : (
       <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
     );
@@ -348,6 +368,65 @@ export default function DynamicIslandContainer() {
       unregister("spotify");
     }
   }, [brainActive, pomodoroActive, syncActive, nowPlaying?.isPlaying, uploadActive, npLoading, register, unregister, settings.islandShowSpotify, settings.islandShowUploads]);
+
+  // Intégrations appareil (données réelles du navigateur, rien d'inventé) : réseau et batterie.
+  const [netState, setNetState] = useState<"offline" | "online" | null>(null);
+  const [batteryInfo, setBatteryInfo] = useState<{ level: number; charging: boolean } | null>(null);
+
+  useEffect(() => {
+    // Hors ligne : reste affiché tant que la connexion manque ; retour en ligne : 4 s.
+    const goOffline = () => {
+      setNetState("offline");
+      register({ id: "network", type: "network" } as IslandEvent);
+    };
+    const goOnline = () => {
+      setNetState("online");
+      register({ id: "network", type: "network", duration: 4000 } as IslandEvent);
+    };
+    if (typeof navigator !== "undefined" && !navigator.onLine) goOffline();
+    window.addEventListener("offline", goOffline);
+    window.addEventListener("online", goOnline);
+    return () => {
+      window.removeEventListener("offline", goOffline);
+      window.removeEventListener("online", goOnline);
+    };
+  }, [register]);
+
+  useEffect(() => {
+    // Batterie faible (≤ 15 %, hors charge) : reste affiché ; branchement du chargeur : 4 s. API absente = rien.
+    type BatteryLike = EventTarget & { level: number; charging: boolean };
+    const nav = navigator as Navigator & { getBattery?: () => Promise<BatteryLike> };
+    if (!nav.getBattery) return;
+    let battery: BatteryLike | null = null;
+    let cancelled = false;
+    const check = () => {
+      if (!battery) return;
+      setBatteryInfo({ level: battery.level, charging: battery.charging });
+      if (!battery.charging && battery.level <= 0.15) register({ id: "battery", type: "battery" } as IslandEvent);
+      else if (!battery.charging) unregister("battery");
+    };
+    const onCharging = () => {
+      if (!battery) return;
+      setBatteryInfo({ level: battery.level, charging: battery.charging });
+      if (battery.charging) register({ id: "battery", type: "battery", duration: 4000 } as IslandEvent);
+      else check();
+    };
+    nav
+      .getBattery()
+      .then((b) => {
+        if (cancelled) return;
+        battery = b;
+        b.addEventListener("levelchange", check);
+        b.addEventListener("chargingchange", onCharging);
+        check();
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+      battery?.removeEventListener("levelchange", check);
+      battery?.removeEventListener("chargingchange", onCharging);
+    };
+  }, [register, unregister]);
 
   // Sync selected view with the top of the queue.
   useEffect(() => {
@@ -640,10 +719,34 @@ export default function DynamicIslandContainer() {
           </div>
         );
       }
+      case "network":
+        return (
+          <div className={cn(base)}>
+            <Icon
+              name={netState === "offline" ? "wifi-slash" : "wifi-high"}
+              pack="phosphor"
+              className={cn("h-3.5 w-3.5", netState === "offline" ? "text-[var(--warning)]" : "text-[var(--success)]")}
+            />
+            <span className="text-xs font-medium">{netState === "offline" ? i18n("v8NetworkOffline", "Hors ligne") : i18n("backOnline", "De retour en ligne")}</span>
+          </div>
+        );
+      case "battery":
+        return (
+          <div className={cn(base)}>
+            <Icon
+              name={batteryInfo?.charging ? "battery-charging" : "battery-warning"}
+              pack="phosphor"
+              className={cn("h-3.5 w-3.5", batteryInfo?.charging ? "text-[var(--success)]" : "text-[var(--danger)]")}
+            />
+            <span className="text-xs font-medium tabular-nums">
+              {batteryInfo ? `${Math.round(batteryInfo.level * 100)} %` : ""} {batteryInfo?.charging ? i18n("charging", "En charge") : i18n("batteryLow", "Batterie faible")}
+            </span>
+          </div>
+        );
       default:
         return null;
     }
-  }, [selectedView, top, nowPlaying, focus, i18n, syncing, pendingCount, uploadingCount, completedCount, errorCount]);
+  }, [selectedView, top, nowPlaying, focus, i18n, syncing, pendingCount, uploadingCount, completedCount, errorCount, netState, batteryInfo]);
 
   // Spotify controls
   const spotifyControl = useCallback(
@@ -775,6 +878,7 @@ export default function DynamicIslandContainer() {
         >
           <DynamicIsland
             ref={islandRef}
+            compactKey={selectedView ?? ""}
             data-testid="dynamic-island"
             view={expanded && selectedView ? selectedView : null}
             compact={compact}
@@ -1179,6 +1283,53 @@ export default function DynamicIslandContainer() {
                   </div>
                 );
               })()}
+            </DynamicIslandView>
+
+            <DynamicIslandView id="network" className="w-[min(92vw,260px)] sm:w-[300px]">
+              <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-3 text-center">
+                <IslandExpandedHeader activeViews={activeViews} selected={selectedView ?? "network"} onSelect={selectView} />
+                <div className={cn("flex h-12 w-12 items-center justify-center rounded-full", netState === "offline" ? "bg-[var(--warning)]/15" : "bg-[var(--success)]/15")}>
+                  <Icon
+                    name={netState === "offline" ? "wifi-slash" : "wifi-high"}
+                    pack="phosphor"
+                    className={cn("h-6 w-6", netState === "offline" ? "text-[var(--warning)]" : "text-[var(--success)]")}
+                  />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-[var(--text-primary)]">
+                    {netState === "offline" ? i18n("v8NetworkOffline", "Hors ligne") : i18n("backOnline", "De retour en ligne")}
+                  </p>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    {netState === "offline"
+                      ? i18n("offlineIslandHint", "Vos changements sont gardés et seront synchronisés au retour du réseau.")
+                      : i18n("onlineIslandHint", "La synchronisation reprend.")}
+                  </p>
+                </div>
+              </div>
+            </DynamicIslandView>
+
+            <DynamicIslandView id="battery" className="w-[min(92vw,260px)] sm:w-[300px]">
+              <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-3 text-center">
+                <IslandExpandedHeader activeViews={activeViews} selected={selectedView ?? "battery"} onSelect={selectView} />
+                <div className="w-full">
+                  <div className="mx-auto flex h-7 w-20 items-center rounded-md border-2 border-[var(--text-primary)]/30 p-0.5">
+                    <motion.div
+                      className={cn("h-full rounded-[3px]", batteryInfo?.charging ? "bg-[var(--success)]" : "bg-[var(--danger)]")}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.round((batteryInfo?.level ?? 0) * 100)}%` }}
+                      transition={{ duration: 0.8, ease: EASE_OUT }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-medium tabular-nums text-[var(--text-primary)]">
+                    {batteryInfo ? `${Math.round(batteryInfo.level * 100)} %` : "—"}
+                  </p>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    {batteryInfo?.charging ? i18n("charging", "En charge") : i18n("batteryLowHint", "Batterie faible : pensez à brancher le chargeur.")}
+                  </p>
+                </div>
+              </div>
             </DynamicIslandView>
           </DynamicIsland>
         </motion.div>

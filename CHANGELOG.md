@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.47.0 — 2026-10-01
+
+**Dynamic Island : motion design et nouvelles intégrations**
+
+- La Dynamic Island change de vue avec un fondu flouté, le contenu d'une vue ouverte apparaît en cascade, la pastille compacte s'anime aussi quand elle passe d'une intégration à l'autre et la sélection glisse entre les bulles. Plus de halo lumineux : une bordure sobre qui s'éclaire au survol.
+- Nouvelle intégration Réseau : « Hors ligne » reste affiché tant que la connexion manque, puis « De retour en ligne » pendant 4 secondes.
+- Nouvelle intégration Batterie : alerte à 15 % ou moins hors charge, et confirmation pendant 4 secondes quand le chargeur est branché, avec une jauge animée (navigateurs qui donnent accès à la batterie).
+
 ## v1.46.5 — 2026-10-01
 
 **Barres du haut et du bas : motion design**

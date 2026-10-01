@@ -40722,6 +40722,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_46_5_en);
 CHANGELOG_BY_LANG.es.unshift(v1_46_5_es);
 CHANGELOG_BY_LANG.de.unshift(v1_46_5_de);
 
+const v1_47_0_fr: ChangelogEntry = {
+  version: "v1.47.0",
+  date: "2026-10-01",
+  title: "Dynamic Island : motion design et nouvelles intégrations",
+  items: [
+    "La Dynamic Island change de vue avec un fondu flouté, le contenu d'une vue ouverte apparaît en cascade, la pastille compacte s'anime aussi quand elle passe d'une intégration à l'autre et la sélection glisse entre les bulles. Plus de halo lumineux : une bordure sobre qui s'éclaire au survol.",
+    "Nouvelle intégration Réseau : « Hors ligne » reste affiché tant que la connexion manque, puis « De retour en ligne » pendant 4 secondes.",
+    "Nouvelle intégration Batterie : alerte à 15 % ou moins hors charge, et confirmation pendant 4 secondes quand le chargeur est branché, avec une jauge animée (navigateurs qui donnent accès à la batterie).",
+  ],
+};
+
+const v1_47_0_en: ChangelogEntry = {
+  version: "v1.47.0",
+  date: "2026-10-01",
+  title: "Dynamic Island: motion design and new integrations",
+  items: [
+    "The Dynamic Island switches views with a blurred fade, an open view's content appears in sequence, the compact pill also animates when it moves to another integration, and the selection glides between bubbles. No more glow: a calm border that brightens on hover.",
+    "New Network integration: \"Offline\" stays visible while the connection is missing, then \"Back online\" for 4 seconds.",
+    "New Battery integration: alert at 15% or less when not charging, and a 4-second confirmation when the charger is plugged in, with an animated gauge (browsers that expose the battery).",
+  ],
+};
+
+const v1_47_0_es: ChangelogEntry = {
+  version: "v1.47.0",
+  date: "2026-10-01",
+  title: "Dynamic Island: motion design y nuevas integraciones",
+  items: [
+    "Transiciones más fluidas y nuevas integraciones de Red y Batería con datos reales del dispositivo.",
+  ],
+};
+
+const v1_47_0_de: ChangelogEntry = {
+  version: "v1.47.0",
+  date: "2026-10-01",
+  title: "Dynamic Island: Motion Design und neue Integrationen",
+  items: [
+    "Flüssigere Übergänge und neue Netzwerk- und Akku-Integrationen mit echten Gerätedaten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_47_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_47_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_47_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_47_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

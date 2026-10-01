@@ -328,7 +328,7 @@ export default function EventsCenterClient() {
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
                 href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer shadow-sm"
+                className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
                 title="Retour au hub Discord"
               >
                 <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
@@ -351,7 +351,7 @@ export default function EventsCenterClient() {
               <button
                 onClick={loadEvents}
                 disabled={loading}
-                className="inline-flex items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] disabled:opacity-50"
+                className="inline-flex items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] disabled:opacity-50"
                 title="Rafraîchir"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
@@ -387,7 +387,7 @@ export default function EventsCenterClient() {
 
             <Link
               href={`/discord/events/create${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm transition-all hover:scale-[1.02]"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] hover:scale-[1.02] btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <Plus className="w-4 h-4" />
               Créer un Événement
@@ -728,7 +728,7 @@ export default function EventsCenterClient() {
             </p>
             <Link
               href="/discord/events/create"
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors"
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-[var(--accent-primary)] text-[var(--accent-contrast)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <Plus className="w-4 h-4" />
               Créer un Événement

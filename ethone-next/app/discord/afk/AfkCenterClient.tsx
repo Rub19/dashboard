@@ -47,7 +47,7 @@ function Switch({ checked, onChange, label, hint }: { checked: boolean; onChange
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="flex w-full items-start justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
+      className="flex w-full items-start justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
     >
       <span className="min-w-0">
         <span className="block text-xs font-semibold text-[var(--text-primary)]">{label}</span>
@@ -288,7 +288,7 @@ export default function AfkCenterClient() {
           <button
             onClick={handleSave}
             disabled={saving || !selectedGuild}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-medium disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
           >
             <Save className="w-3.5 h-3.5" />
             {saving ? "Enregistrement..." : "Sauvegarder"}
@@ -298,7 +298,7 @@ export default function AfkCenterClient() {
 
       <div className="flex-1 overflow-y-auto os-scroll px-4 sm:px-6 py-6 pb-44 md:pb-44 space-y-6 [overscroll-behavior:contain]">
         {!discordLoading && manageableGuilds.length === 0 && (
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
             Connectez un serveur Discord où vous êtes administrateur.
           </div>
         )}
@@ -320,7 +320,7 @@ export default function AfkCenterClient() {
               href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-xs transition-colors shrink-0 cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] font-medium text-xs shrink-0 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               Inviter le bot
             </a>
@@ -344,7 +344,7 @@ export default function AfkCenterClient() {
                 { label: "Mentions pendant absence", value: overview?.totalMentionsWhileAway ?? 0 },
                 { label: "Module", value: config.enabled ? "Actif" : "Inactif" },
               ].map((s) => (
-                <div key={s.label} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
                   <p className="text-xs text-[var(--text-muted)]">{s.label}</p>
                   <p className="mt-1 text-lg font-bold text-[var(--text-primary)]">{s.value}</p>
                 </div>
@@ -356,13 +356,13 @@ export default function AfkCenterClient() {
               <Switch checked={config.clearOnMessage} onChange={(v) => patch("clearOnMessage", v)} label="Retirer le statut au premier message" hint="Dès que le membre reparle, il n'est plus AFK." />
               <Switch checked={config.notifyOnMention} onChange={(v) => patch("notifyOnMention", v)} label="Prévenir quand un membre AFK est mentionné" hint="« X est AFK : raison (depuis …) »." />
               <Switch checked={config.prefixNickname} onChange={(v) => patch("prefixNickname", v)} label="Préfixer le pseudo avec [AFK]" hint="Nécessite la permission Gérer les pseudos. Restauré au retour." />
-              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
                 <label className="block text-xs font-semibold text-[var(--text-primary)]">Auto-suppression des réponses du bot : {config.autoDeleteSeconds === 0 ? "jamais" : `${config.autoDeleteSeconds}s`}</label>
                 <input type="range" min={0} max={60} value={config.autoDeleteSeconds} onChange={(e) => patch("autoDeleteSeconds", Number(e.target.value))} className="mt-2 w-full accent-emerald-500" />
               </div>
             </div>
 
-            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
               <div className="border-b border-[var(--panel-border)] px-4 py-3">
                 <p className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">Membres actuellement AFK ({overview?.members.length ?? 0})</p>
               </div>
@@ -379,7 +379,7 @@ export default function AfkCenterClient() {
                         </p>
                         <p className="mt-0.5 line-clamp-1 text-xs text-[var(--text-muted)]">{m.reason}</p>
                       </div>
-                      <button onClick={() => clearMember(m.userId)} title="Retirer le statut AFK" className="shrink-0 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)] transition-colors cursor-pointer">
+                      <button onClick={() => clearMember(m.userId)} title="Retirer le statut AFK" className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)] transition-colors cursor-pointer">
                         <X className="h-3.5 w-3.5" />
                       </button>
                     </div>

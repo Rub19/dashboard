@@ -43,7 +43,7 @@ function Switch({ checked, onChange, label, hint, disabled }: { checked: boolean
       aria-checked={checked}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className="flex w-full cursor-pointer items-start justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 text-left transition-colors hover:bg-[var(--surface-raised)]/70 disabled:cursor-not-allowed disabled:opacity-50"
+      className="flex w-full cursor-pointer items-start justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 text-left transition-colors hover:bg-[var(--surface-raised)]/70 disabled:cursor-not-allowed disabled:opacity-50"
     >
       <span className="min-w-0">
         <span className="block text-xs font-semibold text-[var(--text-primary)]">{label}</span>
@@ -58,7 +58,7 @@ function Switch({ checked, onChange, label, hint, disabled }: { checked: boolean
 
 function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
       <p className="text-xs text-[var(--text-muted)]">{label}</p>
       <p className="mt-1 text-2xl font-bold tabular-nums text-[var(--text-primary)]">{value}</p>
       {hint && <p className="mt-1 text-xs text-[var(--text-muted)]">{hint}</p>}
@@ -198,7 +198,7 @@ export default function CountingCenterClient() {
               <Stat label="Erreurs" value={String(config.totalMistakes)} />
             </div>
 
-            <section className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+            <section className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <h2 className="text-sm font-semibold">Réglages</h2>
               <div>
                 <p className="mb-1.5 text-xs font-medium text-[var(--text-muted)]">Salon de comptage</p>
@@ -243,7 +243,7 @@ export default function CountingCenterClient() {
               </button>
             </section>
 
-            <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+            <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <h2 className="mb-3 text-sm font-semibold">Classement</h2>
               {overview && overview.leaderboard.length > 0 ? (
                 <ol className="space-y-1.5">

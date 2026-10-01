@@ -915,7 +915,7 @@ export default function EventCreateClient() {
                 <button
                   type="button"
                   onClick={() => setStep((s) => s + 1)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   Suivant
                   <ArrowRight className="w-4 h-4" />
@@ -925,7 +925,7 @@ export default function EventCreateClient() {
                   type="button"
                   disabled={isSubmitting}
                   onClick={handlePublish}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-semibold bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-semibold bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   {isSubmitting ? "Publication en cours..." : "Publier l'Événement"}
                   <Check className="w-4 h-4" />

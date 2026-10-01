@@ -252,18 +252,18 @@ export default function ServerStatsCenterClient() {
 
         {state === "ok" && overview && (
           <>
-            <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+            <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <h2 className="text-sm font-semibold">Démarrage en un clic</h2>
               <p className="mt-1 text-xs text-[var(--text-muted)]">Crée la catégorie « SERVER STATS » avec des salons vocaux verrouillés (visibles, personne ne peut s&apos;y connecter) déjà configurés.</p>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 {presets.map((p) => (
-                  <div key={p.id} className="flex flex-col gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+                  <div key={p.id} className="flex flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
                     <div>
                       <p className="text-sm font-semibold">{p.label}</p>
                       <p className="text-xs text-[var(--text-muted)]">{p.templates.length} salons</p>
                     </div>
                     <DiscordPreview title={p.categoryName} lines={PRESET_SAMPLE[p.id] ?? p.templates} />
-                    <button type="button" disabled={busy} onClick={() => void setup(p.id)} className="cursor-pointer rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50">
+                    <button type="button" disabled={busy} onClick={() => void setup(p.id)} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                       Créer cette catégorie
                     </button>
                   </div>
@@ -271,7 +271,7 @@ export default function ServerStatsCenterClient() {
               </div>
             </section>
 
-            <section className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+            <section className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-sm font-semibold">Vos compteurs ({overview.channels.length}/25)</h2>
                 <div className="flex flex-wrap items-center gap-3 text-xs">
@@ -326,7 +326,7 @@ export default function ServerStatsCenterClient() {
               )}
             </section>
 
-            <section className="space-y-4 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+            <section className="space-y-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <h2 className="text-sm font-semibold">{channelId && overview.channels.some((c) => c.channelId === channelId) ? "Modifier le compteur" : "Ajouter un compteur"}</h2>
               <div>
                 <p className="mb-1.5 text-xs font-medium text-[var(--text-muted)]">Salon vocal à transformer</p>
@@ -334,7 +334,7 @@ export default function ServerStatsCenterClient() {
               </div>
               <div>
                 <p className="mb-1.5 text-xs font-medium text-[var(--text-muted)]">Modèle du nom</p>
-                <input value={template} maxLength={100} onChange={(e) => setTemplate(e.target.value)} placeholder="🕐 {time12:UTC} UTC" className="h-10 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]" />
+                <input value={template} maxLength={100} onChange={(e) => setTemplate(e.target.value)} placeholder="🕐 {time12:UTC} UTC" className="h-10 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]" />
                 <div className="mt-2 rounded-xl bg-[#2b2d31] px-3 py-2 text-[13px] text-[#dbdee1]">
                   <span className="mr-2 text-xs uppercase tracking-wide text-[#949ba4]">Aperçu</span>
                   {preview?.text || "…"}
@@ -354,7 +354,7 @@ export default function ServerStatsCenterClient() {
                     <p className="mb-1 text-xs font-semibold text-[var(--text-muted)]">{group}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {list.map((t) => (
-                        <button key={t.token} type="button" title={`${t.label} — ex. ${t.example}${t.needsStats ? " (module Statistiques requis)" : ""}`} onClick={() => insert(t.token)} className="cursor-pointer rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 py-1 font-mono text-xs text-[var(--text-muted)] transition hover:border-emerald-500/50 hover:text-[var(--text-primary)]">
+                        <button key={t.token} type="button" title={`${t.label} — ex. ${t.example}${t.needsStats ? " (module Statistiques requis)" : ""}`} onClick={() => insert(t.token)} className="cursor-pointer rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 py-1 font-mono text-xs text-[var(--text-muted)] transition hover:border-emerald-500/50 hover:text-[var(--text-primary)]">
                           {t.token}
                           {t.needsStats && <span className="ml-1 text-sky-300">•</span>}
                         </button>
@@ -366,7 +366,7 @@ export default function ServerStatsCenterClient() {
                   <span className="text-sky-300">•</span> = nécessite le module <Link href={`/discord/stats?guildId=${guildId}`} className="underline">Statistiques</Link>. Discord limite le renommage d&apos;un salon à 2 fois toutes les 10 minutes : l&apos;horloge s&apos;affiche à la dizaine de minutes près.
                 </p>
               </div>
-              <button type="button" disabled={busy || !channelId} onClick={() => void saveCounter()} className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50">
+              <button type="button" disabled={busy || !channelId} onClick={() => void saveCounter()} className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                 <Plus className="h-4 w-4" />
                 Enregistrer le compteur
               </button>

@@ -294,7 +294,7 @@ export default function SetupWizardClient() {
                   key={s.id}
                   className={`flex items-center gap-2 p-2 rounded-xl border text-left transition ${
                     isCurrent
-                      ? "bg-[var(--surface-raised)]/40 border-emerald-500/30 text-white"
+                      ? "bg-[var(--surface-raised)]/40 border-emerald-500/30 text-[var(--text-primary)]"
                       : isPast
                       ? "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] text-[var(--text-muted)]"
                       : "opacity-40 border-transparent text-[var(--text-muted)]"
@@ -345,7 +345,7 @@ export default function SetupWizardClient() {
                   </p>
                   <button
                     onClick={() => connect()}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition cursor-pointer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                   >
                     <DiscordIcon className="w-4 h-4" />
                     <span>Lier mon compte Discord</span>
@@ -729,7 +729,7 @@ export default function SetupWizardClient() {
             {currentStep < STEPS.length - 1 ? (
               <button
                 onClick={handleNext}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold shadow-sm transition cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 <span>Étape suivante</span>
                 <ChevronRight className="w-4 h-4" />

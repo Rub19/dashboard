@@ -165,7 +165,7 @@ function SpecificFields({ k, draft, set }: { k: DetKey; draft: Det; set: (patch:
 function Modal({ title, onClose, footer, children }: { title: string; onClose: () => void; footer: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 p-4 " role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)] ">
+      <div className="flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] ">
         <div className="overflow-y-auto p-6">
           <h3 className="mb-5 text-lg font-extrabold uppercase tracking-wide text-[var(--text-primary)]">{title}</h3>
           <div className="space-y-5">{children}</div>
@@ -274,7 +274,7 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
             const unavailable = NEW_KEYS.includes(c.key) && config[c.key] === undefined;
             const on = config[c.key]?.enabled === true;
             return (
-              <div key={c.key} className={cn("flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4", unavailable && "opacity-50")}>
+              <div key={c.key} className={cn("flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4", unavailable && "opacity-50")}>
                 <div className="min-w-0">
                   <p className="text-sm font-bold text-[var(--text-primary)]">{c.title}</p>
                   <p className="mt-0.5 text-xs text-[var(--text-muted)]">{c.text}</p>
@@ -343,7 +343,7 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
               <button type="button" onClick={() => setEditing(null)} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-5 py-2 text-sm font-semibold text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/10">
                 Fermer
               </button>
-              <button type="button" disabled={busy} onClick={() => void saveSettings()} className="cursor-pointer rounded-xl bg-emerald-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50">
+              <button type="button" disabled={busy} onClick={() => void saveSettings()} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-5 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                 Enregistrer
               </button>
             </>
@@ -392,7 +392,7 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
               <button type="button" onClick={() => setSanction(null)} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-5 py-2 text-sm font-semibold text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/10">
                 Annuler
               </button>
-              <button type="button" disabled={busy} onClick={() => void addSanction()} className="cursor-pointer rounded-xl bg-emerald-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50">
+              <button type="button" disabled={busy} onClick={() => void addSanction()} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-5 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                 Créer
               </button>
             </>

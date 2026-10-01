@@ -217,7 +217,7 @@ export default function BackupCompareClient() {
                 {([
                   ["ALL", "Tous", Layers], ["ROLES", "Rôles", Users], ["CATEGORIES", "Catégories", FolderTree], ["CHANNELS", "Salons", FolderTree], ["PERMISSIONS", "Permissions", Shield], ["ETHONE", "ETHONE", Sparkles],
                 ] as [Component, string, typeof Users][]).map(([id, label, Icon]) => (
-                  <button key={id} onClick={() => setComponentFilter(id)} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer", componentFilter === id ? "bg-emerald-500 text-white" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-white")}>
+                  <button key={id} onClick={() => setComponentFilter(id)} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer", componentFilter === id ? "bg-emerald-500 text-white" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
                     <Icon className="w-3.5 h-3.5" /> {label}
                   </button>
                 ))}
@@ -225,7 +225,7 @@ export default function BackupCompareClient() {
               <div className="flex items-center gap-2">
                 <span className="text-xs text-[var(--text-muted)]">Affichage :</span>
                 {([["CHANGES_ONLY", "Changements"], ["ALL", "Tout"]] as const).map(([id, label]) => (
-                  <button key={id} onClick={() => setFilterType(id)} className={cn("px-3 py-1 rounded text-xs font-medium transition-colors cursor-pointer", filterType === id ? "bg-[var(--surface-raised)]/40 text-white border border-[var(--panel-border)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>{label}</button>
+                  <button key={id} onClick={() => setFilterType(id)} className={cn("px-3 py-1 rounded text-xs font-medium transition-colors cursor-pointer", filterType === id ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] border border-[var(--panel-border)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>{label}</button>
                 ))}
               </div>
             </div>

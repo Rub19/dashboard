@@ -506,7 +506,7 @@ export default function PollCreateClient() {
                 </span>
               </label>
 
-              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
                 <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">Informations Générales</h3>
                 <div className="space-y-4">
                   <div>
@@ -603,7 +603,7 @@ export default function PollCreateClient() {
               </div>
 
               {nativeMode && (
-                <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+                <label className="flex cursor-pointer items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
                   <input
                     type="checkbox"
                     checked={allowMultiselect}
@@ -616,7 +616,7 @@ export default function PollCreateClient() {
 
               {/* Voting Type Selection */}
               {!nativeMode && (
-              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
                 <h3 className="text-base font-bold text-[var(--text-primary)] mb-2">Mode de Scrutin & Mécanique de Vote</h3>
                 <p className="text-xs text-[var(--text-muted)] mb-4">
                   Choisissez la règle mathématique utilisée pour déterminer le vainqueur et comptabiliser les suffrages.
@@ -660,7 +660,7 @@ export default function PollCreateClient() {
 
             {/* Quick Summary Sidebar */}
             <div className="space-y-4">
-              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-3">
                   Résumé de Configuration
                 </h4>
@@ -712,7 +712,7 @@ export default function PollCreateClient() {
               {!nativeMode && (
               <button
                 onClick={handleAddQuestion}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-semibold text-white hover:bg-emerald-600"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 <Plus className="h-3.5 w-3.5" />
                 Ajouter une question
@@ -723,7 +723,7 @@ export default function PollCreateClient() {
             {(nativeMode ? questions.slice(0, 1) : questions).map((q, qIndex) => (
               <div
                 key={q.id}
-                className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6"
               >
                 {!nativeMode && (
                 <div className="flex items-center justify-between gap-4 mb-4">
@@ -814,7 +814,7 @@ export default function PollCreateClient() {
                   {q.options.map((opt, optIndex) => (
                     <div
                       key={opt.id}
-                      className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5"
+                      className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5"
                     >
                       <input
                         type="text"
@@ -906,7 +906,7 @@ export default function PollCreateClient() {
         {/* Tab 3: Eligibility & Role Weights */}
         {activeTab === "eligibility" && (
           <div className="space-y-6">
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
               <h3 className="text-base font-bold text-[var(--text-primary)] mb-2">Conditions d'Accès & Éligibilité</h3>
               <p className="text-xs text-[var(--text-muted)] mb-6">
                 Restreignez l'accès au vote selon les rôles Discord, l'ancienneté du compte ou du membre sur le serveur.
@@ -944,7 +944,7 @@ export default function PollCreateClient() {
             </div>
 
             {/* Role Weights Multiplier */}
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-base font-bold text-[var(--text-primary)]">Pondération des Voix par Rôle</h3>
                 <button
@@ -964,7 +964,7 @@ export default function PollCreateClient() {
 
               <div className="space-y-3">
                 {roleWeights.map((rw, index) => (
-                  <div key={rw.roleId} className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+                  <div key={rw.roleId} className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
                     <div className="flex items-center gap-2">
                       <span className="h-2 w-2 rounded-full bg-emerald-500" />
                       <span className="text-xs font-bold text-[var(--text-primary)]">{rw.roleName}</span>
@@ -1030,7 +1030,7 @@ export default function PollCreateClient() {
         {/* Tab 4: Quorum & Security */}
         {activeTab === "quorum" && (
           <div className="space-y-6">
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="text-base font-bold text-[var(--text-primary)]">Quorum & Seuil de Décision</h3>
@@ -1082,7 +1082,7 @@ export default function PollCreateClient() {
             </div>
 
             {/* Anonymity Settings */}
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
               <h3 className="text-base font-bold text-[var(--text-primary)] mb-2">Confidentialité & Anonymat</h3>
               <p className="text-xs text-[var(--text-muted)] mb-4">
                 Contrôlez la visibilité des votes des membres et l'accès aux résultats en direct.
@@ -1117,7 +1117,7 @@ export default function PollCreateClient() {
         {/* Tab 5: Discord Panel & Preview */}
         {activeTab === "panel" && (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
               <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">Personnalisation du Panneau Discord</h3>
               <div className="space-y-4">
                 <div>
@@ -1171,7 +1171,7 @@ export default function PollCreateClient() {
             {/* Live Discord Embed Mockup */}
             <div>
               <span className="text-xs font-semibold text-[var(--text-muted)] mb-2 block">Aperçu Discord Direct</span>
-              <div className="rounded-2xl border border-[var(--panel-border)] bg-[#2b2d31] p-4 text-[#dbdee1]">
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#2b2d31] p-4 text-[#dbdee1]">
                 <div
                   className="rounded-lg border-l-4 bg-[#1e1f22] p-4"
                   style={{ borderLeftColor: panelColor }}

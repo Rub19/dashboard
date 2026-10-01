@@ -215,9 +215,9 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
 const textareaCls =
   "min-h-[96px] w-full rounded-xl border border-[var(--panel-border)] bg-transparent px-3.5 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-emerald-500/60 focus:outline-none";
 
-const cardCls = "rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4";
+const cardCls = "rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4";
 const primaryBtn =
-  "inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 text-sm font-semibold text-white hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50";
 const ghostBtn =
   "inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 text-sm font-medium text-[var(--text-primary)] hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50";
 

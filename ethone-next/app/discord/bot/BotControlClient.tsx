@@ -1237,7 +1237,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         </p>
         <Link
           href="/discord"
-          className="mt-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-2 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]/70"
+          className="mt-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-2 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]/70"
         >
           Retour au Discord Hub
         </Link>
@@ -1391,7 +1391,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               <div className="flex items-center gap-2 shrink-0">
                 <Link
                   href="/discord/bot/presence"
-                  className="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center gap-1.5 transition-all"
+                  className="px-3.5 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-1.5 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>Présence</span>
@@ -1400,7 +1400,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <button
                   onClick={fetchData}
                   disabled={refreshing}
-                  className="px-3 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-white text-xs font-medium flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
+                  className="px-3 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xs font-medium flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
                   title="Actualiser les données"
                 >
                   <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin text-emerald-300")} />
@@ -1527,7 +1527,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <button
                   onClick={handleRemoteUpdate}
                   disabled={updatingBot}
-                  className="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm disabled:opacity-50 cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                   title="Déclencher la mise à jour et recharger les modules"
                 >
                   <RefreshCw className={cn("w-3.5 h-3.5", updatingBot && "animate-spin")} />

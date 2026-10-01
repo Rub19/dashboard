@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.46.0 — 2026-10-01
+
+**Pages des modules du bot : nouvelle DA**
+
+- Les 123 boutons principaux des pages de modules passent aux couleurs du thème, avec reflet au survol, effet d'appui et anneau de focus clavier.
+- Sélecteur de serveur, sélecteur de salon et sélecteur de rôle : menus qui s'ouvrent en douceur, surlignage qui glisse d'un serveur à l'autre, couleurs du thème.
+- En-têtes : le titre de chaque page apparaît en douceur, la flèche de retour avance au survol, les boutons de retour et les tuiles d'icône sont harmonisés (arrivée avec léger rebond). L'en-tête commun PageHeader est animé.
+- Corrigé : 78 textes blancs codés en dur devenaient invisibles sur les thèmes clairs ; ils suivent maintenant le thème. Les cartes adoptent le rayon du thème.
+
 ## v1.45.0 — 2026-10-01
 
 **Motion design : Paramètres, Marketplace, Connexions et modules du bot**

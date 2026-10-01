@@ -258,7 +258,7 @@ export default function FormResponsesClient() {
         <div className="flex items-center gap-3">
           <Link
             href={`/discord/forms?guildId=${rawGuildId}`}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -281,21 +281,21 @@ export default function FormResponsesClient() {
           <button
             onClick={loadResponses}
             disabled={loading}
-            className="flex h-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2.5 text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-50"
+            className="flex h-9 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2.5 text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-50"
             title="Rafraîchir"
           >
             <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
           </button>
           <button
             onClick={handleExportCSV}
-            className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+            className="flex h-9 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
           >
             <Download className="h-3.5 w-3.5" />
             <span>Exporter CSV</span>
           </button>
           <Link
             href={`/discord/forms/${formId}?guildId=${rawGuildId}`}
-            className="flex h-9 items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 text-xs font-bold text-white hover:bg-emerald-600 transition-all cursor-pointer"
+            className="flex h-9 items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
           >
             <Sliders className="h-3.5 w-3.5" />
             <span>Ouvrir Builder</span>
@@ -304,7 +304,7 @@ export default function FormResponsesClient() {
       </div>
 
       {/* Filter Tabs & Search */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
         <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           {[
             { id: "ALL", label: "Toutes" },
@@ -341,7 +341,7 @@ export default function FormResponsesClient() {
       </div>
 
       {/* Responses Table */}
-      <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
@@ -505,7 +505,7 @@ export default function FormResponsesClient() {
             {/* Modal Body: Scrollable answers and review notes */}
             <div className="flex-1 overflow-y-auto py-4 space-y-6 pr-1">
               {/* Score Bar */}
-              <div className="flex items-center justify-between p-3.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
+              <div className="flex items-center justify-between p-3.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                 <div className="flex items-center gap-2">
                   <span className="text-base">📊</span>
                   <div>
@@ -524,7 +524,7 @@ export default function FormResponsesClient() {
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Réponses du Candidat</h4>
                 <div className="space-y-3">
                   {activeResponse.answers.map((ans, idx) => (
-                    <div key={idx} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 space-y-1">
+                    <div key={idx} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 space-y-1">
                       <span className="text-xs font-semibold text-[var(--text-muted)] block">{ans.fieldLabel}</span>
                       <p className="text-xs text-[var(--text-primary)] font-medium whitespace-pre-wrap leading-relaxed">
                         {String(ans.value || "Non renseigné")}
@@ -541,7 +541,7 @@ export default function FormResponsesClient() {
                 </h4>
 
                 {activeResponse.notes.map((note) => (
-                  <div key={note.id} className="p-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-xs space-y-1">
+                  <div key={note.id} className="p-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-xs space-y-1">
                     <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                       <span className="font-bold text-[var(--text-muted)]">{note.authorTag}</span>
                       <span>{note.createdAt}</span>
@@ -585,7 +585,7 @@ export default function FormResponsesClient() {
                 </button>
                 <button
                   onClick={() => handleUpdateStatus("CHANGES_REQUESTED", "Modifications demandées")}
-                  className="flex-1 sm:flex-initial h-9 px-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]"
+                  className="flex-1 sm:flex-initial h-9 px-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]"
                 >
                   Demander révision
                 </button>

@@ -1623,6 +1623,34 @@ select[data-haptic-state="released"],
 .discord-route > * > *:nth-child(5), .hub-module-panel > * + * > *:nth-child(5) { animation-delay: 0.2s; }
 .discord-route > * > *:nth-child(6), .hub-module-panel > * + * > *:nth-child(6) { animation-delay: 0.25s; }
 .discord-route > * > *:nth-child(n + 7), .hub-module-panel > * + * > *:nth-child(n + 7) { animation-delay: 0.3s; }
+/* Bot module pages: every page title reveals, every "back to hub" arrow nudges. */
+@keyframes title-in {
+  from { opacity: 0; transform: translateY(6px); filter: blur(4px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+.discord-route h1 { animation: title-in 0.55s var(--ease-snap) 0.05s backwards; }
+.discord-route a[title="Retour au hub Discord"] > svg:first-child,
+.discord-route a[href="/discord"] > svg:first-child { transition: transform 0.3s var(--ease-snap); }
+.discord-route a[title="Retour au hub Discord"]:hover > svg:first-child,
+.discord-route a[href="/discord"]:hover > svg:first-child { transform: translateX(-2px); }
+/* Header icon tile: lands with a small overshoot (spring-like, CSS only). */
+@keyframes icon-pop {
+  0% { opacity: 0; transform: scale(0.6) rotate(-12deg); }
+  60% { opacity: 1; transform: scale(1.06) rotate(2deg); }
+  100% { opacity: 1; transform: none; }
+}
+.icon-pop { animation: icon-pop 0.55s var(--ease-snap) backwards; }
+@media (prefers-reduced-motion: reduce) { .discord-route h1, .icon-pop { animation: none; } }
+[data-reduced-motion="true"] .discord-route h1, [data-reduced-motion="true"] .icon-pop, [data-reduced-motion="true"] .pop-in { animation: none !important; }
+
+/* Dropdown / popover opening (portals). */
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+.pop-in { animation: pop-in 0.18s var(--ease-snap) backwards; transform-origin: top; }
+@media (prefers-reduced-motion: reduce) { .pop-in { animation: none; } }
+
 /* Generic: direct children rise in sequence. */
 .stagger-children > * { animation: console-rise 0.5s var(--ease-snap) backwards; }
 .stagger-children > :nth-child(2) { animation-delay: 0.06s; }

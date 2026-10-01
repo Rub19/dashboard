@@ -4,6 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronDown, Search } from "@/components/icons/ph";
 import { useBotGuildIds } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { EASE_SNAP, SPRING_PILL } from "@/lib/ease";
+import { useMotionPref } from "@/lib/hooks/useMotionPref";
 
 export interface GuildOption {
   id: string;
@@ -58,6 +61,7 @@ function GuildIcon({ guild, size }: { guild: GuildOption; size: number }) {
  */
 export function GuildSelector<T extends GuildOption>({ guilds, value, onChange, className }: GuildSelectorProps<T>) {
   const botIds = useBotGuildIds(guilds);
+  const { reduced } = useMotionPref();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [cursor, setCursor] = useState(0);
@@ -128,20 +132,27 @@ export function GuildSelector<T extends GuildOption>({ guilds, value, onChange, 
         aria-haspopup="listbox"
         aria-expanded={open}
         className={cn(
-          "flex h-10 w-full min-w-[13rem] max-w-[20rem] items-center gap-2.5 rounded-xl border bg-white/[0.04] px-2.5 text-left text-xs font-medium text-white transition-all cursor-pointer",
-          open ? "border-[var(--accent-primary)] shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_18%,transparent)]" : "border-[var(--panel-border)] hover:bg-white/[0.07]"
+          "flex h-10 w-full min-w-[13rem] max-w-[20rem] items-center gap-2.5 rounded-[var(--inset-radius)] border bg-[var(--text-primary)]/[0.04] px-2.5 text-left text-xs font-medium text-[var(--text-primary)] outline-none transition-[border-color,background-color,box-shadow,transform] duration-200 cursor-pointer active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
+          open ? "border-[var(--accent-primary)]/60 shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_14%,transparent)]" : "border-[var(--panel-border)] hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.07]"
         )}
       >
-        {selected ? <GuildIcon guild={selected} size={24} /> : <span className="h-6 w-6 shrink-0 rounded-lg bg-white/10" />}
+        {selected ? <GuildIcon guild={selected} size={24} /> : <span className="h-6 w-6 shrink-0 rounded-lg bg-[var(--text-primary)]/10" />}
         <span className="min-w-0 flex-1 truncate">{selected?.name || "Choisir un serveur"}</span>
-        {selected && hasBot(selected.id) && <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" title="Le bot est présent" />}
-        <ChevronDown className={cn("h-3.5 w-3.5 shrink-0 text-white/50 transition-transform", open && "rotate-180")} />
+        {selected && hasBot(selected.id) && <span className="h-2 w-2 shrink-0 rounded-full bg-[var(--success)] shadow-[0_0_0_3px_color-mix(in_srgb,var(--success)_18%,transparent)]" title="Le bot est présent" />}
+        <ChevronDown className={cn("h-3.5 w-3.5 shrink-0 text-[var(--text-muted)] transition-transform duration-300 [transition-timing-function:var(--ease-snap)]", open && "rotate-180")} />
       </button>
 
+      <AnimatePresence>
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-[21rem] max-w-[calc(100vw-2rem)] origin-top-right overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated,#17181d)] shadow-2xl shadow-black/60 backdrop-blur-xl">
+        <motion.div
+          initial={reduced ? false : { opacity: 0, y: -6, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={reduced ? undefined : { opacity: 0, y: -4, scale: 0.98, transition: { duration: 0.12 } }}
+          transition={{ duration: 0.22, ease: EASE_SNAP }}
+          className="absolute right-0 z-50 mt-2 w-[21rem] max-w-[calc(100vw-2rem)] origin-top-right overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated,#17181d)] shadow-2xl shadow-black/60 backdrop-blur-xl"
+        >
           <div className="flex items-center gap-2 border-b border-[var(--panel-border)] px-3 py-2.5">
-            <Search className="h-3.5 w-3.5 shrink-0 text-white/40" />
+            <Search className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)]" />
             <input
               ref={searchRef}
               value={query}
@@ -150,13 +161,13 @@ export function GuildSelector<T extends GuildOption>({ guilds, value, onChange, 
                 setCursor(0);
               }}
               placeholder="Rechercher un serveur…"
-              className="w-full bg-transparent text-xs text-white outline-none placeholder:text-white/35"
+              className="w-full bg-transparent text-xs text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
             />
-            <span className="shrink-0 text-[10px] tabular-nums text-white/35">{rows.length}</span>
+            <span className="shrink-0 text-[10px] tabular-nums text-[var(--text-muted)]">{rows.length}</span>
           </div>
 
           <ul ref={listRef} role="listbox" className="max-h-80 overflow-y-auto p-1.5 os-scroll">
-            {rows.length === 0 && <li className="px-3 py-6 text-center text-xs text-white/40">Aucun serveur ne correspond.</li>}
+            {rows.length === 0 && <li className="px-3 py-6 text-center text-xs text-[var(--text-muted)]">Aucun serveur ne correspond.</li>}
             {rows.map((g, i) => {
               const withBot = hasBot(g.id);
               const isSelected = g.id === value;
@@ -164,8 +175,8 @@ export function GuildSelector<T extends GuildOption>({ guilds, value, onChange, 
               const showOthersHeader = !withBot && (i === 0 || hasBot(rows[i - 1].id)) && botCount > 0;
               return (
                 <li key={g.id} role="presentation">
-                  {showBotHeader && <p className="px-2.5 pb-1 pt-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300/80">Le bot est présent</p>}
-                  {showOthersHeader && <p className="px-2.5 pb-1 pt-3 text-[10px] font-bold uppercase tracking-wider text-white/35">Autres serveurs</p>}
+                  {showBotHeader && <p className="px-2.5 pb-1 pt-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--success)]/80">Le bot est présent</p>}
+                  {showOthersHeader && <p className="px-2.5 pb-1 pt-3 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Autres serveurs</p>}
                   <button
                     type="button"
                     role="option"
@@ -174,26 +185,27 @@ export function GuildSelector<T extends GuildOption>({ guilds, value, onChange, 
                     onMouseEnter={() => setCursor(i)}
                     onClick={() => choose(g)}
                     className={cn(
-                      "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left transition-colors cursor-pointer",
-                      i === cursor ? "bg-white/[0.08]" : "hover:bg-white/[0.05]",
+                      "relative flex w-full items-center gap-2.5 rounded-[var(--inset-radius)] px-2.5 py-2 text-left transition-opacity cursor-pointer",
                       !withBot && botIds !== null && "opacity-60"
                     )}
                   >
-                    <GuildIcon guild={g} size={30} />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-xs font-semibold text-white">{g.name}</span>
-                      <span className={cn("block text-[10px]", withBot ? "text-emerald-300/80" : "text-white/35")}>
+                    {i === cursor && <motion.span layoutId="guild-cursor" transition={SPRING_PILL} className="absolute inset-0 rounded-[var(--inset-radius)] bg-[var(--text-primary)]/[0.07]" />}
+                    <span className="relative"><GuildIcon guild={g} size={30} /></span>
+                    <span className="relative min-w-0 flex-1">
+                      <span className="block truncate text-xs font-semibold text-[var(--text-primary)]">{g.name}</span>
+                      <span className={cn("block text-[10px]", withBot ? "text-[var(--success)]/80" : "text-[var(--text-muted)]")}>
                         {botIds === null ? "…" : withBot ? "Bot présent" : "Sans le bot"}
                       </span>
                     </span>
-                    {isSelected && <Check className="h-4 w-4 shrink-0 text-[var(--accent-primary)]" />}
+                    {isSelected && <Check className="relative h-4 w-4 shrink-0 text-[var(--accent-primary)]" />}
                   </button>
                 </li>
               );
             })}
           </ul>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 }

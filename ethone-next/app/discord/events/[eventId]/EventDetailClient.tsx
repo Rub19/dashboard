@@ -306,7 +306,7 @@ export default function EventDetailClient() {
           </p>
           <Link
             href={`/discord/events${guildParam ? `?guildId=${guildParam}` : ""}`}
-            className="mt-6 inline-flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-4 py-2 text-sm font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
+            className="mt-6 inline-flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-4 py-2 text-sm font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
           >
             <ArrowLeft className="h-4 w-4" />
             Retour aux événements
@@ -482,7 +482,7 @@ export default function EventDetailClient() {
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 disabled:opacity-80 ${
                   isCheckedIn
                     ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 cursor-default"
-                    : "bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm"
+                    : "bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 }`}
               >
                 <Ticket className="w-4 h-4" />

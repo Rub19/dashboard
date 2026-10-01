@@ -480,7 +480,7 @@ export default function GiveawaysCenterClient() {
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
                 href={`/discord${selectedGuild?.id ? `?guildId=${selectedGuild.id}` : ""}`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer shadow-sm"
+                className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
                 title="Retour au hub Discord"
               >
                 <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
@@ -488,7 +488,7 @@ export default function GiveawaysCenterClient() {
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-rose-500/15 text-rose-400 rounded-xl border border-rose-500/30">
+              <div className="p-2.5 bg-rose-500/15 text-rose-400 rounded-[var(--inset-radius)] border border-rose-500/30 icon-pop">
                 <Gift className="w-6 h-6" />
               </div>
               <div>
@@ -510,7 +510,7 @@ export default function GiveawaysCenterClient() {
             <button
               onClick={load}
               disabled={loading}
-              className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface)] text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
+              className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface)] text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
               Actualiser
@@ -546,7 +546,7 @@ export default function GiveawaysCenterClient() {
               href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-600 transition-colors shrink-0"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 shrink-0 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               Inviter le bot
             </a>
@@ -1333,7 +1333,7 @@ export default function GiveawaysCenterClient() {
                   <button
                     type="submit"
                     disabled={extendBusy}
-                    className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-[var(--accent-contrast)] bg-[var(--accent-primary)] hover:brightness-110 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                   >
                     <CalendarPlus className="w-4 h-4" />
                     {extendBusy ? "Prolongation..." : "Valider la prolongation"}

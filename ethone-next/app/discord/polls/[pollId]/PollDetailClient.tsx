@@ -81,7 +81,7 @@ export default function PollDetailClient() {
           <span className="text-[var(--text-muted)]">{poll.title}</span>
         </nav>
 
-        <header className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+        <header className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="rounded-md bg-[var(--surface-raised)]/50 px-2 py-0.5 text-[var(--text-muted)]">{poll.category}</span>
             {poll.native && (
@@ -94,7 +94,7 @@ export default function PollDetailClient() {
           {poll.description && <p className="mt-2 text-sm text-[var(--text-muted)]">{poll.description}</p>}
 
           <div className="mt-5 flex flex-wrap gap-2">
-            <Link href={`/discord/polls/${encodeURIComponent(pollId)}/results${guildQuery}`} className="rounded-lg bg-emerald-500 px-3.5 py-2 text-xs font-semibold text-white hover:bg-emerald-600">
+            <Link href={`/discord/polls/${encodeURIComponent(pollId)}/results${guildQuery}`} className="rounded-lg bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
               Résultats détaillés
             </Link>
             {!isNative && (
@@ -133,7 +133,7 @@ export default function PollDetailClient() {
                   ["Anonymat", poll.anonymity],
                 ]),
           ].map(([label, value]) => (
-            <div key={label} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+            <div key={label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
               <p className="text-xs text-[var(--text-muted)]">{label}</p>
               <p className="mt-1 text-lg font-semibold">{value}</p>
             </div>
@@ -144,7 +144,7 @@ export default function PollDetailClient() {
           {poll.questions.map((question) => {
             const result = byQuestion.get(question.id);
             return (
-              <div key={question.id} className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+              <div key={question.id} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
                 <h2 className="text-sm font-semibold">{question.title}</h2>
                 <ul className="mt-3 space-y-2.5">
                   {question.options.map((option) => {

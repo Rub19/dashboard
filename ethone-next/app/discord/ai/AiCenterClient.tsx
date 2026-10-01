@@ -434,7 +434,7 @@ export default function AiCenterClient() {
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
                 href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer shadow-sm"
+                className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
                 title="Retour au hub Discord"
               >
                 <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
@@ -442,7 +442,7 @@ export default function AiCenterClient() {
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-xl border border-emerald-500/30 shadow-sm">
+              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-[var(--inset-radius)] border border-emerald-500/30 icon-pop">
                 <Bot className="w-6 h-6" />
               </div>
               <div>
@@ -470,11 +470,11 @@ export default function AiCenterClient() {
                 }}
               />
             )}
-            <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
+            <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
               <RefreshCw className={cn("w-4 h-4 text-emerald-300", loading && "animate-spin")} />
               Actualiser
             </button>
-            <button onClick={handlePublish} disabled={saving} className={cn("px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50", dirty ? "bg-emerald-500 hover:bg-emerald-600 text-white" : "bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)]")}>
+            <button onClick={handlePublish} disabled={saving} className={cn("px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50", dirty ? "bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50" : "bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)]")}>
               {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 text-emerald-400" />}
               {dirty ? `Publier v${settings.publishedVersion + 1}` : `v${settings.publishedVersion} publiée`}
             </button>
@@ -538,7 +538,7 @@ export default function AiCenterClient() {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer", isActive ? "bg-[var(--surface-raised)]/40 text-white border-b-2 border-emerald-500/30" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
+              <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer", isActive ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] border-b-2 border-emerald-500/30" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
                 <Icon className={cn("w-4 h-4", isActive ? "text-emerald-300" : "text-[var(--text-muted)]")} />
                 {tab.label}
               </button>
@@ -567,7 +567,7 @@ export default function AiCenterClient() {
                 <span className="text-xs font-semibold text-[var(--text-primary)]">Assistant activé</span>
                 <input type="checkbox" checked={settings.enabled} onChange={(e) => { setSettings((s) => ({ ...s, enabled: e.target.checked })); setDirty(true); }} className="w-4 h-4 rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
               </div>
-              <button onClick={() => setActiveTab("personality")} className="w-full py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-white transition-colors cursor-pointer">Modifier la personnalité</button>
+              <button onClick={() => setActiveTab("personality")} className="w-full py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer">Modifier la personnalité</button>
             </div>
 
             <div className="lg:col-span-2 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5">
@@ -581,7 +581,7 @@ export default function AiCenterClient() {
               <form onSubmit={handlePlaygroundSubmit} className="space-y-3">
                 <div className="relative">
                   <input type="text" value={playQuery} onChange={(e) => setPlayQuery(e.target.value)} placeholder="Ex: Comment obtenir le rôle VIP ? Quelles sont les règles ?" className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl pl-4 pr-24 py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] transition-colors" />
-                  <button type="submit" disabled={isPlaying || !playQuery.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+                  <button type="submit" disabled={isPlaying || !playQuery.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-lg bg-[var(--accent-primary)] hover:brightness-110 disabled:opacity-50 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-1.5 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                     <Send className="w-3 h-3" /> Tester
                   </button>
                 </div>
@@ -717,7 +717,7 @@ export default function AiCenterClient() {
                 <h3 className="text-base font-bold text-[var(--text-primary)]">Base de connaissances (RAG)</h3>
                 <p className="text-xs text-[var(--text-muted)]">Règles, FAQ et guides que l'IA cite pour répondre précisément.</p>
               </div>
-              <button onClick={() => setShowAddKnowledgeModal(true)} className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all self-start sm:self-auto cursor-pointer">
+              <button onClick={() => setShowAddKnowledgeModal(true)} className="px-4 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-2 self-start sm:self-auto cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                 <Plus className="w-4 h-4" /> Ajouter une source
               </button>
             </div>
@@ -864,7 +864,7 @@ export default function AiCenterClient() {
                 <label className="text-xs text-[var(--text-muted)] block mb-1">Nom (affichage)</label>
                 <input value={newRuleChannelName} onChange={(e) => setNewRuleChannelName(e.target.value)} placeholder="ai-chat" className="w-full h-8 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs text-[var(--text-primary)]" />
               </div>
-              <button onClick={addChannelRule} className="sm:col-span-2 h-8 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer"><Plus className="w-3.5 h-3.5" /> Règle</button>
+              <button onClick={addChannelRule} className="sm:col-span-2 h-8 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"><Plus className="w-3.5 h-3.5" /> Règle</button>
             </div>
           </div>
         )}
@@ -1010,7 +1010,7 @@ export default function AiCenterClient() {
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
                   <button onClick={() => setShowAddKnowledgeModal(false)} className="px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-muted)] transition-colors cursor-pointer">Annuler</button>
-                  <button onClick={handleAddKnowledge} className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-semibold text-white shadow-sm transition-all cursor-pointer flex items-center gap-1.5"><Save className="w-3.5 h-3.5" /> Indexer</button>
+                  <button onClick={handleAddKnowledge} className="px-5 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-xs font-semibold text-[var(--accent-contrast)] cursor-pointer flex items-center gap-1.5 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"><Save className="w-3.5 h-3.5" /> Indexer</button>
                 </div>
               </div>
             </div>

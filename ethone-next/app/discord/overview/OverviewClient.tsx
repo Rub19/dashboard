@@ -66,7 +66,7 @@ function OverviewCard({
   return (
     <Link
       href={href}
-      className="group flex flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 transition-colors hover:border-[var(--accent-primary)]/30"
+      className="group flex flex-col rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 transition-colors hover:border-[var(--accent-primary)]/30"
     >
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -143,7 +143,7 @@ export default function OverviewClient() {
   if (!BOT_API_URL) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center p-8">
-        <div className="max-w-sm rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center">
+        <div className="max-w-sm rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center">
           <LayoutDashboard className="mx-auto mb-3 h-8 w-8 text-[var(--text-muted)]" />
           <p className="text-sm text-[var(--text-muted)]">Le serveur du bot n'est pas configuré ici.</p>
         </div>
@@ -208,7 +208,7 @@ export default function OverviewClient() {
               href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors shrink-0"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 shrink-0 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <span>Inviter le bot</span>
               <ExternalLink className="h-3 w-3" />
@@ -380,7 +380,7 @@ export default function OverviewClient() {
             </div>
 
             {/* Recent Activity */}
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
               <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
                 <Activity className="h-4 w-4 text-emerald-400" />
                 Activité récente
@@ -411,7 +411,7 @@ export default function OverviewClient() {
             </div>
 
             {/* Quick Actions */}
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
               <h3 className="mb-3 text-sm font-semibold">Actions rapides</h3>
               <div className="flex flex-wrap gap-2">
                 <Link

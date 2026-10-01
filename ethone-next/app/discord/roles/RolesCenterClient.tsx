@@ -482,12 +482,12 @@ export default function RolesCenterClient() {
           <div className="flex items-center gap-3">
             <Link
               href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-              className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+              className="flex h-9 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Retour Discord</span>
             </Link>
-            <div className="p-2.5 bg-emerald-500/15 text-emerald-400 rounded-xl border border-emerald-500/30 shadow-sm">
+            <div className="p-2.5 bg-emerald-500/15 text-emerald-400 rounded-[var(--inset-radius)] border border-emerald-500/30 icon-pop">
               <Tag className="w-6 h-6" />
             </div>
             <div>
@@ -509,11 +509,11 @@ export default function RolesCenterClient() {
                 }}
               />
             )}
-            <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface-raised)] text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
+            <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface-raised)] text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
               <RefreshCw className={cn("w-4 h-4 text-emerald-400", loading && "animate-spin")} />
               Actualiser
             </button>
-            <button onClick={() => { resetBuilder(); setActiveTab("builder"); }} className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer">
+            <button onClick={() => { resetBuilder(); setActiveTab("builder"); }} className="px-4 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-sm font-semibold flex items-center gap-2 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
               <Plus className="w-4 h-4" />
               Créer un panneau
             </button>
@@ -635,7 +635,7 @@ export default function RolesCenterClient() {
                       <div className="pt-3 border-t border-[var(--panel-border)] flex items-center justify-between gap-2 flex-wrap">
                         <span className="text-xs text-[var(--text-muted)]">{pnl.items.length} rôle(s) · synchro {relative(pnl.lastSyncAt)}</span>
                         <div className="flex items-center gap-1">
-                          <button onClick={() => publishPanel(pnl)} disabled={busy} className="px-2.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold flex items-center gap-1 cursor-pointer disabled:opacity-50" title={pnl.status === "active" ? "Republier" : "Publier sur Discord"}>
+                          <button onClick={() => publishPanel(pnl)} disabled={busy} className="px-2.5 py-1.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-sm font-semibold flex items-center gap-1 cursor-pointer disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50" title={pnl.status === "active" ? "Republier" : "Publier sur Discord"}>
                             <Send className="w-3 h-3" /> {pnl.status === "active" ? "Republier" : "Publier"}
                           </button>
                           {pnl.status === "active" && (
@@ -766,7 +766,7 @@ export default function RolesCenterClient() {
               </div>
 
               <div className="pt-3">
-                <button type="submit" disabled={submitting} className="w-full h-11 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50">
+                <button type="submit" disabled={submitting} className="w-full h-11 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] font-bold text-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                   <Save className="w-4 h-4" />
                   {editingId ? "Enregistrer les modifications" : "Enregistrer le panneau (brouillon)"}
                 </button>
@@ -894,7 +894,7 @@ export default function RolesCenterClient() {
                     value={overrideUserInput}
                     onChange={(e) => setOverrideUserInput(e.target.value)}
                     placeholder="ID de l'utilisateur"
-                    className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 text-[var(--text-primary)] outline-none"
+                    className="h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 text-[var(--text-primary)] outline-none"
                   />
                   <RolePicker value={overrideRoleInput} onChange={(id) => setOverrideRoleInput(id)} guildId={currentGuildId} placeholder="Rôle à attribuer..." size="sm" />
                   <button
@@ -1092,7 +1092,7 @@ export default function RolesCenterClient() {
                 <button
                   type="button"
                   onClick={() => setPublishingPanel(null)}
-                  className="px-3 py-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 hover:bg-[var(--surface-raised)] text-xs font-semibold text-[var(--text-muted)] cursor-pointer"
+                  className="px-3 py-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 hover:bg-[var(--surface-raised)] text-xs font-semibold text-[var(--text-muted)] cursor-pointer"
                 >
                   Annuler
                 </button>
@@ -1108,7 +1108,7 @@ export default function RolesCenterClient() {
                     publishPanel(p, publishChannelId);
                   }}
                   disabled={!publishChannelId}
-                  className="px-4 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+                  className="px-4 py-1.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-sm font-semibold disabled:opacity-50 cursor-pointer flex items-center gap-1.5 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   <Send className="w-3 h-3" />
                   Envoyer

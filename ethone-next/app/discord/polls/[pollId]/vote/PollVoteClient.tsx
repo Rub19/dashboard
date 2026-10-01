@@ -78,7 +78,7 @@ export default function PollVoteClient() {
           {poll.questions.map((question) => {
             const multiple = poll.type === "MULTIPLE_CHOICE" || (question.maxSelections ?? 1) > 1;
             return (
-              <fieldset key={question.id} disabled={!votable || done} className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+              <fieldset key={question.id} disabled={!votable || done} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
                 <legend className="px-1 text-sm font-semibold">{question.title}</legend>
                 <div className="mt-2 space-y-2">
                   {question.options.map((option) => {
@@ -115,7 +115,7 @@ export default function PollVoteClient() {
             type="button"
             onClick={submit}
             disabled={!votable || done || sending}
-            className="cursor-pointer rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
+            className="cursor-pointer rounded-lg bg-[var(--accent-primary)] px-5 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
           >
             {done ? "Vote enregistré" : sending ? "Envoi…" : "Voter"}
           </button>

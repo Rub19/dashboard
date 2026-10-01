@@ -131,7 +131,7 @@ const STEP_DEFAULTS: Record<OnboardingStep["type"], { title: string; description
 };
 
 const fieldClass =
-  "w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500";
+  "w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500";
 
 function OnboardingEditor({
   onboarding,
@@ -199,7 +199,7 @@ function OnboardingEditor({
             type="button"
             onClick={onPreview}
             disabled={previewing || onboarding.steps.length === 0}
-            className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-2 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-50 cursor-pointer"
+            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-2 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-50 cursor-pointer"
             title="Reçois le parcours en message privé, tel que le verrait un nouvel arrivant"
           >
             {previewing ? "Envoi…" : "M'envoyer un aperçu"}
@@ -216,7 +216,7 @@ function OnboardingEditor({
       </div>
 
       {/* Réglages généraux */}
-      <div className="space-y-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+      <div className="space-y-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
         <label className="flex cursor-pointer items-center justify-between gap-3">
           <div>
             <p className="text-xs font-bold text-[var(--text-primary)]">Activer le parcours</p>
@@ -278,7 +278,7 @@ function OnboardingEditor({
         {onboarding.steps.map((step, idx) => {
           const meta = STEP_TYPES.find((s) => s.type === step.type);
           return (
-            <div key={step.id} className="space-y-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+            <div key={step.id} className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-500/20 text-xs font-bold text-teal-300">{idx + 1}</span>
@@ -810,7 +810,7 @@ export function WelcomeCenterClient() {
         <div className="flex items-center gap-3">
           <Link
             href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-            className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)] transition-all cursor-pointer"
+            className="flex h-9 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)] transition-all cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Retour Discord</span>
@@ -847,7 +847,7 @@ export function WelcomeCenterClient() {
           <button
             onClick={fetchAllData}
             disabled={loading}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)] transition-all cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)] transition-all cursor-pointer"
             title="Rafraîchir"
           >
             <RefreshCw className={cn("h-4 w-4", loading && "animate-spin text-teal-400")} />
@@ -971,7 +971,7 @@ export function WelcomeCenterClient() {
         <div className="space-y-6 mt-6">
           {/* System Status Toggles */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+            <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
               <div>
                 <p className="text-xs font-bold text-[var(--text-primary)]">Système Welcome</p>
                 <p className="text-xs text-[var(--text-muted)]">Salons textuels d&apos;accueil</p>
@@ -988,7 +988,7 @@ export function WelcomeCenterClient() {
               </span>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+            <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
               <div>
                 <p className="text-xs font-bold text-[var(--text-primary)]">Système Goodbye</p>
                 <p className="text-xs text-[var(--text-muted)]">Notifications de départ</p>
@@ -1005,7 +1005,7 @@ export function WelcomeCenterClient() {
               </span>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+            <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
               <div>
                 <p className="text-xs font-bold text-[var(--text-primary)]">Vérification</p>
                 <p className="text-xs text-[var(--text-muted)]">Validation de règlement</p>
@@ -1022,7 +1022,7 @@ export function WelcomeCenterClient() {
               </span>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+            <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
               <div>
                 <p className="text-xs font-bold text-[var(--text-primary)]">Onboarding Flow</p>
                 <p className="text-xs text-[var(--text-muted)]">Parcours multi-étapes</p>
@@ -1041,7 +1041,7 @@ export function WelcomeCenterClient() {
           </div>
 
           {/* Onboarding Funnel Visualizer */}
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
             <div>
               <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <BarChart3 className="h-4 w-4 text-teal-400" />
@@ -1080,7 +1080,7 @@ export function WelcomeCenterClient() {
           </div>
 
           {/* Live Recent Events Stream */}
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
               <Clock className="h-3.5 w-3.5 text-teal-400" />
               <span>Activité Récente de Bienvenue</span>
@@ -1133,7 +1133,7 @@ export function WelcomeCenterClient() {
             </div>
 
             {/* Variable Helper Chips */}
-            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
               <p className="text-xs uppercase font-bold text-[var(--text-muted)]">Variables Disponibles (Cliquez pour insérer)</p>
               <div className="flex flex-wrap gap-1.5">
                 {[
@@ -1161,7 +1161,7 @@ export function WelcomeCenterClient() {
             </div>
 
             {/* General Switch & Text */}
-            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3">
               <label className="flex items-center justify-between cursor-pointer">
                 <span className="text-xs font-bold text-[var(--text-primary)]">Activer le message de bienvenue</span>
                 <Checkbox
@@ -1202,13 +1202,13 @@ export function WelcomeCenterClient() {
                     }))
                   }
                   placeholder="👋 Bienvenue {user} sur **{server}** !"
-                  className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500 resize-none font-sans"
+                  className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500 resize-none font-sans"
                 />
               </div>
             </div>
 
             {/* Embed Builder */}
-            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <Checkbox
                   checked={config.welcome.embed.enabled}
@@ -1260,7 +1260,7 @@ export function WelcomeCenterClient() {
                           },
                         }))
                       }
-                      className="mt-1 h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-white outline-none focus:border-teal-500"
+                      className="mt-1 h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500"
                     />
                   </div>
 
@@ -1278,7 +1278,7 @@ export function WelcomeCenterClient() {
                           },
                         }))
                       }
-                      className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none"
+                      className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500 resize-none"
                     />
                   </div>
 
@@ -1297,7 +1297,7 @@ export function WelcomeCenterClient() {
                             },
                           }))
                         }
-                        className="mt-1 h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-white outline-none focus:border-teal-500"
+                        className="mt-1 h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500"
                       />
                     </div>
                     <div>
@@ -1314,7 +1314,7 @@ export function WelcomeCenterClient() {
                             },
                           }))
                         }
-                        className="mt-1 h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-white outline-none focus:border-teal-500"
+                        className="mt-1 h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500"
                       />
                     </div>
                   </div>
@@ -1350,7 +1350,7 @@ export function WelcomeCenterClient() {
                     </div>
 
                     {config.welcome.embed.fields?.map((f: EmbedField, idx: number) => (
-                      <div key={f.id} className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-xs">
+                      <div key={f.id} className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-xs">
                         <input
                           type="text"
                           value={f.name}
@@ -1363,7 +1363,7 @@ export function WelcomeCenterClient() {
                             }));
                           }}
                           placeholder="Nom"
-                          className="h-7 w-1/3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-white"
+                          className="h-7 w-1/3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-[var(--text-primary)]"
                         />
                         <input
                           type="text"
@@ -1377,7 +1377,7 @@ export function WelcomeCenterClient() {
                             }));
                           }}
                           placeholder="Valeur"
-                          className="h-7 flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-white"
+                          className="h-7 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-[var(--text-primary)]"
                         />
                         <Checkbox
                           className="text-xs text-[var(--text-muted)]"
@@ -1413,7 +1413,7 @@ export function WelcomeCenterClient() {
             </div>
 
             {/* Interactive Buttons Builder */}
-            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-bold text-[var(--text-primary)]">Boutons d&apos;Action Discord (Max 5)</p>
                 <button
@@ -1444,7 +1444,7 @@ export function WelcomeCenterClient() {
 
               <div className="space-y-2">
                 {config.welcome.buttons?.map((btn: WelcomeButton, idx: number) => (
-                  <div key={btn.id} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2 text-xs">
+                  <div key={btn.id} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2 text-xs">
                     <div className="flex items-center gap-2">
                       <input
                         type="text"
@@ -1455,7 +1455,7 @@ export function WelcomeCenterClient() {
                           setConfig((p: any) => ({ ...p, welcome: { ...p.welcome, buttons: updated } }));
                         }}
                         placeholder="Label"
-                        className="h-8 flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-white"
+                        className="h-8 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-[var(--text-primary)]"
                       />
                       <input
                         type="text"
@@ -1466,7 +1466,7 @@ export function WelcomeCenterClient() {
                           setConfig((p: any) => ({ ...p, welcome: { ...p.welcome, buttons: updated } }));
                         }}
                         placeholder="Emoji"
-                        className="h-8 w-14 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-white text-center"
+                        className="h-8 w-14 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-[var(--text-primary)] text-center"
                       />
                       <Select
                         value={btn.action}
@@ -1509,7 +1509,7 @@ export function WelcomeCenterClient() {
                           setConfig((p: any) => ({ ...p, welcome: { ...p.welcome, buttons: updated } }));
                         }}
                         placeholder="https://..."
-                        className="h-7 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-white"
+                        className="h-7 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-[var(--text-primary)]"
                       />
                     )}
                   </div>
@@ -1529,7 +1529,7 @@ export function WelcomeCenterClient() {
             </div>
 
             {/* Discord Mock Screen */}
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[#313338] p-4 text-[var(--text-primary)] font-sans">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#313338] p-4 text-[var(--text-primary)] font-sans">
               {/* Message Header */}
               <div className="flex items-start gap-3">
                 <div className="h-10 w-10 rounded-full bg-teal-600 flex items-center justify-center font-bold text-white text-xs shrink-0">
@@ -1617,7 +1617,7 @@ export function WelcomeCenterClient() {
                               ? "bg-[#4E5058] hover:bg-[#6D6F78]"
                               : btn.style === "LINK"
                               ? "bg-[#4E5058] text-blue-300 hover:underline"
-                              : "bg-emerald-500 hover:bg-emerald-600"
+                              : "bg-[var(--accent-primary)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                           )}
                         >
                           {btn.emoji && <span>{btn.emoji}</span>}
@@ -1644,7 +1644,7 @@ export function WelcomeCenterClient() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
               <span className="text-xs font-bold text-[var(--text-primary)]">Activer les messages de départ</span>
               <Checkbox
@@ -1685,7 +1685,7 @@ export function WelcomeCenterClient() {
                   }))
                 }
                 placeholder="📤 Au revoir **{username}** ! Nous ne sommes plus que **{membercount}** membres."
-                className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none font-sans"
+                className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500 resize-none font-sans"
               />
             </div>
 
@@ -1710,7 +1710,7 @@ export function WelcomeCenterClient() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
               <div>
                 <p className="text-xs font-bold text-[var(--text-primary)]">Activer le message privé en DM</p>
@@ -1746,7 +1746,7 @@ export function WelcomeCenterClient() {
                   }))
                 }
                 placeholder="👋 Bonjour {user}, bienvenue sur **{server}** !"
-                className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none font-sans"
+                className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500 resize-none font-sans"
               />
             </div>
 
@@ -1785,7 +1785,7 @@ export function WelcomeCenterClient() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
               <span className="text-xs font-bold text-[var(--text-primary)]">Activer le module de vérification</span>
               <Checkbox
@@ -1815,7 +1815,7 @@ export function WelcomeCenterClient() {
                 rows={2}
                 value={verification.verificationPrompt}
                 onChange={(e) => setVerification((p: any) => ({ ...p, verificationPrompt: e.target.value }))}
-                className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none"
+                className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500 resize-none"
               />
             </div>
 
@@ -1844,7 +1844,7 @@ export function WelcomeCenterClient() {
             {templates.map((tpl) => (
               <div
                 key={tpl.id}
-                className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3 hover:border-teal-500/40 transition-colors flex flex-col justify-between"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3 hover:border-teal-500/40 transition-colors flex flex-col justify-between"
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -1883,7 +1883,7 @@ export function WelcomeCenterClient() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <div className="space-y-2">
               <label className="text-xs font-semibold text-[var(--text-muted)]">Rôles attribués à l&apos;arrivée</label>
               <div className="flex flex-wrap gap-2 pt-1">
@@ -1940,7 +1940,7 @@ export function WelcomeCenterClient() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
               <span className="text-xs font-bold text-[var(--text-primary)]">Activer le filtrage conditionnel</span>
               <Checkbox
@@ -1977,7 +1977,7 @@ export function WelcomeCenterClient() {
                     },
                   }))
                 }
-                className="mt-1 h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-white outline-none focus:border-teal-500"
+                className="mt-1 h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500"
               />
               <p className="text-xs text-[var(--text-muted)] mt-1">Si le compte est plus jeune, l&apos;accueil peut être différé ou restreint.</p>
             </div>
@@ -2003,7 +2003,7 @@ export function WelcomeCenterClient() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <div>
               <label className="text-xs font-semibold text-[var(--text-muted)] mb-1 block">Salon de bienvenue (Welcome Channel)</label>
               <ChannelPicker
@@ -2061,7 +2061,7 @@ export function WelcomeCenterClient() {
       {/* MODAL: TEST WELCOME */}
       {showTestModal && (
         <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 p-4">
-          <div className="w-full max-w-md rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
+          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
             <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
               <span>🧪 Tester l&apos;Accueil en Conditions Réelles</span>
             </h3>

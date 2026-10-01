@@ -715,7 +715,7 @@ export default function MusicCenterClient() {
           <div className="flex items-center gap-3">
             <Link
               href={`/discord${guildId ? `?guildId=${guildId}` : ""}`}
-              className="flex h-8 items-center gap-1.5 px-2.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
+              className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
               title="Retour au hub Discord"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -783,7 +783,7 @@ export default function MusicCenterClient() {
             <button
               onClick={fetchState}
               disabled={!isReady}
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-40 transition-all cursor-pointer"
+              className="flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-40 transition-all cursor-pointer"
               title="Rafraîchir"
             >
               <RefreshCw className="h-3.5 w-3.5" />
@@ -930,7 +930,7 @@ export default function MusicCenterClient() {
                     <button
                       onClick={handlePrevious}
                       disabled={!musicState?.history || musicState.history.length === 0}
-                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-30 transition-all cursor-pointer"
+                      className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-30 transition-all cursor-pointer"
                       title="Précédent"
                     >
                       <SkipBack className="h-4 w-4" />
@@ -948,7 +948,7 @@ export default function MusicCenterClient() {
                     <button
                       onClick={handleSkip}
                       disabled={!currentTrack}
-                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-30 transition-all cursor-pointer"
+                      className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-30 transition-all cursor-pointer"
                       title="Suivant"
                     >
                       <SkipForward className="h-4 w-4" />
@@ -957,7 +957,7 @@ export default function MusicCenterClient() {
                     <button
                       onClick={handleStop}
                       disabled={!currentTrack && (!musicState?.queue || musicState.queue.length === 0)}
-                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 disabled:opacity-30 transition-all cursor-pointer"
+                      className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 disabled:opacity-30 transition-all cursor-pointer"
                       title="Arrêter et vider"
                     >
                       <Square className="h-4 w-4" />
@@ -1027,7 +1027,7 @@ export default function MusicCenterClient() {
           </div>
 
           {/* SEARCH & ADD MODAL / INPUT */}
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
             <form onSubmit={handleSearch} className="flex gap-2">
               <div className="relative flex-1">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
@@ -1036,13 +1036,13 @@ export default function MusicCenterClient() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Rechercher un titre, artiste ou coller un lien (YouTube, Spotify, SoundCloud)..."
-                  className="h-10 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 pl-10 pr-4 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--input-border-hover)] transition-all"
+                  className="h-10 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 pl-10 pr-4 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--input-border-hover)] transition-all"
                 />
               </div>
               <button
                 type="submit"
                 disabled={!searchQuery.trim() || !isReady}
-                className="flex h-10 items-center gap-1.5 rounded-xl bg-emerald-500 px-5 text-xs font-bold text-white shadow-sm hover:bg-emerald-600 disabled:opacity-50 transition-all cursor-pointer"
+                className="flex h-10 items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-5 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 {isSearching ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Search className="h-3.5 w-3.5" />}
                 <span>{isSearching ? "Recherche…" : "Rechercher"}</span>
@@ -1071,7 +1071,7 @@ export default function MusicCenterClient() {
                   {searchResults.map((tr) => (
                     <div
                       key={tr.id}
-                      className="flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 hover:border-[var(--input-border-hover)] transition-all"
+                      className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 hover:border-[var(--input-border-hover)] transition-all"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <img
@@ -1089,14 +1089,14 @@ export default function MusicCenterClient() {
                       <div className="flex items-center gap-1.5 shrink-0">
                         <button
                           onClick={() => handlePlayQuery(tr.source === "SPOTIFY" ? `${tr.title} ${tr.artist}` : tr.url || tr.title, false)}
-                          className="flex h-7 items-center gap-1 rounded-lg bg-emerald-500 px-2.5 text-xs font-bold text-white hover:bg-emerald-600 transition-all cursor-pointer"
+                          className="flex h-7 items-center gap-1 rounded-lg bg-[var(--accent-primary)] px-2.5 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                         >
                           <Play className="h-3 w-3 fill-white" />
                           <span>Lire</span>
                         </button>
                         <button
                           onClick={() => handlePlayQuery(tr.source === "SPOTIFY" ? `${tr.title} ${tr.artist}` : tr.url || tr.title, true)}
-                          className="flex h-7 items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
+                          className="flex h-7 items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
                           title="Jouer juste après"
                         >
                           <Plus className="h-3 w-3" />
@@ -1153,7 +1153,7 @@ export default function MusicCenterClient() {
                   <button
                     onClick={() => setIsNewPlaylistOpen(true)}
                     disabled={!musicState?.queue || musicState.queue.length === 0}
-                    className="flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-40 transition-all cursor-pointer"
+                    className="flex h-8 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-40 transition-all cursor-pointer"
                   >
                     <Disc className="h-3.5 w-3.5" />
                     <span>Sauvegarder en Playlist</span>
@@ -1178,7 +1178,7 @@ export default function MusicCenterClient() {
                       onDragStart={(e) => handleDragStart(e, idx)}
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, idx)}
-                      className="group flex items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/70 transition-all cursor-move"
+                      className="group flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/70 transition-all cursor-move"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <GripVertical className="h-4 w-4 text-[var(--text-muted)] group-hover:text-[var(--text-muted)]" />
@@ -1214,7 +1214,7 @@ export default function MusicCenterClient() {
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
+                <div className="flex flex-col items-center justify-center py-12 text-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                   <Music2 className="h-8 w-8 text-[var(--text-muted)] mb-2" />
                   <p className="text-xs font-medium text-[var(--text-muted)]">La file d'attente est actuellement vide.</p>
                   <p className="text-xs text-[var(--text-muted)] mt-0.5">Utilisez la recherche ci-dessus pour ajouter des morceaux.</p>
@@ -1237,7 +1237,7 @@ export default function MusicCenterClient() {
                   onChange={(e) => setImportUrl(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleImportPreview()}
                   placeholder="https://open.spotify.com/playlist/…"
-                  className="flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-2.5 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
+                  className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-2.5 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
                 />
                 <button
                   onClick={handleImportPreview}
@@ -1261,7 +1261,7 @@ export default function MusicCenterClient() {
                       <button
                         key={`${tr.title}-${i}`}
                         onClick={() => handlePlayQuery(`${tr.title} ${tr.artist}`)}
-                        className="flex w-full items-center gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-left hover:border-emerald-500/40 hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
+                        className="flex w-full items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-left hover:border-emerald-500/40 hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
                       >
                         <span className="w-8 text-right text-xs font-mono text-[var(--text-muted)]">{i + 1}</span>
                         {tr.thumbnail && <img src={tr.thumbnail} alt="" className="h-9 w-9 rounded-md object-cover shrink-0" />}
@@ -1290,7 +1290,7 @@ export default function MusicCenterClient() {
                 </div>
                 <button
                   onClick={() => setIsNewPlaylistOpen(true)}
-                  className="flex h-8 items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 text-xs font-bold text-white hover:bg-emerald-600 transition-all cursor-pointer"
+                  className="flex h-8 items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Créer une Playlist</span>
@@ -1302,7 +1302,7 @@ export default function MusicCenterClient() {
                   {playlists.map((pl) => (
                     <div
                       key={pl.id}
-                      className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3"
+                      className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3"
                     >
                       <div className="flex items-center justify-between">
                         <h4 className="text-sm font-bold text-[var(--text-primary)] truncate">{pl.name}</h4>
@@ -1316,7 +1316,7 @@ export default function MusicCenterClient() {
                       <div className="flex items-center justify-between pt-1 border-t border-[var(--panel-border)]">
                         <button
                           onClick={() => handlePlayPlaylist(pl.id)}
-                          className="flex h-7 items-center gap-1.5 rounded-lg bg-emerald-500 px-3 text-xs font-bold text-white hover:bg-emerald-600 transition-all cursor-pointer"
+                          className="flex h-7 items-center gap-1.5 rounded-lg bg-[var(--accent-primary)] px-3 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                         >
                           <Play className="h-3 w-3 fill-white" />
                           <span>Lancer</span>
@@ -1332,7 +1332,7 @@ export default function MusicCenterClient() {
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
+                <div className="flex flex-col items-center justify-center py-12 text-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                   <Disc className="h-8 w-8 text-[var(--text-muted)] mb-2" />
                   <p className="text-xs font-medium text-[var(--text-muted)]">Aucune playlist enregistrée pour ce serveur.</p>
                 </div>
@@ -1353,7 +1353,7 @@ export default function MusicCenterClient() {
                   {favorites.map((tr) => (
                     <div
                       key={tr.id}
-                      className="flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 hover:border-[var(--input-border-hover)] transition-all"
+                      className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 hover:border-[var(--input-border-hover)] transition-all"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <img
@@ -1369,7 +1369,7 @@ export default function MusicCenterClient() {
                       <div className="flex items-center gap-1.5 shrink-0">
                         <button
                           onClick={() => handlePlayQuery(tr.url || tr.title)}
-                          className="flex h-7 items-center gap-1 rounded-lg bg-emerald-500 px-2.5 text-xs font-bold text-white hover:bg-emerald-600 transition-all cursor-pointer"
+                          className="flex h-7 items-center gap-1 rounded-lg bg-[var(--accent-primary)] px-2.5 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                         >
                           <Play className="h-3 w-3 fill-white" />
                           <span>Lire</span>
@@ -1385,7 +1385,7 @@ export default function MusicCenterClient() {
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
+                <div className="flex flex-col items-center justify-center py-12 text-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                   <Heart className="h-8 w-8 text-[var(--text-muted)] mb-2" />
                   <p className="text-xs font-medium text-[var(--text-muted)]">Aucun morceau favori pour le moment.</p>
                   <p className="text-xs text-[var(--text-muted)] mt-0.5">Cliquez sur l'icône cœur pour en ajouter un.</p>
@@ -1407,7 +1407,7 @@ export default function MusicCenterClient() {
                   {history.map((tr, idx) => (
                     <div
                       key={`${tr.id}-${idx}`}
-                      className="flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 hover:border-[var(--input-border-hover)] transition-all"
+                      className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 hover:border-[var(--input-border-hover)] transition-all"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <img
@@ -1424,7 +1424,7 @@ export default function MusicCenterClient() {
                       </div>
                       <button
                         onClick={() => handlePlayQuery(tr.url || tr.title)}
-                        className="flex h-7 items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
+                        className="flex h-7 items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
                       >
                         <Play className="h-3 w-3 fill-current" />
                         <span>Rejouer</span>
@@ -1433,7 +1433,7 @@ export default function MusicCenterClient() {
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
+                <div className="flex flex-col items-center justify-center py-12 text-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                   <Clock className="h-8 w-8 text-[var(--text-muted)] mb-2" />
                   <p className="text-xs font-medium text-[var(--text-muted)]">Historique d'écoute vide.</p>
                 </div>
@@ -1453,7 +1453,7 @@ export default function MusicCenterClient() {
                   type="button"
                   onClick={() => fetchRolesAndChannels(true)}
                   disabled={refreshingMeta}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all disabled:opacity-50 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all disabled:opacity-50 cursor-pointer"
                   title="Rafraîchir les salons vocaux et rôles du serveur"
                 >
                   <RefreshCw className={cn("h-3.5 w-3.5", refreshingMeta && "animate-spin text-emerald-300")} />
@@ -1461,7 +1461,7 @@ export default function MusicCenterClient() {
                 </button>
               </div>
 
-              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-4">
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-4">
                 {/* DJ Mode */}
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
@@ -1616,23 +1616,23 @@ export default function MusicCenterClient() {
 
               {/* Stat Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
                   <span className="text-xs text-[var(--text-muted)] uppercase font-semibold">Titres Écoutés</span>
                   <p className="text-2xl font-black text-[var(--text-primary)] mt-1">{stats.totalTracksPlayed}</p>
                 </div>
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
                   <span className="text-xs text-[var(--text-muted)] uppercase font-semibold">Temps d'Écoute</span>
                   <p className="text-2xl font-black text-emerald-300 mt-1">
                     {Math.round(stats.totalListeningSeconds / 3600)} h {Math.round((stats.totalListeningSeconds % 3600) / 60)} min
                   </p>
                 </div>
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
                   <span className="text-xs text-[var(--text-muted)] uppercase font-semibold">Top Titre</span>
                   <p className="text-sm font-bold text-[var(--text-primary)] mt-1 truncate">
                     {stats.topTracks[0]?.title || "Aucun"}
                   </p>
                 </div>
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
                   <span className="text-xs text-[var(--text-muted)] uppercase font-semibold">Membre le plus actif</span>
                   <p className="text-sm font-bold text-[var(--text-primary)] mt-1 truncate">
                     {stats.topRequesters[0]?.userTag || "Aucun"}
@@ -1641,7 +1641,7 @@ export default function MusicCenterClient() {
               </div>
 
               {/* Top Tracks List */}
-              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Top 5 des Morceaux les plus Demandés</h4>
                 {stats.topTracks.length > 0 ? (
                   <div className="space-y-2">
@@ -1662,7 +1662,7 @@ export default function MusicCenterClient() {
               </div>
 
               {/* Top membres */}
-              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Membres les plus actifs</h4>
                 {stats.topRequesters.length > 0 ? (
                   <div className="space-y-2.5">
@@ -1712,7 +1712,7 @@ export default function MusicCenterClient() {
                   value={newPlaylistName}
                   onChange={(e) => setNewPlaylistName(e.target.value)}
                   placeholder="Ex: Soirée Gaming, Chill Vibes..."
-                  className="mt-1 h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
+                  className="mt-1 h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
                   autoFocus
                 />
               </div>
@@ -1730,7 +1730,7 @@ export default function MusicCenterClient() {
                 <button
                   type="submit"
                   disabled={!newPlaylistName.trim()}
-                  className="h-8 rounded-xl bg-emerald-500 px-4 text-xs font-bold text-white hover:bg-emerald-600 disabled:opacity-50 cursor-pointer"
+                  className="h-8 rounded-xl bg-[var(--accent-primary)] px-4 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   Créer la playlist
                 </button>

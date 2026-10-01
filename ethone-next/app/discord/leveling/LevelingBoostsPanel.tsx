@@ -153,7 +153,7 @@ export default function LevelingBoostsPanel({ guildId, boosts, disabled, onChang
 
   return (
     <div className="space-y-6">
-      <div className="space-y-4 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+      <div className="space-y-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
         <div>
           <h3 className="text-base font-bold text-[var(--text-primary)]">Multiplicateurs d&apos;XP</h3>
           <p className="mt-0.5 text-xs text-[var(--text-muted)]">Bonus (×2), malus (×0,5) ou blocage (×0), sur un rôle, un salon, une catégorie, un membre ou tout le serveur. Ils se cumulent, dans la limite de ×10.</p>
@@ -219,12 +219,12 @@ export default function LevelingBoostsPanel({ guildId, boosts, disabled, onChang
           </Field>
         </div>
 
-        <button type="button" disabled={busy || disabled || Boolean(invalid)} onClick={() => void add()} className="cursor-pointer rounded-xl bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50">
+        <button type="button" disabled={busy || disabled || Boolean(invalid)} onClick={() => void add()} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-5 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
           Ajouter le multiplicateur
         </button>
       </div>
 
-      <div className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+      <div className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
         <h3 className="text-base font-bold text-[var(--text-primary)]">Multiplicateurs en place ({boosts.length})</h3>
         {sorted.length === 0 ? (
           <p className="py-4 text-center text-xs text-[var(--text-muted)]">Aucun multiplicateur : tout le monde gagne l&apos;XP de base.</p>
@@ -234,7 +234,7 @@ export default function LevelingBoostsPanel({ guildId, boosts, disabled, onChang
               const st = status(b);
               const kind = b.multiplier > 1 ? "bonus" : b.multiplier < 1 ? "malus" : "neutre";
               return (
-                <li key={b.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+                <li key={b.id} className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
                   <div className="min-w-0">
                     <p className="flex flex-wrap items-center gap-2 text-sm">
                       <span className={cn("rounded-md px-2 py-0.5 font-mono text-xs font-bold", kind === "bonus" ? "bg-emerald-500/15 text-emerald-300" : kind === "malus" ? "bg-rose-500/15 text-rose-300" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]")}>{fmtMult(b.multiplier)}</span>
@@ -260,7 +260,7 @@ export default function LevelingBoostsPanel({ guildId, boosts, disabled, onChang
         )}
       </div>
 
-      <div className="space-y-4 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+      <div className="space-y-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
         <div>
           <h3 className="text-base font-bold text-[var(--text-primary)]">Simulateur</h3>
           <p className="mt-0.5 text-xs text-[var(--text-muted)]">Combien d&apos;XP gagnerait un membre, dans un salon, avec les multiplicateurs actuels ? Rien n&apos;est modifié.</p>
@@ -289,7 +289,7 @@ export default function LevelingBoostsPanel({ guildId, boosts, disabled, onChang
           Simuler
         </button>
         {preview && (
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 text-sm">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 text-sm">
             <p className="text-[var(--text-primary)]">
               <strong>{preview.member.name}</strong> gagnerait <strong className="text-emerald-300">{new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 }).format(preview.xp)} XP</strong>
               <span className="text-[var(--text-muted)]"> (base {new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 }).format(preview.baseXp)} × {fmtMult(preview.multiplier)})</span>

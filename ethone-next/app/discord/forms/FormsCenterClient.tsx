@@ -325,7 +325,7 @@ export default function FormsCenterClient() {
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-            className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+            className="flex h-9 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Retour Discord</span>
@@ -353,7 +353,7 @@ export default function FormsCenterClient() {
           <button
             onClick={loadForms}
             disabled={loading}
-            className="inline-flex items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-2.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-2.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] disabled:opacity-50"
             title="Rafraîchir"
           >
             <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
@@ -373,14 +373,14 @@ export default function FormsCenterClient() {
           )}
           <button
             onClick={() => setIsTemplateModalOpen(true)}
-            className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3.5 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+            className="flex h-9 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3.5 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
           >
             <Sparkles className="h-3.5 w-3.5 text-amber-400" />
             <span>Templates</span>
           </button>
           <Link
             href={`/discord/forms/create?guildId=${currentGuildId}`}
-            className="flex h-9 items-center gap-1.5 rounded-xl bg-emerald-500 px-4 text-xs font-semibold text-white hover:bg-emerald-600 transition-colors cursor-pointer"
+            className="flex h-9 items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Créer un formulaire</span>
@@ -415,7 +415,7 @@ export default function FormsCenterClient() {
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
           <div className="flex items-center justify-between text-[var(--text-muted)] mb-1">
             <span className="text-xs font-medium">Total Formulaires</span>
             <Layers className="h-4 w-4 text-emerald-400" />
@@ -424,7 +424,7 @@ export default function FormsCenterClient() {
           <p className="text-xs text-[var(--text-muted)] mt-0.5">Créés sur ce serveur</p>
         </div>
 
-        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
           <div className="flex items-center justify-between text-[var(--text-muted)] mb-1">
             <span className="text-xs font-medium">Formulaires Actifs</span>
             <CheckCircle2 className="h-4 w-4 text-emerald-400" />
@@ -433,7 +433,7 @@ export default function FormsCenterClient() {
           <p className="text-xs text-[var(--text-muted)] mt-0.5">Ouverts aux réponses</p>
         </div>
 
-        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
           <div className="flex items-center justify-between text-[var(--text-muted)] mb-1">
             <span className="text-xs font-medium">Total Réponses</span>
             <FileText className="h-4 w-4 text-cyan-400" />
@@ -442,7 +442,7 @@ export default function FormsCenterClient() {
           <p className="text-xs text-[var(--text-muted)] mt-0.5">Soumissions Discord &amp; Web</p>
         </div>
 
-        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
           <div className="flex items-center justify-between text-[var(--text-muted)] mb-1">
             <span className="text-xs font-medium">En Attente de Review</span>
             <Clock className="h-4 w-4 text-amber-400" />
@@ -451,7 +451,7 @@ export default function FormsCenterClient() {
           <p className="text-xs text-[var(--text-muted)] mt-0.5">À traiter par le staff</p>
         </div>
 
-        <div className="col-span-2 sm:col-span-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+        <div className="col-span-2 sm:col-span-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
           <div className="flex items-center justify-between text-[var(--text-muted)] mb-1">
             <span className="text-xs font-medium">Taux de Complétion</span>
             <TrendingUp className="h-4 w-4 text-emerald-400" />
@@ -462,7 +462,7 @@ export default function FormsCenterClient() {
       </div>
 
       {/* Filters & Search Strip */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
         {/* Status Tabs */}
         <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           {[
@@ -524,7 +524,7 @@ export default function FormsCenterClient() {
           </p>
           <button
             onClick={() => setIsTemplateModalOpen(true)}
-            className="mt-4 flex h-8 items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 text-xs font-semibold text-white shadow hover:bg-emerald-600 transition-all cursor-pointer"
+            className="mt-4 flex h-8 items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 text-xs font-semibold text-[var(--accent-contrast)] shadow hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
           >
             <Sparkles className="h-3.5 w-3.5" />
             <span>Découvrir les Templates</span>
@@ -540,7 +540,7 @@ export default function FormsCenterClient() {
             return (
               <div
                 key={form.id}
-                className="flex flex-col justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)] p-5 transition-all group"
+                className="flex flex-col justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)] p-5 transition-all group"
               >
                 <div>
                   {/* Card Header: Category & Status */}
@@ -598,7 +598,7 @@ export default function FormsCenterClient() {
                   <div className="flex items-center gap-1.5">
                     <Link
                       href={`/discord/forms/${form.id}?guildId=${currentGuildId}`}
-                      className="flex h-8 items-center gap-1 rounded-xl bg-emerald-500 px-3 text-xs font-semibold text-white hover:bg-emerald-600 transition-all cursor-pointer"
+                      className="flex h-8 items-center gap-1 rounded-xl bg-[var(--accent-primary)] px-3 text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                       title="Ouvrir le Builder"
                     >
                       <Sliders className="h-3.5 w-3.5" />
@@ -607,7 +607,7 @@ export default function FormsCenterClient() {
 
                     <Link
                       href={`/discord/forms/${form.id}/responses?guildId=${currentGuildId}`}
-                      className="flex h-8 items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2.5 text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+                      className="flex h-8 items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2.5 text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
                       title="Voir les réponses"
                     >
                       <FileText className="h-3.5 w-3.5 text-cyan-400" />
@@ -616,7 +616,7 @@ export default function FormsCenterClient() {
 
                     <Link
                       href={`/discord/forms/${form.id}/settings?guildId=${currentGuildId}`}
-                      className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+                      className="flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
                       title="Réglages et publication Discord"
                     >
                       <Settings className="h-3.5 w-3.5" />
@@ -677,7 +677,7 @@ export default function FormsCenterClient() {
               {TEMPLATES.map((tmpl) => (
                 <div
                   key={tmpl.id}
-                  className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 hover:border-[var(--input-border-hover)] hover:bg-emerald-500/15 transition-all flex flex-col justify-between"
+                  className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 hover:border-[var(--input-border-hover)] hover:bg-emerald-500/15 transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
@@ -693,7 +693,7 @@ export default function FormsCenterClient() {
                     <span className="text-xs text-[var(--text-muted)]">{tmpl.fieldsCount} champs inclus</span>
                     <Link
                       href={`/discord/forms/create?template=${tmpl.id}&guildId=${currentGuildId}`}
-                      className="flex h-7 items-center gap-1 px-3 rounded-lg bg-emerald-500 text-xs font-semibold text-white hover:bg-emerald-600 transition-all cursor-pointer"
+                      className="flex h-7 items-center gap-1 px-3 rounded-lg bg-[var(--accent-primary)] text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                     >
                       <span>Utiliser</span>
                       <ArrowRight className="h-3 w-3" />

@@ -421,7 +421,7 @@ export default function CommandsCenterClient() {
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
                 href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer shadow-sm"
+                className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
                 title="Retour au hub Discord"
               >
                 <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
@@ -429,7 +429,7 @@ export default function CommandsCenterClient() {
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-xl border border-emerald-500/30 shadow-sm">
+              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-[var(--inset-radius)] border border-emerald-500/30 icon-pop">
                 <Code2 className="w-6 h-6" />
               </div>
               <div>
@@ -452,11 +452,11 @@ export default function CommandsCenterClient() {
                 }}
               />
             )}
-            <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
+            <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
               <RefreshCw className={cn("w-4 h-4 text-emerald-300", loading && "animate-spin")} />
               Actualiser
             </button>
-            <button onClick={() => setActiveTab("builder")} className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer">
+            <button onClick={() => setActiveTab("builder")} className="px-4 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-2 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
               <Plus className="w-4 h-4" />
               Créer une Commande
             </button>
@@ -517,7 +517,7 @@ export default function CommandsCenterClient() {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer", isActive ? "bg-[var(--surface-raised)]/40 text-white border-b-2 border-emerald-500/30" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
+              <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer", isActive ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] border-b-2 border-emerald-500/30" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
                 <Icon className={cn("w-4 h-4", isActive ? "text-emerald-300" : "text-[var(--text-muted)]")} />
                 {tab.label}
               </button>
@@ -656,14 +656,14 @@ export default function CommandsCenterClient() {
                   <textarea rows={4} placeholder="Texte de réponse... {user}, {server}..." value={builderRawText} onChange={(e) => setBuilderRawText(e.target.value)} className="w-full rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] p-3 text-xs text-[var(--text-primary)]" />
                 ) : (
                   <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-3">
-                    <input type="text" placeholder="Titre de l'embed" value={builderEmbedTitle} onChange={(e) => setBuilderEmbedTitle(e.target.value)} className="w-full h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs text-white" />
-                    <textarea rows={3} placeholder="Description (Markdown Discord supporté)" value={builderEmbedDesc} onChange={(e) => setBuilderEmbedDesc(e.target.value)} className="w-full rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] p-3 text-xs text-white" />
+                    <input type="text" placeholder="Titre de l'embed" value={builderEmbedTitle} onChange={(e) => setBuilderEmbedTitle(e.target.value)} className="w-full h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs text-[var(--text-primary)]" />
+                    <textarea rows={3} placeholder="Description (Markdown Discord supporté)" value={builderEmbedDesc} onChange={(e) => setBuilderEmbedDesc(e.target.value)} className="w-full rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] p-3 text-xs text-[var(--text-primary)]" />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="flex items-center gap-2">
                         <input type="color" value={builderEmbedColor} onChange={(e) => setBuilderEmbedColor(e.target.value)} className="w-8 h-8 rounded-lg border-0 cursor-pointer bg-transparent" />
-                        <input type="text" value={builderEmbedColor} onChange={(e) => setBuilderEmbedColor(e.target.value)} className="flex-1 h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs text-white font-mono" />
+                        <input type="text" value={builderEmbedColor} onChange={(e) => setBuilderEmbedColor(e.target.value)} className="flex-1 h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs text-[var(--text-primary)] font-mono" />
                       </div>
-                      <input type="text" placeholder="Footer" value={builderEmbedFooter} onChange={(e) => setBuilderEmbedFooter(e.target.value)} className="w-full h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs text-white" />
+                      <input type="text" placeholder="Footer" value={builderEmbedFooter} onChange={(e) => setBuilderEmbedFooter(e.target.value)} className="w-full h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs text-[var(--text-primary)]" />
                     </div>
                   </div>
                 )}
@@ -672,7 +672,7 @@ export default function CommandsCenterClient() {
                   <input type="url" placeholder="https://..." value={builderButtonUrl} onChange={(e) => setBuilderButtonUrl(e.target.value)} className="w-full h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs text-[var(--text-primary)] font-mono" />
                 </div>
               </div>
-              <button type="submit" disabled={submitting} className="w-full h-11 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50">
+              <button type="submit" disabled={submitting} className="w-full h-11 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] font-bold text-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                 <Plus className="w-4 h-4" />
                 Enregistrer & déployer sur Discord
               </button>
@@ -701,7 +701,7 @@ export default function CommandsCenterClient() {
                   </div>
                 )}
                 {builderButtonLabel && (
-                  <button type="button" className="px-3 py-1.5 rounded bg-[var(--surface-raised)]/40 text-white text-xs font-bold flex items-center gap-1">
+                  <button type="button" className="px-3 py-1.5 rounded bg-[var(--surface-raised)]/40 text-[var(--text-primary)] text-xs font-bold flex items-center gap-1">
                     <span>{builderButtonLabel}</span>
                     <ExternalLink className="w-3 h-3" />
                   </button>
@@ -787,7 +787,7 @@ export default function CommandsCenterClient() {
                       <span className="px-2 py-0.5 rounded text-xs font-bold bg-[var(--surface-raised)]/40 text-[var(--text-muted)]">{t.category || "Général"}</span>
                     </div>
                     <p className="text-xs text-[var(--text-muted)]">{t.description || "Template de commande."}</p>
-                    <button onClick={() => createFromTemplate(t.name)} disabled={submitting} className="w-full py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50">
+                    <button onClick={() => createFromTemplate(t.name)} disabled={submitting} className="w-full py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                       <Plus className="w-3.5 h-3.5" />
                       Installer
                     </button>

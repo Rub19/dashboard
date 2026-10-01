@@ -636,7 +636,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         {activeTab === "overview" && (
           <div className="space-y-8">
             {/* REAL-TIME DISCORD HUD PREVIEW WIDGET */}
-            <div className="p-6 rounded-2xl border border-[var(--panel-border)] relative overflow-hidden bg-[var(--surface-raised)]/40">
+            <div className="p-6 rounded-[var(--panel-radius)] border border-[var(--panel-border)] relative overflow-hidden bg-[var(--surface-raised)]/40">
               <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
@@ -856,7 +856,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         value={streamUrl}
                         onChange={(e) => setStreamUrl(e.target.value)}
                         placeholder="https://www.twitch.tv/ethone"
-                        className="w-full px-3.5 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-emerald-500/30 text-xs text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] font-mono"
+                        className="w-full px-3.5 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-emerald-500/30 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] font-mono"
                       />
                       <p className="text-xs text-emerald-300">
                         * Discord exige une URL valide Twitch ou YouTube pour afficher la pastille violette "Streame".
@@ -914,7 +914,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <button
                       onClick={() => handleApplyPresence(currentStatus, { type: activityType, name: activityName, url: streamUrl }, false)}
                       disabled={saving}
-                      className="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs shadow-sm flex items-center gap-2 transition-all disabled:opacity-50"
+                      className="px-6 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] font-semibold text-xs flex items-center gap-2 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                     >
                       <Save className="w-4 h-4" />
                       <span>{saving ? "Application sur Gateway..." : "Appliquer Immédiatement sur Discord"}</span>
@@ -1049,7 +1049,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       "px-4 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-2",
                       rotationConfig.enabled
                         ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/30"
-                        : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-white"
+                        : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)]"
                     )}
                   >
                     <RotateCcw className={cn("w-4 h-4", rotationConfig.enabled && "animate-spin text-emerald-400")} />
@@ -1059,7 +1059,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                   <button
                     onClick={handleSaveRotationConfig}
                     disabled={saving}
-                    className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center gap-1.5 transition-all"
+                    className="px-4 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-1.5 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>Sauvegarder</span>
@@ -1084,7 +1084,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         intervalSeconds: Math.max(30, parseInt(e.target.value) || 30),
                       }))
                     }
-                    className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-sm text-white font-mono focus:outline-none focus:border-[var(--input-border-hover)]"
+                    className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-sm text-[var(--text-primary)] font-mono focus:outline-none focus:border-[var(--input-border-hover)]"
                   />
                   <p className="text-xs text-[var(--text-muted)]">Minimum 30s (Protection anti-spam Discord)</p>
                 </div>
@@ -1211,14 +1211,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       value={newRotText}
                       onChange={(e) => setNewRotText(e.target.value)}
                       placeholder="Texte (ex: {guildCount} serveurs en ligne)"
-                      className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-white focus:outline-none focus:border-[var(--input-border-hover)]"
+                      className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]"
                     />
                   </div>
 
                   <div className="sm:col-span-3 flex items-center gap-2">
                     <button
                       onClick={handleAddRotationItem}
-                      className="w-full px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors"
+                      className="w-full px-4 py-2 rounded-lg bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                     >
                       Ajouter
                     </button>
@@ -1231,7 +1231,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     value={newRotUrl}
                     onChange={(e) => setNewRotUrl(e.target.value)}
                     placeholder="URL Twitch / YouTube (obligatoire pour Streaming)"
-                    className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-emerald-500/30 text-xs text-white font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-emerald-500/30 text-xs text-[var(--text-primary)] font-mono"
                   />
                 )}
               </div>
@@ -1385,7 +1385,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     {guilds.map((g) => (
                       <tr key={g.guildId} className="hover:bg-[var(--surface-raised)]/70">
                         <td className="py-3.5 px-4 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-center font-bold text-white">
+                          <div className="w-8 h-8 rounded-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-center font-bold text-[var(--text-primary)]">
                             {g.guildName?.charAt(0) || "S"}
                           </div>
                           <div>
@@ -1413,7 +1413,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         <td className="py-3.5 px-4 text-right">
                           <button
                             onClick={() => handleApplyProfile(rowProfileByGuild[g.guildId] ?? g.preferredProfileId)}
-                            className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-xs transition-colors"
+                            className="px-3 py-1.5 rounded-lg bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] font-medium text-xs btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                           >
                             Appliquer Profil
                           </button>
@@ -1497,7 +1497,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         <button
                           onClick={handleUpdateAvatar}
                           disabled={uploadingAvatar || identity.avatarChangesRemaining <= 0}
-                          className="flex-1 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+                          className="flex-1 py-2 rounded-lg bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold disabled:opacity-50 flex items-center justify-center gap-1.5 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                         >
                           <Save className="w-3.5 h-3.5" />
                           <span>{uploadingAvatar ? "Envoi en cours..." : "Appliquer l'avatar"}</span>
@@ -1543,14 +1543,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         onChange={(e) => setEditUsername(e.target.value)}
                         placeholder="Etho"
                         maxLength={32}
-                        className="w-full px-3.5 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-white focus:outline-none focus:border-[var(--input-border-hover)]"
+                        className="w-full px-3.5 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]"
                       />
                     </div>
 
                     <button
                       onClick={handleUpdateUsername}
                       disabled={saving || editUsername === identity.username}
-                      className="mt-3 w-full py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors disabled:opacity-50"
+                      className="mt-3 w-full py-2 rounded-lg bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                     >
                       Enregistrer le nouveau nom
                     </button>

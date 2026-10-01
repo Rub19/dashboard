@@ -76,7 +76,7 @@ export default function InviteUserDetailClient() {
         <button
           onClick={fetchData}
           disabled={loading}
-          className="p-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-white border border-[var(--panel-border)] transition cursor-pointer"
+          className="p-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--panel-border)] transition cursor-pointer"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-pink-400" : ""}`} />
         </button>
@@ -182,7 +182,7 @@ export default function InviteUserDetailClient() {
                   <tr key={ref.id} className="hover:bg-[var(--surface-raised)]/70 transition">
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg bg-[var(--surface-raised)]/40 flex items-center justify-center font-bold text-white text-xs">
+                        <div className="w-7 h-7 rounded-lg bg-[var(--surface-raised)]/40 flex items-center justify-center font-bold text-[var(--text-primary)] text-xs">
                           {ref.invitedUserTag?.slice(0, 1) || "U"}
                         </div>
                         <div>

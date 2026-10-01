@@ -317,7 +317,7 @@ export default function AnalyticsCenterClient() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-cyan-500/15 text-cyan-400 rounded-xl border border-cyan-500/30 shadow-sm">
+              <div className="p-2.5 bg-cyan-500/15 text-cyan-400 rounded-[var(--inset-radius)] border border-cyan-500/30 icon-pop">
                 <BarChart3 className="w-6 h-6" />
               </div>
               <div>
@@ -366,7 +366,7 @@ export default function AnalyticsCenterClient() {
             <button
               onClick={handleExport}
               disabled={exporting || !selectedGuild || !overview}
-              className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
+              className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
             >
               {exporting ? (
                 <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />
@@ -396,7 +396,7 @@ export default function AnalyticsCenterClient() {
               href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-xs transition-colors shrink-0 cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] font-medium text-xs shrink-0 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               Inviter le bot
             </a>
@@ -432,7 +432,7 @@ export default function AnalyticsCenterClient() {
 
         {/* No Data Available for Installed Guild */}
         {!overview && !loading && selectedGuild && (botGuildIds === null || botGuildIds.includes(selectedGuild.id)) && (
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-8 text-center text-sm text-[var(--text-muted)]">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-8 text-center text-sm text-[var(--text-muted)]">
             Aucune donnée d&apos;analytics disponible pour ce serveur pour le moment.
           </div>
         )}
@@ -494,7 +494,7 @@ export default function AnalyticsCenterClient() {
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                   isActive
-                    ? "bg-[var(--surface-raised)]/40 text-white border-b-2 border-cyan-500"
+                    ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] border-b-2 border-cyan-500"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 }`}
               >

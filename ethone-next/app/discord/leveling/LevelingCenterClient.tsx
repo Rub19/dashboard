@@ -385,7 +385,7 @@ export default function LevelingCenterClient() {
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
                 href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer shadow-sm"
+                className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
                 title="Retour au hub Discord"
               >
                 <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
@@ -393,7 +393,7 @@ export default function LevelingCenterClient() {
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-xl border border-emerald-500/30 shadow-sm">
+              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-[var(--inset-radius)] border border-emerald-500/30 icon-pop">
                 <Award className="w-6 h-6" />
               </div>
               <div>
@@ -421,7 +421,7 @@ export default function LevelingCenterClient() {
             )}
             <button
               onClick={() => setActiveTab("card_designer")}
-              className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer"
+              className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer"
             >
               <Palette className="w-4 h-4 text-emerald-300" />
               Rank Card Designer
@@ -429,7 +429,7 @@ export default function LevelingCenterClient() {
             <button
               onClick={load}
               disabled={loading}
-              className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50"
+              className="px-4 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-2 cursor-pointer disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
               Actualiser
@@ -507,7 +507,7 @@ export default function LevelingCenterClient() {
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                   isActive
-                    ? "bg-[var(--surface-raised)]/40 text-white border-b-2 border-emerald-500/30"
+                    ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] border-b-2 border-emerald-500/30"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 }`}
               >
@@ -541,7 +541,7 @@ export default function LevelingCenterClient() {
                   placeholder="Rechercher un membre par pseudo..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-10 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] pl-9 pr-3 text-xs text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)]"
+                  className="w-full h-10 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] pl-9 pr-3 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)]"
                 />
               </div>
 
@@ -608,7 +608,7 @@ export default function LevelingCenterClient() {
 
                         <button
                           onClick={() => setSelectedMember(member)}
-                          className="px-3 py-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-primary)] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                          className="px-3 py-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-primary)] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                         >
                           <Edit2 className="w-3.5 h-3.5 text-emerald-300" />
                           Gérer XP
@@ -751,7 +751,7 @@ export default function LevelingCenterClient() {
                 </div>
                 <button
                   onClick={addReward}
-                  className="h-10 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="h-10 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   <Plus className="w-4 h-4" />
                   Ajouter
@@ -1028,7 +1028,7 @@ export default function LevelingCenterClient() {
                   type="button"
                   disabled={adjustSubmitting}
                   onClick={() => handleAdjustXp(true)}
-                  className="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-bold cursor-pointer disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   + Ajouter {xpDelta} XP
                 </button>

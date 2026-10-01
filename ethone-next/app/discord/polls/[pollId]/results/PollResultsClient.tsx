@@ -69,7 +69,7 @@ export default function PollResultsClient() {
                     ["Quorum", QUORUM_LABELS[results.quorumStatus] ?? "Sans quorum"],
                   ]
               ).map(([label, value]) => (
-                <div key={label} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+                <div key={label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
                   <p className="text-xs text-[var(--text-muted)]">{label}</p>
                   <p className="mt-1 text-lg font-semibold">{value}</p>
                 </div>
@@ -78,7 +78,7 @@ export default function PollResultsClient() {
 
             <section className="mt-6 space-y-4">
               {results.questionsResults.map((q) => (
-                <div key={q.questionId} className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+                <div key={q.questionId} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
                   <div className="flex items-baseline justify-between gap-3">
                     <h2 className="text-sm font-semibold">{q.title}</h2>
                     <span className="text-xs text-[var(--text-muted)]">{q.totalVotes} vote{q.totalVotes > 1 ? "s" : ""}</span>

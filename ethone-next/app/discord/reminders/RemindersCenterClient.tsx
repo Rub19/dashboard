@@ -246,7 +246,7 @@ export default function RemindersCenterClient() {
 
       <div className="space-y-6">
         {!discordLoading && manageableGuilds.length === 0 && (
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
             Connectez un serveur Discord où vous êtes administrateur.
           </div>
         )}
@@ -295,7 +295,7 @@ export default function RemindersCenterClient() {
                   { label: "Envoyés", value: overview.delivered },
                   { label: "Prochain", value: overview.nextDueAt ? relative(overview.nextDueAt) : "—" },
                 ].map((s) => (
-                  <div key={s.label} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                  <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
                     <p className="text-xs text-[var(--text-muted)]">{s.label}</p>
                     <p className="mt-1 text-lg font-bold text-[var(--text-primary)] truncate">{s.value}</p>
                   </div>
@@ -304,7 +304,7 @@ export default function RemindersCenterClient() {
             )}
 
             {/* Create */}
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 sm:p-5 space-y-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 sm:p-5 space-y-3">
               <p className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2"><Plus className="h-4 w-4" />Nouveau rappel</p>
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div className="sm:col-span-1">
@@ -336,7 +336,7 @@ export default function RemindersCenterClient() {
                   />
                 </div>
                 <div className="sm:col-span-1 flex items-end">
-                  <button onClick={handleCreate} disabled={saving} className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-4 h-9 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors disabled:opacity-50 cursor-pointer">
+                  <button onClick={handleCreate} disabled={saving} className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 h-9 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                     {saving ? "…" : "Programmer"}
                   </button>
                 </div>
@@ -348,7 +348,7 @@ export default function RemindersCenterClient() {
             </div>
 
             {/* List */}
-            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
               <div className="border-b border-[var(--panel-border)] px-4 py-3">
                 <p className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">Rappels en attente ({pending.length})</p>
               </div>
@@ -369,7 +369,7 @@ export default function RemindersCenterClient() {
                         <p className="mt-1 line-clamp-2 text-[12px] text-[var(--text-muted)]">{r.message}</p>
                         <p className="mt-0.5 text-xs text-[var(--text-muted)]">par {r.userId === profile?.user?.id ? "toi" : `<@${r.userId}>`}</p>
                       </div>
-                      <button onClick={() => handleCancel(r.id)} title="Annuler" className="shrink-0 self-start rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-2 text-rose-300 hover:bg-rose-500/15 hover:text-rose-200 transition-colors cursor-pointer">
+                      <button onClick={() => handleCancel(r.id)} title="Annuler" className="shrink-0 self-start rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-2 text-rose-300 hover:bg-rose-500/15 hover:text-rose-200 transition-colors cursor-pointer">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>

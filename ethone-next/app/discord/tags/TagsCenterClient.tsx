@@ -234,7 +234,7 @@ export default function TagsCenterClient() {
 
       <div className="flex-1 overflow-y-auto os-scroll px-4 sm:px-6 py-6 pb-44 md:pb-44 space-y-6 [overscroll-behavior:contain]">
         {!discordLoading && manageableGuilds.length === 0 && (
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
             Connectez un serveur Discord où vous êtes administrateur.
           </div>
         )}
@@ -256,7 +256,7 @@ export default function TagsCenterClient() {
               href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-xs transition-colors shrink-0 cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] font-medium text-xs shrink-0 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               Inviter le bot
             </a>
@@ -274,15 +274,15 @@ export default function TagsCenterClient() {
           <>
             {overview && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
                   <p className="text-xs text-[var(--text-muted)]">Tags</p>
                   <p className="mt-1 text-lg font-bold text-[var(--text-primary)]">{overview.total}</p>
                 </div>
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
                   <p className="text-xs text-[var(--text-muted)]">Affichages cumulés</p>
                   <p className="mt-1 text-lg font-bold text-[var(--text-primary)]">{overview.totalUses}</p>
                 </div>
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
                   <p className="text-xs text-[var(--text-muted)]">Le plus utilisé</p>
                   <p className="mt-1 text-sm font-bold text-[var(--text-primary)] truncate">{overview.top[0] ? `${overview.top[0].name} (${overview.top[0].uses})` : "—"}</p>
                 </div>
@@ -306,12 +306,12 @@ export default function TagsCenterClient() {
                   onChange={(e) => setEditName(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 32))}
                   disabled={!isNew && !!editName && tags.some((t) => t.name === editName)}
                   placeholder="nom (faq, regles…)"
-                  className="sm:col-span-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 font-mono text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] disabled:opacity-60"
+                  className="sm:col-span-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 font-mono text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] disabled:opacity-60"
                 />
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="sm:col-span-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-600 transition-colors disabled:opacity-50 cursor-pointer"
+                  className="sm:col-span-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   {saving ? "…" : "Enregistrer"}
                 </button>
@@ -321,13 +321,13 @@ export default function TagsCenterClient() {
                 onChange={(e) => setEditContent(e.target.value.slice(0, 2000))}
                 rows={4}
                 placeholder="Le texte affiché par /tag get. Markdown Discord supporté."
-                className="w-full resize-y rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)]"
+                className="w-full resize-y rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)]"
               />
               <p className="text-xs text-[var(--text-muted)]">{editContent.length}/2000</p>
             </div>
 
             {/* List */}
-            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
               <div className="border-b border-[var(--panel-border)] px-4 py-3">
                 <p className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">Tags du serveur ({tags.length})</p>
               </div>
@@ -344,7 +344,7 @@ export default function TagsCenterClient() {
                         </p>
                         <p className="mt-1 line-clamp-2 text-xs text-[var(--text-muted)]">{t.content}</p>
                       </button>
-                      <button onClick={() => handleDelete(t.name)} title="Supprimer" className="shrink-0 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-rose-300 hover:bg-rose-500/15 hover:text-rose-200 transition-colors cursor-pointer">
+                      <button onClick={() => handleDelete(t.name)} title="Supprimer" className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-rose-300 hover:bg-rose-500/15 hover:text-rose-200 transition-colors cursor-pointer">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>

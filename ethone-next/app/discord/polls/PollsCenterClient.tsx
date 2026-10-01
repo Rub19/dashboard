@@ -389,14 +389,14 @@ export default function PollsCenterClient() {
             <button
               onClick={handleRefreshAll}
               disabled={loading || channelsLoading}
-              className="inline-flex items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] disabled:opacity-50"
+              className="inline-flex items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] disabled:opacity-50"
               title="Rafraîchir les sondages et salons"
             >
               <RefreshCw className={cn("h-4 w-4", (loading || channelsLoading) && "animate-spin text-emerald-400")} />
             </button>
             <Link
               href={`/discord/polls/create?guildId=${guildParam}`}
-              className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 h-9 text-sm font-semibold text-white transition-colors hover:bg-emerald-600"
+              className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 h-9 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <Plus className="h-4 w-4" />
               Nouveau Sondage
@@ -406,7 +406,7 @@ export default function PollsCenterClient() {
 
         {/* KPI Metrics Strip */}
         <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="relative overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+          <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-[var(--text-muted)]">Sondages Totaux</span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
@@ -423,7 +423,7 @@ export default function PollsCenterClient() {
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+          <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-[var(--text-muted)]">Suffrages Exprimés</span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
@@ -442,7 +442,7 @@ export default function PollsCenterClient() {
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+          <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-[var(--text-muted)]">Participation Moyenne</span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
@@ -459,7 +459,7 @@ export default function PollsCenterClient() {
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+          <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-[var(--text-muted)]">Confidentialité</span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
@@ -491,7 +491,7 @@ export default function PollsCenterClient() {
 
           <div className="flex flex-wrap items-center gap-2">
             {/* Status filters */}
-            <div className="inline-flex rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-1">
+            <div className="inline-flex rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-1">
               {["ALL", "ACTIVE", "PAUSED", "ENDED", "DRAFT"].map((st) => (
                 <button
                   key={st}
@@ -551,7 +551,7 @@ export default function PollsCenterClient() {
             </p>
             <Link
               href={`/discord/polls/create?guildId=${guildParam}`}
-              className="mt-4 inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-600"
+              className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <Plus className="h-3.5 w-3.5" />
               Créer un sondage
@@ -566,7 +566,7 @@ export default function PollsCenterClient() {
               return (
                 <div
                   key={poll.id}
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 transition-all duration-300 hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/70"
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 transition-all duration-300 hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/70"
                 >
                   {/* Card Top badges */}
                   <div>
@@ -633,7 +633,7 @@ export default function PollsCenterClient() {
 
                     {/* Progress Bar / Stats */}
                     {poll.native ? (
-                      <div className="mt-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-1.5">
+                      <div className="mt-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-1.5">
                         <div className="flex items-center justify-between text-xs">
                           <span className="text-[var(--text-muted)] font-medium flex items-center gap-1.5">
                             <Users className="h-3.5 w-3.5 text-sky-400" />
@@ -649,7 +649,7 @@ export default function PollsCenterClient() {
                         ))}
                       </div>
                     ) : (
-                    <div className="mt-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+                    <div className="mt-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
                       <div className="flex items-center justify-between text-xs mb-1.5">
                         <span className="text-[var(--text-muted)] font-medium flex items-center gap-1.5">
                           <Users className="h-3.5 w-3.5 text-emerald-400" />
@@ -694,7 +694,7 @@ export default function PollsCenterClient() {
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/discord/polls/${poll.id}/results?guildId=${guildParam}`}
-                        className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 py-2 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)]"
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 py-2 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)]"
                       >
                         <BarChart3 className="h-3.5 w-3.5 text-emerald-400" />
                         Résultats
@@ -702,7 +702,7 @@ export default function PollsCenterClient() {
 
                       <Link
                         href={`/discord/polls/${poll.id}?guildId=${guildParam}`}
-                        className="inline-flex items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
+                        className="inline-flex items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
                         title="Configurer le sondage"
                       >
                         <Settings className="h-3.5 w-3.5" />
@@ -711,7 +711,7 @@ export default function PollsCenterClient() {
                       {!poll.native && (
                       <button
                         onClick={() => handleCopyLink(poll.id)}
-                        className="inline-flex items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
+                        className="inline-flex items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
                         title="Copier le lien public de vote"
                       >
                         <Copy className="h-3.5 w-3.5" />
@@ -721,7 +721,7 @@ export default function PollsCenterClient() {
                       {!poll.native && (
                       <button
                         onClick={() => setDeployModalPoll(poll)}
-                        className="inline-flex items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2 text-emerald-400 hover:bg-emerald-600 hover:text-white"
+                        className="inline-flex items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2 text-emerald-400 hover:brightness-110 hover:text-[var(--text-primary)] btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                         title="Déployer sur Discord"
                       >
                         <Send className="h-3.5 w-3.5" />
@@ -731,7 +731,7 @@ export default function PollsCenterClient() {
                       {poll.status !== "ENDED" && !poll.native && (
                         <button
                           onClick={() => handleTogglePause(poll)}
-                          className="inline-flex items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-[var(--text-muted)] hover:text-amber-400 hover:bg-[var(--surface-raised)]"
+                          className="inline-flex items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-[var(--text-muted)] hover:text-amber-400 hover:bg-[var(--surface-raised)]"
                           title={poll.status === "ACTIVE" ? "Mettre en pause" : "Reprendre"}
                         >
                           {poll.status === "ACTIVE" ? (
@@ -745,7 +745,7 @@ export default function PollsCenterClient() {
                       {poll.status !== "ENDED" && poll.status !== "DRAFT" && (
                         <button
                           onClick={() => handleClosePoll(poll)}
-                          className="inline-flex items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-[var(--text-muted)] hover:text-rose-400 hover:bg-[var(--surface-raised)]"
+                          className="inline-flex items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-[var(--text-muted)] hover:text-rose-400 hover:bg-[var(--surface-raised)]"
                           title="Clôturer le sondage"
                         >
                           <Square className="h-3.5 w-3.5" />
@@ -754,7 +754,7 @@ export default function PollsCenterClient() {
 
                       <button
                         onClick={() => handleDuplicate(poll)}
-                        className="inline-flex items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
+                        className="inline-flex items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
                         title="Dupliquer en brouillon"
                       >
                         <CopyPlus className="h-3.5 w-3.5" />
@@ -771,7 +771,7 @@ export default function PollsCenterClient() {
       {/* Deploy to Discord Modal */}
       {deployModalPoll && (
         <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 p-4">
-          <div className="relative w-full max-w-md rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6">
+          <div className="relative w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
@@ -821,13 +821,13 @@ export default function PollsCenterClient() {
             <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => setDeployModalPoll(null)}
-                className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
                 Annuler
               </button>
               <button
                 onClick={handleDeployConfirm}
-                className="rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-600 shadow-sm"
+                className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 Envoyer le panneau
               </button>

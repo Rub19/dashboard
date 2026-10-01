@@ -185,7 +185,7 @@ export default function FormSettingsClient() {
     <div className="w-full px-4 py-6 sm:px-6 text-[var(--text-primary)] space-y-6 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-4">
         <div className="flex items-center gap-3">
-          <Link href={`/discord/forms?guildId=${rawGuildId}`} className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer">
+          <Link href={`/discord/forms?guildId=${rawGuildId}`} className="flex h-9 w-9 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer">
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div>
@@ -194,10 +194,10 @@ export default function FormSettingsClient() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Link href={`/discord/forms/${formId}?guildId=${rawGuildId}`} className="flex h-9 items-center gap-1.5 px-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer">
+          <Link href={`/discord/forms/${formId}?guildId=${rawGuildId}`} className="flex h-9 items-center gap-1.5 px-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer">
             <Sliders className="h-3.5 w-3.5" /> Builder
           </Link>
-          <button onClick={handleSave} disabled={isSaving || !dirty} className={cn("flex h-9 items-center gap-1.5 px-4 rounded-xl text-xs font-bold text-white shadow-sm transition-all cursor-pointer active:scale-95 disabled:opacity-50", dirty ? "bg-emerald-500 hover:bg-emerald-600" : "bg-[var(--surface-raised)]/50")}>
+          <button onClick={handleSave} disabled={isSaving || !dirty} className={cn("flex h-9 items-center gap-1.5 px-4 rounded-xl text-xs font-bold text-[var(--text-primary)] shadow-sm transition-all cursor-pointer active:scale-95 disabled:opacity-50", dirty ? "bg-[var(--accent-primary)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50" : "bg-[var(--surface-raised)]/50")}>
             <Save className="h-3.5 w-3.5" /> {isSaving ? "Enregistrement..." : dirty ? "Sauvegarder" : "À jour"}
           </button>
         </div>
@@ -210,7 +210,7 @@ export default function FormSettingsClient() {
         ].map((tab) => {
           const Icon = tab.icon;
           return (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("flex items-center gap-2 h-9 px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer", activeTab === tab.id ? "bg-emerald-500 text-white shadow" : "text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70")}>
+            <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("flex items-center gap-2 h-9 px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer", activeTab === tab.id ? "bg-emerald-500 text-white shadow" : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70")}>
               <Icon className="h-3.5 w-3.5" /> {tab.label}
             </button>
           );
@@ -219,7 +219,7 @@ export default function FormSettingsClient() {
 
       {activeTab === "discord" && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Configuration de l'embed</h3>
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-[var(--text-muted)]">Salon de destination</label>
@@ -288,7 +288,7 @@ export default function FormSettingsClient() {
               </div>
             </div>
             <div className="pt-3 border-t border-[var(--panel-border)]">
-              <button onClick={handlePublishDiscordPanel} disabled={publishing || formStatus !== "PUBLISHED"} title={formStatus !== "PUBLISHED" ? "Publie d'abord le formulaire depuis le builder" : ""} className="w-full h-9 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold text-white transition-all shadow-sm cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5">
+              <button onClick={handlePublishDiscordPanel} disabled={publishing || formStatus !== "PUBLISHED"} title={formStatus !== "PUBLISHED" ? "Publie d'abord le formulaire depuis le builder" : ""} className="w-full h-9 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-xs font-bold text-[var(--accent-contrast)] cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                 <Send className="h-3.5 w-3.5" /> {publishing ? "Envoi..." : panel.messageId ? "Republier le panneau" : "Publier le panneau sur Discord"}
               </button>
               {formStatus !== "PUBLISHED" && <p className="text-xs text-amber-400 mt-1.5 text-center">Le formulaire est en {formStatus} : publie-le depuis le builder avant de poster le panneau.</p>}
@@ -313,7 +313,7 @@ export default function FormSettingsClient() {
       )}
 
       {activeTab === "antispam" && (
-        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4 max-w-2xl">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4 max-w-2xl">
           <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Règles anti-spam & éligibilité</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {([
@@ -338,7 +338,7 @@ export default function FormSettingsClient() {
       )}
 
       {activeTab === "scoring" && (
-        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4 max-w-2xl">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4 max-w-2xl">
           <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
             <div>
               <h3 className="text-sm font-bold text-[var(--text-primary)]">Scoring pondéré</h3>
@@ -369,13 +369,13 @@ export default function FormSettingsClient() {
       )}
 
       {activeTab === "automations" && (
-        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
             <div>
               <h3 className="text-sm font-bold text-[var(--text-primary)]">Automations</h3>
               <p className="text-xs text-[var(--text-muted)]">Déclenchées par le bot lors des soumissions et décisions.</p>
             </div>
-            <button onClick={() => setAutos((prev) => [...prev, { id: `auto-${Date.now().toString(36)}`, name: "Nouvelle règle", enabled: true, trigger: "RESPONSE_SUBMITTED", conditions: {}, actions: [{ type: "NOTIFY_STAFF" }] }])} className="flex h-8 items-center gap-1.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-semibold text-white transition-all cursor-pointer">
+            <button onClick={() => setAutos((prev) => [...prev, { id: `auto-${Date.now().toString(36)}`, name: "Nouvelle règle", enabled: true, trigger: "RESPONSE_SUBMITTED", conditions: {}, actions: [{ type: "NOTIFY_STAFF" }] }])} className="flex h-8 items-center gap-1.5 px-3 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-xs font-semibold text-[var(--accent-contrast)] cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
               <Plus className="h-3.5 w-3.5" /> Ajouter
             </button>
           </div>
@@ -389,7 +389,7 @@ export default function FormSettingsClient() {
               const needsChannel = action.type === "SEND_CHANNEL_MESSAGE" || action.type === "CREATE_THREAD" || action.type === "NOTIFY_STAFF";
               const needsMessage = action.type === "SEND_DM" || action.type === "SEND_CHANNEL_MESSAGE" || action.type === "CREATE_THREAD";
               return (
-                <div key={rule.id} className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 space-y-3">
+                <div key={rule.id} className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 space-y-3">
                   <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0"><Zap className="h-4 w-4" /></div>
                     <input type="text" value={rule.name} onChange={(e) => update({ name: e.target.value })} className="flex-1 h-8 bg-transparent text-sm font-bold text-[var(--text-primary)] border-b border-transparent hover:border-[var(--input-border-hover)] focus:border-[var(--input-border-hover)] outline-none" />

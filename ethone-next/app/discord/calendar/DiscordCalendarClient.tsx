@@ -269,7 +269,7 @@ export default function DiscordCalendarClient() {
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
                 href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer shadow-sm"
+                className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
                 title="Retour au hub Discord"
               >
                 <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
@@ -309,7 +309,7 @@ export default function DiscordCalendarClient() {
             <button
               onClick={loadEvents}
               disabled={loading}
-              className="inline-flex items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-2 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] disabled:opacity-50"
+              className="inline-flex items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-2 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] disabled:opacity-50"
               title="Rafraîchir"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
@@ -324,7 +324,7 @@ export default function DiscordCalendarClient() {
 
             <Link
               href={`/discord/events/create${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-              className="inline-flex items-center gap-2 px-4 h-9 rounded-xl text-sm font-semibold bg-emerald-500 hover:bg-emerald-600 text-white transition-colors"
+              className="inline-flex items-center gap-2 px-4 h-9 rounded-xl text-sm font-semibold bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <Plus className="w-3.5 h-3.5" />
               Créer un Événement
@@ -424,7 +424,7 @@ export default function DiscordCalendarClient() {
         {/* View 1: Month View — the 7-col grid needs room; on narrow screens it
             scrolls horizontally instead of crushing every cell to nothing. */}
         {viewMode === "MONTH" && (
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-x-auto os-scroll">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-x-auto os-scroll">
            <div className="min-w-[640px]">
             {/* Weekdays Header */}
             <div className="grid grid-cols-7 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-center text-xs font-bold text-[var(--text-muted)] py-3">
@@ -614,7 +614,7 @@ export default function DiscordCalendarClient() {
                 <div className="flex items-center gap-3">
                   <Link
                     href={`/discord/events/${activeModalEvent.id}`}
-                    className="flex-1 h-9 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold text-center transition-colors"
+                    className="flex-1 h-9 px-4 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-sm font-semibold text-center btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                   >
                     Voir la Page Complète de l'Événement
                   </Link>

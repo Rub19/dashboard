@@ -85,7 +85,7 @@ function Switch({ checked, onChange, label, hint }: { checked: boolean; onChange
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="flex w-full items-start justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
+      className="flex w-full items-start justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
     >
       <span className="min-w-0">
         <span className="block text-xs font-semibold text-[var(--text-primary)]">{label}</span>
@@ -352,7 +352,7 @@ export default function StickyCenterClient() {
       {/* Body */}
       <div className="space-y-6">
         {!discordLoading && manageableGuilds.length === 0 && (
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
             Connectez un serveur Discord où vous êtes administrateur pour configurer les Sticky Messages.
           </div>
         )}
@@ -402,7 +402,7 @@ export default function StickyCenterClient() {
                   { label: "En pause", value: overview.paused },
                   { label: "Repositionnements", value: overview.totalReposts },
                 ].map((s) => (
-                  <div key={s.label} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                  <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
                     <p className="text-xs text-[var(--text-muted)]">{s.label}</p>
                     <p className="mt-1 text-xl font-bold text-[var(--text-primary)]">{s.value}</p>
                   </div>
@@ -411,12 +411,12 @@ export default function StickyCenterClient() {
             )}
 
             {/* List */}
-            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
               <div className="flex items-center justify-between border-b border-[var(--panel-border)] px-4 py-3">
                 <p className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">Salons</p>
                 <button
                   onClick={() => openEditor(null)}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-3 h-9 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3 h-9 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   Nouveau sticky
@@ -440,10 +440,10 @@ export default function StickyCenterClient() {
                         <span className="mt-1 text-xs text-[var(--text-muted)]">{row.asEmbed ? "Embed" : "Texte"} · {row.repostCount} repositionnements</span>
                       </button>
                       <div className="flex shrink-0 items-center gap-1.5">
-                        <button onClick={() => handleRepost(row.channelId)} title="Republier maintenant" className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-2 text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-colors cursor-pointer">
+                        <button onClick={() => handleRepost(row.channelId)} title="Republier maintenant" className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-2 text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-colors cursor-pointer">
                           <Send className="h-3.5 w-3.5" />
                         </button>
-                        <button onClick={() => handleDelete(row.channelId)} title="Supprimer" className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-2 text-rose-300 hover:bg-rose-500/15 hover:text-rose-200 transition-colors cursor-pointer">
+                        <button onClick={() => handleDelete(row.channelId)} title="Supprimer" className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-2 text-rose-300 hover:bg-rose-500/15 hover:text-rose-200 transition-colors cursor-pointer">
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
@@ -455,7 +455,7 @@ export default function StickyCenterClient() {
 
             {/* Editor */}
             {draft && (
-              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 sm:p-5 space-y-4">
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 sm:p-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-bold text-[var(--text-primary)]">{usedChannelIds.has(draft.channelId) ? "Modifier le sticky" : "Nouveau sticky"}</p>
                   <button onClick={() => setDraft(null)} className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">Fermer</button>
@@ -524,7 +524,7 @@ export default function StickyCenterClient() {
                   <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 h-9 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors disabled:opacity-50 cursor-pointer"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 h-9 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                   >
                     <Save className="h-3.5 w-3.5" />
                     {saving ? "Enregistrement..." : "Enregistrer & positionner"}

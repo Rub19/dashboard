@@ -107,7 +107,7 @@ const dateFr = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString("
 
 function Card({ title, hint, children, className }: { title: string; hint?: string; children: React.ReactNode; className?: string }) {
   return (
-    <section className={cn("min-w-0 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5", className)}>
+    <section className={cn("min-w-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5", className)}>
       <div className="mb-3">
         <h2 className="text-sm font-semibold text-[var(--text-primary)]">{title}</h2>
         {hint && <p className="mt-0.5 text-xs text-[var(--text-muted)]">{hint}</p>}
@@ -131,7 +131,7 @@ function Delta({ value, invert }: { value: number | null | undefined; invert?: b
 
 function Kpi({ label, value, hint, delta, invert }: { label: string; value: string; hint?: string; delta?: number | null; invert?: boolean }) {
   return (
-    <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
       <p className="text-xs text-[var(--text-muted)]">{label}</p>
       <p className="mt-1 whitespace-nowrap text-xl font-bold tabular-nums text-[var(--text-primary)] xl:text-2xl">{value}</p>
       {delta !== undefined ? <p className="mt-1">
@@ -391,7 +391,7 @@ export default function StatsCenterClient() {
                 )}
               </p>
               <div className="flex shrink-0 gap-2">
-                <button type="button" disabled={saving} onClick={() => void setEnabled(!enabled)} className="cursor-pointer rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50">
+                <button type="button" disabled={saving} onClick={() => void setEnabled(!enabled)} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                   {enabled ? "Désactiver" : "Activer la collecte"}
                 </button>
                 <button type="button" disabled={saving} onClick={() => void clearData()} className="cursor-pointer rounded-xl border border-rose-500/30 px-3 py-2 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/10 disabled:opacity-50">
@@ -592,13 +592,13 @@ export default function StatsCenterClient() {
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+                  <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
                     <p className="text-xs font-semibold text-[var(--text-muted)]">Rangs (60 jours)</p>
                     <p className="mt-2 text-sm text-[var(--text-muted)]">Messages <strong className="float-right text-amber-300">{member.rank.messages ? `#${member.rank.messages}` : "—"}</strong></p>
                     <p className="mt-1 text-sm text-[var(--text-muted)]">Vocal <strong className="float-right text-amber-300">{member.rank.voice ? `#${member.rank.voice}` : "—"}</strong></p>
                   </div>
                   {(["messages", "voiceHours"] as const).map((k) => (
-                    <div key={k} className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+                    <div key={k} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
                       <p className="text-xs font-semibold text-[var(--text-muted)]">{k === "messages" ? "Messages" : "Vocal"}</p>
                       {(["1", "7", "60"] as const).map((w) => (
                         <p key={w} className="mt-1 text-sm text-[var(--text-muted)]">

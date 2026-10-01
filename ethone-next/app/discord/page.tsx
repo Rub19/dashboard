@@ -2285,7 +2285,7 @@ export default function DiscordDashboardPage() {
                               <button
                                 onClick={handleMusicPlayPause}
                                 aria-label={liveMusicState.status === "PLAYING" ? "Pause" : "Lecture"}
-                                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl bg-emerald-500 text-white transition-colors hover:bg-emerald-600"
+                                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                               >
                                 {liveMusicState.status === "PLAYING" ? <Pause className="h-3.5 w-3.5 fill-white" /> : <Play className="h-3.5 w-3.5 fill-white ml-0.5" />}
                               </button>

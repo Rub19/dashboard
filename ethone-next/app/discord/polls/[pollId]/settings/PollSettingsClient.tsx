@@ -243,7 +243,7 @@ export default function PollSettingsClient() {
               type="button"
               onClick={() => fetchChannels(true)}
               disabled={channelsLoading}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all disabled:opacity-50"
               title="Rafraîchir les salons Discord"
             >
               <RefreshCw className={cn("h-3.5 w-3.5", channelsLoading && "animate-spin text-emerald-400")} />
@@ -252,7 +252,7 @@ export default function PollSettingsClient() {
             <button
               onClick={handleSaveSettings}
               disabled={isSaving || !loaded}
-              className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-600 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <Save className="h-3.5 w-3.5" />
               {isSaving ? "Enregistrement..." : "Enregistrer les modifications"}
@@ -262,7 +262,7 @@ export default function PollSettingsClient() {
 
         <div className="space-y-6">
           {/* General Properties */}
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
             <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">Général</h3>
             <div className="space-y-4">
               <div>
@@ -304,7 +304,7 @@ export default function PollSettingsClient() {
           </div>
 
           {/* Voting Rules & Confidentiality */}
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
             <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">Règles & Confidentialité</h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Select
@@ -369,7 +369,7 @@ export default function PollSettingsClient() {
           </div>
 
           {/* Discord Panel Configuration */}
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
             <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">Panneau Discord</h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
@@ -432,7 +432,7 @@ export default function PollSettingsClient() {
             <div className="flex flex-wrap items-center gap-3">
               <button
                 onClick={handleResetVotes}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3.5 py-2 text-xs font-medium text-[var(--text-muted)] hover:text-amber-400 hover:bg-[var(--surface-raised)]"
+                className="inline-flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3.5 py-2 text-xs font-medium text-[var(--text-muted)] hover:text-amber-400 hover:bg-[var(--surface-raised)]"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 Réinitialiser les votes

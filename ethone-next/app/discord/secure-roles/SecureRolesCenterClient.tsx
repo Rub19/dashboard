@@ -114,7 +114,7 @@ function Item({ n, title, text }: { n: string; title: string; text: string }) {
 function WelcomeModal({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 p-4 " role="dialog" aria-modal="true" aria-label="Rôles sécurisés">
-      <div className="w-full max-w-lg rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 ">
+      <div className="w-full max-w-lg rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 ">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-300">
@@ -131,7 +131,7 @@ function WelcomeModal({ onClose }: { onClose: () => void }) {
           <Item n="2" title="La solution" text="Les permissions sensibles (bannir, gérer les rôles, administrateur…) quittent le rôle visible pour un rôle caché. Le membre ne l'obtient que quelques minutes, après un code à usage unique de son application d'authentification (/elevate). Un pirate qui a le compte Discord n'a pas le code." />
           <Item n="3" title="Invisible pour votre équipe" text="Le rôle garde son nom, sa couleur et sa place dans la hiérarchie. Vos modérateurs continuent de discuter normalement ; ils tapent /elevate seulement quand ils doivent sanctionner." />
         </div>
-        <button type="button" onClick={onClose} className="mt-6 w-full cursor-pointer rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600">
+        <button type="button" onClick={onClose} className="mt-6 w-full cursor-pointer rounded-xl bg-[var(--accent-primary)] px-4 py-3 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
           Compris, commencer
         </button>
       </div>
@@ -240,7 +240,7 @@ export default function SecureRolesCenterClient() {
   };
 
   const back = (
-    <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 text-xs font-semibold text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)]">
+    <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex h-8 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 text-xs font-semibold text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)]">
       <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
       Retour Discord
     </Link>
@@ -282,10 +282,10 @@ export default function SecureRolesCenterClient() {
         />
 
         {!config.enabled ? (
-          <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-8 text-center">
+          <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-8 text-center">
             <h2 className="text-lg font-bold">Votre équipe n&apos;est pas encore protégée</h2>
             <p className="mx-auto mt-2 max-w-xl text-sm text-[var(--text-muted)]">Activez le module, puis choisissez les rôles à sécuriser. Rien ne change tant que vous n&apos;avez pas sécurisé un rôle.</p>
-            <button type="button" disabled={busy === "enable"} onClick={() => void call("enable", "/config", "PUT", { enabled: true }, "Module activé")} className="mt-6 cursor-pointer rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50">
+            <button type="button" disabled={busy === "enable"} onClick={() => void call("enable", "/config", "PUT", { enabled: true }, "Module activé")} className="mt-6 cursor-pointer rounded-xl bg-[var(--accent-primary)] px-6 py-3 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
               Activer les rôles sécurisés
             </button>
           </section>
@@ -293,7 +293,7 @@ export default function SecureRolesCenterClient() {
           <>
             {!data.bot.canManageRoles && <p className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">Le bot n&apos;a pas la permission « Gérer les rôles » : il ne pourra pas sécuriser de rôle. Ajoutez-la à son rôle dans Paramètres du serveur → Rôles, en le plaçant au-dessus des rôles à protéger.</p>}
 
-            <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+            <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <h2 className="text-base font-bold">1. Choisir les rôles à protéger</h2>
               <p className="mt-1 text-xs text-[var(--text-muted)]">Le bot doit être placé au-dessus du rôle dans la hiérarchie et posséder lui-même les permissions déplacées (le rôle Administrateur du bot suffit).</p>
               <div className="mt-4 divide-y divide-[var(--panel-border)]">
@@ -322,7 +322,7 @@ export default function SecureRolesCenterClient() {
                         Restaurer
                       </button>
                     ) : (
-                      <button type="button" disabled={!r.editable || busy === `role:${r.id}`} title={r.editable ? undefined : "Ce rôle est au-dessus du rôle du bot"} onClick={() => void secure(r)} className="cursor-pointer rounded-xl bg-emerald-500 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-40">
+                      <button type="button" disabled={!r.editable || busy === `role:${r.id}`} title={r.editable ? undefined : "Ce rôle est au-dessus du rôle du bot"} onClick={() => void secure(r)} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-3 py-1.5 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                         {busy === `role:${r.id}` ? "Sécurisation…" : "Sécuriser"}
                       </button>
                     )}
@@ -337,7 +337,7 @@ export default function SecureRolesCenterClient() {
               {showAll && <p className="mt-2 text-xs text-[var(--text-muted)]">{others.map((r) => r.name).join(" · ")}</p>}
             </section>
 
-            <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+            <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <h2 className="text-base font-bold">2. Membres protégés</h2>
               <p className="mt-1 text-xs text-[var(--text-muted)]">
                 Chaque membre invité tape <code className="rounded bg-[var(--surface-raised)]/40 px-1">/elevate</code> sur Discord : le bot lui donne une clé à ajouter dans son application d&apos;authentification, puis <code className="rounded bg-[var(--surface-raised)]/40 px-1">/elevate code:123456</code> ouvre une session de {config.sessionMinutes} minutes. Seuls les membres invités par un administrateur peuvent s&apos;enrôler, pour qu&apos;un compte volé ne puisse pas configurer son propre code.
@@ -404,7 +404,7 @@ export default function SecureRolesCenterClient() {
               )}
             </section>
 
-            <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+            <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <h2 className="text-base font-bold">3. Réglages</h2>
               <div className="mt-3 max-w-xs">
                 <Select
@@ -418,7 +418,7 @@ export default function SecureRolesCenterClient() {
               <p className="mt-3 text-xs text-[var(--text-muted)]">Le module ne peut être désactivé qu&apos;une fois tous les rôles restaurés, pour ne jamais enfermer votre équipe hors de ses permissions. Si quelqu&apos;un se donne à la main un rôle caché sans code, le bot le retire aussitôt et le consigne dans le journal.</p>
             </section>
 
-            <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+            <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <h2 className="text-base font-bold">Journal</h2>
               {data.audit.length === 0 ? (
                 <p className="mt-3 text-sm text-[var(--text-muted)]">Aucune activité pour l&apos;instant.</p>

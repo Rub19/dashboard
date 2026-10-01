@@ -307,7 +307,7 @@ export default function VoiceCenterClient() {
           <div className="flex flex-wrap items-center gap-2.5 mb-2">
             <Link
               href={`/discord${guildId ? `?guildId=${guildId}` : ""}`}
-              className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer shadow-sm"
+              className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
               title="Retour au hub Discord"
             >
               <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
@@ -346,7 +346,7 @@ export default function VoiceCenterClient() {
               fetchOverview().finally(() => setRefreshing(false));
             }}
             disabled={refreshing}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
             title="Rafraîchir"
           >
             <RefreshCw className={cn("h-4 w-4", refreshing && "animate-spin text-emerald-400")} />
@@ -354,7 +354,7 @@ export default function VoiceCenterClient() {
 
           <Link
             href={`/discord/voice/settings?guildId=${guildId}`}
-            className="flex h-10 items-center gap-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-4 text-xs font-bold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
+            className="flex h-10 items-center gap-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-4 text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
           >
             <Settings className="h-4 w-4 text-[var(--text-muted)]" />
             <span>Paramètres & Délais</span>
@@ -389,7 +389,7 @@ export default function VoiceCenterClient() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-emerald-500/30 transition-all">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-emerald-500/30 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Salons Actifs</span>
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
@@ -406,7 +406,7 @@ export default function VoiceCenterClient() {
           <p className="text-xs text-[var(--text-muted)] mt-1">Salons temporaires ouverts</p>
         </div>
 
-        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-emerald-500/40 transition-all">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-emerald-500/40 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Membres Connectés</span>
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
@@ -422,7 +422,7 @@ export default function VoiceCenterClient() {
           <p className="text-xs text-[var(--text-muted)] mt-1">Utilisateurs en conversation</p>
         </div>
 
-        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-emerald-500/40 transition-all">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-emerald-500/40 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Sessions Aujourd'hui</span>
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
@@ -436,7 +436,7 @@ export default function VoiceCenterClient() {
           <p className="text-xs text-[var(--text-muted)] mt-1">Passages en salon vocal</p>
         </div>
 
-        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-amber-500/30 transition-all">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-amber-500/30 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Durée Moyenne</span>
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
@@ -480,7 +480,7 @@ export default function VoiceCenterClient() {
             <button
               onClick={handlePublishPanel}
               disabled={isPublishing}
-              className="flex h-10 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 text-xs font-bold text-white shadow-sm hover:bg-emerald-600 transition-all active:scale-95 disabled:opacity-50 cursor-pointer whitespace-nowrap"
+              className="flex h-10 items-center justify-center gap-2 rounded-xl bg-[var(--accent-primary)] px-5 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer whitespace-nowrap btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               {isPublishing ? (
                 <RefreshCw className="h-4 w-4 animate-spin" />
@@ -501,7 +501,7 @@ export default function VoiceCenterClient() {
             className={cn(
               "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer",
               activeTab === "overview"
-                ? "bg-[var(--surface-raised)]/40 text-white shadow-sm"
+                ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] shadow-sm"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
             )}
           >
@@ -512,7 +512,7 @@ export default function VoiceCenterClient() {
             className={cn(
               "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer",
               activeTab === "hubs"
-                ? "bg-[var(--surface-raised)]/40 text-white shadow-sm"
+                ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] shadow-sm"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
             )}
           >
@@ -523,7 +523,7 @@ export default function VoiceCenterClient() {
             className={cn(
               "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer",
               activeTab === "analytics"
-                ? "bg-[var(--surface-raised)]/40 text-white shadow-sm"
+                ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] shadow-sm"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
             )}
           >
@@ -575,7 +575,7 @@ export default function VoiceCenterClient() {
               {filteredRooms.map((room) => (
                 <div
                   key={room.id}
-                  className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 flex flex-col justify-between hover:border-[var(--input-border-hover)] transition-all group"
+                  className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 flex flex-col justify-between hover:border-[var(--input-border-hover)] transition-all group"
                 >
                   <div>
                     {/* Header */}
@@ -612,7 +612,7 @@ export default function VoiceCenterClient() {
 
                       <Link
                         href={`/discord/voice/rooms/${room.id}?guildId=${guildId}`}
-                        className="flex h-8 px-3 items-center gap-1.5 rounded-lg bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 text-xs font-semibold transition-all cursor-pointer whitespace-nowrap"
+                        className="flex h-8 px-3 items-center gap-1.5 rounded-lg bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 text-xs font-semibold transition-all cursor-pointer whitespace-nowrap"
                       >
                         <span>Contrôler</span>
                         <ChevronRight className="h-3 w-3" />
@@ -663,7 +663,7 @@ export default function VoiceCenterClient() {
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => handleRoomAction(room.id, room.isLocked ? "unlock" : "lock")}
-                        className="flex h-7 px-2.5 items-center gap-1 rounded-md bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-white text-xs font-semibold transition-all cursor-pointer"
+                        className="flex h-7 px-2.5 items-center gap-1 rounded-md bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xs font-semibold transition-all cursor-pointer"
                         title={room.isLocked ? "Déverrouiller le salon" : "Verrouiller le salon"}
                       >
                         {room.isLocked ? <Unlock className="h-3 w-3 text-emerald-400" /> : <Lock className="h-3 w-3 text-rose-400" />}
@@ -676,7 +676,7 @@ export default function VoiceCenterClient() {
                           setNewRoomName(room.name);
                           setIsRenameOpen(true);
                         }}
-                        className="flex h-7 px-2.5 items-center gap-1 rounded-md bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-white text-xs font-semibold transition-all cursor-pointer"
+                        className="flex h-7 px-2.5 items-center gap-1 rounded-md bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xs font-semibold transition-all cursor-pointer"
                         title="Renommer"
                       >
                         <Edit2 className="h-3 w-3" />
@@ -709,7 +709,7 @@ export default function VoiceCenterClient() {
       {activeTab === "analytics" && (
         <div className="space-y-4">
           <h3 className="text-base font-bold text-[var(--text-primary)]">Dernières Sessions Vocales</h3>
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
             <table className="w-full text-left text-xs">
               <thead className="bg-[var(--surface-raised)]/40 border-b border-[var(--panel-border)] text-[var(--text-muted)] font-semibold uppercase">
                 <tr>
@@ -737,7 +737,7 @@ export default function VoiceCenterClient() {
       {/* Rename Modal */}
       {isRenameOpen && (
         <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
+          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
             <h3 className="text-base font-bold text-[var(--text-primary)]">Renommer le salon vocal</h3>
             <input
               type="text"
@@ -758,7 +758,7 @@ export default function VoiceCenterClient() {
                   handleRoomAction(targetRoomId, "rename", newRoomName);
                   setIsRenameOpen(false);
                 }}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--accent-primary)] text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 Sauvegarder
               </button>

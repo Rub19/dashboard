@@ -108,7 +108,7 @@ function Switch({
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="flex w-full items-start justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
+      className="flex w-full items-start justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
     >
       <span className="min-w-0">
         <span className="block text-xs font-semibold text-[var(--text-primary)]">{label}</span>
@@ -356,7 +356,7 @@ export default function StarboardCenterClient() {
         <div className="flex items-center gap-3">
           <Link
             href="/discord"
-            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-colors"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             title="Retour au hub Discord"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -411,7 +411,7 @@ export default function StarboardCenterClient() {
       {/* Body */}
       <div className="space-y-6">
         {!discordLoading && manageableGuilds.length === 0 && (
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center text-sm text-[var(--text-muted)]">
             Connectez un serveur Discord où vous êtes administrateur pour configurer le Starboard.
           </div>
         )}
@@ -461,7 +461,7 @@ export default function StarboardCenterClient() {
                 { label: "⭐ cumulées", value: String(stats.totalStars), icon: Star, tone: "text-yellow-400" },
                 { label: "Record", value: stats.topMessage ? `${stats.topMessage.starCount} ⭐` : "—", icon: Trophy, tone: "text-fuchsia-400" },
               ].map((s) => (
-                <div key={s.label} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
+                <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
                   <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-muted)]">
                     <s.icon className={cn("h-3.5 w-3.5", s.tone)} />
                     {s.label}
@@ -472,7 +472,7 @@ export default function StarboardCenterClient() {
             </div>
 
             {/* Config */}
-            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-5">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-5">
               <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-4">
                 <div>
                   <h3 className="text-sm font-bold text-[var(--text-primary)]">Configuration</h3>
@@ -568,7 +568,7 @@ export default function StarboardCenterClient() {
             </div>
 
             {/* Top starred */}
-            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6">
               <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-amber-400" /> Messages les plus étoilés
               </h3>

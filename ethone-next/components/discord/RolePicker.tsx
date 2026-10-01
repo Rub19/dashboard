@@ -236,7 +236,7 @@ export default function RolePicker({
               onChange={(e) => handleSelectChange(e.target.value)}
               disabled={disabled || loading}
               className={cn(
-                "w-full rounded-xl border border-[var(--panel-border)] bg-zinc-900/80 text-white outline-none transition-all appearance-none cursor-pointer focus:border-indigo-500/50 disabled:opacity-50",
+                "w-full rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-primary)] outline-none transition-all appearance-none cursor-pointer hover:border-[var(--text-primary)]/20 focus:border-[var(--accent-primary)]/60 focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_14%,transparent)] disabled:opacity-50",
                 isSmall ? "h-8 px-2.5 pr-8 text-[11px]" : "h-9 px-3 pr-8 text-xs",
                 inputClassName
               )}
@@ -286,7 +286,7 @@ export default function RolePicker({
               disabled={disabled}
               placeholder={placeholder}
               className={cn(
-                "w-full rounded-xl border border-[var(--panel-border)] bg-zinc-900/80 pl-8 pr-8 text-white font-mono outline-none transition-all focus:border-indigo-500/50 disabled:opacity-50",
+                "w-full rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] pl-8 pr-8 text-[var(--text-primary)] font-mono outline-none transition-all hover:border-[var(--text-primary)]/20 focus:border-[var(--accent-primary)]/60 focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_14%,transparent)] disabled:opacity-50",
                 isSmall ? "h-8 text-[11px]" : "h-9 text-xs",
                 inputClassName
               )}
@@ -296,7 +296,7 @@ export default function RolePicker({
                 type="button"
                 onClick={() => onChange("")}
                 disabled={disabled}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors cursor-pointer"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                 title="Effacer"
               >
                 <X className="w-3.5 h-3.5" />
@@ -316,7 +316,7 @@ export default function RolePicker({
               : "Choisir dans la liste des rôles"
           }
           className={cn(
-            "shrink-0 flex items-center justify-center gap-1 rounded-xl border border-[var(--panel-border)] bg-white/5 font-semibold transition-all cursor-pointer hover:bg-white/10 hover:text-white disabled:opacity-50",
+            "shrink-0 flex items-center justify-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.05] font-semibold transition-all cursor-pointer active:scale-[0.97] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-50",
             isSmall ? "h-8 px-2 text-[10px]" : "h-9 px-2.5 text-xs",
             mode === "id"
               ? "text-indigo-400 border-indigo-500/40 bg-indigo-500/10"

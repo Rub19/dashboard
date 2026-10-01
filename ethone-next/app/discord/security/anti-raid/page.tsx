@@ -843,7 +843,7 @@ export default function AntiRaidDashboardPage() {
               href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors shrink-0"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 shrink-0 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               Inviter le bot
             </a>
@@ -992,7 +992,7 @@ export default function AntiRaidDashboardPage() {
           </div>
 
           {/* Quick Manual Security Controls */}
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 flex flex-col justify-between space-y-3">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 flex flex-col justify-between space-y-3">
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1 flex items-center gap-1.5">
                 <Zap className="w-3.5 h-3.5 text-amber-400" />
@@ -1073,7 +1073,7 @@ export default function AntiRaidDashboardPage() {
               <button
                 onClick={handleForceUnblockInvites}
                 disabled={isActionLoading}
-                className="mt-2 w-full py-1.5 px-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                className="mt-2 w-full py-1.5 px-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                 title="Garantit que toutes les invitations sont actives et débloquées"
               >
                 <Unlock className="w-3 h-3 text-emerald-400" />
@@ -1089,7 +1089,7 @@ export default function AntiRaidDashboardPage() {
         </div>
 
         {/* 2.2 LIVE RAID MONITOR (METRICS GRID) */}
-        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 sm:p-5 ">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 sm:p-5 ">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-400" />
@@ -1185,7 +1185,7 @@ export default function AntiRaidDashboardPage() {
         </div>
 
         {/* 2.3 CONFIGURATION TABS & INSPECTOR */}
-        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
           {/* Tab Navigation Headers */}
           <div className="flex items-center gap-1 p-2 border-b border-[var(--panel-border)] overflow-x-auto">
             <button

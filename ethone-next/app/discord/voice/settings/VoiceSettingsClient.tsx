@@ -237,7 +237,7 @@ export default function VoiceSettingsClient() {
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex h-10 items-center gap-2 rounded-xl bg-emerald-500 px-5 text-xs font-bold text-white shadow-sm hover:bg-emerald-600 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+            className="flex h-10 items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-5 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
           >
             <Save className="h-4 w-4" />
             <span>{isSaving ? "Enregistrement..." : "Enregistrer les modifications"}</span>
@@ -262,7 +262,7 @@ export default function VoiceSettingsClient() {
             href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-600 transition-colors shrink-0"
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 shrink-0 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
           >
             Inviter le bot
           </a>
@@ -272,7 +272,7 @@ export default function VoiceSettingsClient() {
       {/* Grid Settings Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Section 1: Salons Personnels */}
-        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-5">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-5">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
               <Radio className="h-4 w-4" />
@@ -377,7 +377,7 @@ export default function VoiceSettingsClient() {
         </div>
 
         {/* Section 2: Délais & Nettoyage */}
-        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-5">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-5">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
               <Clock className="h-4 w-4" />

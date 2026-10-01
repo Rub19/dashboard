@@ -351,7 +351,7 @@ export default function TicketDetailClient() {
         <div className="flex items-center gap-3">
           <Link
             href={`/discord/tickets?guildId=${guildId}`}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all"
+            className="flex h-9 w-9 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -410,7 +410,7 @@ export default function TicketDetailClient() {
             <button
               onClick={handleUnclaim}
               disabled={actionLoading}
-              className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer"
+              className="flex h-9 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer"
             >
               <span>Libérer la prise en charge</span>
             </button>
@@ -436,7 +436,7 @@ export default function TicketDetailClient() {
             }}
             target={API_BASE ? "_blank" : undefined}
             rel="noopener noreferrer"
-            className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all"
+            className="flex h-9 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all"
           >
             <Download className="h-3.5 w-3.5" />
             <span>Transcript</span>
@@ -470,7 +470,7 @@ export default function TicketDetailClient() {
         {/* Left Column (2/3): Request Info & Transcript */}
         <div className="lg:col-span-2 space-y-6">
           {/* Answers to Form Fields */}
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
               <FileText className="h-4 w-4 text-emerald-400" />
               <span>Formulaire de Demande Initiale</span>
@@ -479,7 +479,7 @@ export default function TicketDetailClient() {
             {ticket.answers && Object.keys(ticket.answers).length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                 {Object.entries(ticket.answers).map(([key, val]) => (
-                  <div key={key} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+                  <div key={key} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
                     <p className="text-xs font-semibold text-[var(--text-muted)] capitalize">{key}</p>
                     <p className="text-xs font-medium text-[var(--text-primary)] mt-1 whitespace-pre-wrap">
                       {String(val) || "N/A"}
@@ -493,7 +493,7 @@ export default function TicketDetailClient() {
           </div>
 
           {/* Quick Reply or Discord Channel Link */}
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <MessageSquare className="h-4 w-4 text-teal-400" />
@@ -507,7 +507,7 @@ export default function TicketDetailClient() {
             <div className="flex items-center gap-2 pt-1">
               <a
                 href={`discord://discord.com/channels/${guildId}/${ticket.channelId}`}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-bold text-white hover:bg-emerald-600 transition-all"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
                 <span>Ouvrir dans l&apos;application Discord</span>
@@ -516,7 +516,7 @@ export default function TicketDetailClient() {
           </div>
 
           {/* Activity Timeline */}
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
               <Clock className="h-4 w-4 text-emerald-400" />
               <span>Chronologie d&apos;Activité & Traçabilité</span>
@@ -544,7 +544,7 @@ export default function TicketDetailClient() {
         {/* Right Column (1/3): User Profile, Notes, Case Linking, Rating */}
         <div className="space-y-6">
           {/* User Card */}
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Demandeur</h2>
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-full bg-[var(--surface-raised)]/50 flex items-center justify-center font-bold text-emerald-400 text-sm border border-[var(--panel-border)] overflow-hidden">
@@ -562,7 +562,7 @@ export default function TicketDetailClient() {
           </div>
 
           {/* Linked Moderation Case */}
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
                 <Scale className="h-3.5 w-3.5 text-orange-400" />
@@ -593,7 +593,7 @@ export default function TicketDetailClient() {
                 <p className="text-xs text-[var(--text-muted)]">Aucun dossier de sanction associé à ce ticket.</p>
                 <button
                   onClick={() => setShowLinkCaseModal(true)}
-                  className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2.5 py-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+                  className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2.5 py-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
                 >
                   + Lier une Case #
                 </button>
@@ -602,7 +602,7 @@ export default function TicketDetailClient() {
           </div>
 
           {/* Private Internal Notes */}
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
               <Lock className="h-3.5 w-3.5 text-amber-400" />
               <span>Notes Internes Staff (Privé)</span>
@@ -633,7 +633,7 @@ export default function TicketDetailClient() {
             <div className="space-y-2.5 pt-2 border-t border-[var(--panel-border)]">
               {ticket.notes && ticket.notes.length > 0 ? (
                 ticket.notes.map((n: any) => (
-                  <div key={n.id} className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs space-y-1">
+                  <div key={n.id} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs space-y-1">
                     <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                       <span className="font-bold text-amber-300">{n.authorTag}</span>
                       <span>{new Date(n.createdAt).toLocaleTimeString("fr-FR")}</span>
@@ -648,7 +648,7 @@ export default function TicketDetailClient() {
           </div>
 
           {/* Satisfaction Rating (CSAT) */}
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
             <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
               <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
               <span>Avis Membre (CSAT)</span>

@@ -326,7 +326,7 @@ export default function InvitesCenterClient() {
           <button
             onClick={handleSyncDiscord}
             disabled={syncing}
-            className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-xs font-medium text-[var(--text-muted)] hover:text-white transition cursor-pointer"
+            className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition cursor-pointer"
             title="Synchroniser avec Discord Gateway"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${syncing ? "animate-spin text-pink-400" : ""}`} />
@@ -336,7 +336,7 @@ export default function InvitesCenterClient() {
           {/* Settings Link */}
           <Link
             href={`/discord/settings${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-            className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-xs font-medium text-[var(--text-muted)] hover:text-white transition cursor-pointer"
+            className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition cursor-pointer"
           >
             <Settings className="w-3.5 h-3.5 text-[var(--text-muted)]" />
             <span className="hidden sm:inline">Paramètres</span>
@@ -345,7 +345,7 @@ export default function InvitesCenterClient() {
           {/* Back to Bot Hub */}
           <Link
             href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-            className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-xs font-medium text-[var(--text-muted)] hover:text-white transition cursor-pointer"
+            className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Retour Discord</span>
@@ -681,7 +681,7 @@ export default function InvitesCenterClient() {
                     <td className="py-3.5 px-3 text-right">
                       <button
                         onClick={() => copyToClipboard(link.url)}
-                        className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-white transition cursor-pointer"
+                        className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition cursor-pointer"
                         title="Copier le lien"
                       >
                         <Copy className="w-3.5 h-3.5" />

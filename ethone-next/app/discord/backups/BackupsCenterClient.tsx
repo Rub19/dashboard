@@ -480,7 +480,7 @@ export default function BackupsCenterClient() {
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
                 href={`/discord${guildQuery}`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer shadow-sm"
+                className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
                 title="Retour au hub Discord"
               >
                 <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
@@ -488,7 +488,7 @@ export default function BackupsCenterClient() {
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-xl border border-emerald-500/30">
+              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-[var(--inset-radius)] border border-emerald-500/30 icon-pop">
                 <Archive className="w-6 h-6" />
               </div>
               <div>
@@ -511,19 +511,19 @@ export default function BackupsCenterClient() {
                 }}
               />
             )}
-            <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
+            <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
               <RefreshCw className={cn("w-4 h-4 text-emerald-300", loading && "animate-spin")} />
               Actualiser
             </button>
-            <Link href={`/discord/backups/compare${guildQuery}`} className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors">
+            <Link href={`/discord/backups/compare${guildQuery}`} className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors">
               <GitCompare className="w-4 h-4 text-emerald-300" />
               Comparer
             </Link>
-            <Link href={`/discord/backups/settings${guildQuery}`} className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors">
+            <Link href={`/discord/backups/settings${guildQuery}`} className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors">
               <Settings className="w-4 h-4 text-[var(--text-muted)]" />
               Paramètres
             </Link>
-            <button onClick={handleStartCreateWizard} className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer">
+            <button onClick={handleStartCreateWizard} className="px-4 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-2 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
               <Plus className="w-4 h-4" />
               Créer une Sauvegarde
             </button>
@@ -591,11 +591,11 @@ export default function BackupsCenterClient() {
             </div>
             <div className="flex items-center gap-2">
               {backups[0] && (
-                <button onClick={() => openTest(backups[0])} className="px-3.5 py-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer">
+                <button onClick={() => openTest(backups[0])} className="px-3.5 py-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer">
                   Tester intégrité
                 </button>
               )}
-              <button onClick={handleStartCreateWizard} className="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-semibold text-white transition-colors cursor-pointer">
+              <button onClick={handleStartCreateWizard} className="px-3.5 py-1.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-xs font-semibold text-[var(--accent-contrast)] cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                 Sauvegarder maintenant
               </button>
             </div>
@@ -606,14 +606,14 @@ export default function BackupsCenterClient() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input type="text" placeholder="Rechercher par nom, ID ou créateur..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] transition-colors" />
+            <input type="text" placeholder="Rechercher par nom, ID ou créateur..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl pl-10 pr-4 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] transition-colors" />
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
             {[
               { id: "ALL", label: "Toutes" }, { id: "FULL", label: "Complètes" }, { id: "PARTIAL", label: "Partielles" },
               { id: "PRE_CHANGE", label: "Pre-Change" }, { id: "ROLLBACK", label: "Rollback" }, { id: "PROTECTED", label: "🔒 Protégées" },
             ].map((tab) => (
-              <button key={tab.id} onClick={() => setSelectedType(tab.id)} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer", selectedType === tab.id ? "bg-emerald-500 text-white" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-white")}>
+              <button key={tab.id} onClick={() => setSelectedType(tab.id)} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer", selectedType === tab.id ? "bg-emerald-500 text-white" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
                 {tab.label}
               </button>
             ))}
@@ -674,13 +674,13 @@ export default function BackupsCenterClient() {
                     </td>
                     <td className="px-5 py-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
-                        <Link href={`/discord/backups/${bkp.backupId}${guildQuery}`} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-white transition-colors" title="Inspecter"><Eye className="w-3.5 h-3.5" /></Link>
+                        <Link href={`/discord/backups/${bkp.backupId}${guildQuery}`} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors" title="Inspecter"><Eye className="w-3.5 h-3.5" /></Link>
                         {!isDemo && (
-                          <a href={`${base}/${bkp.backupId}/download`} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-white transition-colors" title="Télécharger (.ethone-backup.json)"><Download className="w-3.5 h-3.5" /></a>
+                          <a href={`${base}/${bkp.backupId}/download`} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors" title="Télécharger (.ethone-backup.json)"><Download className="w-3.5 h-3.5" /></a>
                         )}
                         <button onClick={() => handleOpenRestore(bkp)} className="p-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 transition-colors cursor-pointer" title="Restaurer"><RotateCcw className="w-3.5 h-3.5" /></button>
                         <Link href={`/discord/backups/compare?backupA=${bkp.backupId}&backupB=LIVE${selectedGuild ? `&guildId=${selectedGuild.id}` : ""}`} className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 transition-colors" title="Comparer avec le direct"><GitCompare className="w-3.5 h-3.5" /></Link>
-                        <button onClick={() => handleToggleProtect(bkp)} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer" title={bkp.isProtected ? "Retirer protection" : "Protéger"}>
+                        <button onClick={() => handleToggleProtect(bkp)} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer" title={bkp.isProtected ? "Retirer protection" : "Protéger"}>
                           {bkp.isProtected ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
                         </button>
                         <button onClick={() => handleDelete(bkp)} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-rose-500/20 text-[var(--text-muted)] hover:text-rose-400 transition-colors cursor-pointer" title="Supprimer"><Trash2 className="w-3.5 h-3.5" /></button>
@@ -738,7 +738,7 @@ export default function BackupsCenterClient() {
                   </div>
                   <div className="flex justify-end gap-2 pt-2">
                     <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-muted)] transition-colors cursor-pointer">Annuler</button>
-                    <button onClick={handleExecuteCreate} className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-semibold text-white shadow-sm transition-all cursor-pointer">Lancer la sauvegarde</button>
+                    <button onClick={handleExecuteCreate} className="px-5 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-xs font-semibold text-[var(--accent-contrast)] cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">Lancer la sauvegarde</button>
                   </div>
                 </div>
               ) : (
@@ -837,7 +837,7 @@ export default function BackupsCenterClient() {
                   </div>
                   {restoreJob.errors?.length > 0 && <p className="text-xs text-rose-300 text-left max-h-24 overflow-y-auto">{restoreJob.errors.join("\n")}</p>}
                   {["COMPLETED", "PARTIAL", "FAILED", "ROLLED_BACK"].includes(restoreJob.status) && (
-                    <button onClick={() => setShowRestoreModal(false)} className="px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-white transition-colors cursor-pointer">Fermer</button>
+                    <button onClick={() => setShowRestoreModal(false)} className="px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer">Fermer</button>
                   )}
                 </div>
               )}
@@ -874,7 +874,7 @@ export default function BackupsCenterClient() {
                 </div>
               )}
               <div className="flex justify-end">
-                <button onClick={() => setShowTestModal(false)} className="px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-white transition-colors cursor-pointer">Fermer</button>
+                <button onClick={() => setShowTestModal(false)} className="px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer">Fermer</button>
               </div>
             </div>
           </div>

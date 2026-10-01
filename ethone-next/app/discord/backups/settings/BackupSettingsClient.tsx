@@ -157,10 +157,10 @@ export default function BackupSettingsClient() {
             <ArrowLeft className="w-4 h-4" /> Retour aux sauvegardes
           </Link>
           <div className="flex items-center gap-2">
-            <button onClick={load} disabled={loading} className="px-3 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 cursor-pointer disabled:opacity-50">
+            <button onClick={load} disabled={loading} className="px-3 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 cursor-pointer disabled:opacity-50">
               <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
             </button>
-            <button onClick={handleSave} disabled={saving || !dirty} className={cn("px-4 py-2 rounded-xl text-[var(--text-primary)] text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50", dirty ? "bg-emerald-500 hover:bg-emerald-600" : "bg-[var(--surface-raised)]/40")}>
+            <button onClick={handleSave} disabled={saving || !dirty} className={cn("px-4 py-2 rounded-xl text-[var(--text-primary)] text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50", dirty ? "bg-[var(--accent-primary)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50" : "bg-[var(--surface-raised)]/40")}>
               <Save className="w-4 h-4" />
               {saving ? "Enregistrement..." : dirty ? "Enregistrer les paramètres" : "À jour"}
             </button>

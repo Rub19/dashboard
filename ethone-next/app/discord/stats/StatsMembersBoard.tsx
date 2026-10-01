@@ -167,7 +167,7 @@ export default function StatsMembersBoard({
             return (
               <div
                 key={c.kind}
-                className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4"
               >
                 <p className="text-sm font-semibold text-[var(--text-primary)]">
                   <span className="mr-1.5">{c.icon}</span>
@@ -216,7 +216,7 @@ export default function StatsMembersBoard({
           })}
         </div>
       )}
-      <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+      <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-sm font-semibold text-[var(--text-primary)]">

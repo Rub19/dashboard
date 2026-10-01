@@ -158,7 +158,7 @@ export default function BackupDetailClient() {
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <Link href={`/discord/backups${guildQuery}`} className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"><ArrowLeft className="w-4 h-4" /> Retour aux sauvegardes</Link>
           <div className="flex items-center gap-2 flex-wrap">
-            <button onClick={toggleProtect} className={cn("px-3 py-1.5 rounded-lg border text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer", snapshot.isProtected ? "bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border-[var(--panel-border)] hover:text-white")}>
+            <button onClick={toggleProtect} className={cn("px-3 py-1.5 rounded-lg border text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer", snapshot.isProtected ? "bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border-[var(--panel-border)] hover:text-[var(--text-primary)]")}>
               {snapshot.isProtected ? <><Lock className="w-3.5 h-3.5" /> Protégé</> : <><Unlock className="w-3.5 h-3.5" /> Non protégé</>}
             </button>
             <a href={`${base}/${snapshot.backupId}/download`} className="px-3 py-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-medium text-[var(--text-muted)] flex items-center gap-1.5 transition-colors">
@@ -228,7 +228,7 @@ export default function BackupDetailClient() {
           ].map((t) => {
             const Icon = t.icon;
             return (
-              <button key={t.id} onClick={() => setActiveTab(t.id as typeof activeTab)} className={cn("px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer", activeTab === t.id ? "bg-[var(--surface-raised)]/40 text-white border-b-2 border-emerald-500/30" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
+              <button key={t.id} onClick={() => setActiveTab(t.id as typeof activeTab)} className={cn("px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer", activeTab === t.id ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] border-b-2 border-emerald-500/30" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
                 <Icon className={cn("w-4 h-4", t.c)} /> {t.label}
               </button>
             );

@@ -40454,6 +40454,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_45_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_45_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_45_0_de);
 
+const v1_46_0_fr: ChangelogEntry = {
+  version: "v1.46.0",
+  date: "2026-10-01",
+  title: "Pages des modules du bot : nouvelle DA",
+  items: [
+    "Les 123 boutons principaux des pages de modules passent aux couleurs du thème, avec reflet au survol, effet d'appui et anneau de focus clavier.",
+    "Sélecteur de serveur, sélecteur de salon et sélecteur de rôle : menus qui s'ouvrent en douceur, surlignage qui glisse d'un serveur à l'autre, couleurs du thème.",
+    "En-têtes : le titre de chaque page apparaît en douceur, la flèche de retour avance au survol, les boutons de retour et les tuiles d'icône sont harmonisés (arrivée avec léger rebond). L'en-tête commun PageHeader est animé.",
+    "Corrigé : 78 textes blancs codés en dur devenaient invisibles sur les thèmes clairs ; ils suivent maintenant le thème. Les cartes adoptent le rayon du thème.",
+  ],
+};
+
+const v1_46_0_en: ChangelogEntry = {
+  version: "v1.46.0",
+  date: "2026-10-01",
+  title: "Bot module pages: new art direction",
+  items: [
+    "The 123 primary buttons across module pages now use the theme colours, with a hover sheen, press effect and keyboard focus ring.",
+    "Server, channel and role pickers: menus that open smoothly, a highlight that glides between servers, theme colours.",
+    "Headers: each page title reveals smoothly, the back arrow nudges on hover, back buttons and icon tiles are unified (landing with a slight bounce). The shared PageHeader is animated.",
+    "Fixed: 78 hard-coded white texts became invisible on light themes; they now follow the theme. Cards use the theme radius.",
+  ],
+};
+
+const v1_46_0_es: ChangelogEntry = {
+  version: "v1.46.0",
+  date: "2026-10-01",
+  title: "Páginas de módulos del bot: nueva dirección artística",
+  items: [
+    "Botones principales con los colores del tema, selectores animados, encabezados animados y textos legibles en temas claros.",
+  ],
+};
+
+const v1_46_0_de: ChangelogEntry = {
+  version: "v1.46.0",
+  date: "2026-10-01",
+  title: "Bot-Modulseiten: neue Art Direction",
+  items: [
+    "Primäre Buttons in Theme-Farben, animierte Auswahlmenüs, animierte Kopfzeilen und lesbare Texte in hellen Themes.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_46_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_46_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_46_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_46_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

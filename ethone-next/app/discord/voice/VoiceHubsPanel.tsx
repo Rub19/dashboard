@@ -123,7 +123,7 @@ export default function VoiceHubsPanel({ guildId, hubs, onChanged }: Props) {
           type="button"
           disabled={busy}
           onClick={() => void call("/quick", "POST", {}, "Salons temporaires installés", "La catégorie et le salon « Créer ton salon » sont créés et le module est activé.")}
-          className="mt-8 cursor-pointer rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50"
+          className="mt-8 cursor-pointer rounded-xl bg-[var(--accent-primary)] px-6 py-3 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
         >
           {busy ? "Installation…" : "Créer mes salons temporaires"}
         </button>
@@ -156,16 +156,16 @@ export default function VoiceHubsPanel({ guildId, hubs, onChanged }: Props) {
       </div>
 
       {adding && (
-        <div className="grid gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+        <div className="grid gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
           <label className="text-xs text-[var(--text-muted)]">
             Nom du hub
-            <input value={newName} maxLength={60} onChange={(e) => setNewName(e.target.value)} className="mt-1 h-10 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500" />
+            <input value={newName} maxLength={60} onChange={(e) => setNewName(e.target.value)} className="mt-1 h-10 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500" />
           </label>
           <div>
             <p className="mb-1 text-xs text-[var(--text-muted)]">Salon vocal déclencheur</p>
             <ChannelPicker value={newTrigger} guildId={guildId} filterTypes={[2]} disabled={busy} onChange={(id) => setNewTrigger(id)} />
           </div>
-          <button type="button" disabled={busy || !newTrigger} onClick={() => void addManual()} className="h-10 cursor-pointer rounded-xl bg-emerald-500 px-5 text-xs font-bold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-40">
+          <button type="button" disabled={busy || !newTrigger} onClick={() => void addManual()} className="h-10 cursor-pointer rounded-xl bg-[var(--accent-primary)] px-5 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
             Créer
           </button>
         </div>
@@ -175,16 +175,16 @@ export default function VoiceHubsPanel({ guildId, hubs, onChanged }: Props) {
         {hubs.map((hub) => {
           const isEditing = editing === hub.id;
           return (
-            <div key={hub.id} className="flex flex-col justify-between rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+            <div key={hub.id} className="flex flex-col justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               {isEditing ? (
                 <div className="space-y-3">
                   <label className="block text-xs text-[var(--text-muted)]">
                     Nom du hub
-                    <input value={draft.name ?? ""} maxLength={60} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className="mt-1 h-10 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500" />
+                    <input value={draft.name ?? ""} maxLength={60} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className="mt-1 h-10 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500" />
                   </label>
                   <label className="block text-xs text-[var(--text-muted)]">
                     Nom des salons créés
-                    <input value={draft.namingTemplate ?? ""} maxLength={90} onChange={(e) => setDraft({ ...draft, namingTemplate: e.target.value })} className="mt-1 h-10 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 font-mono text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500" />
+                    <input value={draft.namingTemplate ?? ""} maxLength={90} onChange={(e) => setDraft({ ...draft, namingTemplate: e.target.value })} className="mt-1 h-10 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 font-mono text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500" />
                     <span className="mt-1 flex flex-wrap gap-1">
                       {TOKENS.map((t) => (
                         <button key={t} type="button" onClick={() => setDraft({ ...draft, namingTemplate: `${draft.namingTemplate ?? ""}${t}`.slice(0, 90) })} className="cursor-pointer rounded bg-[var(--surface-raised)]/40 px-1.5 py-0.5 font-mono text-xs text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70">
@@ -196,7 +196,7 @@ export default function VoiceHubsPanel({ guildId, hubs, onChanged }: Props) {
                   <div className="grid grid-cols-2 gap-3">
                     <label className="block text-xs text-[var(--text-muted)]">
                       Limite de membres (0 = illimitée)
-                      <input type="number" min={0} max={99} value={draft.userLimit ?? 0} onChange={(e) => setDraft({ ...draft, userLimit: Math.max(0, Math.min(99, Number(e.target.value) || 0)) })} className="mt-1 h-10 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500" />
+                      <input type="number" min={0} max={99} value={draft.userLimit ?? 0} onChange={(e) => setDraft({ ...draft, userLimit: Math.max(0, Math.min(99, Number(e.target.value) || 0)) })} className="mt-1 h-10 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500" />
                     </label>
                     <div>
                       <Select
@@ -229,7 +229,7 @@ export default function VoiceHubsPanel({ guildId, hubs, onChanged }: Props) {
                     <button type="button" onClick={() => setEditing(null)} className="cursor-pointer rounded-xl px-4 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                       Annuler
                     </button>
-                    <button type="button" disabled={busy || !(draft.name ?? "").trim() || !(draft.namingTemplate ?? "").trim()} onClick={() => void saveEdit(hub)} className="cursor-pointer rounded-xl bg-emerald-500 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-40">
+                    <button type="button" disabled={busy || !(draft.name ?? "").trim() || !(draft.namingTemplate ?? "").trim()} onClick={() => void saveEdit(hub)} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                       Enregistrer
                     </button>
                   </div>

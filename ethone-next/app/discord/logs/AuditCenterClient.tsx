@@ -623,7 +623,7 @@ export function AuditCenterClient() {
           <div className="flex items-center gap-3">
             <Link
               href={selectedGuild ? `/discord?guildId=${selectedGuild.id}` : "/discord"}
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]"
+              className="flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
@@ -687,7 +687,7 @@ export function AuditCenterClient() {
             <button
               type="button"
               onClick={() => setExportModalOpen(true)}
-              className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] cursor-pointer"
+              className="flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] cursor-pointer"
             >
               <Download className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Exporter</span>
@@ -724,7 +724,7 @@ export function AuditCenterClient() {
 
         {/* KPI METRICS OVERVIEW BANNER */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 ">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 ">
             <div className="flex items-center justify-between">
               <span className="text-xs text-[var(--text-muted)]">Événements (Auj.)</span>
               <Activity className="h-4 w-4 text-emerald-400" />
@@ -737,7 +737,7 @@ export function AuditCenterClient() {
             </span>
           </div>
 
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 ">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 ">
             <div className="flex items-center justify-between">
               <span className="text-xs text-[var(--text-muted)]">Sécurité & Raids</span>
               <ShieldAlert className="h-4 w-4 text-rose-400" />
@@ -748,7 +748,7 @@ export function AuditCenterClient() {
             <span className="text-xs text-[var(--text-muted)]">Menaces & verrouillages</span>
           </div>
 
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 ">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 ">
             <div className="flex items-center justify-between">
               <span className="text-xs text-[var(--text-muted)]">Modération</span>
               <Scale className="h-4 w-4 text-orange-400" />
@@ -759,7 +759,7 @@ export function AuditCenterClient() {
             <span className="text-xs text-[var(--text-muted)]">Cases générées</span>
           </div>
 
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 ">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 ">
             <div className="flex items-center justify-between">
               <span className="text-xs text-[var(--text-muted)]">AutoMod</span>
               <Zap className="h-4 w-4 text-amber-400" />
@@ -862,7 +862,7 @@ export function AuditCenterClient() {
         {activeTab === "stream" && (
           <div className="space-y-4">
             {/* BARRE DE FILTRES MULTI-CRITÈRES */}
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3.5 ">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3.5 ">
               <div className="flex flex-1 items-center gap-2 min-w-[240px]">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
@@ -871,7 +871,7 @@ export function AuditCenterClient() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Recherche (acteur, cible, ID, Case #, salon, raison...)"
-                    className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 pl-9 pr-3 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--input-border-hover)]"
+                    className="h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 pl-9 pr-3 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--input-border-hover)]"
                   />
                   {searchQuery && (
                     <button
@@ -947,7 +947,7 @@ export function AuditCenterClient() {
                 <button
                   type="button"
                   onClick={fetchEvents}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] cursor-pointer"
+                  className="flex h-9 w-9 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] cursor-pointer"
                   title="Rafraîchir les logs"
                 >
                   <RefreshCw className={cn("h-3.5 w-3.5", loadingEvents && "animate-spin")} />
@@ -956,7 +956,7 @@ export function AuditCenterClient() {
             </div>
 
             {/* TABLEAU DES LOGS */}
-            <div className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 ">
+            <div className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 ">
               {events.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center text-[var(--text-muted)]">
                   <FileText className="h-10 w-10 text-[var(--text-muted)] mb-2" />
@@ -1080,7 +1080,7 @@ export function AuditCenterClient() {
                             <button
                               type="button"
                               onClick={() => handleInvestigate(evt.id)}
-                              className="mt-1 inline-flex items-center gap-1 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-300 transition-all hover:bg-emerald-600 hover:text-white cursor-pointer"
+                              className="mt-1 inline-flex items-center gap-1 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-300 hover:brightness-110 hover:text-[var(--text-primary)] cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                             >
                               <Eye className="h-3 w-3" />
                               <span>Enquêter</span>
@@ -1151,7 +1151,7 @@ export function AuditCenterClient() {
         {activeTab === "analytics" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* RÉPARTITION PAR MODULE */}
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
               <h3 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Layers className="h-4 w-4 text-emerald-400" />
                 Répartition des Événements par Module
@@ -1178,7 +1178,7 @@ export function AuditCenterClient() {
             </div>
 
             {/* RÉPARTITION PAR SÉVÉRITÉ */}
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
               <h3 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Activity className="h-4 w-4 text-emerald-400" />
                 Distribution par Niveau de Sévérité
@@ -1215,7 +1215,7 @@ export function AuditCenterClient() {
         {/* TAB 4: ROUTAGE SALONS & RÉTENTION */}
         {activeTab === "routing" && (
           <div className="max-w-4xl space-y-6">
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
               <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
                 <div>
                   <h3 className="text-sm font-bold text-[var(--text-primary)]">Routage vers Salons Discord</h3>
@@ -1227,7 +1227,7 @@ export function AuditCenterClient() {
                   type="button"
                   onClick={handleSaveConfig}
                   disabled={savingConfig}
-                  className="flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-all cursor-pointer"
+                  className="flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   <CheckCircle2 className="h-4 w-4" />
                   <span>{savingConfig ? "Sauvegarde..." : "Enregistrer"}</span>
@@ -1236,14 +1236,14 @@ export function AuditCenterClient() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 {/* Salon Général */}
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
                   <span className="font-bold text-[var(--text-primary)]">Logs Généraux & Serveur</span>
                   <ChannelSelect
                     value={configRouting.generalChannelId}
                     onChange={(id) => setConfigRouting({ ...configRouting, generalChannelId: id })}
                     channels={textChannels}
                     emptyLabel="— Aucun (salon général) —"
-                    className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
+                    className="h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
                   />
                   <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span>Seuil de déclenchement :</span>
@@ -1264,14 +1264,14 @@ export function AuditCenterClient() {
                 </div>
 
                 {/* Salon Modération */}
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
                   <span className="font-bold text-orange-400">Logs de Modération (Cases)</span>
                   <ChannelSelect
                     value={configRouting.moderationChannelId}
                     onChange={(id) => setConfigRouting({ ...configRouting, moderationChannelId: id })}
                     channels={textChannels}
                     emptyLabel="— Aucun (salon général) —"
-                    className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-orange-500"
+                    className="h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-orange-500"
                   />
                   <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span>Seuil de déclenchement :</span>
@@ -1292,14 +1292,14 @@ export function AuditCenterClient() {
                 </div>
 
                 {/* Salon Sécurité */}
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
                   <span className="font-bold text-rose-400">Logs Sécurité & Anti-Raid</span>
                   <ChannelSelect
                     value={configRouting.securityChannelId}
                     onChange={(id) => setConfigRouting({ ...configRouting, securityChannelId: id })}
                     channels={textChannels}
                     emptyLabel="— Aucun (salon général) —"
-                    className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-rose-500"
+                    className="h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-rose-500"
                   />
                   <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span>Seuil de déclenchement :</span>
@@ -1320,14 +1320,14 @@ export function AuditCenterClient() {
                 </div>
 
                 {/* Salon AutoMod */}
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
                   <span className="font-bold text-amber-400">Logs Détections AutoMod</span>
                   <ChannelSelect
                     value={configRouting.automodChannelId}
                     onChange={(id) => setConfigRouting({ ...configRouting, automodChannelId: id })}
                     channels={textChannels}
                     emptyLabel="— Aucun (salon général) —"
-                    className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-amber-500"
+                    className="h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-amber-500"
                   />
                   <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span>Seuil de déclenchement :</span>
@@ -1350,7 +1350,7 @@ export function AuditCenterClient() {
             </div>
 
             {/* WEBHOOKS PAR CATÉGORIE */}
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
               <div className="flex flex-col gap-3 border-b border-[var(--panel-border)] pb-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h3 className="text-sm font-bold text-[var(--text-primary)]">Webhooks par catégorie</h3>
@@ -1362,7 +1362,7 @@ export function AuditCenterClient() {
                   type="button"
                   onClick={handleSaveConfig}
                   disabled={savingConfig}
-                  className="flex items-center gap-2 self-start rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-all cursor-pointer disabled:opacity-60"
+                  className="flex items-center gap-2 self-start rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer disabled:opacity-60 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   <CheckCircle2 className="h-4 w-4" />
                   <span>{savingConfig ? "Sauvegarde..." : "Enregistrer"}</span>
@@ -1373,7 +1373,7 @@ export function AuditCenterClient() {
                 {LOG_CATEGORIES.map((cat) => (
                   <div
                     key={cat.key}
-                    className="grid grid-cols-1 items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs sm:grid-cols-[9rem_minmax(0,1fr)_minmax(0,1fr)_auto]"
+                    className="grid grid-cols-1 items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs sm:grid-cols-[9rem_minmax(0,1fr)_minmax(0,1fr)_auto]"
                   >
                     <span className="font-bold text-[var(--text-primary)]">
                       <span className="mr-1.5">{cat.icon}</span>
@@ -1385,20 +1385,20 @@ export function AuditCenterClient() {
                       value={webhookNames[cat.key] || ""}
                       onChange={(e) => setWebhookNames({ ...webhookNames, [cat.key]: e.target.value })}
                       placeholder={`Nom du webhook (défaut : ${cat.defaultName})`}
-                      className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
+                      className="h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
                     />
                     <ChannelSelect
                       value={categoryChannels[cat.key] || ""}
                       onChange={(id) => setCategoryChannels({ ...categoryChannels, [cat.key]: id })}
                       channels={textChannels}
                       emptyLabel="Salon par défaut (routage ci-dessus)"
-                      className="h-9 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-2 text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
+                      className="h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-2 text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
                     />
                     <button
                       type="button"
                       onClick={() => handleTestCategory(cat.key)}
                       disabled={testingCategory !== null}
-                      className="h-9 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-50 cursor-pointer"
+                      className="h-9 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-50 cursor-pointer"
                     >
                       {testingCategory === cat.key ? "Envoi…" : "Tester"}
                     </button>
@@ -1411,7 +1411,7 @@ export function AuditCenterClient() {
             </div>
 
             {/* RÉTENTION DES LOGS */}
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-3">
               <h3 className="text-sm font-bold text-[var(--text-primary)]">Politique de Conservation & Purge (Rétention)</h3>
               <p className="text-xs text-[var(--text-muted)]">
                 Détermine combien de temps les logs sont conservés avant d&apos;être purgés automatiquement pour préserver l&apos;espace disque et le respect de la vie privée.
@@ -1443,14 +1443,14 @@ export function AuditCenterClient() {
             </div>
 
             {/* RÉGLAGES : WEBHOOKS + IGNORER */}
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
               <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
                 <h3 className="text-sm font-bold text-[var(--text-primary)]">Réglages</h3>
                 <button
                   type="button"
                   onClick={handleSaveConfig}
                   disabled={savingConfig}
-                  className="flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-all cursor-pointer disabled:opacity-60"
+                  className="flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer disabled:opacity-60 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   <CheckCircle2 className="h-4 w-4" />
                   <span>{savingConfig ? "Sauvegarde..." : "Enregistrer"}</span>
@@ -1460,7 +1460,7 @@ export function AuditCenterClient() {
               <button
                 type="button"
                 onClick={() => setUseWebhooks((v) => !v)}
-                className="flex w-full items-start justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-left cursor-pointer hover:bg-[var(--surface-raised)]/70"
+                className="flex w-full items-start justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-left cursor-pointer hover:bg-[var(--surface-raised)]/70"
               >
                 <span>
                   <span className="block text-xs font-bold text-[var(--text-primary)]">Utiliser des webhooks</span>
@@ -1534,7 +1534,7 @@ export function AuditCenterClient() {
                     value={ignoreUserInput}
                     onChange={(e) => setIgnoreUserInput(e.target.value)}
                     placeholder="ID utilisateur"
-                    className="h-9 flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
+                    className="h-9 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--input-border-hover)]"
                   />
                   <button
                     type="button"
@@ -1544,7 +1544,7 @@ export function AuditCenterClient() {
                       setIgnoreUserIds([...ignoreUserIds, id]);
                       setIgnoreUserInput("");
                     }}
-                    className="h-9 shrink-0 rounded-xl bg-emerald-500 px-3 text-xs font-semibold text-white hover:bg-emerald-600 cursor-pointer"
+                    className="h-9 shrink-0 rounded-xl bg-[var(--accent-primary)] px-3 text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                   >
                     Ajouter
                   </button>
@@ -1558,7 +1558,7 @@ export function AuditCenterClient() {
       {/* MODAL INVESTIGATION (MODE ENQUÊTE APPROFONDIE) */}
       {investigatingEventId && (
         <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 p-4 overflow-y-auto">
-          <div className="relative w-full max-w-3xl rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-5 my-8">
+          <div className="relative w-full max-w-3xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-5 my-8">
             <button
               type="button"
               onClick={() => {
@@ -1592,7 +1592,7 @@ export function AuditCenterClient() {
             ) : investigationData ? (
               <div className="space-y-5 text-xs">
                 {/* SYNTHÈSE "QUI, QUOI, QUAND, OÙ, POURQUOI" */}
-                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 p-4 space-y-3">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 p-4 space-y-3">
                   <h3 className="font-bold text-[var(--text-primary)] text-xs uppercase tracking-wider text-emerald-400">
                     Fiche d&apos;Investigation
                   </h3>
@@ -1677,7 +1677,7 @@ export function AuditCenterClient() {
                     <Clock className="h-4 w-4 text-emerald-400" />
                     Chronologie des Événements Connexes (Chaîne de Causalité)
                   </h3>
-                  <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3 space-y-2 max-h-60 overflow-y-auto">
+                  <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3 space-y-2 max-h-60 overflow-y-auto">
                     {investigationData.causalityChain.map((step) => (
                       <div
                         key={step.eventId}
@@ -1714,7 +1714,7 @@ export function AuditCenterClient() {
                       <Sliders className="h-4 w-4 text-amber-400" />
                       Différence d&apos;État Détectée (Avant / Après)
                     </h3>
-                    <div className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60">
+                    <div className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60">
                       <table className="w-full text-left text-xs">
                         <thead className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-xs uppercase font-bold text-[var(--text-muted)]">
                           <tr>
@@ -1745,7 +1745,7 @@ export function AuditCenterClient() {
       {/* MODAL EXPORT (CSV / JSON) */}
       {exportModalOpen && (
         <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 p-4">
-          <div className="relative w-full max-w-md rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
+          <div className="relative w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
             <button
               type="button"
               onClick={() => setExportModalOpen(false)}
@@ -1800,7 +1800,7 @@ export function AuditCenterClient() {
               <button
                 type="button"
                 onClick={handleDownloadExport}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-500 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-600 transition-all cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-[var(--accent-primary)] py-2.5 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 <Download className="h-4 w-4" />
                 <span>Télécharger l&apos;export {exportFormat.toUpperCase()}</span>

@@ -515,7 +515,7 @@ export default function SuggestionsCenterClient() {
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
                 href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer shadow-sm"
+                className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
                 title="Retour au hub Discord"
               >
                 <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
@@ -523,7 +523,7 @@ export default function SuggestionsCenterClient() {
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-amber-500/15 text-amber-400 rounded-xl border border-amber-500/30 shadow-sm">
+              <div className="p-2.5 bg-amber-500/15 text-amber-400 rounded-[var(--inset-radius)] border border-amber-500/30 icon-pop">
                 <Lightbulb className="w-6 h-6" />
               </div>
               <div>
@@ -548,7 +548,7 @@ export default function SuggestionsCenterClient() {
             )}
             <button
               onClick={() => setActiveTab("settings")}
-              className="px-3.5 py-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)] text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer"
+              className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)] text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer"
             >
               <Sliders className="w-4 h-4 text-amber-400" />
               Paramètres
@@ -655,7 +655,7 @@ export default function SuggestionsCenterClient() {
                       onClick={() => setCategoryFilter(cat)}
                       className={cn(
                         "px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer",
-                        categoryFilter === cat ? "bg-amber-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-white"
+                        categoryFilter === cat ? "bg-amber-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                       )}
                     >
                       {cat === "ALL" ? "Toutes" : cat}

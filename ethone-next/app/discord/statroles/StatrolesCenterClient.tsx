@@ -248,7 +248,7 @@ function LeafEditor({ leaf, roles, onChange, onDelete }: { leaf: Leaf; roles: Ro
       );
   }
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs">
+    <div className="flex flex-wrap items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs">
       <span className="w-40 shrink-0 font-semibold text-[var(--text-primary)]">{title}</span>
       {body}
       <button type="button" aria-label="Supprimer la condition" onClick={onDelete} className="ml-auto cursor-pointer rounded-md p-1 text-[var(--text-muted)] transition hover:bg-rose-500/10 hover:text-rose-300">
@@ -454,13 +454,13 @@ export default function StatrolesCenterClient() {
                     Appliquer maintenant
                   </button>
                 )}
-                <button type="button" disabled={busy} onClick={() => void setEnabled(!cfg.enabled)} className="cursor-pointer rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50">
+                <button type="button" disabled={busy} onClick={() => void setEnabled(!cfg.enabled)} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                   {cfg.enabled ? "Désactiver" : "Activer"}
                 </button>
               </div>
             </div>
 
-            <section className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
+            <section className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold">Règles ({cfg.rules.length}/25)</h2>
                 <button
@@ -519,7 +519,7 @@ export default function StatrolesCenterClient() {
 
       {editing && overview && (
         <div className="fixed inset-0 z-[var(--z-modal)] flex items-start justify-center overflow-y-auto bg-black/60 p-4 sm:items-center" onClick={() => setEditing(null)} role="dialog" aria-modal="true" aria-label="Éditeur de règle">
-          <div className="w-full max-w-3xl rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-5 sm:p-6" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-3xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-5 sm:p-6" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between gap-3">
               <h3 className="text-base font-bold">{cfg?.rules.some((r) => r.id === editing.id) ? "Modifier la règle" : "Nouvelle règle"}</h3>
               <button type="button" aria-label="Fermer" onClick={() => setEditing(null)} className="cursor-pointer rounded-xl p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]">
@@ -557,7 +557,7 @@ export default function StatrolesCenterClient() {
                   ["enabled", "Règle active", "Désactivée, elle n'attribue ni ne retire rien."],
                 ] as const
               ).map(([key, label, hint]) => (
-                <button key={key} type="button" role="switch" aria-checked={editing[key]} onClick={() => setEditing({ ...editing, [key]: !editing[key] })} className="flex cursor-pointer items-start justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-left transition hover:bg-[var(--surface-raised)]/70">
+                <button key={key} type="button" role="switch" aria-checked={editing[key]} onClick={() => setEditing({ ...editing, [key]: !editing[key] })} className="flex cursor-pointer items-start justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-left transition hover:bg-[var(--surface-raised)]/70">
                   <span>
                     <span className="block text-xs font-semibold text-[var(--text-primary)]">{label}</span>
                     <span className="mt-0.5 block text-xs text-[var(--text-muted)]">{hint}</span>
@@ -574,7 +574,7 @@ export default function StatrolesCenterClient() {
               <GroupEditor group={editing.root} roles={overview.roles} depth={0} onChange={(root) => setEditing({ ...editing, root })} />
             </div>
 
-            <div className="mt-4 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+            <div className="mt-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-xs font-semibold text-[var(--text-muted)]">Aperçu</p>
                 <button type="button" disabled={previewing || !editing.roleId} onClick={() => void runPreview()} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition hover:bg-[var(--surface-raised)]/70 disabled:cursor-not-allowed disabled:opacity-50">
@@ -609,7 +609,7 @@ export default function StatrolesCenterClient() {
               <button type="button" onClick={() => setEditing(null)} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)]/70">
                 Annuler
               </button>
-              <button type="button" disabled={busy || !editing.roleId || !editing.name.trim()} onClick={() => void save()} className="cursor-pointer rounded-xl bg-emerald-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50">
+              <button type="button" disabled={busy || !editing.roleId || !editing.name.trim()} onClick={() => void save()} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-5 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                 Enregistrer la règle
               </button>
             </div>

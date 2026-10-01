@@ -951,7 +951,7 @@ export function TicketCenterClient() {
       {activeTab === "explorer" && (
         <div className="space-y-4 mt-6">
           {/* Filters Bar */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative min-w-[240px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-muted)]" />
@@ -1019,7 +1019,7 @@ export function TicketCenterClient() {
           </div>
 
           {/* Tickets Table */}
-          <div className="overflow-x-auto rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
+          <div className="overflow-x-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
             <table className="w-full text-left text-xs">
               <thead className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)]">
                 <tr>
@@ -1124,7 +1124,7 @@ export function TicketCenterClient() {
                           <button
                             onClick={() => handleQuickClaim(t)}
                             disabled={actionLoading}
-                            className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2 py-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-emerald-600/30 transition-all cursor-pointer"
+                            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2 py-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-emerald-600/30 transition-all cursor-pointer"
                           >
                             + Prendre en charge
                           </button>
@@ -1148,7 +1148,7 @@ export function TicketCenterClient() {
                         <div className="flex items-center justify-end gap-1.5">
                           <Link
                             href={`/discord/tickets/${t.id}?guildId=${currentGuildId}`}
-                            className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-emerald-600/20 transition-all"
+                            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-emerald-600/20 transition-all"
                             title="Ouvrir le détail complet"
                           >
                             <ChevronRight className="h-4 w-4" />
@@ -1212,7 +1212,7 @@ export function TicketCenterClient() {
             {panels.map((p) => (
               <div
                 key={p.id}
-                className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
               >
                 <div className="flex items-start justify-between">
                   <div>
@@ -1225,7 +1225,7 @@ export function TicketCenterClient() {
                   />
                 </div>
 
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
                   <p className="text-xs uppercase font-bold text-[var(--text-muted)]">Catégories liées</p>
                   <div className="flex flex-wrap gap-1.5">
                     {p.categoryIds && p.categoryIds.length > 0 ? (
@@ -1325,7 +1325,7 @@ export function TicketCenterClient() {
             {categories.map((cat) => (
               <div
                 key={cat.id}
-                className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
@@ -1366,7 +1366,7 @@ export function TicketCenterClient() {
                       setEditingCategory(cat);
                       setShowCategoryModal(true);
                     }}
-                    className="flex items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2.5 py-1 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+                    className="flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2.5 py-1 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
                   >
                     <Edit2 className="h-3.5 w-3.5" />
                     <span>Modifier</span>
@@ -1418,7 +1418,7 @@ export function TicketCenterClient() {
             {teams.map((t) => (
               <div
                 key={t.id}
-                className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -1432,7 +1432,7 @@ export function TicketCenterClient() {
                 </div>
                 <p className="text-xs text-[var(--text-muted)]">{t.description || "Aucune description"}</p>
 
-                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-1 text-xs">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-1 text-xs">
                   <p className="text-xs text-[var(--text-muted)] font-medium uppercase">Membres & Rôles</p>
                   <p className="text-[var(--text-primary)] font-semibold">
                     {t.roleIds.length > 0 ? `${t.roleIds.length} rôle(s) Discord assigné(s)` : "Aucun rôle configuré"}
@@ -1490,7 +1490,7 @@ export function TicketCenterClient() {
             {automations.map((a) => (
               <div
                 key={a.id}
-                className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4"
+                className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -1551,7 +1551,7 @@ export function TicketCenterClient() {
             </p>
           </div>
 
-          <div className="overflow-x-auto rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
+          <div className="overflow-x-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
             <table className="w-full text-left text-xs">
               <thead className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)]">
                 <tr>
@@ -1579,7 +1579,7 @@ export function TicketCenterClient() {
                             href={`${API_BASE}/api/guilds/${currentGuildId}/tickets/transcripts/${t.id}/download`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2.5 py-1 text-xs font-semibold text-emerald-400 hover:bg-emerald-600/20"
+                            className="inline-flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2.5 py-1 text-xs font-semibold text-emerald-400 hover:bg-emerald-600/20"
                           >
                             <Download className="h-3 w-3" />
                             <span>HTML</span>
@@ -1605,7 +1605,7 @@ export function TicketCenterClient() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
               <h3 className="font-bold text-[var(--text-primary)] text-xs uppercase tracking-wider">Répartition par Catégorie</h3>
               <div className="space-y-2">
                 {Object.entries(overview?.byCategory || {}).map(([catName, count]) => (
@@ -1630,7 +1630,7 @@ export function TicketCenterClient() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
               <h3 className="font-bold text-[var(--text-primary)] text-xs uppercase tracking-wider">Répartition par Priorité</h3>
               <div className="space-y-2">
                 {Object.entries(overview?.byPriority || {}).map(([prio, count]) => (
@@ -1675,7 +1675,7 @@ export function TicketCenterClient() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
               <div>
                 <p className="font-bold text-[var(--text-primary)] text-xs">Activer le système de Tickets</p>
@@ -2020,7 +2020,7 @@ export function TicketCenterClient() {
 
               <div className="space-y-1">
                 <label className="font-semibold text-[var(--text-muted)]">Catégories de tickets associées</label>
-                <div className="space-y-1.5 max-h-36 overflow-y-auto rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5">
+                <div className="space-y-1.5 max-h-36 overflow-y-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5">
                   {categories.length === 0 ? (
                     <p className="text-xs text-[var(--text-muted)]">Aucune catégorie disponible. Créez d'abord une catégorie.</p>
                   ) : (

@@ -363,7 +363,7 @@ export default function FormBuilderClient() {
         <div className="flex items-center gap-3">
           <Link
             href={`/discord/forms?guildId=${rawGuildId}`}
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer"
+            className="flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -388,7 +388,7 @@ export default function FormBuilderClient() {
             onClick={() => setPreviewMode("edit")}
             className={cn(
               "flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer",
-              previewMode === "edit" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-white"
+              previewMode === "edit" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
             <Sliders className="h-3 w-3" />
@@ -398,7 +398,7 @@ export default function FormBuilderClient() {
             onClick={() => setPreviewMode("desktop")}
             className={cn(
               "flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer",
-              previewMode === "desktop" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-white"
+              previewMode === "desktop" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
             <Monitor className="h-3 w-3" />
@@ -408,7 +408,7 @@ export default function FormBuilderClient() {
             onClick={() => setPreviewMode("mobile")}
             className={cn(
               "flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer",
-              previewMode === "mobile" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-white"
+              previewMode === "mobile" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
             <Smartphone className="h-3 w-3" />
@@ -418,7 +418,7 @@ export default function FormBuilderClient() {
             onClick={() => setPreviewMode("discord")}
             className={cn(
               "flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer",
-              previewMode === "discord" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-white"
+              previewMode === "discord" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
             <MessageSquare className="h-3 w-3 text-emerald-400" />
@@ -430,7 +430,7 @@ export default function FormBuilderClient() {
         <div className="flex items-center gap-2">
           <Link
             href={`/discord/forms/${formId}/settings?guildId=${rawGuildId}`}
-            className="flex h-8 items-center gap-1.5 px-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+            className="flex h-8 items-center gap-1.5 px-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
           >
             <Settings className="h-3.5 w-3.5" />
             <span className="hidden lg:inline">Paramètres &amp; Discord</span>
@@ -438,7 +438,7 @@ export default function FormBuilderClient() {
           <button
             onClick={handleSave}
             disabled={isSaving || !dirty}
-            className="flex h-8 items-center gap-1.5 px-3.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+            className="flex h-8 items-center gap-1.5 px-3.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer active:scale-95 disabled:opacity-50"
           >
             <Save className="h-3.5 w-3.5" />
             <span>{isSaving ? "Sauvegarde..." : "Enregistrer"}</span>
@@ -447,7 +447,7 @@ export default function FormBuilderClient() {
             <button
               onClick={handlePublish}
               disabled={isSaving}
-              className="flex h-8 items-center gap-1.5 px-3.5 rounded-xl bg-emerald-500 text-xs font-bold text-white shadow hover:bg-emerald-600 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+              className="flex h-8 items-center gap-1.5 px-3.5 rounded-xl bg-[var(--accent-primary)] text-xs font-bold text-[var(--accent-contrast)] shadow hover:brightness-110 cursor-pointer active:scale-95 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <CheckCircle2 className="h-3.5 w-3.5" />
               <span>Publier</span>
@@ -478,7 +478,7 @@ export default function FormBuilderClient() {
                       <button
                         key={item.type}
                         onClick={() => handleAddField(item.type, item.label)}
-                        className="flex items-center gap-2.5 p-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-emerald-500/15 hover:border-[var(--input-border-hover)] text-left transition-all cursor-pointer group"
+                        className="flex items-center gap-2.5 p-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-emerald-500/15 hover:border-[var(--input-border-hover)] text-left transition-all cursor-pointer group"
                       >
                         <div className="h-7 w-7 rounded-lg bg-[var(--surface-raised)]/50 group-hover:bg-emerald-600 text-[var(--text-muted)] group-hover:text-[var(--text-primary)] flex items-center justify-center shrink-0 transition-colors">
                           <Icon className="h-3.5 w-3.5" />
@@ -531,7 +531,7 @@ export default function FormBuilderClient() {
               </div>
 
               {/* Active Step Card */}
-              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                 <div className="border-b border-[var(--panel-border)] pb-3">
                   <input
                     type="text"
@@ -666,10 +666,10 @@ export default function FormBuilderClient() {
                             )}
                             {field.type === "YES_NO" && (
                               <div className="flex gap-2">
-                                <span className="px-3 py-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs text-[var(--text-muted)]">
+                                <span className="px-3 py-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs text-[var(--text-muted)]">
                                   Oui
                                 </span>
-                                <span className="px-3 py-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs text-[var(--text-muted)]">
+                                <span className="px-3 py-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs text-[var(--text-muted)]">
                                   Non
                                 </span>
                               </div>
@@ -759,7 +759,7 @@ export default function FormBuilderClient() {
                 </div>
 
                 {/* Required Toggle */}
-                <label className="flex items-center justify-between p-2.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 cursor-pointer">
+                <label className="flex items-center justify-between p-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 cursor-pointer">
                   <span className="font-semibold text-[var(--text-primary)]">Champ obligatoire</span>
                   <input
                     type="checkbox"
@@ -862,7 +862,7 @@ export default function FormBuilderClient() {
           <div
             className={cn(
               "w-full transition-all duration-200",
-              previewMode === "desktop" && "max-w-2xl rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 sm:p-8 ",
+              previewMode === "desktop" && "max-w-2xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 sm:p-8 ",
               previewMode === "mobile" && "max-w-sm rounded-[40px] border-4 border-[var(--panel-border)] bg-[var(--bg-main)] p-6 space-y-4",
               previewMode === "discord" && "max-w-md rounded-2xl border border-emerald-500/40 bg-[#313338] p-5 text-white"
             )}
@@ -927,10 +927,10 @@ export default function FormBuilderClient() {
                   )}
                   {f.type === "YES_NO" && (
                     <div className="flex gap-2 pt-1">
-                      <button className="flex-1 h-8 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]">
+                      <button className="flex-1 h-8 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]">
                         Oui
                       </button>
-                      <button className="flex-1 h-8 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]">
+                      <button className="flex-1 h-8 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]">
                         Non
                       </button>
                     </div>

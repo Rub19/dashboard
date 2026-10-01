@@ -113,7 +113,7 @@ export default function ReportsSetupPanel({ guildId }: { guildId: string }) {
 
   if (!config.enabled) {
     return (
-      <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center sm:p-10">
+      <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center sm:p-10">
         <h2 className="text-lg font-bold text-[var(--text-primary)] sm:text-xl">Vous n&apos;avez pas encore configuré vos signalements</h2>
         <p className="mx-auto mt-2 max-w-xl text-sm text-[var(--text-muted)]">Laissez vos membres signaler un abus en un clic (clic droit sur un message ou un membre, ou /report), et donnez à votre équipe un salon pour les traiter.</p>
         <div className="mt-6">
@@ -123,7 +123,7 @@ export default function ReportsSetupPanel({ guildId }: { guildId: string }) {
           type="button"
           disabled={busy}
           onClick={() => void call("/setup", "POST", {}, "Signalements installés", "Le salon de l'équipe est créé (visible de l'équipe seulement) et le système est actif.")}
-          className="mt-8 cursor-pointer rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50"
+          className="mt-8 cursor-pointer rounded-xl bg-[var(--accent-primary)] px-6 py-3 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
         >
           {busy ? "Installation…" : "Installer en quelques secondes"}
         </button>
@@ -133,7 +133,7 @@ export default function ReportsSetupPanel({ guildId }: { guildId: string }) {
   }
 
   return (
-    <section className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+    <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
       <button type="button" onClick={() => setOpen((v) => !v)} className="flex w-full cursor-pointer items-center justify-between gap-3 text-left" aria-expanded={open}>
         <span className="text-sm font-semibold text-[var(--text-primary)]">
           Système de signalement <span className="ml-2 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-300">actif</span>
@@ -157,7 +157,7 @@ export default function ReportsSetupPanel({ guildId }: { guildId: string }) {
             aria-checked={config.pingStaff}
             disabled={busy || !config.staffRoleId}
             onClick={() => void call("/config", "PUT", { pingStaff: !config.pingStaff }, "Réglage enregistré", "")}
-            className="flex cursor-pointer items-start justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-left transition hover:bg-[var(--surface-raised)]/70 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex cursor-pointer items-start justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-left transition hover:bg-[var(--surface-raised)]/70 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <span>
               <span className="block text-xs font-semibold text-[var(--text-primary)]">Mentionner l&apos;équipe à chaque nouveau signalement</span>

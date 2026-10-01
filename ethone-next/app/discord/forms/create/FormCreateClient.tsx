@@ -159,7 +159,7 @@ export default function FormCreateClient() {
   return (
     <div className="w-full px-4 py-6 sm:px-6 text-[var(--text-primary)] space-y-6 max-w-5xl mx-auto">
       <div className="flex items-center gap-3 border-b border-[var(--panel-border)] pb-4">
-        <Link href={`/discord/forms?guildId=${guildId}`} className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer">
+        <Link href={`/discord/forms?guildId=${guildId}`} className="flex h-9 w-9 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all cursor-pointer">
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <div>
@@ -193,7 +193,7 @@ export default function FormCreateClient() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">2. Informations de base</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="sm:col-span-2 space-y-1.5">
@@ -211,7 +211,7 @@ export default function FormCreateClient() {
         </div>
         <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--panel-border)]">
           <Link href={`/discord/forms?guildId=${guildId}`} className="h-9 px-4 rounded-xl border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 flex items-center transition-all cursor-pointer">Annuler</Link>
-          <button onClick={handleCreate} disabled={isSubmitting || !formTitle.trim()} className="h-9 px-5 rounded-xl bg-emerald-500 text-xs font-bold text-white shadow-sm hover:bg-emerald-600 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-95">
+          <button onClick={handleCreate} disabled={isSubmitting || !formTitle.trim()} className="h-9 px-5 rounded-xl bg-[var(--accent-primary)] text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-95 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
             <span>{isSubmitting ? "Création..." : "Créer et ouvrir le builder"}</span>
             <ArrowRight className="h-3.5 w-3.5" />
           </button>

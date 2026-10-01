@@ -216,13 +216,13 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
   if (!room) {
     return (
-      <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-12 text-center">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-12 text-center">
         <AlertTriangle className="h-8 w-8 text-amber-400 mx-auto mb-3" />
         <h3 className="text-base font-bold text-[var(--text-primary)]">Salon vocal introuvable</h3>
         <p className="text-xs text-[var(--text-muted)] mt-1 mb-4">Ce salon a peut-être été supprimé automatiquement à la fin de la session.</p>
         <Link
           href={`/discord/voice?guildId=${guildId}`}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 text-xs font-semibold text-white hover:bg-[var(--surface-raised)]/70 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Retour aux Salons Vocaux</span>
@@ -277,7 +277,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
               "flex h-9 px-3.5 items-center gap-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
               room.isLocked
                 ? "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20"
-                : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-white"
+                : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
             {room.isLocked ? <Unlock className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5 text-rose-400" />}
@@ -289,7 +289,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
               setNewName(room.name);
               setIsRenameOpen(true);
             }}
-            className="flex h-9 px-3.5 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs font-bold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
+            className="flex h-9 px-3.5 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
           >
             <Edit2 className="h-3.5 w-3.5" />
             <span>Renommer</span>
@@ -300,7 +300,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
               setNewLimit(room.userLimit.toString());
               setIsLimitOpen(true);
             }}
-            className="flex h-9 px-3.5 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs font-bold text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
+            className="flex h-9 px-3.5 items-center gap-1.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
           >
             <Users className="h-3.5 w-3.5" />
             <span>Limite ({room.userLimit > 0 ? room.userLimit : "∞"})</span>
@@ -318,7 +318,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
           <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Membres Présents</span>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-2xl font-black text-[var(--text-primary)]">{room.currentUsers?.length || 0}</span>
@@ -326,7 +326,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
           </div>
         </div>
 
-        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
           <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Whitelist</span>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-2xl font-black text-emerald-400">{whitelist.length}</span>
@@ -334,7 +334,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
           </div>
         </div>
 
-        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
           <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Banlist</span>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-2xl font-black text-rose-400">{banlist.length}</span>
@@ -342,7 +342,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
           </div>
         </div>
 
-        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
           <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Qualité Audio</span>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-2xl font-black text-emerald-300">{Math.round(room.bitrate / 1000)}</span>
@@ -357,7 +357,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
           onClick={() => setActiveTab("members")}
           className={cn(
             "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer",
-            activeTab === "members" ? "bg-[var(--surface-raised)]/40 text-white" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            activeTab === "members" ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
         >
           Participants ({room.currentUsers?.length || 0})
@@ -366,7 +366,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
           onClick={() => setActiveTab("whitelist")}
           className={cn(
             "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer",
-            activeTab === "whitelist" ? "bg-[var(--surface-raised)]/40 text-white" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            activeTab === "whitelist" ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
         >
           Whitelist ({whitelist.length})
@@ -375,7 +375,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
           onClick={() => setActiveTab("banlist")}
           className={cn(
             "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer",
-            activeTab === "banlist" ? "bg-[var(--surface-raised)]/40 text-white" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            activeTab === "banlist" ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
         >
           Banlist ({banlist.length})
@@ -384,7 +384,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
           onClick={() => setActiveTab("timeline")}
           className={cn(
             "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer",
-            activeTab === "timeline" ? "bg-[var(--surface-raised)]/40 text-white" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            activeTab === "timeline" ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
         >
           Historique & Timeline
@@ -394,7 +394,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
       {/* TAB: Members */}
       {activeTab === "members" && (
         <div className="space-y-4">
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
             <table className="w-full text-left text-xs">
               <thead className="bg-[var(--surface-raised)]/40 border-b border-[var(--panel-border)] text-[var(--text-muted)] font-semibold uppercase">
                 <tr>
@@ -485,7 +485,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
               <button
                 onClick={() => targetUserId.trim() && handleWhitelist(targetUserId.trim(), "add")}
                 disabled={!targetUserId.trim()}
-                className="flex h-10 px-5 items-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition-all disabled:opacity-50 cursor-pointer"
+                className="flex h-10 px-5 items-center gap-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-bold disabled:opacity-50 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 <Plus className="h-4 w-4" />
                 <span>Ajouter à la Whitelist</span>
@@ -493,7 +493,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
             </div>
           </div>
 
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
               Membres autorisés ({whitelist.length})
             </h4>
@@ -554,7 +554,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
             </div>
           </div>
 
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
               Membres bannis ({banlist.length})
             </h4>
@@ -585,7 +585,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
       {/* TAB: Timeline */}
       {activeTab === "timeline" && (
-        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
           <h3 className="text-sm font-bold text-[var(--text-primary)]">Événements du salon</h3>
           <div className="relative border-l border-[var(--panel-border)] ml-3 space-y-4 pl-4">
             {timeline.map((ev) => (
@@ -605,7 +605,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
       {/* Rename Modal */}
       {isRenameOpen && (
         <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
+          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
             <h3 className="text-base font-bold text-[var(--text-primary)]">Renommer le salon vocal</h3>
             <input
               type="text"
@@ -626,7 +626,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
                   handleAction("rename", newName);
                   setIsRenameOpen(false);
                 }}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--accent-primary)] text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 Sauvegarder
               </button>
@@ -638,7 +638,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
       {/* Limit Modal */}
       {isLimitOpen && (
         <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
+          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
             <h3 className="text-base font-bold text-[var(--text-primary)]">Modifier la limite de membres</h3>
             <input
               type="number"
@@ -661,7 +661,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
                   handleAction("set_limit", parseInt(newLimit, 10) || 0);
                   setIsLimitOpen(false);
                 }}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--accent-primary)] text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 Appliquer
               </button>

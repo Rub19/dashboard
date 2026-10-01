@@ -175,7 +175,7 @@ export default function SettingsCenterClient() {
   };
 
   const back = (
-    <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 text-xs font-semibold text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)]">
+    <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex h-8 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 text-xs font-semibold text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)]">
       <ArrowLeft className="h-3.5 w-3.5 text-[var(--text-muted)]" />
       Retour Discord
     </Link>
@@ -259,7 +259,7 @@ export default function SettingsCenterClient() {
             />
           </Field>
           <div className="flex items-end">
-            <button type="button" disabled={previewing} onClick={() => void sendPreview()} className="cursor-pointer rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50">
+            <button type="button" disabled={previewing} onClick={() => void sendPreview()} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
               {previewing ? "Envoi en cours (quelques secondes)…" : "Me les envoyer en message privé"}
             </button>
           </div>
@@ -276,13 +276,13 @@ export default function SettingsCenterClient() {
       </div>
 
       {dirty && (
-        <div className="fixed inset-x-0 bottom-24 z-30 mx-auto flex w-[min(92vw,640px)] items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-3 ">
+        <div className="fixed inset-x-0 bottom-24 z-30 mx-auto flex w-[min(92vw,640px)] items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-3 ">
           <p className="text-sm text-[var(--text-muted)]">{invalid ? "Corrigez les champs en rouge avant d'enregistrer." : "Vous avez des modifications non enregistrées."}</p>
           <div className="flex gap-2">
             <button type="button" onClick={() => setDraft(saved)} className="cursor-pointer rounded-xl px-3 py-2 text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]">
               Annuler
             </button>
-            <button type="button" disabled={saving || invalid} onClick={() => void save()} className="cursor-pointer rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50">
+            <button type="button" disabled={saving || invalid} onClick={() => void save()} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
               {saving ? "Enregistrement…" : "Enregistrer"}
             </button>
           </div>

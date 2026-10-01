@@ -35,7 +35,7 @@ export default class BotControlErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="min-h-full bg-[var(--bg-main)] text-[var(--text-primary)] flex flex-col items-center justify-center p-6">
-          <div className="max-w-md w-full rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-8 text-center space-y-6">
+          <div className="max-w-md w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-8 text-center space-y-6">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20">
               <AlertTriangle className="h-7 w-7" />
             </div>
@@ -56,7 +56,7 @@ export default class BotControlErrorBoundary extends Component<Props, State> {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
               <Link
                 href="/discord"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-white transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)] transition-all"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Retour Discord</span>
@@ -65,7 +65,7 @@ export default class BotControlErrorBoundary extends Component<Props, State> {
               <button
                 type="button"
                 onClick={this.handleRetry}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 text-xs font-semibold text-white hover:bg-emerald-600 transition-all cursor-pointer shadow-sm"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--accent-primary)] text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Réessayer</span>

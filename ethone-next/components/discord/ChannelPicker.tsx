@@ -469,7 +469,7 @@ export default function ChannelPicker({
               aria-haspopup="listbox"
               aria-expanded={open}
               className={cn(
-                "w-full flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-zinc-900/80 text-left text-white outline-none transition-all cursor-pointer focus:border-amber-500/50 disabled:opacity-50",
+                "w-full flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-left text-[var(--text-primary)] outline-none transition-all cursor-pointer hover:border-[var(--text-primary)]/20 focus:border-[var(--accent-primary)]/60 focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_14%,transparent)] disabled:opacity-50",
                 isSmall ? "h-8 px-2.5 pr-8 text-[11px]" : "h-9 px-3 pr-8 text-xs",
                 inputClassName
               )}
@@ -500,7 +500,7 @@ export default function ChannelPicker({
                 <div
                   ref={popoverRef}
                   style={{ position: "fixed", left: pos.left, width: pos.width, top: pos.top, bottom: pos.bottom, maxHeight: pos.maxHeight }}
-                  className="z-[1000] flex flex-col overflow-hidden rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-xl"
+                  className="pop-in z-[1000] flex flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl shadow-black/50"
                 >
                   <div className="flex items-center gap-2 border-b border-[var(--panel-border)] px-3 py-2">
                     <Search className="w-3.5 h-3.5 shrink-0 text-[var(--text-muted)]" />
@@ -514,7 +514,7 @@ export default function ChannelPicker({
                       onKeyDown={handleSearchKey}
                       placeholder="Rechercher un salon"
                       aria-label="Rechercher un salon"
-                      className="w-full bg-transparent text-sm text-white outline-none placeholder:text-[var(--text-muted)]"
+                      className="w-full bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
                     />
                   </div>
 
@@ -559,7 +559,7 @@ export default function ChannelPicker({
                           className={cn(
                             "mx-1 flex items-center gap-2 rounded-lg py-1.5 pr-2 text-sm",
                             row.depth === 1 ? "pl-7" : "pl-2",
-                            row.selectable ? "cursor-pointer text-white" : "cursor-default text-[var(--text-muted)]",
+                            row.selectable ? "cursor-pointer text-[var(--text-primary)]" : "cursor-default text-[var(--text-muted)]",
                             active && "bg-zinc-800/80",
                             selected && "text-amber-300"
                           )}
@@ -572,7 +572,7 @@ export default function ChannelPicker({
                                 e.stopPropagation();
                                 toggleCollapsed(c.id);
                               }}
-                              className="-ml-1 shrink-0 cursor-pointer text-[var(--text-muted)] hover:text-white"
+                              className="-ml-1 shrink-0 cursor-pointer text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                             >
                               {collapsed.has(c.id) && !query.trim() ? <ChevronRight className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                             </button>
@@ -603,7 +603,7 @@ export default function ChannelPicker({
                   <button
                     type="button"
                     onClick={handleToggleMode}
-                    className="flex cursor-pointer items-center gap-2 border-t border-[var(--panel-border)] px-3 py-2 text-left text-xs text-[var(--text-muted)] hover:text-white"
+                    className="flex cursor-pointer items-center gap-2 border-t border-[var(--panel-border)] px-3 py-2 text-left text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   >
                     <Edit3 className="w-3 h-3 text-amber-400" />
                     Saisir un ID manuellement...
@@ -629,7 +629,7 @@ export default function ChannelPicker({
               disabled={disabled}
               placeholder={placeholder}
               className={cn(
-                "w-full rounded-xl border border-[var(--panel-border)] bg-zinc-900/80 pl-8 pr-8 text-white font-mono outline-none transition-all focus:border-amber-500/50 disabled:opacity-50",
+                "w-full rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] pl-8 pr-8 text-[var(--text-primary)] font-mono outline-none transition-all hover:border-[var(--text-primary)]/20 focus:border-[var(--accent-primary)]/60 focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_14%,transparent)] disabled:opacity-50",
                 isSmall ? "h-8 text-[11px]" : "h-9 text-xs",
                 inputClassName
               )}
@@ -657,7 +657,7 @@ export default function ChannelPicker({
             isSmall ? "h-8 px-2 text-[10px]" : "h-9 px-2.5 text-xs",
             mode === "id"
               ? "border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20"
-              : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-zinc-400 hover:text-white hover:bg-zinc-800"
+              : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/[0.07]"
           )}
           title={
             mode === "select"
@@ -684,7 +684,7 @@ export default function ChannelPicker({
         <div className="flex items-center gap-1 text-[11px] text-emerald-400 pl-1">
           <Check className="w-3 h-3" />
           <span>
-            Salon reconnu : <strong className="text-white">#{matchedChannel.name}</strong>
+            Salon reconnu : <strong className="text-[var(--text-primary)]">#{matchedChannel.name}</strong>
           </span>
         </div>
       )}

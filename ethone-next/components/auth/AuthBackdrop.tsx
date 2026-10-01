@@ -7,32 +7,35 @@ import { useMotionPref } from "@/lib/hooks/useMotionPref";
 
 const mix = (token: string, pct: number) => `color-mix(in srgb, var(${token}) ${pct}%, transparent)`;
 
-// Deterministic dust: [left %, top %, size px, opacity, duration s, delay s, drift px]
+// A few barely-visible specks: [left %, top %, size px, opacity, duration s, delay s, drift px]
 const PARTICLES: [number, number, number, number, number, number, number][] = [
-  [8, 72, 1.5, 0.35, 18, 0, 10], [14, 30, 1, 0.25, 22, 4, -8], [21, 88, 2, 0.3, 20, 9, 14],
-  [27, 54, 1, 0.2, 24, 2, -12], [33, 18, 1.5, 0.3, 19, 12, 6], [39, 76, 1, 0.25, 26, 6, -6],
-  [46, 40, 1.5, 0.2, 21, 15, 10], [52, 92, 1, 0.3, 23, 3, -10], [58, 22, 2, 0.25, 25, 10, 8],
-  [63, 64, 1, 0.3, 18, 7, -14], [69, 36, 1.5, 0.2, 22, 13, 12], [74, 84, 1, 0.35, 20, 1, -8],
-  [80, 50, 1.5, 0.25, 24, 8, 6], [86, 14, 1, 0.3, 19, 5, -10], [91, 70, 2, 0.2, 27, 11, 10],
-  [4, 44, 1, 0.25, 23, 14, 8], [96, 32, 1, 0.3, 21, 3, -6], [44, 8, 1, 0.2, 25, 9, 12],
+  [12, 68, 1.5, 0.18, 22, 0, 8], [24, 34, 1, 0.14, 26, 6, -6], [37, 82, 1, 0.16, 24, 12, 10],
+  [55, 18, 1.5, 0.14, 28, 4, -8], [66, 58, 1, 0.18, 23, 9, 6], [78, 28, 1, 0.14, 27, 15, -10],
+  [88, 74, 1.5, 0.16, 25, 3, 8], [46, 52, 1, 0.12, 30, 18, -6],
 ];
 
 const GRAIN =
   "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")";
 
-/** Auth backdrop: an overhead light, two slow colour fields with a hint of
- * cursor parallax, a planet-like horizon for depth, fine grain and a few
- * drifting specks. Plain gradients and transforms only — no blur filters. */
+// Every light is an ellipse that fades to fully transparent well inside an
+// oversized layer, so nothing ever meets the viewport edge as a line.
+const LIGHT = [
+  `radial-gradient(42% 34% at 50% 6%, ${mix("--accent-primary", 11)}, transparent)`,
+  `radial-gradient(34% 30% at 74% 42%, ${mix("--accent-primary", 7)}, transparent)`,
+  `radial-gradient(38% 34% at 26% 66%, ${mix("--accent-secondary", 6)}, transparent)`,
+].join(", ");
+
+/** Auth backdrop: diffuse light pooled in soft ellipses on an oversized,
+ * slowly breathing layer (its edges always sit outside the viewport), fine
+ * grain, a handful of specks and a vignette. Transform/opacity only. */
 export default function AuthBackdrop() {
   const { reduced } = useMotionPref();
   const px = useMotionValue(0);
   const py = useMotionValue(0);
   const sx = useSpring(px, SPRING_MOUSE);
   const sy = useSpring(py, SPRING_MOUSE);
-  const nearX = useTransform(sx, (v) => v * 40);
-  const nearY = useTransform(sy, (v) => v * 30);
-  const farX = useTransform(sx, (v) => v * -24);
-  const farY = useTransform(sy, (v) => v * -18);
+  const x = useTransform(sx, (v) => v * -24);
+  const y = useTransform(sy, (v) => v * -18);
 
   useEffect(() => {
     if (reduced) return;
@@ -52,27 +55,10 @@ export default function AuthBackdrop() {
       animate={{ opacity: 1 }}
       transition={{ duration: 1.4, ease: "easeOut" }}
     >
-      {/* Overhead light */}
-      <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 70% 45% at 50% -8%, ${mix("--accent-primary", 13)}, transparent 70%)` }} />
-
-      {/* Colour fields */}
-      <motion.div className="absolute -left-[15%] top-[20%] h-[70vh] w-[60vw]" style={{ x: farX, y: farY }}>
-        <div className="auth-field h-full w-full" style={{ background: `radial-gradient(closest-side, ${mix("--accent-secondary", 9)}, transparent)` }} />
-      </motion.div>
-      <motion.div className="absolute -right-[10%] -top-[10%] h-[75vh] w-[55vw]" style={{ x: nearX, y: nearY }}>
-        <div className="auth-field h-full w-full [animation-delay:-9s]" style={{ background: `radial-gradient(closest-side, ${mix("--accent-primary", 8)}, transparent)` }} />
+      <motion.div className="absolute -inset-[25%]" style={{ x, y }}>
+        <div className="auth-field absolute inset-0" style={{ background: LIGHT }} />
       </motion.div>
 
-      {/* Horizon */}
-      <div
-        className="absolute left-1/2 top-[84%] aspect-square w-[220vw] -translate-x-1/2 rounded-full"
-        style={{
-          borderTop: `1px solid ${mix("--text-primary", 9)}`,
-          background: `radial-gradient(ellipse 50% 6% at 50% 0%, ${mix("--accent-primary", 10)}, transparent), linear-gradient(to bottom, ${mix("--bg-card", 60)}, var(--bg-main) 8%)`,
-        }}
-      />
-
-      {/* Dust */}
       {!reduced &&
         PARTICLES.map(([left, top, size, opacity, dur, delay, dx], i) => (
           <span
@@ -91,11 +77,8 @@ export default function AuthBackdrop() {
           />
         ))}
 
-      {/* Grain */}
-      <div className="absolute inset-0 opacity-[0.045] mix-blend-overlay" style={{ backgroundImage: GRAIN }} />
-
-      {/* Vignette */}
-      <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 90% 80% at 50% 40%, transparent 55%, var(--bg-main) 100%)" }} />
+      <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay" style={{ backgroundImage: GRAIN }} />
+      <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 50% 40%, transparent 55%, var(--bg-main) 100%)" }} />
     </motion.div>
   );
 }

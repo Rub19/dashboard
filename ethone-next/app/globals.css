@@ -1585,10 +1585,10 @@ select[data-haptic-state="released"],
 /* Auth backdrop: slow colour fields and drifting specks (transform/opacity only). */
 @keyframes auth-field {
   from { transform: translate3d(0, 0, 0) scale(1); }
-  to { transform: translate3d(4%, 6%, 0) scale(1.12); }
+  to { transform: translate3d(2%, 3%, 0) scale(1.06); }
 }
 .auth-field {
-  animation: auth-field 18s ease-in-out infinite alternate;
+  animation: auth-field 24s ease-in-out infinite alternate;
 }
 @keyframes auth-particle {
   0% { transform: translate3d(0, 0, 0); opacity: 0; }

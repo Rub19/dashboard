@@ -24,8 +24,7 @@ interface AuthCardShellProps {
 }
 
 /** The auth card: icon tile + step headline, then the form in a glass
- * surface with a travelling border light, a stacked sheet behind it for
- * depth, and a height that glides between steps. */
+ * surface with a travelling border light and a height that glides between steps. */
 export default function AuthCardShell({ icon, title, subtitle, children, below, success, shakeKey }: AuthCardShellProps) {
   const { reduced } = useMotionPref();
   const shake = useAnimationControls();
@@ -40,13 +39,9 @@ export default function AuthCardShell({ icon, title, subtitle, children, below, 
       variants={choreography}
       initial={reduced ? "animate" : "initial"}
       animate="animate"
-      className="w-full max-w-[460px] 2xl:max-w-[500px]"
+      className="w-full max-w-[440px] 2xl:max-w-[460px]"
     >
       <motion.div variants={revealUp} className="relative">
-        {/* Stacked sheets behind the card */}
-        <div aria-hidden className="absolute inset-x-8 -bottom-3 h-12 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card,var(--bg-main))]/50" />
-        <div aria-hidden className="absolute inset-x-4 -bottom-1.5 h-12 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card,var(--bg-main))]/80" />
-
         <motion.div animate={shake} className="relative">
           <LightBorder
             light={success ? "--success" : "--accent-primary"}
@@ -57,7 +52,7 @@ export default function AuthCardShell({ icon, title, subtitle, children, below, 
             <div aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[var(--text-primary)]/30 to-transparent" />
 
             {/* Header */}
-            <div className="flex items-start gap-4 px-6 pb-6 pt-7 sm:px-8 sm:pt-8">
+            <div className="flex items-start gap-4 px-6 pb-5 pt-6 sm:px-8 sm:pt-7">
               <div
                 className="relative grid h-12 w-12 shrink-0 place-items-center rounded-[0.9rem] border transition-colors duration-500"
                 style={{
@@ -94,14 +89,14 @@ export default function AuthCardShell({ icon, title, subtitle, children, below, 
             <div aria-hidden className="mx-6 h-px bg-gradient-to-r from-transparent via-[var(--panel-border)] to-transparent sm:mx-8" />
 
             <AutoHeight reduced={reduced}>
-              <div className="relative px-6 pb-7 pt-6 sm:px-8 sm:pb-8">{children}</div>
+              <div className="relative px-6 pb-7 pt-5 sm:px-8">{children}</div>
             </AutoHeight>
           </LightBorder>
         </motion.div>
       </motion.div>
 
       {below && (
-        <motion.div variants={revealUp} className="mt-7 w-full text-center text-[15px]">
+        <motion.div variants={revealUp} className="mt-6 w-full text-center text-[15px]">
           {below}
         </motion.div>
       )}

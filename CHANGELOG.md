@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.41.1 — 2026-10-01
+
+**Connexion : composition et fond affinés**
+
+- Corrigé : la page de connexion ne défilait pas — sur mobile et sur les écrans peu hauts, le bas de la carte (Passkey, inscription) et le pied de page étaient inaccessibles.
+- Fond refait en lumière diffuse : plus d'arc ni de forme coupée par les bords, les nappes de lumière se prolongent naturellement au-delà de l'écran.
+- Composition resserrée : la présentation et la carte sont rapprochées, alignées sur l'en-tête et le pied de page ; les six modules forment désormais un panneau unique.
+- En-tête : le logo est accompagné de la signature ETHONE ; le sélecteur de langue adopte le même style que la tuile du logo, avec un état de focus clavier.
+- Le bouton Passkey n'est plus tronqué et les liens, onglets et boutons de la page ont un anneau de focus visible au clavier.
+
 ## v1.41.0 — 2026-10-01
 
 **Nouvelle direction artistique : connexion**

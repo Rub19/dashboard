@@ -34,15 +34,15 @@ export default function LanguageSwitcher() {
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen} trigger="click" side="bottom" align="end" sideOffset={10}>
+    <Popover open={open} onOpenChange={setOpen} trigger="click" side="bottom" align="end" sideOffset={8}>
       <PopoverTrigger>
         <button
           type="button"
           aria-label={i18n("language")}
-          className="group flex h-10 cursor-pointer select-none items-center gap-2.5 rounded-full border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] py-1 pl-1 pr-3 text-[13px] font-medium text-[var(--text-primary)] backdrop-blur-md transition-[border-color,background-color,transform] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.07] active:scale-[0.97] data-[state=open]:border-[var(--accent-primary)]/40"
+          className="group flex h-9 cursor-pointer select-none items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] pl-1.5 pr-2.5 text-[13px] font-medium text-[var(--text-primary)] shadow-[inset_0_1px_0_rgb(255_255_255/0.06)] outline-none transition-[border-color,background-color,transform] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-main)] active:scale-[0.97] data-[state=open]:border-[var(--text-primary)]/20 data-[state=open]:bg-[var(--text-primary)]/[0.06]"
         >
-          <span className="relative h-8 w-8 overflow-hidden rounded-full ring-1 ring-[var(--text-primary)]/10">
-            <FlagIcon code={current} className="absolute left-1/2 top-1/2 h-8 w-12 max-w-none -translate-x-1/2 -translate-y-1/2" />
+          <span className="relative h-6 w-6 overflow-hidden rounded-full ring-1 ring-[var(--text-primary)]/10">
+            <FlagIcon code={current} className="absolute left-1/2 top-1/2 h-6 w-9 max-w-none -translate-x-1/2 -translate-y-1/2" />
           </span>
           <span className="hidden sm:inline">{LANGUAGE_LABELS[current]}</span>
           <span className="font-mono text-[11px] uppercase tracking-wider text-[var(--text-muted)] sm:hidden">{current}</span>

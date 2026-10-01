@@ -387,7 +387,7 @@ export default function LoginPage() {
         setModeAndReset(mode === "register" ? "password" : "register");
       }}
       disabled={isLoading}
-      className="group text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
+      className="group rounded-md text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--bg-main)]"
     >
       {mode === "register" ? (
         <span className="font-medium text-[var(--accent-primary)]">{i18n("alreadyHaveAccount", "Déjà un compte ? Se connecter")}</span>
@@ -436,7 +436,7 @@ export default function LoginPage() {
                       disabled={isLoading}
                       aria-pressed={active}
                       className={cn(
-                        "relative z-10 select-none rounded-[0.75rem] py-2.5 text-sm font-medium transition-colors duration-200 cursor-pointer",
+                        "relative z-10 select-none rounded-[0.75rem] py-2.5 text-sm font-medium transition-colors duration-200 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
                         active
                           ? "text-[var(--text-primary)] font-semibold"
                           : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -541,7 +541,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => router.push("/password-recovery")}
-                    className="text-sm text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors"
+                    className="rounded-md text-sm text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                   >
                     {i18n("forgotPassword", "Mot de passe oublié ?")}
                   </button>
@@ -847,7 +847,7 @@ export default function LoginPage() {
                   variant="ghost"
                   disabled={isLoading || isSuccess}
                   onClick={handlePasskey}
-                  className="group h-12 w-full rounded-xl text-sm border border-[var(--panel-border)] hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.04]"
+                  className="group h-auto min-h-12 w-full rounded-xl py-2.5 text-sm leading-snug [&_.truncate]:whitespace-normal border border-[var(--panel-border)] hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.04]"
                   rightIcon={<ArrowRight className="h-4 w-4 text-[var(--text-muted)] transition-transform duration-200 group-hover:translate-x-0.5" />}
                   leftIcon={<KeyRound className="h-5 w-5 text-[var(--accent-primary)]" />}
                 >

@@ -40072,6 +40072,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_41_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_41_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_41_0_de);
 
+const v1_41_1_fr: ChangelogEntry = {
+  version: "v1.41.1",
+  date: "2026-10-01",
+  title: "Connexion : composition et fond affinés",
+  items: [
+    "Corrigé : la page de connexion ne défilait pas — sur mobile et sur les écrans peu hauts, le bas de la carte (Passkey, inscription) et le pied de page étaient inaccessibles.",
+    "Fond refait en lumière diffuse : plus d'arc ni de forme coupée par les bords, les nappes de lumière se prolongent naturellement au-delà de l'écran.",
+    "Composition resserrée : la présentation et la carte sont rapprochées, alignées sur l'en-tête et le pied de page ; les six modules forment désormais un panneau unique.",
+    "En-tête : le logo est accompagné de la signature ETHONE ; le sélecteur de langue adopte le même style que la tuile du logo, avec un état de focus clavier.",
+    "Le bouton Passkey n'est plus tronqué et les liens, onglets et boutons de la page ont un anneau de focus visible au clavier.",
+  ],
+};
+
+const v1_41_1_en: ChangelogEntry = {
+  version: "v1.41.1",
+  date: "2026-10-01",
+  title: "Sign-in: refined composition and background",
+  items: [
+    "Fixed: the sign-in page could not scroll — on phones and short screens the bottom of the card (Passkey, sign-up) and the footer were unreachable.",
+    "Background rebuilt as diffuse light: no more arc or shape cut off by the edges; the light pools extend naturally beyond the screen.",
+    "Tighter composition: the presentation and the card sit closer, aligned with the header and footer; the six modules now form a single panel.",
+    "Header: the logo is paired with the ETHONE tagline; the language switcher matches the logo tile and has a keyboard focus state.",
+    "The Passkey button is no longer truncated, and links, tabs and buttons on the page show a visible keyboard focus ring.",
+  ],
+};
+
+const v1_41_1_es: ChangelogEntry = {
+  version: "v1.41.1",
+  date: "2026-10-01",
+  title: "Inicio de sesión: composición y fondo refinados",
+  items: [
+    "Corregido: la página de inicio de sesión no se desplazaba y el final de la tarjeta y el pie eran inaccesibles en móvil.",
+    "Fondo de luz difusa sin formas cortadas por los bordes y composición más compacta con los módulos en un único panel.",
+  ],
+};
+
+const v1_41_1_de: ChangelogEntry = {
+  version: "v1.41.1",
+  date: "2026-10-01",
+  title: "Anmeldung: Komposition und Hintergrund verfeinert",
+  items: [
+    "Behoben: Die Anmeldeseite ließ sich nicht scrollen; Kartenende und Fußzeile waren auf Mobilgeräten unerreichbar.",
+    "Hintergrund aus diffusem Licht ohne abgeschnittene Formen und kompaktere Komposition mit den Modulen in einem Panel.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_41_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_41_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_41_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_41_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

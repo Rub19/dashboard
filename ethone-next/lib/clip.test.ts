@@ -19,6 +19,11 @@ describe("parseClip", () => {
     expect(c?.selection).toBe("");
   });
 
+  it("lit le type demandé et ignore les valeurs inconnues", () => {
+    expect(parseClip(encodeClip({ s: "idée", k: "task" }))?.kind).toBe("task");
+    expect(parseClip(encodeClip({ s: "idée", k: "evil" }))?.kind).toBeUndefined();
+  });
+
   it("renvoie null pour un hash vide, invalide ou sans contenu", () => {
     expect(parseClip("")).toBeNull();
     expect(parseClip("#%E0%A4%A")).toBeNull();

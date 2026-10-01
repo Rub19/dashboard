@@ -41137,6 +41137,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_48_5_en);
 CHANGELOG_BY_LANG.es.unshift(v1_48_5_es);
 CHANGELOG_BY_LANG.de.unshift(v1_48_5_de);
 
+const v1_48_6_fr: ChangelogEntry = {
+  version: "v1.48.6",
+  date: "2026-10-02",
+  title: "Extension Chrome 1.1 : note rapide, tâches et barre d'adresse",
+  items: [
+    "Note rapide dans la popup : tape une idée, choisis Note ou Tâche (sélecteur animé) et envoie avec Ctrl+Entrée.",
+    "Clic droit sur une sélection : « Ajouter comme tâche » en plus de « Enregistrer dans ETHONE » ; la page s'ouvre directement sur le bon type. Bouton tâche à côté de « Enregistrer cette page ».",
+    "Barre d'adresse : tape « eth » puis ton texte pour créer une note, « eth tâche … » pour une tâche, ou « eth notes », « eth brain »… pour ouvrir la page.",
+    "Touches 1 à 6 pour l'accès rapide, thème clair automatique, page « Note rapide » dédiée côté ETHONE.",
+    "À télécharger sur ethone.dev/extension (remplace la 1.0 : recharge l'extension dans chrome://extensions).",
+  ],
+};
+
+const v1_48_6_en: ChangelogEntry = {
+  version: "v1.48.6",
+  date: "2026-10-02",
+  title: "Chrome extension 1.1: quick note, tasks and address bar",
+  items: [
+    "Quick note in the popup: type an idea, pick Note or Task (animated toggle) and send with Ctrl+Enter.",
+    "Right-click a selection: \"Add as task\" next to \"Save to ETHONE\"; the page opens on the right type. Task button next to \"Save this page\".",
+    "Address bar: type \"eth\" then your text to create a note, \"eth task …\" for a task, or \"eth notes\", \"eth brain\"… to open the page.",
+    "Keys 1 to 6 for quick access, automatic light theme, dedicated \"Quick note\" page on ETHONE.",
+    "Download at ethone.dev/extension (replaces 1.0: reload the extension in chrome://extensions).",
+  ],
+};
+
+const v1_48_6_es: ChangelogEntry = {
+  version: "v1.48.6",
+  date: "2026-10-02",
+  title: "Extensión de Chrome 1.1",
+  items: [
+    "Nota rápida, añadir como tarea, comando «eth» en la barra de direcciones, atajos 1–6 y tema claro.",
+  ],
+};
+
+const v1_48_6_de: ChangelogEntry = {
+  version: "v1.48.6",
+  date: "2026-10-02",
+  title: "Chrome-Erweiterung 1.1",
+  items: [
+    "Schnellnotiz, als Aufgabe hinzufügen, „eth“ in der Adressleiste, Tasten 1–6 und helles Theme.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_48_6_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_48_6_en);
+CHANGELOG_BY_LANG.es.unshift(v1_48_6_es);
+CHANGELOG_BY_LANG.de.unshift(v1_48_6_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

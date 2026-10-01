@@ -40,7 +40,9 @@ export default function ClipPage() {
     if (window.location.hash) history.replaceState(null, "", window.location.pathname);
     const parsed = parseClip(hash);
     setClip(parsed);
-    setTitle(parsed?.title || parsed?.url || "");
+    // Note rapide sans titre : la première ligne sert de titre.
+    setTitle(parsed?.title || parsed?.selection.split("\n")[0].slice(0, 120) || parsed?.url || "");
+    if (parsed?.kind) setTarget(parsed.kind);
   }, []);
 
   const host = clip?.url ? new URL(clip.url).hostname.replace(/^www\./, "") : "";
@@ -49,7 +51,9 @@ export default function ClipPage() {
     if (!clip || state === "saving") return;
     setState("saving");
     const name = title.trim() || host || "Clip";
-    const body = [clip.selection && `> ${clip.selection.replace(/\n/g, "\n> ")}`, clip.url && `Source : ${clip.url}`]
+    // Extrait de page : cité. Note rapide (sans URL) : texte tel quel.
+    const quote = clip.url ? `> ${clip.selection.replace(/\n/g, "\n> ")}` : clip.selection;
+    const body = [clip.selection && quote, clip.url && `Source : ${clip.url}`]
       .filter(Boolean)
       .join("\n\n");
     try {
@@ -126,7 +130,7 @@ export default function ClipPage() {
                   <Globe className="h-5 w-5" />
                 </span>
                 <div className="min-w-0">
-                  <h1 className="text-base font-semibold text-[var(--text-primary)]">Enregistrer dans ETHONE</h1>
+                  <h1 className="text-base font-semibold text-[var(--text-primary)]">{clip.url ? "Enregistrer dans ETHONE" : "Note rapide"}</h1>
                   {host && <p className="truncate text-xs text-[var(--text-muted)]">{host}</p>}
                 </div>
               </header>

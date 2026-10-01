@@ -16,6 +16,21 @@
   color-scheme: dark;
 }
 
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f5f6f9;
+    --card: #ffffff;
+    --raised: #eef0f4;
+    --border: rgba(17, 24, 39, 0.1);
+    --border-hover: rgba(17, 24, 39, 0.22);
+    --text: #111827;
+    --muted: #5b6472;
+    --success: #059669;
+    --danger: #dc2626;
+    color-scheme: light;
+  }
+}
+
 * { box-sizing: border-box; }
 
 body {
@@ -58,10 +73,12 @@ header { display: flex; align-items: center; gap: 10px; }
 }
 .ghost:hover { color: var(--text); background: var(--raised); }
 
-.clip {
+.card {
   display: grid; gap: 10px; padding: 12px;
   background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
 }
+.row { display: flex; gap: 6px; }
+.row .primary { flex: 1; }
 .page { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .page img { border-radius: 4px; }
 .page-text { display: grid; min-width: 0; }
@@ -91,6 +108,37 @@ blockquote {
 .primary svg { transition: transform 0.25s var(--ease); }
 .primary:active { transform: scale(0.97); }
 .primary:disabled { opacity: 0.5; cursor: default; filter: none; }
+.primary.small { height: 30px; padding: 0 14px; font-size: 12px; }
+
+.secondary {
+  display: grid; place-items: center; width: 40px; height: 40px; flex: none;
+  border: 1px solid var(--border); border-radius: var(--inset); background: var(--raised); color: var(--muted);
+  cursor: pointer; transition: color 0.2s, border-color 0.2s, transform 0.2s var(--ease);
+}
+.secondary:hover { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.secondary:active { transform: scale(0.94); }
+.secondary:disabled { opacity: 0.5; cursor: default; }
+
+/* Note rapide */
+.note-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.note-head label { font-weight: 600; }
+.seg { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 2px; border: 1px solid var(--border); border-radius: 999px; background: var(--raised); }
+.seg button { position: relative; z-index: 1; padding: 3px 10px; border: 0; background: none; color: var(--muted); font: inherit; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: color 0.25s; }
+.seg button[aria-checked="true"] { color: var(--accent-contrast); }
+/* Pastille qui glisse entre Note et Tâche. */
+.seg-pill { position: absolute; top: 2px; bottom: 2px; left: 2px; width: calc(50% - 2px); border-radius: 999px; background: var(--accent); transition: transform 0.35s var(--ease); }
+.seg[data-kind="task"] .seg-pill { transform: translateX(100%); }
+textarea {
+  width: 100%; min-height: 54px; max-height: 160px; resize: vertical; padding: 8px 10px;
+  border: 1px solid var(--border); border-radius: var(--inset); background: var(--raised); color: var(--text);
+  font: inherit; font-size: 12.5px; outline: none; transition: border-color 0.2s, background 0.2s;
+}
+textarea:focus { border-color: color-mix(in srgb, var(--accent) 60%, transparent); background: var(--card); }
+textarea::placeholder { color: var(--muted); }
+.note-foot { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 11px; }
+.links a kbd { position: absolute; top: 4px; right: 5px; padding: 0 4px; font-size: 9.5px; opacity: 0; transition: opacity 0.2s; }
+.links a { position: relative; }
+.links a:hover kbd, .links:focus-within a kbd { opacity: 0.8; }
 /* Reflet qui traverse le bouton au survol. */
 .primary::after {
   content: ""; position: absolute; inset: 0;

@@ -1,4 +1,4 @@
-import { ETHONE, clipTab, readSelection } from "./clip.js";
+import { ETHONE, clipTab, quickNote, readSelection } from "./clip.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -12,11 +12,13 @@ const LINKS = [
 ];
 
 const svgDoc = (paths) => new DOMParser().parseFromString(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${paths}</svg>`, "image/svg+xml").documentElement;
-LINKS.forEach(([label, path, icon], i) => {
+const links = LINKS.map(([label, path, icon], i) => {
   const a = Object.assign(document.createElement("a"), { className: "rise", href: ETHONE + path, target: "_blank", rel: "noopener noreferrer" });
-  a.style.setProperty("--i", i + 2);
-  a.append(svgDoc(icon), label);
+  a.style.setProperty("--i", i + 3);
+  const kbd = Object.assign(document.createElement("kbd"), { textContent: String(i + 1) });
+  a.append(kbd, svgDoc(icon), label);
   $("links").append(a);
+  return a;
 });
 
 // Statut réel : la version publiée sur ethone.dev, sinon hors ligne.
@@ -33,6 +35,50 @@ LINKS.forEach(([label, path, icon], i) => {
   }
 })();
 
+// ---- Note rapide ----
+const noteText = $("noteText");
+const seg = document.querySelector(".seg");
+let kind = "note";
+function setKind(next) {
+  kind = next;
+  seg.dataset.kind = next;
+  seg.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.kind === next)));
+  noteText.placeholder = next === "task" ? "Une chose à faire…" : "Une idée, un lien, une chose à retenir…";
+}
+seg.addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-kind]");
+  if (b) setKind(b.dataset.kind);
+});
+noteText.addEventListener("input", () => {
+  $("sendNote").disabled = !noteText.value.trim();
+});
+async function sendNote() {
+  const text = noteText.value.trim();
+  if (!text) return;
+  $("sendNote").disabled = true;
+  await quickNote(text, kind);
+  window.close();
+}
+$("sendNote").addEventListener("click", sendNote);
+noteText.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    sendNote();
+  }
+});
+
+// 1 à 6 : accès rapide (hors saisie).
+document.addEventListener("keydown", (e) => {
+  if (e.target === noteText || e.ctrlKey || e.metaKey || e.altKey) return;
+  const n = Number(e.key);
+  if (n >= 1 && n <= links.length) {
+    e.preventDefault();
+    chrome.tabs.create({ url: links[n - 1].href });
+    window.close();
+  }
+});
+
+// ---- Onglet courant ----
 const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 const supported = /^https?:/.test(tab?.url || "");
 
@@ -57,11 +103,15 @@ if (supported) {
   }
 } else {
   $("save").disabled = true;
+  $("saveTask").disabled = true;
   $("unsupported").hidden = false;
 }
 
-$("save").addEventListener("click", async () => {
+async function save(k) {
   $("save").disabled = true;
-  await clipTab(tab, selection);
+  $("saveTask").disabled = true;
+  await clipTab(tab, selection, k);
   window.close();
-});
+}
+$("save").addEventListener("click", () => save("note"));
+$("saveTask").addEventListener("click", () => save("task"));

@@ -17,7 +17,7 @@
     </a>
   </header>
 
-  <section class="clip rise" style="--i:1">
+  <section class="card clip rise" style="--i:1">
     <div class="page">
       <img id="favicon" alt="" width="16" height="16" hidden>
       <div class="page-text">
@@ -26,17 +26,38 @@
       </div>
     </div>
     <blockquote id="selection" hidden></blockquote>
-    <button id="save" class="primary" type="button">
-      <span id="saveLabel">Enregistrer cette page</span>
-      <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </button>
+    <div class="row">
+      <button id="save" class="primary" type="button">
+        <span id="saveLabel">Enregistrer cette page</span>
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+      <button id="saveTask" class="secondary" type="button" title="Ajouter comme tâche" aria-label="Ajouter comme tâche">
+        <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
+      </button>
+    </div>
     <p id="unsupported" class="hint" hidden>Chrome ne permet pas d'enregistrer cette page.</p>
+  </section>
+
+  <section class="card note rise" style="--i:2">
+    <div class="note-head">
+      <label for="noteText">Note rapide</label>
+      <div class="seg" role="radiogroup" aria-label="Type">
+        <span class="seg-pill" aria-hidden="true"></span>
+        <button type="button" role="radio" aria-checked="true" data-kind="note">Note</button>
+        <button type="button" role="radio" aria-checked="false" data-kind="task">Tâche</button>
+      </div>
+    </div>
+    <textarea id="noteText" rows="2" maxlength="5000" placeholder="Une idée, un lien, une chose à faire…"></textarea>
+    <div class="note-foot">
+      <small><kbd>Ctrl</kbd>+<kbd>Entrée</kbd></small>
+      <button id="sendNote" class="primary small" type="button" disabled>Envoyer</button>
+    </div>
   </section>
 
   <nav id="links" class="links" aria-label="Accès rapide"></nav>
 
-  <footer class="rise" style="--i:9">
-    <span><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> enregistre la page</span>
+  <footer class="rise" style="--i:10">
+    <span><kbd>1</kbd>–<kbd>6</kbd> accès rapide · <kbd>eth</kbd> dans la barre d'adresse</span>
   </footer>
 
   <script type="module" src="popup.js"></script>

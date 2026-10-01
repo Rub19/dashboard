@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.48.6 — 2026-10-02
+
+**Extension Chrome 1.1 : note rapide, tâches et barre d'adresse**
+
+- Note rapide dans la popup : tape une idée, choisis Note ou Tâche (sélecteur animé) et envoie avec Ctrl+Entrée.
+- Clic droit sur une sélection : « Ajouter comme tâche » en plus de « Enregistrer dans ETHONE » ; la page s'ouvre directement sur le bon type. Bouton tâche à côté de « Enregistrer cette page ».
+- Barre d'adresse : tape « eth » puis ton texte pour créer une note, « eth tâche … » pour une tâche, ou « eth notes », « eth brain »… pour ouvrir la page.
+- Touches 1 à 6 pour l'accès rapide, thème clair automatique, page « Note rapide » dédiée côté ETHONE.
+- À télécharger sur ethone.dev/extension (remplace la 1.0 : recharge l'extension dans chrome://extensions).
+
 ## v1.48.5 — 2026-10-02
 
 **Tracker et Calendrier : thème, bugs et motion design**

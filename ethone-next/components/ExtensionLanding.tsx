@@ -12,8 +12,9 @@ const ZIP = "/downloads/ethone-extension.zip";
 
 const FEATURES = [
   { icon: NotebookPen, title: "Une page en un clic", body: "Le titre et l'adresse de l'onglet partent dans tes notes ou tes tâches, avec ta session ETHONE habituelle." },
-  { icon: Quote, title: "Le passage qui compte", body: "Sélectionne du texte, clic droit, « Enregistrer dans ETHONE » : la citation arrive avec sa source." },
-  { icon: Layers, title: "Ton espace à portée", body: "Accueil, notes, tâches, Brain, calendrier et console du bot, directement depuis la barre de Chrome." },
+  { icon: Quote, title: "Le passage qui compte", body: "Sélectionne du texte, clic droit : « Enregistrer dans ETHONE » ou « Ajouter comme tâche », avec la source." },
+  { icon: Keyboard, title: "Note rapide, partout", body: "Tape une idée dans la popup, ou « eth » puis ton texte dans la barre d'adresse. « eth notes » ouvre directement la page." },
+  { icon: Layers, title: "Ton espace à portée", body: "Accueil, notes, tâches, Brain, calendrier et bot en un clic, ou avec les touches 1 à 6 dans la popup." },
 ];
 
 const STEPS = [
@@ -147,7 +148,7 @@ export default function ExtensionLanding() {
           initial={initial}
           whileInView="animate"
           viewport={{ once: true, margin: "-80px" }}
-          className="mt-24 grid gap-4 sm:grid-cols-3"
+          className="mt-24 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
         >
           {FEATURES.map(({ icon: Icon, title, body }) => (
             <motion.article key={title} variants={staggerItem} className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card)] p-5">

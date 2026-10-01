@@ -3,6 +3,8 @@
 import { Icon } from "@/lib/icons";
 import { useSettings } from "@/components/SettingsProvider";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useConnections } from "@/lib/hooks/useConnections";
+import { INTEGRATIONS } from "@/lib/integrations";
 import ServiceIcon from "@/components/ServiceIcon";
 import { cn } from "@/lib/utils";
 import type { BrainAttachment } from "@/lib/hooks/useBrain";
@@ -22,6 +24,8 @@ export default function BrainContextDrawer({
 }: BrainContextDrawerProps) {
   const { settings } = useSettings();
   const [activeWorkspace] = useLocalStorage<string>("ethone-active-workspace", "personal");
+  const { connected, loaded } = useConnections();
+  const services = INTEGRATIONS.filter((i) => connected.has(i.id));
 
   return (
     <aside
@@ -123,29 +127,28 @@ export default function BrainContextDrawer({
           <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
             Services connectés
           </span>
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { id: "spotify", name: "Spotify", connected: true },
-              { id: "google-drive", name: "Google Drive", connected: false },
-              { id: "discord", name: "Discord", connected: false },
-              { id: "github", name: "GitHub", connected: true },
-            ].map((s) => (
-              <div
-                key={s.id}
-                className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 shadow-xs transition-all hover:bg-[var(--surface-raised)]"
-              >
-                <ServiceIcon
-                  id={s.id}
-                  icon={s.id}
-                  className="h-4 w-4 shrink-0"
-                  colored={s.connected}
-                />
-                <span className="text-[11px] font-semibold truncate text-[var(--text-primary)]">
-                  {s.name}
+          {!loaded ? null : services.length === 0 ? (
+            <p className="text-xs text-[var(--text-muted)] italic">Aucun service connecté</p>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              {services.slice(0, 6).map((s) => (
+                <div
+                  key={s.id}
+                  className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 shadow-xs transition-all hover:bg-[var(--surface-raised)]"
+                >
+                  <ServiceIcon id={s.id} icon={s.icon} className="h-4 w-4 shrink-0" colored />
+                  <span className="text-[11px] font-semibold truncate text-[var(--text-primary)]">
+                    {s.name}
+                  </span>
+                </div>
+              ))}
+              {services.length > 6 && (
+                <span className="col-span-2 text-[10px] text-[var(--text-muted)]">
+                  +{services.length - 6} autres
                 </span>
-              </div>
-            ))}
-          </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Quick Capabilities */}

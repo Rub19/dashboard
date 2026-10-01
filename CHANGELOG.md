@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.40.1 — 2026-10-01
+
+**Brain : services connectés réels**
+
+- Le panneau de contexte du Brain affiche désormais vos vrais services connectés au lieu d'une liste fixe (Spotify, Google Drive, Discord, GitHub)
+- Message « Aucun service connecté » quand rien n'est relié
+
 ## v1.40.0 — 2026-10-01
 
 **Bandeau de mise à jour, notifications et connexion repensés**

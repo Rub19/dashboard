@@ -39974,6 +39974,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_40_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_40_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_40_0_de);
 
+const v1_40_1_fr: ChangelogEntry = {
+  version: "v1.40.1",
+  date: "2026-10-01",
+  title: "Brain : services connectés réels",
+  items: [
+    "Le panneau de contexte du Brain affiche désormais vos vrais services connectés au lieu d'une liste fixe (Spotify, Google Drive, Discord, GitHub)",
+    "Message « Aucun service connecté » quand rien n'est relié",
+  ],
+};
+
+const v1_40_1_en: ChangelogEntry = {
+  version: "v1.40.1",
+  date: "2026-10-01",
+  title: "Brain: real connected services",
+  items: [
+    "The Brain context drawer now shows your actual connected services instead of a fixed list (Spotify, Google Drive, Discord, GitHub)",
+    "\"No connected services\" message when nothing is linked",
+  ],
+};
+
+const v1_40_1_es: ChangelogEntry = {
+  version: "v1.40.1",
+  date: "2026-10-01",
+  title: "Brain: servicios conectados reales",
+  items: [
+    "El panel de contexto de Brain ahora muestra tus servicios realmente conectados en lugar de una lista fija (Spotify, Google Drive, Discord, GitHub)",
+    "Mensaje «Ningún servicio conectado» cuando no hay nada vinculado",
+  ],
+};
+
+const v1_40_1_de: ChangelogEntry = {
+  version: "v1.40.1",
+  date: "2026-10-01",
+  title: "Brain: echte verbundene Dienste",
+  items: [
+    "Das Brain-Kontextpanel zeigt jetzt deine tatsächlich verbundenen Dienste statt einer festen Liste (Spotify, Google Drive, Discord, GitHub)",
+    "Hinweis „Keine Dienste verbunden“, wenn nichts verknüpft ist",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_40_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_40_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_40_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_40_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

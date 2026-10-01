@@ -30,7 +30,7 @@ export default function AuthShowcase() {
     >
       <motion.h2
         variants={revealUp}
-        className="text-[2.75rem] font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)] xl:text-[3.25rem] 2xl:text-[3.5rem]"
+        className="text-[2.75rem] font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)] xl:text-[3.5rem] 2xl:text-[3.75rem]"
       >
         {i18n("loginHeroHeadlineLine1", "Votre espace,")}
         <br />
@@ -42,27 +42,27 @@ export default function AuthShowcase() {
         </span>
       </motion.h2>
 
-      <motion.p variants={revealUp} className="mt-5 max-w-[30rem] text-[17px] leading-relaxed text-[var(--text-muted)]">
+      <motion.p variants={revealUp} className="mt-5 max-w-[32rem] text-[17px] leading-relaxed text-[var(--text-muted)]">
         {i18n("loginHeroDescription", "Notes, tâches, calendrier, finances, musique, fichiers et IA locale réunis dans un système fluide et instantané.")}
       </motion.p>
 
       {/* Modules: one panel, cells separated by hairlines */}
       <motion.div
         variants={revealUp}
-        className="mt-10 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] shadow-[0_24px_60px_-36px_rgb(0_0_0/0.7)]"
+        className="mt-9 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] shadow-[0_24px_60px_-36px_rgb(0_0_0/0.7)]"
       >
         <motion.ul variants={choreography} className="grid grid-cols-3 gap-px bg-[var(--panel-border)]">
           {MODULES.map(({ icon: Icon, key, fallback }) => (
             <motion.li
               key={key}
               variants={staggerItem}
-              className="group flex items-center gap-3 px-4 py-4"
+              className="group flex flex-col items-start gap-3.5 px-5 py-5 transition-colors duration-300"
               style={{ background: "color-mix(in srgb, var(--bg-card, var(--bg-main)) 85%, var(--bg-main))" }}
             >
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[0.7rem] bg-[var(--text-primary)]/[0.05] text-[var(--text-muted)] transition-[color,background-color] duration-300 group-hover:bg-[var(--accent-primary)]/12 group-hover:text-[var(--accent-primary)]">
-                <Icon className="h-[18px] w-[18px]" />
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.05] text-[var(--text-muted)] transition-[color,background-color] duration-300 group-hover:border-[var(--accent-primary)]/30 group-hover:bg-[var(--accent-primary)]/10 group-hover:text-[var(--accent-primary)]">
+                <Icon className="h-5 w-5" />
               </span>
-              <span className="truncate text-[14px] font-medium text-[var(--text-primary)]/85 transition-colors duration-300 group-hover:text-[var(--text-primary)]">
+              <span className="truncate text-[15px] font-medium text-[var(--text-primary)]/85 transition-colors duration-300 group-hover:text-[var(--text-primary)]">
                 {i18n(key, fallback)}
               </span>
             </motion.li>

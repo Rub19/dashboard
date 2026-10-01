@@ -42,6 +42,9 @@ export default function AuthCardShell({ icon, title, subtitle, children, below, 
       className="w-full max-w-[440px] 2xl:max-w-[460px]"
     >
       <motion.div variants={revealUp} className="relative">
+        {/* Grounding: soft contact shadow below, faint light pooled behind */}
+        <div aria-hidden className="pointer-events-none absolute -bottom-12 left-1/2 h-24 w-[85%] -translate-x-1/2" style={{ background: "radial-gradient(closest-side, rgb(0 0 0 / 0.45), transparent)" }} />
+        <div aria-hidden className="pointer-events-none absolute -inset-x-16 -inset-y-12" style={{ background: "radial-gradient(closest-side, color-mix(in srgb, var(--accent-primary) 7%, transparent), transparent)" }} />
         <motion.div animate={shake} className="relative">
           <LightBorder
             light={success ? "--success" : "--accent-primary"}
@@ -54,7 +57,7 @@ export default function AuthCardShell({ icon, title, subtitle, children, below, 
             {/* Header */}
             <div className="flex items-start gap-4 px-6 pb-5 pt-6 sm:px-8 sm:pt-7">
               <div
-                className="relative grid h-12 w-12 shrink-0 place-items-center rounded-[0.9rem] border transition-colors duration-500"
+                className="relative grid h-12 w-12 shrink-0 place-items-center rounded-[var(--inset-radius)] border transition-colors duration-500"
                 style={{
                   borderColor: success ? "color-mix(in srgb, var(--success) 40%, transparent)" : "var(--panel-border)",
                   background: success ? "color-mix(in srgb, var(--success) 12%, transparent)" : "color-mix(in srgb, var(--text-primary) 4%, transparent)",

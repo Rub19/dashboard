@@ -35,7 +35,7 @@ export default function AuthScreen({ children }: { children: ReactNode }) {
       <motion.header {...fadeIn(0.15)} className={`relative z-20 flex items-center justify-between py-5 ${CONTAINER}`}>
         <div className="flex min-w-0 items-center gap-4">
           <Link href="/login" aria-label="ETHONE" className={`group flex shrink-0 select-none items-center gap-3 ${FOCUS}`}>
-            <span className="grid h-9 w-9 place-items-center rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] shadow-[inset_0_1px_0_rgb(255_255_255/0.06)] transition-colors duration-200 group-hover:border-[var(--text-primary)]/20">
+            <span className="grid h-9 w-9 place-items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] shadow-[inset_0_1px_0_rgb(255_255_255/0.06)] transition-colors duration-200 group-hover:border-[var(--text-primary)]/20">
               <BrandMark size={20} />
             </span>
             <span className="text-[15px] font-semibold tracking-[0.22em] text-[var(--text-primary)]">ETHONE</span>
@@ -57,16 +57,22 @@ export default function AuthScreen({ children }: { children: ReactNode }) {
 
       <motion.footer
         {...fadeIn(0.6)}
-        className={`relative z-20 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-6 text-xs text-[var(--text-muted)] ${CONTAINER}`}
+        className={`relative z-20 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-6 py-6 text-xs text-[var(--text-muted)] ${CONTAINER}`}
       >
-        <span>© {new Date().getFullYear()} ETHONE</span>
-        <nav className="flex items-center gap-5">
-          <Link href="/terms" className={`transition-colors hover:text-[var(--text-primary)] ${FOCUS}`}>
-            {i18n("termsLinkText", "Conditions d'utilisation")}
-          </Link>
-          <Link href="/privacy" className={`transition-colors hover:text-[var(--text-primary)] ${FOCUS}`}>
-            {i18n("privacyLinkText", "Politique de confidentialité")}
-          </Link>
+        <span className="whitespace-nowrap">© {new Date().getFullYear()} ETHONE</span>
+        <nav className="flex flex-wrap items-center justify-end gap-x-5 gap-y-1.5 text-right">
+          {[
+            ["/terms", i18n("termsLinkText", "Conditions d'utilisation")],
+            ["/privacy", i18n("privacyLinkText", "Politique de confidentialité")],
+          ].map(([href, label]) => (
+            <Link
+              key={href}
+              href={href}
+              className={`underline decoration-transparent underline-offset-4 transition-[color,text-decoration-color] duration-200 hover:text-[var(--text-primary)] hover:decoration-[var(--text-primary)]/30 ${FOCUS}`}
+            >
+              {label}
+            </Link>
+          ))}
         </nav>
       </motion.footer>
       </div>

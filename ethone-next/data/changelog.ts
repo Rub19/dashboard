@@ -40123,6 +40123,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_41_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_41_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_41_1_de);
 
+const v1_41_2_fr: ChangelogEntry = {
+  version: "v1.41.2",
+  date: "2026-10-01",
+  title: "Connexion : dernière passe de finition",
+  items: [
+    "Pied de page structuré gauche / droite : « © ETHONE » à gauche, conditions et confidentialité alignées à droite, sur toutes les tailles d'écran.",
+    "Sélecteur de langue plus compact (drapeau + code), aligné sur le bord droit de la carte et du pied de page.",
+    "Les six modules prennent plus de place sous forme de tuiles, la présentation et le formulaire partagent le même centre vertical, et la carte est ancrée dans la scène par une ombre et une lumière très douces.",
+    "Rayons harmonisés sur ceux du thème, liens du pied de page soulignés au survol.",
+  ],
+};
+
+const v1_41_2_en: ChangelogEntry = {
+  version: "v1.41.2",
+  date: "2026-10-01",
+  title: "Sign-in: final polish pass",
+  items: [
+    "Footer with a left / right structure: \"© ETHONE\" on the left, terms and privacy aligned right, on every screen size.",
+    "More compact language switcher (flag + code), aligned with the right edge of the card and footer.",
+    "The six modules gain presence as tiles, the presentation and form share the same vertical centre, and the card is grounded in the scene by a very soft shadow and light.",
+    "Corner radii follow the theme, and footer links underline on hover.",
+  ],
+};
+
+const v1_41_2_es: ChangelogEntry = {
+  version: "v1.41.2",
+  date: "2026-10-01",
+  title: "Inicio de sesión: pulido final",
+  items: [
+    "Pie de página con estructura izquierda / derecha y selector de idioma más compacto.",
+    "Módulos en mosaicos, composición centrada y radios armonizados con el tema.",
+  ],
+};
+
+const v1_41_2_de: ChangelogEntry = {
+  version: "v1.41.2",
+  date: "2026-10-01",
+  title: "Anmeldung: letzter Feinschliff",
+  items: [
+    "Fußzeile mit Links-/Rechts-Struktur und kompaktere Sprachauswahl.",
+    "Module als Kacheln, zentrierte Komposition und an das Theme angepasste Radien.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_41_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_41_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_41_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_41_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

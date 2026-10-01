@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.41.2 — 2026-10-01
+
+**Connexion : dernière passe de finition**
+
+- Pied de page structuré gauche / droite : « © ETHONE » à gauche, conditions et confidentialité alignées à droite, sur toutes les tailles d'écran.
+- Sélecteur de langue plus compact (drapeau + code), aligné sur le bord droit de la carte et du pied de page.
+- Les six modules prennent plus de place sous forme de tuiles, la présentation et le formulaire partagent le même centre vertical, et la carte est ancrée dans la scène par une ombre et une lumière très douces.
+- Rayons harmonisés sur ceux du thème, liens du pied de page soulignés au survol.
+
 ## v1.41.1 — 2026-10-01
 
 **Connexion : composition et fond affinés**

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.40.0 — 2026-10-01
+
+**Bandeau de mise à jour, notifications et connexion repensés**
+
+- Le bandeau « Nouvelle mise à jour disponible » a été refait : plus grand et lisible, une lueur fait le tour de sa bordure, la version est affichée dans un badge, un lien ouvre les notes de version et une barre de progression apparaît pendant la mise à jour.
+- Les notifications ont un nouveau design : l'icône est entourée d'un anneau qui se vide pendant la durée d'affichage (en pause au survol), une étiquette colorée au-dessus du titre et un mini-interrupteur pour les réglages activés/désactivés. Leurs couleurs suivent maintenant le thème actif.
+- Page de connexion : nouveau fond sans halos — une grille fine parcourue par des traits de lumière —, des champs, icônes, boutons et titres plus grands, et plus de reflet coloré autour des boutons.
+- Corrigé : les champs pré-remplis par le navigateur gardent les couleurs du thème au lieu d'une teinte bleutée.
+
 ## v1.39.0 — 2026-10-01
 
 **Nouvelle page de connexion**

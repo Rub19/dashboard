@@ -65,7 +65,7 @@ export default function VerifyMfaPage() {
   return (
     <AuthScreen>
       <AuthCardShell
-        icon={<ShieldCheck className="h-7 w-7 text-[var(--success)]" />}
+        icon={<ShieldCheck className="h-9 w-9 text-[var(--success)]" />}
         title={mode === "code" ? "Entre ton code de vérification" : "Utilise un code de secours"}
         subtitle={
           mode === "code"

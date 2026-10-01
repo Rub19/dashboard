@@ -5,23 +5,34 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { SPRING_MOUSE } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 
-const tint = (token: string, pct: number) => `color-mix(in srgb, var(${token}) ${pct}%, transparent)`;
+const CELL = 72;
 
-/** Full-bleed auth backdrop: two accent auroras drifting with a slight cursor
- * parallax, a slow rotating light halo behind the focal column, and a grid
- * that fades out toward the edges. Every color comes from the active theme. */
+// Grid lines that carry a travelling pulse: offset in cells from the centre,
+// lap duration and start delay. Fixed so every visit looks the same.
+const V_PULSES = [
+  { at: -7, dur: 7, delay: 0.4 },
+  { at: -3, dur: 9, delay: 3.2 },
+  { at: 2, dur: 8, delay: 1.6 },
+  { at: 6, dur: 10, delay: 5 },
+] as const;
+const H_PULSES = [
+  { at: -4, dur: 11, delay: 2.4 },
+  { at: 3, dur: 9, delay: 6 },
+] as const;
+
+const line = (pct: number) => `color-mix(in srgb, var(--text-primary) ${pct}%, transparent)`;
+const fade = "radial-gradient(ellipse 75% 70% at 50% 50%, black 25%, transparent 80%)";
+
+/** Auth backdrop: a precise line grid that fades toward the edges, a few
+ * light pulses travelling along its lines. No blurred glows — every light is a 1px line. */
 export default function AuthBackdrop() {
   const { reduced } = useMotionPref();
   const px = useMotionValue(0);
   const py = useMotionValue(0);
   const sx = useSpring(px, SPRING_MOUSE);
   const sy = useSpring(py, SPRING_MOUSE);
-  const nearX = useTransform(sx, (v) => v * 70);
-  const nearY = useTransform(sy, (v) => v * 50);
-  const farX = useTransform(sx, (v) => v * -40);
-  const farY = useTransform(sy, (v) => v * -30);
-  const gridX = useTransform(sx, (v) => v * -12);
-  const gridY = useTransform(sy, (v) => v * -12);
+  const gx = useTransform(sx, (v) => v * -14);
+  const gy = useTransform(sy, (v) => v * -14);
 
   useEffect(() => {
     if (reduced) return;
@@ -41,57 +52,61 @@ export default function AuthBackdrop() {
       animate={{ opacity: 1 }}
       transition={{ duration: 1.2, ease: "easeOut" }}
     >
-      {/* Grid, masked to fade out toward the edges */}
       <motion.div
-        className="absolute -inset-10"
-        style={{
-          x: gridX,
-          y: gridY,
-          backgroundImage: `linear-gradient(${tint("--text-primary", 5)} 1px, transparent 1px), linear-gradient(90deg, ${tint("--text-primary", 5)} 1px, transparent 1px)`,
-          backgroundSize: "56px 56px",
-          maskImage: "radial-gradient(ellipse 70% 60% at 50% 45%, black 20%, transparent 75%)",
-          WebkitMaskImage: "radial-gradient(ellipse 70% 60% at 50% 45%, black 20%, transparent 75%)",
-        }}
-      />
-
-      {/* Near aurora (accent) */}
-      <motion.div className="absolute left-[8%] top-[-18%] h-[46rem] w-[46rem]" style={{ x: nearX, y: nearY }}>
-        <motion.div
-          className="h-full w-full rounded-full blur-[130px]"
-          style={{ background: tint("--accent-primary", 22) }}
-          animate={reduced ? undefined : { scale: [1, 1.12, 1], opacity: [0.8, 1, 0.8] }}
-          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </motion.div>
-
-      {/* Far aurora (secondary accent) */}
-      <motion.div className="absolute bottom-[-25%] right-[2%] h-[42rem] w-[42rem]" style={{ x: farX, y: farY }}>
-        <motion.div
-          className="h-full w-full rounded-full blur-[140px]"
-          style={{ background: tint("--accent-secondary", 16) }}
-          animate={reduced ? undefined : { scale: [1.08, 0.95, 1.08], opacity: [0.7, 1, 0.7] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </motion.div>
-
-      {/* Slow rotating halo behind the focal column */}
-      <div className="absolute left-1/2 top-[42%] h-[52rem] w-[52rem] -translate-x-1/2 -translate-y-1/2 opacity-60">
-        <motion.div
-          className="h-full w-full rounded-full blur-[70px]"
+        className="absolute -inset-16"
+        style={{ x: gx, y: gy, maskImage: fade, WebkitMaskImage: fade }}
+      >
+        {/* Grid */}
+        <div
+          className="absolute inset-0"
           style={{
-            background: `conic-gradient(from 0deg, transparent 0deg, ${tint("--accent-primary", 18)} 70deg, transparent 150deg, ${tint("--accent-secondary", 12)} 230deg, transparent 300deg)`,
-            maskImage: "radial-gradient(circle, transparent 28%, black 45%, transparent 70%)",
-            WebkitMaskImage: "radial-gradient(circle, transparent 28%, black 45%, transparent 70%)",
+            backgroundImage: `linear-gradient(${line(7)} 1px, transparent 1px), linear-gradient(90deg, ${line(7)} 1px, transparent 1px)`,
+            backgroundSize: `${CELL}px ${CELL}px`,
+            backgroundPosition: `calc(50% + ${CELL / 2}px) calc(50% + ${CELL / 2}px)`,  // puts a line exactly on the centre
           }}
-          animate={reduced ? undefined : { rotate: 360 }}
-          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
         />
-      </div>
+        {/* Intersections */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle, ${line(22)} 1.2px, transparent 1.6px)`,
+            backgroundSize: `${CELL}px ${CELL}px`,
+            backgroundPosition: "center center",
+          }}
+        />
 
-      {/* Vignette */}
+        {!reduced && (
+          <>
+            {V_PULSES.map((p) => (
+              <div key={`v${p.at}`} className="absolute inset-y-0 w-px overflow-hidden" style={{ left: `calc(50% + ${p.at * CELL}px)` }}>
+                <motion.div
+                  className="h-40 w-px"
+                  style={{ background: "linear-gradient(to bottom, transparent, var(--accent-primary))" }}
+                  initial={{ y: "-10rem" }}
+                  animate={{ y: "110vh" }}
+                  transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, repeatDelay: 2, ease: "linear" }}
+                />
+              </div>
+            ))}
+            {H_PULSES.map((p) => (
+              <div key={`h${p.at}`} className="absolute inset-x-0 h-px overflow-hidden" style={{ top: `calc(50% + ${p.at * CELL}px)` }}>
+                <motion.div
+                  className="h-px w-56"
+                  style={{ background: "linear-gradient(to right, transparent, var(--accent-secondary, var(--accent-primary)))" }}
+                  initial={{ x: "-14rem" }}
+                  animate={{ x: "110vw" }}
+                  transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, repeatDelay: 3, ease: "linear" }}
+                />
+              </div>
+            ))}
+          </>
+        )}
+      </motion.div>
+
+      {/* Edge falloff into the page colour */}
       <div
         className="absolute inset-0"
-        style={{ background: `radial-gradient(ellipse 85% 75% at 50% 45%, transparent 40%, var(--bg-main) 100%)` }}
+        style={{ background: "linear-gradient(to bottom, var(--bg-main), transparent 18%, transparent 82%, var(--bg-main))" }}
       />
     </motion.div>
   );

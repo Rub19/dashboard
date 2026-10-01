@@ -24,13 +24,13 @@ export default function AuthScreen({ children }: { children: ReactNode }) {
         className="relative z-20 flex items-center justify-between px-5 py-5 sm:px-8"
       >
         <div className="flex select-none items-center gap-2.5">
-          <BrandMark size={22} />
-          <span className="font-mono text-sm font-bold tracking-[0.2em] text-[var(--text-primary)]">ETHONE</span>
+          <BrandMark size={28} />
+          <span className="font-mono text-base font-bold tracking-[0.22em] text-[var(--text-primary)]">ETHONE</span>
         </div>
         <LanguageSwitcher />
       </motion.header>
 
-      <main className="relative z-10 flex flex-1 items-center justify-center px-4 pb-16 pt-2 sm:pb-20">
+      <main className="relative z-10 flex flex-1 items-center justify-center px-4 pb-10 pt-2">
         {children}
       </main>
     </div>

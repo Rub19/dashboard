@@ -4,7 +4,10 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpCircle, RefreshCw, X, Sparkles } from "@/components/icons/ph";
+import { ArrowUpCircle, RefreshCw, X, Sparkles, ChevronRight } from "@/components/icons/ph";
+import LightBorder from "@/components/ui/LightBorder";
+import { SPRING_PANEL } from "@/lib/ease";
+import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { useVersionChecker } from "@/lib/hooks/useVersionChecker";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
@@ -29,6 +32,7 @@ export default function VersionUpdateToast() {
   const { settings } = useSettings();
   const { hasUpdate, newVersion, newData, dismiss } = useVersionChecker();
   const [isUpdating, setIsUpdating] = useState(false);
+  const { reduced } = useMotionPref();
   const [showChangelog, setShowChangelog] = useState(false);
   const [changelog, setChangelog] = useState<ChangelogEntry[]>([]);
 
@@ -69,56 +73,89 @@ export default function VersionUpdateToast() {
       <AnimatePresence>
         {hasUpdate && (
           <motion.aside
-            initial={{ opacity: 0, y: -12, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.97 }}
-            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-x-4 top-[calc(4.5rem+env(safe-area-inset-top))] z-[var(--z-critical)] mx-auto w-fit max-w-[calc(100vw-2rem)] select-none sm:inset-x-auto sm:left-auto sm:right-6 sm:mx-0"
+            initial={reduced ? { opacity: 0 } : { opacity: 0, y: -28, scale: 0.92, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            exit={reduced ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.96, filter: "blur(6px)", transition: { duration: 0.18 } }}
+            transition={SPRING_PANEL}
+            className="fixed inset-x-3 top-[calc(4.5rem+env(safe-area-inset-top))] z-[var(--z-critical)] mx-auto w-auto max-w-[36rem] select-none sm:inset-x-auto sm:left-auto sm:right-6 sm:mx-0 sm:w-[36rem] sm:max-w-[calc(100vw-3rem)]"
             role="status"
             aria-live="polite"
           >
-            <div className="v8-panel relative flex items-center gap-2.5 overflow-hidden py-2 pl-2.5 pr-2 shadow-2xl before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-[var(--accent-primary)]/50 before:to-transparent">
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
-                <ArrowUpCircle className="h-3.5 w-3.5" />
+            <LightBorder radius="1.1rem" speed={5} className="shadow-[0_24px_60px_-24px_rgb(0_0_0/0.65)]" innerClassName="backdrop-blur-2xl">
+              <div className="flex items-center gap-3.5 p-3">
+                {/* Glyph: arrow rising through a turning ring */}
+                <div className="relative grid h-12 w-12 shrink-0 place-items-center rounded-[0.85rem] border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+                  <motion.span
+                    aria-hidden
+                    className="absolute inset-1.5 rounded-full border border-dashed border-[var(--accent-primary)]/40"
+                    animate={reduced ? undefined : { rotate: 360 }}
+                    transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+                  />
+                  <motion.span
+                    animate={reduced || isUpdating ? undefined : { y: [1.5, -1.5, 1.5] }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <ArrowUpCircle className="h-6 w-6" />
+                  </motion.span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleOpenChangelog}
+                  className="group min-w-0 flex-1 cursor-pointer text-left"
+                >
+                  <span className="block truncate text-[15px] font-semibold leading-tight tracking-[-0.01em] text-[var(--text-primary)]">
+                    {isUpdating ? i18n("updating", "Mise à jour...") : i18n("updateAvailable", "Mise à jour disponible")}
+                  </span>
+                  <span className="mt-1 flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                    {versionLabel && (
+                      <span className="rounded-md border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 px-1.5 py-px font-mono text-[11px] font-semibold text-[var(--accent-primary)]">
+                        {versionLabel}
+                      </span>
+                    )}
+                    <span className="inline-flex items-center gap-1 truncate transition-colors group-hover:text-[var(--text-primary)]">
+                      <Sparkles className="h-3.5 w-3.5" />
+                      {i18n("changelog", "Notes de version")}
+                      <ChevronRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+                    </span>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleUpdate}
+                  disabled={isUpdating}
+                  aria-label={i18n("update", "Mettre à jour")}
+                  className="btn-sheen relative flex h-11 shrink-0 cursor-pointer items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-3.5 text-sm font-semibold text-[var(--accent-contrast)] transition-[filter,transform] duration-150 hover:brightness-110 active:scale-95 disabled:cursor-default sm:px-4"
+                >
+                  <RefreshCw className={cn("h-4 w-4", isUpdating && "animate-spin")} />
+                  <span className="hidden sm:inline">{i18n("update", "Mettre à jour")}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleDismiss}
+                  disabled={isUpdating}
+                  aria-label={i18n("later", "Plus tard")}
+                  title={i18n("later", "Plus tard")}
+                  className="grid h-9 w-9 shrink-0 cursor-pointer place-items-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
 
-              <button
-                type="button"
-                onClick={handleOpenChangelog}
-                title="Voir le journal des modifications"
-                className="min-w-0 cursor-pointer text-left"
-              >
-                <span className="block truncate text-[11px] font-semibold leading-tight text-[var(--text-primary)]">
-                  {i18n("updateAvailable", "Mise à jour disponible")}
-                </span>
-                {versionLabel ? (
-                  <span className="flex items-center gap-1 text-[10px] leading-tight text-[var(--text-muted)]">
-                    {versionLabel}
-                    <Sparkles className="h-2.5 w-2.5" />
-                  </span>
-                ) : null}
-              </button>
-
-              <button
-                type="button"
-                onClick={handleUpdate}
-                disabled={isUpdating}
-                className="ml-1 flex shrink-0 items-center gap-1.5 rounded-[var(--inset-radius)] bg-[var(--accent-primary)] px-2.5 py-1.5 text-[11px] font-medium text-[var(--accent-contrast)] transition-[filter] hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer"
-              >
-                <RefreshCw className={cn("h-3 w-3", isUpdating && "animate-spin")} />
-                <span className="hidden sm:inline">{isUpdating ? "Mise à jour..." : i18n("update", "Mettre à jour")}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleDismiss}
-                aria-label={i18n("later", "Plus tard")}
-                title={i18n("later", "Plus tard")}
-                className="shrink-0 rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/6 hover:text-[var(--text-primary)] cursor-pointer"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
+              {/* Reload progress */}
+              <AnimatePresence>
+                {isUpdating && (
+                  <motion.div
+                    className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-[var(--accent-primary)]"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                  />
+                )}
+              </AnimatePresence>
+            </LightBorder>
           </motion.aside>
         )}
       </AnimatePresence>

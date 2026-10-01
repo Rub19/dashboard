@@ -39923,6 +39923,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_39_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_39_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_39_0_de);
 
+const v1_40_0_fr: ChangelogEntry = {
+  version: "v1.40.0",
+  date: "2026-10-01",
+  title: "Bandeau de mise à jour, notifications et connexion repensés",
+  items: [
+    "Le bandeau « Nouvelle mise à jour disponible » a été refait : plus grand et lisible, une lueur fait le tour de sa bordure, la version est affichée dans un badge, un lien ouvre les notes de version et une barre de progression apparaît pendant la mise à jour.",
+    "Les notifications ont un nouveau design : l'icône est entourée d'un anneau qui se vide pendant la durée d'affichage (en pause au survol), une étiquette colorée au-dessus du titre et un mini-interrupteur pour les réglages activés/désactivés. Leurs couleurs suivent maintenant le thème actif.",
+    "Page de connexion : nouveau fond sans halos — une grille fine parcourue par des traits de lumière —, des champs, icônes, boutons et titres plus grands, et plus de reflet coloré autour des boutons.",
+    "Corrigé : les champs pré-remplis par le navigateur gardent les couleurs du thème au lieu d'une teinte bleutée.",
+  ],
+};
+
+const v1_40_0_en: ChangelogEntry = {
+  version: "v1.40.0",
+  date: "2026-10-01",
+  title: "Redesigned update banner, notifications and sign-in",
+  items: [
+    "The \"New update available\" banner was rebuilt: larger and easier to read, a light travels around its border, the version sits in a badge, a link opens the changelog and a progress bar appears while updating.",
+    "Notifications have a new design: the icon sits inside a ring that drains over the display time (paused on hover), a colored label above the title and a mini switch for on/off settings. Their colors now follow the active theme.",
+    "Sign-in page: new halo-free background — a fine grid with travelling light lines — plus larger fields, icons, buttons and headings, and no more colored glow around buttons.",
+    "Fixed: browser-autofilled fields keep the theme colors instead of a bluish tint.",
+  ],
+};
+
+const v1_40_0_es: ChangelogEntry = {
+  version: "v1.40.0",
+  date: "2026-10-01",
+  title: "Banner de actualización, notificaciones e inicio de sesión rediseñados",
+  items: [
+    "El banner de actualización se rehízo: más grande, con una luz que recorre su borde, la versión en una insignia y una barra de progreso al actualizar.",
+    "Las notificaciones tienen un nuevo diseño con un anillo de cuenta atrás alrededor del icono y colores que siguen el tema activo.",
+    "Inicio de sesión: nuevo fondo sin halos con una cuadrícula fina y líneas de luz, y campos, iconos y botones más grandes.",
+  ],
+};
+
+const v1_40_0_de: ChangelogEntry = {
+  version: "v1.40.0",
+  date: "2026-10-01",
+  title: "Update-Banner, Benachrichtigungen und Anmeldung neu gestaltet",
+  items: [
+    "Das Update-Banner wurde neu gebaut: größer, mit einem Licht, das um den Rand läuft, der Version als Badge und einem Fortschrittsbalken beim Aktualisieren.",
+    "Benachrichtigungen haben ein neues Design mit einem Countdown-Ring um das Symbol und Farben, die dem aktiven Theme folgen.",
+    "Anmeldung: neuer Hintergrund ohne Lichthöfe mit feinem Raster und Lichtlinien sowie größere Felder, Symbole und Buttons.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_40_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_40_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_40_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_40_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

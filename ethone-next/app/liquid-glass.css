@@ -365,17 +365,18 @@
   }
 }
 
-@keyframes toast-progress {
+/* Toast countdown ring: the stroke drains around the icon. */
+@keyframes toast-ring {
   from {
-    transform: scaleX(1);
+    stroke-dashoffset: 0;
   }
   to {
-    transform: scaleX(0);
+    stroke-dashoffset: 100;
   }
 }
 
-.toast-progress {
-  animation-name: toast-progress;
+.toast-ring {
+  animation-name: toast-ring;
   animation-timing-function: linear;
   animation-fill-mode: forwards;
 }

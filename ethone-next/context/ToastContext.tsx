@@ -94,7 +94,7 @@ function DiscordAvatar({ avatarUrl }: { avatarUrl?: string }) {
       alt=""
       width={36}
       height={36}
-      className="h-9 w-9 rounded-lg object-cover"
+      className="h-full w-full object-cover"
       fallback={
         <span className="flex h-full w-full items-center justify-center text-[var(--text-primary)]">
           <DiscordIcon className="h-5 w-5" />
@@ -208,7 +208,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         description,
         type: "success",
         action,
-        icon: <Icon name="check" pack="lucide" className="h-5 w-5 text-emerald-400" />,
+        icon: <Icon name="check" pack="lucide" className="h-5 w-5" />,
       }),
     [show]
   );
@@ -219,7 +219,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         title,
         description,
         type: "error",
-        icon: <Icon name="x" pack="lucide" className="h-5 w-5 text-rose-400" />,
+        icon: <Icon name="x" pack="lucide" className="h-5 w-5" />,
       }),
     [show]
   );
@@ -230,7 +230,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         title,
         description,
         type: "info",
-        icon: <Icon name="info" pack="lucide" className="h-5 w-5 text-cyan-400" />,
+        icon: <Icon name="info" pack="lucide" className="h-5 w-5" />,
       }),
     [show]
   );
@@ -241,7 +241,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         title,
         description,
         type: "warning",
-        icon: <Icon name="warning" pack="lucide" className="h-5 w-5 text-amber-400" />,
+        icon: <Icon name="warning" pack="lucide" className="h-5 w-5" />,
       }),
     [show]
   );
@@ -272,9 +272,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         variant: state ? "success" : "neutral",
         badge,
         icon: state ? (
-          <Icon name="check" pack="lucide" className="h-5 w-5 text-emerald-400" />
+          <Icon name="check" pack="lucide" className="h-5 w-5" />
         ) : (
-          <Icon name="power-off" pack="lucide" className="h-5 w-5 text-zinc-400" />
+          <Icon name="power-off" pack="lucide" className="h-5 w-5" />
         ),
       });
     },
@@ -325,7 +325,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           type: "info",
           variant: "warning",
           title: i18n("disconnectSuccess", "Déconnecté de Discord"),
-          icon: <Icon name="unlink" pack="lucide" className="h-5 w-5 text-amber-400" />,
+          icon: <Icon name="unlink" pack="lucide" className="h-5 w-5" />,
           duration: 3000,
           dedupKey: "discord-toast",
           badge: "DISCORD",
@@ -337,7 +337,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "success",
           title: title || i18n("settingsSaved", "Préférences sauvegardées"),
           description: description || i18n("syncedViaWorker", "Synchronisées via le Worker"),
-          icon: <Icon name="cloud" pack="lucide" className="h-5 w-5 text-emerald-400" />,
+          icon: <Icon name="cloud" pack="lucide" className="h-5 w-5" />,
           duration: 3000,
           dedupKey: "sync-toast",
           badge: "CLOUD",
@@ -349,7 +349,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "warning",
           title: i18n("settingsReset", "Paramètres rétablis"),
           description: i18n("defaultPreferencesRestored", "Valeurs par défaut restaurées"),
-          icon: <Icon name="check" pack="lucide" className="h-5 w-5 text-amber-400" />,
+          icon: <Icon name="check" pack="lucide" className="h-5 w-5" />,
           duration: 3000,
           dedupKey: "reset-toast",
           badge: "RESET",
@@ -361,7 +361,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "success",
           title: i18n("noteCreated", "Note créée"),
           description: noteTitle || "Note enregistrée dans votre espace.",
-          icon: <Icon name="file-text" pack="lucide" className="h-5 w-5 text-emerald-400" />,
+          icon: <Icon name="file-text" pack="lucide" className="h-5 w-5" />,
           duration: 3000,
           dedupKey: "note-created-toast",
           badge: "NOTE",
@@ -373,7 +373,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "warning",
           title: `${i18n("deleted", "Supprimée")}${count > 1 ? ` (${count})` : ""}`,
           description: `${count} note(s) supprimée(s).`,
-          icon: <Icon name="trash-2" pack="lucide" className="h-5 w-5 text-rose-400" />,
+          icon: <Icon name="trash-2" pack="lucide" className="h-5 w-5" />,
           duration: 3000,
           dedupKey: "note-deleted-toast",
           badge: "SUPPRESSION",
@@ -385,7 +385,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "success",
           title: i18n("added", "Tâche ajoutée"),
           description: taskTitle || "Tâche planifiée avec succès.",
-          icon: <Icon name="check-square" pack="lucide" className="h-5 w-5 text-emerald-400" />,
+          icon: <Icon name="check-square" pack="lucide" className="h-5 w-5" />,
           duration: 3000,
           dedupKey: "task-added-toast",
           badge: "TÂCHE",
@@ -396,7 +396,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           type: "info",
           variant: "warning",
           title: i18n("deleted", "Tâche supprimée"),
-          icon: <Icon name="trash-2" pack="lucide" className="h-5 w-5 text-amber-400" />,
+          icon: <Icon name="trash-2" pack="lucide" className="h-5 w-5" />,
           duration: 3000,
           dedupKey: "task-deleted-toast",
           badge: "TÂCHE",
@@ -407,7 +407,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           type: "success",
           variant: "success",
           title: i18n("copied", "Copié dans le presse-papiers"),
-          icon: <Icon name="clipboard-check" pack="lucide" className="h-5 w-5 text-emerald-400" />,
+          icon: <Icon name="clipboard-check" pack="lucide" className="h-5 w-5" />,
           duration: 2200,
           dedupKey: "clipboard-toast",
           badge: "COPIE",
@@ -419,7 +419,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "ai",
           title: "Modèle IA sélectionné",
           description: modelName,
-          icon: <Brain className="h-5 w-5 text-purple-400" />,
+          icon: <Brain className="h-5 w-5" />,
           duration: 3000,
           dedupKey: "model-switch-toast",
           badge: "BRAIN AI",
@@ -431,7 +431,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "info",
           title: "Thème d'affichage",
           description: `Thème activé : ${themeName}`,
-          icon: <Palette className="h-5 w-5 text-cyan-400" />,
+          icon: <Palette className="h-5 w-5" />,
           duration: 2500,
           dedupKey: "theme-switch-toast",
           badge: "DESIGN",
@@ -443,7 +443,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "version",
           title: "Espace de travail",
           description: `Espace actif : ${space}`,
-          icon: <Layers className="h-5 w-5 text-emerald-400" />,
+          icon: <Layers className="h-5 w-5" />,
           duration: 2500,
           dedupKey: "workspace-switch-toast",
           badge: "ESPACE",
@@ -455,7 +455,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "version",
           title: "Version actuelle",
           description: `${version} ${commit ? `· #${commit}` : ""}`,
-          icon: <Icon name="tag" pack="lucide" className="h-5 w-5 text-emerald-400" />,
+          icon: <Icon name="tag" pack="lucide" className="h-5 w-5" />,
           duration: 3500,
           dedupKey: "current-version-toast",
           badge: "SYSTÈME",

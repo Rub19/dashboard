@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { SPRING_PANEL } from "@/lib/ease";
+import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { cn } from "@/lib/utils";
 
 export type RichToastVariant = "success" | "error" | "info" | "warning" | "neutral" | "version" | "ai";
@@ -22,12 +24,8 @@ type RichToastProps = {
   badge?: string;
 };
 
-/**
- * One flat treatment for every toast. Each variant contributes a single
- * semantic colour (a CSS var), used for the icon, the status dot and the
- * progress bar — no per-variant glow shadows, laser gradients, or
- * hardcoded emerald/cyan/purple that broke on light themes.
- */
+/** One semantic colour per variant (a theme token) drives the icon, the
+ * label and the countdown ring — so every toast works on all 13 themes. */
 const VARIANT_CONFIG: Record<RichToastVariant, { color: string; defaultBadge: string }> = {
   success: { color: "var(--success)", defaultBadge: "Succès" },
   error: { color: "var(--danger)", defaultBadge: "Erreur" },
@@ -38,6 +36,9 @@ const VARIANT_CONFIG: Record<RichToastVariant, { color: string; defaultBadge: st
   neutral: { color: "var(--text-muted)", defaultBadge: "Notification" },
 };
 
+/** Toast card: the icon sits inside a ring that drains over the toast's
+ * lifetime (paused while hovered); a small coloured label sits above the
+ * title; ON/OFF toasts show a mini switch instead of a label. */
 export default function RichToast({
   icon,
   title,
@@ -48,106 +49,90 @@ export default function RichToast({
   className,
   badge,
 }: RichToastProps) {
+  const { reduced } = useMotionPref();
   const [playState, setPlayState] = useState<"running" | "paused">("running");
-  const showProgress = typeof duration === "number" && duration > 0 && duration !== Infinity;
+  const timed = typeof duration === "number" && duration > 0 && duration !== Infinity;
   const cfg = VARIANT_CONFIG[variant] || VARIANT_CONFIG.neutral;
-  const displayBadge = badge || cfg.defaultBadge;
-  const isToggleOn = displayBadge === "ON" || displayBadge === "Actif";
-  const isToggleOff = displayBadge === "OFF" || displayBadge === "Inactif";
-  const isToggle = isToggleOn || isToggleOff;
-  const accentColor = isToggleOn ? "#10b981" : isToggleOff ? "#71717a" : cfg.color;
+  const label = badge || cfg.defaultBadge;
+  const toggleState = label === "ON" || label === "Actif" ? true : label === "OFF" || label === "Inactif" ? false : null;
+  const color = toggleState === true ? "var(--success)" : toggleState === false ? "var(--text-muted)" : cfg.color;
+  const tint = (pct: number) => `color-mix(in srgb, ${color} ${pct}%, transparent)`;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16, scale: 0.97 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 16, scale: 0.97 }}
-      transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+      initial={reduced ? { opacity: 0 } : { opacity: 0, x: 32, scale: 0.96, filter: "blur(6px)" }}
+      animate={{ opacity: 1, x: 0, scale: 1, filter: "blur(0px)" }}
+      exit={reduced ? { opacity: 0 } : { opacity: 0, x: 24, scale: 0.97, filter: "blur(4px)", transition: { duration: 0.16 } }}
+      transition={SPRING_PANEL}
       className={cn(
-        "v8-panel relative flex w-full max-w-[22rem] flex-col overflow-hidden py-3 pl-4 pr-3.5 select-none shadow-xl",
+        "relative flex w-full max-w-[24rem] items-start gap-3.5 overflow-hidden rounded-[1.1rem] border border-[var(--panel-border)] p-3.5 pr-4 select-none backdrop-blur-2xl",
+        "shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)]",
         className
       )}
-      style={{ boxShadow: `inset 3px 0 0 ${accentColor}, 0 12px 32px -12px rgba(0,0,0,0.5)` }}
+      style={{ background: "color-mix(in srgb, var(--bg-card, var(--bg-main)) 94%, transparent)" }}
       onMouseEnter={() => setPlayState("paused")}
       onMouseLeave={() => setPlayState("running")}
     >
-      <div className="flex w-full items-start gap-3">
-        {/* Icon */}
-        <div
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
-          style={{
-            color: accentColor,
-            backgroundColor: `color-mix(in srgb, ${accentColor} 14%, transparent)`,
-          }}
-        >
+      {/* Top edge in the variant colour */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-6 top-0 h-px" style={{ background: `linear-gradient(to right, transparent, ${tint(70)}, transparent)` }} />
+
+      {/* Icon inside its countdown ring */}
+      <div className="relative grid h-11 w-11 shrink-0 place-items-center">
+        <svg aria-hidden viewBox="0 0 44 44" className="absolute inset-0 -rotate-90">
+          <circle cx="22" cy="22" r="20.5" fill={tint(12)} stroke={tint(18)} strokeWidth="1.5" />
+          {timed && (
+            <circle
+              cx="22"
+              cy="22"
+              r="20.5"
+              fill="none"
+              stroke={color}
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              pathLength={100}
+              strokeDasharray="100"
+              className="toast-ring"
+              style={{ animationDuration: `${duration}ms`, animationPlayState: playState }}
+            />
+          )}
+        </svg>
+        <span className="relative grid h-7 w-7 place-items-center overflow-hidden rounded-full" style={{ color }}>
           {icon}
-        </div>
-
-        {/* Text */}
-        <div className="min-w-0 flex-1 pt-0.5">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex min-w-0 items-center gap-1.5">
-              <p className="truncate text-[13px] font-semibold leading-tight text-[var(--text-primary)]">{title}</p>
-            </div>
-
-            {displayBadge && (
-              <span
-                className={cn(
-                  "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold transition-all",
-                  isToggleOn
-                    ? "flex items-center gap-1.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.25)] font-bold tracking-wider"
-                    : isToggleOff
-                    ? "flex items-center gap-1.5 bg-zinc-800 text-zinc-400 border border-zinc-700/60 font-bold tracking-wider"
-                    : ""
-                )}
-                style={
-                  !isToggle
-                    ? { color: cfg.color, backgroundColor: `color-mix(in srgb, ${cfg.color} 12%, transparent)` }
-                    : undefined
-                }
-              >
-                {isToggleOn && (
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                )}
-                {isToggleOff && (
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-zinc-500" />
-                )}
-                {displayBadge}
-              </span>
-            )}
-          </div>
-
-          {description ? (
-            <p className="mt-1 line-clamp-3 text-xs leading-relaxed text-[var(--text-muted)]">{description}</p>
-          ) : null}
-
-          {action ? (
-            <div className="mt-2.5 flex justify-end">
-              <button
-                type="button"
-                onClick={action.onClick}
-                className="cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-2.5 py-1 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-2)] active:scale-95 focus:outline-none"
-              >
-                {action.label}
-              </button>
-            </div>
-          ) : null}
-        </div>
+        </span>
       </div>
 
-      {/* Progress bar */}
-      {showProgress && (
-        <div className="relative mt-2.5 h-[3px] w-full overflow-hidden rounded-full bg-[var(--panel-border)]/60">
-          <div
-            className="toast-progress h-full w-full origin-left rounded-full"
-            style={{
-              backgroundColor: cfg.color,
-              animationDuration: `${duration}ms`,
-              animationPlayState: playState,
-            }}
-          />
+      <div className="min-w-0 flex-1 pt-0.5">
+        <div className="flex items-center justify-between gap-3">
+          {toggleState === null ? (
+            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color }}>
+              {label}
+            </span>
+          ) : (
+            <span aria-label={label} className="relative inline-flex h-4 w-7 items-center rounded-full transition-colors" style={{ background: tint(toggleState ? 85 : 35) }}>
+              <motion.span
+                className="absolute h-3 w-3 rounded-full bg-[var(--bg-main)]"
+                initial={{ x: toggleState ? 2 : 14 }}
+                animate={{ x: toggleState ? 14 : 2 }}
+                transition={SPRING_PANEL}
+              />
+            </span>
+          )}
         </div>
-      )}
+        <p className="mt-1 truncate text-sm font-semibold leading-snug text-[var(--text-primary)]">{title}</p>
+        {description ? (
+          <p className="mt-0.5 line-clamp-3 text-[13px] leading-relaxed text-[var(--text-muted)]">{description}</p>
+        ) : null}
+
+        {action ? (
+          <button
+            type="button"
+            onClick={action.onClick}
+            className="mt-2.5 cursor-pointer rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/40 hover:bg-[var(--text-primary)]/[0.08] active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
+          >
+            {action.label}
+          </button>
+        ) : null}
+      </div>
     </motion.div>
   );
 }

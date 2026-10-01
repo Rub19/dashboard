@@ -396,7 +396,7 @@ export default function LoginPage() {
           {i18n("noAccountYet", "Pas encore de compte ?")}{" "}
           <span className="inline-flex items-center gap-1 font-medium text-[var(--accent-primary)]">
             {i18n("createAccount", "Créer un compte")}
-            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+            <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
           </span>
         </>
       )}
@@ -436,7 +436,7 @@ export default function LoginPage() {
                       disabled={isLoading}
                       aria-pressed={active}
                       className={cn(
-                        "relative z-10 select-none rounded-full py-2 text-xs font-medium transition-colors duration-200 cursor-pointer",
+                        "relative z-10 select-none rounded-full py-2.5 text-sm font-medium transition-colors duration-200 cursor-pointer",
                         active
                           ? "text-[var(--text-primary)] font-semibold"
                           : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -446,7 +446,7 @@ export default function LoginPage() {
                         <motion.span
                           layoutId="activeAuthTab"
                           transition={SPRING_PILL}
-                          className="absolute inset-0 z-0 rounded-full border border-[var(--accent-primary)]/35 bg-[var(--accent-primary)]/[0.14] shadow-[0_0_18px_-4px_var(--glow-color)]"
+                          className="absolute inset-0 z-0 rounded-full border border-[var(--accent-primary)]/35 bg-[var(--accent-primary)]/[0.14]"
                         />
                       )}
                       <span className="relative z-10">{label}</span>
@@ -469,8 +469,8 @@ export default function LoginPage() {
                 transition={{ duration: 0.16 }}
                 className="mb-4 overflow-hidden"
               >
-                <div className="flex items-start gap-2.5 rounded-[var(--inset-radius)] border border-[var(--danger)]/20 bg-[var(--danger)]/10 p-3.5 text-xs text-[var(--danger)]">
-                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                <div className="flex items-start gap-2.5 rounded-[var(--inset-radius)] border border-[var(--danger)]/20 bg-[var(--danger)]/10 p-3.5 text-sm text-[var(--danger)]">
+                  <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
                   <span className="leading-snug">{error}</span>
                 </div>
               </motion.div>
@@ -499,7 +499,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading || isSuccess}
-                  leftIcon={<Mail className="h-4 w-4" />}
+                  leftIcon={<Mail className="h-5 w-5" />}
                   ref={emailInputRef}
                 />
 
@@ -512,7 +512,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading || isSuccess}
-                  leftIcon={<Lock className="h-4 w-4" />}
+                  leftIcon={<Lock className="h-5 w-5" />}
                   rightElement={
                     <button
                       type="button"
@@ -523,12 +523,12 @@ export default function LoginPage() {
                       className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1"
                       aria-label={i18n("togglePasswordVisibility", "Afficher ou masquer le mot de passe")}
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
                   }
                 />
 
-                <div className="flex items-center justify-between pt-0.5 text-xs text-[var(--text-muted)]">
+                <div className="flex items-center justify-between pt-0.5 text-sm text-[var(--text-muted)]">
                   <Switch
                     id="remember-me-toggle"
                     checked={rememberMe}
@@ -539,7 +539,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => router.push("/password-recovery")}
-                    className="text-xs text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors"
+                    className="text-sm text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors"
                   >
                     {i18n("forgotPassword", "Mot de passe oublié ?")}
                   </button>
@@ -550,9 +550,9 @@ export default function LoginPage() {
                   variant={isSuccess ? "success" : "primary"}
                   isLoading={isLoading}
                   disabled={isSuccess}
-                  className="btn-sheen mt-2 h-12 w-full rounded-[var(--inset-radius)] text-sm"
-                  rightIcon={!isLoading && !isSuccess ? <ArrowRight className="h-4 w-4" /> : undefined}
-                  leftIcon={isSuccess ? <Check className="h-4 w-4" /> : undefined}
+                  className="btn-sheen shadow-none! mt-2 h-14 w-full rounded-[var(--inset-radius)] text-base"
+                  rightIcon={!isLoading && !isSuccess ? <ArrowRight className="h-5 w-5" /> : undefined}
+                  leftIcon={isSuccess ? <Check className="h-5 w-5" /> : undefined}
                 >
                   {isLoading
                     ? i18n("loginSubmitLoading", "Connexion en cours...")
@@ -583,7 +583,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading || isSuccess}
-                  leftIcon={<Mail className="h-4 w-4" />}
+                  leftIcon={<Mail className="h-5 w-5" />}
                   ref={emailInputRef}
                 />
 
@@ -612,8 +612,8 @@ export default function LoginPage() {
                   variant="primary"
                   isLoading={isLoading}
                   disabled={isSuccess}
-                  className="btn-sheen mt-2 h-12 w-full rounded-[var(--inset-radius)] text-sm"
-                  rightIcon={!isLoading ? <ArrowRight className="h-4 w-4" /> : undefined}
+                  className="btn-sheen shadow-none! mt-2 h-14 w-full rounded-[var(--inset-radius)] text-base"
+                  rightIcon={!isLoading ? <ArrowRight className="h-5 w-5" /> : undefined}
                 >
                   {isLoading ? i18n("otpSendLoading", "Envoi du code...") : i18n("otpSend", "Recevoir le code de connexion")}
                 </Button>
@@ -650,7 +650,7 @@ export default function LoginPage() {
                   />
                 )}
 
-                <div className="flex items-center justify-between text-xs pt-1">
+                <div className="flex items-center justify-between text-sm pt-1">
                   <button
                     type="button"
                     onClick={() => {
@@ -662,7 +662,7 @@ export default function LoginPage() {
                     disabled={isLoading}
                     className="flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                   >
-                    <ChevronLeft className="h-3.5 w-3.5" />
+                    <ChevronLeft className="h-4 w-4" />
                     <span>{i18n("otpEditEmail", "Modifier l'adresse")}</span>
                   </button>
 
@@ -687,8 +687,8 @@ export default function LoginPage() {
                   variant={isSuccess ? "success" : "primary"}
                   isLoading={authState === "verifying"}
                   disabled={isSuccess || code.length !== 6}
-                  className="btn-sheen mt-2 h-12 w-full rounded-[var(--inset-radius)] text-sm"
-                  leftIcon={isSuccess ? <Check className="h-4 w-4" /> : !isLoading ? <ShieldCheck className="h-4 w-4" /> : undefined}
+                  className="btn-sheen shadow-none! mt-2 h-14 w-full rounded-[var(--inset-radius)] text-base"
+                  leftIcon={isSuccess ? <Check className="h-5 w-5" /> : !isLoading ? <ShieldCheck className="h-5 w-5" /> : undefined}
                 >
                   {authState === "verifying"
                     ? i18n("otpVerifyLoading", "Vérification du code...")
@@ -719,7 +719,7 @@ export default function LoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   disabled={isLoading || isSuccess}
-                  leftIcon={<User className="h-4 w-4" />}
+                  leftIcon={<User className="h-5 w-5" />}
                 />
 
                 <AuthInputField
@@ -731,7 +731,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading || isSuccess}
-                  leftIcon={<Mail className="h-4 w-4" />}
+                  leftIcon={<Mail className="h-5 w-5" />}
                 />
 
                 <div className="space-y-1.5">
@@ -744,7 +744,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={isLoading || isSuccess}
-                    leftIcon={<Lock className="h-4 w-4" />}
+                    leftIcon={<Lock className="h-5 w-5" />}
                     rightElement={
                       <button
                         type="button"
@@ -755,7 +755,7 @@ export default function LoginPage() {
                         className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1"
                         aria-label={i18n("togglePasswordVisibility", "Afficher ou masquer le mot de passe")}
                       >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                       </button>
                     }
                   />
@@ -775,7 +775,7 @@ export default function LoginPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   disabled={isLoading || isSuccess}
-                  leftIcon={<Lock className="h-4 w-4" />}
+                  leftIcon={<Lock className="h-5 w-5" />}
                 />
 
                 {TURNSTILE_SITE_KEY && (
@@ -793,8 +793,8 @@ export default function LoginPage() {
                   variant={isSuccess ? "success" : "primary"}
                   isLoading={isLoading}
                   disabled={isSuccess}
-                  className="btn-sheen mt-3 h-12 w-full rounded-[var(--inset-radius)] text-sm"
-                  leftIcon={isSuccess ? <Check className="h-4 w-4" /> : undefined}
+                  className="btn-sheen shadow-none! mt-3 h-14 w-full rounded-[var(--inset-radius)] text-base"
+                  leftIcon={isSuccess ? <Check className="h-5 w-5" /> : undefined}
                 >
                   {isLoading
                     ? i18n("registerSubmitLoading", "Création en cours...")
@@ -811,7 +811,7 @@ export default function LoginPage() {
             <div className="mt-7 space-y-4">
               <div className="flex items-center gap-3">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[var(--panel-border)]" />
-                <span className="text-[10.5px] font-medium uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                <span className="text-xs font-medium uppercase tracking-[0.16em] text-[var(--text-muted)]">
                   {i18n("orContinueWith", "ou continuer avec")}
                 </span>
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[var(--panel-border)]" />
@@ -819,9 +819,9 @@ export default function LoginPage() {
 
               <div className="grid grid-cols-3 gap-2.5">
                 {([
-                  ["google", "Google", <GoogleIcon key="g" className="h-[18px] w-[18px] shrink-0" />],
-                  ["github", "GitHub", <GithubIcon key="gh" className="h-[18px] w-[18px] shrink-0" />],
-                  ["discord", "Discord", <DiscordIcon key="d" className="h-[18px] w-[18px] shrink-0 text-[#5865F2]" />],
+                  ["google", "Google", <GoogleIcon key="g" className="h-5 w-5 shrink-0" />],
+                  ["github", "GitHub", <GithubIcon key="gh" className="h-5 w-5 shrink-0" />],
+                  ["discord", "Discord", <DiscordIcon key="d" className="h-5 w-5 shrink-0 text-[#5865F2]" />],
                 ] as const).map(([provider, label, providerIcon]) => (
                   <Button
                     key={provider}
@@ -830,10 +830,11 @@ export default function LoginPage() {
                     isLoading={oauthLoading === provider}
                     disabled={isLoading || isSuccess}
                     onClick={() => handleOAuth(provider)}
+                    aria-label={label}
                     leftIcon={providerIcon}
-                    className="h-11 rounded-[var(--inset-radius)] bg-[var(--text-primary)]/[0.03] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-12px_var(--glow-color)]"
+                    className="h-12 rounded-[var(--inset-radius)] text-sm bg-[var(--text-primary)]/[0.03] hover:-translate-y-0.5 hover:border-[var(--text-primary)]/20"
                   >
-                    {label}
+                    <span className="hidden sm:inline">{label}</span>
                   </Button>
                 ))}
               </div>
@@ -844,8 +845,8 @@ export default function LoginPage() {
                   variant="ghost"
                   disabled={isLoading || isSuccess}
                   onClick={handlePasskey}
-                  className="h-11 w-full rounded-[var(--inset-radius)] border border-dashed border-[var(--panel-border)] hover:border-[var(--accent-primary)]/40"
-                  leftIcon={<KeyRound className="h-4 w-4 text-[var(--accent-primary)]" />}
+                  className="h-12 w-full rounded-[var(--inset-radius)] text-sm border border-dashed border-[var(--panel-border)] hover:border-[var(--accent-primary)]/40"
+                  leftIcon={<KeyRound className="h-5 w-5 text-[var(--accent-primary)]" />}
                 >
                   {i18n("passkeyLogin", "Se connecter avec une clé de sécurité (Passkey)")}
                 </Button>

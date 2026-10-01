@@ -394,7 +394,7 @@ export default function InteractionsPage() {
         </div>
       </div>
 
-      <div id="interactions-scroll" className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-5">
+      <div id="interactions-scroll" className="stagger-children min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-5">
       {/* KPIs */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[

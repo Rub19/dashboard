@@ -486,7 +486,7 @@ export default function FilesPage() {
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 overflow-y-auto os-scroll p-4 space-y-6">
+        <div className="stagger-children flex-1 overflow-y-auto os-scroll p-4 space-y-6">
           {error && (
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--danger)]/25 bg-[var(--danger)]/10 px-4 py-3 text-xs text-[var(--danger)]">
               <span className="flex items-center gap-2">

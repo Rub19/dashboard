@@ -98,7 +98,7 @@ function DropContent() {
 
   return (
     <div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto os-scroll">
-      <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg space-y-4">
+      <div className="stagger-children w-full max-w-sm sm:max-w-md lg:max-w-lg space-y-4">
         <FlatCard>
           <h1 className="mb-4 flex flex-wrap items-center gap-2 break-words text-xl font-bold">
             <Icon name="inbox" className="h-6 w-6 text-[var(--accent-primary)]" />

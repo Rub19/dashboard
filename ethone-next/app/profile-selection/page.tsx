@@ -71,7 +71,7 @@ export default function ProfileSelectionPage() {
     return (
       <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
         <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("profileSelectionTitle")}</h1>
-        <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
+        <div className="stagger-children min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
           <FlatCard><div className="h-8 w-1/3 animate-pulse rounded bg-[var(--border)]" /></FlatCard>
         </div>
       </div>
@@ -113,7 +113,7 @@ export default function ProfileSelectionPage() {
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
       <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("profileSelectionTitle")}</h1>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
+      <div className="stagger-children min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       <FlatCard>
         <div className="space-y-4">
           <FormField label={i18n("newProfile")}>

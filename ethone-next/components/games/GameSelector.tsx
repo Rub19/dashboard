@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import GameFrame from "@/components/games/GameFrame";
 import { useI18n } from "@/lib/hooks/useI18n";
 
@@ -29,17 +30,28 @@ export default function GameSelector({ games }: { games: GameOption[] }) {
             role="tab"
             aria-selected={game.id === selected?.id}
             onClick={() => setSelectedId(game.id)}
-            className={`whitespace-nowrap rounded-[var(--inset-radius)] border px-3 py-1.5 text-sm font-medium transition-colors ${
+            className={`relative isolate whitespace-nowrap rounded-[var(--inset-radius)] border px-3 py-1.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97] ${
               game.id === selected?.id
-                ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
-                : "border-[var(--panel-border)] bg-black/20 text-zinc-400 hover:text-zinc-200"
+                ? "border-transparent text-[var(--accent-contrast)]"
+                : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
+            {game.id === selected?.id && (
+              <motion.span
+                layoutId="game-tab"
+                transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                className="absolute -inset-px -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm"
+              />
+            )}
             {game.label}
           </button>
         ))}
       </div>
-      {selected ? <GameFrame src={selected.src} title={selected.label} /> : null}
+      {selected ? (
+        <div key={selected.id} className="rise-in flex min-h-0 flex-1 flex-col">
+          <GameFrame src={selected.src} title={selected.label} />
+        </div>
+      ) : null}
     </div>
   );
 }

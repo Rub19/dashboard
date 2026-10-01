@@ -162,7 +162,7 @@ export default function AnalyticsClient() {
     : null;
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="stagger-children flex flex-col gap-5">
       <div>
         <h1 className="flex items-center gap-2 text-xl font-bold text-[var(--text-primary)]">
           <LineChartIcon className="h-5 w-5 text-[var(--accent-primary)]" />

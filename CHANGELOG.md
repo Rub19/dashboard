@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.48.3 — 2026-10-02
+
+**Motion design sur le reste du dashboard**
+
+- Entrée en cascade sur Focus, Statistiques, Fichiers, Flows, Macros, Équipe, Interactions, Système, Habitudes, Calendrier, Bloc-notes, Dépôt, Choix du profil et les pages Conditions / Confidentialité.
+- Jeux : la sélection glisse d'un jeu à l'autre et le jeu apparaît en fondu ; couleurs alignées sur le thème.
+- Conditions et Confidentialité suivent maintenant le thème (elles restaient noires), et le titre du Calendrier redevient lisible sur les thèmes clairs.
+
 ## v1.48.2 — 2026-10-01
 
 **Barre du haut sans chevauchement, cadre blanc supprimé**

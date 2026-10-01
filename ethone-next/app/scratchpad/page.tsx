@@ -76,7 +76,7 @@ export default function ScratchpadPage() {
   };
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+    <div className="stagger-children h-full min-h-0 w-full flex flex-col overflow-hidden">
       <div className="shrink-0 mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">{i18n("scratchpadTitle", "Bloc-notes rapide")}</h1>

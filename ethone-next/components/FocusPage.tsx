@@ -108,7 +108,7 @@ export default function FocusPage() {
       {/* Top Bar Header */}
       <header className="flex items-center justify-between border-b border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/40 px-6 py-3.5 backdrop-blur-[var(--panel-blur)] gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold">
+          <div className="icon-pop flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold">
             <Icon name="timer" className="h-4 w-4" />
           </div>
           <div>
@@ -205,7 +205,7 @@ export default function FocusPage() {
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto os-scroll p-4 sm:p-6">
-          <div className="max-w-6xl mx-auto w-full space-y-5">
+          <div className="stagger-children max-w-6xl mx-auto w-full space-y-5">
 
             {/* Goal Input Banner */}
             <div className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/08 px-4 py-3 backdrop-blur-sm">

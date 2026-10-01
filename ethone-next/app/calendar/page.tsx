@@ -101,12 +101,12 @@ export default function CalendarPage() {
   const markers = useMemo(() => buildMarkers(bills, focused), [bills, focused]);
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col gap-3 overflow-hidden p-3 sm:p-4 lg:p-5">
+    <div className="stagger-children flex h-full min-h-0 w-full flex-col gap-3 overflow-hidden p-3 sm:p-4 lg:p-5">
       {/* Header */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between shrink-0">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[var(--text-primary)]">
               Calendrier & Factures
             </h1>
             <span className="rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 font-mono text-[10px] font-bold text-purple-400">

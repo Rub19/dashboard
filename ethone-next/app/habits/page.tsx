@@ -96,7 +96,7 @@ export default function HabitsPage() {
   ];
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 sm:p-6 lg:p-8 space-y-4">
+    <div className="stagger-children flex h-full min-h-0 w-full flex-col overflow-hidden p-4 sm:p-6 lg:p-8 space-y-4">
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shrink-0">
         <div>
@@ -182,7 +182,7 @@ export default function HabitsPage() {
             </p>
           </div>
         ) : (
-          <div className="h-full min-h-0 overflow-y-auto os-scroll pr-1 space-y-2 pb-6">
+          <div className="stagger-children h-full min-h-0 overflow-y-auto os-scroll pr-1 space-y-2 pb-6">
             <AnimatePresence mode="popLayout" initial={false}>
               {activeHabits.map((habit) => {
                 const done = isDoneToday(habit.id);

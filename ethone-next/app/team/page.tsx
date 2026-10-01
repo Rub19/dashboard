@@ -114,7 +114,7 @@ export default function TeamPage() {
         <p className="text-sm text-zinc-500 mt-1">{i18n("teamDescription")}</p>
       </div>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
+      <div className="stagger-children min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <StatCard

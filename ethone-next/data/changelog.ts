@@ -40994,6 +40994,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_48_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_48_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_48_2_de);
 
+const v1_48_3_fr: ChangelogEntry = {
+  version: "v1.48.3",
+  date: "2026-10-02",
+  title: "Motion design sur le reste du dashboard",
+  items: [
+    "Entrée en cascade sur Focus, Statistiques, Fichiers, Flows, Macros, Équipe, Interactions, Système, Habitudes, Calendrier, Bloc-notes, Dépôt, Choix du profil et les pages Conditions / Confidentialité.",
+    "Jeux : la sélection glisse d'un jeu à l'autre et le jeu apparaît en fondu ; couleurs alignées sur le thème.",
+    "Conditions et Confidentialité suivent maintenant le thème (elles restaient noires), et le titre du Calendrier redevient lisible sur les thèmes clairs.",
+  ],
+};
+
+const v1_48_3_en: ChangelogEntry = {
+  version: "v1.48.3",
+  date: "2026-10-02",
+  title: "Motion design across the rest of the dashboard",
+  items: [
+    "Staggered entrance on Focus, Analytics, Files, Flows, Macros, Team, Interactions, System, Habits, Calendar, Scratchpad, Drop, Profile selection and the Terms / Privacy pages.",
+    "Games: the selection glides between games and the game fades in; colours follow the theme.",
+    "Terms and Privacy now follow the theme (they stayed black), and the Calendar title is readable again on light themes.",
+  ],
+};
+
+const v1_48_3_es: ChangelogEntry = {
+  version: "v1.48.3",
+  date: "2026-10-02",
+  title: "Motion design en el resto del panel",
+  items: [
+    "Entrada en cascada en más páginas, selector de juegos animado y páginas legales con el tema.",
+  ],
+};
+
+const v1_48_3_de: ChangelogEntry = {
+  version: "v1.48.3",
+  date: "2026-10-02",
+  title: "Motion Design im restlichen Dashboard",
+  items: [
+    "Gestaffelter Einstieg auf weiteren Seiten, animierte Spielauswahl und Rechtsseiten im Theme.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_48_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_48_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_48_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_48_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

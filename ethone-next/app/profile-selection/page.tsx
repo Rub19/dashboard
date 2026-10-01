@@ -220,7 +220,7 @@ export default function ProfileSelectionPage() {
         </div>
       </FlatCard>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="stagger-children grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {profiles.map((p) => (
           <FlatCard key={p.id}>
             <div className="flex items-start justify-between gap-2">

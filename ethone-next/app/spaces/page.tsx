@@ -134,14 +134,14 @@ export default function SpacesPage() {
     const data = (item.data || {}) as { color?: string; workspaceId?: string };
     if (data.color) return data.color;
     const workspace = getWorkspace(item, i18n);
-    return workspace?.accent.badge ?? "bg-zinc-500/20 text-zinc-400";
+    return workspace?.accent.badge ?? "bg-[var(--text-muted)]/15 text-[var(--text-muted)]";
   }
 
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden px-4 pt-4 sm:px-6 lg:px-8">
       <div className="shrink-0 mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold">{i18n("spacesTitle")}</h1>
-        <span className="rounded-xl bg-[var(--panel-bg)] px-3 py-1 text-sm text-[var(--muted)]">
+        <span className="rounded-xl bg-[var(--panel-bg)] px-3 py-1 text-sm text-[var(--text-muted)]">
           {spaces.length} {spaces.length > 1 ? i18n("opens") : i18n("open")}
         </span>
       </div>
@@ -158,8 +158,8 @@ export default function SpacesPage() {
 
         <TabsContent value="presets" className="min-h-0 w-full flex-1 space-y-6 overflow-y-auto p-6 pb-10 no-scrollbar">
       <FlatCard>
-        <h2 className="mb-3 text-sm font-semibold capitalize text-[var(--foreground)]">{i18n("active")} {i18n("spaces")}</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <h2 className="mb-3 text-sm font-semibold capitalize text-[var(--text-primary)]">{i18n("active")} {i18n("spaces")}</h2>
+        <div className="stagger-children grid grid-cols-2 gap-3 sm:grid-cols-4">
           {WORKSPACES.map((w) => {
             const isActive = activeSpace === w.id;
             return (
@@ -175,8 +175,8 @@ export default function SpacesPage() {
                 }}
                 className={`relative rounded-[var(--panel-radius)] border p-3 text-left transition-colors duration-150 ${
                   isActive
-                    ? `border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ${w.accent.ring}`
-                    : "border-[var(--panel-border)] bg-[var(--panel-bg)] hover:border-[var(--accent)]"
+                    ? `border-[var(--accent-primary)] bg-[var(--accent-primary)]/5 ring-1 ${w.accent.ring}`
+                    : "border-[var(--panel-border)] bg-[var(--panel-bg)] hover:border-[var(--accent-primary)]"
                 } backdrop-blur-[var(--panel-blur)]`}
               >
                 <div className="flex items-center gap-2">
@@ -192,7 +192,7 @@ export default function SpacesPage() {
                 )}
                 <div className="mt-2 flex flex-wrap gap-1">
                   {w.steps.map((step, i) => (
-                    <span key={i} className="text-[9px] text-[var(--muted)]">
+                    <span key={i} className="text-[9px] text-[var(--text-muted)]">
                       {i + 1}. {step}
                     </span>
                   ))}
@@ -203,7 +203,7 @@ export default function SpacesPage() {
         </div>
       </FlatCard>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="stagger-children grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FlatCard>
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
@@ -211,7 +211,7 @@ export default function SpacesPage() {
             </span>
             <div>
               <p className="text-2xl font-bold">{spaces.length}</p>
-              <p className="text-xs text-[var(--muted)]">{i18n("dedicatedEnvironments")}</p>
+              <p className="text-xs text-[var(--text-muted)]">{i18n("dedicatedEnvironments")}</p>
             </div>
           </div>
         </FlatCard>
@@ -223,7 +223,7 @@ export default function SpacesPage() {
             </span>
             <div>
               <p className="text-2xl font-bold">{WORKSPACES.length}</p>
-              <p className="text-xs text-[var(--muted)]">{i18n("integratedModels")}</p>
+              <p className="text-xs text-[var(--text-muted)]">{i18n("integratedModels")}</p>
             </div>
           </div>
         </FlatCard>
@@ -239,7 +239,7 @@ export default function SpacesPage() {
         <div className="space-y-4">
           <div>
             <h2 className="font-semibold">{i18n("dedicatedEnvironments")}</h2>
-            <p className="text-sm leading-relaxed text-[var(--muted)]">{i18n("spacesAbout")}</p>
+            <p className="text-sm leading-relaxed text-[var(--text-muted)]">{i18n("spacesAbout")}</p>
           </div>
           <div className="flex gap-2">
             <Input
@@ -263,13 +263,13 @@ export default function SpacesPage() {
               leftIcon={<Icon name="plus" className="h-4 w-4" />}
             />
           </div>
-          <p className="text-xs text-[var(--muted)]">
-            {i18n("create")}: <span className="font-medium text-[var(--accent)]">{i18n(activeSpace)}</span>
+          <p className="text-xs text-[var(--text-muted)]">
+            {i18n("create")}: <span className="font-medium text-[var(--accent-primary)]">{i18n(activeSpace)}</span>
           </p>
         </div>
       </FlatCard>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="stagger-children grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {spaces.map((space, index) => {
           const workspace = getWorkspace(space, i18n);
           const isActive = workspace?.id === activeSpace;
@@ -293,7 +293,7 @@ export default function SpacesPage() {
                     </span>
                     <div>
                       <p className="font-medium">{space.label}</p>
-                      <p className="text-xs text-[var(--muted)]">
+                      <p className="text-xs text-[var(--text-muted)]">
                         {workspace ? i18n(workspace.id) : i18n("custom")}
                       </p>
                     </div>
@@ -302,7 +302,7 @@ export default function SpacesPage() {
                     type="button"
                     aria-label={i18n("delete")}
                     onClick={() => deleteSpace(space.id)}
-                    className="text-[var(--muted)] hover:text-[var(--danger)]"
+                    className="text-[var(--text-muted)] hover:text-[var(--danger)]"
                   >
                     <Icon name="trash-2" className="h-4 w-4" />
                   </button>
@@ -313,9 +313,9 @@ export default function SpacesPage() {
                     {workspace.steps.map((step, i) => (
                       <span
                         key={i}
-                        className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--foreground)]"
+                        className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--text-primary)]"
                       >
-                        <b className="mr-1 text-[var(--accent)]">{i + 1}</b>
+                        <b className="mr-1 text-[var(--accent-primary)]">{i + 1}</b>
                         {step}
                       </span>
                     ))}
@@ -326,7 +326,7 @@ export default function SpacesPage() {
                   {(workspace?.widgets ?? ["notes", "tasks", "calendar", "brain"]).map((widgetId) => (
                     <span
                       key={widgetId}
-                      className="flex h-7 w-7 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-[var(--muted)]"
+                      className="flex h-7 w-7 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-[var(--text-muted)]"
                       title={widgetId}
                     >
                       <Icon name={WIDGET_ICONS[widgetId]} className="h-3.5 w-3.5" />

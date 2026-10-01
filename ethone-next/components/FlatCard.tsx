@@ -23,7 +23,7 @@ function FlatCard({
     <div
       onClick={onClick}
       className={cn(
-        "v8-card min-w-0 overflow-hidden p-[var(--panel-padding)] transition-[border-color,box-shadow] duration-150 hover:border-[var(--accent)]/30",
+        "v8-card min-w-0 overflow-hidden p-[var(--panel-padding)] transition-[border-color,box-shadow] duration-150 hover:border-[var(--accent-primary)]/30",
         className
       )}
       style={{

@@ -277,7 +277,7 @@ export default function SystemPage() {
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="stagger-children grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {WORKSPACES.map((w) => (
             <WorkspaceCard
               key={w.id}
@@ -299,7 +299,7 @@ export default function SystemPage() {
                 {i18n("noSpaces")}
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="stagger-children space-y-2">
                 {recentSpaces.map((space) => {
                   const wsId = getWorkspaceId(space, i18n);
                   const isActive = wsId === activeSpace;
@@ -346,7 +346,7 @@ export default function SystemPage() {
                 {i18n("noFlows")}
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="stagger-children space-y-2">
                 {recentFlows.map((flow) => {
                   const wsId = getWorkspaceId(flow, i18n);
                   const isActive = wsId === activeSpace;

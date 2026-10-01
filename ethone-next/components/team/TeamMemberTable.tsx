@@ -16,7 +16,7 @@ const ROLE_META: Record<TeamRole, { label: string; color: string; border: string
   senior: { label: "Développeur", color: "text-[var(--info)]", border: "border-[var(--info)]", bg: "bg-[var(--info)]" },
   junior: { label: "Éditeur", color: "text-sky-400", border: "border-sky-500/30", bg: "bg-sky-500/10" },
   assistant: { label: "Éditeur", color: "text-sky-400", border: "border-sky-500/30", bg: "bg-sky-500/10" },
-  viewer: { label: "Lecteur", color: "text-[var(--text-muted)]", border: "border-zinc-500/30", bg: "bg-zinc-500/10" },
+  viewer: { label: "Lecteur", color: "text-[var(--text-muted)]", border: "border-[var(--panel-border)]", bg: "bg-[var(--text-muted)]/10" },
 };
 
 const ROLES: TeamRole[] = ["owner", "admin", "senior", "junior", "assistant", "viewer"];
@@ -69,7 +69,7 @@ function StatusBadge({ status, invitedAt }: { status: TeamStatus; invitedAt?: st
   }
   return (
     <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[var(--text-muted)]">
-      <span className="h-2 w-2 rounded-full bg-zinc-500" />
+      <span className="h-2 w-2 rounded-full bg-[var(--text-muted)]" />
       {i18n(status) || status}
     </span>
   );

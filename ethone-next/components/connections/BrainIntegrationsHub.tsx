@@ -70,7 +70,7 @@ export default function BrainIntegrationsHub({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Left: Brain Title & Ecosystem Stats */}
         <div className="flex items-start gap-3.5 min-w-0">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-sm">
+          <div className="icon-pop flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-sm">
             <Icon name="brain" className="h-5 w-5" />
           </div>
           <div>

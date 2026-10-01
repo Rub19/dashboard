@@ -105,8 +105,8 @@ export default function FlowCard({
                   {running ? "En cours" : "Actif"}
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-zinc-700/50 bg-[var(--text-primary)]/[0.03] px-2 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-zinc-500" />
+                <span className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-2 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-muted)]" />
                   En pause
                 </span>
               )}
@@ -233,7 +233,7 @@ export default function FlowCard({
               >
                 {running ? (
                   <>
-                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-400 border-t-transparent" />
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[var(--panel-border)] border-t-transparent" />
                     En cours
                   </>
                 ) : active ? (

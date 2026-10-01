@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 import { confirmDialog } from "@/lib/confirmDialog";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useCloudFiles, type CloudFile } from "@/lib/hooks/useCloudFiles";
@@ -409,27 +411,27 @@ export default function FilesPage() {
                 <button
                   type="button"
                   onClick={() => setViewMode("grid")}
+                  aria-pressed={viewMode === "grid"}
                   className={cn(
-                    "flex h-7 w-7 items-center justify-center rounded-lg transition-all cursor-pointer",
-                    viewMode === "grid"
-                      ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-xs"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    "relative isolate flex h-7 w-7 items-center justify-center rounded-lg outline-none transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-90",
+                    viewMode === "grid" ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   )}
                   title="Grille"
                 >
+                  {viewMode === "grid" && <motion.span layoutId="files-view" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-xs" />}
                   <Grid2X2 className="h-3.5 w-3.5" />
                 </button>
                 <button
                   type="button"
                   onClick={() => setViewMode("list")}
+                  aria-pressed={viewMode === "list"}
                   className={cn(
-                    "flex h-7 w-7 items-center justify-center rounded-lg transition-all cursor-pointer",
-                    viewMode === "list"
-                      ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-xs"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    "relative isolate flex h-7 w-7 items-center justify-center rounded-lg outline-none transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-90",
+                    viewMode === "list" ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   )}
                   title="Liste"
                 >
+                  {viewMode === "list" && <motion.span layoutId="files-view" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-xs" />}
                   <ListIcon className="h-3.5 w-3.5" />
                 </button>
               </div>
@@ -597,7 +599,7 @@ export default function FilesPage() {
                       Voir tout
                     </button>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                  <div className="stagger-children grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                     {recentFiles.map((file) => (
                       <FileCard
                         key={file.driveFileId}
@@ -631,7 +633,7 @@ export default function FilesPage() {
                       Voir tout
                     </button>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                  <div className="stagger-children grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                     {favoriteFiles.map((file) => (
                       <FileCard
                         key={file.driveFileId}
@@ -660,7 +662,7 @@ export default function FilesPage() {
                   <h4 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2.5">
                     Dossiers ({currentFolders.length})
                   </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                  <div className="stagger-children grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                     {currentFolders.map((folder) => (
                       <FileCard
                         key={folder.driveFileId}
@@ -685,7 +687,9 @@ export default function FilesPage() {
                     Documents ({currentFiles.length})
                   </h4>
                   <div
+                    key={viewMode}
                     className={cn(
+                      "stagger-children",
                       viewMode === "grid"
                         ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3"
                         : "flex flex-col gap-1.5"
@@ -713,7 +717,7 @@ export default function FilesPage() {
                   {Array.from({ length: 12 }).map((_, i) => (
                     <div
                       key={i}
-                      className="aspect-[4/3] animate-pulse rounded-[var(--inset-radius)] border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40"
+                      className="skeleton-shimmer aspect-[4/3] rounded-[var(--inset-radius)] border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40"
                     />
                   ))}
                 </div>

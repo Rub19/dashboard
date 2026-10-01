@@ -148,7 +148,7 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-[var(--text-muted)]">{i18n("brainBriefingDescription")}</p>
-        <p className="text-sm font-medium text-[var(--accent)]">{greeting.label}</p>
+        <p className="text-sm font-medium text-[var(--accent-primary)]">{greeting.label}</p>
       </div>
 
       {!synthesisDismissed && (

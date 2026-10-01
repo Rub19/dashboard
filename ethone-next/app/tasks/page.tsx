@@ -31,7 +31,7 @@ type ViewMode = "list" | "kanban";
 const CATEGORIES = ["Tous", "Général", "Dev", "Design", "Organisation", "Personnel", "Projet"];
 
 const PRIORITY_OPTIONS: { id: TaskPriority; label: string; dotColor: string }[] = [
-  { id: "low", label: "Basse", dotColor: "bg-zinc-400" },
+  { id: "low", label: "Basse", dotColor: "bg-[var(--text-muted)]" },
   { id: "medium", label: "Moyenne", dotColor: "bg-sky-400" },
   { id: "high", label: "Haute", dotColor: "bg-amber-400" },
   { id: "urgent", label: "Urgente", dotColor: "bg-rose-500" },
@@ -61,8 +61,15 @@ function CompactSelect<T extends string>({
         setOpen(false);
       }
     }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKey);
+    };
   }, [open]);
 
   const selected = options.find((o) => o.id === value) || options[0];
@@ -72,17 +79,26 @@ function CompactSelect<T extends string>({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
         className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/50 px-2.5 py-1.5 text-xs text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] transition-colors"
       >
         {selected.dotColor && (
           <span className={cn("h-2 w-2 rounded-full", selected.dotColor)} />
         )}
         <span>{selected.label}</span>
-        <ChevronDown className="h-3 w-3 opacity-60" />
+        <ChevronDown className={cn("h-3 w-3 opacity-60 transition-transform duration-200", open && "rotate-180")} />
       </button>
 
+      <AnimatePresence>
       {open && (
-        <div className="absolute left-0 top-full mt-1 z-50 min-w-[120px] rounded-xl border border-[var(--panel-border)] bg-[var(--bg-main)]/95 p-1 shadow-xl backdrop-blur-xl">
+        <motion.div
+          initial={{ opacity: 0, y: -4, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -4, scale: 0.97, transition: { duration: 0.1 } }}
+          transition={{ type: "spring", stiffness: 520, damping: 34 }}
+          style={{ transformOrigin: "top left" }}
+          className="absolute left-0 top-full mt-1 z-50 min-w-[120px] rounded-xl border border-[var(--panel-border)] bg-[var(--bg-main)]/95 p-1 shadow-xl backdrop-blur-xl"
+        >
           {options.map((opt) => (
             <button
               key={opt.id}
@@ -104,8 +120,9 @@ function CompactSelect<T extends string>({
               <span className="truncate">{opt.label}</span>
             </button>
           ))}
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -263,27 +280,27 @@ export default function TasksPage() {
             <button
               type="button"
               onClick={() => setViewMode("list")}
+              aria-pressed={viewMode === "list"}
               className={cn(
-                "flex h-7 w-7 items-center justify-center rounded-lg transition-colors",
-                viewMode === "list"
-                  ? "bg-[var(--surface-2)] text-[var(--text-primary)]"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                "relative isolate flex h-7 w-7 items-center justify-center rounded-lg outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-90",
+                viewMode === "list" ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
               title="Vue Liste"
             >
+              {viewMode === "list" && <motion.span layoutId="tasks-view" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--surface-2)]" />}
               <LayoutList className="h-4 w-4" />
             </button>
             <button
               type="button"
               onClick={() => setViewMode("kanban")}
+              aria-pressed={viewMode === "kanban"}
               className={cn(
-                "flex h-7 w-7 items-center justify-center rounded-lg transition-colors",
-                viewMode === "kanban"
-                  ? "bg-[var(--surface-2)] text-[var(--text-primary)]"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                "relative isolate flex h-7 w-7 items-center justify-center rounded-lg outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-90",
+                viewMode === "kanban" ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
               title="Vue Kanban"
             >
+              {viewMode === "kanban" && <motion.span layoutId="tasks-view" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--surface-2)]" />}
               <Kanban className="h-4 w-4" />
             </button>
           </div>
@@ -291,9 +308,9 @@ export default function TasksPage() {
       </div>
 
       {/* KPI strip */}
-      <div className="v8-panel grid shrink-0 grid-cols-2 divide-[var(--panel-border)] sm:grid-cols-4 sm:divide-x">
+      <div className="stagger-children v8-panel grid shrink-0 grid-cols-2 divide-[var(--panel-border)] sm:grid-cols-4 sm:divide-x">
         {KPIS.map((kpi) => (
-          <div key={kpi.label} className="flex items-center gap-3 p-3.5">
+          <div key={kpi.label} className="relative flex items-center gap-3 p-3.5">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-2)] text-[var(--text-muted)]">
               <kpi.icon className="h-4 w-4" />
             </span>
@@ -301,6 +318,14 @@ export default function TasksPage() {
               <p className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">{kpi.label}</p>
               <p className="mt-0.5 text-lg font-semibold tabular-nums text-[var(--text-primary)]">{kpi.value}</p>
             </div>
+            {kpi.label === "Progression" && (
+              <span className="absolute inset-x-3.5 bottom-2 h-1 overflow-hidden rounded-full bg-[var(--text-primary)]/[0.06]">
+                <span
+                  className="block h-full rounded-full bg-[var(--accent-primary)] transition-[width] duration-700 ease-[var(--ease-snap)]"
+                  style={{ width: `${stats.percent}%` }}
+                />
+              </span>
+            )}
           </div>
         ))}
       </div>
@@ -381,15 +406,15 @@ export default function TasksPage() {
       </div>
 
       {/* View area */}
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div key={viewMode} className="rise-in flex-1 min-h-0 overflow-hidden">
         {loading && items.length === 0 ? (
           <div className="h-full space-y-2.5 overflow-hidden" aria-busy="true">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-16 animate-pulse rounded-xl bg-[var(--surface-2)]/60" />
+              <div key={i} className="skeleton-shimmer h-16 rounded-xl bg-[var(--surface-2)]/60" />
             ))}
           </div>
         ) : error && items.length === 0 ? (
-          <div className="v8-panel flex flex-col items-center justify-center p-12 text-center">
+          <div className="pop-in v8-panel flex flex-col items-center justify-center p-12 text-center">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--danger)]/10 text-[var(--danger)]">
               <AlertTriangle className="h-6 w-6" />
             </div>

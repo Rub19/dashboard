@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { useToast } from "@/components/ToastProvider";
 import { useFocus } from "@/components/FocusProvider";
 import { triggerPomodoroCompletedNotification } from "@/lib/local-notifications";
@@ -97,6 +98,30 @@ export default function FocusPage() {
     toggleZen();
   }
 
+  // Sortie du mode Zen : Échap (annoncé sur le bouton mais jamais géré), et sortie du plein écran par le
+  // navigateur (Échap en plein écran ne déclenche pas keydown : l'écran Zen restait affiché).
+  useEffect(() => {
+    if (!zenMode) return;
+    const exit = () => {
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      toggleZen();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") exit();
+    };
+    let wasFullscreen = Boolean(document.fullscreenElement);
+    const onFullscreen = () => {
+      if (wasFullscreen && !document.fullscreenElement) exit();
+      wasFullscreen = Boolean(document.fullscreenElement);
+    };
+    window.addEventListener("keydown", onKey);
+    document.addEventListener("fullscreenchange", onFullscreen);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("fullscreenchange", onFullscreen);
+    };
+  }, [zenMode, toggleZen]);
+
   function handleGoalKeydown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter" || e.key === "Escape") {
       setEditingGoal(false);
@@ -130,13 +155,13 @@ export default function FocusPage() {
                 key={t}
                 type="button"
                 onClick={() => setActiveTab(t)}
+                aria-pressed={activeTab === t}
                 className={cn(
-                  "rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
-                  activeTab === t
-                    ? "bg-[var(--accent-primary)] text-white shadow"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  "relative isolate rounded-lg px-3 py-1.5 text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
+                  activeTab === t ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
               >
+                {activeTab === t && <motion.span layoutId="focus-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow" />}
                 {t === "focus" ? "Focus" : "Historique"}
               </button>
             ))}
@@ -254,13 +279,15 @@ export default function FocusPage() {
                     key={mode.id}
                     type="button"
                     onClick={() => selectMode(mode.id)}
+                    aria-pressed={isActive}
                     className={cn(
-                      "flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all",
+                      "relative isolate flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                       isActive
-                        ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-semibold shadow-md"
+                        ? "text-[var(--accent-contrast)] font-semibold"
                         : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]/40"
                     )}
                   >
+                    {isActive && <motion.span layoutId="focus-mode" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-md" />}
                     <span>{mode.label}</span>
                     <span className="text-[10px] opacity-75">({mode.duration})</span>
                   </button>
@@ -327,7 +354,7 @@ export default function FocusPage() {
 
       {/* Fullscreen Zen Overlay */}
       {zenMode && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center bg-[var(--bg-main)]/95 backdrop-blur-3xl p-6">
+        <div className="pop-in fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center bg-[var(--bg-main)]/95 backdrop-blur-3xl p-6">
           <FocusTimer2026
             progress={progress}
             remaining={format(state.remaining)}

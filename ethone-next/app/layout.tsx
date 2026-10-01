@@ -10,6 +10,7 @@ import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
 import ServiceWorker from "@/components/ServiceWorker";
 import SettingsProvider from "@/components/SettingsProvider";
+import MotionPreference from "@/components/MotionPreference";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import { FocusProvider } from "@/components/FocusProvider";
 import { SoundProvider } from "@/lib/sound";
@@ -169,6 +170,7 @@ export default function RootLayout({
         <AuthProvider>
           <PublicProfileProvider>
             <SettingsProvider>
+              <MotionPreference>
               <LanguageProvider>
                 <FocusProvider>
                   <UIProvider>
@@ -190,6 +192,7 @@ export default function RootLayout({
                   </UIProvider>
                 </FocusProvider>
               </LanguageProvider>
+              </MotionPreference>
             </SettingsProvider>
           </PublicProfileProvider>
         </AuthProvider>

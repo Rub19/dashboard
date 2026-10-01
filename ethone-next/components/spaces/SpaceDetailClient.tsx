@@ -190,7 +190,7 @@ export default function SpaceDetailClient() {
                 </Button>
               )}
             </div>
-            <div className="space-y-1.5">
+            <div className="stagger-children space-y-1.5">
               {members.map((m) => (
                 <div key={m.id} className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 py-2">
                   <div className="min-w-0">
@@ -231,7 +231,7 @@ export default function SpaceDetailClient() {
               />
               <Button type="button" variant="primary" size="md" onClick={addTask} leftIcon={<Plus className="h-4 w-4" />} />
             </div>
-            <div className="space-y-1.5">
+            <div className="stagger-children space-y-1.5">
               {tasks.map((task) => (
                 <div key={task.id} className="flex items-center gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 py-2">
                   <button
@@ -283,7 +283,7 @@ export default function SpaceDetailClient() {
               />
               <Button type="button" variant="primary" size="md" onClick={addEvent} leftIcon={<Plus className="h-4 w-4" />} />
             </div>
-            <div className="space-y-1.5">
+            <div className="stagger-children space-y-1.5">
               {events.map((ev) => (
                 <div key={ev.id} className="flex items-center gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 py-2">
                   <div className="min-w-0 flex-1">
@@ -327,7 +327,7 @@ export default function SpaceDetailClient() {
                 Ajouter la note
               </Button>
             </div>
-            <div className="space-y-1.5">
+            <div className="stagger-children space-y-1.5">
               {notes.map((note) => (
                 <div key={note.id} className="flex items-start gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 py-2">
                   <div className="min-w-0 flex-1">

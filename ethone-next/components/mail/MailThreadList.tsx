@@ -228,13 +228,15 @@ export default function MailThreadList({
                 key={id}
                 type="button"
                 onClick={() => setFilter(id)}
+                aria-pressed={isActive}
                 className={cn(
-                  "flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors",
+                  "relative isolate flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                   isActive
-                    ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
+                    ? "text-[var(--accent-contrast)]"
                     : "text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
                 )}
               >
+                {isActive && <motion.span layoutId="mail-filter" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)]" />}
                 {id === "starred" && <Star className="h-3 w-3" />}
                 {id === "attachments" && <Paperclip className="h-3 w-3" />}
                 <span>{FILTER_LABELS[id]}</span>
@@ -310,11 +312,11 @@ export default function MailThreadList({
         {loading ? (
           <div className="space-y-2 p-3">
             {Array.from({ length: 7 }).map((_, i) => (
-              <div key={i} className="h-16 w-full animate-pulse rounded-xl bg-[var(--surface-2)]/60" />
+              <div key={i} className="skeleton-shimmer h-16 w-full rounded-xl bg-[var(--surface-2)]/60" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center p-8 text-center select-none">
+          <div className="pop-in flex h-full flex-col items-center justify-center p-8 text-center select-none">
             <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-[var(--surface-2)] text-[var(--text-muted)]">
               <Inbox className="h-5 w-5" />
             </div>

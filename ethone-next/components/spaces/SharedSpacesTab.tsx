@@ -53,7 +53,7 @@ export default function SharedSpacesTab() {
         <div className="space-y-3">
           <div>
             <h2 className="font-semibold">Espaces partagés</h2>
-            <p className="text-sm leading-relaxed text-[var(--muted)]">
+            <p className="text-sm leading-relaxed text-[var(--text-muted)]">
               Partage une liste de tâches avec un proche ou ton entourage — une liste de courses, un projet commun, un calendrier familial de tâches.
             </p>
           </div>
@@ -76,7 +76,7 @@ export default function SharedSpacesTab() {
 
       {!loading && spaces.length === 0 && (
         <FlatCard>
-          <p className="py-6 text-center text-sm text-[var(--muted)]">Aucun espace partagé pour l'instant. Crée-en un ci-dessus.</p>
+          <p className="py-6 text-center text-sm text-[var(--text-muted)]">Aucun espace partagé pour l'instant. Crée-en un ci-dessus.</p>
         </FlatCard>
       )}
 
@@ -100,7 +100,7 @@ export default function SharedSpacesTab() {
                   </span>
                   <div>
                     <p className="font-medium">{space.name}</p>
-                    <p className="flex items-center gap-1 text-xs text-[var(--muted)]">
+                    <p className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
                       {space.role === "owner" ? (
                         <>
                           <Crown className="h-3 w-3" /> Propriétaire
@@ -116,7 +116,7 @@ export default function SharedSpacesTab() {
                     type="button"
                     aria-label="Supprimer"
                     onClick={(e) => remove(space.id, e)}
-                    className="text-[var(--muted)] hover:text-[var(--danger)]"
+                    className="text-[var(--text-muted)] hover:text-[var(--danger)]"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

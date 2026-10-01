@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.48.9 — 2026-10-02
+
+**Motion design et corrections sur toutes les pages du dashboard**
+
+- Le réglage « Réduire les animations » d'ETHONE s'applique maintenant à toutes les animations (avant, une partie l'ignorait), en plus du réglage système.
+- Focus : la touche Échap quitte enfin le mode Zen (c'était annoncé sur le bouton mais ne marchait pas), et quitter le plein écran ferme aussi le mode Zen ; onglets et modes à pastille glissante.
+- Tâches : bascule Liste/Kanban glissante avec fondu, menus de priorité/catégorie animés et fermables avec Échap, barre de progression ; les tâches créées depuis l'extension n'ont plus de fausse échéance.
+- Fichiers : bascule Grille/Liste, navigation et catégories à pastille glissante, grilles en cascade. Mail : filtres à pastille glissante, conversation ouverte en fondu. Brain : conversation active qui glisse.
+- Interactions, Spaces, Flows, Équipe : couleurs figées remplacées par celles du thème (illisibles en thème clair) ; années, heatmap et barres animées.
+- Activité et Analytique : barres qui se remplissent, conseils en cascade, chargements en shimmer ; onglets de catégories de Connexions aux couleurs du thème.
+
 ## v1.48.8 — 2026-10-02
 
 **Sécurité : e-mails et notes affichés sans risque**

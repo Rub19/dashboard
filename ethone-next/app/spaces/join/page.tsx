@@ -80,7 +80,7 @@ function JoinContent() {
 
   return (
     <div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto os-scroll">
-      <div className="w-full max-w-sm sm:max-w-md">
+      <div className="pop-in w-full max-w-sm sm:max-w-md">
         <FlatCard>
           <div className="flex flex-col items-center gap-3 text-center">
             <span className="flex h-12 w-12 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">

@@ -93,7 +93,7 @@ export default function MacrosPage() {
         </div>
       </FlatCard>
 
-      <div className="space-y-3">
+      <div className="stagger-children space-y-3">
         {macros.map((m) => {
           const data = m.data as { action?: string; href?: string; setting?: string };
           return (

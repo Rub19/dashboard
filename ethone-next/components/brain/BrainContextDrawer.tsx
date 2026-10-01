@@ -53,7 +53,7 @@ export default function BrainContextDrawer({
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto os-scroll p-4 space-y-6">
+      <div className="stagger-children flex-1 overflow-y-auto os-scroll p-4 space-y-6">
         {/* Workspace & Env */}
         <div className="space-y-2">
           <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">

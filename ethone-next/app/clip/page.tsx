@@ -63,7 +63,7 @@ export default function ClipPage() {
           title: name.slice(0, 100),
           body,
           done: false,
-          data: { category: "Général", priority: "medium", dueDate: new Date().toISOString() },
+          data: { category: "Général", priority: "medium" },
         });
       setState("saved");
     } catch {

@@ -36,17 +36,17 @@ function StatCard({
   sub: string;
   tone?: "default" | "emerald" | "amber";
 }) {
-  const valueColor = tone === "emerald" ? "text-[var(--accent-primary)]" : tone === "amber" ? "text-amber-400" : "text-white";
+  const valueColor = tone === "emerald" ? "text-[var(--accent-primary)]" : tone === "amber" ? "text-amber-400" : "text-[var(--text-primary)]";
   const borderColor = tone === "emerald" ? "hover:border-[var(--accent-primary)]" : tone === "amber" ? "hover:border-amber-500/30" : "hover:border-[var(--input-border-hover)]";
 
   return (
     <div className={`v8-panel rounded-[var(--panel-radius)] p-4 flex items-center justify-between hover:border-[var(--input-border-hover)] transition-all ${borderColor}`}>
       <div>
-        <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">{label}</p>
+        <p className="text-[10px] font-medium text-[var(--text-muted)]/80 uppercase tracking-wider">{label}</p>
         <p className={`text-2xl font-bold font-mono ${valueColor} mt-0.5`}>{value}</p>
-        <p className="text-[11px] text-zinc-500 mt-0.5">{sub}</p>
+        <p className="text-[11px] text-[var(--text-muted)]/80 mt-0.5">{sub}</p>
       </div>
-      <div className="shrink-0 rounded-xl bg-white/[0.04] p-2.5 ring-1 ring-inset ring-white/[0.06]">{icon}</div>
+      <div className="shrink-0 rounded-xl bg-[var(--text-primary)]/[0.04] p-2.5 ring-1 ring-inset ring-[var(--text-primary)]/[0.06]">{icon}</div>
     </div>
   );
 }
@@ -110,15 +110,15 @@ export default function TeamPage() {
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden px-4 pt-4 sm:px-6 lg:px-8">
       <div className="shrink-0 mb-4">
-        <h1 className="text-2xl font-bold text-white">{i18n("teamTitle")}</h1>
-        <p className="text-sm text-zinc-500 mt-1">{i18n("teamDescription")}</p>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">{i18n("teamTitle")}</h1>
+        <p className="text-sm text-[var(--text-muted)]/80 mt-1">{i18n("teamDescription")}</p>
       </div>
 
       <div className="stagger-children min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <StatCard
-          icon={<Users className="h-5 w-5 text-zinc-400" />}
+          icon={<Users className="h-5 w-5 text-[var(--text-muted)]" />}
           value={loading ? "-" : stats.total}
           label={i18n("total") || "Total"}
           sub={i18n("teamSeatsAvailable") || `Places disponibles : ${Math.max(0, 10 - stats.total)}/10`}
@@ -140,7 +140,7 @@ export default function TeamPage() {
       </div>
 
       {/* Invite banner */}
-      <div className="bg-zinc-950/80 border border-[var(--panel-border)] backdrop-blur-xl rounded-[var(--panel-radius)] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="bg-[var(--bg-card)] border border-[var(--panel-border)] backdrop-blur-xl rounded-[var(--panel-radius)] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         <Input
           type="email"
           value={email}

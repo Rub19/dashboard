@@ -41280,6 +41280,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_48_8_en);
 CHANGELOG_BY_LANG.es.unshift(v1_48_8_es);
 CHANGELOG_BY_LANG.de.unshift(v1_48_8_de);
 
+const v1_48_9_fr: ChangelogEntry = {
+  version: "v1.48.9",
+  date: "2026-10-02",
+  title: "Motion design et corrections sur toutes les pages du dashboard",
+  items: [
+    "Le réglage « Réduire les animations » d'ETHONE s'applique maintenant à toutes les animations (avant, une partie l'ignorait), en plus du réglage système.",
+    "Focus : la touche Échap quitte enfin le mode Zen (c'était annoncé sur le bouton mais ne marchait pas), et quitter le plein écran ferme aussi le mode Zen ; onglets et modes à pastille glissante.",
+    "Tâches : bascule Liste/Kanban glissante avec fondu, menus de priorité/catégorie animés et fermables avec Échap, barre de progression ; les tâches créées depuis l'extension n'ont plus de fausse échéance.",
+    "Fichiers : bascule Grille/Liste, navigation et catégories à pastille glissante, grilles en cascade. Mail : filtres à pastille glissante, conversation ouverte en fondu. Brain : conversation active qui glisse.",
+    "Interactions, Spaces, Flows, Équipe : couleurs figées remplacées par celles du thème (illisibles en thème clair) ; années, heatmap et barres animées.",
+    "Activité et Analytique : barres qui se remplissent, conseils en cascade, chargements en shimmer ; onglets de catégories de Connexions aux couleurs du thème.",
+  ],
+};
+
+const v1_48_9_en: ChangelogEntry = {
+  version: "v1.48.9",
+  date: "2026-10-02",
+  title: "Motion design and fixes across every dashboard page",
+  items: [
+    "ETHONE's \"Reduce motion\" setting now applies to every animation (some ignored it before), on top of the system setting.",
+    "Focus: Escape finally exits Zen mode (shown on the button but never worked), and leaving fullscreen closes Zen too; tabs and modes with a gliding pill.",
+    "Tasks: gliding List/Kanban toggle with fade, animated priority/category menus closable with Escape, progress bar; tasks created from the extension no longer get a fake due date.",
+    "Files: gliding Grid/List toggle, navigation and categories, staggered grids. Mail: gliding filters, opened conversation fades in. Brain: active conversation glides.",
+    "Interactions, Spaces, Flows, Team: fixed colours replaced with theme colours (unreadable on light themes); animated years, heatmap and bars.",
+    "Activity and Analytics: filling bars, staggered insights, shimmer loading; Connections category tabs use theme colours.",
+  ],
+};
+
+const v1_48_9_es: ChangelogEntry = {
+  version: "v1.48.9",
+  date: "2026-10-02",
+  title: "Motion design y correcciones en todo el panel",
+  items: [
+    "«Reducir animaciones» aplicado en todas partes, Escape sale del modo Zen, pestañas deslizantes y colores del tema en todas las páginas.",
+  ],
+};
+
+const v1_48_9_de: ChangelogEntry = {
+  version: "v1.48.9",
+  date: "2026-10-02",
+  title: "Motion Design und Korrekturen im ganzen Dashboard",
+  items: [
+    "„Animationen reduzieren“ überall wirksam, Escape beendet den Zen-Modus, gleitende Tabs und Theme-Farben auf allen Seiten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_48_9_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_48_9_en);
+CHANGELOG_BY_LANG.es.unshift(v1_48_9_es);
+CHANGELOG_BY_LANG.de.unshift(v1_48_9_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

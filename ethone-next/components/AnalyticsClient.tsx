@@ -61,7 +61,7 @@ function SectionCard({ icon, title, caption, action, children }: { icon: React.R
     <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 backdrop-blur-md">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
+          <span className="icon-pop flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
             {icon}
           </span>
           <div>
@@ -82,10 +82,10 @@ function EmptyCta({ label, href }: { label: string; href: string }) {
     <button
       type="button"
       onClick={() => router.push(href)}
-      className="flex w-full items-center justify-center gap-1.5 rounded-[var(--inset-radius)] border border-dashed border-[var(--panel-border)] py-8 text-xs font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
+      className="group flex w-full items-center justify-center gap-1.5 rounded-[var(--inset-radius)] border border-dashed border-[var(--panel-border)] py-8 text-xs font-medium text-[var(--text-muted)] outline-none transition-colors hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
     >
       {label}
-      <ArrowRight className="h-3.5 w-3.5" />
+      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
     </button>
   );
 }
@@ -174,7 +174,7 @@ export default function AnalyticsClient() {
       </div>
 
       {/* Overview strip — mirrors DashboardOverview's Priority Layer pattern */}
-      <div className="grid grid-cols-2 divide-x divide-y divide-[var(--panel-border)]/50 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 shadow-xs sm:grid-cols-4 sm:divide-y-0">
+      <div className="stagger-children grid grid-cols-2 divide-x divide-y divide-[var(--panel-border)]/50 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 shadow-xs sm:grid-cols-4 sm:divide-y-0">
         <button
           type="button"
           onClick={() => router.push("/matches")}

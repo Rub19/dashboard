@@ -87,7 +87,7 @@ export default function RssPage() {
               <p className="text-sm text-[var(--muted)]">{feed.description}</p>
             </div>
 
-            <div className="space-y-3">
+            <div className="stagger-children space-y-3">
               {feed.items.map((item, i) => {
                 const safeLink = isAllowedHttpUrl(item.link) ? item.link : undefined;
                 return (

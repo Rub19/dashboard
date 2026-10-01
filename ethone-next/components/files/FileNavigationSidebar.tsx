@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 import { useMemo } from "react";
 import {
   Home,
@@ -114,19 +116,20 @@ export default function FileNavigationSidebar({
               type="button"
               onClick={() => onSelectSection(sec.id)}
               className={cn(
-                "flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-xs font-semibold transition-all cursor-pointer",
+                "relative isolate flex w-full items-center justify-between rounded-xl border border-transparent px-2.5 py-2 text-xs font-semibold outline-none transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
                 active
-                  ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold border border-[var(--accent-primary)]/30 shadow-xs"
+                  ? "text-[var(--accent-primary)] font-bold"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/40"
               )}
             >
+              {active && <motion.span layoutId="files-nav" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute -inset-px -z-10 rounded-[inherit] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 shadow-xs" />}
               <div className="flex items-center gap-2.5 truncate">
                 <IconComp className={cn("h-4 w-4 shrink-0", active ? "text-[var(--accent-primary)]" : "opacity-70")} />
                 <span className="truncate">{sec.label}</span>
               </div>
 
               {sec.badge && (
-                <span className="rounded-md bg-blue-500/20 px-1.5 py-0.5 text-[9px] font-bold text-blue-300">
+                <span className="rounded-md bg-[var(--info)]/15 px-1.5 py-0.5 text-[9px] font-bold text-[var(--info)]">
                   {sec.badge}
                 </span>
               )}
@@ -154,12 +157,13 @@ export default function FileNavigationSidebar({
                   type="button"
                   onClick={() => onSelectCategory(cat.id)}
                   className={cn(
-                    "flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-[11px] font-medium transition-all cursor-pointer",
+                    "relative isolate flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-[11px] font-medium outline-none transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
                     active
-                      ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-bold shadow-xs"
+                      ? "text-[var(--accent-contrast)] font-bold"
                       : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/30"
                   )}
                 >
+                  {active && <motion.span layoutId="files-cat" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-xs" />}
                   <span>{cat.label}</span>
                 </button>
               );

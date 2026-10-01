@@ -200,27 +200,27 @@ export default function FlowsPage() {
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden px-4 pt-4 sm:px-6 lg:px-8">
       <div className="stagger-children min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3 mb-6">
+      <div className="stagger-children grid grid-cols-1 gap-3 md:grid-cols-3 mb-6">
         {statCards.map((stat, i) => (
           <div
             key={i}
             className="flex items-center justify-between rounded-[var(--panel-radius)] v8-panel p-4 transition-all hover:border-[var(--input-border-hover)]"
           >
             <div>
-              <p className="text-2xl font-bold font-mono text-white">{stat.value}</p>
-              <p className="text-xs text-zinc-400">{stat.label}</p>
+              <p className="text-2xl font-bold font-mono text-[var(--text-primary)]">{stat.value}</p>
+              <p className="text-xs text-[var(--text-muted)]">{stat.label}</p>
             </div>
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03]">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03]">
               {stat.icon}
             </span>
           </div>
         ))}
       </div>
 
-      <div className="mb-6 flex flex-col items-start justify-between gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/50 p-4 backdrop-blur-md sm:flex-row sm:items-center">
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card)] p-4 backdrop-blur-md sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-sm font-semibold text-white">Gestionnaire de Flows</h1>
-          <p className="text-xs text-zinc-500">Créez, exécutez et automatisez vos flows.</p>
+          <h1 className="text-sm font-semibold text-[var(--text-primary)]">Gestionnaire de Flows</h1>
+          <p className="text-xs text-[var(--text-muted)]/80">Créez, exécutez et automatisez vos flows.</p>
         </div>
 
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
@@ -260,7 +260,7 @@ export default function FlowsPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="stagger-children grid grid-cols-1 gap-4 lg:grid-cols-2">
         {TEMPLATES.map((template) => (
           <FlowCard
             key={template.id}
@@ -282,8 +282,8 @@ export default function FlowsPage() {
 
       {flows.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-sm font-semibold text-white">{i18n("yourFlows")}</h2>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("yourFlows")}</h2>
+          <div className="stagger-children grid grid-cols-1 gap-4 lg:grid-cols-2">
             {flows.map((flow) => {
               const workspaceId = getFlowWorkspace(flow);
               const template = TEMPLATES.find((t) => t.id === workspaceId) || TEMPLATES[0];
@@ -318,8 +318,8 @@ export default function FlowsPage() {
                   ]}
                 >
                   {canAutomate && (
-                    <div className="mt-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                      <p className="mb-2 text-xs font-medium text-zinc-500">
+                    <div className="mt-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-3">
+                      <p className="mb-2 text-xs font-medium text-[var(--text-muted)]/80">
                         {i18n("automations")}
                       </p>
                       {rules.length > 0 ? (
@@ -330,7 +330,7 @@ export default function FlowsPage() {
                               className={`flex items-center gap-2 rounded-[var(--inset-radius)] border px-2 py-1 text-xs ${
                                 rule.enabled
                                   ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-                                  : "border-[var(--panel-border)] bg-white/[0.02] text-zinc-400"
+                                  : "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)]"
                               }`}
                             >
                               <Icon name="workflow" className="h-3 w-3" />

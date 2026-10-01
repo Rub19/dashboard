@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 import { useState, useMemo } from "react";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
@@ -153,12 +155,19 @@ export default function BrainSidebar({
         key={c.id}
         onClick={() => onSelect(c.id)}
         className={cn(
-          "group relative flex items-center justify-between rounded-xl px-2.5 py-2 text-xs font-medium transition-all cursor-pointer",
+          "rise-in group relative isolate flex items-center justify-between rounded-xl px-2.5 py-2 text-xs font-medium transition-colors cursor-pointer",
           isActive
-            ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-semibold shadow-sm"
+            ? "text-[var(--accent-primary)] font-semibold"
             : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/40 hover:text-[var(--text-primary)]"
         )}
       >
+        {isActive && (
+          <motion.span
+            layoutId="brain-conversation"
+            transition={{ type: "spring", stiffness: 450, damping: 35 }}
+            className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)]/15 shadow-sm"
+          />
+        )}
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <Icon
             name={c.favorite ? "star" : "chat-circle"}

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import {
   Activity,
   Flame,
@@ -158,7 +159,7 @@ function getHeatmapColor(level: number) {
     case 4:
       return "bg-[var(--accent-primary)] shadow-[0_0_8px_var(--glow-color)] border border-[var(--input-border-hover)]";
     default:
-      return "bg-white/[0.03] border border-[var(--panel-border)]";
+      return "bg-[var(--text-primary)]/[0.03] border border-[var(--panel-border)]";
   }
 }
 
@@ -302,13 +303,13 @@ function iconForKind(kind: string): { icon: React.ElementType; color: string; la
     case "fileCreate":
       return { icon: FileUp, color: "text-purple-400", label: "Fichier ajouté" };
     case "spaceSwitch":
-      return { icon: LayoutGrid, color: "text-zinc-300", label: "Espace changé" };
+      return { icon: LayoutGrid, color: "text-[var(--text-primary)]/85", label: "Espace changé" };
     case "sync":
       return { icon: RefreshCw, color: "text-[var(--accent-primary)]", label: "Synchronisation" };
     case "uiCustomize":
-      return { icon: SlidersHorizontal, color: "text-zinc-300", label: "Personnalisation UI" };
+      return { icon: SlidersHorizontal, color: "text-[var(--text-primary)]/85", label: "Personnalisation UI" };
     default:
-      return { icon: Activity, color: "text-zinc-400", label: "Interaction" };
+      return { icon: Activity, color: "text-[var(--text-muted)]", label: "Interaction" };
   }
 }
 
@@ -379,15 +380,15 @@ export default function InteractionsPage() {
       {/* Header */}
       <div className="shrink-0 mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
-          <h1 className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-white">
+          <h1 className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-[var(--text-primary)]">
             <Activity className="h-6 w-6 text-[var(--accent-primary)]" />
             <span>{i18n("interactionsTitle")}</span>
           </h1>
-          <p className="mt-0.5 text-xs text-zinc-400">Télémétrie complète de votre utilisation du système</p>
+          <p className="mt-0.5 text-xs text-[var(--text-muted)]">Télémétrie complète de votre utilisation du système</p>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 py-1.5 text-xs font-medium text-zinc-300">
+          <div className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--bg-card)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)]/85">
             <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]" />
             <span>Télémétrie en direct</span>
           </div>
@@ -412,7 +413,7 @@ export default function InteractionsPage() {
             sub: `Régularité de ${stats.consistency}%`,
             icon: BarChart3,
             color: "text-[var(--info)]",
-            subColor: "text-zinc-400",
+            subColor: "text-[var(--text-muted)]",
           },
           {
             label: "Heure de Pointe",
@@ -437,11 +438,11 @@ export default function InteractionsPage() {
             key={kpi.label}
             className="flex flex-col gap-1 rounded-2xl v8-panel p-4 shadow-lg transition-[border-color,box-shadow] duration-200 hover:border-[var(--accent-primary)]/20"
           >
-            <div className="flex items-center justify-between text-zinc-400">
+            <div className="flex items-center justify-between text-[var(--text-muted)]">
               <span className="text-[11px] font-semibold uppercase tracking-wider">{kpi.label}</span>
               <kpi.icon className={`h-4 w-4 ${kpi.color}`} />
             </div>
-            <div className="mt-1 font-mono text-2xl font-bold text-white">{kpi.value}</div>
+            <div className="mt-1 font-mono text-2xl font-bold text-[var(--text-primary)]">{kpi.value}</div>
             <span className={`text-[10px] font-medium ${kpi.subColor}`}>{kpi.sub}</span>
           </div>
         ))}
@@ -452,11 +453,11 @@ export default function InteractionsPage() {
         <div className="flex flex-col justify-between gap-3 border-b border-[var(--panel-border)] pb-3 sm:flex-row sm:items-center">
           <div className="flex items-center gap-2.5">
             <Flame className="h-4 w-4 text-[var(--accent-primary)]" />
-            <h3 className="text-sm font-bold text-white">Heatmap des interactions ({selectedYear})</h3>
+            <h3 className="text-sm font-bold text-[var(--text-primary)]">Heatmap des interactions ({selectedYear})</h3>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-1.5 text-[10px] text-zinc-400">
+            <div className="flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
               <span>Moins</span>
               {[0, 1, 2, 3, 4].map((level) => (
                 <div key={level} className={`h-2.5 w-2.5 rounded-sm ${getHeatmapColor(level)}`} />
@@ -464,18 +465,18 @@ export default function InteractionsPage() {
               <span>Plus</span>
             </div>
 
-            <div className="flex items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-0.5">
+            <div className="flex items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-0.5">
               {years.map((y) => (
                 <button
                   key={y}
                   type="button"
                   onClick={() => setSelectedYear(y)}
-                  className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
-                    selectedYear === y
-                      ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
-                      : "text-[var(--muted)] hover:text-[var(--text-primary)]"
+                  aria-pressed={selectedYear === y}
+                  className={`relative isolate rounded-lg px-2.5 py-1 text-xs font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97] ${
+                    selectedYear === y ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   }`}
                 >
+                  {selectedYear === y && <motion.span layoutId="interactions-year" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                   {y}
                 </button>
               ))}
@@ -484,17 +485,18 @@ export default function InteractionsPage() {
         </div>
 
         {loading ? (
-          <div className="h-48 w-full animate-pulse rounded-xl bg-white/[0.03]" />
+          <div className="h-48 w-full animate-pulse rounded-xl bg-[var(--text-primary)]/[0.03]" />
         ) : (
           <div className="overflow-x-auto pb-2 scrollbar-none">
             <div
-              className="grid w-full min-w-[760px] gap-1 sm:gap-1.5"
+              key={selectedYear}
+              className="pop-in grid w-full min-w-[760px] gap-1 sm:gap-1.5"
               style={{ gridTemplateColumns: `36px repeat(${weeks.length}, minmax(0, 1fr))` }}
             >
               {monthLabels.map((m, i) => (
                 <div
                   key={`m${i}`}
-                  className="h-4 whitespace-nowrap text-[10px] leading-4 text-zinc-500"
+                  className="h-4 whitespace-nowrap text-[10px] leading-4 text-[var(--text-muted)]/80"
                   style={{ gridRow: 1, gridColumn: m.index + 2 }}
                 >
                   {m.label}
@@ -503,7 +505,7 @@ export default function InteractionsPage() {
               {weekdays.map((d, i) => (
                 <div
                   key={`d${i}`}
-                  className="flex items-center justify-end whitespace-nowrap pr-1 text-[10px] leading-none text-zinc-500"
+                  className="flex items-center justify-end whitespace-nowrap pr-1 text-[10px] leading-none text-[var(--text-muted)]/80"
                   style={{ gridRow: i + 2, gridColumn: 1 }}
                 >
                   {i % 2 === 0 ? d : ""}
@@ -528,7 +530,7 @@ export default function InteractionsPage() {
           </div>
         )}
 
-        <div className="flex items-center justify-between border-t border-[var(--panel-border)] pt-3 text-[11px] text-zinc-500">
+        <div className="flex items-center justify-between border-t border-[var(--panel-border)] pt-3 text-[11px] text-[var(--text-muted)]/80">
           <span>{loading ? "Chargement…" : `${stats.total.toLocaleString(language)} interactions enregistrées`}</span>
           <span>Données calculées en temps réel</span>
         </div>
@@ -541,36 +543,40 @@ export default function InteractionsPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Layers className="h-4 w-4 text-[var(--info)]" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white">Répartition par source</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Répartition par source</h3>
             </div>
-            <span className="text-[11px] font-mono text-zinc-400">Année {selectedYear}</span>
+            <span className="text-[11px] font-mono text-[var(--text-muted)]">Année {selectedYear}</span>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="stagger-children flex flex-col gap-3">
             {categories.rows.map((item) => (
               <div key={item.label} className="flex flex-col gap-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="flex items-center gap-2 font-medium text-zinc-300">
-                    <item.icon className="h-3.5 w-3.5 text-zinc-500" />
+                  <span className="flex items-center gap-2 font-medium text-[var(--text-primary)]/85">
+                    <item.icon className="h-3.5 w-3.5 text-[var(--text-muted)]/80" />
                     {item.label}
                     </span>
-                  <span className="font-mono text-zinc-400">
+                  <span className="font-mono text-[var(--text-muted)]">
                     {item.count} ({item.percent}%)
                   </span>
                 </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-xl bg-white/[0.04]">
-                  <div
-                    className={`h-full rounded-xl ${item.color} shadow-[0_0_6px_rgba(255,255,255,0.1)]`}
-                    style={{ width: `${item.percent}%` }}
+                <div className="h-1.5 w-full overflow-hidden rounded-xl bg-[var(--text-primary)]/[0.04]">
+                  <motion.div
+                    key={`${selectedYear}-${item.label}`}
+                    className={`h-full rounded-xl ${item.color}`}
+                    style={{ width: `${item.percent}%`, originX: 0 }}
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                   />
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 text-[11px] text-zinc-400">
+          <div className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-3 text-[11px] text-[var(--text-muted)]">
             <span>
-              Module le plus sollicité : <strong className="text-white">{topCategory?.label || "—"}</strong>
+              Module le plus sollicité : <strong className="text-[var(--text-primary)]">{topCategory?.label || "—"}</strong>
             </span>
             <span className="font-medium text-[var(--accent-primary)]">Performances optimales</span>
           </div>
@@ -581,18 +587,18 @@ export default function InteractionsPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Zap className="h-4 w-4 text-amber-400" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white">Journal en direct</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Journal en direct</h3>
             </div>
             <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]" />
           </div>
 
           <div className="flex flex-col gap-2">
             {loading ? (
-              <div className="h-48 w-full animate-pulse rounded-xl bg-white/[0.03]" />
+              <div className="h-48 w-full animate-pulse rounded-xl bg-[var(--text-primary)]/[0.03]" />
             ) : recent.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-6 text-center text-zinc-400">
-                <Command className="h-5 w-5 text-zinc-500" />
-                <p className="text-sm font-medium text-zinc-300">Aucune interaction récente</p>
+              <div className="pop-in flex flex-col items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-6 text-center text-[var(--text-muted)]">
+                <Command className="h-5 w-5 text-[var(--text-muted)]/80" />
+                <p className="text-sm font-medium text-[var(--text-primary)]/85">Aucune interaction récente</p>
                 <p className="text-[11px]">Déclenchez une action pour alimenter le flux.</p>
               </div>
             ) : (
@@ -602,13 +608,13 @@ export default function InteractionsPage() {
                 return (
                   <div
                     key={r.id || i}
-                    className="flex items-center justify-between gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5 transition-colors hover:bg-white/[0.04]"
+                    className="flex items-center justify-between gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-2.5 transition-colors hover:bg-[var(--text-primary)]/[0.04]"
                   >
                     <div className="flex min-w-0 items-center gap-2.5">
                       <IconComp className={`h-3.5 w-3.5 shrink-0 ${color}`} />
-                      <span className="truncate text-xs text-zinc-300">{label}</span>
+                      <span className="truncate text-xs text-[var(--text-primary)]/85">{label}</span>
                     </div>
-                    <span className="shrink-0 text-[10px] font-mono text-zinc-500">
+                    <span className="shrink-0 text-[10px] font-mono text-[var(--text-muted)]/80">
                       {timeAgo(r.created_at, language)}
                     </span>
                   </div>
@@ -623,7 +629,7 @@ export default function InteractionsPage() {
             className="flex w-full items-center justify-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] py-2 text-xs font-medium text-[var(--text-primary)]/[0.8] transition-all hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
           >
             <span>Voir tout l&apos;historique</span>
-            <ChevronRight className="h-3.5 w-3.5 text-[var(--muted)]" />
+            <ChevronRight className="h-3.5 w-3.5 text-[var(--text-muted)]" />
           </button>
         </TiltCard>
       </div>

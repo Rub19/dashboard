@@ -560,7 +560,8 @@ export default function MailPage() {
       </div>
 
       {/* 3. Reading Pane (Full on mobile if active thread, side on desktop) */}
-      <div className={cn("h-full flex-1 flex-col", activeThread ? "flex" : "hidden md:flex")}>
+      {/* Rejoue l'entrée à chaque conversation ouverte. */}
+      <div key={activeThreadId ?? "none"} className={cn("rise-in h-full flex-1 flex-col", activeThread ? "flex" : "hidden md:flex")}>
         <MailDetailView
           thread={activeThread}
           onBack={closeThread}

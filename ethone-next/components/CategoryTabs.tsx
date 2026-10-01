@@ -51,7 +51,7 @@ export default function CategoryTabs({
       ref={tabsRef}
       role="tablist"
       aria-label={i18n("categories", "Catégories")}
-      className="flex items-center gap-1.5 overflow-x-auto p-1.5 no-scrollbar rounded-[var(--panel-radius)] bg-black/40 border border-[var(--panel-border)] backdrop-blur-[var(--panel-blur)]"
+      className="flex items-center gap-1.5 overflow-x-auto p-1.5 no-scrollbar rounded-[var(--panel-radius)] bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] backdrop-blur-[var(--panel-blur)]"
     >
       {tabs.map((cat) => {
         const isActive = active === cat.id;
@@ -70,7 +70,7 @@ export default function CategoryTabs({
               "group relative flex min-h-[38px] shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-3.5 py-1.5 text-xs font-semibold select-none cursor-pointer transition-colors duration-150",
               isActive
                 ? "text-[var(--accent-primary)]"
-                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/[0.03]"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/[0.03]"
             )}
           >
             {isActive && (
@@ -101,7 +101,7 @@ export default function CategoryTabs({
                 "relative z-10 ml-0.5 flex h-4 min-w-[1.25rem] items-center justify-center rounded-full px-1.5 text-[10px] font-bold transition-colors duration-150",
                 isActive
                   ? "bg-[var(--accent-primary)]/25 text-[var(--accent-primary)]"
-                  : "bg-white/5 text-[var(--text-muted)] group-hover:text-zinc-300"
+                  : "bg-[var(--text-primary)]/5 text-[var(--text-muted)] group-hover:text-[var(--text-primary)]/85"
               )}
             >
               {count}

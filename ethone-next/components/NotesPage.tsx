@@ -237,7 +237,7 @@ export default function NotesPage() {
 
           {isOffline && (
             <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs text-[var(--text-muted)]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)] shadow-[0_0_5px_var(--glow-color)]" />
+              <span className="status-breathe h-1.5 w-1.5 rounded-full bg-[var(--warning)]" />
               <span>Mode local actif. Vos notes sont sécurisées et synchronisées sur cet appareil.</span>
             </div>
           )}
@@ -279,7 +279,8 @@ export default function NotesPage() {
                     }}
                   >
                     <p className="truncate text-sm font-medium text-[var(--text-primary)]">{note.title}</p>
-                    <p className="line-clamp-2 text-[11px] text-[var(--text-muted)]" dangerouslySetInnerHTML={{ __html: note.body }} />
+                    {/* Texte seul : le corps peut venir d'un clip de page web (extension), jamais injecté tel quel. */}
+                    <p className="line-clamp-2 text-[11px] text-[var(--text-muted)]">{stripHtml(note.body)}</p>
                     <div className="mt-1.5 flex gap-2 text-[10px] text-[var(--text-muted)]">
                       {note.createdAt && <span>{formatDate(note.createdAt)}</span>}
                       <span>{wordCountFromHtml(note.body)} {i18n("words")}</span>
@@ -320,7 +321,7 @@ export default function NotesPage() {
           ))}
 
           {!loading && filtered.length === 0 && (
-            <div className="flex min-h-[180px] flex-col items-center justify-center gap-2.5 rounded-2xl v8-panel p-6 text-center text-[var(--text-muted)]">
+            <div className="pop-in flex min-h-[180px] flex-col items-center justify-center gap-2.5 rounded-2xl v8-panel p-6 text-center text-[var(--text-muted)]">
               <div className="flex h-12 w-12 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--accent-primary)] shadow-sm">
                 <Icon name="notebook-pen" className="h-6 w-6" />
               </div>
@@ -329,7 +330,7 @@ export default function NotesPage() {
               <button
                 type="button"
                 onClick={() => {
-                  const input = document.querySelector('input[placeholder*="Titre"]') as HTMLInputElement | null;
+                  const input = document.querySelector('[data-testid="note-title-input"]') as HTMLInputElement | null;
                   input?.focus();
                 }}
                 className="mt-2 inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-3.5 py-1.5 text-xs font-bold text-[var(--accent-primary)] shadow-sm transition-all hover:bg-[var(--accent-primary)]/25 active:scale-95 cursor-pointer"
@@ -343,7 +344,7 @@ export default function NotesPage() {
       </div>
 
       {/* Right: Editor */}
-      <div className="col-span-12 flex h-full min-h-0 flex-col justify-between overflow-hidden rounded-2xl v8-panel p-6 lg:col-span-8">
+      <div key={editingId ?? "new"} className="rise-in col-span-12 flex h-full min-h-0 flex-col justify-between overflow-hidden rounded-2xl v8-panel p-6 lg:col-span-8">
         <div className="shrink-0 mb-3">
           <Input
             type="text"
@@ -387,8 +388,7 @@ export default function NotesPage() {
               type="button"
               onClick={addNote}
               disabled={loading || !title.trim()}
-              className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold transition-all active:scale-95 disabled:opacity-50"
-              style={{ background: "var(--accent-color, var(--accent-primary))", color: "var(--accent-contrast)" }}
+              className="btn-sheen relative inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] outline-none transition-[filter,transform] hover:brightness-110 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-95 disabled:opacity-50"
             >
               <Icon name="save" className="h-3.5 w-3.5" />
               {i18n("save")}

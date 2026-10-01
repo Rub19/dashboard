@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.48.8 — 2026-10-02
+
+**Sécurité : e-mails et notes affichés sans risque**
+
+- Mail : le contenu HTML des e-mails reçus est maintenant filtré avant affichage (scripts, attributs d'événement et liens javascript: retirés). Avant, un e-mail piégé pouvait exécuter du code dans ETHONE à l'ouverture.
+- Notes : l'aperçu dans la liste n'affiche plus que du texte. Une note créée depuis l'extension à partir d'un texte de page web ne peut plus injecter de code.
+- Notes : la note ouverte apparaît en fondu, bouton Enregistrer aux couleurs du thème, bouton « Rédiger une note » de l'état vide qui cible bien le titre.
+
 ## v1.48.7 — 2026-10-02
 
 **Éditeurs du bot et listes : motion design**

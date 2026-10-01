@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toSafeHtml } from "@/components/RichTextEditor";
 import {
   Reply,
   ReplyAll,
@@ -386,7 +387,8 @@ export default function MailDetailView({
                     <div
                       className="max-w-none overflow-x-auto break-words px-1 text-sm leading-relaxed text-[var(--text-primary)] [&_a]:text-[var(--accent-primary)] [&_a]:underline [&_blockquote]:border-l-2 [&_blockquote]:border-[var(--panel-border)] [&_blockquote]:pl-3 [&_blockquote]:text-[var(--text-muted)] [&_img]:max-w-full"
                       dangerouslySetInnerHTML={{
-                        __html: msg.body_html || (msg.body_text || msg.snippet || "").replace(/\n/g, "<br>"),
+                        // Contenu d'un e-mail reçu = HTML d'un tiers : toujours assaini (scripts, on*, javascript: retirés).
+                        __html: toSafeHtml(msg.body_html || msg.body_text || msg.snippet || ""),
                       }}
                     />
                   </motion.div>

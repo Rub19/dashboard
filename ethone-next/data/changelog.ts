@@ -41235,6 +41235,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_48_7_en);
 CHANGELOG_BY_LANG.es.unshift(v1_48_7_es);
 CHANGELOG_BY_LANG.de.unshift(v1_48_7_de);
 
+const v1_48_8_fr: ChangelogEntry = {
+  version: "v1.48.8",
+  date: "2026-10-02",
+  title: "Sécurité : e-mails et notes affichés sans risque",
+  items: [
+    "Mail : le contenu HTML des e-mails reçus est maintenant filtré avant affichage (scripts, attributs d'événement et liens javascript: retirés). Avant, un e-mail piégé pouvait exécuter du code dans ETHONE à l'ouverture.",
+    "Notes : l'aperçu dans la liste n'affiche plus que du texte. Une note créée depuis l'extension à partir d'un texte de page web ne peut plus injecter de code.",
+    "Notes : la note ouverte apparaît en fondu, bouton Enregistrer aux couleurs du thème, bouton « Rédiger une note » de l'état vide qui cible bien le titre.",
+  ],
+};
+
+const v1_48_8_en: ChangelogEntry = {
+  version: "v1.48.8",
+  date: "2026-10-02",
+  title: "Security: emails and notes displayed safely",
+  items: [
+    "Mail: the HTML of received emails is now filtered before display (scripts, event attributes and javascript: links removed). Before, a crafted email could run code in ETHONE when opened.",
+    "Notes: the list preview now shows text only. A note created from a web page through the extension can no longer inject code.",
+    "Notes: the opened note fades in, Save button uses theme colours, the empty-state \"Write a note\" button targets the title field.",
+  ],
+};
+
+const v1_48_8_es: ChangelogEntry = {
+  version: "v1.48.8",
+  date: "2026-10-02",
+  title: "Seguridad: correos y notas",
+  items: [
+    "El HTML de los correos recibidos y la vista previa de notas ahora se filtran antes de mostrarse.",
+  ],
+};
+
+const v1_48_8_de: ChangelogEntry = {
+  version: "v1.48.8",
+  date: "2026-10-02",
+  title: "Sicherheit: E-Mails und Notizen",
+  items: [
+    "HTML empfangener E-Mails und Notizvorschauen werden jetzt vor der Anzeige gefiltert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_48_8_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_48_8_en);
+CHANGELOG_BY_LANG.es.unshift(v1_48_8_es);
+CHANGELOG_BY_LANG.de.unshift(v1_48_8_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

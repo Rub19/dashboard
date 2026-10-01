@@ -82,6 +82,10 @@ function toEditableHtml(content: string): string {
   return sanitizeRichText(looksLikeHtml(raw) ? raw : plainTextToHtml(raw));
 }
 
+/** HTML sûr à afficher : HTML assaini par liste blanche, ou texte brut converti en paragraphes. Pour tout
+ * contenu venu de l'extérieur (e-mails reçus, clips de pages web) avant un dangerouslySetInnerHTML. */
+export const toSafeHtml = toEditableHtml;
+
 export function stripHtml(html: string): string {
   const doc = new DOMParser().parseFromString(String(html || ""), "text/html");
   return (doc.body.textContent || "").replace(/\s+/g, " ").trim();

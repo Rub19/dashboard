@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>ETHONE</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="rise" style="--i:0">
+    <img class="logo" src="icons/logo.png" alt="" width="34" height="34">
+    <div class="brand">
+      <strong>ETHONE</strong>
+      <span id="status" class="status" data-state="loading"><i></i><span>Connexion…</span></span>
+    </div>
+    <a class="ghost" href="https://ethone.dev/" target="_blank" rel="noopener noreferrer" title="Ouvrir ethone.dev" aria-label="Ouvrir ethone.dev">
+      <svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
+    </a>
+  </header>
+
+  <section class="clip rise" style="--i:1">
+    <div class="page">
+      <img id="favicon" alt="" width="16" height="16" hidden>
+      <div class="page-text">
+        <span id="pageTitle">Onglet actuel</span>
+        <small id="pageHost"></small>
+      </div>
+    </div>
+    <blockquote id="selection" hidden></blockquote>
+    <button id="save" class="primary" type="button">
+      <span id="saveLabel">Enregistrer cette page</span>
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+    <p id="unsupported" class="hint" hidden>Chrome ne permet pas d'enregistrer cette page.</p>
+  </section>
+
+  <nav id="links" class="links" aria-label="Accès rapide"></nav>
+
+  <footer class="rise" style="--i:9">
+    <span><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> enregistre la page</span>
+  </footer>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

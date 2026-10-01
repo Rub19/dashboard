@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.48.0 — 2026-10-01
+
+**Extension Chrome ETHONE**
+
+- Nouvelle extension Chrome, téléchargeable sur ethone.dev/extension : enregistre la page, un passage sélectionné (clic droit) ou un lien dans tes notes ou tes tâches, avec un accès rapide à l'accueil, aux notes, aux tâches, à Brain, au calendrier et au bot. Raccourci Alt+Maj+S.
+- L'extension ne stocke aucun mot de passe ni jeton et n'injecte aucun script dans les sites visités : elle ouvre la nouvelle page « Enregistrer dans ETHONE », qui utilise ta session.
+- Connexions : un encart mène à la page de l'extension.
+- Correctif : après la connexion, ETHONE renvoie bien vers la page demandée (clip de l'extension, invitation à un espace) au lieu de l'accueil.
+
 ## v1.47.2 — 2026-10-01
 
 **Motion design dans tous les modules**

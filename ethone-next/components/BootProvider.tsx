@@ -56,7 +56,7 @@ export function useBoot() {
   return useContext(BootContext);
 }
 
-const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password", "/terms", "/privacy", "/bot", "/leaderboard"];
+const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password", "/terms", "/privacy", "/bot", "/leaderboard", "/extension"];
 
 const BOOT_TIMEOUT_MS = 8_000;
 // Kept short on purpose: this is only a floor for the progress-bar animation
@@ -71,11 +71,18 @@ const SEGMENT_3 = 120;
 
 // Pages d'information (vitrine du bot, conditions, confidentialité) : lisibles par tous, connectés ou non. Contrairement
 // à /login, un utilisateur déjà connecté n'en est pas renvoyé vers l'accueil.
-const INFO_ROUTES = ["/terms", "/privacy", "/bot", "/leaderboard"];
+const INFO_ROUTES = ["/terms", "/privacy", "/bot", "/leaderboard", "/extension"];
 
 function isInfoRoute(pathname: string | null): boolean {
   if (!pathname) return false;
   return INFO_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
+}
+
+// Où renvoyer après connexion : seulement des chemins internes attendus, jamais une URL arbitraire (pas d'open redirect).
+export function safeLoginNext(raw: string | null | undefined): string {
+  const next = raw || "";
+  // trailingSlash: true dans next.config → /clip/ en production.
+  return /^\/clip\/?$/.test(next) || next.startsWith("/spaces/join") ? next : "/";
 }
 
 function isPublicRoute(pathname: string | null): boolean {
@@ -180,7 +187,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
       setState("authenticated");
       if (publicRoute && !isInfoRoute(pathname)) {
         setState("recovering");
-        router.replace("/");
+        router.replace(safeLoginNext(new URLSearchParams(window.location.search).get("next")));
       }
     } else if (publicRoute) {
       setState("ready");
@@ -195,7 +202,12 @@ export default function BootProvider({ children }: { children: ReactNode }) {
       // the symmetric session-on-a-public-route case above: bounce to
       // /login rather than rendering a private page with nothing behind it.
       setState("recovering");
-      router.replace("/login");
+      const here = window.location.pathname + window.location.search;
+      // Le clip de l'extension vit dans le #hash (jamais envoyé au serveur) : on le garde le temps de la connexion.
+      if (/^\/clip\/?$/.test(window.location.pathname) && window.location.hash) {
+        try { sessionStorage.setItem("ethone:clip", window.location.hash); } catch { /* stockage indisponible */ }
+      }
+      router.replace(safeLoginNext(here) === "/" ? "/login" : `/login?next=${encodeURIComponent(here)}`);
     }
   }, [authLoading, authError, session, mfaPending, profileLoaded, publicRoute, pathname, router]);
 

@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plug, RefreshCcw, Zap } from "@/components/icons/ph";
+import { ArrowRight, Download, Plug, RefreshCcw, Zap } from "@/components/icons/ph";
 import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
@@ -417,6 +418,20 @@ export default function IntegrationsSettings() {
             configuredMap={configuredMap}
             onConnectPrompt={(id) => setSearch(id)}
           />
+
+          <Link
+            href="/extension"
+            className="group flex items-center gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 transition-colors hover:border-[var(--accent-primary)]/40"
+          >
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/12 text-[var(--accent-primary)]">
+              <Download className="h-5 w-5 transition-transform duration-300 group-hover:translate-y-0.5" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold text-[var(--text-primary)]">Extension Chrome ETHONE</span>
+              <span className="block text-xs text-[var(--text-muted)]">Enregistre une page ou un passage dans tes notes et tâches depuis le navigateur.</span>
+            </span>
+            <ArrowRight className="h-4 w-4 shrink-0 text-[var(--text-muted)] transition-transform group-hover:translate-x-0.5 group-hover:text-[var(--accent-primary)]" />
+          </Link>
 
           {/* Active Connections Carousel */}
           {myConnections.length > 0 && (

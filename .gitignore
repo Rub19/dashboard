@@ -131,3 +131,6 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+
+# Extension Chrome publiée sur ethone.dev/extension (généré par extension/pack.py)
+!ethone-next/public/downloads/ethone-extension.zip

@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "ETHONE",
+  "version": "1.0.0",
+  "description": "Enregistre une page ou un passage dans tes notes et tâches ETHONE, et ouvre ton espace en un clic.",
+  "homepage_url": "https://ethone.dev/extension",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "ETHONE",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["activeTab", "scripting", "contextMenus"],
+  "host_permissions": ["https://ethone.dev/*"],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": { "default": "Alt+Shift+E" },
+      "description": "Ouvrir ETHONE"
+    },
+    "clip-page": {
+      "suggested_key": { "default": "Alt+Shift+S" },
+      "description": "Enregistrer la page dans ETHONE"
+    }
+  }
+}

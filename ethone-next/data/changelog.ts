@@ -40859,6 +40859,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_47_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_47_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_47_2_de);
 
+const v1_48_0_fr: ChangelogEntry = {
+  version: "v1.48.0",
+  date: "2026-10-01",
+  title: "Extension Chrome ETHONE",
+  items: [
+    "Nouvelle extension Chrome, téléchargeable sur ethone.dev/extension : enregistre la page, un passage sélectionné (clic droit) ou un lien dans tes notes ou tes tâches, avec un accès rapide à l'accueil, aux notes, aux tâches, à Brain, au calendrier et au bot. Raccourci Alt+Maj+S.",
+    "L'extension ne stocke aucun mot de passe ni jeton et n'injecte aucun script dans les sites visités : elle ouvre la nouvelle page « Enregistrer dans ETHONE », qui utilise ta session.",
+    "Connexions : un encart mène à la page de l'extension.",
+    "Correctif : après la connexion, ETHONE renvoie bien vers la page demandée (clip de l'extension, invitation à un espace) au lieu de l'accueil.",
+  ],
+};
+
+const v1_48_0_en: ChangelogEntry = {
+  version: "v1.48.0",
+  date: "2026-10-01",
+  title: "ETHONE Chrome extension",
+  items: [
+    "New Chrome extension, downloadable at ethone.dev/extension: save the page, a selected passage (right-click) or a link to your notes or tasks, with quick access to home, notes, tasks, Brain, calendar and the bot. Shortcut Alt+Shift+S.",
+    "The extension stores no password or token and injects no script into visited sites: it opens the new \"Save to ETHONE\" page, which uses your session.",
+    "Connections: a card leads to the extension page.",
+    "Fix: after signing in, ETHONE now returns to the requested page (extension clip, space invite) instead of home.",
+  ],
+};
+
+const v1_48_0_es: ChangelogEntry = {
+  version: "v1.48.0",
+  date: "2026-10-01",
+  title: "Extensión de Chrome ETHONE",
+  items: [
+    "Nueva extensión de Chrome en ethone.dev/extension: guarda páginas, fragmentos o enlaces en tus notas y tareas.",
+    "Corrección: tras iniciar sesión, vuelves a la página solicitada.",
+  ],
+};
+
+const v1_48_0_de: ChangelogEntry = {
+  version: "v1.48.0",
+  date: "2026-10-01",
+  title: "ETHONE Chrome-Erweiterung",
+  items: [
+    "Neue Chrome-Erweiterung unter ethone.dev/extension: Seiten, Textstellen oder Links in Notizen und Aufgaben speichern.",
+    "Fix: Nach der Anmeldung geht es zurück zur angeforderten Seite.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_48_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_48_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_48_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_48_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

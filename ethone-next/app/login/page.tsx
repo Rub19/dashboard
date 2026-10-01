@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback, useMemo, type FormEvent } fro
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/components/AuthProvider";
+import { safeLoginNext } from "@/components/BootProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { authLog } from "@/lib/auth-log";
@@ -139,7 +140,7 @@ export default function LoginPage() {
     if (!authLoading && session && authState === "idle" && !successRedirected.current) {
       successRedirected.current = true;
       const nextParam = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("next") || "" : "";
-      const safeNext = nextParam.startsWith("/spaces/join") ? nextParam : "/";
+      const safeNext = safeLoginNext(nextParam);
       router.replace(safeNext);
     }
   }, [authLoading, session, authState, router]);
@@ -154,7 +155,7 @@ export default function LoginPage() {
       // relative path we actually expect is honoured — anything else falls
       // back to "/", never an open redirect to an arbitrary URL.
       const nextParam = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("next") || "" : "";
-      const safeNext = nextParam.startsWith("/spaces/join") ? nextParam : "/";
+      const safeNext = safeLoginNext(nextParam);
       const timer = setTimeout(() => router.replace(safeNext), 750);
       return () => clearTimeout(timer);
     }

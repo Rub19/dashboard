@@ -38,6 +38,7 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import RolePicker from "@/components/discord/RolePicker";
 import { formatApiError } from "@/lib/format-error";
 
+import { motion } from "framer-motion";
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -131,7 +132,7 @@ const STEP_DEFAULTS: Record<OnboardingStep["type"], { title: string; description
 };
 
 const fieldClass =
-  "w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500";
+  "w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60";
 
 function OnboardingEditor({
   onboarding,
@@ -953,14 +954,15 @@ export function WelcomeCenterClient() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               className={cn(
-                "flex items-center gap-2 rounded-xl px-3.5 py-2 font-medium transition-all whitespace-nowrap cursor-pointer",
+                "relative flex items-center gap-2 rounded-xl px-3.5 py-2 font-medium transition-colors duration-200 whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                 isActive
-                  ? "bg-teal-600 text-white shadow-sm"
+                  ? "text-[var(--accent-contrast)]"
                   : "text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)]"
               )}
             >
-              <Icon className="h-3.5 w-3.5" />
-              <span>{tab.label}</span>
+              {isActive && <motion.span layoutId="welcome-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              <Icon className="relative h-3.5 w-3.5" />
+              <span className="relative">{tab.label}</span>
             </button>
           );
         })}
@@ -968,7 +970,7 @@ export function WelcomeCenterClient() {
 
       {/* TAB 1: VUE D'ENSEMBLE & FUNNEL */}
       {activeTab === "overview" && (
-        <div className="space-y-6 mt-6">
+        <div className="stagger-children space-y-6 mt-6">
           {/* System Status Toggles */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
@@ -1202,7 +1204,7 @@ export function WelcomeCenterClient() {
                     }))
                   }
                   placeholder="👋 Bienvenue {user} sur **{server}** !"
-                  className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500 resize-none font-sans"
+                  className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60 resize-none font-sans"
                 />
               </div>
             </div>
@@ -1260,7 +1262,7 @@ export function WelcomeCenterClient() {
                           },
                         }))
                       }
-                      className="mt-1 h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500"
+                      className="mt-1 h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
                     />
                   </div>
 
@@ -1278,7 +1280,7 @@ export function WelcomeCenterClient() {
                           },
                         }))
                       }
-                      className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500 resize-none"
+                      className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60 resize-none"
                     />
                   </div>
 
@@ -1297,7 +1299,7 @@ export function WelcomeCenterClient() {
                             },
                           }))
                         }
-                        className="mt-1 h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500"
+                        className="mt-1 h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
                       />
                     </div>
                     <div>
@@ -1314,7 +1316,7 @@ export function WelcomeCenterClient() {
                             },
                           }))
                         }
-                        className="mt-1 h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500"
+                        className="mt-1 h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
                       />
                     </div>
                   </div>
@@ -1685,7 +1687,7 @@ export function WelcomeCenterClient() {
                   }))
                 }
                 placeholder="📤 Au revoir **{username}** ! Nous ne sommes plus que **{membercount}** membres."
-                className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500 resize-none font-sans"
+                className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60 resize-none font-sans"
               />
             </div>
 
@@ -1746,7 +1748,7 @@ export function WelcomeCenterClient() {
                   }))
                 }
                 placeholder="👋 Bonjour {user}, bienvenue sur **{server}** !"
-                className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500 resize-none font-sans"
+                className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60 resize-none font-sans"
               />
             </div>
 
@@ -1815,7 +1817,7 @@ export function WelcomeCenterClient() {
                 rows={2}
                 value={verification.verificationPrompt}
                 onChange={(e) => setVerification((p: any) => ({ ...p, verificationPrompt: e.target.value }))}
-                className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500 resize-none"
+                className="mt-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60 resize-none"
               />
             </div>
 
@@ -1832,7 +1834,7 @@ export function WelcomeCenterClient() {
 
       {/* TAB 7: TEMPLATES PRÊTS À L'EMPLOI */}
       {activeTab === "templates" && (
-        <div className="space-y-5 mt-6">
+        <div className="stagger-children space-y-5 mt-6">
           <div>
             <h2 className="text-base font-bold text-[var(--text-primary)]">Templates Prêts à l&apos;Emploi</h2>
             <p className="text-xs text-[var(--text-muted)]">
@@ -1844,7 +1846,7 @@ export function WelcomeCenterClient() {
             {templates.map((tpl) => (
               <div
                 key={tpl.id}
-                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3 hover:border-teal-500/40 transition-colors flex flex-col justify-between"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3 hover:border-[var(--accent-primary)]/40 transition-colors flex flex-col justify-between"
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -1977,7 +1979,7 @@ export function WelcomeCenterClient() {
                     },
                   }))
                 }
-                className="mt-1 h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-teal-500"
+                className="mt-1 h-9 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
               />
               <p className="text-xs text-[var(--text-muted)] mt-1">Si le compte est plus jeune, l&apos;accueil peut être différé ou restreint.</p>
             </div>

@@ -40,6 +40,7 @@ import { CardSkeleton } from "@/components/ui/Skeleton";
 import Select from "@/components/ui/Select";
 import { errorReason } from "@/lib/format-error";
 
+import { motion } from "framer-motion";
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -924,19 +925,20 @@ export function TicketCenterClient() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               className={cn(
-                "flex items-center gap-2 rounded-xl px-3.5 py-2 font-medium transition-all whitespace-nowrap cursor-pointer",
+                "relative flex items-center gap-2 rounded-xl px-3.5 py-2 font-medium transition-colors duration-200 whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                 isActive
-                  ? "bg-emerald-600 text-white shadow-sm"
+                  ? "text-[var(--accent-contrast)]"
                   : "text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)]"
               )}
             >
-              <Icon className="h-3.5 w-3.5" />
-              <span>{tab.label}</span>
+              {isActive && <motion.span layoutId="tickets-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              <Icon className="relative h-3.5 w-3.5" />
+              <span className="relative">{tab.label}</span>
               {typeof tab.count === "number" && (
                 <span
                   className={cn(
-                    "rounded-full px-1.5 py-0.2 text-xs font-bold",
-                    isActive ? "bg-[var(--surface-raised)]/80 text-[var(--text-primary)]" : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)]"
+                    "relative rounded-full px-1.5 py-0.2 text-xs font-bold tabular-nums",
+                    isActive ? "bg-[var(--accent-contrast)]/20 text-[var(--accent-contrast)]" : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)]"
                   )}
                 >
                   {tab.count}
@@ -949,7 +951,7 @@ export function TicketCenterClient() {
 
       {/* TAB 1: TICKETS EXPLORER */}
       {activeTab === "explorer" && (
-        <div className="space-y-4 mt-6">
+        <div className="stagger-children space-y-4 mt-6">
           {/* Filters Bar */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
             <div className="flex flex-wrap items-center gap-2">
@@ -1045,8 +1047,8 @@ export function TicketCenterClient() {
                     </td>
                   </tr>
                 ) : (
-                  tickets.map((t) => (
-                    <tr key={t.id} className="hover:bg-[var(--surface-raised)]/70 transition-colors group">
+                  tickets.map((t, i) => (
+                    <tr key={t.id} className="rise-in hover:bg-[var(--surface-raised)]/70 transition-colors group" style={{ animationDelay: `${Math.min(i, 12) * 30}ms` }}>
                       {/* Ticket ID */}
                       <td className="py-3 px-4 font-mono font-bold text-[var(--text-primary)]">
                         <Link
@@ -1179,7 +1181,7 @@ export function TicketCenterClient() {
 
       {/* TAB 2: PANELS BUILDER */}
       {activeTab === "panels" && (
-        <div className="space-y-6 mt-6">
+        <div className="stagger-children space-y-6 mt-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-base font-bold text-[var(--text-primary)]">Panneaux d&apos;Ouverture Discord</h2>
@@ -1212,7 +1214,7 @@ export function TicketCenterClient() {
             {panels.map((p) => (
               <div
                 key={p.id}
-                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4 hover:border-[var(--accent-primary)]/35 transition-colors duration-300"
               >
                 <div className="flex items-start justify-between">
                   <div>
@@ -1286,7 +1288,7 @@ export function TicketCenterClient() {
 
       {/* TAB 3: CATÉGORIES & FORMULAIRES */}
       {activeTab === "categories" && (
-        <div className="space-y-6 mt-6">
+        <div className="stagger-children space-y-6 mt-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-base font-bold text-[var(--text-primary)]">Catégories & Formulaires Dynamiques</h2>
@@ -1325,7 +1327,7 @@ export function TicketCenterClient() {
             {categories.map((cat) => (
               <div
                 key={cat.id}
-                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4 hover:border-[var(--accent-primary)]/35 transition-colors duration-300"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
@@ -1386,7 +1388,7 @@ export function TicketCenterClient() {
 
       {/* TAB 4: ÉQUIPES DE SUPPORT */}
       {activeTab === "teams" && (
-        <div className="space-y-6 mt-6">
+        <div className="stagger-children space-y-6 mt-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-base font-bold text-[var(--text-primary)]">Équipes de Support & Spécialistes</h2>
@@ -1418,7 +1420,7 @@ export function TicketCenterClient() {
             {teams.map((t) => (
               <div
                 key={t.id}
-                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4 hover:border-[var(--accent-primary)]/35 transition-colors duration-300"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -1446,7 +1448,7 @@ export function TicketCenterClient() {
 
       {/* TAB 5: AUTOMATISATIONS */}
       {activeTab === "automations" && (
-        <div className="space-y-6 mt-6">
+        <div className="stagger-children space-y-6 mt-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-base font-bold text-[var(--text-primary)]">Règles d&apos;Automatisation Helpdesk</h2>
@@ -1543,7 +1545,7 @@ export function TicketCenterClient() {
 
       {/* TAB 6: TRANSCRIPTS */}
       {activeTab === "transcripts" && (
-        <div className="space-y-6 mt-6">
+        <div className="stagger-children space-y-6 mt-6">
           <div>
             <h2 className="text-base font-bold text-[var(--text-primary)]">Archives & Transcripts</h2>
             <p className="text-xs text-[var(--text-muted)]">
@@ -1566,8 +1568,8 @@ export function TicketCenterClient() {
               <tbody className="divide-y divide-[var(--panel-border)]">
                 {tickets
                   .filter((t) => t.status === "CLOSED")
-                  .map((t) => (
-                    <tr key={t.id} className="hover:bg-[var(--surface-raised)]/70">
+                  .map((t, i) => (
+                    <tr key={t.id} className="rise-in hover:bg-[var(--surface-raised)]/70 transition-colors" style={{ animationDelay: `${Math.min(i, 12) * 30}ms` }}>
                       <td className="py-3 px-4 font-mono font-bold text-[var(--text-primary)]">#{t.id}</td>
                       <td className="py-3 px-4 text-[var(--text-primary)]">{t.userTag}</td>
                       <td className="py-3 px-4 text-[var(--text-muted)]">{t.categoryName}</td>
@@ -1596,7 +1598,7 @@ export function TicketCenterClient() {
 
       {/* TAB 7: ANALYTICS */}
       {activeTab === "analytics" && (
-        <div className="space-y-6 mt-6">
+        <div className="stagger-children space-y-6 mt-6">
           <div>
             <h2 className="text-base font-bold text-[var(--text-primary)]">Analytics & Performance Staff</h2>
             <p className="text-xs text-[var(--text-muted)]">
@@ -1667,7 +1669,7 @@ export function TicketCenterClient() {
 
       {/* TAB 8: SETTINGS & ANTI-ABUSE */}
       {activeTab === "settings" && (
-        <div className="space-y-6 mt-6 max-w-3xl">
+        <div className="stagger-children space-y-6 mt-6 max-w-3xl">
           <div>
             <h2 className="text-base font-bold text-[var(--text-primary)]">Paramètres Généraux & Anti-Abuse</h2>
             <p className="text-xs text-[var(--text-muted)]">

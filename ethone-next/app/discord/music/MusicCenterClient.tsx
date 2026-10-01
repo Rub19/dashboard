@@ -38,6 +38,7 @@ import RolePicker from "@/components/discord/RolePicker";
 import { cn } from "@/lib/utils";
 import { formatApiError } from "@/lib/format-error";
 
+import { motion, AnimatePresence } from "framer-motion";
 interface Track {
   id: string;
   title: string;
@@ -836,9 +837,10 @@ export default function MusicCenterClient() {
               <div className="relative h-44 w-44 sm:h-52 sm:w-52 shrink-0 rounded-2xl overflow-hidden border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 group">
                 {currentTrack?.thumbnail ? (
                   <img
+                    key={currentTrack.thumbnail}
                     src={currentTrack.thumbnail}
                     alt={currentTrack.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="rise-in h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
                   <div className="h-full w-full flex flex-col items-center justify-center text-[var(--text-muted)] gap-2">
@@ -847,8 +849,17 @@ export default function MusicCenterClient() {
                   </div>
                 )}
                 {isPlaying && (
-                  <div className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-[var(--surface-raised)]/40 px-2 py-1 rounded-lg text-xs font-bold text-emerald-400 border border-emerald-500/30">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 bg-[var(--bg-main)]/70 px-2 py-1 rounded-lg text-xs font-bold text-[var(--success)] border border-[var(--success)]/30 backdrop-blur">
+                    <span className="flex h-3 items-end gap-[2px]" aria-hidden>
+                      {[0, 1, 2].map((b) => (
+                        <motion.span
+                          key={b}
+                          className="w-[3px] rounded-full bg-[var(--success)]"
+                          animate={{ height: ["30%", "100%", "45%", "80%", "30%"] }}
+                          transition={{ duration: 1.1, repeat: Infinity, delay: b * 0.18, ease: "easeInOut" }}
+                        />
+                      ))}
+                    </span>
                     EN COURS
                   </div>
                 )}
@@ -858,8 +869,8 @@ export default function MusicCenterClient() {
               <div className="flex-1 w-full space-y-4">
                 {/* Title & Requester */}
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                  <div>
-                    <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                  <div key={currentTrack?.title ?? "none"} className="stagger-children">
+                    <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
                       {currentTrack?.source || "AUDIO"}
                     </span>
                     <h2 className="text-xl sm:text-2xl font-black text-[var(--text-primary)] mt-1 line-clamp-1">
@@ -882,7 +893,7 @@ export default function MusicCenterClient() {
                         )}
                         title="Ajouter aux favoris"
                       >
-                        <Heart className={cn("h-4 w-4", isFav && "fill-rose-400")} />
+                        <motion.span key={String(isFav)} initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 18 }} className="grid place-items-center"><Heart className={cn("h-4 w-4", isFav && "fill-rose-400")} /></motion.span>
                       </button>
                       <div className="text-right hidden sm:block">
                         <span className="text-xs text-[var(--text-muted)] uppercase font-semibold">Demandé par</span>
@@ -930,7 +941,7 @@ export default function MusicCenterClient() {
                     <button
                       onClick={handlePrevious}
                       disabled={!musicState?.history || musicState.history.length === 0}
-                      className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-30 transition-all cursor-pointer"
+                      className="group flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 active:scale-90 disabled:opacity-30 transition-all cursor-pointer [&_svg]:transition-transform hover:[&_svg]:-translate-x-0.5"
                       title="Précédent"
                     >
                       <SkipBack className="h-4 w-4" />
@@ -939,16 +950,27 @@ export default function MusicCenterClient() {
                     <button
                       onClick={handlePlayPause}
                       disabled={!currentTrack}
-                      className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500 text-white font-bold shadow-sm hover:scale-105 active:scale-95 disabled:opacity-40 transition-all cursor-pointer"
+                      className="btn-sheen relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-bold shadow-sm hover:brightness-110 active:scale-90 disabled:opacity-40 transition-[filter,transform] duration-200 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-main)]"
                       title={isPlaying ? "Mettre en pause" : "Lire"}
                     >
-                      {isPlaying ? <Pause className="h-5 w-5 fill-white" /> : <Play className="h-5 w-5 fill-white ml-0.5" />}
+                      <AnimatePresence mode="popLayout" initial={false}>
+                        <motion.span
+                          key={isPlaying ? "pause" : "play"}
+                          initial={{ scale: 0.4, rotate: -90, opacity: 0 }}
+                          animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                          exit={{ scale: 0.4, rotate: 90, opacity: 0 }}
+                          transition={{ type: "spring", stiffness: 450, damping: 28 }}
+                          className="grid place-items-center"
+                        >
+                          {isPlaying ? <Pause className="h-5 w-5 fill-current" /> : <Play className="h-5 w-5 fill-current ml-0.5" />}
+                        </motion.span>
+                      </AnimatePresence>
                     </button>
 
                     <button
                       onClick={handleSkip}
                       disabled={!currentTrack}
-                      className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-30 transition-all cursor-pointer"
+                      className="group flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 active:scale-90 disabled:opacity-30 transition-all cursor-pointer [&_svg]:transition-transform hover:[&_svg]:translate-x-0.5"
                       title="Suivant"
                     >
                       <SkipForward className="h-4 w-4" />
@@ -1128,14 +1150,15 @@ export default function MusicCenterClient() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer",
+                    "relative flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors duration-200 shrink-0 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                     isActive
-                      ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 shadow-sm"
+                      ? "text-[var(--accent-primary)]"
                       : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
                   )}
                 >
-                  <Icon className="h-3.5 w-3.5" />
-                  <span>{tab.label}</span>
+                  {isActive && <motion.span layoutId="music-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10" />}
+                  <Icon className="relative h-3.5 w-3.5" />
+                  <span className="relative">{tab.label}</span>
                 </button>
               );
             })}
@@ -1143,7 +1166,7 @@ export default function MusicCenterClient() {
 
           {/* TAB 1: QUEUE (DRAG & DROP) */}
           {activeTab === "queue" && (
-            <div className="space-y-4">
+            <div className="stagger-children space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-bold text-[var(--text-primary)]">À Suivre (Up Next)</h3>
@@ -1226,7 +1249,7 @@ export default function MusicCenterClient() {
           {/* TAB 2: PLAYLISTS */}
           {/* TAB: IMPORT (Spotify / YouTube playlists) */}
           {activeTab === "import" && (
-            <div className="space-y-4">
+            <div className="stagger-children space-y-4">
               <div>
                 <h3 className="text-sm font-bold text-[var(--text-primary)]">Importer une playlist Spotify ou YouTube</h3>
                 <p className="text-xs text-[var(--text-muted)]">Colle le lien : tous les titres s'affichent, clique sur un titre pour le jouer, ou lance toute la playlist (dans l'ordre ou mélangée).</p>
@@ -1282,7 +1305,7 @@ export default function MusicCenterClient() {
           )}
 
           {activeTab === "playlists" && (
-            <div className="space-y-4">
+            <div className="stagger-children space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-bold text-[var(--text-primary)]">Playlists du Serveur</h3>
@@ -1342,7 +1365,7 @@ export default function MusicCenterClient() {
 
           {/* TAB 3: FAVORITES */}
           {activeTab === "favorites" && (
-            <div className="space-y-4">
+            <div className="stagger-children space-y-4">
               <div>
                 <h3 className="text-sm font-bold text-[var(--text-primary)]">Vos Morceaux Favoris ({favorites.length})</h3>
                 <p className="text-xs text-[var(--text-muted)]">Accédez instantanément à vos titres préférés.</p>
@@ -1396,7 +1419,7 @@ export default function MusicCenterClient() {
 
           {/* TAB 4: HISTORY */}
           {activeTab === "history" && (
-            <div className="space-y-4">
+            <div className="stagger-children space-y-4">
               <div>
                 <h3 className="text-sm font-bold text-[var(--text-primary)]">Historique Récent ({history.length})</h3>
                 <p className="text-xs text-[var(--text-muted)]">Derniers morceaux diffusés sur le serveur.</p>

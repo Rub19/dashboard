@@ -40767,6 +40767,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_47_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_47_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_47_0_de);
 
+const v1_47_1_fr: ChangelogEntry = {
+  version: "v1.47.1",
+  date: "2026-10-01",
+  title: "Tickets, Bienvenue et Musique : motion design",
+  items: [
+    "Tickets, Bienvenue et Musique : l'onglet actif est une pastille aux couleurs du thème qui glisse d'un onglet à l'autre, et le contenu de chaque onglet apparaît en cascade.",
+    "Tickets : les lignes de la liste des tickets et des transcripts apparaissent une à une.",
+    "Musique : le bouton lecture/pause bascule son icône avec une rotation, le titre et la pochette s'animent au changement de morceau, le badge « En cours » a un égaliseur animé, et les boutons réagissent à l'appui.",
+    "Bienvenue : les champs et cartes suivent la couleur du thème au focus et au survol.",
+  ],
+};
+
+const v1_47_1_en: ChangelogEntry = {
+  version: "v1.47.1",
+  date: "2026-10-01",
+  title: "Tickets, Welcome and Music: motion design",
+  items: [
+    "Tickets, Welcome and Music: the active tab is a theme-coloured pill that glides between tabs, and each tab's content appears in sequence.",
+    "Tickets: ticket and transcript rows appear one after another.",
+    "Music: the play/pause button swaps its icon with a rotation, title and cover animate when the track changes, the \"Now playing\" badge has an animated equalizer, and buttons react to presses.",
+    "Welcome: fields and cards follow the theme colour on focus and hover.",
+  ],
+};
+
+const v1_47_1_es: ChangelogEntry = {
+  version: "v1.47.1",
+  date: "2026-10-01",
+  title: "Tickets, Bienvenida y Música: motion design",
+  items: [
+    "Pestañas con píldora deslizante, contenido en cascada, filas animadas y reproductor animado.",
+  ],
+};
+
+const v1_47_1_de: ChangelogEntry = {
+  version: "v1.47.1",
+  date: "2026-10-01",
+  title: "Tickets, Willkommen und Musik: Motion Design",
+  items: [
+    "Gleitende Tab-Markierung, gestaffelte Inhalte, animierte Zeilen und animierter Player.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_47_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_47_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_47_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_47_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

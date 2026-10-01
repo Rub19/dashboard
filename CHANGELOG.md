@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.47.1 — 2026-10-01
+
+**Tickets, Bienvenue et Musique : motion design**
+
+- Tickets, Bienvenue et Musique : l'onglet actif est une pastille aux couleurs du thème qui glisse d'un onglet à l'autre, et le contenu de chaque onglet apparaît en cascade.
+- Tickets : les lignes de la liste des tickets et des transcripts apparaissent une à une.
+- Musique : le bouton lecture/pause bascule son icône avec une rotation, le titre et la pochette s'animent au changement de morceau, le badge « En cours » a un égaliseur animé, et les boutons réagissent à l'appui.
+- Bienvenue : les champs et cartes suivent la couleur du thème au focus et au survol.
+
 ## v1.47.0 — 2026-10-01
 
 **Dynamic Island : motion design et nouvelles intégrations**

@@ -15,7 +15,6 @@ import {
   signInWithPasskey,
   signUpWithPassword,
 } from "@/lib/auth";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Switch from "@/components/Switch";
 import Button from "@/components/ui/Button";
 import GoogleIcon from "@/components/icons/GoogleIcon";
@@ -24,7 +23,7 @@ import DiscordIcon from "@/components/DiscordIcon";
 import { triggerHaptic } from "@/lib/haptics";
 import AuthInputField from "@/components/auth/AuthInputField";
 import AuthCardShell from "@/components/auth/AuthCardShell";
-import AuthHeroPanel from "@/components/auth/AuthHeroPanel";
+import AuthScreen from "@/components/auth/AuthScreen";
 import OtpCodeInput from "@/components/auth/OtpCodeInput";
 import PasswordStrengthMeter from "@/components/auth/PasswordStrengthMeter";
 import TurnstileWidget, { type TurnstileWidgetHandle } from "@/components/auth/TurnstileWidget";
@@ -380,28 +379,43 @@ export default function LoginPage() {
     return i18n("loginSubtitleDefault", "Connectez-vous à votre environnement numérique unifié.");
   }, [mode, otpStep, maskedEmail, i18n]);
 
+  const modeSwitch = (
+    <button
+      type="button"
+      onClick={() => {
+        triggerHaptic("light");
+        setModeAndReset(mode === "register" ? "password" : "register");
+      }}
+      disabled={isLoading}
+      className="group text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
+    >
+      {mode === "register" ? (
+        <span className="font-medium text-[var(--accent-primary)]">{i18n("alreadyHaveAccount", "Déjà un compte ? Se connecter")}</span>
+      ) : (
+        <>
+          {i18n("noAccountYet", "Pas encore de compte ?")}{" "}
+          <span className="inline-flex items-center gap-1 font-medium text-[var(--accent-primary)]">
+            {i18n("createAccount", "Créer un compte")}
+            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </span>
+        </>
+      )}
+    </button>
+  );
+
   return (
-    <div className="relative flex min-h-dvh w-full overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)] selection:bg-[var(--accent-primary)]/30 selection:text-[var(--text-primary)]">
-      {/* Language switcher — pinned to the actual top-right corner of the
-          viewport at every breakpoint (the one place a locale switcher is
-          expected, and never in visual competition with either column). */}
-      <div className="absolute right-4 top-4 z-50 sm:right-6 sm:top-6">
-        <LanguageSwitcher />
-      </div>
-
-      <AuthHeroPanel />
-
-      {/* Right side: Auth Form Card */}
-      <div className="relative flex flex-1 items-center justify-center p-4 sm:p-8 lg:w-1/2">
+    <AuthScreen>
         <AuthCardShell
-          icon={isSuccess ? <Check className="h-7 w-7 text-[var(--success)]" /> : undefined}
+          success={isSuccess}
+          shakeKey={error}
           title={headerTitle}
           subtitle={headerSubtitle}
+          below={modeSwitch}
         >
           {/* Mode Selector Tabs (only when in root mode or register) */}
           {!(mode === "otp" && otpStep === "code") && (
-            <div className="mb-5">
-              <div className="relative grid grid-cols-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-1 shadow-inner">
+            <div className="mb-6">
+              <div className="relative grid grid-cols-3 rounded-full border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-1">
                 {(["password", "otp", "register"] as AuthMode[]).map((m) => {
                   const active = mode === m;
                   const label =
@@ -422,7 +436,7 @@ export default function LoginPage() {
                       disabled={isLoading}
                       aria-pressed={active}
                       className={cn(
-                        "relative z-10 select-none rounded-lg py-2 text-xs font-medium transition-colors cursor-pointer",
+                        "relative z-10 select-none rounded-full py-2 text-xs font-medium transition-colors duration-200 cursor-pointer",
                         active
                           ? "text-[var(--text-primary)] font-semibold"
                           : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -432,7 +446,7 @@ export default function LoginPage() {
                         <motion.span
                           layoutId="activeAuthTab"
                           transition={SPRING_PILL}
-                          className="absolute inset-0 z-0 rounded-[var(--inset-radius)] bg-white/10 border border-[var(--panel-border)] shadow-sm"
+                          className="absolute inset-0 z-0 rounded-full border border-[var(--accent-primary)]/35 bg-[var(--accent-primary)]/[0.14] shadow-[0_0_18px_-4px_var(--glow-color)]"
                         />
                       )}
                       <span className="relative z-10">{label}</span>
@@ -536,7 +550,7 @@ export default function LoginPage() {
                   variant={isSuccess ? "success" : "primary"}
                   isLoading={isLoading}
                   disabled={isSuccess}
-                  className="mt-2 h-12 w-full rounded-2xl text-sm"
+                  className="btn-sheen mt-2 h-12 w-full rounded-[var(--inset-radius)] text-sm"
                   rightIcon={!isLoading && !isSuccess ? <ArrowRight className="h-4 w-4" /> : undefined}
                   leftIcon={isSuccess ? <Check className="h-4 w-4" /> : undefined}
                 >
@@ -598,7 +612,7 @@ export default function LoginPage() {
                   variant="primary"
                   isLoading={isLoading}
                   disabled={isSuccess}
-                  className="mt-2 h-12 w-full rounded-2xl text-sm"
+                  className="btn-sheen mt-2 h-12 w-full rounded-[var(--inset-radius)] text-sm"
                   rightIcon={!isLoading ? <ArrowRight className="h-4 w-4" /> : undefined}
                 >
                   {isLoading ? i18n("otpSendLoading", "Envoi du code...") : i18n("otpSend", "Recevoir le code de connexion")}
@@ -673,7 +687,7 @@ export default function LoginPage() {
                   variant={isSuccess ? "success" : "primary"}
                   isLoading={authState === "verifying"}
                   disabled={isSuccess || code.length !== 6}
-                  className="mt-2 h-12 w-full rounded-2xl text-sm"
+                  className="btn-sheen mt-2 h-12 w-full rounded-[var(--inset-radius)] text-sm"
                   leftIcon={isSuccess ? <Check className="h-4 w-4" /> : !isLoading ? <ShieldCheck className="h-4 w-4" /> : undefined}
                 >
                   {authState === "verifying"
@@ -779,7 +793,7 @@ export default function LoginPage() {
                   variant={isSuccess ? "success" : "primary"}
                   isLoading={isLoading}
                   disabled={isSuccess}
-                  className="mt-3 h-12 w-full rounded-2xl text-sm"
+                  className="btn-sheen mt-3 h-12 w-full rounded-[var(--inset-radius)] text-sm"
                   leftIcon={isSuccess ? <Check className="h-4 w-4" /> : undefined}
                 >
                   {isLoading
@@ -794,51 +808,34 @@ export default function LoginPage() {
 
           {/* Social Authentication & Alternative Methods (only in login modes) */}
           {mode !== "register" && !(mode === "otp" && otpStep === "code") && (
-            <div className="mt-6 space-y-4">
-              <div className="relative flex items-center">
-                <div className="flex-1 border-t border-[var(--panel-border)]" />
-                <span className="px-3 text-[11px] font-medium text-[var(--text-muted)] uppercase tracking-wider">
+            <div className="mt-7 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[var(--panel-border)]" />
+                <span className="text-[10.5px] font-medium uppercase tracking-[0.16em] text-[var(--text-muted)]">
                   {i18n("orContinueWith", "ou continuer avec")}
                 </span>
-                <div className="flex-1 border-t border-[var(--panel-border)]" />
+                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[var(--panel-border)]" />
               </div>
 
-              <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  isLoading={oauthLoading === "google"}
-                  disabled={isLoading || isSuccess}
-                  onClick={() => handleOAuth("google")}
-                  leftIcon={<GoogleIcon className="h-4 w-4 shrink-0" />}
-                  className="h-11 rounded-[var(--inset-radius)]"
-                >
-                  Google
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="secondary"
-                  isLoading={oauthLoading === "github"}
-                  disabled={isLoading || isSuccess}
-                  onClick={() => handleOAuth("github")}
-                  leftIcon={<GithubIcon className="h-4 w-4 shrink-0" />}
-                  className="h-11 rounded-[var(--inset-radius)]"
-                >
-                  GitHub
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="secondary"
-                  isLoading={oauthLoading === "discord"}
-                  disabled={isLoading || isSuccess}
-                  onClick={() => handleOAuth("discord")}
-                  leftIcon={<DiscordIcon className="h-4 w-4 shrink-0 text-[#5865F2]" />}
-                  className="h-11 rounded-[var(--inset-radius)] hover:bg-[#5865F2]/20 hover:border-[#5865F2]/50 hover:text-[#5865F2]"
-                >
-                  Discord
-                </Button>
+              <div className="grid grid-cols-3 gap-2.5">
+                {([
+                  ["google", "Google", <GoogleIcon key="g" className="h-[18px] w-[18px] shrink-0" />],
+                  ["github", "GitHub", <GithubIcon key="gh" className="h-[18px] w-[18px] shrink-0" />],
+                  ["discord", "Discord", <DiscordIcon key="d" className="h-[18px] w-[18px] shrink-0 text-[#5865F2]" />],
+                ] as const).map(([provider, label, providerIcon]) => (
+                  <Button
+                    key={provider}
+                    type="button"
+                    variant="secondary"
+                    isLoading={oauthLoading === provider}
+                    disabled={isLoading || isSuccess}
+                    onClick={() => handleOAuth(provider)}
+                    leftIcon={providerIcon}
+                    className="h-11 rounded-[var(--inset-radius)] bg-[var(--text-primary)]/[0.03] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-12px_var(--glow-color)]"
+                  >
+                    {label}
+                  </Button>
+                ))}
               </div>
 
               {passkeyReady && (
@@ -847,7 +844,7 @@ export default function LoginPage() {
                   variant="ghost"
                   disabled={isLoading || isSuccess}
                   onClick={handlePasskey}
-                  className="h-11 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)]"
+                  className="h-11 w-full rounded-[var(--inset-radius)] border border-dashed border-[var(--panel-border)] hover:border-[var(--accent-primary)]/40"
                   leftIcon={<KeyRound className="h-4 w-4 text-[var(--accent-primary)]" />}
                 >
                   {i18n("passkeyLogin", "Se connecter avec une clé de sécurité (Passkey)")}
@@ -855,38 +852,7 @@ export default function LoginPage() {
               )}
             </div>
           )}
-
-          {/* Bottom Footer Switcher */}
-          <div className="mt-6 text-center text-xs text-[var(--text-muted)]">
-            {mode === "register" ? (
-              <button
-                type="button"
-                onClick={() => {
-                  triggerHaptic("light");
-                  setModeAndReset("password");
-                }}
-                disabled={isLoading}
-                className="text-[var(--accent-primary)] hover:brightness-110 font-medium transition-colors cursor-pointer"
-              >
-                {i18n("alreadyHaveAccount", "Déjà un compte ? Se connecter")}
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  triggerHaptic("light");
-                  setModeAndReset("register");
-                }}
-                disabled={isLoading}
-                className="text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors cursor-pointer"
-              >
-                {i18n("noAccountYet", "Pas encore de compte ?")}{" "}
-                <span className="text-[var(--accent-primary)] font-medium">{i18n("createAccount", "Créer un compte")}</span>
-              </button>
-            )}
-          </div>
         </AuthCardShell>
-      </div>
-    </div>
+    </AuthScreen>
   );
 }

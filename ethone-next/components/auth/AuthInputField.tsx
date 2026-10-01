@@ -17,9 +17,9 @@ const AuthInputField = forwardRef<HTMLInputElement, AuthInputFieldProps>(
         <label htmlFor={id} className="block text-xs font-medium text-[var(--text-muted)] select-none">
           {label}
         </label>
-        <div className="relative flex items-center w-full">
+        <div className="group relative flex items-center w-full">
           {leftIcon && (
-            <div className="pointer-events-none absolute left-3.5 flex items-center justify-center text-[var(--text-muted)]">
+            <div className="pointer-events-none absolute left-3.5 flex items-center justify-center text-[var(--text-muted)] transition-[color,transform] duration-200 [transition-timing-function:var(--ease-snap)] group-focus-within:scale-110 group-focus-within:text-[var(--accent-primary)]">
               {leftIcon}
             </div>
           )}

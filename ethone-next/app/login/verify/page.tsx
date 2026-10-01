@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/components/AuthProvider";
 import AuthCardShell from "@/components/auth/AuthCardShell";
+import AuthScreen from "@/components/auth/AuthScreen";
 import OtpCodeInput from "@/components/auth/OtpCodeInput";
 import AuthInputField from "@/components/auth/AuthInputField";
 import Button from "@/components/ui/Button";
@@ -62,7 +63,7 @@ export default function VerifyMfaPage() {
   }
 
   return (
-    <div className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden bg-[var(--bg-main)] p-4 text-[var(--text-primary)] selection:bg-[var(--accent-primary)]/30 selection:text-[var(--text-primary)]">
+    <AuthScreen>
       <AuthCardShell
         icon={<ShieldCheck className="h-7 w-7 text-[var(--success)]" />}
         title={mode === "code" ? "Entre ton code de vérification" : "Utilise un code de secours"}
@@ -156,6 +157,6 @@ export default function VerifyMfaPage() {
           </button>
         </div>
       </AuthCardShell>
-    </div>
+    </AuthScreen>
   );
 }

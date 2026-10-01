@@ -7,9 +7,10 @@ import { resetPassword } from "@/lib/auth";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import AuthCardShell from "@/components/auth/AuthCardShell";
+import AuthScreen from "@/components/auth/AuthScreen";
 import AuthInputField from "@/components/auth/AuthInputField";
 import Button from "@/components/ui/Button";
-import { Mail, Check } from "@/components/icons/ph";
+import { Mail } from "@/components/icons/ph";
 import TurnstileWidget, { type TurnstileWidgetHandle } from "@/components/auth/TurnstileWidget";
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
@@ -51,9 +52,9 @@ export default function PasswordRecoveryPage() {
   }
 
   return (
-    <div className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden bg-[var(--bg-main)] p-4 text-[var(--text-primary)]">
+    <AuthScreen>
       <AuthCardShell
-        icon={sent ? <Check className="h-7 w-7 text-[var(--success)]" /> : undefined}
+        success={sent}
         title={i18n("passwordRecoveryTitle")}
         subtitle={sent ? i18n("recoverySent") : undefined}
       >
@@ -85,6 +86,6 @@ export default function PasswordRecoveryPage() {
           </form>
         )}
       </AuthCardShell>
-    </div>
+    </AuthScreen>
   );
 }

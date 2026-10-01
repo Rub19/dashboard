@@ -1561,6 +1561,27 @@ select[data-haptic-state="released"],
   }
 }
 
+/* Light sweep across a primary CTA on hover. */
+.btn-sheen {
+  overflow: hidden;
+}
+.btn-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.3) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.75s var(--ease-snap);
+}
+.btn-sheen:hover:not(:disabled)::after {
+  transform: translateX(120%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-sheen::after { display: none; }
+}
+[data-reduced-motion="true"] .btn-sheen::after { display: none; }
+
 /* ============================================================
    Presence Engine + 30+ keyframes
    ============================================================ */

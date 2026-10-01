@@ -39872,6 +39872,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_38_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_38_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_38_4_de);
 
+const v1_39_0_fr: ChangelogEntry = {
+  version: "v1.39.0",
+  date: "2026-10-01",
+  title: "Nouvelle page de connexion",
+  items: [
+    "La page de connexion a été entièrement refaite : une composition centrée sur un fond vivant (aurores aux couleurs du thème, grille en fondu, léger parallaxe qui suit la souris).",
+    "Un orbe ETHONE animé accueille l'utilisateur et se transforme en coche à la connexion ; le titre se révèle en douceur à chaque étape.",
+    "La carte suit le curseur avec un halo de lumière, une lueur parcourt sa bordure, sa hauteur glisse d'un mode à l'autre et elle tremble légèrement en cas d'erreur.",
+    "Le même écran est utilisé pour la vérification en deux étapes, la récupération et la réinitialisation du mot de passe. Les animations respectent le réglage « Réduire les animations ».",
+  ],
+};
+
+const v1_39_0_en: ChangelogEntry = {
+  version: "v1.39.0",
+  date: "2026-10-01",
+  title: "New sign-in page",
+  items: [
+    "The sign-in page has been rebuilt from scratch: a centered composition over a living backdrop (theme-colored auroras, fading grid, subtle cursor parallax).",
+    "An animated ETHONE orb greets you and turns into a checkmark on success; the headline gently reveals itself at each step.",
+    "The card follows your cursor with a spotlight, a light travels along its border, its height glides between modes and it shakes slightly on errors.",
+    "Two-step verification, password recovery and reset now share the same screen. Animations honor the Reduce motion setting.",
+  ],
+};
+
+const v1_39_0_es: ChangelogEntry = {
+  version: "v1.39.0",
+  date: "2026-10-01",
+  title: "Nueva página de inicio de sesión",
+  items: [
+    "La página de inicio de sesión se ha rehecho por completo: composición centrada sobre un fondo vivo con auroras del tema y parallax sutil.",
+    "Un orbe ETHONE animado se convierte en una marca de verificación al iniciar sesión; la tarjeta sigue el cursor, su altura se desliza entre modos y tiembla ante un error.",
+    "La verificación en dos pasos, la recuperación y el restablecimiento de contraseña usan la misma pantalla.",
+  ],
+};
+
+const v1_39_0_de: ChangelogEntry = {
+  version: "v1.39.0",
+  date: "2026-10-01",
+  title: "Neue Anmeldeseite",
+  items: [
+    "Die Anmeldeseite wurde komplett neu gebaut: zentrierte Komposition über einem lebendigen Hintergrund mit Theme-Polarlichtern und dezentem Parallax.",
+    "Ein animierter ETHONE-Orb wird bei Erfolg zum Häkchen; die Karte folgt dem Cursor, ihre Höhe gleitet zwischen den Modi und sie wackelt bei Fehlern.",
+    "Zwei-Faktor-Prüfung, Passwort-Wiederherstellung und -Zurücksetzen nutzen denselben Bildschirm.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_39_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_39_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_39_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_39_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

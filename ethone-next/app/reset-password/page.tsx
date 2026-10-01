@@ -7,6 +7,7 @@ import { updatePassword } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ToastProvider";
 import AuthCardShell from "@/components/auth/AuthCardShell";
+import AuthScreen from "@/components/auth/AuthScreen";
 import AuthInputField from "@/components/auth/AuthInputField";
 import Button from "@/components/ui/Button";
 import { Lock, Loader2 } from "@/components/icons/ph";
@@ -60,7 +61,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden bg-[var(--bg-main)] p-4 text-[var(--text-primary)]">
+    <AuthScreen>
       <AuthCardShell title={i18n("resetPasswordTitle")}>
         {!session ? (
           <div className="flex items-center justify-center gap-3 text-[var(--text-muted)]">
@@ -98,6 +99,6 @@ export default function ResetPasswordPage() {
           </form>
         )}
       </AuthCardShell>
-    </div>
+    </AuthScreen>
   );
 }

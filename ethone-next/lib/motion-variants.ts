@@ -32,6 +32,20 @@ export const staggerItem: Variants = {
   animate: { opacity: 1, y: 0, transition: { duration: DURATION_BASE, ease: EASE_OUT } },
 };
 
+/** Hero-scale reveal: rises out of a soft blur into focus. For headlines and
+ * focal elements in an entrance choreography — heavier than staggerItem. */
+export const revealUp: Variants = {
+  initial: { opacity: 0, y: 14, filter: "blur(8px)" },
+  animate: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: DURATION_SLOW + 0.15, ease: EASE_SNAP } },
+  exit: { opacity: 0, y: -8, filter: "blur(6px)", transition: { duration: DURATION_FAST, ease: EASE_OUT } },
+};
+
+/** Parent for a staged entrance: children with `revealUp`/`staggerItem`
+ * enter one after another, in document order. */
+export const choreography: Variants = {
+  animate: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+};
+
 /** Spring-driven overlay entrance — modals, sheets, anything that should
  * feel physically summoned rather than eased in on a timer. */
 export const panelSpring: Variants = {

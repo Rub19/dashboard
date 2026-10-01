@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.39.0 — 2026-10-01
+
+**Nouvelle page de connexion**
+
+- La page de connexion a été entièrement refaite : une composition centrée sur un fond vivant (aurores aux couleurs du thème, grille en fondu, léger parallaxe qui suit la souris).
+- Un orbe ETHONE animé accueille l'utilisateur et se transforme en coche à la connexion ; le titre se révèle en douceur à chaque étape.
+- La carte suit le curseur avec un halo de lumière, une lueur parcourt sa bordure, sa hauteur glisse d'un mode à l'autre et elle tremble légèrement en cas d'erreur.
+- Le même écran est utilisé pour la vérification en deux étapes, la récupération et la réinitialisation du mot de passe. Les animations respectent le réglage « Réduire les animations ».
+
 ## v1.38.4 — 2026-10-01
 
 **Motion System : Profil**

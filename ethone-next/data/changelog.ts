@@ -40358,6 +40358,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_43_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_43_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_43_0_de);
 
+const v1_44_0_fr: ChangelogEntry = {
+  version: "v1.44.0",
+  date: "2026-10-01",
+  title: "Console du bot : barre latérale et pages de modules",
+  items: [
+    "Barre latérale refaite : plus large (noms moins tronqués), icônes dans des tuiles à la couleur de chaque module, sélection qui glisse avec un filet d'accent, lignes qui avancent au survol, catégories avec compteur actifs/total, recherche avec raccourci « / », et jauge des modules actifs en bas.",
+    "Chaque module ouvert dans la console a un nouvel en-tête : grande icône animée, état Activé/Désactivé, interrupteur pour l'activer directement, lien vers la page complète et retour.",
+    "Les cartes, boutons et liens des 35 panneaux de modules adoptent la nouvelle DA (surfaces, bouton principal aux couleurs du thème avec reflet, micro-interactions) et leur contenu apparaît en cascade.",
+    "Les pages complètes des modules apparaissent aussi en cascade à l'ouverture.",
+  ],
+};
+
+const v1_44_0_en: ChangelogEntry = {
+  version: "v1.44.0",
+  date: "2026-10-01",
+  title: "Bot console: sidebar and module pages",
+  items: [
+    "Sidebar rebuilt: wider (less truncation), icons in tiles tinted per module, gliding selection with an accent line, rows that nudge on hover, categories with an enabled/total counter, search with a \"/\" shortcut and an active-modules gauge at the bottom.",
+    "Each module opened in the console has a new header: large animated icon, Enabled/Disabled state, a switch to toggle it directly, a link to the full page and a back button.",
+    "Cards, buttons and links across the 35 module panels follow the new art direction (surfaces, theme-coloured primary button with sheen, micro-interactions) and their content appears in sequence.",
+    "Full module pages also appear in sequence when opened.",
+  ],
+};
+
+const v1_44_0_es: ChangelogEntry = {
+  version: "v1.44.0",
+  date: "2026-10-01",
+  title: "Consola del bot: barra lateral y páginas de módulos",
+  items: [
+    "Barra lateral rediseñada, nuevo encabezado de módulo con interruptor y paneles de módulos con la nueva dirección artística y aparición en cascada.",
+  ],
+};
+
+const v1_44_0_de: ChangelogEntry = {
+  version: "v1.44.0",
+  date: "2026-10-01",
+  title: "Bot-Konsole: Seitenleiste und Modulseiten",
+  items: [
+    "Neu gestaltete Seitenleiste, neuer Modul-Header mit Schalter und Modul-Panels im neuen Design mit gestaffeltem Einblenden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_44_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_44_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_44_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_44_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -1605,6 +1605,28 @@ select[data-haptic-state="released"],
   .auth-field, .auth-particle { animation: none; }
 }
 
+/* Bot console: content of module pages / panels rises in sequence.
+   `backwards` fill only applies before the start, so nothing keeps a transform
+   afterwards (fixed menus and modals inside keep the viewport as reference). */
+@keyframes console-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.discord-route > * > *,
+.hub-module-panel > :first-child,
+.hub-module-panel > * + * > * {
+  animation: console-rise 0.5s var(--ease-snap) backwards;
+}
+.discord-route > * > *:nth-child(2), .hub-module-panel > * + * > *:nth-child(2) { animation-delay: 0.05s; }
+.discord-route > * > *:nth-child(3), .hub-module-panel > * + * > *:nth-child(3) { animation-delay: 0.1s; }
+.discord-route > * > *:nth-child(4), .hub-module-panel > * + * > *:nth-child(4) { animation-delay: 0.15s; }
+.discord-route > * > *:nth-child(5), .hub-module-panel > * + * > *:nth-child(5) { animation-delay: 0.2s; }
+.discord-route > * > *:nth-child(6), .hub-module-panel > * + * > *:nth-child(6) { animation-delay: 0.25s; }
+.discord-route > * > *:nth-child(n + 7), .hub-module-panel > * + * > *:nth-child(n + 7) { animation-delay: 0.3s; }
+@media (prefers-reduced-motion: reduce) {
+  .discord-route > * > *, .hub-module-panel > :first-child, .hub-module-panel > * + * > * { animation: none; }
+}
+
 /* Keep autofilled auth fields in the theme instead of the browser's tint. */
 .auth-input:-webkit-autofill,
 .auth-input:-webkit-autofill:hover,

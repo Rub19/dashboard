@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.44.0 — 2026-10-01
+
+**Console du bot : barre latérale et pages de modules**
+
+- Barre latérale refaite : plus large (noms moins tronqués), icônes dans des tuiles à la couleur de chaque module, sélection qui glisse avec un filet d'accent, lignes qui avancent au survol, catégories avec compteur actifs/total, recherche avec raccourci « / », et jauge des modules actifs en bas.
+- Chaque module ouvert dans la console a un nouvel en-tête : grande icône animée, état Activé/Désactivé, interrupteur pour l'activer directement, lien vers la page complète et retour.
+- Les cartes, boutons et liens des 35 panneaux de modules adoptent la nouvelle DA (surfaces, bouton principal aux couleurs du thème avec reflet, micro-interactions) et leur contenu apparaît en cascade.
+- Les pages complètes des modules apparaissent aussi en cascade à l'ouverture.
+
 ## v1.43.0 — 2026-10-01
 
 **Console du bot : motion design**

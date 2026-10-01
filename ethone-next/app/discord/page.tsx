@@ -1112,13 +1112,15 @@ export default function DiscordDashboardPage() {
 
   const botAbsent = botPresenceKnown && selectedGuild != null && !botGuildIds.has(selectedGuild.id);
   const botLoginHref = `${BOT_API_URL}/api/auth/login?return_to=${encodeURIComponent(typeof window !== "undefined" ? `${window.location.origin}/discord` : "")}`;
+  // Styles partagés par tous les panneaux de modules : la DA (surfaces, boutons, micro-interactions) se règle ici.
   const secondaryBtn =
-    "inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3.5 text-sm font-medium text-[var(--text-muted)] transition-colors hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)]";
+    "group/btn inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] px-3.5 text-sm font-medium text-[var(--text-muted)] outline-none transition-[border-color,background-color,color,transform] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.05] hover:text-[var(--text-primary)] active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50";
   const primaryBtn =
-    "inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-emerald-600";
-  const cardCls = "rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4";
-  const gatewayCls = `flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center ${cardCls}`;
-  const calloutCls = "flex flex-col gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4 sm:flex-row sm:items-center sm:justify-between";
+    "group/btn btn-sheen relative inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[var(--inset-radius)] bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)] outline-none transition-[filter,transform] duration-200 hover:brightness-110 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] [&>svg:last-child]:transition-transform [&>svg:last-child]:duration-300 hover:[&>svg:last-child]:translate-x-0.5";
+  const cardCls =
+    "relative rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/45 p-5 shadow-[inset_0_1px_0_rgb(255_255_255/0.03)] transition-[border-color,background-color,transform] duration-300 [transition-timing-function:var(--ease-snap)] hover:border-[var(--text-primary)]/[0.12]";
+  const gatewayCls = `flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center ${cardCls} hover:-translate-y-0.5`;
+  const calloutCls = "flex flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4 sm:flex-row sm:items-center sm:justify-between";
   const inviteBtnCls = "inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#5865F2] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#4752C4]";
 
   const onboardingModal = (
@@ -1441,21 +1443,81 @@ export default function DiscordDashboardPage() {
               )}
 
               {activeMeta && (
-                <div id="module-panel">
-                  <div className="mb-6 flex flex-wrap items-start justify-between gap-3 border-b border-[var(--panel-border)] pb-4">
-                    <div className="flex min-w-0 items-start gap-3">
-                      <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/5 bg-white/[0.05]", MODULE_TINTS[activeMeta.id])}>
-                        <activeMeta.icon className="h-5 w-5" />
-                      </span>
-                      <div className="min-w-0">
-                        <h1 className="text-lg font-bold text-[var(--text-primary)]">{activeMeta.title}</h1>
-                        <p className="mt-0.5 text-sm text-[var(--text-muted)]">{activeMeta.description}</p>
+                <div id="module-panel" className="hub-module-panel">
+                  {(() => {
+                    const panelOn = moduleStatus[activeMeta.id];
+                    const panelPending = pendingModuleIds.has(activeMeta.id);
+                    const fullPage = MODULE_PAGES[activeMeta.id];
+                    return (
+                      <div className="relative mb-7 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6">
+                        <div
+                          aria-hidden
+                          className={cn("pointer-events-none absolute -right-10 -top-16 h-56 w-56 opacity-60", MODULE_TINTS[activeMeta.id])}
+                          style={{ background: "radial-gradient(closest-side, color-mix(in srgb, currentColor 14%, transparent), transparent)" }}
+                        />
+                        <div aria-hidden className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[var(--text-primary)]/20 to-transparent" />
+                        <div className="relative flex flex-wrap items-start justify-between gap-4">
+                          <div className="flex min-w-0 items-start gap-4">
+                            <motion.span
+                              initial={motionReduced ? false : { scale: 0.6, rotate: -12, opacity: 0 }}
+                              animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                              transition={{ type: "spring", stiffness: 320, damping: 20 }}
+                              className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-current/10", MODULE_TINTS[activeMeta.id])}
+                            >
+                              <activeMeta.icon className="h-6 w-6" />
+                            </motion.span>
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] sm:text-2xl">{activeMeta.title}</h1>
+                                {typeof panelOn === "boolean" && (
+                                  <span
+                                    className={cn(
+                                      "inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-colors duration-300",
+                                      panelOn ? "bg-[var(--success)]/15 text-[var(--success)]" : "bg-[var(--text-primary)]/[0.07] text-[var(--text-muted)]"
+                                    )}
+                                  >
+                                    <span className={cn("h-1.5 w-1.5 rounded-full", panelOn ? "bg-[var(--success)]" : "bg-[var(--text-muted)]")} />
+                                    {panelOn ? "Activé" : "Désactivé"}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="mt-1 max-w-2xl text-sm leading-relaxed text-[var(--text-muted)]">{activeMeta.description}</p>
+                            </div>
+                          </div>
+                          <div className="flex shrink-0 flex-wrap items-center gap-2">
+                            {typeof panelOn === "boolean" && (
+                              <button
+                                type="button"
+                                role="switch"
+                                aria-checked={panelOn}
+                                disabled={panelPending}
+                                aria-label={`${panelOn ? "Désactiver" : "Activer"} ${activeMeta.title}`}
+                                title={panelPending ? "Envoi en cours…" : panelOn ? "Désactiver ce module sur ce serveur" : "Activer ce module sur ce serveur"}
+                                onClick={() => handleModuleToggle(activeMeta.id, !panelOn)}
+                                className={cn(
+                                  "relative h-6 w-11 shrink-0 rounded-full outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
+                                  panelPending ? "cursor-wait opacity-60" : "cursor-pointer",
+                                  panelOn ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/15"
+                                )}
+                              >
+                                <motion.span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow" initial={false} animate={{ x: panelOn ? 20 : 0 }} transition={{ type: "spring", stiffness: 450, damping: 35 }} />
+                              </button>
+                            )}
+                            {fullPage && (
+                              <Link href={`${fullPage}?guildId=${selectedGuild.id}`} className={secondaryBtn}>
+                                Page complète
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </Link>
+                            )}
+                            <button type="button" onClick={() => setActiveModule(null)} className={secondaryBtn}>
+                              <ChevronRight className="h-3.5 w-3.5 rotate-180" />
+                              {showAllModules ? "Modules" : "Accueil"}
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <button type="button" onClick={() => setActiveModule(null)} className={secondaryBtn}>
-                      {showAllModules ? "Retour aux modules" : "Retour à l'accueil"}
-                    </button>
-                  </div>
+                    );
+                  })()}
 
                   {/* MODULE 0: Vue d'ensemble */}
                   {activeModule === "overview" && (

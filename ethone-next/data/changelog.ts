@@ -40679,6 +40679,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_46_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_46_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_46_4_de);
 
+const v1_46_5_fr: ChangelogEntry = {
+  version: "v1.46.5",
+  date: "2026-10-01",
+  title: "Barres du haut et du bas : motion design",
+  items: [
+    "Barre du haut : entrée en douceur, nom de la page qui glisse à chaque navigation, champ de recherche qui réagit au survol (reflet, icône qui s'anime, halo) et outils dont l'icône grossit au survol avec un effet d'appui.",
+    "Barre du bas : entrée en douceur, valeurs (ping, synchronisation…) qui défilent quand elles changent, pastille « Opérationnel » qui respire, menu du profil animé.",
+  ],
+};
+
+const v1_46_5_en: ChangelogEntry = {
+  version: "v1.46.5",
+  date: "2026-10-01",
+  title: "Top and bottom bars: motion design",
+  items: [
+    "Top bar: smooth entrance, page name that slides on every navigation, search field that reacts on hover (sheen, animated icon, halo) and tools whose icon grows on hover with a press effect.",
+    "Bottom bar: smooth entrance, values (ping, sync…) that roll when they change, breathing \"Operational\" dot, animated profile menu.",
+  ],
+};
+
+const v1_46_5_es: ChangelogEntry = {
+  version: "v1.46.5",
+  date: "2026-10-01",
+  title: "Barras superior e inferior: motion design",
+  items: [
+    "Barras superior e inferior animadas: entrada suave, breadcrumb animado, búsqueda reactiva y valores que se desplazan al cambiar.",
+  ],
+};
+
+const v1_46_5_de: ChangelogEntry = {
+  version: "v1.46.5",
+  date: "2026-10-01",
+  title: "Obere und untere Leiste: Motion Design",
+  items: [
+    "Animierte obere und untere Leiste: sanfter Einstieg, animierter Breadcrumb, reaktive Suche und rollende Werte.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_46_5_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_46_5_en);
+CHANGELOG_BY_LANG.es.unshift(v1_46_5_es);
+CHANGELOG_BY_LANG.de.unshift(v1_46_5_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

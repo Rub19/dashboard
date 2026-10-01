@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
-import { EASE_DRAWER } from "@/lib/ease";
+import { EASE_DRAWER, EASE_SNAP } from "@/lib/ease";
+import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { hapticLightImpact } from "@/lib/haptics";
 import {
   CheckCircle2,
@@ -172,6 +173,7 @@ type StatusPillProps = {
 };
 
 function StatusPill({ icon, label, value, title, children, onClick, tone = "default" }: StatusPillProps) {
+  const { reduced } = useMotionPref();
   const toneClass = {
     default: "hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] text-[var(--text-primary)]",
     success: "hover:bg-[var(--success)]/[0.1] hover:text-[var(--success)] text-[var(--success)]",
@@ -185,13 +187,28 @@ function StatusPill({ icon, label, value, title, children, onClick, tone = "defa
       type="button"
       onClick={onClick}
       title={title}
-      className={`group flex min-w-0 items-center gap-1.5 rounded-lg px-2 py-0.5 text-xs transition-colors ${
-        onClick ? `${toneClass} cursor-pointer` : "text-[var(--text-muted)]"
+      className={`group flex min-w-0 items-center gap-1.5 rounded-lg px-2 py-0.5 text-xs outline-none transition-[background-color,color,transform] duration-200 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 ${
+        onClick ? `${toneClass} cursor-pointer active:scale-95` : "text-[var(--text-muted)]"
       }`}
     >
-      {icon && <span className="shrink-0">{icon}</span>}
+      {icon && <span className="shrink-0 transition-transform duration-300 [transition-timing-function:var(--ease-snap)] group-hover:scale-110">{icon}</span>}
       {label && <span className="hidden whitespace-nowrap opacity-60 md:inline">{label}</span>}
-      {value && <span className="truncate font-medium">{value}</span>}
+      {value && (
+        <span className="relative min-w-0 overflow-hidden">
+          <AnimatePresence mode="popLayout" initial={false}>
+            <motion.span
+              key={value}
+              initial={reduced ? false : { y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={reduced ? undefined : { y: -10, opacity: 0 }}
+              transition={{ duration: 0.28, ease: EASE_SNAP }}
+              className="block truncate font-medium tabular-nums"
+            >
+              {value}
+            </motion.span>
+          </AnimatePresence>
+        </span>
+      )}
       {children}
     </button>
   );
@@ -209,6 +226,7 @@ export default function StatusBar() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { reduced } = useMotionPref();
 
   const userLabel = displayName || "Personnel";
   const sessionRole = useSessionRole();
@@ -251,10 +269,13 @@ export default function StatusBar() {
       data-v8-status-bar
       data-status-bar
       className="fixed bottom-0 right-0 z-0 h-10 select-none border-t border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] px-4 text-xs text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)] pointer-events-none"
+      initial={reduced ? false : { y: 16, opacity: 0 }}
       animate={{
         left: open && !isMobile ? "var(--sidebar-width)" : "0rem",
+        y: 0,
+        opacity: 1,
       }}
-      transition={{ duration: 0.32, ease: EASE_DRAWER }}
+      transition={{ duration: 0.32, ease: EASE_DRAWER, y: { duration: 0.5, ease: EASE_SNAP }, opacity: { duration: 0.5 } }}
     >
       <div className="flex h-full w-full items-center justify-between">
         <div className="pointer-events-auto flex min-w-0 items-center gap-2 px-0 py-0">
@@ -347,8 +368,16 @@ export default function StatusBar() {
               value={userLabel}
               onClick={() => setMenuOpen((v) => !v)}
             />
+            <AnimatePresence>
             {menuOpen && (
-              <div className="absolute bottom-full left-1/2 z-40 mb-2 w-40 -translate-x-1/2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 shadow-2xl backdrop-blur-[var(--panel-blur)]">
+              <motion.div
+                initial={reduced ? false : { opacity: 0, y: 6, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={reduced ? undefined : { opacity: 0, y: 4, scale: 0.97, transition: { duration: 0.12 } }}
+                transition={{ duration: 0.2, ease: EASE_SNAP }}
+                style={{ x: "-50%" }}
+                className="absolute bottom-full left-1/2 z-40 mb-2 w-40 origin-bottom rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 shadow-2xl backdrop-blur-[var(--panel-blur)]"
+              >
                 <button
                   type="button"
                   onClick={() => {
@@ -368,12 +397,13 @@ export default function StatusBar() {
                   <LogOut className="h-3.5 w-3.5" />
                   Déconnexion
                 </button>
-              </div>
+              </motion.div>
             )}
+            </AnimatePresence>
           </div>
 
           <StatusPill
-            icon={systemOk ? <Circle className="h-3.5 w-3.5 fill-[var(--success)] text-[var(--success)]" /> : <AlertCircle className="h-3.5 w-3.5 text-[var(--danger)]" />}
+            icon={systemOk ? <Circle className="status-breathe h-3.5 w-3.5 fill-[var(--success)] text-[var(--success)]" /> : <AlertCircle className="h-3.5 w-3.5 text-[var(--danger)]" />}
             value={systemOk ? "Opérationnel" : `${alertCount} alerte${alertCount > 1 ? "s" : ""}`}
             title={alertTitle}
             tone={systemOk ? "success" : "error"}

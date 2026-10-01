@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.46.5 — 2026-10-01
+
+**Barres du haut et du bas : motion design**
+
+- Barre du haut : entrée en douceur, nom de la page qui glisse à chaque navigation, champ de recherche qui réagit au survol (reflet, icône qui s'anime, halo) et outils dont l'icône grossit au survol avec un effet d'appui.
+- Barre du bas : entrée en douceur, valeurs (ping, synchronisation…) qui défilent quand elles changent, pastille « Opérationnel » qui respire, menu du profil animé.
+
 ## v1.46.4 — 2026-10-01
 
 **Polices au choix, Dynamic Island et retour depuis le bot**

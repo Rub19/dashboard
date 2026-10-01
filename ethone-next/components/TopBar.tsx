@@ -35,6 +35,9 @@ import { useFocus } from "@/components/FocusProvider";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import { THEME_DEFINITIONS, resolvePremiumTheme } from "@/lib/theme-engine";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { EASE_SNAP } from "@/lib/ease";
+import { useMotionPref } from "@/lib/hooks/useMotionPref";
 
 const UserProfileDropdown = dynamic(() => import("@/components/UserProfileDropdown"), {
   ssr: false,
@@ -346,9 +349,13 @@ function FeedbackButton() {
 
 function TopBar() {
   const { home, page } = useBreadcrumb();
+  const { reduced } = useMotionPref();
 
   return (
-    <header
+    <motion.header
+      initial={reduced ? false : { opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: EASE_SNAP }}
       data-app-chrome
       data-v8-topbar
       className="pointer-events-none relative z-40 shrink-0 select-none border-b border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/80 px-4 pt-safe backdrop-blur-[var(--panel-blur)] transition-all"
@@ -389,13 +396,24 @@ function TopBar() {
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)] max-w-[140px] sm:max-w-[200px] lg:max-w-[260px]">
             <Link
               href="/"
-              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors shrink-0"
+              className="rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               {home}
             </Link>
             <ChevronRight className="h-3 w-3 text-[var(--text-muted)]/50 shrink-0" />
-            <span className="font-bold text-[var(--text-primary)] truncate">
-              {page}
+            <span className="relative min-w-0 overflow-hidden">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={page}
+                  initial={reduced ? false : { opacity: 0, y: 8, filter: "blur(3px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={reduced ? undefined : { opacity: 0, y: -8, filter: "blur(3px)", transition: { duration: 0.12 } }}
+                  transition={{ duration: 0.3, ease: EASE_SNAP }}
+                  className="block font-bold text-[var(--text-primary)] truncate"
+                >
+                  {page}
+                </motion.span>
+              </AnimatePresence>
             </span>
           </nav>
         </div>
@@ -435,7 +453,7 @@ function TopBar() {
           <UserProfileDropdown dataTestId="user-profile-trigger-desktop" />
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 }
 

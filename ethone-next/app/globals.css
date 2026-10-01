@@ -182,12 +182,53 @@ html[data-color-scheme="light"] {
   font-size: 0.8125rem;
   color: var(--text-muted);
   cursor: pointer;
-  transition: border-color 120ms ease, background-color 120ms ease, color 120ms ease;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 200ms var(--ease-snap), background-color 200ms var(--ease-snap), color 200ms var(--ease-snap), box-shadow 200ms var(--ease-snap), transform 150ms var(--ease-snap);
 }
 .ethone-search-field:hover {
   border-color: color-mix(in srgb, var(--accent-primary, #6366f1) 45%, transparent);
   background: var(--menu-hover);
   color: var(--text-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-primary, #6366f1) 10%, transparent);
+}
+.ethone-search-field:active { transform: scale(0.99); }
+.ethone-search-field:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-primary, #6366f1) 35%, transparent); }
+.ethone-search-field > svg { transition: transform 300ms var(--ease-snap), color 200ms ease; }
+.ethone-search-field:hover > svg { color: var(--accent-primary); transform: scale(1.1) rotate(-8deg); }
+.ethone-search-field > kbd { transition: color 200ms ease, background-color 200ms ease; }
+.ethone-search-field:hover > kbd { color: var(--text-primary); }
+/* Reflet discret qui traverse le champ au survol */
+.ethone-search-field::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 35%, color-mix(in srgb, var(--text-primary) 7%, transparent) 50%, transparent 65%);
+  transform: translateX(-110%);
+  transition: transform 0.8s var(--ease-snap);
+}
+.ethone-search-field:hover::after { transform: translateX(110%); }
+
+/* Outils de la barre du haut : icône qui grossit au survol, appui, focus clavier visible. */
+.ethone-toolbar button svg,
+.ethone-toolbar a svg { transition: transform 300ms var(--ease-snap); }
+.ethone-toolbar button:hover svg,
+.ethone-toolbar a:hover svg { transform: scale(1.12); }
+.ethone-toolbar button:active,
+.ethone-toolbar a:active { transform: scale(0.94); }
+.ethone-toolbar button:focus-visible,
+.ethone-toolbar a:focus-visible { outline: none; box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-primary) 55%, transparent) !important; }
+
+/* Barre du bas : pastille « Opérationnel » qui respire. */
+@keyframes status-breathe {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 45%, transparent); }
+  50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 0%, transparent); }
+}
+.status-breathe { border-radius: 9999px; animation: status-breathe 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .ethone-search-field::after { display: none; }
+  .status-breathe { animation: none; }
 }
 /* Barre latérale : intitulé de section (visible barre ouverte) */
 .ethone-nav-label {

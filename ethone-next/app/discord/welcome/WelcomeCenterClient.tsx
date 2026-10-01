@@ -810,12 +810,12 @@ export function WelcomeCenterClient() {
         <div className="flex items-center gap-3">
           <Link
             href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-            className="flex h-9 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)] transition-all cursor-pointer"
+            className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-3.5 w-3.5" />
             <span>Retour Discord</span>
           </Link>
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-600 shadow-sm">
+          <div className="flex h-12 w-12 items-center justify-center rounded-[var(--inset-radius)] bg-teal-600 icon-pop">
             <Sparkles className="h-6 w-6 text-[var(--text-primary)]" />
           </div>
           <div>

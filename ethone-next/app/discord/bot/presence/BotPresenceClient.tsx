@@ -544,7 +544,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       <div className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl border border-emerald-500/30 flex items-center justify-center bg-[var(--surface-raised)]/40">
+            <div className="w-12 h-12 rounded-[var(--inset-radius)] border border-emerald-500/30 flex items-center justify-center bg-[var(--surface-raised)]/40 icon-pop">
               <Bot className="w-6 h-6 text-emerald-300" />
             </div>
             <div>

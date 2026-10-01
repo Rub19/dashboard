@@ -146,8 +146,8 @@ export default function BackupCompareClient() {
     <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)]">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
-          <Link href={`/discord/backups${guildQuery}`} className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Retour aux sauvegardes
+          <Link href={`/discord/backups${guildQuery}`} className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer">
+            <ArrowLeft className="h-3.5 w-3.5" /> Retour aux sauvegardes
           </Link>
           <span className="text-xs text-[var(--text-muted)] flex items-center gap-1.5"><GitCompare className="w-3.5 h-3.5 text-emerald-300" /> Comparateur de diff</span>
         </div>

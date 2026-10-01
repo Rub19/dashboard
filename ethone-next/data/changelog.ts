@@ -40501,6 +40501,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_46_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_46_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_46_0_de);
 
+const v1_46_1_fr: ChangelogEntry = {
+  version: "v1.46.1",
+  date: "2026-10-01",
+  title: "Pages des modules du bot : en-têtes harmonisés",
+  items: [
+    "Les 39 pages restantes (Tickets, Bienvenue, Modération, Rôles, Sondages, Formulaires, Événements, Invitations, Vocal, Journal d'audit…) ont des en-têtes harmonisés : tous les boutons de retour adoptent le même style (avec ou sans libellé), et la flèche avance au survol.",
+    "Les icônes des titres deviennent des tuiles à la couleur du module, qui arrivent avec un léger rebond ; les fils d'Ariane verts suivent maintenant le thème.",
+  ],
+};
+
+const v1_46_1_en: ChangelogEntry = {
+  version: "v1.46.1",
+  date: "2026-10-01",
+  title: "Bot module pages: unified headers",
+  items: [
+    "The 39 remaining pages (Tickets, Welcome, Moderation, Roles, Polls, Forms, Events, Invites, Voice, Audit log…) now have unified headers: every back button shares one style (with or without a label) and its arrow nudges on hover.",
+    "Title icons become tiles tinted with the module's colour that land with a slight bounce; green breadcrumbs now follow the theme.",
+  ],
+};
+
+const v1_46_1_es: ChangelogEntry = {
+  version: "v1.46.1",
+  date: "2026-10-01",
+  title: "Páginas de módulos del bot: encabezados unificados",
+  items: [
+    "Botones de retorno unificados e iconos de título animados en las 39 páginas restantes.",
+  ],
+};
+
+const v1_46_1_de: ChangelogEntry = {
+  version: "v1.46.1",
+  date: "2026-10-01",
+  title: "Bot-Modulseiten: vereinheitlichte Kopfzeilen",
+  items: [
+    "Einheitliche Zurück-Buttons und animierte Titelsymbole auf den 39 verbleibenden Seiten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_46_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_46_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_46_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_46_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

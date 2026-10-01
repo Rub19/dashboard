@@ -159,7 +159,7 @@ export default function OverviewClient() {
         {/* Header */}
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="flex items-center gap-3">
-            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/15 p-2.5 text-emerald-400">
+            <div className="rounded-[var(--inset-radius)] border border-emerald-500/30 bg-emerald-500/15 p-2.5 text-emerald-400 icon-pop">
               <LayoutDashboard className="h-6 w-6" />
             </div>
             <div>

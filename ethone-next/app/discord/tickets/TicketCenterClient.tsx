@@ -779,7 +779,7 @@ export function TicketCenterClient() {
       {/* Top Bar / Guild Selector */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 shadow-sm">
+          <div className="flex h-12 w-12 items-center justify-center rounded-[var(--inset-radius)] bg-emerald-600 icon-pop">
             <Ticket className="h-6 w-6 text-[var(--text-primary)]" />
           </div>
           <div>

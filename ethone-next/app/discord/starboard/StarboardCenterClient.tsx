@@ -359,10 +359,10 @@ export default function StarboardCenterClient() {
             className="grid h-9 w-9 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             title="Retour au hub Discord"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="h-4 w-4" />
           </Link>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[var(--surface-raised)]/50 border border-[var(--panel-border)] flex items-center justify-center text-[var(--text-muted)]">
+            <div className="w-9 h-9 rounded-[var(--inset-radius)] bg-[var(--surface-raised)]/50 border border-[var(--panel-border)] flex items-center justify-center text-[var(--text-muted)] icon-pop">
               <Star className="w-5 h-5" />
             </div>
             <div>

@@ -153,8 +153,8 @@ export default function BackupSettingsClient() {
     <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)]">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <Link href={`/discord/backups${guildQuery}`} className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Retour aux sauvegardes
+          <Link href={`/discord/backups${guildQuery}`} className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer">
+            <ArrowLeft className="h-3.5 w-3.5" /> Retour aux sauvegardes
           </Link>
           <div className="flex items-center gap-2">
             <button onClick={load} disabled={loading} className="px-3 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 cursor-pointer disabled:opacity-50">
@@ -169,7 +169,7 @@ export default function BackupSettingsClient() {
 
         <div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-2.5">
-            <Settings className="w-6 h-6 text-emerald-300" /> Paramètres de sauvegarde & rétention
+            <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-emerald-300"><Settings className="h-5 w-5" /></span> Paramètres de sauvegarde & rétention
           </h1>
           <p className="text-sm text-[var(--text-muted)] mt-1">
             Planification automatique, conservation et garde-fous de restauration.

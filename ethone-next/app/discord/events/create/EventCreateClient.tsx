@@ -315,9 +315,9 @@ export default function EventCreateClient() {
         {/* Navigation & Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)] mb-8">
           <div>
-            <div className="flex items-center gap-2 mb-1.5 text-xs text-emerald-400 font-semibold uppercase tracking-wider">
-              <Link href="/discord/events" className="hover:underline flex items-center gap-1">
-                <ArrowLeft className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-2 mb-1.5 text-xs text-[var(--text-muted)] font-semibold uppercase tracking-wider">
+              <Link href="/discord/events" className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer">
+                <ArrowLeft className="h-3.5 w-3.5" />
                 Retour aux Événements
               </Link>
             </div>

@@ -289,7 +289,7 @@ export default function InvitesCenterClient() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-[var(--panel-border)]">
         <div>
           <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-[var(--text-primary)] shadow-sm bg-[var(--surface-raised)]/40">
+            <div className="w-10 h-10 rounded-[var(--inset-radius)] flex items-center justify-center text-[var(--text-primary)] bg-[var(--surface-raised)]/40 icon-pop">
               <UserPlus className="w-5 h-5" />
             </div>
             <div>
@@ -345,9 +345,9 @@ export default function InvitesCenterClient() {
           {/* Back to Bot Hub */}
           <Link
             href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
-            className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition cursor-pointer"
+            className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <ArrowLeft className="h-3.5 w-3.5" />
             <span>Retour Discord</span>
           </Link>
         </div>

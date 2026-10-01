@@ -144,7 +144,7 @@ export default function BackupDetailClient() {
   if (error || !snapshot) {
     return (
       <div className="w-full px-4 py-6 sm:px-6">
-        <Link href={`/discord/backups${guildQuery}`} className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)]"><ArrowLeft className="w-4 h-4" /> Retour aux sauvegardes</Link>
+        <Link href={`/discord/backups${guildQuery}`} className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"><ArrowLeft className="h-3.5 w-3.5" /> Retour aux sauvegardes</Link>
         <div className="mt-6 bg-[var(--surface-raised)]/40 border border-rose-500/30 rounded-2xl p-6 text-xs text-rose-300 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> {error}</div>
       </div>
     );
@@ -156,7 +156,7 @@ export default function BackupDetailClient() {
     <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)]">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <Link href={`/discord/backups${guildQuery}`} className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"><ArrowLeft className="w-4 h-4" /> Retour aux sauvegardes</Link>
+          <Link href={`/discord/backups${guildQuery}`} className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"><ArrowLeft className="h-3.5 w-3.5" /> Retour aux sauvegardes</Link>
           <div className="flex items-center gap-2 flex-wrap">
             <button onClick={toggleProtect} className={cn("px-3 py-1.5 rounded-lg border text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer", snapshot.isProtected ? "bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border-[var(--panel-border)] hover:text-[var(--text-primary)]")}>
               {snapshot.isProtected ? <><Lock className="w-3.5 h-3.5" /> Protégé</> : <><Unlock className="w-3.5 h-3.5" /> Non protégé</>}

@@ -208,13 +208,13 @@ export default function VoiceSettingsClient() {
         <div>
           <Link
             href={`/discord/voice${guildId ? `?guildId=${guildId}` : ""}`}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+            className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Retour aux Salons Vocaux</span>
           </Link>
           <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)] flex items-center gap-2 mt-2">
-            <Sliders className="h-6 w-6 text-emerald-400" />
+            <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-emerald-400"><Sliders className="h-5 w-5" /></span>
             <span>Configuration Personal Voice</span>
           </h1>
           <p className="text-xs text-[var(--text-muted)] mt-1">

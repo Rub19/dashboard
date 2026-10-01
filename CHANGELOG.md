@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.46.1 — 2026-10-01
+
+**Pages des modules du bot : en-têtes harmonisés**
+
+- Les 39 pages restantes (Tickets, Bienvenue, Modération, Rôles, Sondages, Formulaires, Événements, Invitations, Vocal, Journal d'audit…) ont des en-têtes harmonisés : tous les boutons de retour adoptent le même style (avec ou sans libellé), et la flèche avance au survol.
+- Les icônes des titres deviennent des tuiles à la couleur du module, qui arrivent avec un léger rebond ; les fils d'Ariane verts suivent maintenant le thème.
+
 ## v1.46.0 — 2026-10-01
 
 **Pages des modules du bot : nouvelle DA**

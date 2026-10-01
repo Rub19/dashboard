@@ -62,6 +62,8 @@ const BANNER_CANDIDATES = [
   path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'assets', 'etho-banner.png'),
 ];
 const BANNER_FILE = BANNER_CANDIDATES.find((candidate) => fs.existsSync(candidate)) ?? BANNER_CANDIDATES[0];
+/** Bannière animée (GIF) à côté de la PNG ; la PNG reste le repli si Discord refuse le GIF. */
+const ANIMATED_BANNER_FILE = BANNER_FILE.replace(/etho-banner\.png$/, 'etho-banner-animated.gif');
 
 const AVATAR_CANDIDATES = [
   path.resolve(process.cwd(), 'assets', 'etho-avatar-animated.gif'),
@@ -112,13 +114,21 @@ async function syncBotProfile(client: Client<true>): Promise<void> {
   const state = readProfileState();
 
   try {
-    const image = fs.readFileSync(BANNER_FILE);
+    const animated = fs.existsSync(ANIMATED_BANNER_FILE);
+    const image = fs.readFileSync(animated ? ANIMATED_BANNER_FILE : BANNER_FILE);
     const hash = createHash('sha1').update(image).digest('hex');
     if (state.bannerHash !== hash) {
-      await client.user.setBanner(toDataUri(image, 'image/png'));
+      try {
+        await client.user.setBanner(toDataUri(image, animated ? 'image/gif' : 'image/png'));
+        logger.success(`[Profil] Bannière du bot mise à jour${animated ? ' (animée)' : ''}.`);
+      } catch (err) {
+        if (!animated) throw err;
+        logger.warn('[Profil] Bannière animée refusée par Discord, repli sur la PNG :', err);
+        await client.user.setBanner(toDataUri(fs.readFileSync(BANNER_FILE), 'image/png'));
+        logger.success('[Profil] Bannière du bot mise à jour (statique).');
+      }
       state.bannerHash = hash;
       writeProfileState(state);
-      logger.success('[Profil] Bannière du bot mise à jour.');
     }
   } catch (err) {
     logger.warn('[Profil] Impossible de mettre à jour la bannière du bot :', err);

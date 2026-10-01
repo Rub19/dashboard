@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.46.3 — 2026-10-01
+
+**Nouvel avatar et bannière animés d'Etho**
+
+- Etho a un nouvel avatar animé : une traînée lumineuse circule calmement autour de l'anneau et un reflet traverse le « E » (boucle de 4 s, sans à-coup).
+- La bannière du bot est maintenant animée : reflet sur ETHO, lumière qui parcourt la barre et icônes des modules qui flottent en vague. Si Discord refuse la version animée, la version fixe est utilisée.
+- Le nouvel avatar est aussi utilisé dans la console du bot sur le site.
+
 ## v1.46.2 — 2026-10-01
 
 **Pages des modules du bot : boutons restants**

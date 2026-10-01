@@ -40585,6 +40585,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_46_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_46_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_46_2_de);
 
+const v1_46_3_fr: ChangelogEntry = {
+  version: "v1.46.3",
+  date: "2026-10-01",
+  title: "Nouvel avatar et bannière animés d'Etho",
+  items: [
+    "Etho a un nouvel avatar animé : une traînée lumineuse circule calmement autour de l'anneau et un reflet traverse le « E » (boucle de 4 s, sans à-coup).",
+    "La bannière du bot est maintenant animée : reflet sur ETHO, lumière qui parcourt la barre et icônes des modules qui flottent en vague. Si Discord refuse la version animée, la version fixe est utilisée.",
+    "Le nouvel avatar est aussi utilisé dans la console du bot sur le site.",
+  ],
+};
+
+const v1_46_3_en: ChangelogEntry = {
+  version: "v1.46.3",
+  date: "2026-10-01",
+  title: "New animated Etho avatar and banner",
+  items: [
+    "Etho has a new animated avatar: a streak of light calmly travels around the ring and a sheen crosses the \"E\" (seamless 4 s loop).",
+    "The bot's banner is now animated: sheen across ETHO, a light running along the bar and module icons floating in a wave. If Discord rejects the animated version, the static one is used.",
+    "The new avatar is also used in the bot console on the site.",
+  ],
+};
+
+const v1_46_3_es: ChangelogEntry = {
+  version: "v1.46.3",
+  date: "2026-10-01",
+  title: "Nuevo avatar y banner animados de Etho",
+  items: [
+    "Etho tiene un nuevo avatar animado y un banner animado, también usados en la consola del sitio.",
+  ],
+};
+
+const v1_46_3_de: ChangelogEntry = {
+  version: "v1.46.3",
+  date: "2026-10-01",
+  title: "Neuer animierter Avatar und Banner für Etho",
+  items: [
+    "Etho hat einen neuen animierten Avatar und ein animiertes Banner, auch in der Konsole der Website.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_46_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_46_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_46_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_46_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -51,7 +51,7 @@ export default function AuthScreen({ children }: { children: ReactNode }) {
       </motion.header>
 
       <main
-        className={`relative z-10 grid flex-1 grid-cols-[minmax(0,1fr)] items-center gap-12 py-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] xl:gap-16 2xl:grid-cols-[minmax(0,1fr)_minmax(0,460px)] ${CONTAINER}`}
+        className={`relative z-10 grid flex-1 grid-cols-[minmax(0,1fr)] content-center overflow-x-clip items-center gap-12 pb-[6vh] pt-2 lg:grid-cols-[minmax(0,35rem)_440px] lg:justify-center lg:gap-x-12 2xl:grid-cols-[minmax(0,38rem)_460px] 2xl:gap-x-14 ${CONTAINER}`}
       >
         <AuthShowcase />
         <div className="flex w-full justify-center lg:justify-end">{children}</div>

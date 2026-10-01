@@ -40264,6 +40264,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_42_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_42_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_42_0_de);
 
+const v1_42_1_fr: ChangelogEntry = {
+  version: "v1.42.1",
+  date: "2026-10-01",
+  title: "Connexion : polish visuel",
+  items: [
+    "La présentation et le formulaire forment un ensemble centré, plus rapproché et légèrement remonté dans l'écran.",
+    "Les six modules deviennent une liste légère qui prolonge le texte, avec un fin trait d'accent au-dessus du titre et une description plus étroite et lisible.",
+    "Le formulaire gagne en profondeur (surface éclairée par le haut, reflet discret), espacements harmonisés jusqu'à « Créer un compte ».",
+    "Micro-interactions : champs qui s'éclaircissent au survol, flèche du bouton qui avance, modules qui réagissent au survol. Fond un peu plus profond, toujours sans grille ni forme coupée.",
+  ],
+};
+
+const v1_42_1_en: ChangelogEntry = {
+  version: "v1.42.1",
+  date: "2026-10-01",
+  title: "Sign-in: visual polish",
+  items: [
+    "The presentation and the form now form one centred group, closer together and slightly raised on screen.",
+    "The six modules become a light list continuing the text, with a thin accent line above the headline and a narrower, more readable description.",
+    "The form gains depth (top-lit surface, subtle highlight), with harmonised spacing down to \"Create an account\".",
+    "Micro-interactions: fields brighten on hover, the button arrow nudges forward, modules respond on hover. Slightly deeper background, still without grid or cut-off shapes.",
+  ],
+};
+
+const v1_42_1_es: ChangelogEntry = {
+  version: "v1.42.1",
+  date: "2026-10-01",
+  title: "Inicio de sesión: pulido visual",
+  items: [
+    "Composición centrada y más compacta, módulos en una lista ligera, formulario con más profundidad y microinteracciones sutiles.",
+  ],
+};
+
+const v1_42_1_de: ChangelogEntry = {
+  version: "v1.42.1",
+  date: "2026-10-01",
+  title: "Anmeldung: visueller Feinschliff",
+  items: [
+    "Zentrierte, kompaktere Komposition, Module als leichte Liste, Formular mit mehr Tiefe und dezente Mikrointeraktionen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_42_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_42_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_42_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_42_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

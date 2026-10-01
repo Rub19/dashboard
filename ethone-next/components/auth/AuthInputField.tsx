@@ -28,10 +28,10 @@ const AuthInputField = forwardRef<HTMLInputElement, AuthInputFieldProps>(
             ref={ref}
             disabled={disabled}
             className={cn(
-              "auth-input h-14 w-full rounded-[var(--inset-radius)] border bg-[var(--text-primary)]/[0.035] text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all duration-150 [transition-timing-function:var(--ease-snap)] outline-none",
+              "auth-input h-[3.25rem] w-full rounded-[var(--inset-radius)] border bg-[var(--text-primary)]/[0.035] text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all duration-150 [transition-timing-function:var(--ease-snap)] outline-none",
               leftIcon ? "pl-12" : "pl-4",
               rightElement ? "pr-12" : "pr-4",
-              "border-[var(--panel-border)] hover:border-[var(--input-border-hover)]",
+              "border-[var(--panel-border)] hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.05]",
               "focus:border-[var(--accent-primary)]/60 focus:bg-[var(--text-primary)]/[0.06] focus:ring-4 focus:ring-[var(--accent-primary)]/15",
               error && "border-[var(--danger)]/70 text-[var(--danger)] focus:border-[var(--danger)] focus:ring-[var(--danger)]/15",
               disabled && "opacity-50 cursor-not-allowed",

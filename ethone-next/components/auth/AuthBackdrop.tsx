@@ -12,6 +12,7 @@ const PARTICLES: [number, number, number, number, number, number, number][] = [
   [12, 68, 1.5, 0.18, 22, 0, 8], [24, 34, 1, 0.14, 26, 6, -6], [37, 82, 1, 0.16, 24, 12, 10],
   [55, 18, 1.5, 0.14, 28, 4, -8], [66, 58, 1, 0.18, 23, 9, 6], [78, 28, 1, 0.14, 27, 15, -10],
   [88, 74, 1.5, 0.16, 25, 3, 8], [46, 52, 1, 0.12, 30, 18, -6],
+  [6, 24, 1, 0.12, 27, 7, 6], [31, 92, 1.5, 0.14, 24, 13, -8], [72, 12, 1, 0.12, 29, 2, 10], [94, 46, 1, 0.14, 26, 16, -6],
 ];
 
 const GRAIN =
@@ -23,6 +24,8 @@ const LIGHT = [
   `radial-gradient(42% 34% at 50% 6%, ${mix("--accent-primary", 11)}, transparent)`,
   `radial-gradient(34% 30% at 74% 42%, ${mix("--accent-primary", 7)}, transparent)`,
   `radial-gradient(38% 34% at 26% 66%, ${mix("--accent-secondary", 6)}, transparent)`,
+  `radial-gradient(30% 22% at 82% 86%, ${mix("--accent-secondary", 5)}, transparent)`,
+  `radial-gradient(60% 30% at 50% 108%, ${mix("--text-primary", 3)}, transparent)`,
 ].join(", ");
 
 /** Auth backdrop: diffuse light pooled in soft ellipses on an oversized,

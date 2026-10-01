@@ -50,12 +50,13 @@ export default function AuthCardShell({ icon, title, subtitle, children, below, 
             light={success ? "--success" : "--accent-primary"}
             speed={9}
             className="shadow-[0_40px_90px_-40px_rgb(0_0_0/0.75),0_12px_30px_-18px_rgb(0_0_0/0.5)]"
-            innerClassName="backdrop-blur-2xl"
+            innerClassName="backdrop-blur-2xl shadow-[inset_0_1px_0_rgb(255_255_255/0.05)]"
+            innerStyle={{ background: "linear-gradient(180deg, color-mix(in srgb, var(--text-primary) 4%, var(--bg-card, var(--bg-main))) 0%, color-mix(in srgb, var(--bg-card, var(--bg-main)) 96%, transparent) 38%)" }}
           >
             <div aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[var(--text-primary)]/30 to-transparent" />
 
             {/* Header */}
-            <div className="flex items-start gap-4 px-6 pb-5 pt-6 sm:px-8 sm:pt-7">
+            <div className="flex items-start gap-4 px-6 pb-5 pt-6 sm:px-8">
               <div
                 className="relative grid h-12 w-12 shrink-0 place-items-center rounded-[var(--inset-radius)] border transition-colors duration-500"
                 style={{
@@ -99,7 +100,7 @@ export default function AuthCardShell({ icon, title, subtitle, children, below, 
       </motion.div>
 
       {below && (
-        <motion.div variants={revealUp} className="mt-6 w-full text-center text-[15px]">
+        <motion.div variants={revealUp} className="mt-7 w-full text-center text-[15px]">
           {below}
         </motion.div>
       )}

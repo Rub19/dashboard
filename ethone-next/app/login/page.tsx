@@ -414,7 +414,7 @@ export default function LoginPage() {
         >
           {/* Mode Selector Tabs (only when in root mode or register) */}
           {!(mode === "otp" && otpStep === "code") && (
-            <div className="mb-6">
+            <div className="mb-5">
               <div className="relative grid grid-cols-3 rounded-[calc(var(--inset-radius)+4px)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.035] p-1">
                 {(["password", "otp", "register"] as AuthMode[]).map((m) => {
                   const active = mode === m;
@@ -552,8 +552,8 @@ export default function LoginPage() {
                   variant={isSuccess ? "success" : "primary"}
                   isLoading={isLoading}
                   disabled={isSuccess}
-                  className="btn-sheen shadow-none! mt-2 h-14 w-full rounded-[var(--inset-radius)] text-base"
-                  rightIcon={!isLoading && !isSuccess ? <ArrowRight className="h-5 w-5" /> : undefined}
+                  className="group btn-sheen shadow-none! mt-2 h-[3.25rem] w-full rounded-[var(--inset-radius)] text-base"
+                  rightIcon={!isLoading && !isSuccess ? <ArrowRight className="h-5 w-5 transition-transform duration-300 [transition-timing-function:var(--ease-snap)] group-hover:translate-x-1" /> : undefined}
                   leftIcon={isSuccess ? <Check className="h-5 w-5" /> : undefined}
                 >
                   {isLoading
@@ -614,8 +614,8 @@ export default function LoginPage() {
                   variant="primary"
                   isLoading={isLoading}
                   disabled={isSuccess}
-                  className="btn-sheen shadow-none! mt-2 h-14 w-full rounded-[var(--inset-radius)] text-base"
-                  rightIcon={!isLoading ? <ArrowRight className="h-5 w-5" /> : undefined}
+                  className="group btn-sheen shadow-none! mt-2 h-[3.25rem] w-full rounded-[var(--inset-radius)] text-base"
+                  rightIcon={!isLoading ? <ArrowRight className="h-5 w-5 transition-transform duration-300 [transition-timing-function:var(--ease-snap)] group-hover:translate-x-1" /> : undefined}
                 >
                   {isLoading ? i18n("otpSendLoading", "Envoi du code...") : i18n("otpSend", "Recevoir le code de connexion")}
                 </Button>
@@ -689,7 +689,7 @@ export default function LoginPage() {
                   variant={isSuccess ? "success" : "primary"}
                   isLoading={authState === "verifying"}
                   disabled={isSuccess || code.length !== 6}
-                  className="btn-sheen shadow-none! mt-2 h-14 w-full rounded-[var(--inset-radius)] text-base"
+                  className="group btn-sheen shadow-none! mt-2 h-[3.25rem] w-full rounded-[var(--inset-radius)] text-base"
                   leftIcon={isSuccess ? <Check className="h-5 w-5" /> : !isLoading ? <ShieldCheck className="h-5 w-5" /> : undefined}
                 >
                   {authState === "verifying"
@@ -795,7 +795,7 @@ export default function LoginPage() {
                   variant={isSuccess ? "success" : "primary"}
                   isLoading={isLoading}
                   disabled={isSuccess}
-                  className="btn-sheen shadow-none! mt-3 h-14 w-full rounded-[var(--inset-radius)] text-base"
+                  className="group btn-sheen shadow-none! mt-3 h-[3.25rem] w-full rounded-[var(--inset-radius)] text-base"
                   leftIcon={isSuccess ? <Check className="h-5 w-5" /> : undefined}
                 >
                   {isLoading
@@ -810,7 +810,7 @@ export default function LoginPage() {
 
           {/* Social Authentication & Alternative Methods (only in login modes) */}
           {mode !== "register" && !(mode === "otp" && otpStep === "code") && (
-            <div className="mt-7 space-y-4">
+            <div className="mt-6 space-y-3.5">
               <div className="flex items-center gap-3">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[var(--panel-border)]" />
                 <span className="text-xs font-medium uppercase tracking-[0.16em] text-[var(--text-muted)]">

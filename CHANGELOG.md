@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.42.1 — 2026-10-01
+
+**Connexion : polish visuel**
+
+- La présentation et le formulaire forment un ensemble centré, plus rapproché et légèrement remonté dans l'écran.
+- Les six modules deviennent une liste légère qui prolonge le texte, avec un fin trait d'accent au-dessus du titre et une description plus étroite et lisible.
+- Le formulaire gagne en profondeur (surface éclairée par le haut, reflet discret), espacements harmonisés jusqu'à « Créer un compte ».
+- Micro-interactions : champs qui s'éclaircissent au survol, flèche du bouton qui avance, modules qui réagissent au survol. Fond un peu plus profond, toujours sans grille ni forme coupée.
+
 ## v1.42.0 — 2026-10-01
 
 **Page du bot Etho : motion design complet**

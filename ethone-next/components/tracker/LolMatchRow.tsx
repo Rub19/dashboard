@@ -138,11 +138,11 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
         <div className="flex flex-wrap items-center gap-3.5 pl-2.5 min-w-0">
           {/* Mode Details + LP / Rank Tier Badge */}
           <div className="min-w-[105px]">
-            <p className="text-[10px] font-medium text-zinc-400">
-              {formatLolTimeAgo(meta?.timestamp)} <span className="text-zinc-600">{"//"}</span>{" "}
+            <p className="text-[10px] font-medium text-[var(--text-muted)]">
+              {formatLolTimeAgo(meta?.timestamp)} <span className="text-[var(--text-muted)]/60">{"//"}</span>{" "}
               <span>{formatLolDuration(meta?.duration)}</span>
             </p>
-            <h4 className="text-sm font-black text-white tracking-wide mt-0.5">
+            <h4 className="text-sm font-black text-[var(--text-primary)] tracking-wide mt-0.5">
               {meta?.modeName || "Ranked Solo"}
             </h4>
             <div className="mt-1 flex items-center gap-1.5">
@@ -167,7 +167,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
               }}
             />
             {me?.level && (
-              <span className="absolute bottom-0 left-0 rounded-tr-md bg-black/85 px-1 py-0.2 font-mono text-[9px] font-bold text-zinc-300">
+              <span className="absolute bottom-0 left-0 rounded-tr-md bg-black/85 px-1 py-0.2 font-mono text-[9px] font-bold text-white/85">
                 {me.level}
               </span>
             )}
@@ -186,7 +186,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                   {spell.image ? (
                     <img src={spell.image} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <div className="h-full w-full bg-zinc-800" />
+                    <div className="h-full w-full bg-[var(--surface-raised)]" />
                   )}
                 </div>
               ))}
@@ -230,7 +230,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                       }}
                     />
                   ) : (
-                    <div className="h-full w-full bg-white/[0.03] border border-dashed border-[var(--panel-border)]" />
+                    <div className="h-full w-full bg-[var(--text-primary)]/[0.03] border border-dashed border-[var(--panel-border)]" />
                   )}
                 </div>
               ))}
@@ -269,22 +269,22 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                   ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-400 shadow-emerald-500/20"
                   : trs >= 400
                   ? "border-cyan-500/40 bg-cyan-500/15 text-cyan-300"
-                  : "border-[var(--panel-border)] bg-white/5 text-zinc-400"
+                  : "border-[var(--panel-border)] bg-[var(--text-primary)]/5 text-[var(--text-muted)]"
               )}
             >
               <Shield className="h-5 w-5" />
             </div>
             <div>
-              <span className="block text-[8px] font-black uppercase text-zinc-500">TRS</span>
-              <span className="font-mono text-sm font-black text-white">{trs}</span>
+              <span className="block text-[8px] font-black uppercase text-[var(--text-muted)]/80">TRS</span>
+              <span className="font-mono text-sm font-black text-[var(--text-primary)]">{trs}</span>
             </div>
           </div>
 
           {/* K/D/A & Ratio */}
           <div className="text-center min-w-[72px]">
-            <span className="block font-mono text-[11px] font-bold text-zinc-400">
-              {kills} <span className="text-zinc-600">{"//"}</span> {deaths}{" "}
-              <span className="text-zinc-600">{"//"}</span> {assists}
+            <span className="block font-mono text-[11px] font-bold text-[var(--text-muted)]">
+              {kills} <span className="text-[var(--text-muted)]/60">{"//"}</span> {deaths}{" "}
+              <span className="text-[var(--text-muted)]/60">{"//"}</span> {assists}
             </span>
             <span
               className={cn(
@@ -304,8 +304,8 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
 
           {/* CS / Min */}
           <div className="text-center min-w-[40px]">
-            <span className="block text-[9px] font-bold text-zinc-500 uppercase">CS/min</span>
-            <span className="font-mono text-sm font-black text-white">{csMin}</span>
+            <span className="block text-[9px] font-bold text-[var(--text-muted)]/80 uppercase">CS/min</span>
+            <span className="font-mono text-sm font-black text-[var(--text-primary)]">{csMin}</span>
           </div>
 
           {/* Teams 2-Row Champion Preview (Guaranteed 5 Champions each) */}
@@ -370,7 +370,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
               e.stopPropagation();
               setExpanded(!expanded);
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-xl text-zinc-400 hover:bg-white/10 hover:text-white transition-all active:scale-95 cursor-pointer"
+            className="flex h-8 w-8 items-center justify-center rounded-xl text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer"
             aria-label="Détails du match"
           >
             {expanded ? <ChevronUp className="h-4 w-4" /> : <MoreVertical className="h-4 w-4" />}
@@ -402,25 +402,25 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                   >
                     {isWin ? "Red Side Victory" : "Blue Side Victory"}
                   </span>
-                  <span className="font-mono text-xs text-zinc-400">
+                  <span className="font-mono text-xs text-[var(--text-muted)]">
                     {formatLolDuration(meta?.duration)}
                   </span>
                 </div>
-                <p className="text-[11px] text-zinc-500 mt-1 font-medium">
+                <p className="text-[11px] text-[var(--text-muted)]/80 mt-1 font-medium">
                   {meta?.modeName || "Ranked Solo"} • {meta?.timestamp ? new Date(meta.timestamp).toLocaleString("fr-FR") : "Récemment"}
                 </p>
               </div>
 
               {/* Navigation Tabs */}
-              <div className="flex items-center gap-1 rounded-[var(--inset-radius)] bg-white/[0.04] p-1 border border-[var(--panel-border)] text-xs">
+              <div className="flex items-center gap-1 rounded-[var(--inset-radius)] bg-[var(--text-primary)]/[0.04] p-1 border border-[var(--panel-border)] text-xs">
                 <button
                   type="button"
                   onClick={() => setActiveTab("scoreboard")}
                   className={cn(
                     "rounded-lg px-3 py-1 font-bold transition cursor-pointer",
                     activeTab === "scoreboard"
-                      ? "bg-white/15 text-white shadow-xs"
-                      : "text-zinc-400 hover:text-white"
+                      ? "bg-[var(--text-primary)]/15 text-[var(--text-primary)] shadow-xs"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   )}
                 >
                   Scoreboard
@@ -431,8 +431,8 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                   className={cn(
                     "rounded-lg px-3 py-1 font-bold transition cursor-pointer",
                     activeTab === "charts"
-                      ? "bg-white/15 text-white shadow-xs"
-                      : "text-zinc-400 hover:text-white"
+                      ? "bg-[var(--text-primary)]/15 text-[var(--text-primary)] shadow-xs"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   )}
                 >
                   Dégâts & Or
@@ -448,12 +448,12 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                   <span className="text-xs font-black text-rose-400 uppercase tracking-wider">
                     RED SIDE
                   </span>
-                  <span className="font-mono text-xs font-black text-white">
+                  <span className="font-mono text-xs font-black text-[var(--text-primary)]">
                     {redStats.totalKills} / {redStats.totalDeaths} / {redStats.totalAssists}
                   </span>
                 </div>
-                <div className="mt-2 flex items-center justify-between text-xs text-zinc-400">
-                  <span>Dégâts Totaux : <strong className="text-white font-mono">{redStats.totalDamage.toLocaleString()}</strong></span>
+                <div className="mt-2 flex items-center justify-between text-xs text-[var(--text-muted)]">
+                  <span>Dégâts Totaux : <strong className="text-[var(--text-primary)] font-mono">{redStats.totalDamage.toLocaleString()}</strong></span>
                   <span>Or Total : <strong className="text-amber-300 font-mono">{redStats.totalGold.toLocaleString()}</strong></span>
                 </div>
               </div>
@@ -464,12 +464,12 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                   <span className="text-xs font-black text-cyan-400 uppercase tracking-wider">
                     BLUE SIDE
                   </span>
-                  <span className="font-mono text-xs font-black text-white">
+                  <span className="font-mono text-xs font-black text-[var(--text-primary)]">
                     {blueStats.totalKills} / {blueStats.totalDeaths} / {blueStats.totalAssists}
                   </span>
                 </div>
-                <div className="mt-2 flex items-center justify-between text-xs text-zinc-400">
-                  <span>Dégâts Totaux : <strong className="text-white font-mono">{blueStats.totalDamage.toLocaleString()}</strong></span>
+                <div className="mt-2 flex items-center justify-between text-xs text-[var(--text-muted)]">
+                  <span>Dégâts Totaux : <strong className="text-[var(--text-primary)] font-mono">{blueStats.totalDamage.toLocaleString()}</strong></span>
                   <span>Or Total : <strong className="text-amber-300 font-mono">{blueStats.totalGold.toLocaleString()}</strong></span>
                 </div>
               </div>
@@ -516,7 +516,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                       {/* Team Players Table */}
                       <table className="w-full text-left text-xs">
                         <thead>
-                          <tr className="border-b border-[var(--panel-border)] text-[10px] uppercase tracking-wider text-zinc-500">
+                          <tr className="border-b border-[var(--panel-border)] text-[10px] uppercase tracking-wider text-[var(--text-muted)]/80">
                             <th className="pb-1.5 pl-2">Joueur / Champion</th>
                             <th className="pb-1.5 text-center">Build</th>
                             <th className="pb-1.5 text-center">TRS</th>
@@ -526,7 +526,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                             <th className="pb-1.5 text-center">Or</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-white/5">
+                        <tbody className="divide-y divide-[var(--text-primary)]/5">
                           {[...teamGroup.players]
                             .sort((a, b) => {
                               const trsA = calculateLolTRS(a);
@@ -572,8 +572,8 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                                 className={cn(
                                   "transition-colors",
                                   p.isMe
-                                    ? "bg-amber-400/[0.07] text-white [&>td:first-child]:border-l-2 [&>td:first-child]:border-amber-400/80"
-                                    : "hover:bg-white/[0.02] text-zinc-300"
+                                    ? "bg-amber-400/[0.07] text-[var(--text-primary)] [&>td:first-child]:border-l-2 [&>td:first-child]:border-amber-400/80"
+                                    : "hover:bg-[var(--text-primary)]/[0.02] text-[var(--text-primary)]/85"
                                 )}
                               >
                                 {/* Champion & Player Info with Left Party Trait Bar */}
@@ -605,19 +605,19 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                                       alt=""
                                       className="h-full w-full object-cover"
                                     />
-                                    <span className="absolute bottom-0 left-0 rounded-tr-md bg-black/90 px-1 text-[8px] font-mono font-bold text-zinc-300">
+                                    <span className="absolute bottom-0 left-0 rounded-tr-md bg-black/90 px-1 text-[8px] font-mono font-bold text-white/85">
                                       {p.level || 1}
                                     </span>
                                   </div>
                                   <div className="min-w-0">
                                     <div className="flex items-baseline gap-1.5">
-                                      <span className={cn("font-bold truncate max-w-[140px]", p.isMe ? "text-amber-300" : "text-white")}>{p.name}</span>
-                                      <span className="text-[10px] text-zinc-500 font-mono shrink-0">#{p.tag}</span>
+                                      <span className={cn("font-bold truncate max-w-[140px]", p.isMe ? "text-amber-300" : "text-[var(--text-primary)]")}>{p.name}</span>
+                                      <span className="text-[10px] text-[var(--text-muted)]/80 font-mono shrink-0">#{p.tag}</span>
                                       {p.isMe && (
                                         <span className="shrink-0 rounded bg-amber-400/15 px-1 py-px text-[8px] font-black uppercase tracking-wider text-amber-300">Vous</span>
                                       )}
                                     </div>
-                                    <span className="text-[10px] text-zinc-500 font-medium block truncate">
+                                    <span className="text-[10px] text-[var(--text-muted)]/80 font-medium block truncate">
                                       {p.character || "Champion"}
                                     </span>
                                   </div>
@@ -665,28 +665,28 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                                 </td>
 
                                 {/* TRS */}
-                                <td className="py-2 text-center font-mono font-bold text-zinc-300">
+                                <td className="py-2 text-center font-mono font-bold text-[var(--text-primary)]/85">
                                   {pTrs}
                                 </td>
 
                                 {/* K / D / A */}
                                 <td className="py-2 text-center font-mono">
-                                  <span className="font-bold text-white">{p.stats.kills}</span>
-                                  <span className="text-zinc-500 mx-0.5">/</span>
+                                  <span className="font-bold text-[var(--text-primary)]">{p.stats.kills}</span>
+                                  <span className="text-[var(--text-muted)]/80 mx-0.5">/</span>
                                   <span className="text-rose-400 font-bold">{p.stats.deaths}</span>
-                                  <span className="text-zinc-500 mx-0.5">/</span>
-                                  <span className="text-zinc-400">{p.stats.assists}</span>
-                                  <span className={cn("block text-[9px] font-extrabold", pKda >= 3.0 ? "text-emerald-400" : "text-zinc-400")}>
+                                  <span className="text-[var(--text-muted)]/80 mx-0.5">/</span>
+                                  <span className="text-[var(--text-muted)]">{p.stats.assists}</span>
+                                  <span className={cn("block text-[9px] font-extrabold", pKda >= 3.0 ? "text-emerald-400" : "text-[var(--text-muted)]")}>
                                     {pKda}:1 KDA
                                   </span>
                                 </td>
 
                                 {/* Dégâts infligés + Mini Barre */}
                                 <td className="py-2 text-center min-w-[100px]">
-                                  <span className="font-mono text-xs font-bold text-zinc-200 block">
+                                  <span className="font-mono text-xs font-bold text-[var(--text-primary)]/90 block">
                                     {p.stats.damage.toLocaleString()}
                                   </span>
-                                  <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden mt-1">
+                                  <div className="h-1 w-full bg-[var(--text-primary)]/5 rounded-full overflow-hidden mt-1">
                                     <div
                                       className={cn("h-full rounded-full", p.team === "Blue" ? "bg-cyan-400" : "bg-rose-400")}
                                       style={{ width: `${pDmgPercent}%` }}
@@ -695,9 +695,9 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                                 </td>
 
                                 {/* CS (CS/M) */}
-                                <td className="py-2 text-center font-mono text-xs text-zinc-300">
+                                <td className="py-2 text-center font-mono text-xs text-[var(--text-primary)]/85">
                                   <span>{p.stats.cs}</span>
-                                  <span className="text-[10px] text-zinc-500 block">({p.stats.csPerMin}/m)</span>
+                                  <span className="text-[10px] text-[var(--text-muted)]/80 block">({p.stats.csPerMin}/m)</span>
                                 </td>
 
                                 {/* Gold */}
@@ -716,7 +716,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
             ) : (
               /* Charts Tab: Dégâts & Or comparison */
               <div className="space-y-3">
-                <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">
                   Comparatif des Dégâts Infligés par Champion
                 </h4>
                 <div className="space-y-2">
@@ -727,8 +727,8 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                         <div className="h-6 w-6 rounded-[var(--inset-radius)] overflow-hidden border border-[var(--panel-border)] shrink-0">
                           <img src={getLolChampionIcon(p.character)} alt="" className="h-full w-full object-cover" />
                         </div>
-                        <span className="w-24 text-xs font-bold text-white truncate">{p.name}</span>
-                        <div className="flex-1 h-3 rounded-full bg-white/10 overflow-hidden relative">
+                        <span className="w-24 text-xs font-bold text-[var(--text-primary)] truncate">{p.name}</span>
+                        <div className="flex-1 h-3 rounded-full bg-[var(--text-primary)]/10 overflow-hidden relative">
                           <div
                             className={cn(
                               "h-full rounded-full transition-all duration-500",
@@ -737,7 +737,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                             style={{ width: `${pDmgPercent}%` }}
                           />
                         </div>
-                        <span className="font-mono text-xs font-bold text-white w-16 text-right">
+                        <span className="font-mono text-xs font-bold text-[var(--text-primary)] w-16 text-right">
                           {p.stats.damage.toLocaleString()}
                         </span>
                       </div>

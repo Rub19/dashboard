@@ -149,12 +149,12 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
       {/* Header Bar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-purple-500/30 bg-purple-500/15 text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.25)]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-[0_0_12px_rgba(168,85,247,0.25)]">
             <Brain className="h-4 w-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-white">Brain Finance & Abonnements</h4>
-            <p className="text-[10px] text-zinc-400">
+            <h4 className="text-xs font-bold text-[var(--text-primary)]">Brain Finance & Abonnements</h4>
+            <p className="text-[10px] text-[var(--text-muted)]">
               {totalMonthly.toFixed(2)} €/mois · {totalYearly.toFixed(0)} €/an
             </p>
           </div>
@@ -163,16 +163,16 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 py-1 text-[11px] font-bold text-purple-300 hover:bg-white/10 transition-all active:scale-95 cursor-pointer"
+          className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 px-2.5 py-1 text-[11px] font-bold text-[var(--accent-primary)] hover:bg-[var(--text-primary)]/10 transition-all active:scale-95 cursor-pointer"
         >
-          <Sparkles className="h-3 w-3 text-purple-400" />
+          <Sparkles className="h-3 w-3 text-[var(--accent-primary)]" />
           <span>{isOpen ? "Fermer" : "Assistant IA"}</span>
         </button>
       </div>
 
       {/* Quick Add Brands Carousel */}
       <div className="space-y-1.5 pt-1">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
           ⚡ Ajouter un abonnement officiel en 1 clic
         </p>
         <div className="flex items-center gap-2 overflow-x-auto os-scroll pb-1">
@@ -181,22 +181,22 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
               key={pick.key}
               type="button"
               onClick={() => handleQuickAddPopular(pick.key)}
-              className="group flex shrink-0 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 py-1.5 text-xs text-white hover:border-purple-500/40 hover:bg-purple-500/10 transition-all active:scale-95 cursor-pointer shadow-xs"
+              className="group flex shrink-0 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 px-2.5 py-1.5 text-xs text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/10 transition-all active:scale-95 cursor-pointer shadow-xs"
             >
               {pick.logo ? (
                 <Icon
                   name={pick.logo}
                   pack="brand"
-                  className="h-3.5 w-3.5 text-white opacity-90 group-hover:scale-110 transition-transform"
+                  className="h-3.5 w-3.5 text-[var(--text-primary)] opacity-90 group-hover:scale-110 transition-transform"
                 />
               ) : (
                 <Icon
                   name={pick.icon || "receipt"}
-                  className="h-3.5 w-3.5 text-white opacity-90 group-hover:scale-110 transition-transform"
+                  className="h-3.5 w-3.5 text-[var(--text-primary)] opacity-90 group-hover:scale-110 transition-transform"
                 />
               )}
               <span className="font-medium text-[11px]">{pick.label}</span>
-              <span className="text-[10px] font-mono font-bold text-zinc-400">
+              <span className="text-[10px] font-mono font-bold text-[var(--text-muted)]">
                 {pick.amount}{pick.currency}
               </span>
             </button>
@@ -216,7 +216,7 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
           >
             {/* Natural language AI Bill Add */}
             <div className="space-y-1.5">
-              <label className="text-[11px] font-medium text-zinc-300">
+              <label className="text-[11px] font-medium text-[var(--text-primary)]/85">
                 Créer une facture en langage naturel avec Brain :
               </label>
               <div className="relative flex items-center">
@@ -226,13 +226,13 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
                   onChange={(e) => setPrompt(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleCreateWithAi()}
                   placeholder="Ex: Netflix 13.49€, ChatGPT 20$, Loyer 750€..."
-                  className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 py-2 pr-24 text-xs text-white placeholder-zinc-500 outline-none focus:border-purple-500/50"
+                  className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 px-3 py-2 pr-24 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--accent-primary)]/50"
                 />
                 <button
                   type="button"
                   onClick={handleCreateWithAi}
                   disabled={!prompt.trim() || isProcessing}
-                  className="absolute right-1.5 flex items-center gap-1 rounded-lg bg-purple-600 px-2.5 py-1 text-[11px] font-bold text-white shadow-sm transition-all hover:bg-purple-500 active:scale-95 disabled:opacity-40 cursor-pointer"
+                  className="absolute right-1.5 flex items-center gap-1 rounded-lg bg-[var(--accent-primary)] px-2.5 py-1 text-[11px] font-bold text-[var(--accent-contrast)] shadow-sm transition-all hover:brightness-110 hover:bg-[var(--accent-primary)] active:scale-95 disabled:opacity-40 cursor-pointer"
                 >
                   {isProcessing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />}
                   <span>Ajouter</span>
@@ -246,18 +246,18 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
                 type="button"
                 onClick={handleAskBrainAdvice}
                 disabled={isProcessing}
-                className="flex w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-purple-500/30 bg-purple-500/10 py-2 text-xs font-bold text-purple-300 hover:bg-purple-500/20 transition-all cursor-pointer shadow-sm"
+                className="flex w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 py-2 text-xs font-bold text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20 transition-all cursor-pointer shadow-sm"
               >
                 {isProcessing ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin text-purple-400" />
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-[var(--accent-primary)]" />
                 ) : (
-                  <Sparkles className="h-3.5 w-3.5 text-purple-400" />
+                  <Sparkles className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                 )}
                 <span>Analyser mon budget & Optimiser avec Brain</span>
               </button>
 
               {aiAdvice && (
-                <div className="rounded-[var(--inset-radius)] border border-purple-500/20 bg-purple-500/5 p-3 text-xs leading-relaxed text-zinc-300 whitespace-pre-line animate-in fade-in zoom-in-95 duration-200">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/5 p-3 text-xs leading-relaxed text-[var(--text-primary)]/85 whitespace-pre-line animate-in fade-in zoom-in-95 duration-200">
                   {aiAdvice}
                 </div>
               )}

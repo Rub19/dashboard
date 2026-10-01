@@ -209,7 +209,7 @@ export default function TrackerGgView() {
             <button
               type="button"
               onClick={() => toggleFavorite(gameId)}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-black/40 text-zinc-500 hover:text-amber-400 hover:border-amber-400/40 active:scale-90 transition-all cursor-pointer"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)]/80 hover:text-amber-400 hover:border-amber-400/40 active:scale-90 transition-all cursor-pointer"
               title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
               aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
               aria-pressed={isFavorite}
@@ -229,22 +229,22 @@ export default function TrackerGgView() {
             </div>
           )}
 
-          <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 flex-1 min-w-[180px]">
-            <User className="h-4 w-4 text-zinc-400 shrink-0" />
+          <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 py-2 transition-colors focus-within:border-[var(--accent-primary)]/60 flex-1 min-w-[180px]">
+            <User className="h-4 w-4 text-[var(--text-muted)] shrink-0" />
             <input
               type="text"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
               placeholder={game.idHint}
               aria-label={game.idLabel}
-              className="w-full bg-transparent text-xs font-bold text-white placeholder-zinc-500 outline-none"
+              className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-zinc-500 outline-none"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading || syncing}
-            className="flex items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:from-indigo-500 hover:to-violet-500 active:scale-95 transition-all cursor-pointer disabled:opacity-40 shrink-0"
+            className="flex items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-xs font-bold text-[var(--text-primary)] shadow-md hover:from-indigo-500 hover:to-violet-500 active:scale-95 transition-all cursor-pointer disabled:opacity-40 shrink-0"
           >
             <Search className="h-3.5 w-3.5" />
             <span>Analyser</span>
@@ -252,8 +252,8 @@ export default function TrackerGgView() {
 
           <div className="flex items-center gap-3 shrink-0">
             {lastSync && (
-              <div className="flex items-center gap-1 text-[11px] text-zinc-400 font-medium">
-                <Clock className="h-3 w-3 text-zinc-500" />
+              <div className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] font-medium">
+                <Clock className="h-3 w-3 text-[var(--text-muted)]/80" />
                 <span>{lastSync.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
               </div>
             )}
@@ -261,7 +261,7 @@ export default function TrackerGgView() {
               type="button"
               onClick={() => load(true)}
               disabled={syncing}
-              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 px-3 py-1.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={cn("h-3.5 w-3.5 text-indigo-400", syncing && "animate-spin")} />
               <span>{syncing ? "Synchro..." : "Actualiser"}</span>
@@ -277,13 +277,13 @@ export default function TrackerGgView() {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={profile.avatarUrl} alt="" className="h-10 w-10 rounded-lg object-cover" />
           ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
-              <User className="h-5 w-5 text-zinc-400" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--text-primary)]/5">
+              <User className="h-5 w-5 text-[var(--text-muted)]" />
             </div>
           )}
           <div className="min-w-0">
-            <p className="truncate text-sm font-bold text-white">{profile.handle || profile.identifier}</p>
-            <p className="flex items-center gap-1.5 text-[11px] text-zinc-400">
+            <p className="truncate text-sm font-bold text-[var(--text-primary)]">{profile.handle || profile.identifier}</p>
+            <p className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
               <GameBrandIcon name={game.label} className="h-3.5 w-3.5" />
               {game.label} · {profile.platform}
             </p>
@@ -296,11 +296,11 @@ export default function TrackerGgView() {
         <div className="shrink-0 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {tiles.map((s) => (
             <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
-              <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400">
+              <div className="flex items-center gap-1.5 text-[11px] font-medium text-[var(--text-muted)]">
                 <BarChart3 className="h-3.5 w-3.5 text-indigo-400" />
                 {s.label}
               </div>
-              <div className="mt-1 text-lg font-bold text-white truncate">{s.value}</div>
+              <div className="mt-1 text-lg font-bold text-[var(--text-primary)] truncate">{s.value}</div>
             </div>
           ))}
         </div>
@@ -311,17 +311,17 @@ export default function TrackerGgView() {
         {loading ? (
           <div className="space-y-3">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-24 animate-pulse rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02]" />
+              <div key={i} className="h-24 skeleton-shimmer rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02]" />
             ))}
           </div>
         ) : errorMsg && !available ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center text-zinc-400">
+          <div className="pop-in flex flex-col items-center justify-center py-16 text-center text-[var(--text-muted)]">
             <AlertCircle className="mb-2 h-6 w-6 text-rose-400" />
             <p className="max-w-md text-sm">{errorMsg}</p>
           </div>
         ) : !available ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center text-zinc-400">
-            <Gamepad2 className="mb-2 h-6 w-6 text-zinc-600" />
+          <div className="pop-in flex flex-col items-center justify-center py-16 text-center text-[var(--text-muted)]">
+            <Gamepad2 className="mb-2 h-6 w-6 text-[var(--text-muted)]/60" />
             <p className="max-w-md text-sm">Choisis un jeu et entre ton identifiant ({game.idLabel}) pour voir tes statistiques tracker.gg.</p>
           </div>
         ) : (
@@ -331,12 +331,12 @@ export default function TrackerGgView() {
               .filter((seg) => Object.keys(seg.stats).length > 0)
               .map((seg, i) => (
                 <div key={`${seg.type}-${i}`} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-4 backdrop-blur-xl">
-                  <p className="mb-3 text-xs font-bold uppercase tracking-wide text-zinc-400">{seg.name || seg.type}</p>
+                  <p className="mb-3 text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">{seg.name || seg.type}</p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                     {Object.entries(seg.stats).slice(0, 16).map(([k, stat]) => (
                       <div key={k}>
-                        <p className="text-[11px] text-zinc-500">{fmtStat(k)}</p>
-                        <p className="text-sm font-bold text-white">{fmtStatValue(stat)}</p>
+                        <p className="text-[11px] text-[var(--text-muted)]/80">{fmtStat(k)}</p>
+                        <p className="text-sm font-bold text-[var(--text-primary)]">{fmtStatValue(stat)}</p>
                       </div>
                     ))}
                   </div>
@@ -346,7 +346,7 @@ export default function TrackerGgView() {
             {/* Match history */}
             {matches.length > 0 && (
               <div className="space-y-2">
-                <p className="px-1 text-xs font-bold uppercase tracking-wide text-zinc-400">Historique ({matches.length})</p>
+                <p className="px-1 text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">Historique ({matches.length})</p>
                 {matches.map((m, i) => {
                   const win = /win|victory|1st|won/i.test(m.metadata.result || "");
                   return (
@@ -354,7 +354,7 @@ export default function TrackerGgView() {
                       key={m.id || i}
                       className={cn(
                         "flex items-center gap-3 rounded-[var(--panel-radius)] border p-3 backdrop-blur-xl",
-                        win ? "border-emerald-500/20 bg-emerald-500/[0.04]" : "border-[var(--panel-border)] bg-white/[0.02]"
+                        win ? "border-emerald-500/20 bg-emerald-500/[0.04]" : "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02]"
                       )}
                     >
                       {m.metadata.agentImageUrl && (
@@ -362,14 +362,14 @@ export default function TrackerGgView() {
                         <img src={m.metadata.agentImageUrl} alt="" className="h-9 w-9 rounded-lg object-cover" />
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-bold text-white">
+                        <p className="truncate text-sm font-bold text-[var(--text-primary)]">
                           {m.metadata.mapName || m.metadata.modeName || "Match"}
                         </p>
-                        <p className="text-[11px] text-zinc-400">
+                        <p className="text-[11px] text-[var(--text-muted)]">
                           {[m.metadata.modeName, m.metadata.agentName].filter(Boolean).join(" · ")}
                         </p>
                       </div>
-                      <span className={cn("text-xs font-bold shrink-0", win ? "text-emerald-400" : "text-zinc-400")}>
+                      <span className={cn("text-xs font-bold shrink-0", win ? "text-emerald-400" : "text-[var(--text-muted)]")}>
                         {m.metadata.result || "—"}
                       </span>
                     </div>
@@ -379,8 +379,8 @@ export default function TrackerGgView() {
             )}
 
             {profile!.segments.every((seg) => Object.keys(seg.stats).length === 0) && matches.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-16 text-center text-zinc-400">
-                <BarChart3 className="mb-2 h-6 w-6 text-zinc-600" />
+              <div className="pop-in flex flex-col items-center justify-center py-16 text-center text-[var(--text-muted)]">
+                <BarChart3 className="mb-2 h-6 w-6 text-[var(--text-muted)]/60" />
                 <p className="text-sm">Aucune statistique publique disponible pour ce profil.</p>
               </div>
             )}

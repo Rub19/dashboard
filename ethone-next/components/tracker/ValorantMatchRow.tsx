@@ -113,12 +113,12 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
 
           {/* Map & Mode Details */}
           <div className="min-w-[110px]">
-            <p className="text-[10px] font-medium text-zinc-400">
-              {formatTimeAgo(meta.timestamp)} <span className="text-zinc-600">{"//"}</span>{" "}
-              <span className="text-zinc-300 font-semibold">{meta.modeName || "Swiftplay"}</span>
+            <p className="text-[10px] font-medium text-[var(--text-muted)]">
+              {formatTimeAgo(meta.timestamp)} <span className="text-[var(--text-muted)]/60">{"//"}</span>{" "}
+              <span className="text-[var(--text-primary)]/85 font-semibold">{meta.modeName || "Swiftplay"}</span>
             </p>
             <div className="flex items-center gap-2 mt-0.5">
-              <h4 className="text-sm font-black text-white tracking-wide truncate">
+              <h4 className="text-sm font-black text-[var(--text-primary)] tracking-wide truncate">
                 {meta.mapName || "Split"}
               </h4>
 
@@ -129,8 +129,8 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                   rankBadge.tone === "gold"
                     ? "border border-amber-500/40 bg-amber-500/15 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.2)]"
                     : rankBadge.tone === "silver"
-                    ? "border border-zinc-500/40 bg-zinc-700/30 text-zinc-200"
-                    : "border border-[var(--panel-border)] bg-white/5 text-zinc-400"
+                    ? "border border-[var(--text-muted)]/40 bg-[var(--text-primary)]/10 text-[var(--text-primary)]/90"
+                    : "border border-[var(--panel-border)] bg-[var(--text-primary)]/5 text-[var(--text-muted)]"
                 )}
               >
                 {rankBadge.label}
@@ -140,14 +140,14 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
 
           {/* Score Box */}
           <div className="ml-2 sm:ml-4 shrink-0 text-center">
-            <span className="block text-[8px] font-black text-zinc-500 uppercase tracking-wider">
+            <span className="block text-[8px] font-black text-[var(--text-muted)]/80 uppercase tracking-wider">
               Score
             </span>
             <div className="flex items-center gap-1 font-mono text-sm font-black">
               <span className={isWin ? "text-emerald-400" : "text-rose-400"}>
                 {teamScore}
               </span>
-              <span className="text-zinc-600">:</span>
+              <span className="text-[var(--text-muted)]/60">:</span>
               <span className={!isWin ? "text-emerald-400" : "text-rose-400"}>
                 {opponentScore}
               </span>
@@ -160,7 +160,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
           {highlights.map((badge, bi) => (
             <span
               key={bi}
-              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-2 py-0.5 text-[10px] font-bold text-zinc-300 shadow-xs"
+              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-2 py-0.5 text-[10px] font-bold text-[var(--text-primary)]/85 shadow-xs"
             >
               {badge}
             </span>
@@ -171,7 +171,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
         <div className="flex items-center justify-between md:justify-end gap-3 sm:gap-6 pl-2 md:pl-0">
           {/* K/D */}
           <div className="text-center min-w-[36px]">
-            <span className="block text-[9px] font-bold uppercase text-zinc-500">K/D</span>
+            <span className="block text-[9px] font-bold uppercase text-[var(--text-muted)]/80">K/D</span>
             <span
               className={cn(
                 "font-mono text-sm font-black",
@@ -188,20 +188,20 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
 
           {/* K/D/A */}
           <div className="text-center min-w-[58px]">
-            <span className="block text-[9px] font-bold uppercase text-zinc-500">K/D/A</span>
-            <span className="font-mono text-xs font-bold text-white">
-              {kills} <span className="text-zinc-600">/</span> {deaths}{" "}
-              <span className="text-zinc-600">/</span> {assists}
+            <span className="block text-[9px] font-bold uppercase text-[var(--text-muted)]/80">K/D/A</span>
+            <span className="font-mono text-xs font-bold text-[var(--text-primary)]">
+              {kills} <span className="text-[var(--text-muted)]/60">/</span> {deaths}{" "}
+              <span className="text-[var(--text-muted)]/60">/</span> {assists}
             </span>
           </div>
 
           {/* DDΔ (Damage Delta) */}
           <div className="text-center min-w-[36px]">
-            <span className="block text-[9px] font-bold uppercase text-zinc-500">DDΔ</span>
+            <span className="block text-[9px] font-bold uppercase text-[var(--text-muted)]/80">DDΔ</span>
             <span
               className={cn(
                 "font-mono text-xs font-bold",
-                damageDelta >= 0 ? "text-white" : "text-rose-400"
+                damageDelta >= 0 ? "text-[var(--text-primary)]" : "text-rose-400"
               )}
             >
               {damageDelta >= 0 ? `${damageDelta}` : damageDelta}
@@ -210,8 +210,8 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
 
           {/* HS% */}
           <div className="text-center min-w-[32px]">
-            <span className="block text-[9px] font-bold uppercase text-zinc-500">HS%</span>
-            <span className="font-mono text-xs font-bold text-white">{hsPercent}</span>
+            <span className="block text-[9px] font-bold uppercase text-[var(--text-muted)]/80">HS%</span>
+            <span className="font-mono text-xs font-bold text-[var(--text-primary)]">{hsPercent}</span>
           </div>
 
           {/* Score de performance (0-500) ou ACS (parties d'avant le patch 13.06) */}
@@ -219,8 +219,8 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
             className="text-center min-w-[36px]"
             title={isPerformance ? (scoreEntry.value === null ? "Score de performance non fourni par l'API pour cette partie" : "Score de performance (0-500)") : "ACS (score de combat moyen, ancien système)"}
           >
-            <span className="block text-[9px] font-bold uppercase text-zinc-500">{scoreLabel}</span>
-            <span className="font-mono text-xs font-black text-white">{scoreText}</span>
+            <span className="block text-[9px] font-bold uppercase text-[var(--text-muted)]/80">{scoreLabel}</span>
+            <span className="font-mono text-xs font-black text-[var(--text-primary)]">{scoreText}</span>
           </div>
 
           {/* Expand Menu Toggle */}
@@ -230,7 +230,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
               e.stopPropagation();
               setExpanded(!expanded);
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-xl text-zinc-400 hover:bg-white/10 hover:text-white transition-all active:scale-95 cursor-pointer"
+            className="flex h-8 w-8 items-center justify-center rounded-xl text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer"
             aria-label="Détails du match"
           >
             {expanded ? <ChevronUp className="h-4 w-4" /> : <MoreVertical className="h-4 w-4" />}
@@ -256,30 +256,30 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h4 className="text-base font-black text-white">{meta.mapName || "Split"}</h4>
-                    <span className="rounded-md bg-white/10 px-2 py-0.5 text-xs font-bold text-zinc-300">
+                    <h4 className="text-base font-black text-[var(--text-primary)]">{meta.mapName || "Split"}</h4>
+                    <span className="rounded-md bg-[var(--text-primary)]/10 px-2 py-0.5 text-xs font-bold text-[var(--text-primary)]/85">
                       {meta.modeName || "Swiftplay"}
                     </span>
                     <span className="rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 text-xs font-black">
                       Team A {teamScore} : Team B {opponentScore}
                     </span>
                   </div>
-                  <p className="text-[11px] text-zinc-500 mt-0.5">
+                  <p className="text-[11px] text-[var(--text-muted)]/80 mt-0.5">
                     Durée: 8m 24s • Rang Moyen : <strong className="text-cyan-300 font-bold">{matchAvgRank}</strong>
                   </p>
                 </div>
               </div>
 
               {/* Tabs */}
-              <div className="flex items-center gap-1 rounded-[var(--inset-radius)] bg-white/[0.04] p-1 border border-[var(--panel-border)] text-xs">
+              <div className="flex items-center gap-1 rounded-[var(--inset-radius)] bg-[var(--text-primary)]/[0.04] p-1 border border-[var(--panel-border)] text-xs">
                 <button
                   type="button"
                   onClick={() => setActiveTab("scoreboard")}
                   className={cn(
                     "rounded-lg px-3 py-1 font-bold transition cursor-pointer",
                     activeTab === "scoreboard"
-                      ? "bg-white/15 text-white shadow-xs"
-                      : "text-zinc-400 hover:text-white"
+                      ? "bg-[var(--text-primary)]/15 text-[var(--text-primary)] shadow-xs"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   )}
                 >
                   Scoreboard
@@ -290,8 +290,8 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                   className={cn(
                     "rounded-lg px-3 py-1 font-bold transition cursor-pointer",
                     activeTab === "performance"
-                      ? "bg-white/15 text-white shadow-xs"
-                      : "text-zinc-400 hover:text-white"
+                      ? "bg-[var(--text-primary)]/15 text-[var(--text-primary)] shadow-xs"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   )}
                 >
                   Performance
@@ -339,7 +339,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                       {/* Team Players Table */}
                       <table className="w-full text-left text-xs">
                         <thead>
-                          <tr className="border-b border-[var(--panel-border)] text-[10px] uppercase tracking-wider text-zinc-500">
+                          <tr className="border-b border-[var(--panel-border)] text-[10px] uppercase tracking-wider text-[var(--text-muted)]/80">
                             <th className="pb-1.5 pl-2">Joueur / Agent</th>
                             <th className="pb-1.5 text-center">Rang</th>
                             <th className="pb-1.5 text-center">TRS</th>
@@ -354,7 +354,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                             <th className="pb-1.5 text-center">HS%</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-white/5">
+                        <tbody className="divide-y divide-[var(--text-primary)]/5">
                           {[...teamGroup.players]
                             .sort((a, b) => {
                               const scoreA = a.stats.score || (a.stats.kills * 150);
@@ -392,8 +392,8 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                 className={cn(
                                   "transition-colors",
                                   p.isMe
-                                    ? "bg-amber-400/[0.07] text-white [&>td:first-child]:border-l-2 [&>td:first-child]:border-amber-400/80"
-                                    : "hover:bg-white/[0.02] text-zinc-300"
+                                    ? "bg-amber-400/[0.07] text-[var(--text-primary)] [&>td:first-child]:border-l-2 [&>td:first-child]:border-amber-400/80"
+                                    : "hover:bg-[var(--text-primary)]/[0.02] text-[var(--text-primary)]/85"
                                 )}
                               >
                                 {/* Player / Agent with Left Vertical Party Trait (Bar) */}
@@ -427,7 +427,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                       alt=""
                                       className="h-full w-full object-cover"
                                     />
-                                    <span className="absolute bottom-0 left-0 rounded-tr-md bg-black/90 px-1 text-[8px] font-mono font-bold text-zinc-300">
+                                    <span className="absolute bottom-0 left-0 rounded-tr-md bg-black/90 px-1 text-[8px] font-mono font-bold text-white/85">
                                       {playerLevel}
                                     </span>
                                   </div>
@@ -438,11 +438,11 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                     <div className="flex items-baseline gap-1.5">
                                       <span className={cn(
                                         "font-bold truncate max-w-[140px]",
-                                        p.isMe ? "text-amber-300" : "text-white"
+                                        p.isMe ? "text-amber-300" : "text-[var(--text-primary)]"
                                       )}>
                                         {p.name}
                                       </span>
-                                      <span className="text-[10px] text-zinc-500 font-mono shrink-0">
+                                      <span className="text-[10px] text-[var(--text-muted)]/80 font-mono shrink-0">
                                         #{p.tag}
                                       </span>
                                       {p.isMe && (
@@ -451,7 +451,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                         </span>
                                       )}
                                     </div>
-                                    <span className="text-[10px] text-zinc-500 font-medium block truncate">
+                                    <span className="text-[10px] text-[var(--text-muted)]/80 font-medium block truncate">
                                       {p.character}
                                     </span>
                                   </div>
@@ -469,27 +469,27 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                 </td>
 
                                 {/* TRS */}
-                                <td className="py-2 text-center font-mono font-bold text-zinc-300">
+                                <td className="py-2 text-center font-mono font-bold text-[var(--text-primary)]/85">
                                   {pTrs ?? "—"}
                                 </td>
 
                                 {/* ACS */}
-                                <td className="py-2 text-center font-mono font-black text-white text-xs">
+                                <td className="py-2 text-center font-mono font-black text-[var(--text-primary)] text-xs">
                                   {pAcs ?? "—"}
                                 </td>
 
                                 {/* K */}
-                                <td className="py-2 text-center font-mono font-bold text-white">
+                                <td className="py-2 text-center font-mono font-bold text-[var(--text-primary)]">
                                   {p.stats.kills}
                                 </td>
 
                                 {/* D */}
-                                <td className="py-2 text-center font-mono text-zinc-400">
+                                <td className="py-2 text-center font-mono text-[var(--text-muted)]">
                                   {p.stats.deaths}
                                 </td>
 
                                 {/* A */}
-                                <td className="py-2 text-center font-mono text-zinc-400">
+                                <td className="py-2 text-center font-mono text-[var(--text-muted)]">
                                   {p.stats.assists}
                                 </td>
 
@@ -497,7 +497,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                 <td
                                   className={cn(
                                     "py-2 text-center font-mono font-bold text-xs",
-                                    pDiff > 0 ? "text-emerald-400" : pDiff < 0 ? "text-rose-400" : "text-zinc-500"
+                                    pDiff > 0 ? "text-emerald-400" : pDiff < 0 ? "text-rose-400" : "text-[var(--text-muted)]/80"
                                   )}
                                 >
                                   {pDiff > 0 ? `+${pDiff}` : pDiff}
@@ -524,12 +524,12 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                 </td>
 
                                 {/* ADR */}
-                                <td className="py-2 text-center font-mono text-zinc-300">
+                                <td className="py-2 text-center font-mono text-[var(--text-primary)]/85">
                                   {typeof p.stats.adr === "number" ? p.stats.adr : "—"}
                                 </td>
 
                                 {/* HS% */}
-                                <td className="py-2 text-center font-mono font-bold text-white">
+                                <td className="py-2 text-center font-mono font-bold text-[var(--text-primary)]">
                                   {typeof p.stats.headshots === "number" ? `${p.stats.headshots}%` : "—"}
                                 </td>
                               </tr>
@@ -544,7 +544,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
             ) : (
               /* Performance Tab: Duel & Damage Efficiency */
               <div className="space-y-4">
-                <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">
                   Performance & Dégâts par Agent
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -559,18 +559,18 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                         className={cn(
                           "rounded-[var(--panel-radius)] border p-3 flex items-center justify-between gap-3 backdrop-blur-[var(--panel-blur)]",
                           p.isMe
-                            ? "border-amber-400/30 bg-amber-400/[0.08] text-white"
-                            : "border-[var(--panel-border)] bg-white/[0.03] text-zinc-300"
+                            ? "border-amber-400/30 bg-amber-400/[0.08] text-[var(--text-primary)]"
+                            : "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] text-[var(--text-primary)]/85"
                         )}
                       >
                         <div className="flex items-center gap-2.5">
                           <img src={pIcon} alt="" className="h-9 w-9 rounded-[var(--inset-radius)] object-cover border border-[var(--panel-border)]" />
                           <div>
-                            <span className={cn("font-bold text-xs block", p.isMe ? "text-amber-300" : "text-white")}>
+                            <span className={cn("font-bold text-xs block", p.isMe ? "text-amber-300" : "text-[var(--text-primary)]")}>
                               {p.name}
                               {p.isMe && <span className="ml-1.5 rounded bg-amber-400/15 px-1 py-px text-[8px] font-black uppercase tracking-wider text-amber-300 align-middle">Vous</span>}
                             </span>
-                            <span className="text-[10px] text-zinc-400 font-mono">
+                            <span className="text-[10px] text-[var(--text-muted)] font-mono">
                               {p.character} • {p.stats.kills} Kills
                             </span>
                           </div>
@@ -578,17 +578,17 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
 
                         <div className="flex items-center gap-4 text-right font-mono text-xs">
                           <div>
-                            <span className="block text-[9px] text-zinc-500 uppercase font-bold">K/D</span>
+                            <span className="block text-[9px] text-[var(--text-muted)]/80 uppercase font-bold">K/D</span>
                             <span className={cn("font-bold", pKd >= 1.0 ? "text-emerald-400" : "text-rose-400")}>
                               {pKd}
                             </span>
                           </div>
                           <div>
-                            <span className="block text-[9px] text-zinc-500 uppercase font-bold">Dégâts</span>
-                            <span className="font-bold text-white">{pDamage}</span>
+                            <span className="block text-[9px] text-[var(--text-muted)]/80 uppercase font-bold">Dégâts</span>
+                            <span className="font-bold text-[var(--text-primary)]">{pDamage}</span>
                           </div>
                           <div>
-                            <span className="block text-[9px] text-zinc-500 uppercase font-bold">HS%</span>
+                            <span className="block text-[9px] text-[var(--text-muted)]/80 uppercase font-bold">HS%</span>
                             <span className="font-bold text-amber-300">{typeof p.stats.headshots === "number" ? `${p.stats.headshots}%` : "—"}</span>
                           </div>
                         </div>

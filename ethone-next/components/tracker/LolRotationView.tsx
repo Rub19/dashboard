@@ -30,14 +30,18 @@ const REGIONS: Array<{ id: string; label: string }> = [
 function ChampionGrid({ champions }: { champions: Champion[] }) {
   return (
     <ul className="grid grid-cols-3 gap-3 sm:grid-cols-5 lg:grid-cols-7 xl:grid-cols-10">
-      {champions.map((champion) => (
-        <li key={champion.id} className="v8-panel flex flex-col items-center gap-1 rounded-[var(--panel-radius)] p-2 text-center">
+      {champions.map((champion, i) => (
+        <li
+          key={champion.id}
+          style={{ animationDelay: `${Math.min(i, 20) * 25}ms` }}
+          className="rise-in group v8-panel flex flex-col items-center gap-1 rounded-[var(--panel-radius)] p-2 text-center transition-colors hover:border-[var(--accent-primary)]/30"
+        >
           {champion.icon && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={champion.icon} alt="" className="h-14 w-14 rounded-lg" loading="lazy" />
+            <img src={champion.icon} alt="" className="h-14 w-14 rounded-lg transition-transform duration-300 group-hover:scale-105" loading="lazy" />
           )}
           <span className="w-full truncate text-xs font-semibold" title={champion.name}>{champion.name}</span>
-          {champion.title && <span className="w-full truncate text-[10px] text-[var(--muted)]" title={champion.title}>{champion.title}</span>}
+          {champion.title && <span className="w-full truncate text-[10px] text-[var(--text-muted)]" title={champion.title}>{champion.title}</span>}
         </li>
       ))}
     </ul>
@@ -75,8 +79,8 @@ export default function LolRotationView() {
     <div className="flex min-h-0 w-full flex-1 flex-col gap-4 overflow-y-auto p-1 pr-2">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Rotation League of Legends</h1>
-          <p className="text-xs text-[var(--muted)]">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Rotation League of Legends</h1>
+          <p className="text-xs text-[var(--text-muted)]">
             Champions gratuits de la semaine{rotation ? ` · patch ${rotation.gameVersion}` : ""}.
           </p>
         </div>
@@ -96,7 +100,7 @@ export default function LolRotationView() {
             type="button"
             onClick={() => void load()}
             disabled={loading}
-            className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm font-medium transition-colors hover:bg-[var(--accent)]/20 disabled:opacity-50"
+            className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm font-medium transition-colors hover:bg-[var(--accent-primary)]/15 disabled:opacity-50"
           >
             {loading ? "Chargement…" : "Actualiser"}
           </button>
@@ -112,13 +116,13 @@ export default function LolRotationView() {
       {rotation && (
         <>
           <section className="space-y-3" aria-labelledby="rotation-free">
-            <h2 id="rotation-free" className="text-sm font-semibold uppercase tracking-wider text-[var(--muted)]">
+            <h2 id="rotation-free" className="text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Rotation gratuite ({rotation.free.length})
             </h2>
             <ChampionGrid champions={rotation.free} />
           </section>
           <section className="space-y-3" aria-labelledby="rotation-new">
-            <h2 id="rotation-new" className="text-sm font-semibold uppercase tracking-wider text-[var(--muted)]">
+            <h2 id="rotation-new" className="text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Nouveaux joueurs (jusqu&apos;au niveau {rotation.maxNewPlayerLevel || 10}) ({rotation.freeForNewPlayers.length})
             </h2>
             <ChampionGrid champions={rotation.freeForNewPlayers} />
@@ -126,7 +130,7 @@ export default function LolRotationView() {
         </>
       )}
 
-      <p className="text-[11px] text-[var(--muted)]">
+      <p className="text-[11px] text-[var(--text-muted)]">
         La boutique de League of Legends (skins en promotion, packs) n&apos;a pas d&apos;API publique : elle ne peut pas être affichée ici.
       </p>
     </div>

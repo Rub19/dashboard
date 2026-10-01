@@ -150,8 +150,8 @@ export default function DailyReportModal({
                 <TrendingUp className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-base font-black text-white">Rapport du jour</h3>
-                <p className="text-xs text-zinc-400 font-medium">
+                <h3 className="text-base font-black text-[var(--text-primary)]">Rapport du jour</h3>
+                <p className="text-xs text-[var(--text-muted)] font-medium">
                   {stats.dateLabel} • {stats.count} {stats.count > 1 ? "parties" : "partie"}
                 </p>
               </div>
@@ -160,7 +160,7 @@ export default function DailyReportModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
+              className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] transition cursor-pointer"
             >
               <X className="h-4 w-4" />
             </button>
@@ -169,24 +169,24 @@ export default function DailyReportModal({
           {/* Stats Grid */}
           <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
             {/* Record & Win Rate */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-3 backdrop-blur-xl">
-              <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-3 backdrop-blur-xl">
+              <span className="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
                 Bilan ({stats.winRate}%)
               </span>
               <div className="mt-1 flex items-center gap-1.5 font-mono text-sm font-black">
                 <span className="text-emerald-400">{stats.wins}W</span>
-                <span className="text-zinc-600">{"//"}</span>
+                <span className="text-[var(--text-muted)]/60">{"//"}</span>
                 <span className="text-rose-400">{stats.losses}L</span>
               </div>
             </div>
 
             {/* K/D or KDA */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-3 backdrop-blur-xl">
-              <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-3 backdrop-blur-xl">
+              <span className="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
                 {isVal ? "Ratio K/D" : "KDA Moyen"}
               </span>
               <div className="mt-1 flex items-center justify-between">
-                <span className="font-mono text-sm font-black text-white">{stats.kd}</span>
+                <span className="font-mono text-sm font-black text-[var(--text-primary)]">{stats.kd}</span>
                 {stats.kdDiff !== null && (
                   <span
                     className={cn(
@@ -202,12 +202,12 @@ export default function DailyReportModal({
             </div>
 
             {/* ACS / DPM */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-3 backdrop-blur-xl">
-              <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-3 backdrop-blur-xl">
+              <span className="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
                 {isVal ? (stats.valScoreIsPerformance ? "Score de performance" : "Score ACS") : "Dégâts DPM"}
               </span>
               <div className="mt-1 flex items-center justify-between">
-                <span className="font-mono text-sm font-black text-white">{stats.acs}</span>
+                <span className="font-mono text-sm font-black text-[var(--text-primary)]">{stats.acs}</span>
                 {stats.acsDiff !== null && (
                   <span
                     className={cn(
@@ -223,12 +223,12 @@ export default function DailyReportModal({
 
             {/* HS% if Valorant */}
             {isVal && (
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-3 backdrop-blur-xl">
-                <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-3 backdrop-blur-xl">
+                <span className="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
                   Précision HS
                 </span>
                 <div className="mt-1 flex items-center justify-between">
-                  <span className="font-mono text-sm font-black text-white">{stats.hs}%</span>
+                  <span className="font-mono text-sm font-black text-[var(--text-primary)]">{stats.hs}%</span>
                   {stats.hsDiff !== null && (
                     <span
                       className={cn(
@@ -245,14 +245,14 @@ export default function DailyReportModal({
           </div>
 
           {/* AI Coach Insights Section */}
-          <div className="mt-5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 p-4 shadow-inner">
+          <div className="mt-5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] p-4">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="h-4 w-4 text-amber-400" />
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">
                 Analyse & Conseils Coach
               </h4>
             </div>
-            <ul className="space-y-2 text-xs text-zinc-300">
+            <ul className="space-y-2 text-xs text-[var(--text-primary)]/85">
               {stats.tips.map((tip, idx) => (
                 <li key={idx} className="flex items-start gap-2">
                   <span className="text-amber-400 mt-0.5">•</span>

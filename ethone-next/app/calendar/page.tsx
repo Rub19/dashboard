@@ -101,7 +101,7 @@ export default function CalendarPage() {
   const markers = useMemo(() => buildMarkers(bills, focused), [bills, focused]);
 
   return (
-    <div className="stagger-children flex h-full min-h-0 w-full flex-col gap-3 overflow-hidden p-3 sm:p-4 lg:p-5">
+    <div className="stagger-children flex h-full min-h-0 w-full flex-col gap-3 overflow-y-auto os-scroll p-3 sm:p-4 lg:overflow-hidden lg:p-5">
       {/* Header */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between shrink-0">
         <div>
@@ -109,11 +109,11 @@ export default function CalendarPage() {
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[var(--text-primary)]">
               Calendrier & Factures
             </h1>
-            <span className="rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 font-mono text-[10px] font-bold text-purple-400">
+            <span className="rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2.5 py-0.5 font-mono text-[10px] font-bold text-[var(--accent-primary)]">
               {bills.length} abonnements
             </span>
           </div>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-[var(--text-muted)]">
             Suivez vos échéances, abonnements et dépenses avec l&apos;intelligence Brain.
           </p>
         </div>
@@ -125,8 +125,8 @@ export default function CalendarPage() {
       </div>
 
       {/* Main Grid: Interactive Calendar + Billing Detail Panel */}
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden lg:grid-cols-12 pb-1">
-        <div className="flex h-full min-h-0 flex-col lg:col-span-7 xl:col-span-8">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 pb-1 lg:grid-cols-12 lg:overflow-hidden">
+        <div className="flex min-h-[26rem] flex-col lg:h-full lg:min-h-0 lg:col-span-7 xl:col-span-8">
           <Calendar
             value={selected}
             onChange={setSelected}
@@ -137,8 +137,10 @@ export default function CalendarPage() {
             locale="fr-FR"
           />
         </div>
-        <div className="flex h-full min-h-0 flex-col lg:col-span-5 xl:col-span-4">
-          <CalendarBillingPanel date={selected} bills={bills} onChange={reload} />
+        <div className="flex min-h-[24rem] flex-col lg:h-full lg:min-h-0 lg:col-span-5 xl:col-span-4">
+          <div key={selected.toString()} className="rise-in flex min-h-0 flex-1 flex-col">
+            <CalendarBillingPanel date={selected} bills={bills} onChange={reload} />
+          </div>
         </div>
       </div>
     </div>

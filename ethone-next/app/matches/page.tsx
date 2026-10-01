@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useTracker } from "@/lib/hooks/useTracker";
-import { EASE_OUT } from "@/lib/ease";
+import { EASE_OUT, EASE_SNAP } from "@/lib/ease";
 import FlatCard from "@/components/FlatCard";
 import LiquidSidebar from "@/components/LiquidSidebar";
 import ValorantTrackerView from "@/components/tracker/ValorantTrackerView";
@@ -57,20 +57,10 @@ export default function MatchesPage() {
       if (!settings.liveTrackerApexIdentifier) return "";
       return `/api/stats/apex-matches?platform=${encodeURIComponent(settings.liveTrackerApexPlatform)}&identifier=${encodeURIComponent(settings.liveTrackerApexIdentifier)}&mode=all`;
     }
-    if (tab === "lol") {
-      if (!settings.liveTrackerRiotName || !settings.liveTrackerRiotTag) return "";
-      return `/api/stats/lol-matches?name=${encodeURIComponent(settings.liveTrackerRiotName)}&tag=${encodeURIComponent(settings.liveTrackerRiotTag)}`;
-    }
     return "";
-  }, [
-    tab,
-    settings.liveTrackerRiotName,
-    settings.liveTrackerRiotTag,
-    settings.liveTrackerApexPlatform,
-    settings.liveTrackerApexIdentifier,
-  ]);
+  }, [tab, settings.liveTrackerApexPlatform, settings.liveTrackerApexIdentifier]);
 
-  const trackerKind = tab === "apex" ? "tracker-apex" : "tracker-lol";
+  const trackerKind = "tracker-apex";
   const { items, loading, syncing, sync } = useTracker(path, trackerKind);
 
   return (
@@ -85,6 +75,15 @@ export default function MatchesPage() {
 
       {/* Main Workspace Area */}
       <div className="min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden">
+        <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={tab}
+          className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
+          initial={skipEntranceAnimation ? false : { opacity: 0, y: 10, filter: "blur(4px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={skipEntranceAnimation ? undefined : { opacity: 0, y: -6, filter: "blur(4px)", transition: { duration: 0.14 } }}
+          transition={{ duration: 0.32, ease: EASE_SNAP }}
+        >
         {tab === "valorant" ? (
           <ValorantTrackerView />
         ) : tab === "lol" ? (
@@ -101,7 +100,7 @@ export default function MatchesPage() {
           <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
             <div className="shrink-0 space-y-4">
               <div className="flex items-center justify-between gap-4">
-                <h1 className="min-w-0 truncate text-2xl font-bold">{i18n("matchesTitle")}</h1>
+                <h1 className="min-w-0 truncate text-2xl font-bold text-[var(--text-primary)]">{i18n("matchesTitle")}</h1>
                 <button
                   type="button"
                   onClick={async () => {
@@ -113,7 +112,7 @@ export default function MatchesPage() {
                     }
                   }}
                   disabled={syncing}
-                  className="flex shrink-0 items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--accent)]/20 disabled:opacity-50"
+                  className="flex shrink-0 items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-primary)]/15 disabled:opacity-50"
                 >
                   <Icon name="refresh-cw" className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
                   {i18n("sync")}
@@ -123,7 +122,7 @@ export default function MatchesPage() {
               {tab === "apex" ? (
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
                   <div className="min-w-0 flex-1">
-                    <label htmlFor="apex-platform" className="mb-1 block text-xs text-[var(--muted)]">{i18n("platform")}</label>
+                    <label htmlFor="apex-platform" className="mb-1 block text-xs text-[var(--text-muted)]">{i18n("platform")}</label>
                     <Select
                       id="apex-platform"
                       value={apexPlatform}
@@ -193,8 +192,8 @@ export default function MatchesPage() {
             <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-4 pb-6 [overscroll-behavior:contain] [touch-action:pan-y]">
               {loading && !items ? (
                 <div className="space-y-3">
-                  <div className="h-20 animate-pulse rounded-[var(--panel-radius)] bg-[var(--border)]" />
-                  <div className="h-20 animate-pulse rounded-[var(--panel-radius)] bg-[var(--border)]" />
+                  <div className="h-20 skeleton-shimmer rounded-[var(--panel-radius)] bg-[var(--text-primary)]/[0.04]" />
+                  <div className="h-20 skeleton-shimmer rounded-[var(--panel-radius)] bg-[var(--text-primary)]/[0.04]" />
                 </div>
               ) : items && items.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -211,8 +210,8 @@ export default function MatchesPage() {
                     >
                       <FlatCard>
                         <div className="space-y-2">
-                          <p className="font-bold text-white">{match.map || match.mode || "Match"}</p>
-                          <p className="text-xs text-zinc-400 font-mono">{match.kills ?? "-"}/{match.deaths ?? "-"}/{match.assists ?? "-"}</p>
+                          <p className="font-bold text-[var(--text-primary)]">{match.map || match.mode || "Match"}</p>
+                          <p className="text-xs font-mono text-[var(--text-muted)]">{match.kills ?? "-"}/{match.deaths ?? "-"}/{match.assists ?? "-"}</p>
                         </div>
                       </FlatCard>
                     </motion.div>
@@ -220,12 +219,14 @@ export default function MatchesPage() {
                 </div>
               ) : (
                 <FlatCard>
-                  <p className="text-sm text-[var(--muted)]">{i18n("noMatches")}</p>
+                  <p className="text-sm text-[var(--text-muted)]">{i18n("noMatches")}</p>
                 </FlatCard>
               )}
             </div>
           </div>
         )}
+        </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

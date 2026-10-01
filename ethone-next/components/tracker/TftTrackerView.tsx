@@ -128,30 +128,30 @@ export default function TftTrackerView() {
       <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/90 p-4 backdrop-blur-2xl shadow-lg">
         <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
-            <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 flex-1 min-w-[180px]">
-              <User className="h-4 w-4 text-zinc-400 shrink-0" />
+            <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 py-2 transition-colors focus-within:border-[var(--accent-primary)]/60 flex-1 min-w-[180px]">
+              <User className="h-4 w-4 text-[var(--text-muted)] shrink-0" />
               <input
                 type="text"
                 value={riotName}
                 onChange={(e) => setRiotName(e.target.value)}
                 placeholder="Riot Name (ex: Rub19)"
-                className="w-full bg-transparent text-xs font-bold text-white placeholder-zinc-500 outline-none"
+                className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-zinc-500 outline-none"
               />
             </div>
-            <div className="flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 w-28 shrink-0">
-              <span className="text-xs font-bold text-zinc-500">#</span>
+            <div className="flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 py-2 transition-colors focus-within:border-[var(--accent-primary)]/60 w-28 shrink-0">
+              <span className="text-xs font-bold text-[var(--text-muted)]/80">#</span>
               <input
                 type="text"
                 value={riotTag}
                 onChange={(e) => setRiotTag(e.target.value)}
                 placeholder="TAG"
-                className="w-full bg-transparent font-mono text-xs font-bold text-white placeholder-zinc-500 outline-none"
+                className="w-full bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] placeholder-zinc-500 outline-none"
               />
             </div>
             <button
               type="submit"
               disabled={loading || syncing}
-              className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:from-indigo-500 hover:to-violet-500 active:scale-95 transition-all cursor-pointer disabled:opacity-40"
+              className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-xs font-bold text-[var(--text-primary)] shadow-md hover:from-indigo-500 hover:to-violet-500 active:scale-95 transition-all cursor-pointer disabled:opacity-40"
             >
               <Search className="h-3.5 w-3.5" />
               <span>Analyser</span>
@@ -159,8 +159,8 @@ export default function TftTrackerView() {
           </div>
           <div className="flex items-center justify-between lg:justify-end gap-3 shrink-0">
             {lastSyncTime && (
-              <div className="flex items-center gap-1 text-[11px] text-zinc-400 font-medium">
-                <Clock className="h-3 w-3 text-zinc-500" />
+              <div className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] font-medium">
+                <Clock className="h-3 w-3 text-[var(--text-muted)]/80" />
                 <span>Mis en cache ({lastSyncTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })})</span>
               </div>
             )}
@@ -168,7 +168,7 @@ export default function TftTrackerView() {
               type="button"
               onClick={() => fetchMatches(true)}
               disabled={syncing}
-              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 px-3 py-1.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={cn("h-3.5 w-3.5 text-indigo-400", syncing && "animate-spin")} />
               <span>{syncing ? "Synchro..." : "Actualiser"}</span>
@@ -180,13 +180,13 @@ export default function TftTrackerView() {
       {stats && (
         <div className="shrink-0 grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { label: "Parties", value: String(stats.games), icon: Target, tone: "text-zinc-300" },
+            { label: "Parties", value: String(stats.games), icon: Target, tone: "text-[var(--text-primary)]/85" },
             { label: "Placement moyen", value: `${stats.avg}`, icon: Trophy, tone: stats.avg <= 4 ? "text-emerald-400" : "text-rose-400" },
             { label: "Top 4", value: `${stats.top4Rate}%`, icon: Trophy, tone: "text-emerald-400" },
             { label: "Tops 1", value: `${stats.firstRate}%`, icon: Crown, tone: "text-amber-400" },
           ].map((s) => (
             <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
-              <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400">
+              <div className="flex items-center gap-1.5 text-[11px] font-medium text-[var(--text-muted)]">
                 <s.icon className={cn("h-3.5 w-3.5", s.tone)} />
                 {s.label}
               </div>
@@ -200,17 +200,17 @@ export default function TftTrackerView() {
         {loading ? (
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-20 animate-pulse rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02]" />
+              <div key={i} className="h-20 skeleton-shimmer rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02]" />
             ))}
           </div>
         ) : errorMsg && matches.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center text-zinc-400">
+          <div className="pop-in flex flex-col items-center justify-center py-16 text-center text-[var(--text-muted)]">
             <AlertCircle className="mb-2 h-6 w-6 text-rose-400" />
             <p className="max-w-sm text-sm">{errorMsg}</p>
           </div>
         ) : matches.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center text-zinc-400">
-            <Trophy className="mb-2 h-6 w-6 text-zinc-600" />
+          <div className="pop-in flex flex-col items-center justify-center py-16 text-center text-[var(--text-muted)]">
+            <Trophy className="mb-2 h-6 w-6 text-[var(--text-muted)]/60" />
             <p className="text-sm">Entre ton Riot ID pour voir ton historique Teamfight Tactics.</p>
           </div>
         ) : (

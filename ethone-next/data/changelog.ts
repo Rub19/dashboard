@@ -41090,6 +41090,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_48_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_48_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_48_4_de);
 
+const v1_48_5_fr: ChangelogEntry = {
+  version: "v1.48.5",
+  date: "2026-10-02",
+  title: "Tracker et Calendrier : thème, bugs et motion design",
+  items: [
+    "Tracker : tous les textes et fonds suivent maintenant le thème (plus de 250 couleurs étaient figées en blanc/gris : illisible sur les thèmes clairs). Les badges posés sur les portraits restent lisibles.",
+    "Tracker : transition fluide entre les jeux, groupes de jours en cascade, chargements en shimmer, rotation LoL animée ; le TAG Riot n'est plus coupé dans son champ ; la vue Apex utilise les couleurs du thème et un chargement inutile a été retiré.",
+    "Calendrier : le mois glisse dans le sens de la navigation, la sélection glisse d'un jour à l'autre, le panneau du jour apparaît en fondu.",
+    "Calendrier : corrige les clics rapides sur « mois suivant » qui n'avançaient que d'un mois ; fond et panneaux qui restaient noirs sur les thèmes clairs ; page coupée sur mobile (le panneau des factures défile maintenant) ; points sans halo, couleurs du thème.",
+  ],
+};
+
+const v1_48_5_en: ChangelogEntry = {
+  version: "v1.48.5",
+  date: "2026-10-02",
+  title: "Tracker and Calendar: theme, bugs and motion design",
+  items: [
+    "Tracker: every text and background now follows the theme (250+ colours were fixed to white/grey: unreadable on light themes). Badges over portraits stay readable.",
+    "Tracker: smooth transition between games, staggered day groups, shimmer loading, animated LoL rotation; the Riot TAG is no longer cut off; Apex uses theme colours and a useless request was removed.",
+    "Calendar: the month slides in the navigation direction, the selection glides between days, the day panel fades in.",
+    "Calendar: fixes quick clicks on \"next month\" only moving one month; background and panels that stayed black on light themes; page cut off on mobile (the bills panel now scrolls); dots without glow, theme colours.",
+  ],
+};
+
+const v1_48_5_es: ChangelogEntry = {
+  version: "v1.48.5",
+  date: "2026-10-02",
+  title: "Tracker y Calendario: tema, errores y motion",
+  items: [
+    "Colores del tema en todo el Tracker, transiciones, calendario animado y correcciones (clics rápidos, temas claros, móvil).",
+  ],
+};
+
+const v1_48_5_de: ChangelogEntry = {
+  version: "v1.48.5",
+  date: "2026-10-02",
+  title: "Tracker und Kalender: Theme, Fehler und Motion",
+  items: [
+    "Theme-Farben im ganzen Tracker, Übergänge, animierter Kalender und Korrekturen (schnelle Klicks, helle Themes, Mobil).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_48_5_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_48_5_en);
+CHANGELOG_BY_LANG.es.unshift(v1_48_5_es);
+CHANGELOG_BY_LANG.de.unshift(v1_48_5_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

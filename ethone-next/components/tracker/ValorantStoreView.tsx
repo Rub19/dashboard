@@ -98,8 +98,8 @@ function BundleCountdown({ expiresAt, now }: { expiresAt: string | null; now: nu
  */
 function ItemCard({ item }: { item: StoreItem }) {
   return (
-    <li className="group relative flex flex-col overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.02] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--accent-primary)]/35 hover:bg-white/[0.04] hover:shadow-[0_10px_24px_-12px_rgba(0,0,0,0.6)]">
-      <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-gradient-to-b from-white/[0.05] to-black/10">
+    <li className="group relative flex flex-col overflow-hidden rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--accent-primary)]/35 hover:bg-[var(--text-primary)]/[0.04] hover:shadow-[0_10px_24px_-12px_rgba(0,0,0,0.6)]">
+      <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-gradient-to-b from-[var(--text-primary)]/[0.05] to-black/10">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(255,255,255,0.07),transparent_70%)]" />
         {item.image && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -116,12 +116,12 @@ function ItemCard({ item }: { item: StoreItem }) {
         <p className="truncate text-[12.5px] font-semibold leading-tight text-[var(--text-primary)]" title={item.name}>
           {item.name}
         </p>
-        <p className="text-[10px] font-medium uppercase tracking-wide text-[var(--muted)]">{ITEM_TYPE_LABELS[item.type] || item.type}</p>
+        <p className="text-[10px] font-medium uppercase tracking-wide text-[var(--text-muted)]">{ITEM_TYPE_LABELS[item.type] || item.type}</p>
         <div className="mt-auto flex items-center gap-1.5 pt-1">
           <Coins className="h-3 w-3 shrink-0 text-amber-400" />
           <span className="font-mono text-[13px] font-bold text-[var(--text-primary)]">{item.price.toLocaleString("fr-FR")}</span>
           {item.discountPercent > 0 && (
-            <span className="font-mono text-[10px] text-[var(--muted)] line-through">{item.basePrice.toLocaleString("fr-FR")}</span>
+            <span className="font-mono text-[10px] text-[var(--text-muted)] line-through">{item.basePrice.toLocaleString("fr-FR")}</span>
           )}
         </div>
       </div>
@@ -133,7 +133,7 @@ function ItemGridSkeleton({ count }: { count: number }) {
   return (
     <ul className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
       {Array.from({ length: count }).map((_, index) => (
-        <li key={index} className="aspect-[4/5] animate-pulse rounded-xl bg-white/[0.03]" />
+        <li key={index} className="aspect-[4/5] skeleton-shimmer rounded-xl bg-[var(--text-primary)]/[0.03]" />
       ))}
     </ul>
   );
@@ -149,8 +149,8 @@ function FeaturedSection({ bundle, now }: { bundle: FeaturedBundle; now: number 
 
   return (
     <article className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]">
-      <div className="flex flex-wrap items-center gap-3 border-b border-white/[0.06] bg-gradient-to-r from-white/[0.03] to-transparent p-3.5 sm:p-4">
-        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.04] sm:h-14 sm:w-14">
+      <div className="flex flex-wrap items-center gap-3 border-b border-[var(--text-primary)]/[0.06] bg-gradient-to-r from-[var(--text-primary)]/[0.03] to-transparent p-3.5 sm:p-4">
+        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.04] sm:h-14 sm:w-14">
           {bundle.image && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={bundle.image} alt="" className="h-full w-full object-contain p-1.5" loading="lazy" />
@@ -173,7 +173,7 @@ function FeaturedSection({ bundle, now }: { bundle: FeaturedBundle; now: number 
               </Badge>
             )}
           </div>
-          <p className="mt-0.5 flex items-center gap-1 text-xs text-[var(--muted)]">
+          <p className="mt-0.5 flex items-center gap-1 text-xs text-[var(--text-muted)]">
             <Coins className="h-3 w-3 text-amber-400" />
             {formatVp(bundle.price)}
           </p>
@@ -196,7 +196,7 @@ function FeaturedSkeleton() {
     <div className="space-y-4">
       {Array.from({ length: 2 }).map((_, i) => (
         <div key={i} className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]">
-          <div className="h-16 animate-pulse bg-white/[0.03]" />
+          <div className="h-16 animate-pulse bg-[var(--text-primary)]/[0.03]" />
           <div className="p-3">
             <ItemGridSkeleton count={6} />
           </div>
@@ -211,8 +211,8 @@ function CatalogueCard({ bundle }: { bundle: CatalogueBundle }) {
   const promo = bundle.verticalPromoImage;
   const fallback = bundle.displayIcon;
   return (
-    <li className="group relative flex flex-col overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.02] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--accent-primary)]/35 hover:bg-white/[0.04] hover:shadow-[0_10px_24px_-12px_rgba(0,0,0,0.6)]">
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-gradient-to-b from-white/[0.05] to-black/10">
+    <li className="group relative flex flex-col overflow-hidden rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--accent-primary)]/35 hover:bg-[var(--text-primary)]/[0.04] hover:shadow-[0_10px_24px_-12px_rgba(0,0,0,0.6)]">
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-gradient-to-b from-[var(--text-primary)]/[0.05] to-black/10">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(255,255,255,0.06),transparent_70%)]" />
         {promo ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -232,7 +232,7 @@ function CatalogueCard({ bundle }: { bundle: CatalogueBundle }) {
           />
         ) : null}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/70 to-transparent" />
-        <span className="absolute inset-x-0 bottom-0 truncate p-2 text-xs font-semibold text-white" title={bundle.displayName}>
+        <span className="absolute inset-x-0 bottom-0 truncate p-2 text-xs font-semibold text-[var(--text-primary)]" title={bundle.displayName}>
           {bundle.displayName}
         </span>
       </div>
@@ -244,7 +244,7 @@ function CatalogueSkeleton() {
   return (
     <ul className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6">
       {Array.from({ length: 12 }).map((_, index) => (
-        <li key={index} className="aspect-[3/4] animate-pulse rounded-xl bg-white/[0.03]" />
+        <li key={index} className="aspect-[3/4] skeleton-shimmer rounded-xl bg-[var(--text-primary)]/[0.03]" />
       ))}
     </ul>
   );
@@ -333,15 +333,15 @@ export default function ValorantStoreView() {
             <ShoppingBag className="h-5 w-5" />
           </span>
           <div>
-            <h1 className="text-2xl font-bold">Boutique Valorant</h1>
-            <p className="text-xs text-[var(--muted)]">Bundles à la une et catalogue complet.</p>
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">Boutique Valorant</h1>
+            <p className="text-xs text-[var(--text-muted)]">Bundles à la une et catalogue complet.</p>
           </div>
         </div>
         <button
           type="button"
           onClick={() => void load()}
           disabled={loading}
-          className="inline-flex items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/10 disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-2 text-sm font-medium text-[var(--text-primary)] transition-colors active:scale-[0.97] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/10 disabled:opacity-50"
         >
           <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
           {loading ? "Chargement…" : "Actualiser"}
@@ -349,7 +349,7 @@ export default function ValorantStoreView() {
       </div>
 
       <section className="space-y-3" aria-labelledby="featured-title">
-        <h2 id="featured-title" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+        <h2 id="featured-title" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">
           <Sparkles className="h-3.5 w-3.5" />À la une en ce moment
         </h2>
         {featuredError && (
@@ -360,7 +360,7 @@ export default function ValorantStoreView() {
         )}
         {featured === null && !featuredError && <FeaturedSkeleton />}
         {featured && featured.length === 0 && !featuredError && (
-          <p className="v8-panel flex items-center gap-2 rounded-2xl p-4 text-sm text-[var(--muted)]">
+          <p className="v8-panel flex items-center gap-2 rounded-2xl p-4 text-sm text-[var(--text-muted)]">
             <Info className="h-4 w-4 shrink-0" />
             Aucun bundle à la une.
           </p>
@@ -382,17 +382,17 @@ export default function ValorantStoreView() {
           aria-expanded={catalogueOpen}
         >
           <span className="flex items-center gap-2">
-            <ShoppingBag className="h-4 w-4 text-[var(--muted)]" />
+            <ShoppingBag className="h-4 w-4 text-[var(--text-muted)]" />
             <span>
               <span id="catalogue-title" className="block text-sm font-bold text-[var(--text-primary)]">
                 Catalogue complet {catalogue ? `(${catalogue.length})` : ""}
               </span>
-              <span className="block text-[11px] text-[var(--muted)]">
+              <span className="block text-[11px] text-[var(--text-muted)]">
                 Tous les bundles déjà sortis dans le jeu — pas la boutique actuelle, qui est la section « À la une » ci-dessus.
               </span>
             </span>
           </span>
-          <ChevronDown className={cn("h-4 w-4 shrink-0 text-[var(--muted)] transition-transform", catalogueOpen && "rotate-180")} />
+          <ChevronDown className={cn("h-4 w-4 shrink-0 text-[var(--text-muted)] transition-transform", catalogueOpen && "rotate-180")} />
         </button>
 
         {catalogueOpen && (
@@ -423,7 +423,7 @@ export default function ValorantStoreView() {
             )}
             {catalogue === null && !catalogueError && <CatalogueSkeleton />}
             {catalogue && filteredCatalogue.length === 0 && (
-              <p className="v8-panel flex items-center gap-2 rounded-2xl p-4 text-sm text-[var(--muted)]">
+              <p className="v8-panel flex items-center gap-2 rounded-2xl p-4 text-sm text-[var(--text-muted)]">
                 <SearchX className="h-4 w-4 shrink-0" />
                 Aucun bundle ne correspond à « {query} ».
               </p>
@@ -437,7 +437,7 @@ export default function ValorantStoreView() {
         )}
       </section>
 
-      <p className="flex items-start gap-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-[11px] leading-relaxed text-[var(--muted)]">
+      <p className="flex items-start gap-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-[11px] leading-relaxed text-[var(--text-muted)]">
         <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
         La boutique quotidienne personnelle (4 skins du jour, Marché nocturne) n&apos;est pas affichée : Riot ne propose pas d&apos;API publique pour
         elle, elle nécessiterait vos jetons de connexion Riot, qu&apos;ETHONE ne demande ni ne stocke.

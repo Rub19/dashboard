@@ -1,6 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useMotionPref } from "@/lib/hooks/useMotionPref";
+import { EASE_SNAP } from "@/lib/ease";
 import { ChevronLeft, ChevronRight } from "@/components/icons/ph";
 import { Icon } from "@/lib/icons";
 import Select, { type SelectOption } from "@/components/ui/Select";
@@ -42,14 +45,6 @@ export interface CalendarProps {
 
 const DEFAULT_LOCALE = "fr-FR";
 
-const TONE_CLASSES: Record<string, string> = {
-  default: "bg-violet-400",
-  success: "bg-[var(--accent-primary)]",
-  warning: "bg-amber-400",
-  error: "bg-rose-400",
-  info: "bg-sky-400",
-};
-
 export function Calendar({
   value,
   onChange,
@@ -61,6 +56,13 @@ export function Calendar({
 }: CalendarProps) {
   const initial = startOfMonth(value ?? today(getLocalTimeZone()));
   const [focused, setFocused] = React.useState<CalendarDate>(initial);
+  const { reduced } = useMotionPref();
+  // Sens du glissement : mois suivant -> vers la gauche, précédent -> vers la droite.
+  const prevFocused = React.useRef(focused);
+  const dir = focused.compare(prevFocused.current) >= 0 ? 1 : -1;
+  React.useEffect(() => {
+    prevFocused.current = focused;
+  }, [focused]);
 
   React.useEffect(() => {
     if (value) setFocused(startOfMonth(value));
@@ -97,14 +99,23 @@ export function Calendar({
     [focused, locale],
   );
 
+  // Mois courant toujours à jour : deux clics rapprochés partaient de la même valeur du dernier rendu
+  // et n'avançaient que d'un mois.
+  const focusedRef = React.useRef(focused);
+  React.useEffect(() => {
+    focusedRef.current = focused;
+  }, [focused]);
+
   function changeMonth(month: number, year: number) {
     const next = new CalendarDate(year, month, 1);
+    focusedRef.current = next;
     setFocused(next);
     onMonthChange?.(next);
   }
 
   function nav(offset: number) {
-    const next = focused.add({ months: offset });
+    const next = focusedRef.current.add({ months: offset });
+    focusedRef.current = next;
     setFocused(next);
     onMonthChange?.(next);
   }
@@ -145,7 +156,7 @@ export function Calendar({
   return (
     <div
       className={cn(
-        "flex flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/80 p-3 sm:p-4 backdrop-blur-2xl shadow-xl",
+        "flex flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card)] p-3 sm:p-4 shadow-[var(--panel-shadow)]",
         className,
       )}
     >
@@ -153,10 +164,10 @@ export function Calendar({
         <button
           type="button"
           onClick={() => nav(-1)}
-          className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/4 p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
+          className="group rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/4 p-1.5 text-[var(--text-muted)] outline-none transition-[color,transform] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-90 cursor-pointer"
           aria-label="Mois précédent"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
         </button>
 
         {captionLayout === "dropdown" ? (
@@ -177,16 +188,27 @@ export function Calendar({
             />
           </div>
         ) : (
-          <span className="text-sm font-medium text-[var(--text-primary)]">{monthYearLabel}</span>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={monthYearLabel}
+              initial={reduced ? false : { opacity: 0, y: 6 * dir }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduced ? undefined : { opacity: 0, y: -6 * dir }}
+              transition={{ duration: 0.18, ease: EASE_SNAP }}
+              className="text-sm font-medium capitalize text-[var(--text-primary)]"
+            >
+              {monthYearLabel}
+            </motion.span>
+          </AnimatePresence>
         )}
 
         <button
           type="button"
           onClick={() => nav(1)}
-          className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/4 p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
+          className="group rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/4 p-1.5 text-[var(--text-muted)] outline-none transition-[color,transform] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-90 cursor-pointer"
           aria-label="Mois suivant"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
         </button>
       </div>
 
@@ -196,7 +218,17 @@ export function Calendar({
         ))}
       </div>
 
-      <div className="mt-0.5 grid min-h-0 flex-1 grid-cols-7 grid-rows-6 gap-1 sm:gap-1.5 overflow-hidden">
+      <div className="relative mt-0.5 min-h-0 flex-1 overflow-hidden">
+      <AnimatePresence mode="popLayout" initial={false} custom={dir}>
+      <motion.div
+        key={focused.toString()}
+        custom={dir}
+        initial={reduced ? false : { opacity: 0, x: 28 * dir }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={reduced ? undefined : { opacity: 0, x: -28 * dir }}
+        transition={{ duration: 0.26, ease: EASE_SNAP }}
+        className="grid h-full grid-cols-7 grid-rows-6 gap-1 sm:gap-1.5"
+      >
         {cells.map((day) => {
           const inMonth = isSameMonth(day, focused);
           const selected = value ? isSameDay(day, value) : false;
@@ -211,16 +243,23 @@ export function Calendar({
               onClick={() => select(day)}
               aria-pressed={selected}
               className={cn(
-                "relative flex min-h-0 flex-col items-center justify-between rounded-[var(--inset-radius)] p-1 sm:p-1.5 text-xs sm:text-sm transition-all duration-150 cursor-pointer overflow-hidden",
+                "relative isolate flex min-h-0 flex-col items-center justify-between rounded-[var(--inset-radius)] p-1 sm:p-1.5 text-xs sm:text-sm outline-none transition-[background-color,border-color,transform] duration-150 cursor-pointer overflow-hidden focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.96]",
                 !inMonth && "pointer-events-none opacity-0",
                 selected
-                  ? "border border-[var(--accent-primary)]/50 bg-[var(--accent-primary)]/15 text-[var(--text-primary)]"
+                  ? "border border-transparent text-[var(--text-primary)]"
                   : isTodayCell
                     ? "border border-[var(--info)]/40 bg-[var(--info)]/10 text-[var(--info)] hover:bg-[var(--info)]/15"
                     : "border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)] hover:border-[var(--input-border-hover)] hover:bg-[var(--text-primary)]/[0.06]",
                 marker && !selected && "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04]"
               )}
             >
+              {selected && (
+                <motion.span
+                  layoutId="calendar-selected-day"
+                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                  className="absolute inset-0 -z-10 rounded-[inherit] border border-[var(--accent-primary)]/50 bg-[var(--accent-primary)]/15"
+                />
+              )}
               <span
                 className={cn(
                   "text-[11px] sm:text-xs font-bold leading-none",
@@ -243,7 +282,7 @@ export function Calendar({
                         </div>
                       ))}
                       {marker.logos.length > 2 && (
-                        <span className="flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-purple-500/30 border border-purple-500/40 text-[8px] font-bold text-purple-200">
+                        <span className="flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/20 text-[8px] font-bold text-[var(--text-primary)]">
                           +{marker.logos.length - 2}
                         </span>
                       )}
@@ -252,16 +291,16 @@ export function Calendar({
                     <div className="flex items-center gap-1">
                       <span
                         className={cn(
-                          "h-1.5 w-1.5 rounded-full shadow-[0_0_6px_currentColor]",
+                          "h-1.5 w-1.5 rounded-full",
                           marker.tone === "error"
-                            ? "bg-rose-500 text-rose-500"
+                            ? "bg-[var(--danger)]"
                             : marker.tone === "success"
-                            ? "bg-emerald-400 text-emerald-400"
-                            : "bg-purple-400 text-purple-400"
+                            ? "bg-[var(--success)]"
+                            : "bg-[var(--accent-primary)]"
                         )}
                       />
                       {marker.count && marker.count > 1 && (
-                        <span className="font-mono text-[8px] font-bold text-zinc-400">
+                        <span className="font-mono text-[8px] font-bold text-[var(--text-muted)]">
                           {marker.count}
                         </span>
                       )}
@@ -272,6 +311,8 @@ export function Calendar({
             </button>
           );
         })}
+      </motion.div>
+      </AnimatePresence>
       </div>
     </div>
   );

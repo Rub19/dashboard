@@ -36,7 +36,7 @@ function UnitIcon({ unit, size = "h-7 w-7" }: { unit: TftUnit; size?: string }) 
       {!broken ? (
         <img src={getTftUnitIcon(unit.characterId)} alt="" className="h-full w-full object-cover" onError={() => setBroken(true)} />
       ) : (
-        <span className="flex h-full w-full items-center justify-center text-[8px] font-bold text-zinc-300">
+        <span className="flex h-full w-full items-center justify-center text-[8px] font-bold text-[var(--text-primary)]/85">
           {unit.name.slice(0, 3)}
         </span>
       )}
@@ -44,7 +44,7 @@ function UnitIcon({ unit, size = "h-7 w-7" }: { unit: TftUnit; size?: string }) 
         <span
           className={cn(
             "absolute left-0 right-0 top-0 text-center text-[7px] font-black leading-none",
-            unit.tier === 3 ? "text-amber-300" : "text-zinc-200"
+            unit.tier === 3 ? "text-amber-300" : "text-[var(--text-primary)]/90"
           )}
         >
           {"★".repeat(unit.tier)}
@@ -73,7 +73,7 @@ export default function TftMatchRow({ match, index = 0 }: { match: TftMatch; ind
           ? { duration: 0 }
           : { duration: 0.2, delay: Math.min(index * 0.03, 0.3), ease: EASE_OUT }
       }
-      className={cn("rounded-[var(--panel-radius)] border bg-white/[0.02] backdrop-blur-[var(--panel-blur)] transition-colors hover:border-[var(--accent-primary)]/20", pc.border)}
+      className={cn("rounded-[var(--panel-radius)] border bg-[var(--text-primary)]/[0.02] backdrop-blur-[var(--panel-blur)] transition-colors hover:border-[var(--accent-primary)]/20", pc.border)}
     >
       {/* Collapsed header */}
       <button
@@ -83,19 +83,19 @@ export default function TftMatchRow({ match, index = 0 }: { match: TftMatch; ind
       >
         <div className={cn("flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-[var(--inset-radius)] border", pc.bg, pc.border)}>
           <span className={cn("text-lg font-black leading-none", pc.text)}>{placement}</span>
-          <span className="mt-0.5 text-[9px] font-bold uppercase tracking-wide text-zinc-500">{ordinal}</span>
+          <span className="mt-0.5 text-[9px] font-bold uppercase tracking-wide text-[var(--text-muted)]/80">{ordinal}</span>
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            <span className="text-sm font-bold text-white">{match.mode}</span>
-            {match.setNumber > 0 && <span className="text-[10px] font-semibold text-zinc-500">Set {match.setNumber}</span>}
-            <span className="flex items-center gap-1 text-[10px] text-zinc-500">
+            <span className="text-sm font-bold text-[var(--text-primary)]">{match.mode}</span>
+            {match.setNumber > 0 && <span className="text-[10px] font-semibold text-[var(--text-muted)]/80">Set {match.setNumber}</span>}
+            <span className="flex items-center gap-1 text-[10px] text-[var(--text-muted)]/80">
               <Clock className="h-3 w-3" /> {formatTftTimeAgo(match.playedAt)}
             </span>
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-zinc-400">
-            <span>Niv. <span className="font-semibold text-zinc-200">{me?.level ?? "—"}</span></span>
+          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[var(--text-muted)]">
+            <span>Niv. <span className="font-semibold text-[var(--text-primary)]/90">{me?.level ?? "—"}</span></span>
             <span className="flex items-center gap-1"><Skull className="h-3 w-3" /> {me?.playersEliminated ?? 0}</span>
             <span className="flex items-center gap-1"><Swords className="h-3 w-3" /> {me?.damage ?? 0}</span>
             <span className="flex items-center gap-1"><Coins className="h-3 w-3" /> {me?.goldLeft ?? 0}</span>
@@ -116,7 +116,7 @@ export default function TftMatchRow({ match, index = 0 }: { match: TftMatch; ind
           ))}
         </div>
 
-        <ChevronDown className={cn("h-4 w-4 shrink-0 text-zinc-500 transition-transform", open && "rotate-180")} />
+        <ChevronDown className={cn("h-4 w-4 shrink-0 text-[var(--text-muted)]/80 transition-transform", open && "rotate-180")} />
       </button>
 
       {/* Expanded lobby */}
@@ -130,17 +130,17 @@ export default function TftMatchRow({ match, index = 0 }: { match: TftMatch; ind
                   key={p.puuid || p.placement}
                   className={cn(
                     "rounded-[var(--inset-radius)] border p-2.5",
-                    p.isMe ? "border-amber-400/40 bg-amber-400/[0.06]" : "border-[var(--panel-border)] bg-white/[0.02]"
+                    p.isMe ? "border-amber-400/40 bg-amber-400/[0.06]" : "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02]"
                   )}
                 >
                   <div className="flex items-center gap-2">
                     <span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-md border text-xs font-black", ppc.bg, ppc.border, ppc.text)}>
                       {p.placement}
                     </span>
-                    <span className={cn("text-xs font-bold", p.isMe ? "text-amber-300" : "text-zinc-200")}>
+                    <span className={cn("text-xs font-bold", p.isMe ? "text-amber-300" : "text-[var(--text-primary)]/90")}>
                       {p.isMe ? "Vous" : p.companionSpecies || `Joueur ${p.placement}`}
                     </span>
-                    <span className="ml-auto text-[10px] text-zinc-500">
+                    <span className="ml-auto text-[10px] text-[var(--text-muted)]/80">
                       Niv. {p.level} · {p.playersEliminated} elim · {p.damage} dmg
                     </span>
                   </div>

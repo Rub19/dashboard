@@ -341,25 +341,25 @@ export default function ValorantTrackerView() {
         <form onSubmit={handleSearchSubmit} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           {/* Riot ID Input */}
           <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
-            <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 flex-1 min-w-[200px]">
-              <User className="h-4 w-4 text-zinc-400 shrink-0" />
+            <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 py-2 transition-colors focus-within:border-[var(--accent-primary)]/60 flex-1 min-w-[200px]">
+              <User className="h-4 w-4 text-[var(--text-muted)] shrink-0" />
               <input
                 type="text"
                 value={riotName}
                 onChange={(e) => setRiotName(e.target.value)}
                 placeholder="Nom Riot (ex: Rub19)"
-                className="w-full bg-transparent text-xs font-bold text-white placeholder-zinc-500 outline-none"
+                className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-zinc-500 outline-none"
               />
             </div>
 
-            <div className="flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 w-28 shrink-0">
-              <span className="text-xs font-bold text-zinc-500">#</span>
+            <div className="flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 py-2 transition-colors focus-within:border-[var(--accent-primary)]/60 w-28 shrink-0">
+              <span className="text-xs font-bold text-[var(--text-muted)]/80">#</span>
               <input
                 type="text"
                 value={riotTag}
                 onChange={(e) => setRiotTag(e.target.value)}
-                placeholder="TAG (ex: boss)"
-                className="w-full bg-transparent font-mono text-xs font-bold text-white placeholder-zinc-500 outline-none"
+                placeholder="TAG" aria-label="TAG Riot (ex. EUW)"
+                className="w-full bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] placeholder-zinc-500 outline-none"
               />
             </div>
 
@@ -374,7 +374,7 @@ export default function ValorantTrackerView() {
             <button
               type="submit"
               disabled={loading || syncing}
-              className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:from-rose-500 hover:to-red-500 active:scale-95 transition-all cursor-pointer disabled:opacity-40"
+              className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 px-4 py-2 text-xs font-bold text-[var(--text-primary)] shadow-md hover:from-rose-500 hover:to-red-500 active:scale-95 transition-all cursor-pointer disabled:opacity-40"
             >
               <Search className="h-3.5 w-3.5" />
               <span>Analyser</span>
@@ -400,8 +400,8 @@ export default function ValorantTrackerView() {
             </button>
 
             {lastSyncTime && (
-              <div className="hidden sm:flex items-center gap-1 text-[11px] text-zinc-400 font-medium">
-                <Clock className="h-3 w-3 text-zinc-500" />
+              <div className="hidden sm:flex items-center gap-1 text-[11px] text-[var(--text-muted)] font-medium">
+                <Clock className="h-3 w-3 text-[var(--text-muted)]/80" />
                 <span>Mis en cache ({lastSyncTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })})</span>
               </div>
             )}
@@ -410,7 +410,7 @@ export default function ValorantTrackerView() {
               type="button"
               onClick={() => fetchMatches(true)}
               disabled={syncing}
-              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 px-3 py-1.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={cn("h-3.5 w-3.5 text-cyan-400", syncing && "animate-spin")} />
               <span>{syncing ? "Synchro..." : "Actualiser"}</span>
@@ -425,8 +425,8 @@ export default function ValorantTrackerView() {
           {/* Winrate & Match Stats */}
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Victoires / Ratio</p>
-              <p className="text-lg font-black text-white">{winRate}% <span className="text-xs font-normal text-zinc-400">({totalWins}V - {totalLosses}D)</span></p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Victoires / Ratio</p>
+              <p className="text-lg font-black text-[var(--text-primary)]">{winRate}% <span className="text-xs font-normal text-[var(--text-muted)]">({totalWins}V - {totalLosses}D)</span></p>
             </div>
             <div className="flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] bg-rose-500/15 text-rose-400 font-bold border border-rose-500/20">
               {winRate}%
@@ -436,12 +436,12 @@ export default function ValorantTrackerView() {
           {/* Score de performance moyen (0-500) — remplace l'ACS depuis le patch 13.06 */}
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                 {scoreSummary.system === "performance" ? "Score de performance moyen" : "Score de combat moyen (ACS, ancien)"}
               </p>
               <p className="text-lg font-black text-cyan-400">
                 {scoreSummary.value === null ? "—" : scoreSummary.value}{" "}
-                <span className="text-xs font-normal text-zinc-400">
+                <span className="text-xs font-normal text-[var(--text-muted)]">
                   {scoreSummary.value === null
                     ? "non fourni par l'API"
                     : scoreSummary.system === "performance"
@@ -458,13 +458,13 @@ export default function ValorantTrackerView() {
           {/* Top Agent */}
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Agent Principal</p>
-              <p className="text-lg font-black text-white truncate">{topAgents[0]?.name || "Valorant"}</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Agent Principal</p>
+              <p className="text-lg font-black text-[var(--text-primary)] truncate">{topAgents[0]?.name || "Valorant"}</p>
             </div>
             {topAgents[0] && (
               <div className="text-right">
                 <span className="text-xs font-bold text-emerald-400">{topAgents[0].winRate}% WR</span>
-                <p className="text-[10px] text-zinc-400">{topAgents[0].kda} KDA</p>
+                <p className="text-[10px] text-[var(--text-muted)]">{topAgents[0].kda} KDA</p>
               </div>
             )}
           </div>
@@ -474,7 +474,7 @@ export default function ValorantTrackerView() {
       {/* Quick Agent & Map Filters */}
       {matches.length > 0 && (availableAgents.length > 1 || availableMaps.length > 1) && (
         <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)]/50 p-2 backdrop-blur-xl">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 px-2">Filtres :</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]/80 px-2">Filtres :</span>
           
           {/* Agent Filter */}
           {availableAgents.length > 1 && (
@@ -486,7 +486,7 @@ export default function ValorantTrackerView() {
                   "rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all",
                   selectedAgent === "all"
                     ? "bg-rose-500 text-white shadow-sm"
-                    : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
+                    : "bg-[var(--text-primary)]/5 text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]"
                 )}
               >
                 Tous Agents
@@ -500,7 +500,7 @@ export default function ValorantTrackerView() {
                     "rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all",
                     selectedAgent === agent
                       ? "bg-rose-500 text-white shadow-sm"
-                      : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
+                      : "bg-[var(--text-primary)]/5 text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]"
                   )}
                 >
                   {agent}
@@ -519,7 +519,7 @@ export default function ValorantTrackerView() {
                   "rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all",
                   selectedMap === "all"
                     ? "bg-cyan-500 text-black font-extrabold shadow-sm"
-                    : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
+                    : "bg-[var(--text-primary)]/5 text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]"
                 )}
               >
                 Toutes Maps
@@ -533,7 +533,7 @@ export default function ValorantTrackerView() {
                     "rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all",
                     selectedMap === map
                       ? "bg-cyan-500 text-black font-extrabold shadow-sm"
-                      : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
+                      : "bg-[var(--text-primary)]/5 text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]"
                   )}
                 >
                   {map}
@@ -551,31 +551,31 @@ export default function ValorantTrackerView() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="h-16 animate-pulse rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02]"
+                className="h-16 skeleton-shimmer rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02]"
               />
             ))}
           </div>
         ) : errorMsg ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center text-zinc-400">
+          <div className="pop-in flex flex-col items-center justify-center py-16 text-center text-[var(--text-muted)]">
             <div className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] border border-rose-500/30 bg-rose-500/10 text-rose-400 mb-3 shadow-md">
               <AlertCircle className="h-7 w-7" />
             </div>
-            <h4 className="text-sm font-bold text-white">Impossible de charger les parties</h4>
-            <p className="mt-1 max-w-sm text-xs text-zinc-500">{errorMsg}</p>
+            <h4 className="text-sm font-bold text-[var(--text-primary)]">Impossible de charger les parties</h4>
+            <p className="mt-1 max-w-sm text-xs text-[var(--text-muted)]/80">{errorMsg}</p>
           </div>
         ) : dayGroups.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center text-zinc-400">
-            <div className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-300 mb-3">
+          <div className="pop-in flex flex-col items-center justify-center py-16 text-center text-[var(--text-muted)]">
+            <div className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 text-[var(--text-primary)]/85 mb-3">
               <Swords className="h-7 w-7" />
             </div>
-            <h4 className="text-sm font-bold text-white">Aucune partie trouvée</h4>
-            <p className="mt-1 max-w-sm text-xs text-zinc-500">
+            <h4 className="text-sm font-bold text-[var(--text-primary)]">Aucune partie trouvée</h4>
+            <p className="mt-1 max-w-sm text-xs text-[var(--text-muted)]/80">
               Vérifiez votre Riot ID et votre TAG ci-dessus pour charger vos statistiques officielles.
             </p>
           </div>
         ) : (
           dayGroups.map((group, gi) => (
-            <div key={group.rawDate || gi} className="space-y-2">
+            <div key={group.rawDate || gi} className="rise-in space-y-2" style={{ animationDelay: `${Math.min(gi, 6) * 60}ms` }}>
               {/* Day Header Group Matching Screenshot */}
               <ValorantDayHeader
                 group={group}
@@ -602,12 +602,12 @@ export default function ValorantTrackerView() {
               type="button"
               onClick={loadMoreMatches}
               disabled={loadingMore}
-              className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-white/5 px-3.5 py-2 text-xs font-bold text-zinc-300 hover:bg-white/10 hover:text-white active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/5 px-3.5 py-2 text-xs font-bold text-[var(--text-primary)]/85 hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] active:scale-95 transition-all cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={cn("h-3.5 w-3.5", loadingMore && "animate-spin")} />
               <span>{loadingMore ? "Chargement..." : "Charger plus de parties"}</span>
             </button>
-            <p className="text-[10px] text-zinc-600">Expérimental — peut ne rien trouver de plus selon les limites de l'API</p>
+            <p className="text-[10px] text-[var(--text-muted)]/60">Expérimental — peut ne rien trouver de plus selon les limites de l'API</p>
           </div>
         )}
       </div>
@@ -634,20 +634,20 @@ export default function ValorantTrackerView() {
       >
         <form onSubmit={handleSaveApiKey} className="space-y-4">
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-zinc-300">
+            <label className="block text-xs font-bold text-[var(--text-primary)]/85">
               Clé API Henrik (Authorization)
             </label>
-            <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/60 px-3 py-2 text-xs">
+            <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs">
               <Key className="h-4 w-4 text-amber-400 shrink-0" />
               <input
                 type="text"
                 value={apiKeyInput}
                 onChange={(e) => setApiKeyInput(e.target.value)}
                 placeholder="ex: HDEV-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                className="w-full bg-transparent font-mono text-xs text-white placeholder-zinc-500 outline-none"
+                className="w-full bg-transparent font-mono text-xs text-[var(--text-primary)] placeholder-zinc-500 outline-none"
               />
             </div>
-            <p className="text-[11px] text-zinc-400 leading-relaxed mt-1">
+            <p className="text-[11px] text-[var(--text-muted)] leading-relaxed mt-1">
               Obtenez votre clé API gratuite sur{" "}
               <a
                 href="https://api.henrikdev.xyz/dashboard/api-keys"

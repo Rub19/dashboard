@@ -46,15 +46,15 @@ export default function TrackerModeDropdown({
         className={cn(
           "flex items-center gap-2 rounded-[var(--panel-radius)] border px-3.5 py-1.5 text-xs font-bold",
           "transition-all shadow-md active:scale-95 cursor-pointer backdrop-blur-xl",
-          "border-[var(--panel-border)] bg-black/60 text-zinc-200 hover:border-[var(--input-border-hover)] hover:bg-white/[0.08]",
-          "data-[popup-open]:border-[var(--input-border-hover)] data-[popup-open]:bg-white/15 data-[popup-open]:text-white data-[popup-open]:ring-2 data-[popup-open]:ring-white/10",
+          "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-primary)]/90 hover:border-[var(--input-border-hover)] hover:bg-[var(--text-primary)]/[0.08]",
+          "data-[popup-open]:border-[var(--input-border-hover)] data-[popup-open]:bg-[var(--text-primary)]/15 data-[popup-open]:text-[var(--text-primary)] data-[popup-open]:ring-2 data-[popup-open]:ring-[var(--text-primary)]/10",
           className,
         )}
       >
         <span className="truncate max-w-[130px]">
           {selected?.label ?? "Tous les modes"}
         </span>
-        <AnimatedDropdownTriggerIndicator className="h-3.5 w-3.5 text-zinc-400 group-data-[popup-open]:text-white" />
+        <AnimatedDropdownTriggerIndicator className="h-3.5 w-3.5 text-[var(--text-muted)] group-data-[popup-open]:text-[var(--text-primary)]" />
       </AnimatedDropdownTrigger>
 
       <AnimatedDropdownContent side="bottom" align="start" sideOffset={4}>

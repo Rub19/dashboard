@@ -14,10 +14,10 @@ export default function LolDayHeader({ group, onViewReport }: LolDayHeaderProps)
       {/* Left: Date + Count + Record */}
       <div className="flex flex-wrap items-center gap-3.5">
         <div className="flex items-center gap-2">
-          <h3 className="text-base font-black text-white tracking-wide">
+          <h3 className="text-base font-black text-[var(--text-primary)] tracking-wide">
             {group.dateLabel}
           </h3>
-          <span className="flex h-5 min-w-[20px] items-center justify-center rounded-md border border-[var(--panel-border)] bg-white/5 px-1.5 font-mono text-[10px] font-bold text-zinc-300">
+          <span className="flex h-5 min-w-[20px] items-center justify-center rounded-md border border-[var(--panel-border)] bg-[var(--text-primary)]/5 px-1.5 font-mono text-[10px] font-bold text-[var(--text-primary)]/85">
             {group.count}
           </span>
         </div>
@@ -35,29 +35,29 @@ export default function LolDayHeader({ group, onViewReport }: LolDayHeaderProps)
         {/* Record (Wins // Losses) */}
         <div className="flex items-center gap-1.5 font-mono font-black text-xs pl-2">
           <span className="text-emerald-400">{group.wins} W</span>
-          <span className="text-zinc-600">{"//"}</span>
+          <span className="text-[var(--text-muted)]/60">{"//"}</span>
           <span className="text-rose-400">{group.losses} L</span>
         </div>
       </div>
 
       {/* Right: Daily Aggregate KPIs (Avg DPM, Avg KDA, Avg GPM) */}
-      <div className="flex items-center justify-between md:justify-end gap-6 text-zinc-400 overflow-x-auto os-scroll">
+      <div className="flex items-center justify-between md:justify-end gap-6 text-[var(--text-muted)] overflow-x-auto os-scroll">
         {/* Avg DPM */}
         <div className="text-right">
-          <span className="block text-[8px] font-extrabold uppercase text-zinc-500">Avg DPM</span>
-          <span className="font-mono text-xs font-black text-white">{group.avgDpm}</span>
+          <span className="block text-[8px] font-extrabold uppercase text-[var(--text-muted)]/80">Avg DPM</span>
+          <span className="font-mono text-xs font-black text-[var(--text-primary)]">{group.avgDpm}</span>
         </div>
 
         {/* Avg KDA */}
         <div className="text-right">
-          <span className="block text-[8px] font-extrabold uppercase text-zinc-500">Avg KDA</span>
-          <span className="font-mono text-xs font-black text-white">{group.avgKda.toFixed(2)}</span>
+          <span className="block text-[8px] font-extrabold uppercase text-[var(--text-muted)]/80">Avg KDA</span>
+          <span className="font-mono text-xs font-black text-[var(--text-primary)]">{group.avgKda.toFixed(2)}</span>
         </div>
 
         {/* Avg GPM */}
         <div className="text-right min-w-[36px]">
-          <span className="block text-[8px] font-extrabold uppercase text-zinc-500">Avg GPM</span>
-          <span className="font-mono text-xs font-black text-white">{group.avgGpm}</span>
+          <span className="block text-[8px] font-extrabold uppercase text-[var(--text-muted)]/80">Avg GPM</span>
+          <span className="font-mono text-xs font-black text-[var(--text-primary)]">{group.avgGpm}</span>
         </div>
       </div>
     </div>

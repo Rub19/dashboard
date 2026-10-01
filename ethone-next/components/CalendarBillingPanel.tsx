@@ -148,14 +148,14 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
       {/* Header with Selected Date & Total Due */}
       <div className="mb-4 flex shrink-0 items-start justify-between gap-3 border-b border-[var(--panel-border)] pb-3.5">
         <div>
-          <p className="text-xs font-semibold capitalize text-zinc-400">
+          <p className="text-xs font-semibold capitalize text-[var(--text-muted)]">
             {selectedDate.toLocaleDateString(settings.language, {
               weekday: "long",
               day: "numeric",
               month: "long",
             })}
           </p>
-          <h3 className="text-base font-bold text-white mt-0.5">
+          <h3 className="text-base font-bold text-[var(--text-primary)] mt-0.5">
             {dayBills.length === 0
               ? "Aucune facture ce jour"
               : `${dayBills.length} facture${dayBills.length > 1 ? "s" : ""} / échéance${dayBills.length > 1 ? "s" : ""}`}
@@ -175,12 +175,12 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
       {/* List of Bills for the Day */}
       <div className="min-h-0 flex-1 overflow-y-auto os-scroll space-y-2.5 pr-1">
         {dayBills.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-10 text-center text-zinc-500">
-            <div className="flex h-12 w-12 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 mb-2">
+          <div className="flex flex-col items-center justify-center py-10 text-center text-[var(--text-muted)]/80">
+            <div className="flex h-12 w-12 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 text-[var(--text-muted)] mb-2">
               <CreditCard className="h-6 w-6" />
             </div>
-            <p className="text-xs font-semibold text-zinc-300">Rien à payer ce jour</p>
-            <p className="text-[11px] text-zinc-500 mt-0.5">
+            <p className="text-xs font-semibold text-[var(--text-primary)]/85">Rien à payer ce jour</p>
+            <p className="text-[11px] text-[var(--text-muted)]/80 mt-0.5">
               Sélectionnez une autre date ou ajoutez un abonnement ci-dessous.
             </p>
           </div>
@@ -193,26 +193,26 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
                 className={cn(
                   "group relative flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border p-3 transition-all duration-200",
                   b.paid
-                    ? "border-[var(--panel-border)] bg-white/[0.02] opacity-70"
-                    : "border-[var(--panel-border)] bg-white/[0.04] hover:border-[var(--input-border-hover)] hover:bg-white/[0.07]"
+                    ? "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] opacity-70"
+                    : "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] hover:border-[var(--input-border-hover)] hover:bg-[var(--text-primary)]/[0.07]"
                 )}
               >
                 {/* Brand Logo or Icon */}
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div
-                    className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 shadow-xs"
+                    className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] shadow-xs"
                     style={{ backgroundColor: brand.bgColor || "#18181b" }}
                   >
                     {brand.logo ? (
-                      <Icon name={brand.logo} pack="brand" className="h-5 w-5 text-white" />
+                      <Icon name={brand.logo} pack="brand" className="h-5 w-5 text-[var(--text-primary)]" />
                     ) : (
-                      <Icon name={brand.icon || "receipt"} className="h-5 w-5 text-white" />
+                      <Icon name={brand.icon || "receipt"} className="h-5 w-5 text-[var(--text-primary)]" />
                     )}
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-bold text-white">{b.label}</p>
-                    <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[10px] text-zinc-400">
+                    <p className="truncate text-xs font-bold text-[var(--text-primary)]">{b.label}</p>
+                    <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
                       <span className="capitalize">{i18n(b.category)}</span>
                       <span>·</span>
                       <span className="capitalize">{i18n(b.recurrence)}</span>
@@ -222,7 +222,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
 
                 {/* Amount & Paid Toggle */}
                 <div className="flex shrink-0 items-center gap-2">
-                  <span className="font-mono text-xs font-bold text-white">
+                  <span className="font-mono text-xs font-bold text-[var(--text-primary)]">
                     {formatCurrency(b.amount, b.currency, settings.language)}
                   </span>
 
@@ -249,7 +249,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
                   <button
                     type="button"
                     onClick={() => handleDelete(b)}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-500 opacity-0 group-hover:opacity-100 hover:bg-rose-500/20 hover:text-rose-400 transition-all"
+                    className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)]/80 opacity-0 group-hover:opacity-100 hover:bg-rose-500/20 hover:text-rose-400 transition-all"
                     title="Supprimer"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -264,13 +264,13 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
       {/* Add Bill Form / Trigger */}
       <div className="pt-3 border-t border-[var(--panel-border)] shrink-0">
         {adding ? (
-          <div className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/5 p-3.5 animate-in fade-in zoom-in-95 duration-150">
+          <div className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 p-3.5 animate-in fade-in zoom-in-95 duration-150">
             <input
               type="text"
               value={label}
               onChange={(e) => handleLabelChange(e.target.value)}
               placeholder="Nom ou marque (ex: Netflix, ChatGPT, EDF)..."
-              className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 text-xs text-white placeholder-zinc-500 outline-none focus:border-purple-500/50"
+              className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] px-3 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--accent-primary)]/50"
             />
 
             <div className="grid grid-cols-3 gap-2">
@@ -280,36 +280,36 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="Montant"
-                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-2.5 py-1.5 font-mono text-xs text-white placeholder-zinc-500 outline-none focus:border-purple-500/50"
+                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] px-2.5 py-1.5 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--accent-primary)]/50"
               />
 
               <div className="relative">
                 <select
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="w-full appearance-none rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-2.5 py-1.5 pr-7 font-mono text-xs text-white outline-none focus:border-purple-500/50 cursor-pointer"
+                  className="w-full appearance-none rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] px-2.5 py-1.5 pr-7 font-mono text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/50 cursor-pointer"
                 >
                   {CURRENCIES.map((c) => (
-                    <option key={c.id} value={c.id} className="bg-zinc-900 text-white">
+                    <option key={c.id} value={c.id} className="bg-[var(--bg-card)] text-[var(--text-primary)]">
                       {c.label} ({c.code})
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
+                <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-muted)]" />
               </div>
 
               <div className="relative">
                 <select
                   value={recurrence}
                   onChange={(e) => setRecurrence(e.target.value as typeof recurrence)}
-                  className="w-full appearance-none rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-2.5 py-1.5 pr-7 text-xs text-white outline-none focus:border-purple-500/50 cursor-pointer"
+                  className="w-full appearance-none rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] px-2.5 py-1.5 pr-7 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/50 cursor-pointer"
                 >
-                  <option value="monthly" className="bg-zinc-900 text-white">Mensuel</option>
-                  <option value="yearly" className="bg-zinc-900 text-white">Annuel</option>
-                  <option value="weekly" className="bg-zinc-900 text-white">Hebdo</option>
-                  <option value="none" className="bg-zinc-900 text-white">Ponctuel</option>
+                  <option value="monthly" className="bg-[var(--bg-card)] text-[var(--text-primary)]">Mensuel</option>
+                  <option value="yearly" className="bg-[var(--bg-card)] text-[var(--text-primary)]">Annuel</option>
+                  <option value="weekly" className="bg-[var(--bg-card)] text-[var(--text-primary)]">Hebdo</option>
+                  <option value="none" className="bg-[var(--bg-card)] text-[var(--text-primary)]">Ponctuel</option>
                 </select>
-                <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
+                <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-muted)]" />
               </div>
             </div>
 
@@ -317,7 +317,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
               <button
                 type="button"
                 onClick={resetForm}
-                className="rounded-xl px-3 py-1.5 text-xs font-semibold text-zinc-400 hover:text-white"
+                className="rounded-xl px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
                 Annuler
               </button>
@@ -325,7 +325,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
                 type="button"
                 onClick={handleAdd}
                 disabled={!label.trim() || !amount}
-                className="flex items-center gap-1.5 rounded-xl bg-purple-600 px-4 py-1.5 text-xs font-bold text-white shadow-md hover:bg-purple-500 active:scale-95 disabled:opacity-40 cursor-pointer"
+                className="flex items-center gap-1.5 btn-sheen relative rounded-xl bg-[var(--accent-primary)] px-4 py-1.5 text-xs font-bold text-[var(--accent-contrast)] shadow-sm transition-[filter,transform] hover:brightness-110 active:scale-95 disabled:opacity-40 cursor-pointer"
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>Enregistrer</span>
@@ -336,7 +336,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
           <button
             type="button"
             onClick={() => setAdding(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-purple-500/30 bg-purple-500/10 py-2.5 text-xs font-bold text-purple-300 hover:bg-purple-500/20 active:scale-95 transition-all cursor-pointer shadow-xs"
+            className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 py-2.5 text-xs font-bold text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20 active:scale-95 transition-all cursor-pointer shadow-xs"
           >
             <Plus className="h-4 w-4" />
             <span>Ajouter une facture / abonnement</span>

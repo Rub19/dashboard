@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.48.5 — 2026-10-02
+
+**Tracker et Calendrier : thème, bugs et motion design**
+
+- Tracker : tous les textes et fonds suivent maintenant le thème (plus de 250 couleurs étaient figées en blanc/gris : illisible sur les thèmes clairs). Les badges posés sur les portraits restent lisibles.
+- Tracker : transition fluide entre les jeux, groupes de jours en cascade, chargements en shimmer, rotation LoL animée ; le TAG Riot n'est plus coupé dans son champ ; la vue Apex utilise les couleurs du thème et un chargement inutile a été retiré.
+- Calendrier : le mois glisse dans le sens de la navigation, la sélection glisse d'un jour à l'autre, le panneau du jour apparaît en fondu.
+- Calendrier : corrige les clics rapides sur « mois suivant » qui n'avançaient que d'un mois ; fond et panneaux qui restaient noirs sur les thèmes clairs ; page coupée sur mobile (le panneau des factures défile maintenant) ; points sans halo, couleurs du thème.
+
 ## v1.48.4 — 2026-10-02
 
 **Météo refaite : heures justes, motion design**

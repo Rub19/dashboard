@@ -4,16 +4,29 @@ import { ActivityRotationConfig, RotationActivityItem } from '../types/index.js'
 import { PresenceService } from './presenceService.js';
 import { logger } from '../../../utils/logger.js';
 
+// Le verbe (« Listening to », « Playing »…) est ajouté à l'affichage par PresenceService.formatActivityText.
+// Toutes renvoient à ce que fait vraiment Etho (musique, jeux suivis, tickets, classement…).
+const DEFAULT_ACTIVITIES: RotationActivityItem[] = [
+  { id: 'rot_1', type: 'Listening', text: 'Spotify', weight: 20 },
+  { id: 'rot_2', type: 'Playing', text: 'Valorant', weight: 15 },
+  { id: 'rot_3', type: 'Watching', text: '{guildCount} servers', weight: 15 },
+  { id: 'rot_4', type: 'Playing', text: 'League of Legends', weight: 10 },
+  { id: 'rot_5', type: 'Watching', text: '/help • ethone.dev', weight: 15 },
+  { id: 'rot_6', type: 'Listening', text: 'SoundCloud • /play', weight: 10 },
+  { id: 'rot_7', type: 'Playing', text: 'Teamfight Tactics', weight: 8 },
+  { id: 'rot_8', type: 'Watching', text: '{userCount} members', weight: 10 },
+  { id: 'rot_9', type: 'Competing', text: 'ETHONE Tournaments', weight: 8 },
+  { id: 'rot_10', type: 'Listening', text: 'your /suggestions', weight: 8 },
+  { id: 'rot_11', type: 'Playing', text: 'Minecraft', weight: 6 },
+  { id: 'rot_12', type: 'Watching', text: 'your tickets • /ticket', weight: 8 },
+  { id: 'rot_13', type: 'Competing', text: 'the /leaderboard', weight: 6 },
+];
+
 const DEFAULT_CONFIG: ActivityRotationConfig = {
   enabled: false,
   intervalSeconds: 60,
   order: 'sequential',
-  activities: [
-    { id: 'rot_1', type: 'Playing', text: 'Valorant', weight: 40 },
-    { id: 'rot_2', type: 'Watching', text: '{guildCount} serveurs Discord', weight: 30 },
-    { id: 'rot_3', type: 'Listening', text: 'Spotify', weight: 20 },
-    { id: 'rot_4', type: 'Competing', text: 'ETHONE Tournaments', weight: 10 },
-  ],
+  activities: DEFAULT_ACTIVITIES,
   currentIndex: 0,
 };
 
@@ -24,6 +37,8 @@ const DEFAULT_CONFIG: ActivityRotationConfig = {
  * silencieusement la rotation à "désactivée" sans que rien ne le signale sur le dashboard).
  */
 export class ActivityRotationEngine {
+  /** Exposé pour les tests et pour remettre la rotation par défaut. */
+  public static readonly DEFAULT_ACTIVITIES = DEFAULT_ACTIVITIES;
   private static instance: ActivityRotationEngine;
   private timer: NodeJS.Timeout | null = null;
   private configPath = path.resolve(process.cwd(), 'data', 'activity_rotation.json');

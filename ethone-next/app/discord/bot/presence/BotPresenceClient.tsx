@@ -64,6 +64,15 @@ export type PresenceTab =
 export type DiscordStatus = "online" | "idle" | "dnd" | "invisible";
 export type DiscordActivityType = "Playing" | "Streaming" | "Listening" | "Watching" | "Competing";
 
+// Verbe affiché par Discord devant le texte (même table que PresenceService.formatActivityText côté bot).
+const ACTIVITY_VERB: Record<DiscordActivityType, string> = {
+  Playing: "Playing",
+  Streaming: "Streaming",
+  Listening: "Listening to",
+  Watching: "Watching",
+  Competing: "Competing in",
+};
+
 interface BotPresenceClientProps {
   initialTab?: PresenceTab;
 }
@@ -683,7 +692,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         {activityType === "Listening" && <Headphones className="w-3.5 h-3.5 text-emerald-400" />}
                         {activityType === "Watching" && <Tv className="w-3.5 h-3.5 text-blue-400" />}
                         {activityType === "Competing" && <Trophy className="w-3.5 h-3.5 text-amber-400" />}
-                        <span>{activityType}</span>
+                        <span>{ACTIVITY_VERB[activityType]}</span>
                       </span>
 
                       <span className="text-sm font-medium text-[var(--text-primary)]">
@@ -750,7 +759,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               <div className="mt-5 pt-4 border-t border-[var(--panel-border)] flex items-start gap-2 text-xs text-[var(--text-muted)]">
                 <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <p>
-                  <strong className="text-[var(--text-muted)]">Transparence Discord API :</strong> Les bots Discord ne supportent pas nativement les statuts personnalisés utilisateur (Custom Status bio textuelle avec emoji). Les activités officielles supportées par la Gateway sont <code className="text-emerald-300">Playing</code>, <code className="text-emerald-300">Streaming</code>, <code className="text-emerald-300">Listening</code>, <code className="text-emerald-300">Watching</code> et <code className="text-emerald-300">Competing</code>.
+                  <strong className="text-[var(--text-muted)]">Affichage Discord :</strong> Etho publie ses activités en statut personnalisé pour que le verbe apparaisse partout, liste des membres comprise (« Listening to Spotify », « Playing Valorant »). Le mode Streaming garde le type natif de Discord, avec son bouton « Regarder ».
                 </p>
               </div>
             </div>
@@ -818,11 +827,11 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
                     {[
-                      { type: "Playing", label: "Joue à", icon: Flame, color: "text-orange-400" },
-                      { type: "Streaming", label: "Streame", icon: Video, color: "text-emerald-300" },
-                      { type: "Listening", label: "Écoute", icon: Headphones, color: "text-emerald-400" },
-                      { type: "Watching", label: "Regarde", icon: Tv, color: "text-blue-400" },
-                      { type: "Competing", label: "Participe à", icon: Trophy, color: "text-amber-400" },
+                      { type: "Playing", label: ACTIVITY_VERB.Playing, icon: Flame, color: "text-orange-400" },
+                      { type: "Streaming", label: ACTIVITY_VERB.Streaming, icon: Video, color: "text-emerald-300" },
+                      { type: "Listening", label: ACTIVITY_VERB.Listening, icon: Headphones, color: "text-emerald-400" },
+                      { type: "Watching", label: ACTIVITY_VERB.Watching, icon: Tv, color: "text-blue-400" },
+                      { type: "Competing", label: ACTIVITY_VERB.Competing, icon: Trophy, color: "text-amber-400" },
                     ].map((item) => {
                       const Icon = item.icon;
                       const isSelected = activityType === item.type;

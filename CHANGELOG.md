@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.49.0 — 2026-10-02
+
+**Etho : activités complètes et visuels en haute définition**
+
+- Le statut d'Etho affiche maintenant le verbe partout, liste des membres comprise : « Listening to Spotify », « Playing Valorant », « Watching 3 servers »… (avant : juste « Spotify »).
+- Rotation enrichie : 13 activités au lieu de 4 (Spotify, SoundCloud, Valorant, League of Legends, TFT, Minecraft, serveurs, membres, /help, tickets, suggestions, classement, tournois).
+- Variables {userCount}, {ping} et {version} : vraies valeurs uniquement (avant, des chiffres inventés comme 48 membres ou v2.4.0 s'affichaient quand l'info manquait).
+- Avatar animé refait en 1024 px avec un grand « E » et un anneau épais, lisible même en tout petit ; bannière animée en 1500×600 (avant 960×384, floue sur écran haute densité) avec 9 modules.
+- Dashboard : l'aperçu de présence montre le verbe exact affiché par Discord ; l'avatar d'Etho sur le site passe de 2,7 Mo à 592 Ko.
+
 ## v1.48.9 — 2026-10-02
 
 **Motion design et corrections sur toutes les pages du dashboard**

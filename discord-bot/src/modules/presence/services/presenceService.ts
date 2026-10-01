@@ -1,4 +1,6 @@
 import { Client, ActivityType, PresenceData, Events } from 'discord.js';
+import fs from 'fs';
+import path from 'path';
 import {
   BotActivity,
   BotPresenceState,
@@ -11,6 +13,17 @@ import { config } from '../../../config.js';
 import { logger } from '../../../utils/logger.js';
 import { syncEngine } from '../../../services/syncEngine.js';
 
+
+// Version publiée d'ETHONE pour {version} : package.json du dashboard (même dépôt), sinon celui du bot.
+const ETHONE_VERSION = (() => {
+  for (const p of [path.resolve(process.cwd(), '..', 'ethone-next', 'package.json'), path.resolve(process.cwd(), 'package.json')]) {
+    try {
+      const v = JSON.parse(fs.readFileSync(p, 'utf8')).version;
+      if (typeof v === 'string') return `v${v}`;
+    } catch { /* fichier absent */ }
+  }
+  return '';
+})();
 export class PresenceService {
   private static instance: PresenceService;
   private client?: Client;
@@ -97,25 +110,42 @@ export class PresenceService {
     };
   }
 
+  /** Texte affiché pour un type d'activité : « Listening to Spotify », « Playing Valorant »…
+   * Si le texte commence déjà par un verbe (saisi tel quel dans le dashboard), on ne le double pas. */
+  public static formatActivityText(type: DiscordActivityType, name: string, state?: string): string {
+    const verb: Record<DiscordActivityType, string> = {
+      Playing: 'Playing',
+      Streaming: 'Streaming',
+      Listening: 'Listening to',
+      Watching: 'Watching',
+      Competing: 'Competing in',
+    };
+    const prefix = verb[type] ?? '';
+    const already = prefix && name.toLowerCase().startsWith(prefix.toLowerCase());
+    const main = already || !prefix ? name : `${prefix} ${name}`;
+    return (state ? `${main} • ${state}` : main).slice(0, 128);
+  }
+
   /**
    * Résout les variables dynamiques dans le texte de l'activité
    */
   public parseDynamicVariables(text: string): string {
     if (!text) return '';
     const client = this.client;
-    const guildCount = client?.guilds.cache.size || 1;
-    const userCount = client?.users.cache.size || 48;
-    const ping = client?.ws.ping ? Math.max(1, client.ws.ping) : 22;
-    const uptime = client?.uptime ? Math.floor(client.uptime / 60000) : 10;
+    // Valeurs réelles uniquement (avant : 48 membres, 22 ms, v2.4.0… inventés quand l'info manquait).
+    const guildCount = client?.guilds.cache.size ?? 0;
+    const userCount = client ? client.guilds.cache.reduce((sum, g) => sum + (g.memberCount || 0), 0) : 0;
+    const ping = client && client.ws.ping >= 0 ? `${Math.round(client.ws.ping)}ms` : '—';
+    const uptime = client?.uptime ? Math.floor(client.uptime / 60000) : 0;
     const now = new Date();
 
     return text
       .replace(/\{guildCount\}/gi, String(guildCount))
       .replace(/\{serverCount\}/gi, String(guildCount))
-      .replace(/\{userCount\}/gi, String(userCount))
-      .replace(/\{ping\}/gi, `${ping}ms`)
+      .replace(/\{userCount\}/gi, userCount.toLocaleString('fr-FR'))
+      .replace(/\{ping\}/gi, ping)
       .replace(/\{uptime\}/gi, `${uptime}m`)
-      .replace(/\{version\}/gi, 'v2.4.0')
+      .replace(/\{version\}/gi, ETHONE_VERSION)
       .replace(/\{time\}/gi, now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }))
       .replace(/\{date\}/gi, now.toLocaleDateString('fr-FR'));
   }
@@ -140,26 +170,6 @@ export class PresenceService {
   }
 
   /**
-   * Mappe le type vers les constantes Discord.js ActivityType
-   */
-  private mapActivityType(type: DiscordActivityType): ActivityType {
-    switch (type) {
-      case 'Playing':
-        return ActivityType.Playing;
-      case 'Streaming':
-        return ActivityType.Streaming;
-      case 'Listening':
-        return ActivityType.Listening;
-      case 'Watching':
-        return ActivityType.Watching;
-      case 'Competing':
-        return ActivityType.Competing;
-      default:
-        return ActivityType.Playing;
-    }
-  }
-
-  /**
    * Applique réellement la présence sur la Gateway Discord
    */
   private applyToGateway(status: DiscordStatus, activity: BotActivity): boolean {
@@ -168,25 +178,28 @@ export class PresenceService {
     }
 
     try {
-      const resolvedName = this.parseDynamicVariables(activity.name);
+      const resolvedName = this.parseDynamicVariables(activity.name) || 'ETHONE';
       const resolvedState = activity.state ? this.parseDynamicVariables(activity.state) : undefined;
-      const activityType = this.mapActivityType(activity.type);
 
-      const presenceData: PresenceData = {
-        status,
-        activities: [
-          {
-            name: resolvedName || 'ETHONE',
-            type: activityType,
-            url: activity.type === 'Streaming' ? activity.url : undefined,
-            // `state` (2e ligne) : seul champ additionnel exposé par discord.js pour la
-            // présence d'un COMPTE BOT — contrairement à un vrai client de jeu connecté en RPC,
-            // un bot n'a pas accès à `details`/`assets`/`party`/`buttons` (Rich Presence complète),
-            // qui restent une fonctionnalité du Game SDK côté client, pas de la Gateway pour les bots.
-            state: resolvedState,
-          },
-        ],
-      };
+      // Streaming garde le type natif (bouton « Regarder » + lien). Pour les autres, Discord n'affichait
+      // que le nom dans la liste des membres (« Spotify » au lieu de « Listening to Spotify ») : on passe
+      // par le statut personnalisé, affiché tel quel, avec le verbe écrit par nous.
+      const presenceData: PresenceData =
+        activity.type === 'Streaming'
+          ? {
+              status,
+              activities: [{ name: resolvedName, type: ActivityType.Streaming, url: activity.url, state: resolvedState }],
+            }
+          : {
+              status,
+              activities: [
+                {
+                  name: 'Custom Status',
+                  type: ActivityType.Custom,
+                  state: PresenceService.formatActivityText(activity.type, resolvedName, resolvedState),
+                },
+              ],
+            };
 
       this.client.user.setPresence(presenceData);
       this.currentState.fallbackActive = false;

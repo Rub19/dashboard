@@ -41331,6 +41331,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_48_9_en);
 CHANGELOG_BY_LANG.es.unshift(v1_48_9_es);
 CHANGELOG_BY_LANG.de.unshift(v1_48_9_de);
 
+const v1_49_0_fr: ChangelogEntry = {
+  version: "v1.49.0",
+  date: "2026-10-02",
+  title: "Etho : activités complètes et visuels en haute définition",
+  items: [
+    "Le statut d'Etho affiche maintenant le verbe partout, liste des membres comprise : « Listening to Spotify », « Playing Valorant », « Watching 3 servers »… (avant : juste « Spotify »).",
+    "Rotation enrichie : 13 activités au lieu de 4 (Spotify, SoundCloud, Valorant, League of Legends, TFT, Minecraft, serveurs, membres, /help, tickets, suggestions, classement, tournois).",
+    "Variables {userCount}, {ping} et {version} : vraies valeurs uniquement (avant, des chiffres inventés comme 48 membres ou v2.4.0 s'affichaient quand l'info manquait).",
+    "Avatar animé refait en 1024 px avec un grand « E » et un anneau épais, lisible même en tout petit ; bannière animée en 1500×600 (avant 960×384, floue sur écran haute densité) avec 9 modules.",
+    "Dashboard : l'aperçu de présence montre le verbe exact affiché par Discord ; l'avatar d'Etho sur le site passe de 2,7 Mo à 592 Ko.",
+  ],
+};
+
+const v1_49_0_en: ChangelogEntry = {
+  version: "v1.49.0",
+  date: "2026-10-02",
+  title: "Etho: full activities and high-definition visuals",
+  items: [
+    "Etho's status now shows the verb everywhere, member list included: \"Listening to Spotify\", \"Playing Valorant\", \"Watching 3 servers\"… (before: just \"Spotify\").",
+    "Richer rotation: 13 activities instead of 4 (Spotify, SoundCloud, Valorant, League of Legends, TFT, Minecraft, servers, members, /help, tickets, suggestions, leaderboard, tournaments).",
+    "{userCount}, {ping} and {version}: real values only (before, made-up numbers like 48 members or v2.4.0 showed when data was missing).",
+    "Animated avatar rebuilt at 1024 px with a large \"E\" and a thick ring, readable even when tiny; animated banner at 1500×600 (was 960×384, blurry on high-density screens) with 9 modules.",
+    "Dashboard: the presence preview shows the exact verb Discord displays; Etho's avatar on the site goes from 2.7 MB to 592 KB.",
+  ],
+};
+
+const v1_49_0_es: ChangelogEntry = {
+  version: "v1.49.0",
+  date: "2026-10-02",
+  title: "Etho: actividades completas y visuales en HD",
+  items: [
+    "Estado con verbo («Listening to Spotify»), 13 actividades en rotación, avatar 1024 px y banner 1500×600.",
+  ],
+};
+
+const v1_49_0_de: ChangelogEntry = {
+  version: "v1.49.0",
+  date: "2026-10-02",
+  title: "Etho: vollständige Aktivitäten und HD-Visuals",
+  items: [
+    "Status mit Verb („Listening to Spotify“), 13 Aktivitäten in Rotation, Avatar 1024 px und Banner 1500×600.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_49_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_49_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_49_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_49_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

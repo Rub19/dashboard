@@ -159,7 +159,7 @@ export default function VoiceHubsPanel({ guildId, hubs, onChanged }: Props) {
         <div className="grid gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
           <label className="text-xs text-[var(--text-muted)]">
             Nom du hub
-            <input value={newName} maxLength={60} onChange={(e) => setNewName(e.target.value)} className="mt-1 h-10 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500" />
+            <input value={newName} maxLength={60} onChange={(e) => setNewName(e.target.value)} className="mt-1 h-10 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60" />
           </label>
           <div>
             <p className="mb-1 text-xs text-[var(--text-muted)]">Salon vocal déclencheur</p>
@@ -171,7 +171,7 @@ export default function VoiceHubsPanel({ guildId, hubs, onChanged }: Props) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="stagger-children grid grid-cols-1 gap-4 sm:grid-cols-2">
         {hubs.map((hub) => {
           const isEditing = editing === hub.id;
           return (
@@ -180,11 +180,11 @@ export default function VoiceHubsPanel({ guildId, hubs, onChanged }: Props) {
                 <div className="space-y-3">
                   <label className="block text-xs text-[var(--text-muted)]">
                     Nom du hub
-                    <input value={draft.name ?? ""} maxLength={60} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className="mt-1 h-10 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500" />
+                    <input value={draft.name ?? ""} maxLength={60} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className="mt-1 h-10 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60" />
                   </label>
                   <label className="block text-xs text-[var(--text-muted)]">
                     Nom des salons créés
-                    <input value={draft.namingTemplate ?? ""} maxLength={90} onChange={(e) => setDraft({ ...draft, namingTemplate: e.target.value })} className="mt-1 h-10 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 font-mono text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500" />
+                    <input value={draft.namingTemplate ?? ""} maxLength={90} onChange={(e) => setDraft({ ...draft, namingTemplate: e.target.value })} className="mt-1 h-10 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 font-mono text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60" />
                     <span className="mt-1 flex flex-wrap gap-1">
                       {TOKENS.map((t) => (
                         <button key={t} type="button" onClick={() => setDraft({ ...draft, namingTemplate: `${draft.namingTemplate ?? ""}${t}`.slice(0, 90) })} className="cursor-pointer rounded bg-[var(--surface-raised)]/40 px-1.5 py-0.5 font-mono text-xs text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70">
@@ -196,7 +196,7 @@ export default function VoiceHubsPanel({ guildId, hubs, onChanged }: Props) {
                   <div className="grid grid-cols-2 gap-3">
                     <label className="block text-xs text-[var(--text-muted)]">
                       Limite de membres (0 = illimitée)
-                      <input type="number" min={0} max={99} value={draft.userLimit ?? 0} onChange={(e) => setDraft({ ...draft, userLimit: Math.max(0, Math.min(99, Number(e.target.value) || 0)) })} className="mt-1 h-10 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500" />
+                      <input type="number" min={0} max={99} value={draft.userLimit ?? 0} onChange={(e) => setDraft({ ...draft, userLimit: Math.max(0, Math.min(99, Number(e.target.value) || 0)) })} className="mt-1 h-10 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60" />
                     </label>
                     <div>
                       <Select

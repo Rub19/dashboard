@@ -571,7 +571,7 @@ export default function VoiceCenterClient() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredRooms.map((room) => (
                 <div
                   key={room.id}
@@ -719,7 +719,7 @@ export default function VoiceCenterClient() {
                   <th className="p-3.5">Durée</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--panel-border)] text-[var(--text-muted)]">
+              <tbody className="stagger-children divide-y divide-[var(--panel-border)] text-[var(--text-muted)]">
                 {sessions.map((sess) => (
                   <tr key={sess.id} className="hover:bg-[var(--surface-raised)]/70 transition-colors">
                     <td className="p-3.5 font-medium text-[var(--text-primary)]">{sess.userTag}</td>
@@ -744,7 +744,7 @@ export default function VoiceCenterClient() {
               value={newRoomName}
               onChange={(e) => setNewRoomName(e.target.value)}
               placeholder="Nouveau nom du salon"
-              className="w-full h-10 px-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-emerald-500"
+              className="w-full h-10 px-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]/60"
             />
             <div className="flex items-center justify-end gap-2 pt-2">
               <button

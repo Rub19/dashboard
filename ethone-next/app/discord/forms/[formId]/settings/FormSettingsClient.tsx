@@ -191,7 +191,7 @@ export default function FormSettingsClient() {
           </Link>
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">Paramètres & intégration Discord</h1>
-            <p className="text-xs text-[var(--text-muted)] mt-0.5">{formTitle} · <span className={formStatus === "PUBLISHED" ? "text-emerald-400" : "text-amber-400"}>{formStatus}</span>{dirty && <span className="text-amber-400"> · non enregistré</span>}</p>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">{formTitle} · <span className={formStatus === "PUBLISHED" ? "text-[var(--accent-primary)]" : "text-amber-400"}>{formStatus}</span>{dirty && <span className="text-amber-400"> · non enregistré</span>}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -231,7 +231,7 @@ export default function FormSettingsClient() {
                 guildId={rawGuildId}
                 placeholder="ID du salon ou sélection dans la liste"
               />
-              {panel.messageId && <p className="text-xs text-emerald-400">Panneau déjà posté (message {panel.messageId}) — republier en crée un nouveau.</p>}
+              {panel.messageId && <p className="text-xs text-[var(--accent-primary)]">Panneau déjà posté (message {panel.messageId}) — republier en crée un nouveau.</p>}
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-[var(--text-muted)]">Titre</label>
@@ -298,7 +298,7 @@ export default function FormSettingsClient() {
           </div>
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Aperçu Discord</h3>
-            <div className="rounded-2xl border border-emerald-500/30 bg-[#2b2d31] p-4 text-white space-y-3">
+            <div className="rounded-2xl border border-[var(--accent-primary)]/30 bg-[#2b2d31] p-4 text-white space-y-3">
               <div className="border-l-4 pl-3 space-y-1.5" style={{ borderColor: panel.embedColor }}>
                 <h4 className="text-sm font-bold text-[var(--text-primary)]">{panel.embedTitle}</h4>
                 <p className="text-xs text-[#dbdee1] whitespace-pre-wrap leading-relaxed">{panel.embedDescription}</p>
@@ -346,7 +346,7 @@ export default function FormSettingsClient() {
               <h3 className="text-sm font-bold text-[var(--text-primary)]">Scoring pondéré</h3>
               <p className="text-xs text-[var(--text-muted)]">Les points définis sur chaque option (builder) sont additionnés par réponse.</p>
             </div>
-            <input type="checkbox" checked={scoring.enabled} onChange={(e) => patchScoring({ enabled: e.target.checked })} className="h-4 w-4 rounded accent-emerald-500 cursor-pointer" />
+            <input type="checkbox" checked={scoring.enabled} onChange={(e) => patchScoring({ enabled: e.target.checked })} className="h-4 w-4 rounded accent-[var(--accent-primary)] cursor-pointer" />
           </div>
           {scoring.enabled && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
@@ -382,7 +382,7 @@ export default function FormSettingsClient() {
             </button>
           </div>
           {automations.length === 0 && <p className="text-xs text-[var(--text-muted)]">Aucune automation. Exemple : à l'approbation → ajouter le rôle Modérateur + MP de bienvenue.</p>}
-          <div className="space-y-3">
+          <div className="stagger-children space-y-3">
             {automations.map((rule) => {
               const update = (p: Partial<Automation>) => setAutos((prev) => prev.map((r) => (r.id === rule.id ? { ...r, ...p } : r)));
               const action = rule.actions[0] || { type: "NOTIFY_STAFF" as ActionType };
@@ -393,9 +393,9 @@ export default function FormSettingsClient() {
               return (
                 <div key={rule.id} className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0"><Zap className="h-4 w-4" /></div>
+                    <div className="h-8 w-8 rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] flex items-center justify-center shrink-0"><Zap className="h-4 w-4" /></div>
                     <input type="text" value={rule.name} onChange={(e) => update({ name: e.target.value })} className="flex-1 h-8 bg-transparent text-sm font-bold text-[var(--text-primary)] border-b border-transparent hover:border-[var(--input-border-hover)] focus:border-[var(--input-border-hover)] outline-none" />
-                    <input type="checkbox" checked={rule.enabled} onChange={(e) => update({ enabled: e.target.checked })} className="h-4 w-4 rounded accent-emerald-500 cursor-pointer" title="Activée" />
+                    <input type="checkbox" checked={rule.enabled} onChange={(e) => update({ enabled: e.target.checked })} className="h-4 w-4 rounded accent-[var(--accent-primary)] cursor-pointer" title="Activée" />
                     <button onClick={() => setAutos((prev) => prev.filter((r) => r.id !== rule.id))} className="h-7 w-7 flex items-center justify-center rounded-lg text-[var(--text-muted)] hover:text-rose-400 hover:bg-[var(--surface-raised)]/70 cursor-pointer"><Trash2 className="h-3.5 w-3.5" /></button>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">

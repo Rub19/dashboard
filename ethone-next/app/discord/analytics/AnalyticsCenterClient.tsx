@@ -454,7 +454,7 @@ export default function AnalyticsCenterClient() {
         {/* KPI Cards */}
         {overview && health && (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="stagger-children grid grid-cols-2 sm:grid-cols-4 gap-3">
           {kpiCards.map(({ label, kpi, colorClass }) => {
             const delta = formatDelta(kpi);
             return (
@@ -762,7 +762,7 @@ export default function AnalyticsCenterClient() {
                   Pas encore de messages enregistrés sur cette période.
                 </p>
               ) : (
-                <div className="space-y-3">
+                <div className="stagger-children space-y-3">
                   {overview.topChannels.map((ch) => (
                     <div key={ch.channelId} className="space-y-1.5">
                       <div className="flex justify-between text-xs">
@@ -795,7 +795,7 @@ export default function AnalyticsCenterClient() {
                   Pas encore de messages enregistrés sur cette période.
                 </p>
               ) : (
-                <div className="divide-y divide-[var(--panel-border)]">
+                <div className="stagger-children divide-y divide-[var(--panel-border)]">
                   {overview.topMembers.map((m, idx) => (
                     <div key={m.userId} className="py-2.5 flex items-center justify-between text-xs">
                       <div className="flex items-center gap-3">
@@ -843,7 +843,7 @@ export default function AnalyticsCenterClient() {
                   Pas assez de données pour générer des informations sur cette période.
                 </p>
               ) : (
-                <div className="space-y-2.5">
+                <div className="stagger-children space-y-2.5">
                   {overview.insights.map((insight) => {
                     const Icon = INSIGHT_ICON[insight.type] || Sparkles;
                     return (

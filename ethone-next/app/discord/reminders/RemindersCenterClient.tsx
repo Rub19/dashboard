@@ -355,7 +355,7 @@ export default function RemindersCenterClient() {
               {pending.length === 0 ? (
                 <p className="px-4 py-8 text-center text-sm text-[var(--text-muted)]">Aucun rappel en attente.</p>
               ) : (
-                <div className="divide-y divide-[var(--panel-border)]">
+                <div className="stagger-children divide-y divide-[var(--panel-border)]">
                   {pending.map((r) => (
                     <div key={r.id} className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center">
                       <div className="min-w-0 flex-1">

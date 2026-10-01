@@ -630,7 +630,7 @@ export default function GiveawaysCenterClient() {
             )}
 
             {activeGiveaways.length === 0 && !loading && (
-              <div className="py-16 text-center rounded-xl border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/20 p-8">
+              <div className="pop-in py-16 text-center rounded-xl border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/20 p-8">
                 <Gift className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3 opacity-60" />
                 <p className="text-sm font-semibold text-[var(--text-muted)]">Aucun concours en cours</p>
                 <p className="text-xs text-[var(--text-muted)] mt-1">
@@ -646,7 +646,7 @@ export default function GiveawaysCenterClient() {
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="stagger-children grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {activeGiveaways.map((gw) => {
                 const channelName = channels.find((c) => c.id === gw.channelId)?.name;
                 const requiredRoleNames = gw.requirements.requiredRoleIds.map(
@@ -1101,11 +1101,11 @@ export default function GiveawaysCenterClient() {
 
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl overflow-hidden">
               {pastGiveaways.length === 0 && (
-                <div className="py-12 text-center text-sm text-[var(--text-muted)]">
+                <div className="pop-in py-12 text-center text-sm text-[var(--text-muted)]">
                   Aucun concours dans l'historique correspondant à ce filtre.
                 </div>
               )}
-              <div className="divide-y divide-[var(--panel-border)]">
+              <div className="stagger-children divide-y divide-[var(--panel-border)]">
                 {pastGiveaways.map((gw) => {
                   const isEnded = gw.status === "ended";
                   const isCancelled = gw.status === "cancelled";
@@ -1381,14 +1381,14 @@ export default function GiveawaysCenterClient() {
 
               <div className="flex-1 overflow-y-auto os-scroll space-y-2 pr-1 min-h-[220px]">
                 {participantsLoading && (
-                  <div className="py-12 text-center text-xs text-[var(--text-muted)] flex items-center justify-center gap-2">
+                  <div className="pop-in py-12 text-center text-xs text-[var(--text-muted)] flex items-center justify-center gap-2">
                     <RefreshCw className="w-4 h-4 animate-spin" />
                     Chargement des participants...
                   </div>
                 )}
 
                 {!participantsLoading && filteredParticipants.length === 0 && (
-                  <div className="py-12 text-center text-xs text-[var(--text-muted)]">
+                  <div className="pop-in py-12 text-center text-xs text-[var(--text-muted)]">
                     {participantSearch ? "Aucun participant ne correspond à la recherche." : "Aucun participant inscrit pour l'instant."}
                   </div>
                 )}

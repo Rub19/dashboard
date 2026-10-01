@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -375,7 +377,7 @@ export default function FormBuilderClient() {
               onChange={(e) => setFormTitle(e.target.value)}
               className="bg-transparent text-sm font-bold text-[var(--text-primary)] border-b border-transparent hover:border-[var(--input-border-hover)] focus:border-[var(--input-border-hover)] outline-none px-1 py-0.5 rounded transition-colors"
             />
-            <span className={cn("text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border", formStatus === "PUBLISHED" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : formStatus === "DRAFT" ? "bg-amber-500/20 text-amber-300 border-amber-500/30" : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)] border-[var(--panel-border)]")}>
+            <span className={cn("text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border", formStatus === "PUBLISHED" ? "bg-[var(--success)]/15 text-[var(--success)] border-[var(--success)]/30" : formStatus === "DRAFT" ? "bg-amber-500/20 text-amber-300 border-amber-500/30" : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)] border-[var(--panel-border)]")}>
               {formStatus === "PUBLISHED" ? "Publié" : formStatus === "DRAFT" ? "Brouillon" : formStatus === "CLOSED" ? "Fermé" : "Archivé"} v{formVersion}
             </span>
             {dirty && <span className="text-xs text-amber-400">• non enregistré</span>}
@@ -387,41 +389,45 @@ export default function FormBuilderClient() {
           <button
             onClick={() => setPreviewMode("edit")}
             className={cn(
-              "flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer",
-              previewMode === "edit" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              "relative isolate flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold outline-none transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
+              previewMode === "edit" ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
+            {previewMode === "edit" && <motion.span layoutId="form-preview-mode" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
             <Sliders className="h-3 w-3" />
             <span>Éditeur</span>
           </button>
           <button
             onClick={() => setPreviewMode("desktop")}
             className={cn(
-              "flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer",
-              previewMode === "desktop" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              "relative isolate flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold outline-none transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
+              previewMode === "desktop" ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
+            {previewMode === "desktop" && <motion.span layoutId="form-preview-mode" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
             <Monitor className="h-3 w-3" />
             <span className="hidden md:inline">Aperçu Web</span>
           </button>
           <button
             onClick={() => setPreviewMode("mobile")}
             className={cn(
-              "flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer",
-              previewMode === "mobile" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              "relative isolate flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold outline-none transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
+              previewMode === "mobile" ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
+            {previewMode === "mobile" && <motion.span layoutId="form-preview-mode" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
             <Smartphone className="h-3 w-3" />
             <span className="hidden md:inline">Mobile</span>
           </button>
           <button
             onClick={() => setPreviewMode("discord")}
             className={cn(
-              "flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer",
-              previewMode === "discord" ? "bg-emerald-500 text-white shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              "relative isolate flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold outline-none transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
+              previewMode === "discord" ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
-            <MessageSquare className="h-3 w-3 text-emerald-400" />
+            {previewMode === "discord" && <motion.span layoutId="form-preview-mode" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+            <MessageSquare className="h-3 w-3" />
             <span className="hidden md:inline">Modal Discord</span>
           </button>
         </div>
@@ -471,16 +477,16 @@ export default function FormBuilderClient() {
                 <span className="text-xs font-bold text-[var(--text-muted)] tracking-wider block uppercase">
                   {cat.category}
                 </span>
-                <div className="grid grid-cols-1 gap-1">
+                <div className="stagger-children grid grid-cols-1 gap-1">
                   {cat.items.map((item) => {
                     const Icon = item.icon;
                     return (
                       <button
                         key={item.type}
                         onClick={() => handleAddField(item.type, item.label)}
-                        className="flex items-center gap-2.5 p-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-emerald-500/15 hover:border-[var(--input-border-hover)] text-left transition-all cursor-pointer group"
+                        className="flex items-center gap-2.5 p-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--accent-primary)]/15 hover:border-[var(--input-border-hover)] text-left transition-all cursor-pointer group"
                       >
-                        <div className="h-7 w-7 rounded-lg bg-[var(--surface-raised)]/50 group-hover:bg-emerald-600 text-[var(--text-muted)] group-hover:text-[var(--text-primary)] flex items-center justify-center shrink-0 transition-colors">
+                        <div className="h-7 w-7 rounded-lg bg-[var(--surface-raised)]/50 group-hover:bg-[var(--accent-primary)] text-[var(--text-muted)] group-hover:text-[var(--text-primary)] flex items-center justify-center shrink-0 transition-colors">
                           <Icon className="h-3.5 w-3.5" />
                         </div>
                         <div className="min-w-0">
@@ -508,12 +514,13 @@ export default function FormBuilderClient() {
                       key={sec.id}
                       onClick={() => setActiveSectionId(sec.id)}
                       className={cn(
-                        "h-8 px-3 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer",
+                        "relative isolate h-8 px-3 rounded-xl text-xs font-bold whitespace-nowrap outline-none transition-colors flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                         activeSectionId === sec.id
-                          ? "bg-emerald-500 text-white shadow"
+                          ? "text-[var(--accent-contrast)]"
                           : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
                       )}
                     >
+                      {activeSectionId === sec.id && <motion.span layoutId="form-section-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                       <span className="h-4 w-4 rounded-full bg-[var(--surface-raised)]/40 flex items-center justify-center text-xs">
                         {idx + 1}
                       </span>
@@ -566,17 +573,19 @@ export default function FormBuilderClient() {
                     <p className="text-xs text-[var(--text-muted)]">Cliquez sur la palette à gauche pour ajouter votre premier champ.</p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div key={activeSectionId} className="stagger-children space-y-3">
                     {currentSectionFields.map((field, index) => {
                       const isSelected = selectedFieldId === field.id;
                       return (
-                        <div
+                        <motion.div
+                          layout="position"
+                          transition={{ type: "spring", stiffness: 420, damping: 36 }}
                           key={field.id}
                           onClick={() => setSelectedFieldId(field.id)}
                           className={cn(
                             "rounded-2xl border p-4 transition-all cursor-pointer relative group",
                             isSelected
-                              ? "border-emerald-500 bg-emerald-500/10 ring-1 ring-emerald-500/40 "
+                              ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 ring-1 ring-[var(--accent-primary)]/40 "
                               : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/70"
                           )}
                         >
@@ -693,7 +702,7 @@ export default function FormBuilderClient() {
                               </div>
                             )}
                           </div>
-                        </div>
+                        </motion.div>
                       );
                     })}
                   </div>
@@ -770,7 +779,7 @@ export default function FormBuilderClient() {
                         prev.map((f) => (f.id === selectedField.id ? { ...f, required: checked } : f))
                       );
                     }}
-                    className="rounded border-[var(--input-border)] accent-emerald-500 h-4 w-4 cursor-pointer"
+                    className="rounded border-[var(--input-border)] accent-[var(--accent-primary)] h-4 w-4 cursor-pointer"
                   />
                 </label>
 
@@ -795,13 +804,13 @@ export default function FormBuilderClient() {
                             )
                           );
                         }}
-                        className="text-xs text-emerald-400 hover:text-emerald-300 font-bold"
+                        className="text-xs text-[var(--accent-primary)] hover:text-[var(--accent-primary)] font-bold"
                       >
                         + Ajouter
                       </button>
                     </div>
 
-                    <div className="space-y-1.5">
+                    <div className="stagger-children space-y-1.5">
                       {selectedField.options.map((opt, oIdx) => (
                         <div key={opt.id} className="flex items-center gap-1.5">
                           <input
@@ -864,7 +873,7 @@ export default function FormBuilderClient() {
               "w-full transition-all duration-200",
               previewMode === "desktop" && "max-w-2xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 sm:p-8 ",
               previewMode === "mobile" && "max-w-sm rounded-[40px] border-4 border-[var(--panel-border)] bg-[var(--bg-main)] p-6 space-y-4",
-              previewMode === "discord" && "max-w-md rounded-2xl border border-emerald-500/40 bg-[#313338] p-5 text-white"
+              previewMode === "discord" && "max-w-md rounded-2xl border border-[var(--accent-primary)]/40 bg-[#313338] p-5 text-white"
             )}
           >
             {/* Discord Header */}
@@ -887,7 +896,7 @@ export default function FormBuilderClient() {
             )}
 
             {/* Render Fields */}
-            <div className="space-y-4">
+            <div className="stagger-children space-y-4">
               {fields.map((f) => (
                 <div key={f.id} className="space-y-1.5 text-xs">
                   <label className="font-semibold text-[var(--text-primary)] flex items-center gap-1">
@@ -944,7 +953,7 @@ export default function FormBuilderClient() {
                 type="button"
                 disabled
                 title="Aperçu seulement — les membres répondent via le panneau Discord ou le portail web"
-                className="h-9 px-4 rounded-xl bg-emerald-500/60 text-xs font-bold text-[var(--text-primary)] shadow cursor-not-allowed"
+                className="h-9 px-4 rounded-xl bg-[var(--accent-primary)]/60 text-xs font-bold text-[var(--text-primary)] shadow cursor-not-allowed"
               >
                 Envoyer (aperçu)
               </button>

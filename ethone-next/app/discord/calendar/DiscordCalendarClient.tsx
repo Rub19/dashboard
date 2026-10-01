@@ -435,7 +435,7 @@ export default function DiscordCalendarClient() {
             </div>
 
             {/* Days Grid */}
-            <div className="grid grid-cols-7 auto-rows-fr">
+            <div className="stagger-children grid grid-cols-7 auto-rows-fr">
               {monthDays.map((cell, idx) => {
                 const cellDateStr = cell.date.toISOString().slice(0, 10);
                 const isToday = new Date().toISOString().slice(0, 10) === cellDateStr;
@@ -496,7 +496,7 @@ export default function DiscordCalendarClient() {
 
         {/* View 2: Agenda View */}
         {viewMode === "AGENDA" && (
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             {filteredEvents.map((ev) => {
               const start = new Date(ev.startDate);
               return (

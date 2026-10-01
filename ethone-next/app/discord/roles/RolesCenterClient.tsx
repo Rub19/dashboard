@@ -593,7 +593,7 @@ export default function RolesCenterClient() {
             ) : panels.length === 0 ? (
               <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-2xl p-10 text-center text-xs text-[var(--text-muted)]">Aucun panneau. Crée-en un pour laisser tes membres choisir leurs rôles.</div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-6">
                 {panels.map((pnl) => {
                   const mode = pnl.groups[0]?.mode || "toggle";
                   const busy = busyPanelId === pnl.id;
@@ -687,11 +687,11 @@ export default function RolesCenterClient() {
               </div>
               <div>
                 <label className="block font-semibold text-[var(--text-muted)] mb-1">Titre de l'embed *</label>
-                <input type="text" required value={formTitle} onChange={(e) => setFormTitle(e.target.value)} placeholder="🎮 Rôles de jeux & plateformes" className="w-full h-10 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] px-3 text-xs text-[var(--text-primary)] focus:outline-none focus:border-emerald-500" />
+                <input type="text" required value={formTitle} onChange={(e) => setFormTitle(e.target.value)} placeholder="🎮 Rôles de jeux & plateformes" className="w-full h-10 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] px-3 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]/60" />
               </div>
               <div>
                 <label className="block font-semibold text-[var(--text-muted)] mb-1">Description / consignes</label>
-                <textarea rows={2} value={formDesc} onChange={(e) => setFormDesc(e.target.value)} placeholder="Clique sur les boutons pour ajouter ou retirer un rôle..." className="w-full rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] p-3 text-xs text-[var(--text-primary)] focus:outline-none focus:border-emerald-500" />
+                <textarea rows={2} value={formDesc} onChange={(e) => setFormDesc(e.target.value)} placeholder="Clique sur les boutons pour ajouter ou retirer un rôle..." className="w-full rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] p-3 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]/60" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
@@ -728,7 +728,7 @@ export default function RolesCenterClient() {
                   <h4 className="font-bold text-[var(--text-primary)] flex items-center gap-1.5"><Tag className="w-4 h-4 text-emerald-400" /> Rôles ({formItems.length})</h4>
                   <button type="button" onClick={() => setFormItems((p) => [...p, newItem(p.length + 1)])} className="px-3 py-1.5 rounded-xl bg-[var(--surface-raised)] hover:bg-[var(--text-primary)]/20 text-[var(--text-primary)] text-xs font-semibold flex items-center gap-1 cursor-pointer"><Plus className="w-3.5 h-3.5" /> Ajouter</button>
                 </div>
-                <div className="space-y-2">
+                <div className="stagger-children space-y-2">
                   {formItems.map((opt, idx) => (
                     <div key={opt.id} className="grid grid-cols-12 items-center gap-2 p-2.5 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)]">
                       <input type="text" value={opt.emoji || ""} onChange={(e) => setFormItems((p) => p.map((x, i) => (i === idx ? { ...x, emoji: e.target.value || null } : x)))} placeholder="⭐" className="col-span-2 sm:col-span-1 h-9 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] text-center text-xs" />

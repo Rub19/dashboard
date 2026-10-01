@@ -103,7 +103,7 @@ export default function SetupModulesStep({ guildId }: { guildId: string }) {
         </div>
       ) : (
         <>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="stagger-children grid gap-3 sm:grid-cols-2">
             {PRESETS.map((p) => {
               const active = sameAs(p.ids);
               return (

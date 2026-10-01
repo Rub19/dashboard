@@ -81,7 +81,7 @@ function DiscordPreview({ title, lines }: { title: string; lines: string[] }) {
   return (
     <div className="rounded-xl bg-[#2b2d31] p-3 text-[#b5bac1]">
       <p className="mb-1.5 text-xs font-bold uppercase tracking-wide text-[#949ba4]">⌄ {title}</p>
-      <ul className="space-y-1">
+      <ul className="stagger-children space-y-1">
         {lines.map((l, i) => (
           <li key={i} className="flex items-center gap-2 rounded-md px-2 py-1 text-[13px] hover:bg-[var(--surface-raised)]/70">
             <Volume2 className="h-4 w-4 shrink-0 opacity-70" />
@@ -295,7 +295,7 @@ export default function ServerStatsCenterClient() {
               {overview.channels.length === 0 ? (
                 <p className="rounded-xl border border-dashed border-[var(--panel-border)] p-6 text-center text-xs text-[var(--text-muted)]">Aucun compteur. Utilisez un démarrage en un clic ci-dessus ou ajoutez-en un ci-dessous.</p>
               ) : (
-                <ul className="space-y-2">
+                <ul className="stagger-children space-y-2">
                   {overview.channels.map((c) => (
                     <li key={c.channelId} className="flex flex-wrap items-center gap-3 rounded-xl bg-[var(--surface-raised)]/40 px-4 py-3 text-xs">
                       <Volume2 className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />

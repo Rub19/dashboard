@@ -95,7 +95,7 @@ export default function PollVoteClient() {
                           name={question.id}
                           checked={selected}
                           onChange={() => toggle(question.id, option.id, multiple)}
-                          className="h-4 w-4 accent-emerald-500"
+                          className="h-4 w-4 accent-[var(--accent-primary)]"
                         />
                         <span>
                           {option.emoji ? `${option.emoji} ` : ""}

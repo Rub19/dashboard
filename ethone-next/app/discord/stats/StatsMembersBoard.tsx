@@ -161,7 +161,7 @@ export default function StatsMembersBoard({
   return (
     <div className="space-y-6">
       {champions && (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="stagger-children grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           {CHAMPIONS.map((c) => {
             const list = champions[c.kind] ?? [];
             return (
@@ -260,11 +260,11 @@ export default function StatsMembersBoard({
         </div>
 
         {failed ? (
-          <p className="py-10 text-center text-xs text-[var(--text-muted)]">
+          <p className="pop-in py-10 text-center text-xs text-[var(--text-muted)]">
             Le bot n&apos;a pas répondu : le classement est indisponible.
           </p>
         ) : rows.length === 0 && !loading ? (
-          <p className="py-10 text-center text-xs text-[var(--text-muted)]">
+          <p className="pop-in py-10 text-center text-xs text-[var(--text-muted)]">
             {query
               ? "Aucun membre ne correspond à cette recherche."
               : "Aucune activité enregistrée sur cette période."}
@@ -284,7 +284,7 @@ export default function StatsMembersBoard({
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--panel-border)]">
+              <tbody className="stagger-children divide-y divide-[var(--panel-border)]">
                 {rows.map((r) => (
                   <tr
                     key={r.id}

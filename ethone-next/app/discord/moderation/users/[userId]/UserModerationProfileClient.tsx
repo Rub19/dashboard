@@ -685,7 +685,7 @@ export default function UserModerationProfileClient() {
               </h3>
 
               {userProfile?.activeSanctions?.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-4">
                   {userProfile.activeSanctions.map((sc: any) => (
                     <div key={sc.id} className="p-4 rounded-xl bg-orange-500/5 border border-orange-500/20 flex items-start justify-between">
                       <div>
@@ -732,7 +732,7 @@ export default function UserModerationProfileClient() {
               </div>
 
               {userProfile?.notes?.length > 0 ? (
-                <div className="space-y-3">
+                <div className="stagger-children space-y-3">
                   {userProfile.notes.slice(0, 3).map((n: any) => (
                     <div key={n.id} className="p-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                       <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-1">
@@ -755,7 +755,7 @@ export default function UserModerationProfileClient() {
           <div className="stagger-children p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
             <h3 className="text-base font-bold text-[var(--text-primary)]">Dossiers Disciplinaires (Cases)</h3>
             {userProfile?.timeline?.length > 0 ? (
-              <div className="divide-y divide-[var(--panel-border)]">
+              <div className="stagger-children divide-y divide-[var(--panel-border)]">
                 {userProfile.timeline.map((c: any) => (
                   <div key={c.id} className="py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div className="space-y-1">
@@ -915,7 +915,7 @@ export default function UserModerationProfileClient() {
             <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
               <h4 className="text-sm font-bold text-[var(--text-primary)]">Notes Privées Existantes ({userProfile?.notes?.length || 0})</h4>
               {userProfile?.notes?.length > 0 ? (
-                <div className="space-y-3">
+                <div className="stagger-children space-y-3">
                   {userProfile.notes.map((n: any) => (
                     <div key={n.id} className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-1">
                       <div className="flex items-center justify-between text-xs">
@@ -975,7 +975,7 @@ export default function UserModerationProfileClient() {
             </div>
 
             {filteredTimeline.length > 0 ? (
-              <div className="space-y-4 pt-2">
+              <div className="stagger-children space-y-4 pt-2">
                 {filteredTimeline.map((item) => (
                   <div key={item.id} className="p-4 rounded-xl bg-[var(--surface-raised)]/30 border border-[var(--panel-border)] flex items-start gap-4">
                     <div className="p-2 rounded-xl bg-[var(--surface-raised)]/40 text-[var(--text-muted)] mt-0.5">
@@ -1015,7 +1015,7 @@ export default function UserModerationProfileClient() {
             </h3>
 
             {reports.length > 0 ? (
-              <div className="divide-y divide-[var(--panel-border)]">
+              <div className="stagger-children divide-y divide-[var(--panel-border)]">
                 {reports.map((r) => (
                   <div key={r.id} className="py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div className="space-y-1">

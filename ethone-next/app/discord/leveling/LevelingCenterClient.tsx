@@ -558,7 +558,7 @@ export default function LevelingCenterClient() {
                   Aucun membre n'a encore gagné d'XP sur ce serveur.
                 </p>
               ) : (
-                <div className="divide-y divide-[var(--panel-border)]">
+                <div className="stagger-children divide-y divide-[var(--panel-border)]">
                   {filteredMembers.map((member) => (
                     <div
                       key={member.userId}

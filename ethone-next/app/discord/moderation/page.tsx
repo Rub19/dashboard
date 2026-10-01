@@ -744,7 +744,7 @@ export default function ModerationCenterPage() {
 
             {/* RÉSULTATS RAPIDES RECHERCHE */}
             {memberSearchResults.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+              <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
                 {memberSearchResults.map((m) => (
                   <div
                     key={m.userId}
@@ -870,7 +870,7 @@ export default function ModerationCenterPage() {
               {/* TABLEAU DES CASES */}
               <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
                 {cases.length === 0 ? (
-                  <div className="py-16 text-center text-[var(--text-muted)]">
+                  <div className="pop-in py-16 text-center text-[var(--text-muted)]">
                     <FileCheck className="h-8 w-8 text-[var(--text-muted)] mx-auto mb-2" />
                     <p className="text-xs font-semibold text-[var(--text-muted)]">Aucun dossier de modération trouvé</p>
                     <p className="text-xs text-[var(--text-muted)] mt-0.5">
@@ -892,7 +892,7 @@ export default function ModerationCenterPage() {
                           <th className="py-3 px-4 text-right">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[var(--panel-border)]">
+                      <tbody className="stagger-children divide-y divide-[var(--panel-border)]">
                         {cases.map((c, i) => {
                           const conf = ACTION_CONFIG[c.action] || ACTION_CONFIG.WARN;
                           const Icon = conf.icon;
@@ -1070,7 +1070,7 @@ export default function ModerationCenterPage() {
                   </h3>
                 </div>
 
-                <div className="divide-y divide-[var(--panel-border)]">
+                <div className="stagger-children divide-y divide-[var(--panel-border)]">
                   {cases.slice(0, 6).map((c) => (
                     <div key={c.id} className="py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                       <div className="space-y-1">
@@ -1226,7 +1226,7 @@ export default function ModerationCenterPage() {
                   <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
                     Ventilation des Sanctions
                   </h3>
-                  <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div className="stagger-children grid grid-cols-2 gap-2 pt-1">
                     {Object.entries(stats.counts).map(([type, count]) => (
                       <div
                         key={type}
@@ -1585,7 +1585,7 @@ export default function ModerationCenterPage() {
                   {userProfile.timeline.length === 0 ? (
                     <p className="text-xs text-[var(--text-muted)] italic">Aucune sanction au dossier.</p>
                   ) : (
-                    <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                    <div className="stagger-children space-y-1.5 max-h-48 overflow-y-auto">
                       {userProfile.timeline.map((c) => (
                         <div
                           key={c.id}

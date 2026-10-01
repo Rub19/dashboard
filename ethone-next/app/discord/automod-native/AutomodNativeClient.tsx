@@ -213,7 +213,7 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
 }
 
 const textareaCls =
-  "min-h-[96px] w-full rounded-xl border border-[var(--panel-border)] bg-transparent px-3.5 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-emerald-500/60 focus:outline-none";
+  "min-h-[96px] w-full rounded-xl border border-[var(--panel-border)] bg-transparent px-3.5 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)]/60 focus:outline-none";
 
 const cardCls = "rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4";
 const primaryBtn =
@@ -571,7 +571,7 @@ export default function AutomodNativeClient() {
       )}
 
       {rules && rules.length > 0 && (
-        <ul className="grid gap-3 md:grid-cols-2">
+        <ul className="stagger-children grid gap-3 md:grid-cols-2">
           {rules.map((r) => (
             <li key={r.id} className={cn(cardCls, "space-y-3", !r.enabled && "opacity-70")}>
               <div className="flex items-start justify-between gap-3">

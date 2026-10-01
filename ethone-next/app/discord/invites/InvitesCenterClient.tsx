@@ -585,7 +585,7 @@ export default function InvitesCenterClient() {
                   <th className="py-3 px-3 text-right">Profil</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--panel-border)]">
+              <tbody className="stagger-children divide-y divide-[var(--panel-border)]">
                 {leaderboard.map((entry) => (
                   <tr key={entry.userId} className="hover:bg-[var(--surface-raised)]/70 transition">
                     <td className="py-3.5 px-3">
@@ -663,7 +663,7 @@ export default function InvitesCenterClient() {
                   <th className="py-3 px-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--panel-border)]">
+              <tbody className="stagger-children divide-y divide-[var(--panel-border)]">
                 {links.map((link) => (
                   <tr key={link.code} className="hover:bg-[var(--surface-raised)]/70 transition">
                     <td className="py-3.5 px-3 font-mono font-bold text-pink-400">
@@ -719,7 +719,7 @@ export default function InvitesCenterClient() {
             </div>
 
             {/* Rewards Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="stagger-children grid grid-cols-1 sm:grid-cols-3 gap-4">
               {rewards.map((r) => (
                 <div
                   key={r.id}
@@ -774,7 +774,7 @@ export default function InvitesCenterClient() {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             {campaigns.map((c) => {
               const pct = Math.min(100, Math.round((c.currentInvites / c.inviteTarget) * 100));
               return (

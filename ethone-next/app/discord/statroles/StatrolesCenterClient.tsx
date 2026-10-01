@@ -286,7 +286,7 @@ function GroupEditor({ group, roles, depth, onChange, onDelete }: { group: Group
         </span>
       </div>
       {group.children.length === 0 && <p className="rounded-xl border border-dashed border-[var(--panel-border)] px-3 py-2 text-xs text-[var(--text-muted)]">Groupe vide : il ne correspond à personne. Ajoutez une condition avec le bouton +.</p>}
-      <div className="space-y-2 pl-3">
+      <div className="stagger-children space-y-2 pl-3">
         {group.children.map((child, i) =>
           child.kind === "group" ? (
             <GroupEditor key={i} group={child} roles={roles} depth={depth + 1} onChange={(g) => setChild(i, g)} onDelete={() => delChild(i)} />
@@ -478,7 +478,7 @@ export default function StatrolesCenterClient() {
               {cfg.rules.length === 0 ? (
                 <p className="rounded-xl border border-dashed border-[var(--panel-border)] p-6 text-center text-xs text-[var(--text-muted)]">Aucune règle. Exemple : rôle « Actif » pour ceux qui ont écrit au moins 100 messages sur 30 jours ET sont là depuis 30 jours.</p>
               ) : (
-                <ul className="space-y-2">
+                <ul className="stagger-children space-y-2">
                   {cfg.rules.map((r) => {
                     const role = roleName.get(r.roleId);
                     return (

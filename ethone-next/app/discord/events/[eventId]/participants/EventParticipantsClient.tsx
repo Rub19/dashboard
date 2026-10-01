@@ -307,7 +307,7 @@ export default function EventParticipantsClient() {
                   <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--panel-border)] text-xs">
+              <tbody className="stagger-children divide-y divide-[var(--panel-border)] text-xs">
                 {filteredList.map((p) => {
                   const isAttended = p.attendance === "ATTENDED";
                   const isWaitlist = p.rsvp === "WAITLIST";

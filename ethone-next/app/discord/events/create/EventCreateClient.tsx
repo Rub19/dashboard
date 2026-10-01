@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
@@ -330,7 +331,7 @@ export default function EventCreateClient() {
             onClick={handleSaveDraft}
             className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-muted)] transition-colors self-start sm:self-auto"
           >
-            <Save className="w-3.5 h-3.5 text-emerald-400" />
+            <Save className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
             {saveToast ? "Brouillon Sauvegardé !" : "Sauvegarder Brouillon"}
           </button>
         </div>
@@ -341,7 +342,7 @@ export default function EventCreateClient() {
             {/* Progress line */}
             <div className="absolute top-4 left-0 right-0 h-0.5 bg-[var(--surface-raised)]/80 z-0" />
             <div
-              className="absolute top-4 left-0 h-0.5 bg-emerald-500 transition-all duration-300 z-0"
+              className="absolute top-4 left-0 h-0.5 bg-[var(--accent-primary)] transition-[width] duration-500 ease-[var(--ease-snap)] z-0"
               style={{ width: `${((step - 1) / (STEPS.length - 1)) * 100}%` }}
             />
 
@@ -353,18 +354,25 @@ export default function EventCreateClient() {
                 <button
                   key={s.id}
                   onClick={() => setStep(s.id)}
-                  className="relative z-10 flex flex-col items-center group cursor-pointer"
+                  className="relative z-10 flex flex-col items-center group cursor-pointer outline-none"
                 >
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                    className={`relative w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-[background-color,color,transform] duration-300 group-hover:scale-110 group-active:scale-95 group-focus-visible:ring-2 group-focus-visible:ring-[var(--accent-primary)]/50 ${
                       isCompleted
-                        ? "bg-emerald-500 text-white shadow-sm"
+                        ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
                         : isCurrent
-                        ? "bg-emerald-500 text-white ring-4 ring-emerald-500/20 "
+                        ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
                         : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)]"
                     }`}
                   >
-                    {isCompleted ? <Check className="w-4 h-4" /> : s.id}
+                    {isCurrent && (
+                      <motion.span
+                        layoutId="event-step-ring"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        className="absolute -inset-1.5 rounded-full border-2 border-[var(--accent-primary)]/35"
+                      />
+                    )}
+                    {isCompleted ? <Check className="pop-in w-4 h-4" /> : s.id}
                   </div>
                   <span
                     className={`text-xs font-semibold mt-2 transition-colors ${
@@ -385,9 +393,9 @@ export default function EventCreateClient() {
           <div className="lg:col-span-7 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] p-6">
             {/* STEP 1: Basic Info */}
             {step === 1 && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-emerald-400" />
+                  <FileText className="w-5 h-5 text-[var(--accent-primary)]" />
                   Informations Générales
                 </h2>
 
@@ -469,9 +477,9 @@ export default function EventCreateClient() {
 
             {/* STEP 2: Date & Time */}
             {step === 2 && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-emerald-400" />
+                  <Clock className="w-5 h-5 text-[var(--accent-primary)]" />
                   Date, Heure & Récurrence
                 </h2>
 
@@ -547,9 +555,9 @@ export default function EventCreateClient() {
 
             {/* STEP 3: Location */}
             {step === 3 && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <Volume2 className="w-5 h-5 text-emerald-400" />
+                  <Volume2 className="w-5 h-5 text-[var(--accent-primary)]" />
                   Lieu sur Discord
                 </h2>
 
@@ -566,11 +574,11 @@ export default function EventCreateClient() {
                       onClick={() => updateForm("locationType", loc.id)}
                       className={`p-4 rounded-xl border text-left flex items-center gap-3 transition-all ${
                         form.locationType === loc.id
-                          ? "bg-emerald-500/10 border-emerald-500 text-[var(--text-primary)]"
+                          ? "bg-[var(--accent-primary)]/10 border-[var(--accent-primary)] text-[var(--text-primary)]"
                           : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] text-[var(--text-muted)] hover:border-[var(--input-border-hover)]"
                       }`}
                     >
-                      <loc.icon className="w-5 h-5 text-emerald-400" />
+                      <loc.icon className="w-5 h-5 text-[var(--accent-primary)]" />
                       <span className="text-xs font-bold">{loc.label}</span>
                     </button>
                   ))}
@@ -603,9 +611,9 @@ export default function EventCreateClient() {
 
             {/* STEP 4: Capacity */}
             {step === 4 && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <Users className="w-5 h-5 text-emerald-400" />
+                  <Users className="w-5 h-5 text-[var(--accent-primary)]" />
                   Capacité & Inscriptions
                 </h2>
 
@@ -619,7 +627,7 @@ export default function EventCreateClient() {
                       type="checkbox"
                       checked={form.unlimitedCapacity}
                       onChange={(e) => updateForm("unlimitedCapacity", e.target.checked)}
-                      className="w-4 h-4 rounded text-emerald-400 focus:ring-0"
+                      className="w-4 h-4 rounded text-[var(--accent-primary)] focus:ring-0"
                     />
                   </div>
 
@@ -648,7 +656,7 @@ export default function EventCreateClient() {
                       type="checkbox"
                       checked={form.waitlistEnabled}
                       onChange={(e) => updateForm("waitlistEnabled", e.target.checked)}
-                      className="w-4 h-4 rounded text-emerald-400 focus:ring-0"
+                      className="w-4 h-4 rounded text-[var(--accent-primary)] focus:ring-0"
                     />
                   </div>
                 </div>
@@ -657,9 +665,9 @@ export default function EventCreateClient() {
 
             {/* STEP 5: Publishing & Sync */}
             {step === 5 && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <Radio className="w-5 h-5 text-emerald-400" />
+                  <Radio className="w-5 h-5 text-[var(--accent-primary)]" />
                   Publication Discord & Annonces
                 </h2>
 
@@ -710,16 +718,16 @@ export default function EventCreateClient() {
                   </div>
                 )}
 
-                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
+                <div className="p-4 rounded-xl bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20 flex items-center justify-between">
                   <div>
                     <span className="text-xs font-bold text-[var(--text-primary)] block">Synchronisation Discord Événement Natif</span>
-                    <span className="text-xs text-emerald-300/80">Créera automatiquement l'événement officiel en tête de liste des salons</span>
+                    <span className="text-xs text-[var(--accent-primary)]/80">Créera automatiquement l'événement officiel en tête de liste des salons</span>
                   </div>
                   <input
                     type="checkbox"
                     checked={form.syncToDiscordScheduled}
                     onChange={(e) => updateForm("syncToDiscordScheduled", e.target.checked)}
-                    className="w-4 h-4 rounded text-emerald-400"
+                    className="w-4 h-4 rounded text-[var(--accent-primary)]"
                   />
                 </div>
               </div>
@@ -727,9 +735,9 @@ export default function EventCreateClient() {
 
             {/* STEP 6: Notifications & Reminders */}
             {step === 6 && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <Bell className="w-5 h-5 text-emerald-400" />
+                  <Bell className="w-5 h-5 text-[var(--accent-primary)]" />
                   Rappels & Notifications Automatisés
                 </h2>
 
@@ -761,7 +769,7 @@ export default function EventCreateClient() {
                             reminders: { ...prev.reminders, [r.key]: e.target.checked },
                           }))
                         }
-                        className="w-4 h-4 rounded text-emerald-400"
+                        className="w-4 h-4 rounded text-[var(--accent-primary)]"
                       />
                     </div>
                   ))}
@@ -771,9 +779,9 @@ export default function EventCreateClient() {
 
             {/* STEP 7: Automations */}
             {step === 7 && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <Bot className="w-5 h-5 text-emerald-400" />
+                  <Bot className="w-5 h-5 text-[var(--accent-primary)]" />
                   Automatisations & Rôles
                 </h2>
 
@@ -792,7 +800,7 @@ export default function EventCreateClient() {
                           automations: { ...prev.automations, createDiscussionThread: e.target.checked },
                         }))
                       }
-                      className="w-4 h-4 rounded text-emerald-400"
+                      className="w-4 h-4 rounded text-[var(--accent-primary)]"
                     />
                   </div>
 
@@ -810,7 +818,7 @@ export default function EventCreateClient() {
                           automations: { ...prev.automations, assignRoleOnRSVP: e.target.checked },
                         }))
                       }
-                      className="w-4 h-4 rounded text-emerald-400"
+                      className="w-4 h-4 rounded text-[var(--accent-primary)]"
                     />
                   </div>
 
@@ -849,7 +857,7 @@ export default function EventCreateClient() {
                           automations: { ...prev.automations, removeRoleAfterEvent: e.target.checked },
                         }))
                       }
-                      className="w-4 h-4 rounded text-emerald-400"
+                      className="w-4 h-4 rounded text-[var(--accent-primary)]"
                     />
                   </div>
                 </div>
@@ -858,13 +866,13 @@ export default function EventCreateClient() {
 
             {/* STEP 8: Review & Publish */}
             {step === 8 && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                  <CheckCircle2 className="w-5 h-5 text-[var(--accent-primary)]" />
                   Vérification Finale
                 </h2>
 
-                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300">
+                <div className="p-4 rounded-xl bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20 text-xs text-[var(--accent-primary)]">
                   ✅ Votre événement est prêt à être programmé. Le bot ETHONE publiera l'encart interactif dans {form.announcementChannel}.
                 </div>
 
@@ -901,13 +909,13 @@ export default function EventCreateClient() {
                 type="button"
                 disabled={step === 1}
                 onClick={() => setStep((s) => s - 1)}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold ${
+                className={`group inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-[background-color,transform] active:scale-[0.97] ${
                   step === 1
                     ? "opacity-30 cursor-not-allowed text-[var(--text-muted)]"
                     : "bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)] border border-[var(--panel-border)]"
                 }`}
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
                 Précédent
               </button>
 
@@ -915,10 +923,10 @@ export default function EventCreateClient() {
                 <button
                   type="button"
                   onClick={() => setStep((s) => s + 1)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
+                  className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   Suivant
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                 </button>
               ) : (
                 <button
@@ -938,16 +946,16 @@ export default function EventCreateClient() {
           <div className="lg:col-span-5 space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider flex items-center gap-1.5">
-                <Eye className="w-3.5 h-3.5 text-emerald-400" />
+                <Eye className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                 Aperçu Discord Interactif
               </span>
               <span className="text-xs text-[var(--text-muted)]">Mise à jour en temps réel</span>
             </div>
 
             {/* Discord Embed Mockup */}
-            <div className="p-4 rounded-2xl bg-[#1e1f22] border-l-4 border-emerald-500 font-sans">
+            <div className="p-4 rounded-2xl bg-[#1e1f22] border-l-4 border-[var(--accent-primary)] font-sans">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-bold text-emerald-400">Etho</span>
+                <span className="text-xs font-bold text-[var(--accent-primary)]">Etho</span>
                 <span className="text-xs px-1.5 py-0.5 rounded bg-[#5865F2] text-white font-bold">BOT</span>
               </div>
 

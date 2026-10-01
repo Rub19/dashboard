@@ -189,7 +189,7 @@ export default function BackupSettingsClient() {
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" checked={settings.enabled} onChange={(e) => patch({ enabled: e.target.checked })} className="sr-only peer" />
-              <div className="w-11 h-6 bg-[var(--surface-raised)]/40 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500" />
+              <div className="w-11 h-6 bg-[var(--surface-raised)]/40 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--accent-primary)]" />
             </label>
           </div>
           {settings.enabled && (

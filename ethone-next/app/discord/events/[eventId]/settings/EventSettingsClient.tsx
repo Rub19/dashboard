@@ -157,7 +157,7 @@ export default function EventSettingsClient() {
               </Link>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] flex items-center gap-3">
-              <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-emerald-400"><Settings className="h-5 w-5" /></span>
+              <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-[var(--accent-primary)]"><Settings className="h-5 w-5" /></span>
               Paramètres de l'Événement
             </h1>
             <p className="text-xs text-[var(--text-muted)] mt-1">
@@ -169,9 +169,9 @@ export default function EventSettingsClient() {
           <div className="flex flex-col items-end gap-1.5">
             <button
               onClick={handleSave}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-emerald-500 hover:brightness-110 text-white shadow-sm transition-all self-start sm:self-auto"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] shadow-sm transition-all self-start sm:self-auto"
             >
-              {savedToast ? <Check className="w-4 h-4 text-emerald-300" /> : <Save className="w-4 h-4" />}
+              {savedToast ? <Check className="w-4 h-4 text-[var(--success)]" /> : <Save className="w-4 h-4" />}
               {savedToast ? "Modifications Enregistrées !" : "Enregistrer les modifications"}
             </button>
             {saveError && <span className="text-xs text-rose-400">{saveError}</span>}
@@ -179,11 +179,11 @@ export default function EventSettingsClient() {
         </div>
 
         {/* Settings Sections */}
-        <div className="space-y-8">
+        <div className="stagger-children space-y-8">
           {/* Section 1: Informations Générales */}
           <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
             <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <FileText className="w-4 h-4 text-emerald-400" />
+              <FileText className="w-4 h-4 text-[var(--accent-primary)]" />
               Informations Principales
             </h2>
 
@@ -211,7 +211,7 @@ export default function EventSettingsClient() {
           {/* Section 2: Reprogrammation */}
           <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
             <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <Clock className="w-4 h-4 text-emerald-400" />
+              <Clock className="w-4 h-4 text-[var(--accent-primary)]" />
               Reprogrammer la Date & Heure
             </h2>
 
@@ -261,7 +261,7 @@ export default function EventSettingsClient() {
           {/* Section 3: Capacité & Rôles */}
           <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
             <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <Users className="w-4 h-4 text-emerald-400" />
+              <Users className="w-4 h-4 text-[var(--accent-primary)]" />
               Capacité & Inscriptions
             </h2>
 
@@ -295,7 +295,7 @@ export default function EventSettingsClient() {
                 type="checkbox"
                 checked={waitlistEnabled}
                 onChange={(e) => setWaitlistEnabled(e.target.checked)}
-                className="w-4 h-4 rounded text-emerald-400"
+                className="w-4 h-4 rounded text-[var(--accent-primary)]"
               />
             </div>
           </div>

@@ -360,7 +360,7 @@ export default function SetupWizardClient() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-2 max-h-[340px] overflow-y-auto pr-1">
+                <div className="stagger-children space-y-2 max-h-[340px] overflow-y-auto pr-1">
                   {manageableGuilds.map((g) => {
                     const isSelected = selectedGuild?.id === g.id;
                     return (

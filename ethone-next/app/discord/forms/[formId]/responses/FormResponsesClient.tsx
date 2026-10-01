@@ -524,7 +524,7 @@ export default function FormResponsesClient() {
               {/* Submitted Answers List */}
               <div className="space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Réponses du Candidat</h4>
-                <div className="space-y-3">
+                <div className="stagger-children space-y-3">
                   {activeResponse.answers.map((ans, idx) => (
                     <div key={idx} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 space-y-1">
                       <span className="text-xs font-semibold text-[var(--text-muted)] block">{ans.fieldLabel}</span>

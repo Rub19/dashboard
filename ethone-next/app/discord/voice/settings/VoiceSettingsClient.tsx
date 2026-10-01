@@ -370,7 +370,7 @@ export default function VoiceSettingsClient() {
                 type="checkbox"
                 checked={settings.sendControlPanelInRoom}
                 onChange={(e) => setSettings({ ...settings, sendControlPanelInRoom: e.target.checked })}
-                className="h-4 w-4 rounded accent-emerald-500 cursor-pointer"
+                className="h-4 w-4 rounded accent-[var(--accent-primary)] cursor-pointer"
               />
             </div>
           </div>

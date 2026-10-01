@@ -1085,7 +1085,7 @@ export default function ServerManagementClient({
               {/* Members */}
               <div>
                 <p className="font-semibold text-[var(--text-muted)] mb-2">Membres ({searchResults.members.length})</p>
-                <div className="space-y-1.5">
+                <div className="stagger-children space-y-1.5">
                   {searchResults.members.map((m: any) => (
                     <div
                       key={m.id}
@@ -1107,7 +1107,7 @@ export default function ServerManagementClient({
               {/* Channels */}
               <div>
                 <p className="font-semibold text-[var(--text-muted)] mb-2">Salons ({searchResults.channels.length})</p>
-                <div className="space-y-1.5">
+                <div className="stagger-children space-y-1.5">
                   {searchResults.channels.map((c: any) => (
                     <div
                       key={c.id}
@@ -1128,7 +1128,7 @@ export default function ServerManagementClient({
               {/* Roles */}
               <div>
                 <p className="font-semibold text-[var(--text-muted)] mb-2">Rôles ({searchResults.roles.length})</p>
-                <div className="space-y-1.5">
+                <div className="stagger-children space-y-1.5">
                   {searchResults.roles.map((r: any) => (
                     <div
                       key={r.id}
@@ -1252,7 +1252,7 @@ export default function ServerManagementClient({
                 </div>
 
                 {/* Factors List */}
-                <div className="space-y-2 pt-2 border-t border-[var(--panel-border)]">
+                <div className="stagger-children space-y-2 pt-2 border-t border-[var(--panel-border)]">
                   {overview?.security.factors.slice(0, 3).map((factor, idx) => (
                     <div key={idx} className="flex items-center justify-between text-xs p-2 rounded-xl bg-[var(--surface-raised)]/40">
                       <div className="flex items-center gap-2">
@@ -1420,7 +1420,7 @@ export default function ServerManagementClient({
                   </button>
                 </div>
 
-                <div className="space-y-2.5">
+                <div className="stagger-children space-y-2.5">
                   {overview?.recentActivity.map((act) => (
                     <div
                       key={act.id}
@@ -1503,7 +1503,7 @@ export default function ServerManagementClient({
                       <th className="p-4 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[var(--panel-border)]">
+                  <tbody className="stagger-children divide-y divide-[var(--panel-border)]">
                     {members.map((m) => (
                       <tr key={m.id} className="hover:bg-[var(--surface-raised)]/70 transition-all">
                         <td className="p-4">
@@ -1643,7 +1643,7 @@ export default function ServerManagementClient({
                       Historique de Modération ({selectedMember.moderationHistory.warningsCount} warns, {selectedMember.moderationHistory.timeoutsCount} timeouts, {selectedMember.moderationHistory.kicksCount} kicks)
                     </h3>
                     {selectedMember.moderationHistory.recentCases.length > 0 ? (
-                      <div className="space-y-2">
+                      <div className="stagger-children space-y-2">
                         {selectedMember.moderationHistory.recentCases.map((c) => (
                           <div key={c.id} className="p-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-xs flex items-center justify-between">
                             <div>
@@ -1830,7 +1830,7 @@ export default function ServerManagementClient({
             </div>
 
             {/* Visual Channel Tree */}
-            <div className="space-y-4">
+            <div className="stagger-children space-y-4">
               {channelTree.categories.map((category) => (
                 <div key={category.id} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-2">
                   <div className="flex items-center justify-between text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider px-2 py-1">
@@ -1893,7 +1893,7 @@ export default function ServerManagementClient({
                   <div className="flex items-center justify-between text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider px-2 py-1">
                     <span>Sans catégorie</span>
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="stagger-children space-y-1.5">
                     {channelTree.orphanChannels.map((ch) => (
                       <div
                         key={ch.id}
@@ -2359,7 +2359,7 @@ export default function ServerManagementClient({
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[var(--panel-border)]">
+                  <tbody className="stagger-children divide-y divide-[var(--panel-border)]">
                     {permMatrix.map((item) => (
                       <tr key={item.permission} className="hover:bg-[var(--surface-raised)]/70">
                         <td className="p-3">
@@ -2442,7 +2442,7 @@ export default function ServerManagementClient({
                 <Smile className="h-4 w-4 text-amber-400" />
                 Galerie des Emojis ({emojis.length})
               </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+              <div className="stagger-children grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
                 {emojis.map((emoji) => (
                   <div
                     key={emoji.id}
@@ -2464,7 +2464,7 @@ export default function ServerManagementClient({
                 <Sparkles className="h-4 w-4 text-emerald-400" />
                 Stickers du Serveur ({stickers.length})
               </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="stagger-children grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {stickers.map((stk) => (
                   <div
                     key={stk.id}
@@ -2511,7 +2511,7 @@ export default function ServerManagementClient({
                     <th className="p-4 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[var(--panel-border)]">
+                <tbody className="stagger-children divide-y divide-[var(--panel-border)]">
                   {webhooks.map((wh) => (
                     <tr key={wh.id} className="hover:bg-[var(--surface-raised)]/70">
                       <td className="p-4 font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -2699,7 +2699,7 @@ export default function ServerManagementClient({
               </Link>
             </div>
 
-            <div className="space-y-2">
+            <div className="stagger-children space-y-2">
               {auditLogs.map((log) => (
                 <div
                   key={log.id}
@@ -2880,7 +2880,7 @@ export default function ServerManagementClient({
               </button>
             </div>
 
-            <div className="space-y-2.5 max-h-[60vh] overflow-y-auto pr-1">
+            <div className="stagger-children space-y-2.5 max-h-[60vh] overflow-y-auto pr-1">
               {overview.security.factors.map((factor, idx) => (
                 <div key={idx} className="p-3.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 space-y-1">
                   <div className="flex items-center justify-between text-xs">

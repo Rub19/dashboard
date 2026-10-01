@@ -160,7 +160,7 @@ export default function InviteUserDetailClient() {
         </div>
 
         {filteredReferrals.length === 0 ? (
-          <div className="py-12 text-center text-[var(--text-muted)] text-xs">
+          <div className="pop-in py-12 text-center text-[var(--text-muted)] text-xs">
             Aucun membre invité trouvé.
           </div>
         ) : (
@@ -177,7 +177,7 @@ export default function InviteUserDetailClient() {
                   <th className="py-3 px-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--panel-border)]">
+              <tbody className="stagger-children divide-y divide-[var(--panel-border)]">
                 {filteredReferrals.map((ref) => (
                   <tr key={ref.id} className="hover:bg-[var(--surface-raised)]/70 transition">
                     <td className="py-3 px-3">

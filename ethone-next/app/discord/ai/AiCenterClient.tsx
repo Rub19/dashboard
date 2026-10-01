@@ -669,10 +669,10 @@ export default function AiCenterClient() {
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">Curseurs de personnalité</span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                   {([
-                    ["friendly", "Convivialité", "text-emerald-300", "accent-emerald-500"],
+                    ["friendly", "Convivialité", "text-emerald-300", "accent-[var(--accent-primary)]"],
                     ["humor", "Humour", "text-amber-400", "accent-amber-500"],
                     ["formality", "Formalité", "text-cyan-400", "accent-cyan-500"],
-                    ["verbosity", "Longueur des réponses", "text-emerald-300", "accent-emerald-500"],
+                    ["verbosity", "Longueur des réponses", "text-emerald-300", "accent-[var(--accent-primary)]"],
                     ["creativity", "Créativité", "text-pink-400", "accent-pink-500"],
                   ] as [keyof Personality["sliders"], string, string, string][]).map(([key, label, txt, accent]) => (
                     <div key={key} className="space-y-1.5 bg-[var(--surface-raised)]/40 p-3 rounded-xl border border-[var(--panel-border)]">

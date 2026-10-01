@@ -155,7 +155,7 @@ function downloadCsv(name: string, header: string[], rows: Array<Array<string | 
 function RankList({ rows, unit, isMember, onPick }: { rows: Ranked[]; unit: string; isMember?: boolean; onPick?: (id: string) => void }) {
   // Membres et salons sont cliquables dès qu'un gestionnaire est fourni (fiche membre / détail du salon).
   const clickable = Boolean(onPick);
-  if (rows.length === 0) return <p className="py-6 text-center text-xs text-[var(--text-muted)]">Aucune donnée sur cette période.</p>;
+  if (rows.length === 0) return <p className="pop-in py-6 text-center text-xs text-[var(--text-muted)]">Aucune donnée sur cette période.</p>;
   const max = Math.max(...rows.map((r) => r.value), 1);
   return (
     <ol className="space-y-1.5">

@@ -142,7 +142,7 @@ function SpecificFields({ k, draft, set }: { k: DetKey; draft: Det; set: (patch:
       return (
         <>
           <Field label="Types interdits">
-            <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+            <div className="stagger-children grid grid-cols-1 gap-1.5 sm:grid-cols-2">
               {MARKDOWN_LABELS.map(([id, label]) => {
                 const on = (draft.types ?? []).includes(id);
                 return (
@@ -361,7 +361,7 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
           )}
           <SpecificFields k={editing} draft={draft} set={setD} guildId={guildId} />
           <Field label="Actions">
-            <div className="space-y-2">
+            <div className="stagger-children space-y-2">
               {ACTION_LABELS.map(([id, label, text]) => (
                 <label key={id} className="flex cursor-pointer items-start gap-2 text-sm text-[var(--text-muted)]">
                   <input type="checkbox" className="mt-1" checked={draftActions.includes(id)} onChange={() => setD({ actions: draftActions.includes(id) ? draftActions.filter((a) => a !== id) : [...draftActions, id] })} />

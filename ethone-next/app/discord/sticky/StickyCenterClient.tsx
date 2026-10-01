@@ -425,7 +425,7 @@ export default function StickyCenterClient() {
               {overview && overview.channels.length === 0 ? (
                 <p className="px-4 py-8 text-center text-sm text-[var(--text-muted)]">Aucun sticky. Cliquez sur « Nouveau sticky ».</p>
               ) : (
-                <div className="divide-y divide-[var(--panel-border)]">
+                <div className="stagger-children divide-y divide-[var(--panel-border)]">
                   {overview?.channels.map((row) => (
                     <div key={row.channelId} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
                       <button onClick={() => openEditor(row.channelId)} className="flex min-w-0 flex-1 flex-col items-start text-left cursor-pointer">
@@ -515,7 +515,7 @@ export default function StickyCenterClient() {
 
                 <div>
                   <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">Anti-rebond : {draft.cooldownSeconds}s entre deux repositionnements</label>
-                  <input type="range" min={2} max={120} value={draft.cooldownSeconds} onChange={(e) => patch("cooldownSeconds", Number(e.target.value))} className="w-full accent-emerald-500" />
+                  <input type="range" min={2} max={120} value={draft.cooldownSeconds} onChange={(e) => patch("cooldownSeconds", Number(e.target.value))} className="w-full accent-[var(--accent-primary)]" />
                 </div>
 
                 <Switch checked={draft.enabled} onChange={(v) => patch("enabled", v)} label="Sticky actif" hint="En pause, le message est retiré mais la config est conservée." />

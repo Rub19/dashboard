@@ -217,7 +217,7 @@ export default function OverviewClient() {
         )}
 
         {!selectedGuild ? (
-          <p className="py-8 text-center text-sm text-[var(--text-muted)]">
+          <p className="pop-in py-8 text-center text-sm text-[var(--text-muted)]">
             Aucun serveur administrable trouvé — connecte Discord dans les réglages.
           </p>
         ) : (
@@ -395,7 +395,7 @@ export default function OverviewClient() {
               ) : guild.error || !guild.data?.stats?.recentActivities?.length ? (
                 <p className="text-xs text-[var(--text-muted)]">Aucune activité récente enregistrée.</p>
               ) : (
-                <div className="space-y-1.5">
+                <div className="stagger-children space-y-1.5">
                   {guild.data.stats.recentActivities.slice(0, 8).map((a) => (
                     <div key={a.id} className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] px-3 py-2 text-xs">
                       <span className="truncate">

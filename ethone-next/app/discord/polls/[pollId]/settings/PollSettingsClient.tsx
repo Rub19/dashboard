@@ -246,7 +246,7 @@ export default function PollSettingsClient() {
               className="inline-flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all disabled:opacity-50"
               title="Rafraîchir les salons Discord"
             >
-              <RefreshCw className={cn("h-3.5 w-3.5", channelsLoading && "animate-spin text-emerald-400")} />
+              <RefreshCw className={cn("h-3.5 w-3.5", channelsLoading && "animate-spin text-[var(--accent-primary)]")} />
               <span>Rafraîchir</span>
             </button>
             <button
@@ -260,7 +260,7 @@ export default function PollSettingsClient() {
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="stagger-children space-y-6">
           {/* General Properties */}
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
             <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">Général</h3>
@@ -345,7 +345,7 @@ export default function PollSettingsClient() {
                   type="checkbox"
                   checked={allowVoteChange}
                   onChange={(e) => setAllowVoteChange(e.target.checked)}
-                  className="h-4 w-4 rounded border-[var(--input-border)] bg-[var(--input-bg)] text-emerald-400 focus:ring-0"
+                  className="h-4 w-4 rounded border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--accent-primary)] focus:ring-0"
                 />
               </div>
 
@@ -362,7 +362,7 @@ export default function PollSettingsClient() {
                   type="checkbox"
                   checked={allowVoteRetract}
                   onChange={(e) => setAllowVoteRetract(e.target.checked)}
-                  className="h-4 w-4 rounded border-[var(--input-border)] bg-[var(--input-bg)] text-emerald-400 focus:ring-0"
+                  className="h-4 w-4 rounded border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--accent-primary)] focus:ring-0"
                 />
               </div>
             </div>
@@ -401,10 +401,10 @@ export default function PollSettingsClient() {
                     type="button"
                     onClick={() => fetchChannels(true)}
                     disabled={channelsLoading}
-                    className="inline-flex items-center gap-1 text-xs font-medium text-[var(--text-muted)] hover:text-emerald-400 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors disabled:opacity-50"
                     title="Rafraîchir les salons"
                   >
-                    <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-emerald-400")} />
+                    <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-[var(--accent-primary)]")} />
                     <span>Rafraîchir</span>
                   </button>
                 </div>

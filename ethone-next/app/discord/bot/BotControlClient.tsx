@@ -1590,7 +1590,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                     <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-2">
                       Dernières Actions Administratives Exécutées
                     </span>
-                    <div className="space-y-1.5 max-h-36 overflow-y-auto">
+                    <div className="stagger-children space-y-1.5 max-h-36 overflow-y-auto">
                       {ownerLogs.map((log: any, idx: number) => (
                         <div
                           key={log.id || idx}

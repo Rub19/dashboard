@@ -489,7 +489,7 @@ export default function EventsCenterClient() {
             <span className="text-xs text-[var(--text-muted)]">Pré-configurés avec rôles, canaux et règles</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="stagger-children grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {TEMPLATES.map((tpl) => (
               <Link
                 key={tpl.id}
@@ -721,7 +721,7 @@ export default function EventsCenterClient() {
 
         {/* Empty State */}
         {filteredEvents.length === 0 && (
-          <div className="text-center py-16 bg-[var(--surface-raised)]/40 rounded-xl border border-[var(--panel-border)] my-8">
+          <div className="pop-in text-center py-16 bg-[var(--surface-raised)]/40 rounded-xl border border-[var(--panel-border)] my-8">
             <Calendar className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
             <h3 className="text-base font-bold text-[var(--text-primary)]">Aucun événement trouvé</h3>
             <p className="text-xs text-[var(--text-muted)] max-w-sm mx-auto mt-1">

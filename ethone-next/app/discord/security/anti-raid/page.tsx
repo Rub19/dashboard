@@ -66,7 +66,7 @@ function ActionPicker({ actions, onChange }: { actions: RaidAction[]; onChange: 
   return (
     <div>
       <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">Actions automatiques</p>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <div className="stagger-children grid grid-cols-1 gap-2 sm:grid-cols-2">
         {ACTION_CHOICES.map((choice) => {
           const checked = actions.includes(choice.id);
           return (
@@ -1754,7 +1754,7 @@ export default function AntiRaidDashboardPage() {
                   />
                 </div>
 
-                <div className="space-y-3">
+                <div className="stagger-children space-y-3">
                   {settings.accountAge.tiers.map((tier, idx) => (
                     <div
                       key={idx}
@@ -1860,11 +1860,11 @@ export default function AntiRaidDashboardPage() {
                 </div>
 
                 {incidents.length === 0 ? (
-                  <div className="py-12 text-center text-[var(--text-muted)] text-xs">
+                  <div className="pop-in py-12 text-center text-[var(--text-muted)] text-xs">
                     Aucun incident enregistré sur ce serveur.
                   </div>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="stagger-children space-y-2">
                     {incidents.map((inc, i) => (
                       <div
                         key={inc.id}
@@ -1959,7 +1959,7 @@ export default function AntiRaidDashboardPage() {
               <h4 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
                 Membres Impliqués ({selectedIncident.involvedMembers.length})
               </h4>
-              <div className="space-y-1.5 max-h-48 overflow-y-auto os-scroll">
+              <div className="stagger-children space-y-1.5 max-h-48 overflow-y-auto os-scroll">
                 {selectedIncident.involvedMembers.map((m, idx) => (
                   <div
                     key={idx}

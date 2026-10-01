@@ -958,7 +958,7 @@ export function AuditCenterClient() {
             {/* TABLEAU DES LOGS */}
             <div className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 ">
               {events.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-center text-[var(--text-muted)]">
+                <div className="pop-in flex flex-col items-center justify-center py-16 text-center text-[var(--text-muted)]">
                   <FileText className="h-10 w-10 text-[var(--text-muted)] mb-2" />
                   <p className="text-sm font-semibold text-[var(--text-muted)]">Aucun événement ne correspond aux filtres</p>
                   <p className="text-xs text-[var(--text-muted)] max-w-sm mt-1">
@@ -978,7 +978,7 @@ export function AuditCenterClient() {
                         <th className="px-4 py-3 text-right">Date / Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[var(--panel-border)]">
+                    <tbody className="stagger-children divide-y divide-[var(--panel-border)]">
                       {events.map((evt) => (
                         <tr
                           key={evt.id}
@@ -1369,7 +1369,7 @@ export function AuditCenterClient() {
                 </button>
               </div>
 
-              <div className="space-y-2">
+              <div className="stagger-children space-y-2">
                 {LOG_CATEGORIES.map((cat) => (
                   <div
                     key={cat.key}
@@ -1723,7 +1723,7 @@ export function AuditCenterClient() {
                             <th className="px-3 py-2 text-emerald-400">État Après (Current)</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[var(--panel-border)] font-mono text-xs">
+                        <tbody className="stagger-children divide-y divide-[var(--panel-border)] font-mono text-xs">
                           {investigationData.diffInspection.map((d, i) => (
                             <tr key={i} className="hover:bg-[var(--surface-raised)]/70">
                               <td className="px-3 py-2 font-bold text-[var(--text-muted)]">{d.field}</td>

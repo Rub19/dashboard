@@ -1166,13 +1166,13 @@ export default function AutoModCommandCenterPage() {
                 </div>
 
                 {incidents.length === 0 ? (
-                  <div className="text-center py-12 text-[var(--text-muted)]">
+                  <div className="pop-in text-center py-12 text-[var(--text-muted)]">
                     <CheckCircle2 className="h-8 w-8 text-emerald-500/40 mx-auto mb-2" />
                     <p className="text-xs font-medium text-[var(--text-muted)]">Aucune infraction récente enregistrée</p>
                     <p className="text-xs text-[var(--text-muted)] mt-0.5">Le serveur est calme et les messages sont conformes.</p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-[var(--panel-border)] overflow-hidden">
+                  <div className="stagger-children divide-y divide-[var(--panel-border)] overflow-hidden">
                     {incidents.map((inc, i) => {
                       const badge = RISK_BADGES[inc.riskLevel] || RISK_BADGES.SAFE;
                       return (
@@ -1378,7 +1378,7 @@ export default function AutoModCommandCenterPage() {
                       </button>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="stagger-children space-y-2">
                       {editingRule.conditions.map((cond, index) => (
                         <div
                           key={cond.id}
@@ -1454,7 +1454,7 @@ export default function AutoModCommandCenterPage() {
                   {/* Actions automatiques à appliquer */}
                   <div className="space-y-2">
                     <label className="text-xs font-medium text-[var(--text-muted)]">Actions à exécuter</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    <div className="stagger-children grid grid-cols-2 sm:grid-cols-5 gap-2">
                       {ALL_ACTIONS.map((act) => {
                         const isSelected = editingRule.actions.includes(act.id);
                         return (
@@ -2153,7 +2153,7 @@ export default function AutoModCommandCenterPage() {
                       </button>
                     </div>
 
-                    <div className="space-y-1.5 pt-2">
+                    <div className="stagger-children space-y-1.5 pt-2">
                       {config.regex.patterns.map((pat) => (
                         <div
                           key={pat}
@@ -2250,7 +2250,7 @@ export default function AutoModCommandCenterPage() {
                       type="checkbox"
                       checked={config.strikes.enabled}
                       onChange={(e) => setConfig({ ...config, strikes: { ...config.strikes, enabled: e.target.checked } })}
-                      className="h-4 w-4 cursor-pointer accent-emerald-500"
+                      className="h-4 w-4 cursor-pointer accent-[var(--accent-primary)]"
                     />
                     Sanctions progressives automatiques
                   </label>
@@ -2527,7 +2527,7 @@ export default function AutoModCommandCenterPage() {
                   {/* Explications détaillées */}
                   <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
                     <span className="text-xs font-medium text-[var(--text-muted)]">Raisonnement du Moteur :</span>
-                    <ul className="space-y-1 text-xs text-[var(--text-muted)]">
+                    <ul className="stagger-children space-y-1 text-xs text-[var(--text-muted)]">
                       {sandboxResult.explanation.map((exp, i) => (
                         <li key={i} className="flex items-start gap-2">
                           <span className="text-amber-400">•</span>
@@ -2615,7 +2615,7 @@ export default function AutoModCommandCenterPage() {
                   {inspectedProfile.activeStrikes.length === 0 ? (
                     <p className="text-xs text-[var(--text-muted)] italic">Aucun strike actif pour ce membre.</p>
                   ) : (
-                    <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                    <div className="stagger-children space-y-1.5 max-h-40 overflow-y-auto">
                       {inspectedProfile.activeStrikes.map((s) => (
                         <div
                           key={s.id}
@@ -2650,7 +2650,7 @@ export default function AutoModCommandCenterPage() {
                 </div>
               </div>
             ) : (
-              <div className="py-8 text-center text-[var(--text-muted)]">
+              <div className="pop-in py-8 text-center text-[var(--text-muted)]">
                 <p className="text-xs">Aucune information trouvée pour cet identifiant.</p>
               </div>
             )}

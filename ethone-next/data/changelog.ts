@@ -41186,6 +41186,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_48_6_en);
 CHANGELOG_BY_LANG.es.unshift(v1_48_6_es);
 CHANGELOG_BY_LANG.de.unshift(v1_48_6_de);
 
+const v1_48_7_fr: ChangelogEntry = {
+  version: "v1.48.7",
+  date: "2026-10-02",
+  title: "Éditeurs du bot et listes : motion design",
+  items: [
+    "Assistant d'événement : un anneau glisse d'étape en étape, les étapes terminées se cochent avec une petite animation, la barre de progression s'étire en douceur et chaque étape apparaît en cascade.",
+    "Création de sondage : les questions et réponses ajoutées glissent en place, la sélection du type de scrutin glisse d'une carte à l'autre.",
+    "Constructeur de formulaire : le sélecteur d'aperçu et les étapes ont une pastille glissante, les champs glissent à leur nouvelle place quand on les réordonne, la liste se rejoue à chaque étape. L'icône « Modal Discord » était invisible une fois sélectionnée : corrigé.",
+    "Modèles de formulaire utilisables au clavier (c'étaient des cartes non focalisables) ; réglages de sondage et d'événement en cascade.",
+    "Dans tous les modules du bot : les listes et grilles (cartes, lignes) apparaissent en cascade, les états vides en douceur, et les champs/cases à cocher utilisent la couleur du thème au lieu du vert fixe.",
+  ],
+};
+
+const v1_48_7_en: ChangelogEntry = {
+  version: "v1.48.7",
+  date: "2026-10-02",
+  title: "Bot editors and lists: motion design",
+  items: [
+    "Event wizard: a ring glides between steps, completed steps tick with a small animation, the progress bar stretches smoothly and each step appears in sequence.",
+    "Poll creation: added questions and answers slide into place, the poll-type selection glides between cards.",
+    "Form builder: the preview switcher and steps get a gliding pill, fields slide to their new place when reordered, the list replays per step. The \"Discord modal\" icon was invisible when selected: fixed.",
+    "Form templates usable with the keyboard (they were non-focusable cards); poll and event settings in sequence.",
+    "Across all bot modules: lists and grids (cards, rows) appear in sequence, empty states fade in, and fields/checkboxes use the theme colour instead of fixed green.",
+  ],
+};
+
+const v1_48_7_es: ChangelogEntry = {
+  version: "v1.48.7",
+  date: "2026-10-02",
+  title: "Editores del bot y listas: motion design",
+  items: [
+    "Asistente de eventos, encuestas y formularios animados; listas en cascada en todos los módulos; colores del tema.",
+  ],
+};
+
+const v1_48_7_de: ChangelogEntry = {
+  version: "v1.48.7",
+  date: "2026-10-02",
+  title: "Bot-Editoren und Listen: Motion Design",
+  items: [
+    "Animierte Assistenten für Events, Umfragen und Formulare; gestaffelte Listen in allen Modulen; Theme-Farben.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_48_7_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_48_7_en);
+CHANGELOG_BY_LANG.es.unshift(v1_48_7_es);
+CHANGELOG_BY_LANG.de.unshift(v1_48_7_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

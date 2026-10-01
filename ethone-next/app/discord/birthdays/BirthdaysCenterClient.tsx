@@ -393,7 +393,7 @@ export default function BirthdaysCenterClient() {
                 </div>
                 <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
                   <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">Heure d&apos;annonce : {config.announceHour}h</label>
-                  <input type="range" min={0} max={23} value={config.announceHour} onChange={(e) => patch("announceHour", Number(e.target.value))} className="mt-2 w-full accent-emerald-500" />
+                  <input type="range" min={0} max={23} value={config.announceHour} onChange={(e) => patch("announceHour", Number(e.target.value))} className="mt-2 w-full accent-[var(--accent-primary)]" />
                 </div>
               </div>
 
@@ -431,7 +431,7 @@ export default function BirthdaysCenterClient() {
                 <div className="border-b border-[var(--panel-border)] px-4 py-3">
                   <p className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">Prochains anniversaires (30 j)</p>
                 </div>
-                <div className="divide-y divide-[var(--panel-border)]">
+                <div className="stagger-children divide-y divide-[var(--panel-border)]">
                   {overview.upcoming.map((u) => (
                     <div key={u.userId} className="flex items-center justify-between gap-3 p-4 text-sm">
                       <span className="font-semibold text-[var(--text-primary)]"><code className="text-[var(--text-muted)]">{u.userId}</code></span>

@@ -962,7 +962,7 @@ export function TicketCenterClient() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Rechercher par ID, utilisateur, tag, case..."
-                  className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] pl-9 pr-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/60 outline-none focus:border-emerald-500"
+                  className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] pl-9 pr-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/60 outline-none focus:border-[var(--accent-primary)]/60"
                 />
               </div>
 
@@ -1038,8 +1038,8 @@ export function TicketCenterClient() {
               <tbody className="divide-y divide-[var(--panel-border)]">
                 {tickets.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="py-12 text-center text-[var(--text-muted)]">
-                      <div className="flex flex-col items-center justify-center gap-2">
+                    <td colSpan={8} className="pop-in py-12 text-center text-[var(--text-muted)]">
+                      <div className="pop-in flex flex-col items-center justify-center gap-2">
                         <Ticket className="h-8 w-8 text-[var(--text-muted)]" />
                         <p className="text-sm font-medium text-[var(--text-muted)]">Aucun ticket correspondant aux filtres.</p>
                         <p className="text-xs text-[var(--text-muted)]">Les nouveaux tickets ouverts apparaîtront ici en direct.</p>
@@ -1210,7 +1210,7 @@ export function TicketCenterClient() {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-4">
             {panels.map((p) => (
               <div
                 key={p.id}
@@ -1323,7 +1323,7 @@ export function TicketCenterClient() {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="stagger-children grid grid-cols-1 md:grid-cols-3 gap-4">
             {categories.map((cat) => (
               <div
                 key={cat.id}
@@ -1416,7 +1416,7 @@ export function TicketCenterClient() {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="stagger-children grid grid-cols-1 md:grid-cols-3 gap-4">
             {teams.map((t) => (
               <div
                 key={t.id}
@@ -1488,7 +1488,7 @@ export function TicketCenterClient() {
             </button>
           </div>
 
-          <div className="space-y-3">
+          <div className="stagger-children space-y-3">
             {automations.map((a) => (
               <div
                 key={a.id}
@@ -1687,7 +1687,7 @@ export function TicketCenterClient() {
                 type="checkbox"
                 checked={config.enabled ?? true}
                 onChange={(e) => handleSaveConfig({ enabled: e.target.checked })}
-                className="h-4 w-4 rounded border-[var(--input-border)] accent-emerald-500"
+                className="h-4 w-4 rounded border-[var(--input-border)] accent-[var(--accent-primary)]"
               />
             </label>
 
@@ -1702,7 +1702,7 @@ export function TicketCenterClient() {
                   onBlur={(e) =>
                     handleSaveConfig({ maxOpenTicketsPerUser: parseInt(e.target.value, 10) })
                   }
-                  className="mt-1 h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500"
+                  className="mt-1 h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
                 />
               </div>
 
@@ -1716,7 +1716,7 @@ export function TicketCenterClient() {
                   onBlur={(e) =>
                     handleSaveConfig({ autoCloseInactivityHours: parseInt(e.target.value, 10) })
                   }
-                  className="mt-1 h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500"
+                  className="mt-1 h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
                 />
               </div>
 
@@ -1726,7 +1726,7 @@ export function TicketCenterClient() {
                   type="text"
                   defaultValue={config.namingFormat ?? config.channelNamingScheme ?? "ticket-{username}"}
                   onBlur={(e) => handleSaveConfig({ namingFormat: e.target.value })}
-                  className="mt-1 h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500 font-mono"
+                  className="mt-1 h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60 font-mono"
                 />
                 <p className="text-xs text-[var(--text-muted)] mt-1">Variables : {"{username}"}, {"{count}"}, {"{category}"}</p>
               </div>
@@ -1814,7 +1814,7 @@ export function TicketCenterClient() {
                 value={closeReason}
                 onChange={(e) => setCloseReason(e.target.value)}
                 placeholder="Ex: Problème résolu, inactivité..."
-                className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500"
+                className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
               />
             </div>
 
@@ -1862,7 +1862,7 @@ export function TicketCenterClient() {
                     value={editingCategory.name}
                     onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
                     placeholder="Ex: Support Technique"
-                    className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-[var(--text-primary)] outline-none focus:border-emerald-500"
+                    className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
                   />
                 </div>
                 <div className="space-y-1">
@@ -1872,7 +1872,7 @@ export function TicketCenterClient() {
                     value={editingCategory.emoji || ""}
                     onChange={(e) => setEditingCategory({ ...editingCategory, emoji: e.target.value })}
                     placeholder="🛠️"
-                    className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-[var(--text-primary)] outline-none focus:border-emerald-500 text-center text-base"
+                    className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60 text-center text-base"
                   />
                 </div>
               </div>
@@ -1884,7 +1884,7 @@ export function TicketCenterClient() {
                   value={editingCategory.description || ""}
                   onChange={(e) => setEditingCategory({ ...editingCategory, description: e.target.value })}
                   placeholder="Décrivez à quoi sert cette catégorie pour les membres..."
-                  className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2.5 text-[var(--text-primary)] outline-none focus:border-emerald-500"
+                  className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2.5 text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
                 />
               </div>
 
@@ -1942,7 +1942,7 @@ export function TicketCenterClient() {
                   value={editingCategory.welcomeMessage || ""}
                   onChange={(e) => setEditingCategory({ ...editingCategory, welcomeMessage: e.target.value })}
                   placeholder="Ex: Bonjour {user}, un modérateur va prendre en charge votre demande."
-                  className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2.5 text-[var(--text-primary)] outline-none focus:border-emerald-500"
+                  className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2.5 text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
                 />
               </div>
             </div>
@@ -1990,7 +1990,7 @@ export function TicketCenterClient() {
                   value={editingPanel.title}
                   onChange={(e) => setEditingPanel({ ...editingPanel, title: e.target.value })}
                   placeholder="Ex: Centre d'Assistance ETHONE"
-                  className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-[var(--text-primary)] outline-none focus:border-emerald-500"
+                  className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
                 />
               </div>
 
@@ -2001,7 +2001,7 @@ export function TicketCenterClient() {
                   value={editingPanel.description}
                   onChange={(e) => setEditingPanel({ ...editingPanel, description: e.target.value })}
                   placeholder="Instructions affichées sur le message interactif..."
-                  className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2.5 text-[var(--text-primary)] outline-none focus:border-emerald-500"
+                  className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2.5 text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
                 />
               </div>
 
@@ -2057,7 +2057,7 @@ export function TicketCenterClient() {
                     value={editingPanel.buttonLabel || "Ouvrir un ticket"}
                     onChange={(e) => setEditingPanel({ ...editingPanel, buttonLabel: e.target.value })}
                     placeholder="Ouvrir un ticket"
-                    className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-[var(--text-primary)] outline-none focus:border-emerald-500"
+                    className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
                   />
                 </div>
 
@@ -2119,7 +2119,7 @@ export function TicketCenterClient() {
                   value={editingTeam.name}
                   onChange={(e) => setEditingTeam({ ...editingTeam, name: e.target.value })}
                   placeholder="Ex: Équipe Modération"
-                  className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-[var(--text-primary)] outline-none focus:border-emerald-500"
+                  className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
                 />
               </div>
 
@@ -2130,7 +2130,7 @@ export function TicketCenterClient() {
                   value={editingTeam.description || ""}
                   onChange={(e) => setEditingTeam({ ...editingTeam, description: e.target.value })}
                   placeholder="Rôles et attributions de cette équipe..."
-                  className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2.5 text-[var(--text-primary)] outline-none focus:border-emerald-500"
+                  className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2.5 text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
                 />
               </div>
 

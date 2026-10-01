@@ -516,7 +516,7 @@ export default function FormsCenterClient() {
 
       {/* Forms Grid */}
       {filteredForms.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-12 text-center">
+        <div className="pop-in flex flex-col items-center justify-center rounded-3xl border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-12 text-center">
           <FileText className="h-10 w-10 text-[var(--text-muted)] mb-3" />
           <h3 className="text-sm font-bold text-[var(--text-primary)]">Aucun formulaire trouvé</h3>
           <p className="text-xs text-[var(--text-muted)] max-w-sm mt-1">
@@ -533,7 +533,7 @@ export default function FormsCenterClient() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="stagger-children grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredForms.map((form) => {
             const isPublished = form.status === "PUBLISHED";
             const isDraft = form.status === "DRAFT";
@@ -675,7 +675,7 @@ export default function FormsCenterClient() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto pr-1">
+            <div className="stagger-children grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto pr-1">
               {TEMPLATES.map((tmpl) => (
                 <div
                   key={tmpl.id}

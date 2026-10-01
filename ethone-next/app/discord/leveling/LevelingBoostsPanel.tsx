@@ -227,9 +227,9 @@ export default function LevelingBoostsPanel({ guildId, boosts, disabled, onChang
       <div className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
         <h3 className="text-base font-bold text-[var(--text-primary)]">Multiplicateurs en place ({boosts.length})</h3>
         {sorted.length === 0 ? (
-          <p className="py-4 text-center text-xs text-[var(--text-muted)]">Aucun multiplicateur : tout le monde gagne l&apos;XP de base.</p>
+          <p className="pop-in py-4 text-center text-xs text-[var(--text-muted)]">Aucun multiplicateur : tout le monde gagne l&apos;XP de base.</p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="stagger-children space-y-2">
             {sorted.map((b) => {
               const st = status(b);
               const kind = b.multiplier > 1 ? "bonus" : b.multiplier < 1 ? "malus" : "neutre";

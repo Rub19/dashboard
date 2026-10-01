@@ -289,7 +289,7 @@ export default function BackupDetailClient() {
           <div className="stagger-children bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
             <h3 className="text-base font-semibold text-[var(--text-primary)]">Overwrites de permissions</h3>
             {permissionRows.length === 0 && <p className="text-xs text-[var(--text-muted)]">Aucun overwrite dans ce snapshot.</p>}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-3">
               {permissionRows.map(({ channel, ow }, i) => (
                 <div key={`${channel}-${ow.id}-${i}`} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-4 space-y-2 text-xs">
                   <div className="flex items-center justify-between font-semibold text-[var(--text-primary)]">
@@ -309,7 +309,7 @@ export default function BackupDetailClient() {
         {activeTab === "server" && (
           <div className="stagger-children bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
             <h3 className="text-base font-semibold text-[var(--text-primary)]">Configuration serveur</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(snapshot.data.guild).map(([key, value]) => (
                 <div key={key} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] p-4 rounded-xl flex items-center justify-between gap-3">
                   <span className="text-sm text-[var(--text-muted)]">{GUILD_LABELS[key] || key}</span>
@@ -327,7 +327,7 @@ export default function BackupDetailClient() {
               <p className="text-xs text-[var(--text-muted)]">Restaurables indépendamment de la structure Discord.</p>
             </div>
             {ethoneModules.length === 0 && <p className="text-xs text-[var(--text-muted)]">Aucune configuration ETHONE incluse dans ce snapshot.</p>}
-            <div className="divide-y divide-[var(--panel-border)] border border-[var(--panel-border)] rounded-xl overflow-hidden">
+            <div className="stagger-children divide-y divide-[var(--panel-border)] border border-[var(--panel-border)] rounded-xl overflow-hidden">
               {ethoneModules.map(([mod, cfg]) => (
                 <details key={mod} className="group">
                   <summary className="p-4 flex items-center justify-between cursor-pointer hover:bg-[var(--surface-raised)]/70 text-sm">

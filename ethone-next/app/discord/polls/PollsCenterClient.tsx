@@ -543,7 +543,7 @@ export default function PollsCenterClient() {
 
         {/* Polls Cards Grid */}
         {filteredPolls.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/40 py-16 text-center">
+          <div className="pop-in flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/40 py-16 text-center">
             <Vote className="h-12 w-12 text-[var(--text-muted)] mb-3" />
             <h3 className="text-base font-medium text-[var(--text-primary)]">Aucun sondage trouvé</h3>
             <p className="text-xs text-[var(--text-muted)] max-w-sm mt-1">
@@ -558,7 +558,7 @@ export default function PollsCenterClient() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="stagger-children grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {filteredPolls.map((poll) => {
               const typeCfg = TYPE_CONFIG[poll.type] || TYPE_CONFIG.SINGLE_CHOICE;
               const TypeIcon = typeCfg.icon;

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.48.7 — 2026-10-02
+
+**Éditeurs du bot et listes : motion design**
+
+- Assistant d'événement : un anneau glisse d'étape en étape, les étapes terminées se cochent avec une petite animation, la barre de progression s'étire en douceur et chaque étape apparaît en cascade.
+- Création de sondage : les questions et réponses ajoutées glissent en place, la sélection du type de scrutin glisse d'une carte à l'autre.
+- Constructeur de formulaire : le sélecteur d'aperçu et les étapes ont une pastille glissante, les champs glissent à leur nouvelle place quand on les réordonne, la liste se rejoue à chaque étape. L'icône « Modal Discord » était invisible une fois sélectionnée : corrigé.
+- Modèles de formulaire utilisables au clavier (c'étaient des cartes non focalisables) ; réglages de sondage et d'événement en cascade.
+- Dans tous les modules du bot : les listes et grilles (cartes, lignes) apparaissent en cascade, les états vides en douceur, et les champs/cases à cocher utilisent la couleur du thème au lieu du vert fixe.
+
 ## v1.48.6 — 2026-10-02
 
 **Extension Chrome 1.1 : note rapide, tâches et barre d'adresse**

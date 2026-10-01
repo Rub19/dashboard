@@ -542,7 +542,7 @@ export default function CommandsCenterClient() {
                 Aucune commande personnalisée. Crée-en une dans le Studio ou installe un template.
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-4">
                 {commands.map((cmd) => {
                   const r = primaryResponse(cmd);
                   return (
@@ -781,7 +781,7 @@ export default function CommandsCenterClient() {
             {templates.length === 0 ? (
               <p className="text-xs text-[var(--text-muted)]">{isDemo ? "Connecte un serveur pour charger les templates du bot." : "Aucun template disponible."}</p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="stagger-children grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {templates.map((t) => (
                   <div key={t.name} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-5 space-y-3">
                     <div className="flex items-center justify-between">

@@ -391,12 +391,12 @@ export default function AntiNukePage() {
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Incidents récents ({incidents.length})</h2>
             {incidents.length === 0 ? (
-              <div className="text-center py-10 text-[var(--text-muted)]">
+              <div className="pop-in text-center py-10 text-[var(--text-muted)]">
                 <CheckCircle2 className="h-7 w-7 text-emerald-500/40 mx-auto mb-2" />
                 <p className="text-xs font-medium text-[var(--text-muted)]">Aucun incident détecté</p>
               </div>
             ) : (
-              <div className="divide-y divide-[var(--panel-border)]">
+              <div className="stagger-children divide-y divide-[var(--panel-border)]">
                 {incidents.map((inc) => {
                   const Icon = inc.type === "MASS_BAN" ? Users : inc.type === "MASS_CHANNEL_DELETE" ? DoorOpen : Trash2;
                   return (

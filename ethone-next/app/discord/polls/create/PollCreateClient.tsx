@@ -425,7 +425,7 @@ export default function PollCreateClient() {
               className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] px-3 py-2.5 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all disabled:opacity-50"
               title="Rafraîchir les salons et rôles du serveur"
             >
-              <RefreshCw className={cn("h-3.5 w-3.5", (isRefreshing || channelsLoading || rolesLoading) && "animate-spin text-emerald-400")} />
+              <RefreshCw className={cn("h-3.5 w-3.5", (isRefreshing || channelsLoading || rolesLoading) && "animate-spin text-[var(--accent-primary)]")} />
               <span className="hidden sm:inline">Rafraîchir</span>
             </button>
             <button
@@ -440,7 +440,7 @@ export default function PollCreateClient() {
             <button
               onClick={() => handleSave(true)}
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2.5 text-xs font-semibold text-[var(--accent-contrast)] shadow-sm hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50"
             >
               <Send className="h-3.5 w-3.5" />
               {isSubmitting ? "Publication en cours..." : "Publier Immédiatement"}
@@ -573,17 +573,17 @@ export default function PollCreateClient() {
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <label className="text-xs font-medium text-[var(--text-muted)] flex items-center gap-1.5">
-                        <Hash className="h-3.5 w-3.5 text-emerald-400" />
+                        <Hash className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                         Salon Discord de diffusion <span className="text-rose-400">*</span>
                       </label>
                       <button
                         type="button"
                         onClick={() => fetchChannelsList(true)}
                         disabled={channelsLoading}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-[var(--text-muted)] hover:text-emerald-400 transition-colors disabled:opacity-50"
+                        className="inline-flex items-center gap-1 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors disabled:opacity-50"
                         title="Rafraîchir la liste des salons"
                       >
-                        <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-emerald-400")} />
+                        <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-[var(--accent-primary)]")} />
                         <span>Rafraîchir</span>
                       </button>
                     </div>
@@ -641,13 +641,20 @@ export default function PollCreateClient() {
                         type="button"
                         onClick={() => setPollType(item.id)}
                         className={cn(
-                          "flex flex-col items-start rounded-xl border p-4 text-left transition-all",
+                          "relative isolate flex flex-col items-start rounded-xl border p-4 text-left outline-none transition-[border-color,color,transform] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.98]",
                           isSel
-                            ? "border-emerald-500 bg-emerald-500/10 text-[var(--text-primary)] shadow-sm"
+                            ? "border-transparent text-[var(--text-primary)]"
                             : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)]"
                         )}
                       >
-                        <div className={cn("p-2 rounded-lg mb-2", isSel ? "bg-emerald-500 text-white" : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)]")}>
+                        {isSel && (
+                          <motion.span
+                            layoutId="poll-type-selected"
+                            transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                            className="absolute inset-0 -z-10 rounded-[inherit] border border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 shadow-sm"
+                          />
+                        )}
+                        <div className={cn("p-2 rounded-lg mb-2 transition-colors duration-300", isSel ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)]")}>
                           <Icon className="h-4 w-4" />
                         </div>
                         <span className="text-xs font-bold text-[var(--text-primary)]">{item.label}</span>
@@ -669,7 +676,7 @@ export default function PollCreateClient() {
                 <div className="space-y-2.5 text-xs text-[var(--text-muted)]">
                   <div className="flex justify-between border-b border-[var(--panel-border)] pb-2">
                     <span className="text-[var(--text-muted)]">Salon de diffusion :</span>
-                    <span className="font-semibold text-emerald-400">
+                    <span className="font-semibold text-[var(--accent-primary)]">
                       {channels.find((c) => c.id === targetChannel)
                         ? `#${channels.find((c) => c.id === targetChannel)?.name}`
                         : targetChannel
@@ -679,7 +686,7 @@ export default function PollCreateClient() {
                   </div>
                   <div className="flex justify-between border-b border-[var(--panel-border)] pb-2">
                     <span className="text-[var(--text-muted)]">Type de scrutin :</span>
-                    <span className="font-semibold text-emerald-400">{nativeMode ? "Natif Discord" : pollType}</span>
+                    <span className="font-semibold text-[var(--accent-primary)]">{nativeMode ? "Natif Discord" : pollType}</span>
                   </div>
                   <div className="flex justify-between border-b border-[var(--panel-border)] pb-2">
                     <span className="text-[var(--text-muted)]">Durée :</span>
@@ -714,9 +721,9 @@ export default function PollCreateClient() {
               {!nativeMode && (
               <button
                 onClick={handleAddQuestion}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
+                className="group inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-semibold text-[var(--accent-contrast)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
-                <Plus className="h-3.5 w-3.5" />
+                <Plus className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-90" />
                 Ajouter une question
               </button>
               )}
@@ -725,12 +732,12 @@ export default function PollCreateClient() {
             {(nativeMode ? questions.slice(0, 1) : questions).map((q, qIndex) => (
               <div
                 key={q.id}
-                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6"
+                className="rise-in rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6"
               >
                 {!nativeMode && (
                 <div className="flex items-center justify-between gap-4 mb-4">
                   <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/10 text-xs font-bold text-emerald-400">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--accent-primary)]/10 text-xs font-bold text-[var(--accent-primary)]">
                       {qIndex + 1}
                     </span>
                     <h4 className="text-sm font-bold text-[var(--text-primary)]">Question #{qIndex + 1}</h4>
@@ -816,7 +823,7 @@ export default function PollCreateClient() {
                   {q.options.map((opt, optIndex) => (
                     <div
                       key={opt.id}
-                      className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5"
+                      className="rise-in flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 transition-colors focus-within:border-[var(--accent-primary)]/40"
                     >
                       <input
                         type="text"
@@ -953,10 +960,10 @@ export default function PollCreateClient() {
                   type="button"
                   onClick={() => fetchRolesList(true)}
                   disabled={rolesLoading}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-emerald-400 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors disabled:opacity-50"
                   title="Rafraîchir les rôles du serveur"
                 >
-                  <RefreshCw className={cn("h-3 w-3", rolesLoading && "animate-spin text-emerald-400")} />
+                  <RefreshCw className={cn("h-3 w-3", rolesLoading && "animate-spin text-[var(--accent-primary)]")} />
                   <span>Rafraîchir les rôles</span>
                 </button>
               </div>
@@ -964,11 +971,11 @@ export default function PollCreateClient() {
                 Attribuez un coefficient multiplicateur aux votes exprimés par certains rôles (ex: Boosters 2x, Vétérans 2x, Staff 3x).
               </p>
 
-              <div className="space-y-3">
+              <div className="stagger-children space-y-3">
                 {roleWeights.map((rw, index) => (
                   <div key={rw.roleId} className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
                     <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                      <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
                       <span className="text-xs font-bold text-[var(--text-primary)]">{rw.roleName}</span>
                       <span className="text-xs text-[var(--text-muted)]">({rw.roleId})</span>
                     </div>
@@ -986,9 +993,9 @@ export default function PollCreateClient() {
                             prev.map((item, i) => (i === index ? { ...item, weightMultiplier: val } : item))
                           );
                         }}
-                        className="w-16 rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-2 py-1 text-sm text-center text-emerald-400 font-bold focus:outline-none"
+                        className="w-16 rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-2 py-1 text-sm text-center text-[var(--accent-primary)] font-bold focus:outline-none"
                       />
-                      <span className="text-xs font-semibold text-emerald-400">x</span>
+                      <span className="text-xs font-semibold text-[var(--accent-primary)]">x</span>
                       <button
                         type="button"
                         onClick={() => setRoleWeights((prev) => prev.filter((_, i) => i !== index))}
@@ -1047,7 +1054,7 @@ export default function PollCreateClient() {
                     onChange={(e) => setQuorumEnabled(e.target.checked)}
                     className="peer sr-only"
                   />
-                  <div className="h-5 w-9 rounded-full bg-[var(--surface-raised)]/50 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-emerald-500 peer-checked:after:translate-x-full peer-checked:after:border-white" />
+                  <div className="h-5 w-9 rounded-full bg-[var(--surface-raised)]/50 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-[var(--accent-primary)] peer-checked:after:translate-x-full peer-checked:after:border-white" />
                 </label>
               </div>
 
@@ -1103,7 +1110,7 @@ export default function PollCreateClient() {
                     className={cn(
                       "rounded-xl border p-4 text-left transition-all",
                       anonymity === item.id
-                        ? "border-emerald-500 bg-emerald-500/10 text-[var(--text-primary)]"
+                        ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--text-primary)]"
                         : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
@@ -1151,10 +1158,10 @@ export default function PollCreateClient() {
                       type="button"
                       onClick={() => fetchChannelsList(true)}
                       disabled={channelsLoading}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-[var(--text-muted)] hover:text-emerald-400 transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors disabled:opacity-50"
                       title="Rafraîchir la liste des salons"
                     >
-                      <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-emerald-400")} />
+                      <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-[var(--accent-primary)]")} />
                       <span>Rafraîchir</span>
                     </button>
                   </div>
@@ -1190,7 +1197,7 @@ export default function PollCreateClient() {
                       <span className="text-xs font-semibold text-[var(--text-primary)]">
                         ❓ {questions[0].title}
                       </span>
-                      <div className="space-y-1">
+                      <div className="stagger-children space-y-1">
                         {questions[0].options.map((opt) => (
                           <div key={opt.id} className="text-xs text-[#b5bac1]">
                             {opt.emoji} **{opt.label}** {opt.description ? `• *${opt.description}*` : ""}

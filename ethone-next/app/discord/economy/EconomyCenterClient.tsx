@@ -556,7 +556,7 @@ export default function EconomyCenterClient() {
           {leaderboard.length === 0 ? (
             <p className="text-xs text-[var(--text-muted)] py-6 text-center">Aucun membre n'a encore de solde sur ce serveur.</p>
           ) : (
-            <div className="space-y-2">
+            <div className="stagger-children space-y-2">
               {leaderboard.map((w) => (
                 <div key={w.userId} className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                   <div className="flex items-center gap-3">
@@ -636,7 +636,7 @@ export default function EconomyCenterClient() {
             Boutique de rôles
           </h2>
 
-          <div className="space-y-2">
+          <div className="stagger-children space-y-2">
             {shopItems.map((item) => (
               <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                 <div>

@@ -334,7 +334,7 @@ export default function TagsCenterClient() {
               {tags.length === 0 ? (
                 <p className="px-4 py-8 text-center text-sm text-[var(--text-muted)]">Aucun tag. Crée-en un ci-dessus.</p>
               ) : (
-                <div className="divide-y divide-[var(--panel-border)]">
+                <div className="stagger-children divide-y divide-[var(--panel-border)]">
                   {tags.map((t) => (
                     <div key={t.name} className="flex items-start gap-3 p-4">
                       <button onClick={() => openEditor(t)} className="min-w-0 flex-1 text-left cursor-pointer">

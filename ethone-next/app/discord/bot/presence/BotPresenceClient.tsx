@@ -941,7 +941,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <p className="text-xs text-[var(--text-muted)]">Basculez instantanément vers un préreglage</p>
                   </div>
 
-                  <div className="space-y-2.5">
+                  <div className="stagger-children space-y-2.5">
                     {profiles.map((p) => {
                       const isActive =
                         currentStatus === p.status &&
@@ -1138,7 +1138,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 </h3>
               </div>
 
-              <div className="space-y-3">
+              <div className="stagger-children space-y-3">
                 {rotationConfig.activities.map((item, index) => (
                   <div
                     key={item.id}
@@ -1255,7 +1255,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="stagger-children grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {profiles.map((p) => (
                   <div
                     key={p.id}
@@ -1383,7 +1383,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       <th className="py-3 px-4 text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[var(--panel-border)] text-[var(--text-muted)]">
+                  <tbody className="stagger-children divide-y divide-[var(--panel-border)] text-[var(--text-muted)]">
                     {guilds.map((g) => (
                       <tr key={g.guildId} className="hover:bg-[var(--surface-raised)]/70">
                         <td className="py-3.5 px-4 flex items-center gap-3">
@@ -1601,7 +1601,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       <th className="py-3 px-3 text-right">Portée</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[var(--panel-border)] text-[var(--text-muted)] font-mono">
+                  <tbody className="stagger-children divide-y divide-[var(--panel-border)] text-[var(--text-muted)] font-mono">
                     {auditHistory.map((item) => (
                       <tr key={item.id} className="hover:bg-[var(--surface-raised)]/70 font-sans">
                         <td className="py-3 px-3 text-[var(--text-muted)] whitespace-nowrap font-mono text-xs">

@@ -477,7 +477,7 @@ export default function TicketDetailClient() {
             </h2>
 
             {ticket.answers && Object.keys(ticket.answers).length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div className="stagger-children grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                 {Object.entries(ticket.answers).map(([key, val]) => (
                   <div key={key} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
                     <p className="text-xs font-semibold text-[var(--text-muted)] capitalize">{key}</p>
@@ -618,7 +618,7 @@ export default function TicketDetailClient() {
                 onChange={(e) => setNoteContent(e.target.value)}
                 placeholder="Ajouter une note d'investigation..."
                 rows={2}
-                className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] p-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/60 outline-none focus:border-emerald-500 resize-none"
+                className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] p-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/60 outline-none focus:border-[var(--accent-primary)]/60 resize-none"
               />
               <button
                 type="submit"
@@ -699,7 +699,7 @@ export default function TicketDetailClient() {
                 value={closeReason}
                 onChange={(e) => setCloseReason(e.target.value)}
                 placeholder="Ex: Problème résolu, question traitée..."
-                className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-emerald-500"
+                className="h-9 w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]/60"
               />
             </div>
 

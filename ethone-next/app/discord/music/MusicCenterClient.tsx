@@ -1089,7 +1089,7 @@ export default function MusicCenterClient() {
                 {!searchError && searchResults.length === 0 && (
                   <p className="text-xs text-[var(--text-muted)]">Rien trouvé pour « {searchQuery.trim()} ». Essaie un autre titre, ou colle un lien YouTube, Spotify ou SoundCloud.</p>
                 )}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-72 overflow-y-auto">
+                <div className="stagger-children grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-72 overflow-y-auto">
                   {searchResults.map((tr) => (
                     <div
                       key={tr.id}
@@ -1193,7 +1193,7 @@ export default function MusicCenterClient() {
               </div>
 
               {musicState?.queue && musicState.queue.length > 0 ? (
-                <div className="space-y-2">
+                <div className="stagger-children space-y-2">
                   {musicState.queue.map((track, idx) => (
                     <div
                       key={`${track.id}-${idx}`}
@@ -1237,7 +1237,7 @@ export default function MusicCenterClient() {
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
+                <div className="pop-in flex flex-col items-center justify-center py-12 text-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                   <Music2 className="h-8 w-8 text-[var(--text-muted)] mb-2" />
                   <p className="text-xs font-medium text-[var(--text-muted)]">La file d'attente est actuellement vide.</p>
                   <p className="text-xs text-[var(--text-muted)] mt-0.5">Utilisez la recherche ci-dessus pour ajouter des morceaux.</p>
@@ -1321,7 +1321,7 @@ export default function MusicCenterClient() {
               </div>
 
               {playlists.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="stagger-children grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {playlists.map((pl) => (
                     <div
                       key={pl.id}
@@ -1355,7 +1355,7 @@ export default function MusicCenterClient() {
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
+                <div className="pop-in flex flex-col items-center justify-center py-12 text-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                   <Disc className="h-8 w-8 text-[var(--text-muted)] mb-2" />
                   <p className="text-xs font-medium text-[var(--text-muted)]">Aucune playlist enregistrée pour ce serveur.</p>
                 </div>
@@ -1372,7 +1372,7 @@ export default function MusicCenterClient() {
               </div>
 
               {favorites.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="stagger-children grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {favorites.map((tr) => (
                     <div
                       key={tr.id}
@@ -1408,7 +1408,7 @@ export default function MusicCenterClient() {
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
+                <div className="pop-in flex flex-col items-center justify-center py-12 text-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                   <Heart className="h-8 w-8 text-[var(--text-muted)] mb-2" />
                   <p className="text-xs font-medium text-[var(--text-muted)]">Aucun morceau favori pour le moment.</p>
                   <p className="text-xs text-[var(--text-muted)] mt-0.5">Cliquez sur l'icône cœur pour en ajouter un.</p>
@@ -1426,7 +1426,7 @@ export default function MusicCenterClient() {
               </div>
 
               {history.length > 0 ? (
-                <div className="space-y-2">
+                <div className="stagger-children space-y-2">
                   {history.map((tr, idx) => (
                     <div
                       key={`${tr.id}-${idx}`}
@@ -1456,7 +1456,7 @@ export default function MusicCenterClient() {
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
+                <div className="pop-in flex flex-col items-center justify-center py-12 text-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                   <Clock className="h-8 w-8 text-[var(--text-muted)] mb-2" />
                   <p className="text-xs font-medium text-[var(--text-muted)]">Historique d'écoute vide.</p>
                 </div>
@@ -1563,7 +1563,7 @@ export default function MusicCenterClient() {
                     onChange={(e) => setSettings({ ...settings, maxQueueSize: Number(e.target.value) })}
                     onMouseUp={() => handleSaveSettings({ maxQueueSize: settings.maxQueueSize })}
                     onTouchEnd={() => handleSaveSettings({ maxQueueSize: settings.maxQueueSize })}
-                    className="w-full h-1.5 rounded-full bg-[var(--panel-border)] appearance-none cursor-pointer accent-emerald-500"
+                    className="w-full h-1.5 rounded-full bg-[var(--panel-border)] appearance-none cursor-pointer accent-[var(--accent-primary)]"
                   />
                 </div>
 
@@ -1667,7 +1667,7 @@ export default function MusicCenterClient() {
               <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Top 5 des Morceaux les plus Demandés</h4>
                 {stats.topTracks.length > 0 ? (
-                  <div className="space-y-2">
+                  <div className="stagger-children space-y-2">
                     {stats.topTracks.slice(0, 5).map((tr, idx) => (
                       <div key={idx} className="flex items-center justify-between text-xs py-1.5 border-b border-[var(--panel-border)] last:border-0">
                         <div className="flex items-center gap-2.5">
@@ -1688,7 +1688,7 @@ export default function MusicCenterClient() {
               <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Membres les plus actifs</h4>
                 {stats.topRequesters.length > 0 ? (
-                  <div className="space-y-2.5">
+                  <div className="stagger-children space-y-2.5">
                     {stats.topRequesters.slice(0, 5).map((m, idx) => {
                       const max = Math.max(1, stats.topRequesters[0]?.count || 1);
                       return (

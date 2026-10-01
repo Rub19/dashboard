@@ -358,7 +358,7 @@ export default function AfkCenterClient() {
               <Switch checked={config.prefixNickname} onChange={(v) => patch("prefixNickname", v)} label="Préfixer le pseudo avec [AFK]" hint="Nécessite la permission Gérer les pseudos. Restauré au retour." />
               <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5">
                 <label className="block text-xs font-semibold text-[var(--text-primary)]">Auto-suppression des réponses du bot : {config.autoDeleteSeconds === 0 ? "jamais" : `${config.autoDeleteSeconds}s`}</label>
-                <input type="range" min={0} max={60} value={config.autoDeleteSeconds} onChange={(e) => patch("autoDeleteSeconds", Number(e.target.value))} className="mt-2 w-full accent-emerald-500" />
+                <input type="range" min={0} max={60} value={config.autoDeleteSeconds} onChange={(e) => patch("autoDeleteSeconds", Number(e.target.value))} className="mt-2 w-full accent-[var(--accent-primary)]" />
               </div>
             </div>
 
@@ -369,7 +369,7 @@ export default function AfkCenterClient() {
               {!overview || overview.members.length === 0 ? (
                 <p className="px-4 py-8 text-center text-sm text-[var(--text-muted)]">Personne n&apos;est AFK.</p>
               ) : (
-                <div className="divide-y divide-[var(--panel-border)]">
+                <div className="stagger-children divide-y divide-[var(--panel-border)]">
                   {overview.members.map((m) => (
                     <div key={m.userId} className="flex items-center gap-3 p-4">
                       <div className="min-w-0 flex-1">

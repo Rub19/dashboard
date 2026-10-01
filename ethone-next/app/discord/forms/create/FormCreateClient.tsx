@@ -157,7 +157,7 @@ export default function FormCreateClient() {
   };
 
   return (
-    <div className="w-full px-4 py-6 sm:px-6 text-[var(--text-primary)] space-y-6 max-w-5xl mx-auto">
+    <div className="stagger-children w-full px-4 py-6 sm:px-6 text-[var(--text-primary)] space-y-6 max-w-5xl mx-auto">
       <div className="flex items-center gap-3 border-b border-[var(--panel-border)] pb-4">
         <Link href={`/discord/forms?guildId=${guildId}`} className="grid h-9 w-9 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
           <ArrowLeft className="h-4 w-4" />
@@ -170,15 +170,15 @@ export default function FormCreateClient() {
 
       <div className="space-y-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">1. Point de départ</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="stagger-children grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {TEMPLATES.map((tmpl) => {
             const isSelected = selectedTemplate === tmpl.id;
             return (
-              <div key={tmpl.id} onClick={() => handleSelectTemplate(tmpl.id)} className={cn("rounded-2xl border p-4 cursor-pointer transition-all duration-150 flex flex-col justify-between", isSelected ? "border-emerald-500 bg-emerald-500/10 shadow-sm ring-1 ring-emerald-500/50" : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/70")}>
+              <button type="button" aria-pressed={isSelected} key={tmpl.id} onClick={() => handleSelectTemplate(tmpl.id)} className={cn("w-full text-left rounded-2xl border p-4 cursor-pointer outline-none transition-[border-color,background-color,transform] duration-150 flex flex-col justify-between focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.98]", isSelected ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 shadow-sm ring-1 ring-[var(--accent-primary)]/50" : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/70")}>
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-2xl">{tmpl.icon}</span>
-                    {isSelected && <CheckCircle2 className="h-4 w-4 text-emerald-400 fill-emerald-500/20" />}
+                    {isSelected && <CheckCircle2 className="pop-in h-4 w-4 text-[var(--accent-primary)] fill-[var(--accent-primary)]/20" />}
                   </div>
                   <h3 className="text-sm font-bold text-[var(--text-primary)]">{tmpl.title}</h3>
                   <p className="text-xs text-[var(--text-muted)] mt-1 line-clamp-2 leading-relaxed">{tmpl.description}</p>
@@ -187,7 +187,7 @@ export default function FormCreateClient() {
                   <span>{tmpl.category}</span>
                   <span>{tmpl.fields.length} champs</span>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>

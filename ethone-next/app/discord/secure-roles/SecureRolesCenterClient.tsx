@@ -355,7 +355,7 @@ export default function SecureRolesCenterClient() {
                         <th className="pb-2 text-right font-semibold">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[var(--panel-border)]">
+                    <tbody className="stagger-children divide-y divide-[var(--panel-border)]">
                       {data.members.map((m) => (
                         <tr key={m.userId}>
                           <td className="py-2.5 pr-3">

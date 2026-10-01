@@ -491,7 +491,7 @@ export default function CaseDetailClient() {
             {relatedCases.length === 0 ? (
               <p className="text-xs text-[var(--text-muted)] italic">Aucune autre sanction au dossier de ce membre.</p>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="stagger-children grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {relatedCases.map((rc) => (
                   <Link
                     key={rc.id}

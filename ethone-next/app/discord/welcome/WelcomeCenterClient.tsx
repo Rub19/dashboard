@@ -1054,7 +1054,7 @@ export function WelcomeCenterClient() {
               </p>
             </div>
 
-            <div className="space-y-3 pt-2">
+            <div className="stagger-children space-y-3 pt-2">
               {overview?.funnel?.map((stage: any, idx: number) => (
                 <div key={stage.stage} className="space-y-1">
                   <div className="flex items-center justify-between text-xs">
@@ -1444,7 +1444,7 @@ export function WelcomeCenterClient() {
                 </button>
               </div>
 
-              <div className="space-y-2">
+              <div className="stagger-children space-y-2">
                 {config.welcome.buttons?.map((btn: WelcomeButton, idx: number) => (
                   <div key={btn.id} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2 text-xs">
                     <div className="flex items-center gap-2">
@@ -1584,7 +1584,7 @@ export function WelcomeCenterClient() {
 
                       {/* Fields */}
                       {config.welcome.embed.fields && config.welcome.embed.fields.length > 0 && (
-                        <div className="grid grid-cols-2 gap-2 pt-1">
+                        <div className="stagger-children grid grid-cols-2 gap-2 pt-1">
                           {config.welcome.embed.fields.map((f: EmbedField) => (
                             <div key={f.id} className={cn(f.inline ? "col-span-1" : "col-span-2")}>
                               <p className="text-xs font-bold text-[var(--text-muted)] uppercase">{f.name}</p>
@@ -1842,7 +1842,7 @@ export function WelcomeCenterClient() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="stagger-children grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {templates.map((tpl) => (
               <div
                 key={tpl.id}

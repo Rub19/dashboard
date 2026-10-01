@@ -692,7 +692,7 @@ export default function SuggestionsCenterClient() {
                 Aucune suggestion pour ce filtre. Les membres peuvent en proposer sur Discord via <code className="text-[var(--text-muted)]">/suggest</code>.
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+              <div className="stagger-children grid grid-cols-1 lg:grid-cols-4 gap-4">
                 {KANBAN_COLUMNS.map((col) => {
                   const items = filteredSuggestions.filter((s) => col.statuses.includes(s.status));
                   return (
@@ -870,7 +870,7 @@ export default function SuggestionsCenterClient() {
             {topIdeas.length === 0 ? (
               <p className="text-xs text-[var(--text-muted)]">Pas encore de suggestion votée.</p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="stagger-children grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {topIdeas.map((s, i) => (
                   <div key={s.id} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-5 space-y-2">
                     <div className="flex items-center justify-between">

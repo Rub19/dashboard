@@ -248,7 +248,7 @@ export default function BackupCompareClient() {
                     {item.details && <span className="text-xs text-[var(--text-muted)]">{item.details}</span>}
                   </div>
                   {item.status === "MODIFIED" && item.changes && item.changes.length > 0 && (
-                    <div className="space-y-1.5 pt-2 text-xs">
+                    <div className="stagger-children space-y-1.5 pt-2 text-xs">
                       {item.changes.map((c, i) => (
                         <div key={i} className="grid grid-cols-1 sm:grid-cols-[140px_1fr_1fr] gap-2 items-start">
                           <span className="text-[var(--text-muted)] font-medium font-mono">{c.field}</span>

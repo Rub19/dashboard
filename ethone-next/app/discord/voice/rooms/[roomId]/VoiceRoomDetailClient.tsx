@@ -480,7 +480,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
                 placeholder="ID ou nom Discord de l'utilisateur"
                 value={targetUserId}
                 onChange={(e) => setTargetUserId(e.target.value)}
-                className="h-10 px-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-emerald-500 flex-1"
+                className="h-10 px-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-primary)]/60 flex-1"
               />
               <button
                 onClick={() => targetUserId.trim() && handleWhitelist(targetUserId.trim(), "add")}
@@ -500,7 +500,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
             {whitelist.length === 0 ? (
               <p className="text-xs text-[var(--text-muted)] italic py-2">Aucun membre dans la liste blanche.</p>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+              <div className="stagger-children grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                 {whitelist.map((id) => (
                   <div
                     key={id}
@@ -561,7 +561,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
             {banlist.length === 0 ? (
               <p className="text-xs text-[var(--text-muted)] italic py-2">Aucun membre dans la liste noire.</p>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+              <div className="stagger-children grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                 {banlist.map((id) => (
                   <div
                     key={id}
@@ -612,7 +612,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder="Nouveau nom"
-              className="w-full h-10 px-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-emerald-500"
+              className="w-full h-10 px-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]/60"
             />
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
@@ -647,7 +647,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
               value={newLimit}
               onChange={(e) => setNewLimit(e.target.value)}
               placeholder="0 pour illimité, max 99"
-              className="w-full h-10 px-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-emerald-500"
+              className="w-full h-10 px-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]/60"
             />
             <div className="flex items-center justify-end gap-2 pt-2">
               <button

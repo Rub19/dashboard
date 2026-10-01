@@ -1,8 +1,8 @@
 // Avatar + bannière animés d'Etho (v4, haute définition), dans la DA de la console : fond nuit, rouge Etho, lignes nettes.
 //  - Avatar 1024 : anneau épais où circule une traînée lumineuse + reflet qui traverse un grand « E ». Pensé pour
 //    rester lisible à 32-40 px (liste des membres) : la v3 (512, « E » fin sur disque sombre) devenait floue.
-//  - Bannière 1500x600 (5:2) : Discord l'affiche jusqu'à 600 px de large, soit 1200 px sur écran haute densité ;
-//    la v3 en 960x384 était agrandie, donc floue. Reflet sur ETHO, lumière sur la barre, icônes en vague.
+//  - Bannière 960x384 (5:2, taille maximale stockée par Discord, au-delà il ré-encode) : sous-titre plus gros et en
+//    semi-gras, 9 modules. Reflet sur ETHO, lumière sur la barre, icônes en vague.
 // Tout est dessiné dans le repère d'origine puis mis à l'échelle (SCALE) : textes et formes tracés nets.
 // Les images sont vérifiées après encodage : chaque frame doit être différente (piège déjà rencontré : un GIF
 // « animé » dont toutes les frames étaient identiques).
@@ -148,7 +148,9 @@ async function banner() {
   dumpPrefix = 'banner';
   const W = 960; // repère de dessin
   const H = 384;
-  const SCALE = 1500 / 960; // rendu final 1500 x 600
+  // Discord stocke les bannières en 960 x 384 au plus et ré-encode tout ce qui dépasse (vérifié sur le CDN : un
+  // envoi en 1500 x 600 revient en 960 x 384, re-quantifié). On rend donc pile à cette taille.
+  const SCALE = 1;
   const FRAMES = 60; // 60 x 50 ms = 3 s
   const canvas = createCanvas(Math.round(W * SCALE), Math.round(H * SCALE));
   const ctx = canvas.getContext('2d');

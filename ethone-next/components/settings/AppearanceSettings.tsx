@@ -10,6 +10,7 @@ import { useSettingsForm } from "./SettingsFormContext";
 import { ACCENTS } from "@/components/SettingsProvider";
 import { type Settings, DEFAULTS } from "@/lib/settings";
 import { resolveAccent } from "@/lib/theme-engine";
+import { cn } from "@/lib/utils";
 import BentoCard from "@/components/ui/BentoCard";
 import ThemeStudio from "./ThemeStudio";
 import LiveThemePreview from "./LiveThemePreview";
@@ -38,15 +39,27 @@ const PACKS = [
   { id: "radix", label: "Radix" },
 ] as const;
 
+// "sans" = police du thème actif ; les autres forcent leur police quel que soit le thème.
 const FONTS = [
+  { id: "sans", label: "Police du thème" },
   { id: "inter", label: "Inter" },
   { id: "outfit", label: "Outfit" },
+  { id: "poppins", label: "Poppins (Asphalt)" },
+  { id: "oswald", label: "Oswald (Burgundy)" },
   { id: "jetbrains", label: "JetBrains Mono" },
   { id: "editorial", label: "Editorial Serif" },
-  { id: "sans", label: "Sans système" },
-  { id: "mono", label: "Mono" },
-  { id: "serif", label: "Serif" },
 ] as const;
+
+/** Aperçu « Aa » de chaque police dans sa propre famille (même chargement que l'interface). */
+const FONT_PREVIEW: Record<string, string> = {
+  sans: "var(--font-theme-override, var(--font-geist-sans))",
+  inter: "var(--font-geist-sans)",
+  outfit: "var(--font-outfit)",
+  poppins: "var(--font-poppins)",
+  oswald: "var(--font-oswald)",
+  jetbrains: "var(--font-geist-mono)",
+  editorial: "ui-serif, Georgia, serif",
+};
 
 const DOCK_SCALES = [
   { id: "compact", label: "Compact" },
@@ -269,14 +282,38 @@ export default function AppearanceSettings() {
       {/* Card 2 : Typographie & Échelle */}
       <BentoCard title="Typographie" icon="type">
         <div className="space-y-1">
-          <SettingsRow label="Police" description="Famille de caractères principale.">
-            <Select
-              value={settings.fontFamily}
-              onChange={(v) => handleChange("fontFamily", v as Settings["fontFamily"])}
-              options={FONTS.map((f) => ({ id: f.id, label: f.label }))}
-              className="min-w-[9rem]"
-            />
-          </SettingsRow>
+          <div className="py-2">
+            <p className="text-sm font-medium text-[var(--text-primary)]">Police</p>
+            <p className="mb-3 text-xs text-[var(--text-muted)]">
+              « Police du thème » suit le thème actif ; les autres s&apos;appliquent à tous les thèmes et sont enregistrées dans vos presets.
+            </p>
+            <div role="radiogroup" aria-label="Police" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {FONTS.map((f) => {
+                const active = settings.fontFamily === f.id;
+                return (
+                  <button
+                    key={f.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={active}
+                    onClick={() => handleChange("fontFamily", f.id as Settings["fontFamily"])}
+                    className={cn(
+                      "group relative flex cursor-pointer flex-col items-start gap-1 rounded-[var(--inset-radius)] border px-3 py-2.5 text-left outline-none transition-colors duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
+                      active ? "border-[var(--accent-primary)]/50" : "border-[var(--panel-border)] hover:border-[var(--text-primary)]/20"
+                    )}
+                  >
+                    {active && (
+                      <motion.span layoutId="font-pick" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/10" />
+                    )}
+                    <span className="relative text-xl leading-none text-[var(--text-primary)]" style={{ fontFamily: FONT_PREVIEW[f.id] }}>
+                      Aa
+                    </span>
+                    <span className={cn("relative truncate text-[11px]", active ? "font-semibold text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>{f.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           <SettingsRow label="Échelle du texte" description="Ajuste la taille globale du texte.">
             <div className="w-40">

@@ -11,7 +11,7 @@ export type Preset = {
   customAccentColor: string;
   aura: string;
   density: Settings["densityMode"];
-  fontFamily: "inter" | "outfit" | "mono" | "serif" | "sans" | "jetbrains" | "editorial";
+  fontFamily: "sans" | "outfit" | "mono" | "serif" | "inter" | "jetbrains" | "editorial" | "oswald" | "poppins";
   radiusStyle: Settings["radiusStyle"];
   dockScale: Settings["dockScale"];
   dockAlign: Settings["dockAlign"];
@@ -34,7 +34,8 @@ const ALLOWED_DOCK_GLASS = new Set<string>(["default", "ultra", "opaque"]);
 const ALLOWED_HOME_GRID = new Set<string>(["2", "3", "4"]);
 const ALLOWED_HOME_HERO = new Set<string>(["full", "compact", "hidden"]);
 const ALLOWED_UI_ANIMATIONS = new Set<string>(["smooth", "snappy", "reduced"]);
-const ALLOWED_FONT_FAMILY = new Set<string>(["inter", "outfit", "mono", "serif"]);
+// Toutes les polices proposées dans Apparence : un preset enregistré les restitue telles quelles.
+const ALLOWED_FONT_FAMILY = new Set<string>(["sans", "inter", "outfit", "poppins", "oswald", "jetbrains", "editorial", "mono", "serif"]);
 const ALLOWED_RADIUS_STYLE = new Set<string>(["rounded", "soft", "sharp"]);
 const ALLOWED_THEME: Settings["theme"][] = [...PREMIUM_THEMES, "auto"];
 const ALLOWED_ACCENT: Preset["accent"][] = ["violet", "blue", "cyan", "pink", "red", "orange", "green", "mint", "amber", "sky", "teal", "rose", "coral", "custom", "auto"];

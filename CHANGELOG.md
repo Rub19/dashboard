@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.46.4 — 2026-10-01
+
+**Polices au choix, Dynamic Island et retour depuis le bot**
+
+- Thèmes & Apparence : nouveau sélecteur de police avec aperçu « Aa ». Oswald (la police de Burgundy) et Poppins (celle d'Asphalt) peuvent maintenant être utilisées sur n'importe quel thème, Dyno Rose compris, ainsi qu'Outfit (désormais réellement chargée). « Police du thème » garde le comportement d'origine.
+- Corrigé : choisir Inter ou Outfit ne changeait rien quand le thème avait sa propre police ; le choix s'applique maintenant partout.
+- Corrigé : les presets enregistrés perdaient la police choisie (seules 4 polices sur 7 étaient acceptées) ; toutes les polices sont maintenant sauvegardées et restaurées avec le preset.
+- La Dynamic Island ne recouvre plus la recherche Ctrl K sur grand écran : elle s'affiche juste sous la barre du haut.
+- Le bouton « Retour à ETHONE » de la console du bot fait maintenant une vraie navigation (et ramène bien au dashboard depuis discord.ethone.dev).
+
 ## v1.46.3 — 2026-10-01
 
 **Nouvel avatar et bannière animés d'Etho**

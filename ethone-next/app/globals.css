@@ -1097,17 +1097,15 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Ces 3 alias suivent la police du thème actif (--font-theme-override, posée par lib/theme-engine.ts pour
-   les thèmes qui en définissent une, ex. Burgundy/Asphalt) : c'est le réglage "police" par défaut, donc rien
-   ici ne doit passer outre le choix du thème. Mono/Serif ci-dessous restent un choix explicite de l'utilisateur
-   et ne sont jamais remplacés par un thème. */
-[data-font="sans"] body { font-family: var(--font-theme-override, var(--font-geist-sans)), ui-sans-serif, system-ui, sans-serif; }
-[data-font="inter"] body { font-family: var(--font-theme-override, var(--font-geist-sans)), ui-sans-serif, system-ui, sans-serif; }
-[data-font="outfit"] body { font-family: var(--font-theme-override, var(--font-geist-sans)), ui-sans-serif, system-ui, sans-serif; }
-[data-font="mono"] body { font-family: var(--font-geist-mono), ui-monospace, monospace; }
-[data-font="jetbrains"] body { font-family: var(--font-geist-mono), ui-monospace, monospace; }
-[data-font="serif"] body { font-family: ui-serif, Georgia, serif; }
-[data-font="editorial"] body { font-family: ui-serif, Georgia, serif; }
+/* Police : "sans" (par défaut) suit la police du thème actif (--font-theme-override, posée en style inline par
+   lib/theme-engine.ts pour Burgundy/Asphalt). Tout autre choix force sa police sur n'importe quel thème : on
+   réécrit la même variable avec !important (qui l'emporte sur le style inline), donc tout ce qui la lit suit. */
+html[data-font="inter"] { --font-theme-override: var(--font-geist-sans) !important; }
+html[data-font="outfit"] { --font-theme-override: var(--font-outfit) !important; }
+html[data-font="poppins"] { --font-theme-override: var(--font-poppins) !important; }
+html[data-font="oswald"] { --font-theme-override: var(--font-oswald) !important; }
+html[data-font="mono"], html[data-font="jetbrains"] { --font-theme-override: var(--font-geist-mono) !important; }
+html[data-font="serif"], html[data-font="editorial"] { --font-theme-override: ui-serif, Georgia, serif !important; }
 
 [data-aura="classic"] body { background: radial-gradient(ellipse at 50% 10%, rgba(139, 92, 246, 0.16) 0%, transparent 60%), var(--background); }
 [data-aura="boreal"] body { background: radial-gradient(ellipse at 25% 15%, rgba(6, 182, 212, 0.18) 0%, transparent 55%), radial-gradient(ellipse at 80% 20%, rgba(16, 185, 129, 0.16) 0%, transparent 50%), var(--background); }

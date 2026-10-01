@@ -149,14 +149,15 @@ const AURAS = [
   { id: "mineral", label: "auraMineral" },
 ] as const;
 
+// "sans" = police du thème actif ; les autres forcent leur police quel que soit le thème.
 const FONTS = [
+  { id: "sans", label: "Police du thème" },
   { id: "inter", label: "Inter" },
   { id: "outfit", label: "Outfit" },
+  { id: "poppins", label: "Poppins (Asphalt)" },
+  { id: "oswald", label: "Oswald (Burgundy)" },
   { id: "jetbrains", label: "JetBrains Mono" },
   { id: "editorial", label: "Editorial Serif" },
-  { id: "sans", label: "fontSans" },
-  { id: "mono", label: "fontMono" },
-  { id: "serif", label: "fontSerif" },
 ] as const;
 
 const RADIUS_STYLES = [

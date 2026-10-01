@@ -40630,6 +40630,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_46_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_46_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_46_3_de);
 
+const v1_46_4_fr: ChangelogEntry = {
+  version: "v1.46.4",
+  date: "2026-10-01",
+  title: "Polices au choix, Dynamic Island et retour depuis le bot",
+  items: [
+    "Thèmes & Apparence : nouveau sélecteur de police avec aperçu « Aa ». Oswald (la police de Burgundy) et Poppins (celle d'Asphalt) peuvent maintenant être utilisées sur n'importe quel thème, Dyno Rose compris, ainsi qu'Outfit (désormais réellement chargée). « Police du thème » garde le comportement d'origine.",
+    "Corrigé : choisir Inter ou Outfit ne changeait rien quand le thème avait sa propre police ; le choix s'applique maintenant partout.",
+    "Corrigé : les presets enregistrés perdaient la police choisie (seules 4 polices sur 7 étaient acceptées) ; toutes les polices sont maintenant sauvegardées et restaurées avec le preset.",
+    "La Dynamic Island ne recouvre plus la recherche Ctrl K sur grand écran : elle s'affiche juste sous la barre du haut.",
+    "Le bouton « Retour à ETHONE » de la console du bot fait maintenant une vraie navigation (et ramène bien au dashboard depuis discord.ethone.dev).",
+  ],
+};
+
+const v1_46_4_en: ChangelogEntry = {
+  version: "v1.46.4",
+  date: "2026-10-01",
+  title: "Font choice, Dynamic Island and back from the bot",
+  items: [
+    "Themes & Appearance: new font picker with an \"Aa\" preview. Oswald (Burgundy's font) and Poppins (Asphalt's) can now be used on any theme, Dyno Rose included, as can Outfit (now actually loaded). \"Theme font\" keeps the original behaviour.",
+    "Fixed: choosing Inter or Outfit did nothing when the theme had its own font; the choice now applies everywhere.",
+    "Fixed: saved presets lost the chosen font (only 4 of 7 fonts were accepted); every font is now saved and restored with the preset.",
+    "The Dynamic Island no longer covers the Ctrl K search on large screens: it now sits just below the top bar.",
+    "The bot console's \"Back to ETHONE\" button now performs a real navigation (and returns to the dashboard from discord.ethone.dev).",
+  ],
+};
+
+const v1_46_4_es: ChangelogEntry = {
+  version: "v1.46.4",
+  date: "2026-10-01",
+  title: "Elección de fuente, Dynamic Island y regreso desde el bot",
+  items: [
+    "Nuevo selector de fuente (Oswald, Poppins, Outfit) en todos los temas y guardado en los presets; la Dynamic Island ya no tapa la búsqueda; botón de regreso corregido.",
+  ],
+};
+
+const v1_46_4_de: ChangelogEntry = {
+  version: "v1.46.4",
+  date: "2026-10-01",
+  title: "Schriftwahl, Dynamic Island und Zurück vom Bot",
+  items: [
+    "Neue Schriftauswahl (Oswald, Poppins, Outfit) für alle Themes, in Presets gespeichert; Dynamic Island überdeckt die Suche nicht mehr; Zurück-Button korrigiert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_46_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_46_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_46_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_46_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Oswald, Poppins } from "next/font/google";
+import { Inter, JetBrains_Mono, Oswald, Outfit, Poppins } from "next/font/google";
 import "./legacy-v8-tokens.css";
 import "./legacy-v8-components-tokens.css";
 import "./legacy-v8-depth-tokens.css";
@@ -47,7 +47,8 @@ const oswald = Oswald({
   variable: "--font-oswald",
   display: "swap",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  // 400 inclus : la police peut aussi être choisie comme police de toute l'interface (Apparence > Police).
+  weight: ["400", "500", "600", "700"],
   preload: false,
 });
 
@@ -55,7 +56,14 @@ const poppins = Poppins({
   variable: "--font-poppins",
   display: "swap",
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["400", "500", "600", "700", "800"],
+  preload: false,
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
+  display: "swap",
+  subsets: ["latin"],
   preload: false,
 });
 
@@ -97,7 +105,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${inter.variable} ${jetbrainsMono.variable} ${oswald.variable} ${poppins.variable} h-full max-h-dvh overflow-hidden antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${oswald.variable} ${poppins.variable} ${outfit.variable} h-full max-h-dvh overflow-hidden antialiased`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >

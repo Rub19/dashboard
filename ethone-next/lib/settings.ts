@@ -99,7 +99,7 @@ export type Settings = {
   iconPack: "lucide" | "phosphor" | "tabler" | "heroicons" | "radix";
   densityMode: DensityMode;
   fontSize: number;
-  fontFamily: "sans" | "outfit" | "mono" | "serif" | "inter" | "jetbrains" | "editorial";
+  fontFamily: "sans" | "outfit" | "mono" | "serif" | "inter" | "jetbrains" | "editorial" | "oswald" | "poppins";
   density: number;
   densityCustom: {
     fontScale: number;

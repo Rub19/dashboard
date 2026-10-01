@@ -2,7 +2,6 @@
 
 import { type ReactNode } from "react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowLeft } from "@/components/icons/ph";
 import BotStatusStrip from "@/components/discord/BotStatusStrip";
@@ -68,20 +67,27 @@ export default function Shell({ children }: { children: ReactNode }) {
                   <RefreshSpinner />
                   <VisualHaptics />
                   <header className="relative z-10 flex h-16 shrink-0 items-center gap-4 border-b border-[var(--panel-border)]/60 px-4 pt-1 sm:px-6">
-                    <Link
+                    {/* Vraie navigation (et non <Link>) : depuis le plein écran du bot, la navigation client vers « / »
+                        pouvait ne rien faire, et sur discord.ethone.dev « / » redirige vers la vitrine /bot. */}
+                    {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                    <a
                       href="/"
-                      onClick={() => {
+                      onClick={(e) => {
                         try {
                           sessionStorage.removeItem("ethone:discord:picked");
                         } catch {
                           // stockage indisponible : le choix du serveur sera simplement conservé
+                        }
+                        if (window.location.hostname === "discord.ethone.dev") {
+                          e.preventDefault();
+                          window.location.assign("https://ethone.dev/");
                         }
                       }}
                       className="group inline-flex h-11 items-center gap-2.5 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-5 text-sm font-semibold text-[var(--text-primary)] transition-all hover:border-[var(--accent-primary)]/50 hover:bg-[var(--accent-primary)]/10 active:scale-95"
                     >
                       <ArrowLeft className="h-5 w-5 transition-transform duration-300 [transition-timing-function:var(--ease-snap)] group-hover:-translate-x-0.5" />
                       Retour à ETHONE
-                    </Link>
+                    </a>
                     <span aria-hidden className="hidden h-6 w-px bg-[var(--panel-border)] sm:block" />
                     <div className="flex items-center gap-2.5">
                       {/* eslint-disable-next-line @next/next/no-img-element */}

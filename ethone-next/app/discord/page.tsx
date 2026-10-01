@@ -78,6 +78,10 @@ import ServerPicker from "@/components/discord/ServerPicker";
 import ModuleNavigator, { type NavigatorCategory, type NavigatorModule } from "@/components/discord/ModuleNavigator";
 import HubSidebar, { type HubView } from "@/components/discord/HubSidebar";
 import ServerOverview from "@/components/discord/ServerOverview";
+import { motion, AnimatePresence } from "framer-motion";
+import { choreography, revealUp, staggerItem } from "@/lib/motion-variants";
+import { EASE_SNAP } from "@/lib/ease";
+import { useMotionPref } from "@/lib/hooks/useMotionPref";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const PICKED_STORAGE_KEY = "ethone:discord:picked";
@@ -566,6 +570,7 @@ export default function DiscordDashboardPage() {
   // Vue « Tous les modules » (grille complète avec interrupteurs) ; un module ouvert a toujours la priorité.
   const [showAllModules, setShowAllModules] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { reduced: motionReduced } = useMotionPref();
   const [moreOpen, setMoreOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const [onlyManageable, setOnlyManageable] = useState(true);
@@ -1226,9 +1231,9 @@ export default function DiscordDashboardPage() {
                 type="button"
                 onClick={handleSaveSettings}
                 disabled={isSaving}
-                className="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-xl bg-emerald-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 disabled:opacity-50"
+                className="btn-sheen relative inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-[var(--inset-radius)] bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)] transition-[filter,transform] duration-200 hover:brightness-110 active:scale-95 disabled:opacity-50"
               >
-                <Save className="h-3.5 w-3.5" />
+                <Save className={cn("h-3.5 w-3.5", isSaving && "animate-pulse")} />
                 {isSaving ? "Sauvegarde..." : "Enregistrer"}
               </button>
               <div className="relative" onKeyDown={(e) => e.key === "Escape" && setMoreOpen(false)}>
@@ -1243,10 +1248,17 @@ export default function DiscordDashboardPage() {
                 >
                   <MoreHorizontal className="h-4 w-4" />
                 </button>
+                {moreOpen && <div className="fixed inset-0 z-40" onClick={() => setMoreOpen(false)} aria-hidden="true" />}
+                <AnimatePresence>
                 {moreOpen && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setMoreOpen(false)} aria-hidden="true" />
-                    <div role="menu" className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5">
+                    <motion.div
+                      role="menu"
+                      initial={motionReduced ? false : { opacity: 0, y: -6, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={motionReduced ? undefined : { opacity: 0, y: -4, scale: 0.98, transition: { duration: 0.12 } }}
+                      transition={{ duration: 0.2, ease: EASE_SNAP }}
+                      className="absolute right-0 top-full z-50 mt-2 w-64 origin-top-right rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5 shadow-[0_24px_60px_-24px_rgb(0_0_0/0.7)]"
+                    >
                       <button type="button" role="menuitem" className={menuItemCls} onClick={() => { setMoreOpen(false); openOnboarding(0); }} title="Revoir l'introduction d'Etho">
                         <Sparkles className="h-4 w-4" />
                         Découvrir le Bot
@@ -1273,9 +1285,9 @@ export default function DiscordDashboardPage() {
                           Inviter le bot
                         </a>
                       )}
-                    </div>
-                  </>
+                    </motion.div>
                 )}
+                </AnimatePresence>
               </div>
             </div>
           </header>
@@ -1311,38 +1323,73 @@ export default function DiscordDashboardPage() {
                 </div>
               )}
 
+              <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeModule ? `module-${activeModule}` : view}
+                initial={motionReduced ? false : { opacity: 0, y: 12, filter: "blur(4px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={motionReduced ? undefined : { opacity: 0, y: -6, filter: "blur(3px)", transition: { duration: 0.14 } }}
+                transition={{ duration: 0.4, ease: EASE_SNAP }}
+              >
               {view === "home" && (
-                <div>
-                  <h1 className="text-2xl font-bold text-[var(--text-primary)]">{userName ? `Bienvenue ${userName},` : "Bienvenue,"}</h1>
-                  <p className="mt-1 text-sm text-[var(--text-muted)]">Retrouve les pages les plus utilisées ci-dessous.</p>
+                <motion.div variants={choreography} initial={motionReduced ? "animate" : "initial"} animate="animate">
+                  <motion.h1 variants={revealUp} className="text-3xl font-bold tracking-tight text-[var(--text-primary)] sm:text-[2.1rem]">
+                    {userName ? (
+                      <>
+                        Bienvenue{" "}
+                        <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(100deg, var(--text-primary), var(--accent-primary) 140%)" }}>
+                          {userName}
+                        </span>
+                        ,
+                      </>
+                    ) : (
+                      "Bienvenue,"
+                    )}
+                  </motion.h1>
+                  <motion.p variants={revealUp} className="mt-1.5 text-sm text-[var(--text-muted)]">Retrouve les pages les plus utilisées ci-dessous.</motion.p>
 
                   <ServerOverview guildId={selectedGuild.id} activeModules={activeModuleCount} totalModules={totalModuleCount} />
 
-                  <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  <motion.div variants={choreography} className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                     {HOME_CARDS.map((c) => {
                       const Icon = MODULE_ICONS[c.id];
                       return (
-                        <div key={c.id} className="flex flex-col gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-5">
-                          <div className="flex items-center gap-3">
-                            <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/5 bg-white/[0.05]", MODULE_TINTS[c.id])}>
+                        <motion.div
+                          key={c.id}
+                          variants={staggerItem}
+                          onPointerMove={(e) => {
+                            const r = e.currentTarget.getBoundingClientRect();
+                            e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
+                            e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
+                          }}
+                          className="group relative flex flex-col gap-3 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-5 transition-[border-color,transform] duration-300 [transition-timing-function:var(--ease-snap)] hover:-translate-y-1 hover:border-[var(--text-primary)]/15"
+                        >
+                          <div
+                            aria-hidden
+                            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                            style={{ background: "radial-gradient(300px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--accent-primary) 9%, transparent), transparent 70%)" }}
+                          />
+                          <div className="relative flex items-center gap-3">
+                            <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] transition-transform duration-500 [transition-timing-function:var(--ease-snap)] group-hover:-rotate-6 group-hover:scale-110", MODULE_TINTS[c.id])}>
                               <Icon className="h-5 w-5" />
                             </span>
                             <h2 className="min-w-0 text-base font-semibold text-[var(--text-primary)]">{c.title}</h2>
                           </div>
-                          <p className="text-sm text-[var(--text-muted)]">{c.description}</p>
+                          <p className="relative text-sm leading-relaxed text-[var(--text-muted)]">{c.description}</p>
                           <Link
                             href={`${MODULE_PAGES[c.id]}?guildId=${selectedGuild.id}`}
-                            className="mt-auto inline-flex h-9 w-fit items-center rounded-lg bg-white/[0.07] px-3.5 text-sm font-semibold text-[var(--text-primary)] transition-colors hover:bg-white/[0.13]"
+                            className="relative mt-auto inline-flex h-9 w-fit items-center gap-1.5 rounded-[var(--inset-radius)] bg-[var(--text-primary)]/[0.07] px-3.5 text-sm font-semibold text-[var(--text-primary)] outline-none transition-[background-color,transform] duration-200 hover:bg-[var(--text-primary)]/[0.12] active:scale-95 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                           >
                             {c.cta}
+                            <ChevronRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
                           </Link>
-                        </div>
+                        </motion.div>
                       );
                     })}
-                  </div>
+                  </motion.div>
 
                   {liveMusicState?.currentTrack && (
-                    <div className="mt-4 flex items-center gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
+                    <motion.div variants={revealUp} className="mt-4 flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
                       <img src={liveMusicState.currentTrack.thumbnail} alt="" className="h-10 w-10 shrink-0 rounded-xl object-cover" />
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-[var(--text-primary)]">{liveMusicState.currentTrack.title}</p>
@@ -1367,15 +1414,15 @@ export default function DiscordDashboardPage() {
                           <span className="hidden sm:inline">Music Center</span>
                         </Link>
                       </div>
-                    </div>
+                    </motion.div>
                   )}
 
-                  <footer className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-[var(--panel-border)] pt-4 text-xs text-[var(--text-muted)]">
-                    <a href="https://discord.gg/WvEcyBuP45" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-[var(--text-primary)]">Support</a>
-                    <a href={inviteHref} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-[var(--text-primary)]">Inviter le bot</a>
-                    <Link href="/discord/setup" className="transition-colors hover:text-[var(--text-primary)]">Setup assisté</Link>
-                  </footer>
-                </div>
+                  <motion.footer variants={revealUp} className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-[var(--panel-border)] pt-4 text-xs text-[var(--text-muted)]">
+                    <a href="https://discord.gg/WvEcyBuP45" target="_blank" rel="noopener noreferrer" className="underline decoration-transparent underline-offset-4 transition-[color,text-decoration-color] hover:text-[var(--text-primary)] hover:decoration-[var(--text-primary)]/30">Support</a>
+                    <a href={inviteHref} target="_blank" rel="noopener noreferrer" className="underline decoration-transparent underline-offset-4 transition-[color,text-decoration-color] hover:text-[var(--text-primary)] hover:decoration-[var(--text-primary)]/30">Inviter le bot</a>
+                    <Link href="/discord/setup" className="underline decoration-transparent underline-offset-4 transition-[color,text-decoration-color] hover:text-[var(--text-primary)] hover:decoration-[var(--text-primary)]/30">Setup assisté</Link>
+                  </motion.footer>
+                </motion.div>
               )}
 
               {view === "modules" && (
@@ -3172,6 +3219,8 @@ export default function DiscordDashboardPage() {
                   )}
                 </div>
               )}
+              </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </div>

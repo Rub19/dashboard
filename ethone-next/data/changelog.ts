@@ -40311,6 +40311,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_42_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_42_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_42_1_de);
 
+const v1_43_0_fr: ChangelogEntry = {
+  version: "v1.43.0",
+  date: "2026-10-01",
+  title: "Console du bot : motion design",
+  items: [
+    "Choix du serveur refait : avatar d'Etho entouré d'un anneau lumineux, liste animée où la sélection glisse d'un serveur à l'autre, pastille verte sur les serveurs où le bot est installé, interrupteur « Uniquement gérables » animé.",
+    "Accueil de la console : bienvenue révélée en douceur, chiffres du serveur qui défilent jusqu'à leur valeur (squelette pendant le chargement), raccourcis avec lumière qui suit le curseur.",
+    "« Tous les modules » : barre de recherche et filtres épinglés en haut, cartes qui apparaissent et se réorganisent en douceur, interrupteurs à ressort, filet vert sur les modules actifs, favoris animés.",
+    "Barre latérale : indicateur de page qui glisse, catégories qui se replient en douceur, tiroir mobile animé. Transitions entre l'accueil, les modules et la configuration d'un module ; menu « … » animé et bouton Enregistrer aux couleurs du thème.",
+  ],
+};
+
+const v1_43_0_en: ChangelogEntry = {
+  version: "v1.43.0",
+  date: "2026-10-01",
+  title: "Bot console: motion design",
+  items: [
+    "Server picker rebuilt: Etho's avatar inside a glowing ring, animated list with a selection that glides between servers, a green dot on servers where the bot is installed, animated \"Manageable only\" switch.",
+    "Console home: smooth welcome reveal, server numbers that count up (skeleton while loading), shortcut cards with a cursor-following light.",
+    "\"All modules\": pinned search and filters, cards that appear and rearrange smoothly, spring switches, a green line on active modules, animated favourites.",
+    "Sidebar: gliding page indicator, smoothly collapsing categories, animated mobile drawer. Transitions between home, modules and a module's settings; animated \"…\" menu and theme-coloured Save button.",
+  ],
+};
+
+const v1_43_0_es: ChangelogEntry = {
+  version: "v1.43.0",
+  date: "2026-10-01",
+  title: "Consola del bot: motion design",
+  items: [
+    "Selector de servidor, inicio de la consola, «Todos los módulos» y barra lateral rediseñados con animaciones suaves y transiciones entre vistas.",
+  ],
+};
+
+const v1_43_0_de: ChangelogEntry = {
+  version: "v1.43.0",
+  date: "2026-10-01",
+  title: "Bot-Konsole: Motion Design",
+  items: [
+    "Serverauswahl, Konsolen-Startseite, „Alle Module“ und Seitenleiste mit sanften Animationen und Übergängen zwischen den Ansichten neu gestaltet.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_43_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_43_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_43_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_43_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

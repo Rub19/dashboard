@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Settings, Star } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import Input from "@/components/ui/Input";
 import AnimatedFilterTabs, { type AnimatedFilterTab } from "@/components/ui/AnimatedFilterTabs";
-import { EASE_OUT } from "@/lib/ease";
+import { EASE_OUT, EASE_SNAP, SPRING_PILL } from "@/lib/ease";
+import { useMotionPref } from "@/lib/hooks/useMotionPref";
 
 export interface NavigatorModule {
   id: string;
@@ -69,10 +70,10 @@ export default function ModuleNavigator({
   heading,
   summary,
 }: ModuleNavigatorProps) {
+  const { reduced } = useMotionPref();
   const [query, setQuery] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
   const [filter, setFilter] = useState<QuickFilter>("all");
-  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     try {
@@ -129,7 +130,7 @@ export default function ModuleNavigator({
     .filter((c) => c.items.length > 0);
   const total = sections.reduce((n, c) => n + c.items.length, 0);
 
-  const card = (m: NavigatorModule) => {
+  const card = (m: NavigatorModule, index: number, scope: string) => {
     const Icon = m.icon;
     const current = m.id === activeId;
     const fav = favorites.includes(m.id);
@@ -138,19 +139,37 @@ export default function ModuleNavigator({
     const isPending = pendingIds?.has(m.id) ?? false;
     return (
       <motion.div
-        key={m.id}
+        key={`${scope}-${m.id}`}
+        layout={reduced ? false : "position"}
         aria-busy={isPending}
-        animate={isPending && !prefersReducedMotion ? { opacity: [1, 0.55, 1] } : { opacity: 1 }}
-        transition={isPending && !prefersReducedMotion ? { duration: 0.9, repeat: Infinity, ease: EASE_OUT } : { duration: 0.15, ease: EASE_OUT }}
+        initial={reduced ? false : { opacity: 0, y: 12, scale: 0.98 }}
+        animate={
+          isPending && !reduced
+            ? { opacity: [1, 0.55, 1], y: 0, scale: 1, transition: { duration: 0.9, repeat: Infinity, ease: EASE_OUT } }
+            : { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: EASE_SNAP, delay: Math.min(index, 8) * 0.03 } }
+        }
+        exit={reduced ? undefined : { opacity: 0, scale: 0.97, transition: { duration: 0.12 } }}
         className={cn(
-          "group relative flex flex-col gap-2 rounded-xl border p-4 text-left transition-colors duration-150",
+          "group relative flex flex-col gap-2.5 overflow-hidden rounded-[var(--panel-radius)] border p-4 text-left transition-[border-color,background-color,transform] duration-300 [transition-timing-function:var(--ease-snap)] hover:-translate-y-0.5",
           current
-            ? "border-emerald-500/40 bg-emerald-500/[0.07]"
-            : "border-[var(--panel-border)] bg-[var(--surface-raised)]/50 hover:border-[var(--input-border-hover)] hover:bg-[var(--surface-raised)]/80"
+            ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/[0.07]"
+            : isOn
+              ? "border-[var(--success)]/25 bg-[var(--surface-raised)]/55 hover:border-[var(--success)]/40"
+              : "border-[var(--panel-border)] bg-[var(--surface-raised)]/45 hover:border-[var(--text-primary)]/15 hover:bg-[var(--surface-raised)]/75"
         )}
       >
-        <div className="flex items-center gap-2">
-          <Icon className={cn("h-4 w-4 shrink-0", m.tint)} />
+        {/* Filet lumineux en haut quand le module est actif */}
+        <span
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-[var(--success)] to-transparent transition-opacity duration-500",
+            isOn ? "opacity-70" : "opacity-0"
+          )}
+        />
+        <div className="flex items-center gap-2.5">
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] transition-transform duration-300 [transition-timing-function:var(--ease-snap)] group-hover:-rotate-6 group-hover:scale-105">
+            <Icon className={cn("h-4 w-4", m.tint)} />
+          </span>
           <h4 className="min-w-0 flex-1 truncate text-sm font-semibold text-[var(--text-primary)]">{m.title}</h4>
           <button
             type="button"
@@ -159,11 +178,13 @@ export default function ModuleNavigator({
             aria-pressed={fav}
             title={fav ? "Retirer des favoris" : "Épingler en haut"}
             className={cn(
-              "flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors",
-              fav ? "text-amber-300" : "text-zinc-600 opacity-0 hover:text-amber-300 group-hover:opacity-100 focus:opacity-100"
+              "flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md outline-none transition-[color,opacity,transform] duration-200 active:scale-75 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
+              fav ? "text-amber-300" : "text-[var(--text-muted)] opacity-0 hover:text-amber-300 group-hover:opacity-100 focus:opacity-100"
             )}
           >
-            <Star className="h-3.5 w-3.5" fill={fav ? "currentColor" : "none"} />
+            <motion.span key={String(fav)} initial={reduced ? false : { scale: 0.5, rotate: -30 }} animate={{ scale: 1, rotate: 0 }} transition={SPRING_PILL}>
+              <Star className="h-3.5 w-3.5" fill={fav ? "currentColor" : "none"} />
+            </motion.span>
           </button>
           {hasStatus && onToggle && (
             <button
@@ -175,12 +196,17 @@ export default function ModuleNavigator({
               title={isPending ? "Envoi en cours…" : isOn ? "Désactiver ce module sur ce serveur" : "Activer ce module sur ce serveur"}
               onClick={() => onToggle(m.id, !isOn)}
               className={cn(
-                "relative h-5 w-9 shrink-0 rounded-full transition-colors",
+                "relative h-5 w-9 shrink-0 rounded-full outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
                 isPending ? "cursor-wait opacity-60" : "cursor-pointer",
-                isOn ? "bg-emerald-500" : "bg-white/15"
+                isOn ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/15"
               )}
             >
-              <span className={cn("absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white transition-transform", isOn ? "translate-x-4" : "translate-x-0")} />
+              <motion.span
+                className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow"
+                initial={false}
+                animate={{ x: isOn ? 16 : 0 }}
+                transition={SPRING_PILL}
+              />
             </button>
           )}
         </div>
@@ -191,35 +217,54 @@ export default function ModuleNavigator({
             onClick={() => onSelect(m.id)}
             aria-pressed={current}
             className={cn(
-              "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-colors",
-              current ? "bg-emerald-500/20 text-emerald-200" : "bg-white/[0.07] text-zinc-100 hover:bg-white/[0.13]"
+              "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-[var(--inset-radius)] px-3 text-xs font-semibold outline-none transition-[background-color,transform] duration-200 active:scale-95 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
+              current ? "bg-[var(--accent-primary)]/20 text-[var(--text-primary)]" : "bg-[var(--text-primary)]/[0.07] text-[var(--text-primary)] hover:bg-[var(--text-primary)]/[0.12]"
             )}
           >
-            <Settings className="h-3.5 w-3.5" />
+            <Settings className="h-3.5 w-3.5 transition-transform duration-500 group-hover:rotate-90" />
             Paramètres
           </button>
           <Link
             href={m.href}
             aria-label={`Ouvrir la page ${m.title}`}
             title="Ouvrir la page complète"
-            className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-white/[0.07] hover:text-white"
+            className="ml-auto flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] text-[var(--text-muted)] outline-none transition-[background-color,color] duration-200 hover:bg-[var(--text-primary)]/[0.07] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
           >
-            <ArrowUpRight className="h-4 w-4" />
+            <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </Link>
         </div>
       </motion.div>
     );
   };
 
+  const sectionHeader = (label: string, hint: string, count: number, extra?: string) => (
+    <div className="mb-3 flex items-center gap-3">
+      <h3 className={cn("text-[11px] font-bold uppercase tracking-[0.14em]", extra ?? "text-[var(--text-primary)]/90")}>{label}</h3>
+      <span className="rounded-full bg-[var(--text-primary)]/[0.06] px-2 py-0.5 text-[10px] font-semibold tabular-nums text-[var(--text-muted)]">{count}</span>
+      {hint && <span className="hidden truncate text-xs text-[var(--text-muted)] sm:inline">{hint}</span>}
+      <span aria-hidden className="h-px flex-1 bg-gradient-to-r from-[var(--panel-border)] to-transparent" />
+    </div>
+  );
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-7">
       {heading && (
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h2 className="text-lg font-bold text-[var(--text-primary)]">{heading}</h2>
+        <motion.div
+          initial={reduced ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: EASE_SNAP }}
+          className="flex flex-wrap items-baseline gap-x-3 gap-y-1"
+        >
+          <h2 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">{heading}</h2>
           {summary && <span className="text-sm text-[var(--text-muted)]">{summary}</span>}
-        </div>
+        </motion.div>
       )}
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+      <motion.div
+        initial={reduced ? false : { opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: EASE_SNAP, delay: 0.06 }}
+        className="sticky top-0 z-10 -mx-2 flex flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/70 bg-[var(--background)]/80 p-2 backdrop-blur-xl lg:flex-row lg:items-center"
+      >
         <div className="relative w-full lg:max-w-sm">
           <Input
             value={query}
@@ -232,33 +277,51 @@ export default function ModuleNavigator({
           />
         </div>
         <AnimatedFilterTabs tabs={filterTabs} activeId={filter} onChange={(id) => setFilter(id as QuickFilter)} />
-      </div>
+      </motion.div>
 
-      {total === 0 && favoriteModules.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-xs text-[var(--text-muted)]">
-          Aucun module ne correspond{query ? ` à « ${query} »` : ""}
-          {filter !== "all" ? " pour ce filtre" : ""}.
-        </div>
-      )}
+      <AnimatePresence>
+        {total === 0 && favoriteModules.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="rounded-[var(--panel-radius)] border border-dashed border-[var(--panel-border)] p-10 text-center text-sm text-[var(--text-muted)]"
+          >
+            Aucun module ne correspond{query ? ` à « ${query} »` : ""}
+            {filter !== "all" ? " pour ce filtre" : ""}.
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {favoriteModules.length > 0 && (
         <section>
-          <h3 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-300/90">
-            <Star className="h-3.5 w-3.5" fill="currentColor" /> Favoris
-          </h3>
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{favoriteModules.map(card)}</div>
+          {sectionHeader("Favoris", "", favoriteModules.length, "flex items-center gap-1.5 text-amber-300/90")}
+          <motion.div layout={!reduced} className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {favoriteModules.map((m, i) => card(m, i, "fav"))}
+            </AnimatePresence>
+          </motion.div>
         </section>
       )}
 
-      {sections.map((section) => (
-        <section key={section.id}>
-          <div className="mb-3 flex items-baseline gap-2 border-b border-[var(--panel-border)]/60 pb-2">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200">{section.label}</h3>
-            <span className="text-xs text-zinc-500">{section.hint}</span>
-          </div>
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{section.items.map(card)}</div>
-        </section>
-      ))}
+      <AnimatePresence mode="popLayout" initial={false}>
+        {sections.map((section) => (
+          <motion.section
+            key={section.id}
+            layout={reduced ? false : "position"}
+            initial={reduced ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={reduced ? undefined : { opacity: 0, transition: { duration: 0.12 } }}
+          >
+            {sectionHeader(section.label, section.hint, section.items.length)}
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              <AnimatePresence mode="popLayout" initial={!reduced}>
+                {section.items.map((m, i) => card(m, i, section.id))}
+              </AnimatePresence>
+            </div>
+          </motion.section>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }

@@ -77,9 +77,9 @@ export default function Shell({ children }: { children: ReactNode }) {
                           // stockage indisponible : le choix du serveur sera simplement conservé
                         }
                       }}
-                      className="inline-flex h-11 items-center gap-2.5 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-5 text-sm font-semibold text-[var(--text-primary)] transition-all hover:border-[var(--accent-primary)]/50 hover:bg-[var(--accent-primary)]/10 active:scale-95"
+                      className="group inline-flex h-11 items-center gap-2.5 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-5 text-sm font-semibold text-[var(--text-primary)] transition-all hover:border-[var(--accent-primary)]/50 hover:bg-[var(--accent-primary)]/10 active:scale-95"
                     >
-                      <ArrowLeft className="h-5 w-5" />
+                      <ArrowLeft className="h-5 w-5 transition-transform duration-300 [transition-timing-function:var(--ease-snap)] group-hover:-translate-x-0.5" />
                       Retour à ETHONE
                     </Link>
                     <span aria-hidden className="hidden h-6 w-px bg-[var(--panel-border)] sm:block" />

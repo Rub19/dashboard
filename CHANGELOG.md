@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.43.0 — 2026-10-01
+
+**Console du bot : motion design**
+
+- Choix du serveur refait : avatar d'Etho entouré d'un anneau lumineux, liste animée où la sélection glisse d'un serveur à l'autre, pastille verte sur les serveurs où le bot est installé, interrupteur « Uniquement gérables » animé.
+- Accueil de la console : bienvenue révélée en douceur, chiffres du serveur qui défilent jusqu'à leur valeur (squelette pendant le chargement), raccourcis avec lumière qui suit le curseur.
+- « Tous les modules » : barre de recherche et filtres épinglés en haut, cartes qui apparaissent et se réorganisent en douceur, interrupteurs à ressort, filet vert sur les modules actifs, favoris animés.
+- Barre latérale : indicateur de page qui glisse, catégories qui se replient en douceur, tiroir mobile animé. Transitions entre l'accueil, les modules et la configuration d'un module ; menu « … » animé et bouton Enregistrer aux couleurs du thème.
+
 ## v1.42.1 — 2026-10-01
 
 **Connexion : polish visuel**

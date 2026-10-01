@@ -26,13 +26,16 @@ const FORBIDDEN_PATH_RULES = Object.freeze([
   [/\.(?:bak|backup|old|orig|tmp|temp|swp|swo|zip|7z|rar|tar|tgz|tar\.gz)$/i, "backup, temporary file or local archive"]
 ]);
 
+// Archives publiées volontairement (servies en téléchargement par le site), générées par extension/pack.py.
+const PUBLISHED_ARCHIVES = new Set(["ethone-next/public/downloads/ethone-extension.zip"]);
+
 function normalizedPath(file) {
   return String(file || "").replaceAll("\\", "/").replace(/^\.\//, "");
 }
 
 export function forbiddenPathReason(file) {
   const relative = normalizedPath(file);
-  if (!relative || relative === ".env.example") return null;
+  if (!relative || relative === ".env.example" || PUBLISHED_ARCHIVES.has(relative)) return null;
   for (const [pattern, reason] of FORBIDDEN_PATH_RULES) {
     if (pattern.test(relative)) return reason;
   }

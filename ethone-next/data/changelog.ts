@@ -40172,6 +40172,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_41_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_41_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_41_2_de);
 
+const v1_41_3_fr: ChangelogEntry = {
+  version: "v1.41.3",
+  date: "2026-10-01",
+  title: "Connexion : en-tête et pied de page sur toute la largeur",
+  items: [
+    "L'en-tête et le pied de page de la connexion occupent maintenant toute la largeur de l'écran : logo et signature tout à gauche, langue tout à droite ; « © ETHONE » à gauche, conditions et confidentialité à droite sur une seule ligne. Le contenu central reste centré.",
+  ],
+};
+
+const v1_41_3_en: ChangelogEntry = {
+  version: "v1.41.3",
+  date: "2026-10-01",
+  title: "Sign-in: full-width header and footer",
+  items: [
+    "The sign-in header and footer now span the full screen width: logo and tagline at the far left, language at the far right; \"© ETHONE\" on the left, terms and privacy on the right on one line. The main content stays centred.",
+  ],
+};
+
+const v1_41_3_es: ChangelogEntry = {
+  version: "v1.41.3",
+  date: "2026-10-01",
+  title: "Inicio de sesión: cabecera y pie a todo el ancho",
+  items: [
+    "La cabecera y el pie de la página de inicio de sesión ocupan ahora todo el ancho de la pantalla.",
+  ],
+};
+
+const v1_41_3_de: ChangelogEntry = {
+  version: "v1.41.3",
+  date: "2026-10-01",
+  title: "Anmeldung: Kopf- und Fußzeile in voller Breite",
+  items: [
+    "Kopf- und Fußzeile der Anmeldeseite nutzen jetzt die volle Bildschirmbreite.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_41_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_41_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_41_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_41_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

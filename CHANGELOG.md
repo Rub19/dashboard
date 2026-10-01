@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.41.3 — 2026-10-01
+
+**Connexion : en-tête et pied de page sur toute la largeur**
+
+- L'en-tête et le pied de page de la connexion occupent maintenant toute la largeur de l'écran : logo et signature tout à gauche, langue tout à droite ; « © ETHONE » à gauche, conditions et confidentialité à droite sur une seule ligne. Le contenu central reste centré.
+
 ## v1.41.2 — 2026-10-01
 
 **Connexion : dernière passe de finition**

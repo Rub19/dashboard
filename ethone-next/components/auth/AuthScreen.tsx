@@ -11,8 +11,10 @@ import { EASE_SNAP } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { useI18n } from "@/lib/hooks/useI18n";
 
-// Header, main and footer share one container so their edges line up.
+// Main content stays in a centred container; header and footer span the full
+// viewport width with the same horizontal padding.
 const CONTAINER = "mx-auto w-full max-w-[1120px] px-5 sm:px-8 2xl:max-w-[1200px]";
+const EDGE = "w-full px-5 sm:px-8 lg:px-10";
 const FOCUS = "rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-main)]";
 
 /** Full-screen frame shared by every auth route: backdrop, header (brand +
@@ -32,7 +34,7 @@ export default function AuthScreen({ children }: { children: ReactNode }) {
     <div className="relative h-dvh w-full overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)] selection:bg-[var(--accent-primary)]/30 selection:text-[var(--text-primary)]">
       <AuthBackdrop />
       <div className="relative z-10 flex h-full flex-col overflow-y-auto overflow-x-hidden overscroll-contain [scrollbar-width:thin]">
-      <motion.header {...fadeIn(0.15)} className={`relative z-20 flex items-center justify-between py-5 ${CONTAINER}`}>
+      <motion.header {...fadeIn(0.15)} className={`relative z-20 flex items-center justify-between gap-4 py-5 ${EDGE}`}>
         <div className="flex min-w-0 items-center gap-4">
           <Link href="/login" aria-label="ETHONE" className={`group flex shrink-0 select-none items-center gap-3 ${FOCUS}`}>
             <span className="grid h-9 w-9 place-items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] shadow-[inset_0_1px_0_rgb(255_255_255/0.06)] transition-colors duration-200 group-hover:border-[var(--text-primary)]/20">
@@ -57,10 +59,10 @@ export default function AuthScreen({ children }: { children: ReactNode }) {
 
       <motion.footer
         {...fadeIn(0.6)}
-        className={`relative z-20 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-6 py-6 text-xs text-[var(--text-muted)] ${CONTAINER}`}
+        className={`relative z-20 flex flex-col items-start gap-2 py-6 text-xs text-[var(--text-muted)] sm:flex-row sm:items-center sm:justify-between sm:gap-6 ${EDGE}`}
       >
         <span className="whitespace-nowrap">© {new Date().getFullYear()} ETHONE</span>
-        <nav className="flex flex-wrap items-center justify-end gap-x-5 gap-y-1.5 text-right">
+        <nav className="flex items-center gap-5 whitespace-nowrap">
           {[
             ["/terms", i18n("termsLinkText", "Conditions d'utilisation")],
             ["/privacy", i18n("privacyLinkText", "Politique de confidentialité")],

@@ -40908,6 +40908,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_48_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_48_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_48_0_de);
 
+const v1_48_1_fr: ChangelogEntry = {
+  version: "v1.48.1",
+  date: "2026-10-01",
+  title: "Centre de contrôle du bot : motion design",
+  items: [
+    "Les sous-onglets du Centre de contrôle ont une pastille aux couleurs du thème qui glisse de l'un à l'autre, et le contenu rejoue son entrée en cascade à chaque changement d'onglet.",
+  ],
+};
+
+const v1_48_1_en: ChangelogEntry = {
+  version: "v1.48.1",
+  date: "2026-10-01",
+  title: "Bot control center: motion design",
+  items: [
+    "Control center sub-tabs get a theme-coloured pill that glides between them, and the content replays its staggered entrance on every tab change.",
+  ],
+};
+
+const v1_48_1_es: ChangelogEntry = {
+  version: "v1.48.1",
+  date: "2026-10-01",
+  title: "Centro de control del bot: motion design",
+  items: [
+    "Pestañas con píldora deslizante y contenido en cascada.",
+  ],
+};
+
+const v1_48_1_de: ChangelogEntry = {
+  version: "v1.48.1",
+  date: "2026-10-01",
+  title: "Bot-Kontrollzentrum: Motion Design",
+  items: [
+    "Gleitende Tab-Markierung und gestaffelte Inhalte.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_48_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_48_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_48_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_48_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

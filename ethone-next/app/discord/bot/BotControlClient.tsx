@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
@@ -1453,20 +1455,21 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   key={tabId}
                   onClick={() => handleTabChange(tabId)}
                   className={cn(
-                    "px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 transition-all whitespace-nowrap cursor-pointer",
+                    "relative isolate px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                     isActive
-                      ? "bg-emerald-500 text-white font-semibold shadow-sm"
+                      ? "text-[var(--accent-contrast)] font-semibold"
                       : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
                   )}
                 >
-                  <Icon className={cn("w-3.5 h-3.5", isActive ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")} />
+                  {isActive && <motion.span layoutId="botcontrol-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+                  <Icon className={cn("w-3.5 h-3.5", isActive ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)]")} />
                   <span>{meta.label}</span>
                   {count !== undefined && (
                     <span
                       className={cn(
                         "px-1.5 py-0.2 rounded-full text-xs font-mono",
                         isActive
-                          ? "bg-[var(--panel-border)] text-[var(--text-primary)] font-bold"
+                          ? "bg-[var(--accent-contrast)]/20 text-[var(--accent-contrast)] font-bold"
                           : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
                       )}
                     >
@@ -1610,6 +1613,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
           </div>
         )}
 
+        {/* Rejoue l'entrée à chaque changement d'onglet. */}
+        <div key={activeTab} className="stagger-children">
         {/* ======================================================== */}
         {/* TAB: OVERVIEW                                            */}
         {/* ======================================================== */}
@@ -1735,6 +1740,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         {(activeTab === "security" || activeTab === "errors") && (
           <SecurityGroup activeTab={activeTab} securityAudit={securityAudit} errors={errors} />
         )}
+        </div>
       </div>
     </div>
   );

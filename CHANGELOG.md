@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.48.1 — 2026-10-01
+
+**Centre de contrôle du bot : motion design**
+
+- Les sous-onglets du Centre de contrôle ont une pastille aux couleurs du thème qui glisse de l'un à l'autre, et le contenu rejoue son entrée en cascade à chaque changement d'onglet.
+
 ## v1.48.0 — 2026-10-01
 
 **Extension Chrome ETHONE**

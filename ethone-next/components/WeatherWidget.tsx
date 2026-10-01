@@ -42,6 +42,8 @@ export type AirQualityDetails = {
 
 export type WeatherData = {
   updatedAt?: string;
+  /** Décalage UTC de la ville (s) : sert à afficher les heures locales de la ville, pas du navigateur. */
+  utcOffsetSeconds?: number;
   latitude?: number;
   longitude?: number;
   temperature?: number;

@@ -34,6 +34,13 @@ const WEATHER_LABELS: Record<number, string> = {
   99: "Orage avec grêle forte",
 };
 
+// Heure murale de la ville sans fuseau ("2026-10-02T07:51") -> instant UTC réel.
+function cityWallToIso(wall: unknown, utcOffsetSeconds: number): string | undefined {
+  if (typeof wall !== "string" || !wall) return undefined;
+  const ms = Date.parse(`${wall}Z`);
+  return Number.isNaN(ms) ? wall : new Date(ms - utcOffsetSeconds * 1000).toISOString();
+}
+
 export async function fetchDirectOpenMeteo(city: string): Promise<WeatherData | null> {
   try {
     const geoRes = await fetch(
@@ -48,7 +55,7 @@ export async function fetchDirectOpenMeteo(city: string): Promise<WeatherData | 
 
     const [forecastRes, aqiRes] = await Promise.all([
       fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max&timezone=auto`
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m,uv_index,visibility,dew_point_2m&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max&forecast_days=7&timezone=auto`
       ),
       fetch(
         `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${latitude}&longitude=${longitude}&current=european_aqi,pm10,pm2_5&timezone=auto`
@@ -63,14 +70,21 @@ export async function fetchDirectOpenMeteo(city: string): Promise<WeatherData | 
     const daily = forecast.daily || {};
     const hourly = forecast.hourly || {};
 
-    const hourlyList = (hourly.time || []).slice(0, 24).map((t: string, i: number) => ({
-      time: t,
-      temperature: hourly.temperature_2m?.[i],
-      weatherCode: hourly.weather_code?.[i],
-      precipitation: hourly.precipitation?.[i],
-      precipitationProbability: hourly.precipitation_probability?.[i],
-      isDay: Boolean(hourly.is_day?.[i]),
-    }));
+    const utcOffsetSeconds: number = typeof forecast.utc_offset_seconds === "number" ? forecast.utc_offset_seconds : 0;
+    const times: string[] = hourly.time || [];
+    // Même logique que le Worker : on part de l'heure courante de la ville, pas de minuit.
+    const h0 = Math.max(0, times.findIndex((t) => String(t).slice(0, 13) === String(current.time || "").slice(0, 13)));
+    const hourlyList = times.slice(h0, h0 + 24).map((t: string, k: number) => {
+      const i = h0 + k;
+      return {
+        time: t,
+        temperature: hourly.temperature_2m?.[i],
+        weatherCode: hourly.weather_code?.[i],
+        precipitation: hourly.precipitation?.[i],
+        precipitationProbability: hourly.precipitation_probability?.[i],
+        isDay: Boolean(hourly.is_day?.[i]),
+      };
+    });
 
     const dailyList = (daily.time || []).map((d: string, i: number) => ({
       date: d,
@@ -78,8 +92,8 @@ export async function fetchDirectOpenMeteo(city: string): Promise<WeatherData | 
       min: daily.temperature_2m_min?.[i],
       weatherCode: daily.weather_code?.[i],
       precipitationProbability: daily.precipitation_probability_max?.[i],
-      sunrise: daily.sunrise?.[i],
-      sunset: daily.sunset?.[i],
+      sunrise: cityWallToIso(daily.sunrise?.[i], utcOffsetSeconds),
+      sunset: cityWallToIso(daily.sunset?.[i], utcOffsetSeconds),
     }));
 
     const weatherCode = current.weather_code ?? 0;
@@ -88,6 +102,7 @@ export async function fetchDirectOpenMeteo(city: string): Promise<WeatherData | 
       updatedAt: new Date().toISOString(),
       latitude,
       longitude,
+      utcOffsetSeconds,
       city: cityName,
       country,
       temperature: current.temperature_2m,
@@ -100,10 +115,13 @@ export async function fetchDirectOpenMeteo(city: string): Promise<WeatherData | 
       humidityPercent: current.relative_humidity_2m,
       pressure: current.surface_pressure,
       isDay: Boolean(current.is_day),
-      sunrise: daily.sunrise?.[0],
-      sunset: daily.sunset?.[0],
+      sunrise: cityWallToIso(daily.sunrise?.[0], utcOffsetSeconds),
+      sunset: cityWallToIso(daily.sunset?.[0], utcOffsetSeconds),
+      uvIndex: current.uv_index,
+      visibility: current.visibility,
+      dewPoint: current.dew_point_2m,
       precipitation: current.precipitation,
-      precipitationProbability: daily.precipitation_probability_max?.[0] ?? 0,
+      precipitationProbability: hourlyList[0]?.precipitationProbability ?? 0,
       airQuality: aqiData?.current?.european_aqi,
       airQualityDetails: {
         aqi: aqiData?.current?.european_aqi,
@@ -119,12 +137,13 @@ export async function fetchDirectOpenMeteo(city: string): Promise<WeatherData | 
   }
 }
 
-export async function fetchWeatherSafe(city: string): Promise<WeatherData | null> {
+export async function fetchWeatherSafe(city: string, opts: { fresh?: boolean } = {}): Promise<WeatherData | null> {
   const cleanCity = city.trim();
   if (!cleanCity) return null;
 
   try {
-    const res = (await fetchWorkerCached(`/api/weather?city=${encodeURIComponent(cleanCity)}`, {}, 300_000)) as { data?: WeatherData } | null;
+    // fresh : « Actualiser » doit vraiment repasser par le réseau, pas resservir le cache de 5 min.
+    const res = (await fetchWorkerCached(`/api/weather?city=${encodeURIComponent(cleanCity)}`, {}, opts.fresh ? 0 : 300_000)) as { data?: WeatherData } | null;
     if (res?.data && typeof res.data.temperature === "number") {
       return res.data;
     }

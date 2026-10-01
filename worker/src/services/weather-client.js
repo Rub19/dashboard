@@ -7,46 +7,49 @@ const FORECAST_ORIGIN = "https://api.open-meteo.com";
 const AIR_QUALITY_ORIGIN = "https://air-quality-api.open-meteo.com";
 
 const WEATHER_LABELS = Object.freeze({
-  0: "Ciel degage",
-  1: "Plutot degage",
+  0: "Ciel dégagé",
+  1: "Plutôt dégagé",
   2: "Partiellement nuageux",
   3: "Couvert",
   45: "Brouillard",
   48: "Brouillard givrant",
-  51: "Bruine legere",
+  51: "Bruine légère",
   53: "Bruine",
   55: "Bruine dense",
-  56: "Bruine verglacante",
-  57: "Bruine verglacante dense",
-  61: "Pluie legere",
+  56: "Bruine verglaçante",
+  57: "Bruine verglaçante dense",
+  61: "Pluie légère",
   63: "Pluie",
   65: "Pluie forte",
-  66: "Pluie verglacante",
-  67: "Pluie verglacante forte",
-  71: "Neige legere",
+  66: "Pluie verglaçante",
+  67: "Pluie verglaçante forte",
+  71: "Neige légère",
   73: "Neige",
   75: "Neige forte",
   77: "Grains de neige",
-  80: "Averses legeres",
+  80: "Averses légères",
   81: "Averses",
   82: "Averses violentes",
-  85: "Averses de neige legeres",
+  85: "Averses de neige légères",
   86: "Averses de neige fortes",
   95: "Orage",
-  96: "Orage avec grele",
-  99: "Orage avec grele forte"
+  96: "Orage avec grêle",
+  99: "Orage avec grêle forte"
 });
 
 function weatherLabel(code) {
   return WEATHER_LABELS[Number(code)] || "Conditions inconnues";
 }
 
-function formatIsoTime(value) {
+// Open-Meteo (timezone=auto) renvoie l'heure murale de la ville sans fuseau ("2026-10-02T07:51").
+// La lire telle quelle dans le Worker (UTC) la décalait de l'écart UTC de la ville (+2 h à Paris).
+function formatIsoTime(value, utcOffsetSeconds = 0) {
   const iso = String(value || "");
   if (!iso) return undefined;
-  const d = new Date(iso);
+  const hasZone = /(Z|[+-]\d{2}:?\d{2})$/.test(iso);
+  const d = new Date(hasZone ? iso : `${iso}Z`);
   if (Number.isNaN(d.getTime())) return iso;
-  return d.toISOString();
+  return new Date(d.getTime() - (hasZone ? 0 : utcOffsetSeconds * 1000)).toISOString();
 }
 
 function firstDailyValue(values) {
@@ -56,7 +59,9 @@ function firstDailyValue(values) {
 function currentHourIndex(hourlyTimes, currentTime) {
   if (!Array.isArray(hourlyTimes) || !hourlyTimes.length) return 0;
   if (!currentTime) return 0;
-  const idx = hourlyTimes.findIndex((t) => String(t) === String(currentTime));
+  // current.time est au quart d'heure ("…T21:15"), les heures pleines ("…T21:00") : on compare à l'heure près.
+  const hour = String(currentTime).slice(0, 13);
+  const idx = hourlyTimes.findIndex((t) => String(t).slice(0, 13) === hour);
   return idx >= 0 ? idx : 0;
 }
 
@@ -163,6 +168,7 @@ export async function getWeather(env, city) {
   const airQualityData = await fetchAirQuality(env, latitude, longitude);
   const aqi = airQualityData?.aqi;
 
+  const utcOffsetSeconds = safeNumber(forecast.data?.utc_offset_seconds, -14 * 3600, 14 * 3600) ?? 0;
   const hIndex = currentHourIndex(hourly.time, current.time);
   const next24 = 24;
 
@@ -173,6 +179,7 @@ export async function getWeather(env, city) {
     updatedAt: new Date().toISOString(),
     latitude,
     longitude,
+    utcOffsetSeconds,
     city: safeText(place.name, 80),
     country: safeText(place.country, 80),
     temperature: safeNumber(current.temperature_2m, -90, 60),
@@ -188,8 +195,8 @@ export async function getWeather(env, city) {
     isDay: current.is_day !== 0,
     visibility: safeNumber(current.visibility, 0, 100000),
     dewPoint: safeNumber(current.dew_point_2m, -90, 60),
-    sunrise: formatIsoTime(firstDailyValue(daily.sunrise)),
-    sunset: formatIsoTime(firstDailyValue(daily.sunset)),
+    sunrise: formatIsoTime(firstDailyValue(daily.sunrise), utcOffsetSeconds),
+    sunset: formatIsoTime(firstDailyValue(daily.sunset), utcOffsetSeconds),
     precipitation,
     precipitationProbability,
     airQuality: aqi,
@@ -208,8 +215,8 @@ export async function getWeather(env, city) {
       min: safeNumber(daily.temperature_2m_min?.[index], -90, 60),
       weatherCode: safeNumber(daily.weather_code?.[index], 0, 99),
       precipitationProbability: safeNumber(daily.precipitation_probability_max?.[index], 0, 100),
-      sunrise: formatIsoTime(daily.sunrise?.[index]),
-      sunset: formatIsoTime(daily.sunset?.[index]),
+      sunrise: formatIsoTime(daily.sunrise?.[index], utcOffsetSeconds),
+      sunset: formatIsoTime(daily.sunset?.[index], utcOffsetSeconds),
     }))),
     forecast: Object.freeze((Array.isArray(daily.time) ? daily.time : []).slice(0, 5).map((date, index) => Object.freeze({
       date: safeText(date, 10),

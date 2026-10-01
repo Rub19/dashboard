@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.48.4 — 2026-10-02
+
+**Météo refaite : heures justes, motion design**
+
+- Heures du soleil corrigées : le lever et le coucher étaient décalés de 2 h (09:51 au lieu de 07:51 à Paris). Toutes les heures s'affichent maintenant à l'heure locale de la ville, avec l'heure sur place.
+- « Prochaines 24 heures » commence vraiment à l'heure actuelle (avant : à minuit, même le soir).
+- La recherche ne part plus à chaque lettre tapée (« Pa », « Par »…) et n'enregistre plus ces fragments comme ville par défaut. « Actualiser » recharge vraiment les données au lieu de resservir le cache.
+- Le graphique des précipitations s'affiche enfin (les barres étaient invisibles), la flèche du vent pointe dans la bonne direction, et les jours ne glissent plus d'un jour selon le fuseau.
+- Nouveau design animé : température qui roule, courbe de température sur 24 h, barres des 7 jours qui se remplissent, course du soleil, jauge de qualité de l'air, conseil du jour basé sur la pluie des 3 prochaines heures.
+- Les infos inventées (« Tendance stable »…) sont retirées ; en cas d'erreur, les dernières données restent affichées.
+
 ## v1.48.3 — 2026-10-02
 
 **Motion design sur le reste du dashboard**

@@ -41039,6 +41039,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_48_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_48_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_48_3_de);
 
+const v1_48_4_fr: ChangelogEntry = {
+  version: "v1.48.4",
+  date: "2026-10-02",
+  title: "Météo refaite : heures justes, motion design",
+  items: [
+    "Heures du soleil corrigées : le lever et le coucher étaient décalés de 2 h (09:51 au lieu de 07:51 à Paris). Toutes les heures s'affichent maintenant à l'heure locale de la ville, avec l'heure sur place.",
+    "« Prochaines 24 heures » commence vraiment à l'heure actuelle (avant : à minuit, même le soir).",
+    "La recherche ne part plus à chaque lettre tapée (« Pa », « Par »…) et n'enregistre plus ces fragments comme ville par défaut. « Actualiser » recharge vraiment les données au lieu de resservir le cache.",
+    "Le graphique des précipitations s'affiche enfin (les barres étaient invisibles), la flèche du vent pointe dans la bonne direction, et les jours ne glissent plus d'un jour selon le fuseau.",
+    "Nouveau design animé : température qui roule, courbe de température sur 24 h, barres des 7 jours qui se remplissent, course du soleil, jauge de qualité de l'air, conseil du jour basé sur la pluie des 3 prochaines heures.",
+    "Les infos inventées (« Tendance stable »…) sont retirées ; en cas d'erreur, les dernières données restent affichées.",
+  ],
+};
+
+const v1_48_4_en: ChangelogEntry = {
+  version: "v1.48.4",
+  date: "2026-10-02",
+  title: "Weather rebuilt: correct times, motion design",
+  items: [
+    "Sun times fixed: sunrise and sunset were off by 2 h (09:51 instead of 07:51 in Paris). All times now show in the city's local time, with the local clock.",
+    "\"Next 24 hours\" really starts at the current hour (before: at midnight, even in the evening).",
+    "Search no longer fires on every keystroke and no longer saves partial names as the default city. \"Refresh\" really reloads instead of serving the cache.",
+    "The precipitation chart finally shows (bars were invisible), the wind arrow points the right way, and days no longer shift by one depending on timezone.",
+    "New animated design: rolling temperature, 24 h temperature curve, filling 7-day bars, sun path, air-quality gauge, daily tip based on rain in the next 3 hours.",
+    "Made-up info (\"stable trend\"…) removed; on error, the last data stays visible.",
+  ],
+};
+
+const v1_48_4_es: ChangelogEntry = {
+  version: "v1.48.4",
+  date: "2026-10-02",
+  title: "Tiempo rehecho: horas correctas",
+  items: [
+    "Horas del sol corregidas (desfase de 2 h), previsión desde la hora actual, búsqueda y actualización corregidas, nuevo diseño animado.",
+  ],
+};
+
+const v1_48_4_de: ChangelogEntry = {
+  version: "v1.48.4",
+  date: "2026-10-02",
+  title: "Wetter neu: korrekte Zeiten",
+  items: [
+    "Sonnenzeiten korrigiert (2 h Versatz), Vorhersage ab der aktuellen Stunde, Suche und Aktualisierung repariert, neues animiertes Design.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_48_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_48_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_48_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_48_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -3,8 +3,10 @@ import test from "node:test";
 import { getWeather } from "../src/services/weather-client.js";
 import { json, testEnv } from "./helpers.mjs";
 
-function forecastResponse() {
+function forecastResponse(extra = {}) {
   return json({
+    utc_offset_seconds: 7200,
+    ...extra,
     current: {
       temperature_2m: 12,
       apparent_temperature: 11,
@@ -52,7 +54,9 @@ test("getWeather falls back to a hyphenated query when the plain-space name has 
   assert.equal(weather.pressure, 1012);
   assert.equal(weather.uvIndex, 3);
   assert.equal(weather.airQuality, 42);
-  assert.equal(weather.sunrise, new Date("2026-07-30T06:30:00").toISOString());
+  // Heure murale de la ville (UTC+2) -> instant UTC réel, quel que soit le fuseau de la machine.
+  assert.equal(weather.sunrise, "2026-07-30T04:30:00.000Z");
+  assert.equal(weather.utcOffsetSeconds, 7200);
   assert.equal(weather.forecast.length, 3);
   assert.deepEqual(calls, ["Brive la Gaillarde", "Brive-la-Gaillarde"]);
 });
@@ -76,4 +80,27 @@ test("getWeather does not retry when the plain-space query already resolves", as
   assert.equal(weather.apparentTemperature, 11);
   assert.equal(weather.uvIndex, 3);
   assert.deepEqual(calls, ["Saint Etienne"]);
+});
+
+test("getWeather starts the hourly strip at the current hour even when current.time is mid-hour", async () => {
+  const hours = Array.from({ length: 48 }, (_, i) => `2026-07-30T${String(i % 24).padStart(2, "0")}:00`).map((t, i) => (i < 24 ? t : t.replace("07-30", "07-31")));
+  const env = testEnv({
+    __TEST_FETCH__: async (input) => {
+      const url = new URL(String(input));
+      if (url.hostname === "geocoding-api.open-meteo.com") return json({ results: [{ name: "Paris", country: "France", latitude: 48.85, longitude: 2.35 }] });
+      if (url.hostname === "api.open-meteo.com") {
+        const body = await forecastResponse().json();
+        body.current.time = "2026-07-30T21:15";
+        body.hourly = { time: hours, temperature_2m: hours.map((_, i) => i) };
+        return json(body);
+      }
+      if (url.hostname === "air-quality-api.open-meteo.com") return airQualityResponse();
+      throw new Error(`Unexpected destination: ${url.href}`);
+    }
+  });
+  const weather = await getWeather(env, "Paris");
+  assert.equal(weather.hourly[0].time, "2026-07-30T21:00");
+  assert.equal(weather.hourly[0].temperature, 21);
+  assert.equal(weather.hourly.length, 24);
+  assert.equal(weather.description, "Plutôt dégagé");
 });

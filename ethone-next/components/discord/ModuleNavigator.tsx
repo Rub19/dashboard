@@ -150,7 +150,7 @@ export default function ModuleNavigator({
         }
         exit={reduced ? undefined : { opacity: 0, scale: 0.97, transition: { duration: 0.12 } }}
         className={cn(
-          "group relative flex flex-col gap-2.5 overflow-hidden rounded-[var(--panel-radius)] border p-4 text-left transition-[border-color,background-color,transform] duration-300 [transition-timing-function:var(--ease-snap)] hover:-translate-y-0.5",
+          "group relative flex flex-col gap-2.5 overflow-hidden rounded-[var(--panel-radius)] border p-4 text-left transition-[border-color,background-color,transform] duration-300 [transition-timing-function:var(--ease-snap)]",
           current
             ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/[0.07]"
             : isOn

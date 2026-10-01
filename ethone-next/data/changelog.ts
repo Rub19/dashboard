@@ -40405,6 +40405,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_44_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_44_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_44_0_de);
 
+const v1_45_0_fr: ChangelogEntry = {
+  version: "v1.45.0",
+  date: "2026-10-01",
+  title: "Motion design : Paramètres, Marketplace, Connexions et modules du bot",
+  items: [
+    "Console du bot : les panneaux ne se soulèvent plus au survol (seule la bordure s'éclaire), comme demandé. Idem pour les cartes de l'application.",
+    "Pages de modules du bot : nouvel en-tête animé partagé (retour, icône, titre) sur AFK, Anniversaires, Rappels, Messages épinglés et Tags — les autres pages suivront.",
+    "Paramètres : en-tête animé, statut « Synchronisé / Modifications non enregistrées » qui bascule en douceur, résultats de recherche et barre d'enregistrement flottante animés, menu plus sobre (sans halo) avec filet d'accent et apparition en cascade, sélecteurs à options dont la sélection glisse.",
+    "Marketplace : onglets et filtres dont la sélection glisse, en-tête et recherche animés, bannière d'intention animée, transition entre onglets. Corrigé : l'onglet actif était illisible sur les thèmes à accent blanc.",
+    "Connexions : en-tête animé, bouton « Tester toutes » sans zoom ni halo, sections qui apparaissent en cascade et cartes plus fluides.",
+  ],
+};
+
+const v1_45_0_en: ChangelogEntry = {
+  version: "v1.45.0",
+  date: "2026-10-01",
+  title: "Motion design: Settings, Marketplace, Connections and bot modules",
+  items: [
+    "Bot console: panels no longer lift on hover (only the border brightens), as requested. Same for app cards.",
+    "Bot module pages: new shared animated header (back, icon, title) on AFK, Birthdays, Reminders, Sticky Messages and Tags — the other pages will follow.",
+    "Settings: animated header, \"Synced / Unsaved changes\" status that switches smoothly, animated search results and floating save bar, calmer menu (no glow) with an accent line and cascading entrance, segmented options whose selection glides.",
+    "Marketplace: tabs and filters with a gliding selection, animated header and search, animated intent banner, tab transitions. Fixed: the active tab was unreadable on white-accent themes.",
+    "Connections: animated header, \"Test all\" button without zoom or glow, sections appearing in sequence and smoother cards.",
+  ],
+};
+
+const v1_45_0_es: ChangelogEntry = {
+  version: "v1.45.0",
+  date: "2026-10-01",
+  title: "Motion design: Ajustes, Marketplace, Conexiones y módulos del bot",
+  items: [
+    "Los paneles de la consola ya no se elevan al pasar el ratón; animaciones nuevas en Ajustes, Marketplace, Conexiones y en cinco páginas de módulos del bot.",
+  ],
+};
+
+const v1_45_0_de: ChangelogEntry = {
+  version: "v1.45.0",
+  date: "2026-10-01",
+  title: "Motion Design: Einstellungen, Marketplace, Verbindungen und Bot-Module",
+  items: [
+    "Konsolen-Panels heben sich beim Überfahren nicht mehr an; neue Animationen in Einstellungen, Marketplace, Verbindungen und fünf Bot-Modulseiten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_45_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_45_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_45_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_45_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

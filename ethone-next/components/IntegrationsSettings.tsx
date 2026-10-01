@@ -344,10 +344,15 @@ export default function IntegrationsSettings() {
       <div className="shrink-0 border-b border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/40 px-6 py-4 backdrop-blur-xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between max-w-7xl mx-auto w-full">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-sm">
+            <motion.div
+              initial={{ scale: 0.6, rotate: -15, opacity: 0 }}
+              animate={{ scale: 1, rotate: 0, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 320, damping: 20 }}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)]"
+            >
               <Plug className="h-5 w-5" />
-            </div>
-            <div>
+            </motion.div>
+            <div className="rise-in">
               <div className="flex items-center gap-2">
                 <h1 className="text-base font-bold text-[var(--text-primary)]">
                   Connexions & Intégrations
@@ -380,7 +385,7 @@ export default function IntegrationsSettings() {
               type="button"
               onClick={testAll}
               disabled={testingAll}
-              className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:scale-105 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+              className="btn-sheen relative flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-bold text-[var(--accent-contrast)] transition-[filter,transform] duration-200 hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <Zap className={cn("h-3.5 w-3.5", testingAll && "animate-spin")} />
               <span>{testingAll ? "Test global en cours..." : "Tester toutes"}</span>
@@ -404,7 +409,7 @@ export default function IntegrationsSettings() {
 
       {/* Main Scrollable Content */}
       <div className="min-h-0 flex-1 overflow-y-auto os-scroll p-4 sm:p-6 pb-16 space-y-6 [overscroll-behavior:contain]">
-        <div className="max-w-7xl mx-auto w-full space-y-6">
+        <div className="stagger-children max-w-7xl mx-auto w-full space-y-6">
           {/* Brain Ecosystem Hub */}
           <BrainIntegrationsHub
             connectedCount={myConnections.length}
@@ -441,7 +446,7 @@ export default function IntegrationsSettings() {
                   )}
                   title="Afficher uniquement les services connectés"
                 >
-                  <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]" />
+                  <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
                   <span>{healthCounts.connectedCount} Connectés</span>
                 </button>
 
@@ -495,10 +500,10 @@ export default function IntegrationsSettings() {
                   <motion.div
                     key={integration.id}
                     layout="position"
-                    initial={{ opacity: 0, scale: 0.96 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.96 }}
-                    transition={{ duration: 0.22, ease: "easeOut" }}
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.12 } }}
+                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                   >
                     <ConnectionCard
                       integration={integration}

@@ -1,12 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Select from "@/components/ui/Select";
 import {
   Clock,
-  ArrowLeft,
   RefreshCw,
   Plus,
   Trash2,
@@ -24,6 +22,7 @@ import ChannelPicker from "@/components/discord/ChannelPicker";
 import { errorReason } from "@/lib/format-error";
 import { formatApiError } from "@/lib/format-error";
 
+import ModulePageTitle from "@/components/discord/ModulePageTitle";
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -223,18 +222,7 @@ export default function RemindersCenterClient() {
     <div className="mx-auto w-full max-w-6xl space-y-6 px-4 py-6 sm:px-6 text-[var(--text-primary)]">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <Link href="/discord" className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-colors" title="Retour au hub Discord">
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[var(--surface-raised)]/50 border border-[var(--panel-border)] flex items-center justify-center text-[var(--text-muted)]">
-              <Clock className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-[var(--text-primary)]">Reminders</h1>
-              <p className="text-xs text-[var(--text-muted)]">« Rappelle-moi » — rappels personnels programmés</p>
-            </div>
-          </div>
+          <ModulePageTitle icon={<Clock />} title="Reminders" subtitle="« Rappelle-moi » — rappels personnels programmés" />
         </div>
 
         <div className="flex items-center gap-2.5">

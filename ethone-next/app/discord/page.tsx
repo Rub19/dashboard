@@ -1119,7 +1119,7 @@ export default function DiscordDashboardPage() {
     "group/btn btn-sheen relative inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[var(--inset-radius)] bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)] outline-none transition-[filter,transform] duration-200 hover:brightness-110 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] [&>svg:last-child]:transition-transform [&>svg:last-child]:duration-300 hover:[&>svg:last-child]:translate-x-0.5";
   const cardCls =
     "relative rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/45 p-5 shadow-[inset_0_1px_0_rgb(255_255_255/0.03)] transition-[border-color,background-color,transform] duration-300 [transition-timing-function:var(--ease-snap)] hover:border-[var(--text-primary)]/[0.12]";
-  const gatewayCls = `flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center ${cardCls} hover:-translate-y-0.5`;
+  const gatewayCls = `flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center ${cardCls} hover:bg-[var(--surface-raised)]/60`;
   const calloutCls = "flex flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4 sm:flex-row sm:items-center sm:justify-between";
   const inviteBtnCls = "inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#5865F2] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#4752C4]";
 
@@ -1364,7 +1364,7 @@ export default function DiscordDashboardPage() {
                             e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
                             e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
                           }}
-                          className="group relative flex flex-col gap-3 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-5 transition-[border-color,transform] duration-300 [transition-timing-function:var(--ease-snap)] hover:-translate-y-1 hover:border-[var(--text-primary)]/15"
+                          className="group relative flex flex-col gap-3 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-5 transition-[border-color,transform] duration-300 [transition-timing-function:var(--ease-snap)] hover:border-[var(--text-primary)]/15"
                         >
                           <div
                             aria-hidden

@@ -1623,8 +1623,21 @@ select[data-haptic-state="released"],
 .discord-route > * > *:nth-child(5), .hub-module-panel > * + * > *:nth-child(5) { animation-delay: 0.2s; }
 .discord-route > * > *:nth-child(6), .hub-module-panel > * + * > *:nth-child(6) { animation-delay: 0.25s; }
 .discord-route > * > *:nth-child(n + 7), .hub-module-panel > * + * > *:nth-child(n + 7) { animation-delay: 0.3s; }
+/* Generic: direct children rise in sequence. */
+.stagger-children > * { animation: console-rise 0.5s var(--ease-snap) backwards; }
+.stagger-children > :nth-child(2) { animation-delay: 0.06s; }
+.stagger-children > :nth-child(3) { animation-delay: 0.12s; }
+.stagger-children > :nth-child(4) { animation-delay: 0.18s; }
+.stagger-children > :nth-child(n + 5) { animation-delay: 0.24s; }
+@media (prefers-reduced-motion: reduce) { .stagger-children > * { animation: none; } }
+[data-reduced-motion="true"] .stagger-children > *, [data-reduced-motion="true"] .rise-in, [data-reduced-motion="true"] .discord-route > * > * { animation: none !important; }
+
+/* Single element rising in (stagger by setting animation-delay inline). */
+.rise-in {
+  animation: console-rise 0.5s var(--ease-snap) backwards;
+}
 @media (prefers-reduced-motion: reduce) {
-  .discord-route > * > *, .hub-module-panel > :first-child, .hub-module-panel > * + * > * { animation: none; }
+  .discord-route > * > *, .hub-module-panel > :first-child, .hub-module-panel > * + * > *, .rise-in { animation: none; }
 }
 
 /* Keep autofilled auth fields in the theme instead of the browser's tint. */

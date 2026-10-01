@@ -1,6 +1,8 @@
 "use client";
 
 import { useId } from "react";
+import { motion } from "framer-motion";
+import { SPRING_PILL } from "@/lib/ease";
 import Switch from "@/components/Switch";
 import Select from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
@@ -90,13 +92,20 @@ export function ButtonGridControl<T extends string>({
               onClick={() => onChange(opt.id)}
               aria-pressed={active}
               className={cn(
-                "relative flex-1 min-w-0 select-none rounded-[calc(var(--panel-radius)-2px)] px-2.5 py-1.5 text-[11px] font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] min-h-[40px]",
+                "relative flex-1 min-w-0 select-none rounded-[calc(var(--panel-radius)-2px)] px-2.5 py-1.5 text-[11px] font-medium transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] min-h-[40px] active:scale-[0.97]",
                 active
-                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
+                  ? "text-[var(--accent-contrast)]"
                   : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
               )}
             >
-              <span className="block truncate text-center">{opt.label}</span>
+              {active && (
+                <motion.span
+                  layoutId={`${groupId}-pill`}
+                  transition={SPRING_PILL}
+                  className="absolute inset-0 rounded-[calc(var(--panel-radius)-2px)] bg-[var(--accent-primary)] shadow-sm"
+                />
+              )}
+              <span className="relative block truncate text-center">{opt.label}</span>
             </button>
           );
         })}

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.45.0 — 2026-10-01
+
+**Motion design : Paramètres, Marketplace, Connexions et modules du bot**
+
+- Console du bot : les panneaux ne se soulèvent plus au survol (seule la bordure s'éclaire), comme demandé. Idem pour les cartes de l'application.
+- Pages de modules du bot : nouvel en-tête animé partagé (retour, icône, titre) sur AFK, Anniversaires, Rappels, Messages épinglés et Tags — les autres pages suivront.
+- Paramètres : en-tête animé, statut « Synchronisé / Modifications non enregistrées » qui bascule en douceur, résultats de recherche et barre d'enregistrement flottante animés, menu plus sobre (sans halo) avec filet d'accent et apparition en cascade, sélecteurs à options dont la sélection glisse.
+- Marketplace : onglets et filtres dont la sélection glisse, en-tête et recherche animés, bannière d'intention animée, transition entre onglets. Corrigé : l'onglet actif était illisible sur les thèmes à accent blanc.
+- Connexions : en-tête animé, bouton « Tester toutes » sans zoom ni halo, sections qui apparaissent en cascade et cartes plus fluides.
+
 ## v1.44.0 — 2026-10-01
 
 **Console du bot : barre latérale et pages de modules**

@@ -156,25 +156,28 @@ export default function SettingsNavigation({
         onClick={() => handleClick(cat.id)}
         onKeyDown={handleKeyDown}
         className={cn(
-          "group relative flex min-h-[44px] w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left text-sm font-medium transition-colors duration-150 outline-none select-none cursor-pointer",
+          "rise-in group relative flex min-h-[44px] w-full items-center gap-3 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm font-medium transition-colors duration-150 outline-none select-none cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
           isActive
             ? "text-[var(--accent-primary)] font-semibold"
             : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]/40"
         )}
+        style={{ animationDelay: `${Math.min(index, 14) * 22}ms` }}
       >
         {isActive && (
           <motion.div
             layoutId="settings-nav-active-pill"
-            className="absolute inset-0 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 shadow-[0_0_16px_color-mix(in_srgb,var(--accent-primary)_25%,transparent)]"
+            className="absolute inset-0 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/[0.08]"
             transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 30 }}
-          />
+          >
+            <span className="absolute inset-y-3 -left-px w-[3px] rounded-full bg-[var(--accent-primary)]" />
+          </motion.div>
         )}
 
         <span
           className={cn(
-            "relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-105",
+            "relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--inset-radius)] transition-transform duration-300 [transition-timing-function:var(--ease-snap)] group-hover:scale-110 group-active:scale-95",
             isActive
-              ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] shadow-sm"
+              ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
               : "bg-[var(--surface-raised)]/70 text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
           )}
         >
@@ -189,9 +192,6 @@ export default function SettingsNavigation({
             {i18n(cat.descriptionKey || "", cat.description)}
           </span>
         </span>
-        {isActive && (
-          <span className="relative z-10 ml-auto h-2 w-2 shrink-0 rounded-full bg-[var(--accent-primary)] shadow-[0_0_8px_var(--accent-primary)]" aria-hidden="true" />
-        )}
       </button>
     );
   };
@@ -232,7 +232,7 @@ export default function SettingsNavigation({
               <Icon name={cat.icon} className="h-3.5 w-3.5" aria-hidden="true" />
               <span className="whitespace-nowrap">{cat.label}</span>
               {isActive && (
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] shadow-[0_0_6px_var(--accent-primary)]" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
               )}
             </button>
           );

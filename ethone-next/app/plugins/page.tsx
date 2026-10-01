@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useSettings } from "@/components/SettingsProvider";
-import { EASE_OUT } from "@/lib/ease";
+import { EASE_OUT, EASE_SNAP, SPRING_PILL } from "@/lib/ease";
 import Select from "@/components/ui/Select";
 import {
   Search,
@@ -253,7 +253,12 @@ export default function PluginsPage() {
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden p-3 sm:p-6 space-y-4">
       {/* Search Header Bar */}
-      <div className="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--panel-border)]/60 pb-4">
+      <motion.div
+        initial={skipEntranceAnimation ? false : { opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: EASE_SNAP }}
+        className="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--panel-border)]/60 pb-4"
+      >
         <div>
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
             <span>Marketplace & App Store ETHONE</span>
@@ -267,30 +272,39 @@ export default function PluginsPage() {
         </div>
 
         {/* Search Input Bar */}
-        <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
+        <div className="group relative w-full sm:w-80">
+          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)] transition-colors group-focus-within:text-[var(--accent-primary)]" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher (ex: 'setup gaming', GitHub, Pomodoro...)"
-            className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 pl-10 pr-9 py-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none shadow-inner"
+            className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 pl-10 pr-9 py-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-[border-color,box-shadow] duration-200 hover:border-[var(--text-primary)]/20 focus:border-[var(--accent-primary)]/60 focus:outline-none focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--accent-primary)_14%,transparent)]"
           />
           {search && (
             <button
               type="button"
               onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-white"
+              aria-label="Effacer la recherche"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             >
               <X className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {/* Natural Language Intent Detection Banner */}
+      <AnimatePresence initial={false}>
       {searchIntent.hasIntent && (
-        <div className="shrink-0 flex items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-purple-500/30 bg-purple-950/25 px-4 py-2 text-xs backdrop-blur-md">
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.25, ease: EASE_SNAP }}
+          className="shrink-0 overflow-hidden"
+        >
+        <div className="flex items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-purple-500/30 bg-purple-950/25 px-4 py-2 text-xs backdrop-blur-md">
           <div className="flex items-center gap-2 text-purple-200">
             <Brain className="h-4 w-4 text-purple-400 shrink-0" />
             <span>
@@ -301,12 +315,14 @@ export default function PluginsPage() {
           <button
             type="button"
             onClick={() => setSearch("")}
-            className="text-[11px] text-purple-300 hover:text-white underline cursor-pointer"
+            className="text-[11px] text-purple-300 hover:text-[var(--text-primary)] underline cursor-pointer"
           >
             Effacer
           </button>
         </div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       {/* Navigation Tabs Bar */}
       <div className="shrink-0 flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
@@ -320,20 +336,21 @@ export default function PluginsPage() {
               type="button"
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "shrink-0 flex items-center gap-1.5 rounded-xl px-3 py-2 font-semibold transition-all touch-manipulation cursor-pointer",
+                "relative shrink-0 flex items-center gap-1.5 rounded-xl border px-3 py-2 font-semibold transition-colors duration-200 touch-manipulation cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                 isActive
-                  ? "bg-[var(--accent-primary)] text-white shadow-sm"
-                  : "border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                  ? "border-transparent text-[var(--accent-contrast)]"
+                  : "border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
               )}
             >
-              <TabIcon className="h-3.5 w-3.5" />
-              <span>{tab.label}</span>
+              {isActive && <motion.span layoutId="market-tab" transition={SPRING_PILL} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              <TabIcon className="relative h-3.5 w-3.5" />
+              <span className="relative">{tab.label}</span>
               {typeof tab.count === "number" && (
                 <span
                   className={cn(
-                    "ml-0.5 rounded-full px-1.5 py-0.2 text-[10px]",
+                    "relative ml-0.5 rounded-full px-1.5 py-0.2 text-[10px]",
                     isActive
-                      ? "bg-white/20 text-white"
+                      ? "bg-[var(--accent-contrast)]/20 text-[var(--accent-contrast)]"
                       : "bg-[var(--panel-border)] text-[var(--text-muted)]"
                   )}
                 >
@@ -362,13 +379,14 @@ export default function PluginsPage() {
                 type="button"
                 onClick={() => setActiveTier(tier.id as any)}
                 className={cn(
-                  "shrink-0 rounded-lg px-2.5 py-1 font-medium transition-colors cursor-pointer",
+                  "relative shrink-0 rounded-lg px-2.5 py-1 font-medium transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
                   activeTier === tier.id
-                    ? "bg-[var(--panel-border)] text-[var(--text-primary)] font-bold"
-                    : "text-[var(--text-muted)] hover:text-white"
+                    ? "text-[var(--text-primary)] font-bold"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
               >
-                {tier.label}
+                {activeTier === tier.id && <motion.span layoutId="market-tier" transition={SPRING_PILL} className="absolute inset-0 rounded-lg bg-[var(--panel-border)]" />}
+                <span className="relative">{tier.label}</span>
               </button>
             ))}
           </div>
@@ -394,7 +412,13 @@ export default function PluginsPage() {
       )}
 
       {/* Main Content Area */}
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pr-1 pb-6 space-y-6">
+      <motion.div
+        key={activeTab}
+        initial={skipEntranceAnimation ? false : { opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: EASE_SNAP }}
+        className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pr-1 pb-6 space-y-6"
+      >
         {/* Render Updates View if in Updates tab */}
         {activeTab === "updates" ? (
           <MarketplaceUpdatesView
@@ -494,7 +518,7 @@ export default function PluginsPage() {
             )}
           </>
         )}
-      </div>
+      </motion.div>
 
       {/* Item Detail Modal */}
       <MarketplaceItemModal

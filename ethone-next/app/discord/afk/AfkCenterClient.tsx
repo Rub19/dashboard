@@ -1,9 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Moon, ArrowLeft, RefreshCw, Save, AlertTriangle, X, Bot } from "@/components/icons/ph";
+import { Moon, RefreshCw, Save, AlertTriangle, X, Bot } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
@@ -11,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import { formatApiError } from "@/lib/format-error";
 
+import ModulePageTitle from "@/components/discord/ModulePageTitle";
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -264,20 +264,9 @@ export default function AfkCenterClient() {
 
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)]">
-      <div className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--bg-surface-elevated)]/80 px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 z-20">
+      <div className="sticky top-0 shrink-0 border-b border-[var(--panel-border)] bg-[var(--background)]/75 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3 z-20 backdrop-blur-xl">
         <div className="flex items-center gap-3">
-          <Link href="/discord" className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-colors" title="Retour au hub Discord">
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-center text-[var(--text-muted)]">
-              <Moon className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">AFK</h1>
-              <p className="text-xs text-[var(--text-muted)]">Statut absent + notification sur mention</p>
-            </div>
-          </div>
+          <ModulePageTitle icon={<Moon />} title="AFK" subtitle="Statut absent + notification sur mention" />
         </div>
 
         <div className="flex items-center gap-2.5">

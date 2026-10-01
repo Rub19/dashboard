@@ -12,6 +12,9 @@ import { DEFAULTS, type Settings } from "@/lib/settings";
 import { CATEGORY_KEYS } from "@/lib/settings-category-keys";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { EASE_SNAP } from "@/lib/ease";
+import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import SettingsNavigation from "./SettingsNavigation";
@@ -27,6 +30,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   const searchParams = useSearchParams();
   const contentRef = useRef<HTMLElement | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const { reduced } = useMotionPref();
 
   const sectionParam = typeof params?.section === "string" ? params.section : undefined;
   const categoryParam = searchParams?.get("category") || searchParams?.get("section") || undefined;
@@ -175,12 +179,23 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
       {/* Header */}
-      <header className="mb-4 shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 px-4 py-3.5 sm:px-5">
+      <motion.header
+        initial={reduced ? false : { opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: EASE_SNAP }}
+        className="relative mb-4 shrink-0 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 px-4 py-3.5 sm:px-5"
+      >
+        <div aria-hidden className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[var(--text-primary)]/20 to-transparent" />
         <div className="flex w-full min-w-0 max-w-full flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+            <motion.div
+              initial={reduced ? false : { rotate: -90, scale: 0.6, opacity: 0 }}
+              animate={{ rotate: 0, scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.05 }}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+            >
               <Icon name="settings" className="h-5 w-5" aria-hidden="true" />
-            </div>
+            </motion.div>
             <div className="min-w-0">
               <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
                 {i18n("settingsTitle") || "Paramètres"}
@@ -208,9 +223,14 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
                 inputSize="compact"
                 className="w-full min-w-0"
               />
+              <AnimatePresence>
               {showSearchDropdown && searchResults.length > 0 && (
-                <div
-                  className="absolute left-0 right-0 top-full z-[var(--z-dropdown)] mt-1.5 max-h-64 overflow-y-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-lg backdrop-blur-[var(--panel-blur)]"
+                <motion.div
+                  initial={reduced ? false : { opacity: 0, y: -6, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={reduced ? undefined : { opacity: 0, y: -4, transition: { duration: 0.12 } }}
+                  transition={{ duration: 0.2, ease: EASE_SNAP }}
+                  className="absolute left-0 right-0 top-full z-[var(--z-dropdown)] mt-1.5 max-h-64 origin-top overflow-y-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-lg backdrop-blur-[var(--panel-blur)]"
                   role="listbox"
                   aria-label={i18n("searchResults", "Résultats de recherche")}
                 >
@@ -228,13 +248,14 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
                       <span className="shrink-0 text-[10px] text-[var(--text-muted)]">{result.type === "section" ? i18n("section") || "Section" : i18n("setting") || "Paramètre"}</span>
                     </button>
                   ))}
-                </div>
+                </motion.div>
               )}
+              </AnimatePresence>
             </form>
 
             <div
               className={cn(
-                "flex min-h-[44px] items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium",
+                "flex min-h-[44px] items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium transition-colors duration-300",
                 form.hasExplicitChanges
                   ? "border-[var(--warning)]/20 bg-[var(--warning)]/10 text-[var(--warning)]"
                   : "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
@@ -249,9 +270,19 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
                 )}
                 aria-hidden="true"
               />
-              {form.hasExplicitChanges
-                ? i18n("unsavedChanges") || "Modifications non enregistrées"
-                : i18n("synced") || "Synchronisé"}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={form.hasExplicitChanges ? "dirty" : "synced"}
+                  initial={reduced ? false : { opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduced ? undefined : { opacity: 0, y: -4 }}
+                  transition={{ duration: 0.18 }}
+                >
+                  {form.hasExplicitChanges
+                    ? i18n("unsavedChanges") || "Modifications non enregistrées"
+                    : i18n("synced") || "Synchronisé"}
+                </motion.span>
+              </AnimatePresence>
             </div>
 
             <div className="flex items-center gap-2">
@@ -278,7 +309,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
             </div>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Mobile category strip */}
       <div className="mb-4 block md:hidden">
@@ -316,9 +347,14 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
         </main>
       </div>
 
+      <AnimatePresence>
       {settings.dockFloatingSave && form.hasExplicitChanges && (
-        <div
-          className="fixed bottom-[max(5rem,env(safe-area-inset-bottom)+4.5rem)] left-[max(1rem,env(safe-area-inset-left))] right-[max(1rem,env(safe-area-inset-right))] z-[var(--z-modal)] mx-auto w-max max-w-[min(90%,32rem)] animate-in slide-in-from-bottom-4 sm:left-1/2 sm:-translate-x-1/2"
+        <motion.div
+          initial={reduced ? false : { opacity: 0, y: 24, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={reduced ? undefined : { opacity: 0, y: 16, scale: 0.97, transition: { duration: 0.15 } }}
+          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+          className="fixed bottom-[max(5rem,env(safe-area-inset-bottom)+4.5rem)] left-[max(1rem,env(safe-area-inset-left))] right-[max(1rem,env(safe-area-inset-right))] z-[var(--z-modal)] mx-auto w-max max-w-[min(90%,32rem)]"
           aria-live="polite"
           aria-atomic="true"
         >
@@ -348,8 +384,9 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
               </Button>
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       <Modal
         isOpen={isResetModalOpen}

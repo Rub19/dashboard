@@ -42,7 +42,7 @@ function Tile({ label, icon: Icon, value, suffix, loading }: { label: string; ic
   return (
     <motion.div
       variants={staggerItem}
-      className="group relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 transition-[border-color,transform] duration-300 [transition-timing-function:var(--ease-snap)] hover:-translate-y-0.5 hover:border-[var(--text-primary)]/15"
+      className="group relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 transition-[border-color,transform] duration-300 [transition-timing-function:var(--ease-snap)] hover:border-[var(--text-primary)]/15"
     >
       <div aria-hidden className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[var(--text-primary)]/20 to-transparent" />
       <div className="flex items-center justify-between gap-2">

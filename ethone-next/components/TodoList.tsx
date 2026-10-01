@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useId, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Plus } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -23,6 +23,7 @@ export type TodoListProps = {
 const TodoList = memo(function TodoList({ tasks, loading, onToggle, onDelete, onNewTask, className = "", scrollable = true }: TodoListProps) {
   const i18n = useI18n();
   const [filter, setFilter] = useState<Filter>("all");
+  const pillId = useId();
 
   const tabs: { id: Filter; label: string; count: number }[] = useMemo(() => {
     const all = tasks.length;
@@ -83,12 +84,17 @@ const TodoList = memo(function TodoList({ tasks, loading, onToggle, onDelete, on
             key={tab.id}
             type="button"
             onClick={() => setFilter(tab.id)}
-            className={`rounded-lg px-3 py-1 transition-all ${
-              filter === tab.id
-                ? "border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.08] font-bold text-[var(--text-primary)] shadow-sm"
-                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            className={`relative isolate rounded-lg px-3 py-1 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97] ${
+              filter === tab.id ? "font-bold text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
+            {filter === tab.id && (
+              <motion.span
+                layoutId={pillId}
+                transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                className="absolute inset-0 -z-10 rounded-[inherit] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.08] shadow-sm"
+              />
+            )}
             {tab.label}{" "}
             <span className="opacity-60">({tab.count})</span>
           </button>

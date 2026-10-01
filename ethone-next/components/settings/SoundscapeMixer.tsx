@@ -209,12 +209,13 @@ export default function SoundscapeMixer() {
             type="button"
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              "rounded-xl px-3 py-1.5 text-xs font-medium transition-all whitespace-nowrap",
+              "relative isolate rounded-xl px-3 py-1.5 text-xs font-medium transition-all whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
               activeTab === tab.id
-                ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-semibold shadow-sm"
+                ? "text-[var(--accent-contrast)]"
                 : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/40 hover:text-[var(--text-primary)]"
             )}
           >
+            {activeTab === tab.id && <motion.span layoutId="soundscapemixer-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
             {tab.label}
           </button>
         ))}

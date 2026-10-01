@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.48.2 — 2026-10-01
+
+**Barre du haut sans chevauchement, cadre blanc supprimé**
+
+- Barre du haut : la météo et l'heure ne passent plus par-dessus le raccourci Ctrl K de la recherche. Elles s'affichent seulement s'il reste la place, et la recherche rétrécit plutôt que de se faire recouvrir.
+- Le cadre blanc qui pouvait entourer toute la zone de contenu (après un clic dans une zone vide ou le lien « aller au contenu ») a disparu.
+- Onglets animés aussi dans Tâches, l'historique Focus, le mixeur d'ambiances, le choix d'avatar, l'administration des fichiers, la liste de tâches, les notifications, les dossiers Mail, la barre latérale des panneaux et les onglets génériques.
+
 ## v1.48.1 — 2026-10-01
 
 **Centre de contrôle du bot : motion design**

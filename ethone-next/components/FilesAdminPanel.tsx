@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
@@ -188,10 +189,11 @@ export default function FilesAdminPanel() {
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-[var(--panel-radius)] py-2 text-xs font-medium transition-colors sm:text-sm ${
-              tab === t.id ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            className={`relative isolate flex flex-1 items-center justify-center gap-1.5 rounded-[var(--panel-radius)] py-2 text-xs font-medium transition-colors sm:text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97] ${
+              tab === t.id ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
+            {tab === t.id && <motion.span layoutId="filesadminpanel-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
             <Icon name={t.icon} className="h-4 w-4" />
             <span className="hidden sm:inline">{t.label}</span>
             <span className="sm:hidden">{t.label}</span>

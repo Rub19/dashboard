@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
+import { motion } from "framer-motion";
 
 export type LiquidItem = {
   id: string;
@@ -21,6 +22,7 @@ export default function LiquidSidebar({
 }) {
   const [internal, setInternal] = useState(defaultActive || items[0]?.id);
   const currentActive = active !== undefined ? active : internal;
+  const pillId = useId();
 
   function handleClick(id: string) {
     if (active === undefined) setInternal(id);
@@ -42,13 +44,24 @@ export default function LiquidSidebar({
             role="tab"
             aria-selected={isActive}
             onClick={() => handleClick(item.id)}
-            className={`relative flex shrink-0 items-center gap-2 whitespace-nowrap rounded-[var(--panel-radius)] px-3 py-2 text-sm font-medium transition-colors md:w-full md:gap-3 ${
+            className={`group relative isolate flex shrink-0 items-center gap-2 whitespace-nowrap rounded-[var(--panel-radius)] px-3 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.98] md:w-full md:gap-3 ${
               isActive
-                ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
+                ? "text-[var(--accent-contrast)]"
                 : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
             }`}
           >
-            {item.icon && <span className={isActive ? "text-white/80" : "text-[var(--text-muted)]"}>{item.icon}</span>}
+            {isActive && (
+              <motion.span
+                layoutId={pillId}
+                transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm"
+              />
+            )}
+            {item.icon && (
+              <span className={`transition-transform duration-300 group-hover:scale-110 ${isActive ? "text-[var(--accent-contrast)]/80" : "text-[var(--text-muted)]"}`}>
+                {item.icon}
+              </span>
+            )}
             <span className="min-w-0 truncate">{item.label}</span>
           </button>
         );

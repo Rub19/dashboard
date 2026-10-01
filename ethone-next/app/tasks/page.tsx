@@ -356,12 +356,13 @@ export default function TasksPage() {
               type="button"
               onClick={() => setActiveTab(tab.id as FilterTab)}
               className={cn(
-                "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                "relative isolate rounded-full px-3 py-1.5 text-xs font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                 activeTab === tab.id
-                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
+                  ? "text-[var(--accent-contrast)]"
                   : "text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
               )}
             >
+              {activeTab === tab.id && <motion.span layoutId="tasks-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
               {tab.label} <span className="opacity-60">({tab.count})</span>
             </button>
           ))}

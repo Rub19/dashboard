@@ -389,7 +389,11 @@ function TopBar() {
           la grille réserve la place de chaque colonne au lieu de l'ignorer.
           `min-w-0` sur les colonnes 1fr : sans lui, leur contenu (fil d'Ariane, barre d'outils) forcerait
           la piste à dépasser 1fr et grignoterait la colonne centrale au lieu de simplement tronquer. */}
-      <div className="@container relative pointer-events-auto hidden h-14 w-full grid-cols-[1fr_auto_1fr] items-center gap-3 md:grid">
+      {/* Colonnes latérales en minmax(max-content,1fr) : la droite (outils + profil) ne peut plus être plus étroite que son
+          contenu, donc plus jamais de débordement vers la gauche sous la recherche ; c'est la recherche qui rétrécit
+          (minmax(0,480px)) quand la place manque. Les pastilles météo/heure ne comptent pas dans cette largeur
+          (contain-inline-size) et passent à la ligne, donc hors champ, s'il ne reste pas assez de place. */}
+      <div className="@container relative pointer-events-auto hidden h-14 w-full grid-cols-[minmax(max-content,1fr)_minmax(0,480px)_minmax(max-content,1fr)] items-center gap-3 md:grid">
         {/* Gauche : bouton de barre latérale + fil d'Ariane */}
         <div className="flex min-w-0 items-center gap-2.5">
           <SidebarTopToggle />
@@ -419,20 +423,23 @@ function TopBar() {
         </div>
 
         {/* Centre : champ de recherche */}
-        <div className="flex items-center justify-center px-2">
-          <div className="w-[480px] max-w-full">
+        <div className="flex min-w-0 items-center justify-center px-2">
+          <div className="w-full min-w-0">
             <CommandBarTrigger variant="field" />
           </div>
         </div>
 
         {/* Droite : état du système (très grands écrans), capsule d'outils, profil */}
-        <div className="flex min-w-0 items-center justify-end gap-2">
-          {/* Les pastilles ne s'affichent que si la barre est assez large pour ne jamais chevaucher la recherche centrée. */}
-          <div className="hidden @min-[1750px]:flex @min-[2250px]:hidden">
-            <SystemStatusPills compact />
-          </div>
-          <div className="hidden @min-[2250px]:flex">
-            <SystemStatusPills />
+        <div className="flex items-center justify-end gap-2">
+          {/* Le span vide de largeur nulle garde la 1re ligne : une pastille qui ne tient pas passe en 2e ligne, masquée. */}
+          <div className="flex h-9 min-w-0 flex-1 flex-wrap items-center justify-end overflow-hidden contain-inline-size">
+            <span aria-hidden className="h-9 w-0" />
+            <div className="hidden @min-[1750px]:flex @min-[2250px]:hidden">
+              <SystemStatusPills compact />
+            </div>
+            <div className="hidden @min-[2250px]:flex">
+              <SystemStatusPills />
+            </div>
           </div>
           <div className="ethone-toolbar">
             <FocusLivePill />

@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -469,12 +470,13 @@ export default function AvatarPickerModal({
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    "flex items-center gap-2 whitespace-nowrap rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 shrink-0",
+                    "relative isolate flex items-center gap-2 whitespace-nowrap rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                     isActive
-                      ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-bold"
+                      ? "text-[var(--accent-contrast)]"
                       : "border border-[var(--panel-border)] bg-[var(--surface-2)]/40 text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
                   )}
                 >
+                  {isActive && <motion.span layoutId="avatarpickermodal-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                   <Icon className="h-3.5 w-3.5" />
                   <span>{tab.label}</span>
                 </button>

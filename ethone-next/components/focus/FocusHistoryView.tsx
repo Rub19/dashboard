@@ -176,12 +176,13 @@ export default function FocusHistoryView() {
                 type="button"
                 onClick={() => setFilter(f.id)}
                 className={cn(
-                  "rounded-lg px-2.5 py-1 text-[10px] font-medium transition-all cursor-pointer",
+                  "relative isolate rounded-lg px-2.5 py-1 text-[10px] font-medium transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                   filter === f.id
-                    ? "bg-[var(--accent-primary)] text-white"
+                    ? "text-[var(--accent-contrast)]"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]/40"
                 )}
               >
+                {filter === f.id && <motion.span layoutId="focushistoryview-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                 {f.label}
               </button>
             ))}

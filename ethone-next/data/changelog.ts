@@ -40949,6 +40949,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_48_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_48_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_48_1_de);
 
+const v1_48_2_fr: ChangelogEntry = {
+  version: "v1.48.2",
+  date: "2026-10-01",
+  title: "Barre du haut sans chevauchement, cadre blanc supprimé",
+  items: [
+    "Barre du haut : la météo et l'heure ne passent plus par-dessus le raccourci Ctrl K de la recherche. Elles s'affichent seulement s'il reste la place, et la recherche rétrécit plutôt que de se faire recouvrir.",
+    "Le cadre blanc qui pouvait entourer toute la zone de contenu (après un clic dans une zone vide ou le lien « aller au contenu ») a disparu.",
+    "Onglets animés aussi dans Tâches, l'historique Focus, le mixeur d'ambiances, le choix d'avatar, l'administration des fichiers, la liste de tâches, les notifications, les dossiers Mail, la barre latérale des panneaux et les onglets génériques.",
+  ],
+};
+
+const v1_48_2_en: ChangelogEntry = {
+  version: "v1.48.2",
+  date: "2026-10-01",
+  title: "Top bar without overlap, white frame removed",
+  items: [
+    "Top bar: weather and time no longer cover the search's Ctrl K shortcut. They only show when there's room, and the search shrinks instead of being covered.",
+    "The white frame that could surround the whole content area (after clicking an empty area or the skip link) is gone.",
+    "Animated tabs also in Tasks, Focus history, the ambience mixer, avatar picker, file administration, task list, notifications, Mail folders, the panel sidebar and generic tabs.",
+  ],
+};
+
+const v1_48_2_es: ChangelogEntry = {
+  version: "v1.48.2",
+  date: "2026-10-01",
+  title: "Barra superior sin superposición",
+  items: [
+    "El tiempo y la hora ya no tapan Ctrl K; se elimina el marco blanco; más pestañas animadas.",
+  ],
+};
+
+const v1_48_2_de: ChangelogEntry = {
+  version: "v1.48.2",
+  date: "2026-10-01",
+  title: "Obere Leiste ohne Überlappung",
+  items: [
+    "Wetter und Uhrzeit verdecken Strg K nicht mehr; weißer Rahmen entfernt; weitere animierte Tabs.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_48_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_48_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_48_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_48_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

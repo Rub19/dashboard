@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback, useId } from "react";
+import { motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import Modal from "@/components/ui/Modal";
 import type { TabItem } from "./types";
@@ -187,7 +188,7 @@ export default function TabList({
               onClick={() => onSelect(tab.id)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               className={cn(
-                "relative z-0 flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-[var(--panel-radius)] px-4 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
+                "relative z-0 flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-[var(--panel-radius)] px-4 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 active:scale-[0.97] focus-visible:ring-offset-[var(--background)]",
                 active
                   ? "text-[var(--text-primary)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
@@ -195,7 +196,7 @@ export default function TabList({
               )}
             >
               {active && (
-                <div className="absolute inset-0 -z-10 rounded-[var(--panel-radius)] bg-[var(--text-primary)]/[0.12]" />
+                <motion.div layoutId={`${listId}-pill`} transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[var(--panel-radius)] bg-[var(--text-primary)]/[0.12]" />
               )}
               <span className="relative z-10 flex items-center gap-2">
                 {tab.icon}

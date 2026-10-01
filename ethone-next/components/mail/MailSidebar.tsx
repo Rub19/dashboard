@@ -128,14 +128,21 @@ export default function MailSidebar({
                   onChange(f.id);
                 }}
                 className={cn(
-                  "group flex w-full items-center rounded-lg text-[13px] transition-colors",
+                  "group relative isolate flex w-full items-center rounded-lg text-[13px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
                   collapsed ? "h-9 justify-center" : "justify-between px-2.5 py-1.5",
                   isActive
-                    ? "bg-[var(--accent-primary)]/[0.12] font-medium text-[var(--text-primary)]"
+                    ? "font-medium text-[var(--text-primary)]"
                     : "text-[var(--text-muted)] hover:bg-[var(--surface-2)]/60 hover:text-[var(--text-primary)]"
                 )}
                 title={f.label}
               >
+                {isActive && (
+                  <motion.span
+                    layoutId="mail-folder"
+                    transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                    className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)]/[0.12]"
+                  />
+                )}
                 <span className={cn("flex min-w-0 items-center gap-2.5", collapsed && "justify-center")}>
                   <Icon
                     className={cn(

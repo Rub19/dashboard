@@ -234,12 +234,19 @@ export default function NotificationCenter() {
               aria-selected={active}
               onClick={() => setFilter(f.id)}
               className={cn(
-                "inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer",
+                "relative isolate inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
                 active
-                  ? "bg-[var(--menu-hover)] text-[var(--text-primary)]"
+                  ? "text-[var(--text-primary)]"
                   : "text-[var(--text-muted)] hover:bg-[var(--menu-hover)] hover:text-[var(--text-primary)]"
               )}
             >
+              {active && (
+                <motion.span
+                  layoutId="notification-filter"
+                  transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                  className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--menu-hover)]"
+                />
+              )}
               {i18n(f.key, f.label)}
               {f.id === "unread" && unreadCount > 0 && (
                 <span

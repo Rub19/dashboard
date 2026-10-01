@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.42.0 — 2026-10-01
+
+**Page du bot Etho : motion design complet**
+
+- La page publique du bot est entièrement animée : titre révélé mot par mot avec un dégradé qui glisse, aperçu du dashboard qui se redresse en perspective au défilement et s'incline sous le curseur.
+- Dans l'aperçu, les modules s'allument un à un puis Etho « écrit » avant de publier le message d'accueil ; les interrupteurs sont cliquables.
+- Chiffres réels animés de 0 à leur valeur, cartes de fonctionnalités avec une lumière teintée qui suit le curseur, trait des étapes qui se dessine au défilement.
+- Liste des commandes : filtre avec pastille glissante et cartes qui se réorganisent en douceur à la recherche.
+- En-tête qui se densifie au défilement avec barre de progression de lecture, menu mobile et sélecteur de langue animés, nouveau fond en lumière diffuse sans quadrillage. Les animations respectent « Réduire les animations ».
+
 ## v1.41.3 — 2026-10-01
 
 **Connexion : en-tête et pied de page sur toute la largeur**

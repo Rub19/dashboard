@@ -40213,6 +40213,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_41_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_41_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_41_3_de);
 
+const v1_42_0_fr: ChangelogEntry = {
+  version: "v1.42.0",
+  date: "2026-10-01",
+  title: "Page du bot Etho : motion design complet",
+  items: [
+    "La page publique du bot est entièrement animée : titre révélé mot par mot avec un dégradé qui glisse, aperçu du dashboard qui se redresse en perspective au défilement et s'incline sous le curseur.",
+    "Dans l'aperçu, les modules s'allument un à un puis Etho « écrit » avant de publier le message d'accueil ; les interrupteurs sont cliquables.",
+    "Chiffres réels animés de 0 à leur valeur, cartes de fonctionnalités avec une lumière teintée qui suit le curseur, trait des étapes qui se dessine au défilement.",
+    "Liste des commandes : filtre avec pastille glissante et cartes qui se réorganisent en douceur à la recherche.",
+    "En-tête qui se densifie au défilement avec barre de progression de lecture, menu mobile et sélecteur de langue animés, nouveau fond en lumière diffuse sans quadrillage. Les animations respectent « Réduire les animations ».",
+  ],
+};
+
+const v1_42_0_en: ChangelogEntry = {
+  version: "v1.42.0",
+  date: "2026-10-01",
+  title: "Etho bot page: full motion design",
+  items: [
+    "The bot's public page is fully animated: word-by-word headline with a gliding gradient, and a dashboard preview that straightens in perspective as you scroll and tilts under the cursor.",
+    "In the preview, modules switch on one by one, then Etho \"types\" before posting the welcome message; the toggles are clickable.",
+    "Real numbers count up from 0, feature cards carry a tinted light that follows the cursor, and the steps line draws itself as you scroll.",
+    "Command list: filter with a gliding pill and cards that smoothly rearrange while searching.",
+    "Header that densifies on scroll with a reading progress bar, animated mobile menu and language switcher, and a new diffuse-light background without the grid. Animations honour Reduce motion.",
+  ],
+};
+
+const v1_42_0_es: ChangelogEntry = {
+  version: "v1.42.0",
+  date: "2026-10-01",
+  title: "Página del bot Etho: motion design completo",
+  items: [
+    "La página pública del bot está totalmente animada: título revelado palabra a palabra, vista previa en perspectiva, módulos que se activan uno a uno y cifras reales animadas.",
+    "Filtro de comandos con pastilla deslizante, cabecera con barra de progreso y nuevo fondo de luz difusa.",
+  ],
+};
+
+const v1_42_0_de: ChangelogEntry = {
+  version: "v1.42.0",
+  date: "2026-10-01",
+  title: "Etho-Bot-Seite: volles Motion Design",
+  items: [
+    "Die öffentliche Bot-Seite ist vollständig animiert: Wort-für-Wort-Titel, perspektivische Vorschau, Module, die nacheinander einschalten, und animierte echte Zahlen.",
+    "Befehlsfilter mit gleitender Markierung, Header mit Lesefortschritt und neuer Hintergrund aus diffusem Licht.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_42_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_42_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_42_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_42_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

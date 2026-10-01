@@ -724,7 +724,7 @@ export default function CommandsCenterClient() {
               </p>
               <form onSubmit={handleSimulate} className="flex gap-2">
                 <input type="text" value={simInput} onChange={(e) => setSimInput(e.target.value)} placeholder="/regles ou !site" className="flex-1 h-11 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-3.5 text-xs text-[var(--text-primary)] font-mono focus:outline-none focus:border-[var(--input-border-hover)]" />
-                <button type="submit" className="px-5 h-11 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer">
+                <button type="submit" className="px-5 h-11 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] font-bold text-xs flex items-center gap-2 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
                   <Play className="w-4 h-4" />
                   Exécuter
                 </button>

@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.46.2 — 2026-10-01
+
+**Pages des modules du bot : boutons restants**
+
+- 19 boutons principaux encore verts (notamment sur Tickets et Bienvenue) adoptent à leur tour les couleurs du thème, avec reflet, effet d'appui et anneau de focus.
+
 ## v1.46.1 — 2026-10-01
 
 **Pages des modules du bot : en-têtes harmonisés**

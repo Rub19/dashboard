@@ -650,7 +650,7 @@ export default function EconomyCenterClient() {
                       type="button"
                       onClick={() => handleBuyShopItem(item.id, item.label, item.price)}
                       disabled={purchasingItemId === item.id || (myWallet !== null && myWallet.balance < item.price)}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition"
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                     >
                       {purchasingItemId === item.id ? "Achat..." : "Acheter"}
                     </button>

@@ -1201,7 +1201,7 @@ export function TicketCenterClient() {
                 });
                 setShowPanelModal(true);
               }}
-              className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-500 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <Plus className="h-4 w-4" />
               <span>Nouveau Panneau</span>
@@ -1260,7 +1260,7 @@ export function TicketCenterClient() {
                     <button
                       onClick={() => handlePublishPanel(p.id)}
                       disabled={actionLoading}
-                      className="flex h-8 items-center gap-1 rounded-lg bg-emerald-600 px-3 text-xs font-bold text-white hover:bg-emerald-500 transition-all cursor-pointer whitespace-nowrap shrink-0"
+                      className="flex h-8 items-center gap-1 rounded-lg bg-[var(--accent-primary)] px-3 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer whitespace-nowrap shrink-0 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                     >
                       <Send className="h-3 w-3" />
                       <span>Publier</span>
@@ -1314,7 +1314,7 @@ export function TicketCenterClient() {
                 });
                 setShowCategoryModal(true);
               }}
-              className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-500 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <Plus className="h-4 w-4" />
               <span>Nouvelle Catégorie</span>
@@ -1407,7 +1407,7 @@ export function TicketCenterClient() {
                 });
                 setShowTeamModal(true);
               }}
-              className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-500 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <Plus className="h-4 w-4" />
               <span>Créer une Équipe</span>
@@ -1479,7 +1479,7 @@ export function TicketCenterClient() {
                   showError("Erreur", formatApiError(err, "Impossible d'ajouter la règle d'automatisation."));
                 }
               }}
-              className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-500 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
             >
               <Plus className="h-4 w-4" />
               <span>Ajouter une Règle</span>
@@ -1771,7 +1771,7 @@ export function TicketCenterClient() {
                         type="button"
                         onClick={handleCreateForumTags}
                         disabled={!config.forumChannelId || forumTagsLoading || actionLoading}
-                        className="flex h-8 items-center gap-1 rounded-lg bg-emerald-600 px-3 text-xs font-bold text-white hover:bg-emerald-500 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex h-8 items-center gap-1 rounded-lg bg-[var(--accent-primary)] px-3 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                       >
                         Créer les tags de statut
                       </button>
@@ -1955,7 +1955,7 @@ export function TicketCenterClient() {
               <button
                 onClick={() => handleSaveCategory(editingCategory)}
                 disabled={actionLoading || !editingCategory.name.trim()}
-                className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500 transition-all cursor-pointer disabled:opacity-50"
+                className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 {actionLoading ? "Enregistrement..." : "Enregistrer"}
               </button>
@@ -2084,7 +2084,7 @@ export function TicketCenterClient() {
               <button
                 onClick={() => handleSavePanel(editingPanel)}
                 disabled={actionLoading || !editingPanel.title.trim()}
-                className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500 transition-all cursor-pointer disabled:opacity-50"
+                className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 {actionLoading ? "Enregistrement..." : "Enregistrer"}
               </button>
@@ -2173,7 +2173,7 @@ export function TicketCenterClient() {
               <button
                 onClick={() => handleSaveTeam(editingTeam)}
                 disabled={actionLoading || !editingTeam.name.trim()}
-                className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500 transition-all cursor-pointer disabled:opacity-50"
+                className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 {actionLoading ? "Enregistrement..." : "Enregistrer"}
               </button>

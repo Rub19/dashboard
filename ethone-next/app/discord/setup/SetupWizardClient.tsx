@@ -699,7 +699,7 @@ export default function SetupWizardClient() {
               <div className="pt-2">
                 <Link
                   href="/discord"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition cursor-pointer"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-bold cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 >
                   <span>Accéder à la console Bot</span>
                   <ArrowRight className="w-4 h-4" />
@@ -738,7 +738,7 @@ export default function SetupWizardClient() {
               <button
                 onClick={handleSaveAndFinish}
                 disabled={isSaving}
-                className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition cursor-pointer disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-bold cursor-pointer disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
               >
                 <span>{isSaving ? "Sauvegarde..." : "Valider & Lancer"}</span>
                 <Rocket className="w-4 h-4" />

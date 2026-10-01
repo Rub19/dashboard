@@ -40544,6 +40544,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_46_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_46_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_46_1_de);
 
+const v1_46_2_fr: ChangelogEntry = {
+  version: "v1.46.2",
+  date: "2026-10-01",
+  title: "Pages des modules du bot : boutons restants",
+  items: [
+    "19 boutons principaux encore verts (notamment sur Tickets et Bienvenue) adoptent à leur tour les couleurs du thème, avec reflet, effet d'appui et anneau de focus.",
+  ],
+};
+
+const v1_46_2_en: ChangelogEntry = {
+  version: "v1.46.2",
+  date: "2026-10-01",
+  title: "Bot module pages: remaining buttons",
+  items: [
+    "19 primary buttons that were still green (notably on Tickets and Welcome) now also use the theme colours, with sheen, press effect and focus ring.",
+  ],
+};
+
+const v1_46_2_es: ChangelogEntry = {
+  version: "v1.46.2",
+  date: "2026-10-01",
+  title: "Páginas de módulos del bot: botones restantes",
+  items: [
+    "19 botones principales más adoptan los colores del tema.",
+  ],
+};
+
+const v1_46_2_de: ChangelogEntry = {
+  version: "v1.46.2",
+  date: "2026-10-01",
+  title: "Bot-Modulseiten: verbleibende Buttons",
+  items: [
+    "19 weitere primäre Buttons übernehmen die Theme-Farben.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_46_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_46_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_46_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_46_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -820,7 +820,7 @@ export default function BackupsCenterClient() {
                   )}
                   <div className="flex justify-end gap-2 pt-2">
                     <button onClick={() => setShowRestoreModal(false)} className="px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-muted)] transition-colors cursor-pointer">Annuler</button>
-                    <button onClick={handleExecuteRestore} disabled={planLoading} className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white shadow-sm transition-all cursor-pointer disabled:opacity-50">Confirmer & restaurer</button>
+                    <button onClick={handleExecuteRestore} disabled={planLoading} className="px-5 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-xs font-semibold text-[var(--accent-contrast)] cursor-pointer disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">Confirmer & restaurer</button>
                   </div>
                 </div>
               ) : (

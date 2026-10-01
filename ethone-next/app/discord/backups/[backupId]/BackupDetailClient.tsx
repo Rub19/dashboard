@@ -167,7 +167,7 @@ export default function BackupDetailClient() {
             <Link href={`/discord/backups/compare?backupA=${snapshot.backupId}&backupB=LIVE${guildAmp}`} className="px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/10 text-xs font-medium text-emerald-300 flex items-center gap-1.5 transition-colors">
               <GitCompare className="w-3.5 h-3.5" /> Comparer avec le live
             </Link>
-            <Link href={`/discord/backups${guildQuery}`} className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all">
+            <Link href={`/discord/backups${guildQuery}`} className="px-4 py-1.5 rounded-lg bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-1.5 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
               <RotateCcw className="w-3.5 h-3.5" /> Restaurer (depuis la liste)
             </Link>
           </div>

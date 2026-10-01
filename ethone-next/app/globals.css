@@ -1582,6 +1582,29 @@ select[data-haptic-state="released"],
 }
 [data-reduced-motion="true"] .btn-sheen::after { display: none; }
 
+/* Auth backdrop: slow colour fields and drifting specks (transform/opacity only). */
+@keyframes auth-field {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(4%, 6%, 0) scale(1.12); }
+}
+.auth-field {
+  animation: auth-field 18s ease-in-out infinite alternate;
+}
+@keyframes auth-particle {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  20%, 80% { opacity: var(--o, 0.3); }
+  100% { transform: translate3d(var(--dx, 0), -110px, 0); opacity: 0; }
+}
+.auth-particle {
+  position: absolute;
+  border-radius: 9999px;
+  background: var(--text-primary);
+  animation: auth-particle 20s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-field, .auth-particle { animation: none; }
+}
+
 /* Keep autofilled auth fields in the theme instead of the browser's tint. */
 .auth-input:-webkit-autofill,
 .auth-input:-webkit-autofill:hover,

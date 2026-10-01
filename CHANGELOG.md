@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.41.0 — 2026-10-01
+
+**Nouvelle direction artistique : connexion**
+
+- La page de connexion est recomposée : sur ordinateur, une colonne de présentation (ce qu'est ETHONE et ses six modules) accompagne la carte de connexion dans une mise en page équilibrée.
+- Nouveau fond sombre et profond : lumière zénithale douce, nappes de couleur lentes, horizon, grain fin et quelques particules — sans grille et sans effets lourds.
+- Le gros logo au-dessus du formulaire disparaît : l'identité passe par un en-tête plus élégant et une tuile dans la carte, qui se transforme en coche à la connexion.
+- Sélecteur de langue refait : pastille compacte avec drapeau rond et nom de la langue, liste en verre où la sélection glisse d'une ligne à l'autre.
+- Carte repensée (feuillets superposés pour la profondeur, en-tête avec titre d'étape), onglets, boutons Google / GitHub / Discord / Passkey et pied de page avec les liens légaux.
+
 ## v1.40.1 — 2026-10-01
 
 **Brain : services connectés réels**

@@ -40019,6 +40019,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_40_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_40_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_40_1_de);
 
+const v1_41_0_fr: ChangelogEntry = {
+  version: "v1.41.0",
+  date: "2026-10-01",
+  title: "Nouvelle direction artistique : connexion",
+  items: [
+    "La page de connexion est recomposée : sur ordinateur, une colonne de présentation (ce qu'est ETHONE et ses six modules) accompagne la carte de connexion dans une mise en page équilibrée.",
+    "Nouveau fond sombre et profond : lumière zénithale douce, nappes de couleur lentes, horizon, grain fin et quelques particules — sans grille et sans effets lourds.",
+    "Le gros logo au-dessus du formulaire disparaît : l'identité passe par un en-tête plus élégant et une tuile dans la carte, qui se transforme en coche à la connexion.",
+    "Sélecteur de langue refait : pastille compacte avec drapeau rond et nom de la langue, liste en verre où la sélection glisse d'une ligne à l'autre.",
+    "Carte repensée (feuillets superposés pour la profondeur, en-tête avec titre d'étape), onglets, boutons Google / GitHub / Discord / Passkey et pied de page avec les liens légaux.",
+  ],
+};
+
+const v1_41_0_en: ChangelogEntry = {
+  version: "v1.41.0",
+  date: "2026-10-01",
+  title: "New art direction: sign-in",
+  items: [
+    "The sign-in page is recomposed: on desktop, a presentation column (what ETHONE is and its six modules) sits beside the sign-in card in a balanced layout.",
+    "New deep dark background: soft overhead light, slow colour fields, a horizon, fine grain and a few particles — no grid and no heavy effects.",
+    "The big logo above the form is gone: identity now lives in a more elegant header and a tile inside the card that turns into a checkmark on sign-in.",
+    "Language switcher rebuilt: compact pill with a round flag and language name, a glass list where the selection glides between rows.",
+    "Redesigned card (stacked sheets for depth, step header), tabs, Google / GitHub / Discord / Passkey buttons and a footer with legal links.",
+  ],
+};
+
+const v1_41_0_es: ChangelogEntry = {
+  version: "v1.41.0",
+  date: "2026-10-01",
+  title: "Nueva dirección artística: inicio de sesión",
+  items: [
+    "La página de inicio de sesión se recompone con una columna de presentación junto a la tarjeta en escritorio.",
+    "Nuevo fondo oscuro y profundo sin cuadrícula; el logo grande desaparece en favor de una cabecera más elegante.",
+    "Selector de idioma rehecho y tarjeta, pestañas y botones rediseñados.",
+  ],
+};
+
+const v1_41_0_de: ChangelogEntry = {
+  version: "v1.41.0",
+  date: "2026-10-01",
+  title: "Neue Art Direction: Anmeldung",
+  items: [
+    "Die Anmeldeseite wurde neu komponiert, mit einer Präsentationsspalte neben der Karte auf dem Desktop.",
+    "Neuer tiefer, dunkler Hintergrund ohne Raster; das große Logo weicht einem eleganteren Header.",
+    "Sprachauswahl neu gebaut sowie Karte, Tabs und Buttons neu gestaltet.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_41_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_41_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_41_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_41_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

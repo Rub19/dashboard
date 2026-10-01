@@ -415,7 +415,7 @@ export default function LoginPage() {
           {/* Mode Selector Tabs (only when in root mode or register) */}
           {!(mode === "otp" && otpStep === "code") && (
             <div className="mb-6">
-              <div className="relative grid grid-cols-3 rounded-full border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-1">
+              <div className="relative grid grid-cols-3 rounded-[0.95rem] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.035] p-1">
                 {(["password", "otp", "register"] as AuthMode[]).map((m) => {
                   const active = mode === m;
                   const label =
@@ -436,7 +436,7 @@ export default function LoginPage() {
                       disabled={isLoading}
                       aria-pressed={active}
                       className={cn(
-                        "relative z-10 select-none rounded-full py-2.5 text-sm font-medium transition-colors duration-200 cursor-pointer",
+                        "relative z-10 select-none rounded-[0.75rem] py-2.5 text-sm font-medium transition-colors duration-200 cursor-pointer",
                         active
                           ? "text-[var(--text-primary)] font-semibold"
                           : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -446,8 +446,10 @@ export default function LoginPage() {
                         <motion.span
                           layoutId="activeAuthTab"
                           transition={SPRING_PILL}
-                          className="absolute inset-0 z-0 rounded-full border border-[var(--accent-primary)]/35 bg-[var(--accent-primary)]/[0.14]"
-                        />
+                          className="absolute inset-0 z-0 rounded-[0.75rem] border border-[var(--text-primary)]/10 bg-[var(--bg-card,var(--bg-main))] shadow-[inset_0_1px_0_rgb(255_255_255/0.06),0_6px_16px_-8px_rgb(0_0_0/0.6)]"
+                        >
+                          <span className="absolute bottom-1 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full bg-[var(--accent-primary)]" />
+                        </motion.span>
                       )}
                       <span className="relative z-10">{label}</span>
                     </button>
@@ -832,7 +834,7 @@ export default function LoginPage() {
                     onClick={() => handleOAuth(provider)}
                     aria-label={label}
                     leftIcon={providerIcon}
-                    className="h-12 rounded-[var(--inset-radius)] text-sm bg-[var(--text-primary)]/[0.03] hover:-translate-y-0.5 hover:border-[var(--text-primary)]/20"
+                    className="h-12 rounded-xl text-sm bg-[var(--text-primary)]/[0.03] hover:-translate-y-0.5 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] [&_svg]:transition-transform [&_svg]:duration-300 hover:[&_svg]:scale-110"
                   >
                     <span className="hidden sm:inline">{label}</span>
                   </Button>
@@ -845,7 +847,8 @@ export default function LoginPage() {
                   variant="ghost"
                   disabled={isLoading || isSuccess}
                   onClick={handlePasskey}
-                  className="h-12 w-full rounded-[var(--inset-radius)] text-sm border border-dashed border-[var(--panel-border)] hover:border-[var(--accent-primary)]/40"
+                  className="group h-12 w-full rounded-xl text-sm border border-[var(--panel-border)] hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.04]"
+                  rightIcon={<ArrowRight className="h-4 w-4 text-[var(--text-muted)] transition-transform duration-200 group-hover:translate-x-0.5" />}
                   leftIcon={<KeyRound className="h-5 w-5 text-[var(--accent-primary)]" />}
                 >
                   {i18n("passkeyLogin", "Se connecter avec une clé de sécurité (Passkey)")}

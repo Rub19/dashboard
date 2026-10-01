@@ -7,25 +7,25 @@ import { EASE_SNAP, SPRING_SWAP } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import BrandMark from "@/components/BrandMark";
 import LightBorder from "@/components/ui/LightBorder";
-import { Check } from "@/components/icons/ph";
+import { Icon } from "@/lib/icons";
 
 interface AuthCardShellProps {
-  /** Replaces the brand mark inside the orb (e.g. a shield on MFA). */
+  /** Replaces the brand mark in the header tile (e.g. a shield on MFA). */
   icon?: ReactNode;
   title: string;
   subtitle?: string;
   children: ReactNode;
   /** Rendered under the card, outside the glass (mode switch, back link). */
   below?: ReactNode;
-  /** Orb turns into a check and the light switches to --success. */
+  /** Header tile turns into a check and the border light switches to --success. */
   success?: boolean;
   /** Each new non-empty value shakes the card once (pass the error string). */
   shakeKey?: string | null;
 }
 
-/** Shared focal composition for every auth screen: a brand orb with a
- * turning ring, an animated headline, then the card with the travelling
- * light border and a height that glides between steps. */
+/** The auth card: icon tile + step headline, then the form in a glass
+ * surface with a travelling border light, a stacked sheet behind it for
+ * depth, and a height that glides between steps. */
 export default function AuthCardShell({ icon, title, subtitle, children, below, success, shakeKey }: AuthCardShellProps) {
   const { reduced } = useMotionPref();
   const shake = useAnimationControls();
@@ -35,67 +35,66 @@ export default function AuthCardShell({ icon, title, subtitle, children, below, 
     shake.start({ x: [0, -10, 9, -6, 3, 0], transition: { duration: 0.42, ease: "easeOut" } });
   }, [shakeKey, reduced, shake]);
 
-  const light = success ? "--success" : "--accent-primary";
-
   return (
     <motion.div
       variants={choreography}
       initial={reduced ? "animate" : "initial"}
       animate="animate"
-      className="flex w-full max-w-[480px] flex-col items-center 2xl:max-w-[540px]"
+      className="w-full max-w-[460px] 2xl:max-w-[500px]"
     >
-      {/* Brand orb */}
-      <motion.div
-        variants={{
-          initial: { opacity: 0, scale: 0.6, filter: "blur(10px)" },
-          animate: { opacity: 1, scale: 1, filter: "blur(0px)", transition: { duration: 0.7, ease: EASE_SNAP } },
-        }}
-        className="relative mb-6 h-20 w-20 2xl:mb-8 2xl:h-24 2xl:w-24"
-      >
-        <motion.div
-          aria-hidden
-          className="absolute inset-0 rounded-full"
-          style={{ background: `conic-gradient(from 0deg, transparent 0deg, var(${light}) 90deg, transparent 200deg, color-mix(in srgb, var(${light}) 45%, transparent) 290deg, transparent 360deg)` }}
-          animate={reduced ? undefined : { rotate: 360 }}
-          transition={{ duration: success ? 1.6 : 5, repeat: Infinity, ease: "linear" }}
-        />
-        <div className="absolute inset-[2px] flex items-center justify-center rounded-full border border-[var(--panel-border)] bg-[var(--bg-card,var(--bg-main))]">
-          <AnimatePresence mode="popLayout" initial={false}>
-            <motion.span
-              key={success ? "ok" : "brand"}
-              initial={{ opacity: 0, scale: 0.4, rotate: -45 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              exit={{ opacity: 0, scale: 0.4, rotate: 45 }}
-              transition={SPRING_SWAP}
-              className="flex items-center justify-center"
-            >
-              {success ? <Check className="h-10 w-10 text-[var(--success)]" /> : icon ?? <BrandMark size={40} />}
-            </motion.span>
-          </AnimatePresence>
-        </div>
-      </motion.div>
+      <motion.div variants={revealUp} className="relative">
+        {/* Stacked sheets behind the card */}
+        <div aria-hidden className="absolute inset-x-8 -bottom-3 h-12 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card,var(--bg-main))]/50" />
+        <div aria-hidden className="absolute inset-x-4 -bottom-1.5 h-12 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card,var(--bg-main))]/80" />
 
-      {/* Headline — re-reveals whenever the step changes */}
-      <motion.div variants={revealUp} className="mb-7 min-h-[5rem] w-full px-2 text-center">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div key={title + (subtitle ?? "")} variants={revealUp} initial="initial" animate="animate" exit="exit">
-            <h1 className="text-balance text-[2rem] font-semibold leading-[1.1] tracking-[-0.03em] text-[var(--text-primary)] sm:text-[2.6rem] 2xl:text-[3rem]">
-              {title}
-            </h1>
-            {subtitle && (
-              <p className="mx-auto mt-3 max-w-[36ch] text-pretty text-base leading-relaxed text-[var(--text-muted)] 2xl:text-lg">{subtitle}</p>
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </motion.div>
+        <motion.div animate={shake} className="relative">
+          <LightBorder
+            light={success ? "--success" : "--accent-primary"}
+            speed={9}
+            className="shadow-[0_40px_90px_-40px_rgb(0_0_0/0.75),0_12px_30px_-18px_rgb(0_0_0/0.5)]"
+            innerClassName="backdrop-blur-2xl"
+          >
+            <div aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[var(--text-primary)]/30 to-transparent" />
 
-      {/* Card */}
-      <motion.div variants={revealUp} className="w-full">
-        <motion.div animate={shake}>
-          <LightBorder light={light} className="shadow-[var(--panel-shadow)]" innerClassName="backdrop-blur-2xl">
-            <div aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[var(--text-primary)]/25 to-transparent" />
+            {/* Header */}
+            <div className="flex items-start gap-4 px-6 pb-6 pt-7 sm:px-8 sm:pt-8">
+              <div
+                className="relative grid h-12 w-12 shrink-0 place-items-center rounded-[0.9rem] border transition-colors duration-500"
+                style={{
+                  borderColor: success ? "color-mix(in srgb, var(--success) 40%, transparent)" : "var(--panel-border)",
+                  background: success ? "color-mix(in srgb, var(--success) 12%, transparent)" : "color-mix(in srgb, var(--text-primary) 4%, transparent)",
+                }}
+              >
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span
+                    key={success ? "ok" : "brand"}
+                    initial={{ opacity: 0, scale: 0.4, rotate: -45 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                    exit={{ opacity: 0, scale: 0.4, rotate: 45 }}
+                    transition={SPRING_SWAP}
+                    className="grid place-items-center"
+                  >
+                    {success ? <Icon name="check" pack="lucide" className="h-6 w-6 !text-[var(--success)]" /> : icon ?? <BrandMark size={24} />}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
+
+              <div className="min-w-0 flex-1 pt-0.5">
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div key={title + (subtitle ?? "")} variants={revealUp} initial="initial" animate="animate" exit="exit">
+                    <h1 className="text-balance text-[1.6rem] font-semibold leading-tight tracking-[-0.025em] text-[var(--text-primary)] 2xl:text-[1.8rem]">
+                      {title}
+                    </h1>
+                    {subtitle && <p className="mt-1.5 text-pretty text-[15px] leading-relaxed text-[var(--text-muted)]">{subtitle}</p>}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
+
+            <div aria-hidden className="mx-6 h-px bg-gradient-to-r from-transparent via-[var(--panel-border)] to-transparent sm:mx-8" />
+
             <AutoHeight reduced={reduced}>
-              <div className="relative p-6 sm:p-8 2xl:p-10">{children}</div>
+              <div className="relative px-6 pb-7 pt-6 sm:px-8 sm:pb-8">{children}</div>
             </AutoHeight>
           </LightBorder>
         </motion.div>

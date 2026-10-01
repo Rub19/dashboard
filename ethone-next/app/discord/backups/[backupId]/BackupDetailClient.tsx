@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -228,7 +229,8 @@ export default function BackupDetailClient() {
           ].map((t) => {
             const Icon = t.icon;
             return (
-              <button key={t.id} onClick={() => setActiveTab(t.id as typeof activeTab)} className={cn("px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer", activeTab === t.id ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] border-b-2 border-emerald-500/30" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
+              <button key={t.id} onClick={() => setActiveTab(t.id as typeof activeTab)} className={cn("relative px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]", activeTab === t.id ? "border-transparent text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
+                {activeTab === t.id && <motion.span layoutId="backupdetail-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
                 <Icon className={cn("w-4 h-4", t.c)} /> {t.label}
               </button>
             );
@@ -236,7 +238,7 @@ export default function BackupDetailClient() {
         </div>
 
         {activeTab === "channels" && (
-          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+          <div className="stagger-children bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
             <h3 className="text-base font-semibold text-[var(--text-primary)]">Arborescence sauvegardée</h3>
             {[...snapshot.data.categories].sort((a, b) => a.position - b.position).map((cat) => (
               <div key={cat.id} className="border border-[var(--panel-border)] rounded-xl overflow-hidden bg-[var(--surface-raised)]/40">
@@ -259,7 +261,7 @@ export default function BackupDetailClient() {
         )}
 
         {activeTab === "roles" && (
-          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+          <div className="stagger-children bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
             <h3 className="text-base font-semibold text-[var(--text-primary)]">Hiérarchie des rôles</h3>
             <div className="divide-y divide-[var(--panel-border)] border border-[var(--panel-border)] rounded-xl overflow-hidden">
               {[...snapshot.data.roles].sort((a, b) => b.position - a.position).map((role) => (
@@ -284,7 +286,7 @@ export default function BackupDetailClient() {
         )}
 
         {activeTab === "permissions" && (
-          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+          <div className="stagger-children bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
             <h3 className="text-base font-semibold text-[var(--text-primary)]">Overwrites de permissions</h3>
             {permissionRows.length === 0 && <p className="text-xs text-[var(--text-muted)]">Aucun overwrite dans ce snapshot.</p>}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -305,7 +307,7 @@ export default function BackupDetailClient() {
         )}
 
         {activeTab === "server" && (
-          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+          <div className="stagger-children bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
             <h3 className="text-base font-semibold text-[var(--text-primary)]">Configuration serveur</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(snapshot.data.guild).map(([key, value]) => (
@@ -319,7 +321,7 @@ export default function BackupDetailClient() {
         )}
 
         {activeTab === "ethone" && (
-          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+          <div className="stagger-children bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
             <div>
               <h3 className="text-base font-semibold text-[var(--text-primary)]">Configurations des modules ETHONE</h3>
               <p className="text-xs text-[var(--text-muted)]">Restaurables indépendamment de la structure Discord.</p>
@@ -340,7 +342,7 @@ export default function BackupDetailClient() {
         )}
 
         {activeTab === "raw" && (
-          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+          <div className="stagger-children bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-semibold text-[var(--text-primary)]">Fichier JSON canonique</h3>
               <button onClick={() => { navigator.clipboard.writeText(JSON.stringify(snapshot, null, 2)); success("JSON copié."); }} className="px-3 py-1 bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 rounded text-xs text-[var(--text-muted)] transition-colors cursor-pointer">Copier tout</button>

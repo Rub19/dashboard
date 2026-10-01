@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
@@ -598,13 +599,14 @@ export default function GiveawaysCenterClient() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                className={`relative px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97] ${
                   isActive
-                    ? "bg-[var(--surface-raised)] border-b-2 border-rose-500 text-[var(--text-primary)]"
+                    ? "border-transparent text-[var(--text-primary)]"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? "text-rose-400" : "text-[var(--text-muted)]"}`} />
+                {isActive && <motion.span layoutId="giveaways-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
+                <Icon className={`w-4 h-4 ${isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]"}`} />
                 {tab.label}
               </button>
             );
@@ -613,7 +615,7 @@ export default function GiveawaysCenterClient() {
 
         {/* TAB: Active */}
         {activeTab === "active" && (
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             {giveaways.filter((g) => g.status === "active").length > 3 && (
               <div className="relative max-w-sm">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
@@ -774,7 +776,7 @@ export default function GiveawaysCenterClient() {
 
         {/* TAB: Create */}
         {activeTab === "create" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="stagger-children grid grid-cols-1 lg:grid-cols-12 gap-6">
             <form
               onSubmit={handleCreate}
               className="lg:col-span-7 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-6 space-y-5"
@@ -1063,7 +1065,7 @@ export default function GiveawaysCenterClient() {
 
         {/* TAB: History */}
         {activeTab === "history" && (
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-1 bg-[var(--surface-raised)]/40 p-1 rounded-xl border border-[var(--panel-border)]">
                 {[
@@ -1183,7 +1185,7 @@ export default function GiveawaysCenterClient() {
 
         {/* TAB: Fairness */}
         {activeTab === "fairness" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-6 space-y-4">
               <div className="flex items-center gap-2">
                 <Dice5 className="w-5 h-5 text-emerald-400" />

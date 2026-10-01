@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -635,14 +636,15 @@ export default function ModerationCenterPage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all duration-150 cursor-pointer",
+                  "relative flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                   isCurrent
-                    ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm border border-[var(--panel-border)]"
+                    ? "text-[var(--accent-contrast)]"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
                 )}
               >
-                <Icon className={cn("h-3.5 w-3.5", isCurrent ? "text-orange-400" : "text-[var(--text-muted)]")} />
-                <span>{tab.label}</span>
+                {isCurrent && <motion.span layoutId="mod-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+                <Icon className="relative h-3.5 w-3.5" />
+                <span className="relative">{tab.label}</span>
               </button>
             );
           })}
@@ -800,7 +802,7 @@ export default function ModerationCenterPage() {
           {/* ONGLET 1: CASES TABLE (LISTE DES DOSSIERS)               */}
           {/* ======================================================== */}
           {activeTab === "cases" && (
-            <div className="space-y-4 animate-in fade-in duration-200">
+            <div className="stagger-children space-y-4 animate-in fade-in duration-200">
               {/* BARRE DE RECHERCHE & FILTRES */}
               <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
                 <div className="relative flex-1">
@@ -891,7 +893,7 @@ export default function ModerationCenterPage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[var(--panel-border)]">
-                        {cases.map((c) => {
+                        {cases.map((c, i) => {
                           const conf = ACTION_CONFIG[c.action] || ACTION_CONFIG.WARN;
                           const Icon = conf.icon;
                           const isExpired = c.status === "EXPIRED";
@@ -900,7 +902,8 @@ export default function ModerationCenterPage() {
                           return (
                             <tr
                               key={c.id}
-                              className="hover:bg-[var(--surface-raised)]/70 transition-colors group"
+                              className="rise-in hover:bg-[var(--surface-raised)]/70 transition-colors group"
+                              style={{ animationDelay: `${Math.min(i, 12) * 30}ms` }}
                             >
                               {/* Case # */}
                               <td className="py-3 px-4 font-mono font-bold text-[var(--text-primary)]">
@@ -1025,7 +1028,7 @@ export default function ModerationCenterPage() {
           {/* ONGLET WORKSPACE: MY MODERATION (ESPACE STAFF)          */}
           {/* ======================================================== */}
           {activeTab === "workspace" && (
-            <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="stagger-children space-y-6 animate-in fade-in duration-200">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 rounded-2xl bg-orange-500/10 border border-orange-500/20 space-y-1">
                   <span className="text-xs text-orange-300 font-semibold block">Dossiers Assignés</span>
@@ -1106,7 +1109,7 @@ export default function ModerationCenterPage() {
           {/* ONGLET 2: TIMELINE CHRONOLOGIQUE                         */}
           {/* ======================================================== */}
           {activeTab === "timeline" && (
-            <div className="space-y-4 animate-in fade-in duration-200">
+            <div className="stagger-children space-y-4 animate-in fade-in duration-200">
               <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 ">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] flex items-center gap-2 mb-4">
                   <Clock className="h-4 w-4 text-orange-400" />
@@ -1114,10 +1117,10 @@ export default function ModerationCenterPage() {
                 </h2>
 
                 <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-[var(--text-primary)]/10">
-                  {cases.map((c) => {
+                  {cases.map((c, i) => {
                     const conf = ACTION_CONFIG[c.action] || ACTION_CONFIG.WARN;
                     return (
-                      <div key={c.id} className="relative group">
+                      <div key={c.id} className="rise-in relative group" style={{ animationDelay: `${Math.min(i, 12) * 40}ms` }}>
                         <div className="absolute -left-[27px] top-1.5 h-3.5 w-3.5 rounded-full border-2 border-[var(--bg-main)] bg-orange-500 group-hover:scale-125 transition-transform" />
                         <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 hover:border-[var(--input-border-hover)] transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                           <div className="space-y-1">
@@ -1170,7 +1173,7 @@ export default function ModerationCenterPage() {
           {/* ONGLET 3: ANALYTICS & TENDANCES                          */}
           {/* ======================================================== */}
           {activeTab === "analytics" && (
-            <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="stagger-children space-y-6 animate-in fade-in duration-200">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Répartition Manuelle vs Automatisée */}
                 <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
@@ -1243,7 +1246,7 @@ export default function ModerationCenterPage() {
           {/* ONGLET 4: STAFF ACTIVITY & ABUSE GUARD                   */}
           {/* ======================================================== */}
           {activeTab === "staff" && (
-            <div className="space-y-4 animate-in fade-in duration-200">
+            <div className="stagger-children space-y-4 animate-in fade-in duration-200">
               <div className="rounded-2xl border border-blue-500/20 bg-blue-500/15 p-4">
                 <div className="flex items-start gap-3">
                   <ShieldCheck className="h-5 w-5 text-blue-400 mt-0.5" />
@@ -1264,7 +1267,7 @@ export default function ModerationCenterPage() {
           {/* ONGLET 5: RETENTION & SETTINGS                           */}
           {/* ======================================================== */}
           {activeTab === "settings" && (
-            <div className="space-y-4 animate-in fade-in duration-200">
+            <div className="stagger-children space-y-4 animate-in fade-in duration-200">
               <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
                   Politique de Conservation & Purge (Data Retention)

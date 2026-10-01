@@ -393,7 +393,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
       {/* TAB: Members */}
       {activeTab === "members" && (
-        <div className="space-y-4">
+        <div className="stagger-children space-y-4">
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
             <table className="w-full text-left text-xs">
               <thead className="bg-[var(--surface-raised)]/40 border-b border-[var(--panel-border)] text-[var(--text-muted)] font-semibold uppercase">
@@ -463,7 +463,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
       {/* TAB: Whitelist */}
       {activeTab === "whitelist" && (
-        <div className="space-y-6">
+        <div className="stagger-children space-y-6">
           <div className="rounded-2xl border border-emerald-500/20 bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <div>
               <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -524,7 +524,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
       {/* TAB: Banlist */}
       {activeTab === "banlist" && (
-        <div className="space-y-6">
+        <div className="stagger-children space-y-6">
           <div className="rounded-2xl border border-rose-500/20 bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <div>
               <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -585,7 +585,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
       {/* TAB: Timeline */}
       {activeTab === "timeline" && (
-        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
+        <div className="stagger-children rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
           <h3 className="text-sm font-bold text-[var(--text-primary)]">Événements du salon</h3>
           <div className="relative border-l border-[var(--panel-border)] ml-3 space-y-4 pl-4">
             {timeline.map((ev) => (

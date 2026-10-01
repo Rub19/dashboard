@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.47.2 — 2026-10-01
+
+**Motion design dans tous les modules**
+
+- Modération, AutoMod et Anti-Raid : l'onglet actif est une pastille aux couleurs du thème qui glisse d'un onglet à l'autre, le contenu de chaque onglet apparaît en cascade, et les lignes des dossiers, incidents et règles apparaissent une à une.
+- Même traitement des onglets dans IA, Statistiques, Sauvegardes, Présence du bot, Calendrier, Commandes, Événements, Formulaires, Concours, Invitations, Niveaux, Sondages, Rôles, Suggestions, Journaux, Vocal, Gestion du serveur et le profil de modération d'un membre : pastille ou soulignement glissant selon le style de la barre, contenu en cascade.
+- Les couleurs fixes (vert, cyan, rose…) des onglets actifs suivent maintenant le thème.
+
 ## v1.47.1 — 2026-10-01
 
 **Tickets, Bienvenue et Musique : motion design**

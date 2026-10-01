@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -649,18 +650,19 @@ export default function UserModerationProfileClient() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               className={cn(
-                "px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-2",
+                "relative isolate px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                 activeTab === tab.id
-                  ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm border border-[var(--panel-border)]"
+                  ? "text-[var(--accent-contrast)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
+              {activeTab === tab.id && <motion.span layoutId="usermoderationprofile-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
               <span>{tab.label}</span>
               {typeof tab.count === "number" && (
                 <span
                   className={cn(
                     "text-xs px-1.5 py-0.5 rounded-full font-mono",
-                    activeTab === tab.id ? "bg-[var(--text-primary)]/15 text-[var(--text-primary)]" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
+                    activeTab === tab.id ? "bg-[var(--accent-contrast)]/20 text-[var(--accent-contrast)]" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
                   )}
                 >
                   {tab.count}
@@ -674,7 +676,7 @@ export default function UserModerationProfileClient() {
 
         {/* 1. OVERVIEW */}
         {activeTab === "overview" && (
-          <div className="space-y-6">
+          <div className="stagger-children space-y-6">
             {/* Sanctions Actives */}
             <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
               <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
@@ -750,7 +752,7 @@ export default function UserModerationProfileClient() {
 
         {/* 2. CASES */}
         {activeTab === "cases" && (
-          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+          <div className="stagger-children p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
             <h3 className="text-base font-bold text-[var(--text-primary)]">Dossiers Disciplinaires (Cases)</h3>
             {userProfile?.timeline?.length > 0 ? (
               <div className="divide-y divide-[var(--panel-border)]">
@@ -806,7 +808,7 @@ export default function UserModerationProfileClient() {
 
         {/* 3. WARNINGS */}
         {activeTab === "warnings" && (
-          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+          <div className="stagger-children p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
             <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-amber-400" />
               <span>Historique des Avertissements (Warnings)</span>
@@ -846,7 +848,7 @@ export default function UserModerationProfileClient() {
 
         {/* 4. SANCTIONS */}
         {activeTab === "sanctions" && (
-          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+          <div className="stagger-children p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
             <h3 className="text-base font-bold text-[var(--text-primary)]">Sanctions Lourdes (Timeouts, Kicks, Bans)</h3>
             {userProfile?.timeline?.filter((c: any) => c.action !== "WARN").length > 0 ? (
               <div className="divide-y divide-[var(--panel-border)]">
@@ -884,7 +886,7 @@ export default function UserModerationProfileClient() {
 
         {/* 5. NOTES STAFF */}
         {activeTab === "notes" && (
-          <div className="space-y-6">
+          <div className="stagger-children space-y-6">
             {/* Formulaire ajout de note */}
             <form onSubmit={handleAddNote} className="p-5 rounded-2xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] space-y-3">
               <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -933,7 +935,7 @@ export default function UserModerationProfileClient() {
 
         {/* 6. EVIDENCE */}
         {activeTab === "evidence" && (
-          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+          <div className="stagger-children p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
             <h3 className="text-base font-bold text-[var(--text-primary)]">Preuves Archivées (Evidence Center)</h3>
             <p className="text-xs text-[var(--text-muted)]">
               Métadonnées et captures horodatées associées aux dossiers de cet utilisateur.
@@ -946,7 +948,7 @@ export default function UserModerationProfileClient() {
 
         {/* 7. ACTIVITY TIMELINE */}
         {activeTab === "activity" && (
-          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+          <div className="stagger-children p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Activity className="w-5 h-5 text-ethone-accent" />
@@ -1006,7 +1008,7 @@ export default function UserModerationProfileClient() {
 
         {/* 8. REPORTS */}
         {activeTab === "reports" && (
-          <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
+          <div className="stagger-children p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
             <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-amber-400" />
               <span>Signalements Visant ce Membre ({reports.length})</span>

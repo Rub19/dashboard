@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -465,13 +466,14 @@ export default function PollCreateClient() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={cn(
-                  "flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-semibold whitespace-nowrap transition-all",
+                  "relative flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-semibold whitespace-nowrap transition-all outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                   isActive
-                    ? "border-emerald-500 text-[var(--text-primary)]"
+                    ? "border-transparent text-[var(--text-primary)]"
                     : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
               >
-                <Icon className={cn("h-4 w-4", isActive ? "text-emerald-400" : "text-[var(--text-muted)]")} />
+                {isActive && <motion.span layoutId="pollcreate-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
+                <Icon className={cn("h-4 w-4", isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
                 {tab.label}
               </button>
             );
@@ -480,7 +482,7 @@ export default function PollCreateClient() {
 
         {/* Tab 1: General Info */}
         {activeTab === "general" && (
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="stagger-children grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div className="space-y-6 lg:col-span-2">
               <label
                 className={cn(
@@ -699,7 +701,7 @@ export default function PollCreateClient() {
 
         {/* Tab 2: Questions & Options Builder */}
         {activeTab === "questions" && (
-          <div className="space-y-6">
+          <div className="stagger-children space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-base font-bold text-[var(--text-primary)]">{nativeMode ? "Réponses du sondage natif" : "Questions & Options du Sondage"}</h3>
@@ -905,7 +907,7 @@ export default function PollCreateClient() {
 
         {/* Tab 3: Eligibility & Role Weights */}
         {activeTab === "eligibility" && (
-          <div className="space-y-6">
+          <div className="stagger-children space-y-6">
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
               <h3 className="text-base font-bold text-[var(--text-primary)] mb-2">Conditions d'Accès & Éligibilité</h3>
               <p className="text-xs text-[var(--text-muted)] mb-6">
@@ -1029,7 +1031,7 @@ export default function PollCreateClient() {
 
         {/* Tab 4: Quorum & Security */}
         {activeTab === "quorum" && (
-          <div className="space-y-6">
+          <div className="stagger-children space-y-6">
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -1116,7 +1118,7 @@ export default function PollCreateClient() {
 
         {/* Tab 5: Discord Panel & Preview */}
         {activeTab === "panel" && (
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="stagger-children grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
               <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">Personnalisation du Panneau Discord</h3>
               <div className="space-y-4">

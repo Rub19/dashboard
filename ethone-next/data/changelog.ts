@@ -40814,6 +40814,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_47_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_47_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_47_1_de);
 
+const v1_47_2_fr: ChangelogEntry = {
+  version: "v1.47.2",
+  date: "2026-10-01",
+  title: "Motion design dans tous les modules",
+  items: [
+    "Modération, AutoMod et Anti-Raid : l'onglet actif est une pastille aux couleurs du thème qui glisse d'un onglet à l'autre, le contenu de chaque onglet apparaît en cascade, et les lignes des dossiers, incidents et règles apparaissent une à une.",
+    "Même traitement des onglets dans IA, Statistiques, Sauvegardes, Présence du bot, Calendrier, Commandes, Événements, Formulaires, Concours, Invitations, Niveaux, Sondages, Rôles, Suggestions, Journaux, Vocal, Gestion du serveur et le profil de modération d'un membre : pastille ou soulignement glissant selon le style de la barre, contenu en cascade.",
+    "Les couleurs fixes (vert, cyan, rose…) des onglets actifs suivent maintenant le thème.",
+  ],
+};
+
+const v1_47_2_en: ChangelogEntry = {
+  version: "v1.47.2",
+  date: "2026-10-01",
+  title: "Motion design across all modules",
+  items: [
+    "Moderation, AutoMod and Anti-Raid: the active tab is a theme-coloured pill that glides between tabs, each tab's content appears in sequence, and case, incident and rule rows appear one after another.",
+    "The same tab treatment in AI, Analytics, Backups, Bot presence, Calendar, Commands, Events, Forms, Giveaways, Invites, Leveling, Polls, Roles, Suggestions, Logs, Voice, Server management and a member's moderation profile: gliding pill or underline depending on the bar style, content in sequence.",
+    "Fixed colours (green, cyan, pink…) on active tabs now follow the theme.",
+  ],
+};
+
+const v1_47_2_es: ChangelogEntry = {
+  version: "v1.47.2",
+  date: "2026-10-01",
+  title: "Motion design en todos los módulos",
+  items: [
+    "Pestañas con píldora o subrayado deslizante del color del tema, contenido en cascada y filas animadas en Moderación, AutoMod, Anti-Raid y el resto de módulos.",
+  ],
+};
+
+const v1_47_2_de: ChangelogEntry = {
+  version: "v1.47.2",
+  date: "2026-10-01",
+  title: "Motion Design in allen Modulen",
+  items: [
+    "Gleitende Tab-Markierung in Themenfarbe, gestaffelte Inhalte und animierte Zeilen in Moderation, AutoMod, Anti-Raid und allen weiteren Modulen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_47_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_47_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_47_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_47_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

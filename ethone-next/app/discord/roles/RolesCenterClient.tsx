@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { confirmDialog } from "@/lib/confirmDialog";
 import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
@@ -572,8 +573,9 @@ export default function RolesCenterClient() {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer", isActive ? "bg-[var(--surface-raised)] text-[var(--text-primary)] border-b-2 border-emerald-500" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
-                <Icon className={cn("w-4 h-4", isActive ? "text-emerald-400" : "text-[var(--text-muted)]")} />
+              <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("relative px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]", isActive ? "border-transparent text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
+                {isActive && <motion.span layoutId="roles-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
+                <Icon className={cn("w-4 h-4", isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
                 {tab.label}
               </button>
             );
@@ -582,7 +584,7 @@ export default function RolesCenterClient() {
 
         {/* Panneaux */}
         {activeTab === "panels" && (
-          <div className="space-y-6">
+          <div className="stagger-children space-y-6">
             {!hasLoadedOnce ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <CardSkeleton className="h-40" />
@@ -778,7 +780,7 @@ export default function RolesCenterClient() {
 
         {/* Auto-rôles */}
         {activeTab === "join_roles" && (
-          <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-2xl p-6 space-y-5 max-w-2xl">
+          <div className="stagger-children bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-2xl p-6 space-y-5 max-w-2xl">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><Users className="w-5 h-5 text-amber-400" /> Rôles automatiques à l'arrivée</h3>
               <button onClick={() => saveAutoRole({ ...autoRole, enabled: !autoRole.enabled })} disabled={savingAutoRole} className={cn("px-3 py-1 rounded-xl text-xs font-bold cursor-pointer disabled:opacity-50", autoRole.enabled ? "bg-emerald-500 text-white" : "bg-[var(--surface-raised)] text-[var(--text-muted)]")}>
@@ -1047,7 +1049,7 @@ export default function RolesCenterClient() {
 
         {/* Hiérarchie */}
         {activeTab === "hierarchy" && (
-          <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-2xl p-6 space-y-4 max-w-2xl">
+          <div className="stagger-children bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-2xl p-6 space-y-4 max-w-2xl">
             <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-emerald-400" /> Hiérarchie des rôles</h3>
             <p className="text-xs text-[var(--text-muted)] leading-relaxed">
               Pour que le bot puisse attribuer un rôle sans erreur Discord (403), son rôle <strong className="text-[var(--text-primary)]">@Etho</strong> doit être placé <strong className="text-[var(--text-primary)]">au-dessus</strong> des rôles qu'il gère, avec la permission « Gérer les rôles ».

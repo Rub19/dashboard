@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import {
@@ -492,13 +493,14 @@ export default function AnalyticsCenterClient() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                className={`relative px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97] ${
                   isActive
-                    ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] border-b-2 border-cyan-500"
+                    ? "border-transparent text-[var(--text-primary)]"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? "text-cyan-400" : "text-[var(--text-muted)]"}`} />
+                {isActive && <motion.span layoutId="analytics-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
+                <Icon className={`w-4 h-4 ${isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]"}`} />
                 {tab.label}
               </button>
             );
@@ -507,7 +509,7 @@ export default function AnalyticsCenterClient() {
 
         {/* TAB 1: Messages Chart */}
         {activeTab === "messages" && (
-          <div className="space-y-6">
+          <div className="stagger-children space-y-6">
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -593,7 +595,7 @@ export default function AnalyticsCenterClient() {
 
         {/* TAB 2: Growth & Retention */}
         {activeTab === "growth" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -671,7 +673,7 @@ export default function AnalyticsCenterClient() {
 
         {/* TAB 3: Heatmap */}
         {activeTab === "heatmap" && (
-          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+          <div className="stagger-children bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
                 <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -747,7 +749,7 @@ export default function AnalyticsCenterClient() {
 
         {/* TAB 4: Top Channels & Members */}
         {activeTab === "channels" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Channels Share */}
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
               <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -825,7 +827,7 @@ export default function AnalyticsCenterClient() {
 
         {/* TAB 5: Automatic Insights */}
         {activeTab === "insights" && (
-          <div className="space-y-4 max-w-2xl">
+          <div className="stagger-children space-y-4 max-w-2xl">
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
               <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-cyan-400" />

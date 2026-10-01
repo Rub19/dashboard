@@ -392,12 +392,13 @@ export default function DiscordCalendarClient() {
               <button
                 key={f.id}
                 onClick={() => setSelectedCategory(f.id)}
-                className={`px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`relative isolate px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-all outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97] ${
                   selectedCategory === f.id
-                    ? "bg-emerald-500 text-white shadow-sm"
+                    ? "text-[var(--accent-contrast)]"
                     : "bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)]"
                 }`}
               >
+                {selectedCategory === f.id && <motion.span layoutId="discordcalendar-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                 {f.label}
               </button>
             ))}

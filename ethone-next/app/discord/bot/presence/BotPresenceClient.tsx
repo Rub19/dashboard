@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -605,13 +606,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id as PresenceTab)}
                 className={cn(
-                  "px-3.5 py-2.5 text-xs font-medium border-b-2 flex items-center gap-2 transition-all whitespace-nowrap",
+                  "relative px-3.5 py-2.5 text-xs font-medium border-b-2 flex items-center gap-2 transition-all whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                   isActive
-                    ? "border-emerald-500/30 text-[var(--text-primary)] bg-emerald-500/10 font-semibold"
+                    ? "border-transparent text-[var(--text-primary)]"
                     : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--input-border-hover)]"
                 )}
               >
-                <Icon className={cn("w-4 h-4", isActive ? "text-emerald-300" : "text-[var(--text-muted)]")} />
+                {isActive && <motion.span layoutId="botpresence-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
+                <Icon className={cn("w-4 h-4", isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
                 <span>{tab.label}</span>
                 {tab.count !== undefined && (
                   <span
@@ -634,7 +636,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* TAB 1: OVERVIEW */}
         {activeTab === "overview" && (
-          <div className="space-y-8">
+          <div className="stagger-children space-y-8">
             {/* REAL-TIME DISCORD HUD PREVIEW WIDGET */}
             <div className="p-6 rounded-[var(--panel-radius)] border border-[var(--panel-border)] relative overflow-hidden bg-[var(--surface-raised)]/40">
               <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -1029,7 +1031,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
         {/* TAB 2: ROTATION */}
         {activeTab === "rotation" && (
-          <div className="space-y-8">
+          <div className="stagger-children space-y-8">
             <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -1241,7 +1243,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
         {/* TAB 3: SCHEDULE */}
         {activeTab === "schedule" && (
-          <div className="space-y-8">
+          <div className="stagger-children space-y-8">
             <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
               <div>
                 <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -1348,7 +1350,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
         {/* TAB 4: SERVERS */}
         {activeTab === "servers" && (
-          <div className="space-y-8">
+          <div className="stagger-children space-y-8">
             <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
               <div>
                 <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -1429,7 +1431,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
         {/* TAB 5: IDENTITY */}
         {activeTab === "identity" && (
-          <div className="space-y-8">
+          <div className="stagger-children space-y-8">
             <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
               <div>
                 <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -1573,7 +1575,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
         {/* TAB 6: HISTORY */}
         {activeTab === "history" && (
-          <div className="space-y-8">
+          <div className="stagger-children space-y-8">
             <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
               <div className="flex items-center justify-between">
                 <div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -974,14 +975,15 @@ export default function AutoModCommandCenterPage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all duration-150 cursor-pointer",
+                  "relative flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                   isCurrent
-                    ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm border border-[var(--panel-border)]"
+                    ? "text-[var(--accent-contrast)]"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
                 )}
               >
-                <Icon className={cn("h-3.5 w-3.5", isCurrent ? "text-amber-400" : "text-[var(--text-muted)]")} />
-                <span>{tab.label}</span>
+                {isCurrent && <motion.span layoutId="automod-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+                <Icon className="relative h-3.5 w-3.5" />
+                <span className="relative">{tab.label}</span>
               </button>
             );
           })}
@@ -1027,7 +1029,7 @@ export default function AutoModCommandCenterPage() {
           {/* ONGLET 1: OVERVIEW & LIVE MONITOR                        */}
           {/* ======================================================== */}
           {activeTab === "overview" && (
-            <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="stagger-children space-y-6 animate-in fade-in duration-200">
               {/* CARTES DE STATISTIQUES EN DIRECT */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {/* 1. Score Moyen de Risque */}
@@ -1171,12 +1173,13 @@ export default function AutoModCommandCenterPage() {
                   </div>
                 ) : (
                   <div className="divide-y divide-[var(--panel-border)] overflow-hidden">
-                    {incidents.map((inc) => {
+                    {incidents.map((inc, i) => {
                       const badge = RISK_BADGES[inc.riskLevel] || RISK_BADGES.SAFE;
                       return (
                         <div
                           key={inc.id}
-                          className="py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-[var(--surface-raised)]/70 transition-colors rounded-xl px-2"
+                          style={{ animationDelay: `${Math.min(i, 12) * 35}ms` }}
+                          className="rise-in py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-[var(--surface-raised)]/70 transition-colors rounded-xl px-2"
                         >
                           <div className="flex items-start gap-3">
                             <span className="text-base mt-0.5">{badge.icon}</span>
@@ -1252,7 +1255,7 @@ export default function AutoModCommandCenterPage() {
           {/* ONGLET 2: RULE BUILDER (RÈGLES PERSONNALISÉES)           */}
           {/* ======================================================== */}
           {activeTab === "builder" && (
-            <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="stagger-children space-y-6 animate-in fade-in duration-200">
               {/* En-tête de la section */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
@@ -1553,11 +1556,12 @@ export default function AutoModCommandCenterPage() {
                     </button>
                   </div>
                 ) : (
-                  rules.map((rule) => (
+                  rules.map((rule, i) => (
                     <div
                       key={rule.id}
+                      style={{ animationDelay: `${Math.min(i, 12) * 35}ms` }}
                       className={cn(
-                        "rounded-2xl border p-4 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4",
+                        "rise-in rounded-[var(--panel-radius)] border p-4 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4",
                         rule.enabled
                           ? "border-[var(--panel-border)] bg-[var(--surface-raised)]/40"
                           : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 opacity-60"
@@ -1632,7 +1636,7 @@ export default function AutoModCommandCenterPage() {
           {/* ONGLET 3: LES 10 DÉTECTEURS INTÉGRÉS                      */}
           {/* ======================================================== */}
           {activeTab === "detectors" && (
-            <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="stagger-children space-y-6 animate-in fade-in duration-200">
               {/* Menu horizontal des 10 détecteurs */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none border-b border-[var(--panel-border)]">
                 {[
@@ -2232,7 +2236,7 @@ export default function AutoModCommandCenterPage() {
           {/* ONGLET 4: STRIKES & SANCTIONS PROGRESSIVES               */}
           {/* ======================================================== */}
           {activeTab === "strikes" && (
-            <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="stagger-children space-y-6 animate-in fade-in duration-200">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                   <h2 className="text-sm font-bold text-[var(--text-primary)]">Échelle Progressive des Sanctions (Strikes)</h2>
@@ -2388,7 +2392,7 @@ export default function AutoModCommandCenterPage() {
           {/* ONGLET 5: RULE TESTER / SANDBOX SANS SANCTIONS           */}
           {/* ======================================================== */}
           {activeTab === "tester" && (
-            <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="stagger-children space-y-6 animate-in fade-in duration-200">
               <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4">
                 <div className="flex items-start gap-3">
                   <Terminal className="h-5 w-5 text-amber-400 mt-0.5" />

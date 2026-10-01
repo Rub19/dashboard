@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -538,8 +539,9 @@ export default function AiCenterClient() {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer", isActive ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] border-b-2 border-emerald-500/30" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
-                <Icon className={cn("w-4 h-4", isActive ? "text-emerald-300" : "text-[var(--text-muted)]")} />
+              <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("relative px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]", isActive ? "border-transparent text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
+                {isActive && <motion.span layoutId="ai-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
+                <Icon className={cn("w-4 h-4", isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
                 {tab.label}
               </button>
             );
@@ -548,7 +550,7 @@ export default function AiCenterClient() {
 
         {/* Playground */}
         {activeTab === "overview" && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="stagger-children grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-5 space-y-4">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-lg shrink-0">🤖</div>
@@ -628,7 +630,7 @@ export default function AiCenterClient() {
 
         {/* Personnalité */}
         {activeTab === "personality" && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="stagger-children grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-6">
               <div>
                 <h3 className="text-base font-bold text-[var(--text-primary)]">Personality Builder</h3>
@@ -711,7 +713,7 @@ export default function AiCenterClient() {
 
         {/* Connaissances */}
         {activeTab === "knowledge" && (
-          <div className="space-y-6">
+          <div className="stagger-children space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-base font-bold text-[var(--text-primary)]">Base de connaissances (RAG)</h3>
@@ -781,7 +783,7 @@ export default function AiCenterClient() {
 
         {/* Salons */}
         {activeTab === "channels" && (
-          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
+          <div className="stagger-children bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h3 className="text-base font-bold text-[var(--text-primary)]">Salons & règles</h3>
@@ -871,7 +873,7 @@ export default function AiCenterClient() {
 
         {/* Outils */}
         {activeTab === "tools" && (
-          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-6">
+          <div className="stagger-children bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-6">
             <div>
               <h3 className="text-base font-bold text-[var(--text-primary)]">Outils & actions autorisées</h3>
               <p className="text-xs text-[var(--text-muted)]">Principe du moindre privilège : n'active que ce qui sert à ton serveur.</p>
@@ -897,7 +899,7 @@ export default function AiCenterClient() {
 
         {/* Mémoire */}
         {activeTab === "memory" && (
-          <div className="max-w-4xl space-y-6">
+          <div className="stagger-children max-w-4xl space-y-6">
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5">
               <div className="flex items-center justify-between">
                 <div>
@@ -936,7 +938,7 @@ export default function AiCenterClient() {
 
         {/* Qualité */}
         {activeTab === "analytics" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="stagger-children grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
               <h3 className="text-base font-bold text-[var(--text-primary)]">Satisfaction & retours</h3>
               <div className="grid grid-cols-2 gap-3 text-center">

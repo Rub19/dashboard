@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -279,12 +280,13 @@ export default function EventParticipantsClient() {
               <button
                 key={tab.id}
                 onClick={() => setFilterRsvp(tab.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`relative isolate px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97] ${
                   filterRsvp === tab.id
-                    ? "bg-emerald-500 text-white shadow-sm"
+                    ? "text-[var(--accent-contrast)]"
                     : "bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)]"
                 }`}
               >
+                {filterRsvp === tab.id && <motion.span layoutId="eventparticipants-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                 {tab.label}
               </button>
             ))}

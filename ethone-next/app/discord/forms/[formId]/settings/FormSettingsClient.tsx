@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -210,7 +211,8 @@ export default function FormSettingsClient() {
         ].map((tab) => {
           const Icon = tab.icon;
           return (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("flex items-center gap-2 h-9 px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer", activeTab === tab.id ? "bg-emerald-500 text-white shadow" : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70")}>
+            <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("relative isolate flex items-center gap-2 h-9 px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]", activeTab === tab.id ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70")}>
+              {activeTab === tab.id && <motion.span layoutId="formsettings-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
               <Icon className="h-3.5 w-3.5" /> {tab.label}
             </button>
           );
@@ -218,7 +220,7 @@ export default function FormSettingsClient() {
       </div>
 
       {activeTab === "discord" && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="stagger-children grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Configuration de l'embed</h3>
             <div className="space-y-1.5">
@@ -313,7 +315,7 @@ export default function FormSettingsClient() {
       )}
 
       {activeTab === "antispam" && (
-        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4 max-w-2xl">
+        <div className="stagger-children rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4 max-w-2xl">
           <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Règles anti-spam & éligibilité</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {([
@@ -338,7 +340,7 @@ export default function FormSettingsClient() {
       )}
 
       {activeTab === "scoring" && (
-        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4 max-w-2xl">
+        <div className="stagger-children rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4 max-w-2xl">
           <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
             <div>
               <h3 className="text-sm font-bold text-[var(--text-primary)]">Scoring pondéré</h3>
@@ -369,7 +371,7 @@ export default function FormSettingsClient() {
       )}
 
       {activeTab === "automations" && (
-        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4">
+        <div className="stagger-children rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 sm:p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
             <div>
               <h3 className="text-sm font-bold text-[var(--text-primary)]">Automations</h3>

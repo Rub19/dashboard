@@ -553,7 +553,7 @@ export default function VoiceCenterClient() {
       )}
 
       {activeTab === "overview" && (
-        <div className="space-y-6">
+        <div className="stagger-children space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
               <Radio className="h-4 w-4 text-emerald-400" />
@@ -707,7 +707,7 @@ export default function VoiceCenterClient() {
 
       {/* TAB CONTENT: Analytics */}
       {activeTab === "analytics" && (
-        <div className="space-y-4">
+        <div className="stagger-children space-y-4">
           <h3 className="text-base font-bold text-[var(--text-primary)]">Dernières Sessions Vocales</h3>
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 overflow-hidden">
             <table className="w-full text-left text-xs">

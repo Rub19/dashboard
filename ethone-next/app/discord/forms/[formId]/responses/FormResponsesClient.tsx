@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -317,12 +318,13 @@ export default function FormResponsesClient() {
               key={tab.id}
               onClick={() => setSelectedStatus(tab.id)}
               className={cn(
-                "h-8 px-3 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer",
+                "relative isolate h-8 px-3 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                 selectedStatus === tab.id
-                  ? "bg-emerald-500 text-white shadow-sm"
+                  ? "text-[var(--accent-contrast)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
+              {selectedStatus === tab.id && <motion.span layoutId="formresponses-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
               {tab.label}
             </button>
           ))}

@@ -1156,7 +1156,7 @@ export default function ServerManagementClient({
         {/* TAB 1: OVERVIEW */}
         {/* ========================================================================= */}
         {activeTab === "overview" && (
-          <div className="space-y-6">
+          <div className="stagger-children space-y-6">
             {/* Top Stat Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {/* Total Members */}
@@ -1452,7 +1452,7 @@ export default function ServerManagementClient({
         {/* TAB 2: MEMBERS */}
         {/* ========================================================================= */}
         {activeTab === "members" && (
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             {/* Filter and Search Toolbar */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60">
               <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
@@ -1794,7 +1794,7 @@ export default function ServerManagementClient({
         {/* TAB 3: CHANNELS */}
         {/* ========================================================================= */}
         {activeTab === "channels" && (
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             {/* Top Bar: Channel search & Create Channel button */}
             <div className="flex items-center justify-between gap-3 p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60">
               <div className="relative w-full sm:w-72">
@@ -2029,7 +2029,7 @@ export default function ServerManagementClient({
         {/* TAB 4: ROLES */}
         {/* ========================================================================= */}
         {activeTab === "roles" && (
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             <div className="flex items-center justify-between gap-3 p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60">
               <div className="relative w-full sm:w-72">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-[var(--text-muted)]" />
@@ -2209,7 +2209,7 @@ export default function ServerManagementClient({
         {/* TAB 5: PERMISSIONS & DEBUGGER */}
         {/* ========================================================================= */}
         {activeTab === "permissions" && (
-          <div className="space-y-6">
+          <div className="stagger-children space-y-6">
             {/* Interactive Permission Debugger Section */}
             <div className="p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 space-y-4">
               <div className="flex items-center gap-2.5">
@@ -2391,7 +2391,7 @@ export default function ServerManagementClient({
         {/* TAB 6: EMOJIS & STICKERS */}
         {/* ========================================================================= */}
         {activeTab === "emojis" && (
-          <div className="space-y-6">
+          <div className="stagger-children space-y-6">
             {/* Quotas Progress Cards */}
             {emojiQuota && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -2484,7 +2484,7 @@ export default function ServerManagementClient({
         {/* TAB 7: WEBHOOKS */}
         {/* ========================================================================= */}
         {activeTab === "webhooks" && (
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             <div className="flex items-center justify-between p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60">
               <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                 <ShieldCheck className="h-4 w-4 text-emerald-400" />
@@ -2599,7 +2599,7 @@ export default function ServerManagementClient({
         {/* TAB 8: SETTINGS */}
         {/* ========================================================================= */}
         {activeTab === "settings" && settings && (
-          <div className="max-w-3xl space-y-6">
+          <div className="stagger-children max-w-3xl space-y-6">
             <div className="p-6 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 space-y-4">
               <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Settings className="h-4 w-4 text-emerald-400" />
@@ -2679,7 +2679,7 @@ export default function ServerManagementClient({
         {/* TAB 9: AUDIT LOGS */}
         {/* ========================================================================= */}
         {activeTab === "audit" && (
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -2744,7 +2744,7 @@ export default function ServerManagementClient({
         {/* TAB 10: HEALTH DIAGNOSTICS */}
         {/* ========================================================================= */}
         {activeTab === "health" && overview?.health && (
-          <div className="space-y-6 max-w-4xl">
+          <div className="stagger-children space-y-6 max-w-4xl">
             <div className="p-6 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 space-y-6">
               <div className="flex items-center justify-between">
                 <div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { confirmDialog } from "@/lib/confirmDialog";
 import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
@@ -613,7 +614,8 @@ export default function BackupsCenterClient() {
               { id: "ALL", label: "Toutes" }, { id: "FULL", label: "Complètes" }, { id: "PARTIAL", label: "Partielles" },
               { id: "PRE_CHANGE", label: "Pre-Change" }, { id: "ROLLBACK", label: "Rollback" }, { id: "PROTECTED", label: "🔒 Protégées" },
             ].map((tab) => (
-              <button key={tab.id} onClick={() => setSelectedType(tab.id)} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer", selectedType === tab.id ? "bg-emerald-500 text-white" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
+              <button key={tab.id} onClick={() => setSelectedType(tab.id)} className={cn("relative isolate px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]", selectedType === tab.id ? "text-[var(--accent-contrast)]" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
+                {selectedType === tab.id && <motion.span layoutId="backups-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                 {tab.label}
               </button>
             ))}

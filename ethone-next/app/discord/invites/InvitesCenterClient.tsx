@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -517,12 +518,13 @@ export default function InvitesCenterClient() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-semibold transition-all cursor-pointer ${
+              className={`relative isolate inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-semibold transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97] ${
                 isActive
-                  ? "bg-pink-600 text-white shadow-sm"
+                  ? "text-[var(--accent-contrast)]"
                   : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)]"
               }`}
             >
+              {isActive && <motion.span layoutId="invites-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
               <Icon className="w-4 h-4" />
               <span>{tab.label}</span>
             </button>
@@ -532,7 +534,7 @@ export default function InvitesCenterClient() {
 
       {/* TAB 1: LEADERBOARD */}
       {activeTab === "leaderboard" && (
-        <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+        <div className="stagger-children rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
           {/* Filters row */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs">
@@ -638,7 +640,7 @@ export default function InvitesCenterClient() {
 
       {/* TAB 2: INVITE LINKS */}
       {activeTab === "links" && (
-        <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+        <div className="stagger-children rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-base font-bold text-[var(--text-primary)]">Liens d'Invitations Discord</h3>
@@ -697,7 +699,7 @@ export default function InvitesCenterClient() {
 
       {/* TAB 3: REWARDS & BUILDER */}
       {activeTab === "rewards" && (
-        <div className="space-y-6">
+        <div className="stagger-children space-y-6">
           <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div>
@@ -762,7 +764,7 @@ export default function InvitesCenterClient() {
 
       {/* TAB 4: CAMPAIGNS */}
       {activeTab === "campaigns" && (
-        <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
+        <div className="stagger-children rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-base font-bold text-[var(--text-primary)]">Campagnes de Parrainage Actives</h3>
@@ -825,7 +827,7 @@ export default function InvitesCenterClient() {
 
       {/* TAB 5: ANALYTICS & RETENTION */}
       {activeTab === "analytics" && (
-        <div className="space-y-6">
+        <div className="stagger-children space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Retention Curves */}
             <div className="p-6 rounded-3xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">

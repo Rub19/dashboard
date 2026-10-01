@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { confirmDialog } from "@/lib/confirmDialog";
 import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
@@ -517,8 +518,9 @@ export default function CommandsCenterClient() {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer", isActive ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] border-b-2 border-emerald-500/30" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
-                <Icon className={cn("w-4 h-4", isActive ? "text-emerald-300" : "text-[var(--text-muted)]")} />
+              <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("relative px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]", isActive ? "border-transparent text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
+                {isActive && <motion.span layoutId="commands-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
+                <Icon className={cn("w-4 h-4", isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
                 {tab.label}
               </button>
             );
@@ -527,7 +529,7 @@ export default function CommandsCenterClient() {
 
         {/* Catalogue */}
         {activeTab === "catalog" && (
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             {loading && isDemo ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CardSkeleton className="h-40" />
@@ -598,7 +600,7 @@ export default function CommandsCenterClient() {
 
         {/* Builder */}
         {activeTab === "builder" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="stagger-children grid grid-cols-1 lg:grid-cols-12 gap-6">
             <form onSubmit={handleCreateCommand} className="lg:col-span-7 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-emerald-300" />
@@ -713,7 +715,7 @@ export default function CommandsCenterClient() {
 
         {/* Simulateur */}
         {activeTab === "simulator" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="stagger-children grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-7 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><Terminal className="w-5 h-5 text-emerald-400" /> Simulateur</h3>
@@ -774,7 +776,7 @@ export default function CommandsCenterClient() {
 
         {/* Templates */}
         {activeTab === "templates" && (
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2"><LayoutTemplate className="w-4 h-4 text-emerald-300" /> Templates prêts à l'emploi</h2>
             {templates.length === 0 ? (
               <p className="text-xs text-[var(--text-muted)]">{isDemo ? "Connecte un serveur pour charger les templates du bot." : "Aucun template disponible."}</p>

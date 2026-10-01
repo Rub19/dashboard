@@ -1117,7 +1117,7 @@ export function WelcomeCenterClient() {
 
       {/* TAB 2: WELCOME MESSAGE & EMBED BUILDER */}
       {activeTab === "builder" && config && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <div className="stagger-children grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           {/* LEFT: BUILDER CONTROLS */}
           <div className="space-y-5">
             <div className="flex items-center justify-between">
@@ -1638,7 +1638,7 @@ export function WelcomeCenterClient() {
 
       {/* TAB 3: GOODBYE SYSTEM */}
       {activeTab === "goodbye" && config && (
-        <div className="space-y-5 mt-6 max-w-2xl">
+        <div className="stagger-children space-y-5 mt-6 max-w-2xl">
           <div>
             <h2 className="text-base font-bold text-[var(--text-primary)]">Message de Départ (Goodbye)</h2>
             <p className="text-xs text-[var(--text-muted)]">
@@ -1704,7 +1704,7 @@ export function WelcomeCenterClient() {
 
       {/* TAB 4: DM WELCOME */}
       {activeTab === "dm" && config && (
-        <div className="space-y-5 mt-6 max-w-2xl">
+        <div className="stagger-children space-y-5 mt-6 max-w-2xl">
           <div>
             <h2 className="text-base font-bold text-[var(--text-primary)]">Message Privé d&apos;Accueil (DM Welcome)</h2>
             <p className="text-xs text-[var(--text-muted)]">
@@ -1779,7 +1779,7 @@ export function WelcomeCenterClient() {
 
       {/* TAB 6: VÉRIFICATION & RÈGLES */}
       {activeTab === "verification" && verification && (
-        <div className="space-y-5 mt-6 max-w-2xl">
+        <div className="stagger-children space-y-5 mt-6 max-w-2xl">
           <div>
             <h2 className="text-base font-bold text-[var(--text-primary)]">Vérification & Validation de Règlement</h2>
             <p className="text-xs text-[var(--text-muted)]">
@@ -1877,7 +1877,7 @@ export function WelcomeCenterClient() {
 
       {/* TAB 8: AUTO-RÔLES */}
       {activeTab === "autoroles" && config && (
-        <div className="space-y-5 mt-6 max-w-2xl">
+        <div className="stagger-children space-y-5 mt-6 max-w-2xl">
           <div>
             <h2 className="text-base font-bold text-[var(--text-primary)]">Attribution Automatique de Rôles (Auto-Roles)</h2>
             <p className="text-xs text-[var(--text-muted)]">
@@ -1934,7 +1934,7 @@ export function WelcomeCenterClient() {
 
       {/* TAB 9: CONDITIONS & AUTOMATIONS */}
       {activeTab === "conditions" && config && (
-        <div className="space-y-5 mt-6 max-w-2xl">
+        <div className="stagger-children space-y-5 mt-6 max-w-2xl">
           <div>
             <h2 className="text-base font-bold text-[var(--text-primary)]">Conditions d&apos;Éligibilité & Automatisations</h2>
             <p className="text-xs text-[var(--text-muted)]">
@@ -1997,7 +1997,7 @@ export function WelcomeCenterClient() {
 
       {/* TAB 10: SETTINGS & SALONS */}
       {activeTab === "settings" && config && (
-        <div className="space-y-5 mt-6 max-w-2xl">
+        <div className="stagger-children space-y-5 mt-6 max-w-2xl">
           <div>
             <h2 className="text-base font-bold text-[var(--text-primary)]">Paramètres Généraux & Salons de Destination</h2>
             <p className="text-xs text-[var(--text-muted)]">

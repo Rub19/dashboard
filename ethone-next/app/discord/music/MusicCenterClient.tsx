@@ -1466,7 +1466,7 @@ export default function MusicCenterClient() {
 
           {/* TAB 5: DJ MODE & SETTINGS */}
           {activeTab === "settings" && settings && (
-            <div className="space-y-4 max-w-2xl">
+            <div className="stagger-children space-y-4 max-w-2xl">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-bold text-[var(--text-primary)]">Configuration du Lecteur & Mode DJ</h3>
@@ -1631,7 +1631,7 @@ export default function MusicCenterClient() {
           )}
 
           {activeTab === "stats" && stats && (
-            <div className="space-y-6">
+            <div className="stagger-children space-y-6">
               <div>
                 <h3 className="text-sm font-bold text-[var(--text-primary)]">Statistiques Musicales</h3>
                 <p className="text-xs text-[var(--text-muted)]">Données d'écoute et tendances sur ce serveur.</p>

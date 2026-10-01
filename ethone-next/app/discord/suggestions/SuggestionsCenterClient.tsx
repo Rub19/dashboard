@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
@@ -622,11 +623,12 @@ export default function SuggestionsCenterClient() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
                 className={cn(
-                  "px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer",
-                  isActive ? "bg-[var(--surface-raised)]/40 text-[var(--text-primary)] border-b-2 border-amber-500" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  "relative px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
+                  isActive ? "border-transparent text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
               >
-                <Icon className={cn("w-4 h-4", isActive ? "text-amber-400" : "text-[var(--text-muted)]")} />
+                {isActive && <motion.span layoutId="suggestions-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
+                <Icon className={cn("w-4 h-4", isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
                 {tab.label}
               </button>
             );
@@ -635,7 +637,7 @@ export default function SuggestionsCenterClient() {
 
         {/* TAB: Kanban */}
         {activeTab === "kanban" && (
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
                 <div className="relative w-full sm:w-72">
@@ -769,7 +771,7 @@ export default function SuggestionsCenterClient() {
 
         {/* TAB: Studio de réponse */}
         {activeTab === "response_studio" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="stagger-children grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-4 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-2 max-h-[70vh] overflow-y-auto">
               <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Sélectionner une suggestion</span>
               {suggestions.length === 0 && <p className="text-xs text-[var(--text-muted)]">Aucune suggestion.</p>}
@@ -863,7 +865,7 @@ export default function SuggestionsCenterClient() {
 
         {/* TAB: Top idées */}
         {activeTab === "hall_of_fame" && (
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2"><Sparkles className="w-4 h-4 text-amber-400" /> Les idées les mieux notées (score = 👍 − 👎)</h2>
             {topIdeas.length === 0 ? (
               <p className="text-xs text-[var(--text-muted)]">Pas encore de suggestion votée.</p>
@@ -886,7 +888,7 @@ export default function SuggestionsCenterClient() {
 
         {/* TAB: Paramètres */}
         {activeTab === "settings" && (
-          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5 max-w-2xl">
+          <div className="stagger-children bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5 max-w-2xl">
             <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><Sliders className="w-4 h-4 text-amber-400" /> Salon, anti-spam & notifications</h3>
 
             <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--panel-border)]">

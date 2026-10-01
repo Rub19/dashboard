@@ -860,7 +860,7 @@ export function AuditCenterClient() {
 
         {/* TAB 1: FLUX D'ÉVÉNEMENTS & RECHERCHE */}
         {activeTab === "stream" && (
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             {/* BARRE DE FILTRES MULTI-CRITÈRES */}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3.5 ">
               <div className="flex flex-1 items-center gap-2 min-w-[240px]">
@@ -1098,7 +1098,7 @@ export function AuditCenterClient() {
 
         {/* TAB 2: ZONE ÉVÉNEMENTS CRITIQUES */}
         {activeTab === "critical" && (
-          <div className="space-y-4">
+          <div className="stagger-children space-y-4">
             <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4">
               <div className="flex items-center gap-2">
                 <AlertOctagon className="h-5 w-5 text-rose-400" />
@@ -1149,7 +1149,7 @@ export function AuditCenterClient() {
 
         {/* TAB 3: ANALYTIQUE & RÉPARTITION */}
         {activeTab === "analytics" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* RÉPARTITION PAR MODULE */}
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
               <h3 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -1214,7 +1214,7 @@ export function AuditCenterClient() {
 
         {/* TAB 4: ROUTAGE SALONS & RÉTENTION */}
         {activeTab === "routing" && (
-          <div className="max-w-4xl space-y-6">
+          <div className="stagger-children max-w-4xl space-y-6">
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
               <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
                 <div>

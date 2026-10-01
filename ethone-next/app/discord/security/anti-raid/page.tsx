@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -1191,97 +1192,105 @@ export default function AntiRaidDashboardPage() {
             <button
               onClick={() => setActiveTab("overview")}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
+                "relative px-3 py-1.5 rounded-xl text-xs font-medium transition-colors duration-200 shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                 activeTab === "overview"
-                  ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm"
+                  ? "text-[var(--accent-contrast)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              👥 Join Raid
+              {activeTab === "overview" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              <span className="relative">👥 Join Raid</span>
             </button>
 
             <button
               onClick={() => setActiveTab("message")}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
+                "relative px-3 py-1.5 rounded-xl text-xs font-medium transition-colors duration-200 shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                 activeTab === "message"
-                  ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm"
+                  ? "text-[var(--accent-contrast)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              💬 Message Spam
+              {activeTab === "message" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              <span className="relative">💬 Message Spam</span>
             </button>
 
             <button
               onClick={() => setActiveTab("mention")}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
+                "relative px-3 py-1.5 rounded-xl text-xs font-medium transition-colors duration-200 shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                 activeTab === "mention"
-                  ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm"
+                  ? "text-[var(--accent-contrast)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              🔔 Mention Raid
+              {activeTab === "mention" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              <span className="relative">🔔 Mention Raid</span>
             </button>
 
             <button
               onClick={() => setActiveTab("bots")}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
+                "relative px-3 py-1.5 rounded-xl text-xs font-medium transition-colors duration-200 shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                 activeTab === "bots"
-                  ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm"
+                  ? "text-[var(--accent-contrast)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              🤖 Bot Raid
+              {activeTab === "bots" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              <span className="relative">🤖 Bot Raid</span>
             </button>
 
             <button
               onClick={() => setActiveTab("nuke")}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
+                "relative px-3 py-1.5 rounded-xl text-xs font-medium transition-colors duration-200 shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                 activeTab === "nuke"
-                  ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm"
+                  ? "text-[var(--accent-contrast)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              💥 Anti-Nuke
+              {activeTab === "nuke" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              <span className="relative">💥 Anti-Nuke</span>
             </button>
 
             <button
               onClick={() => setActiveTab("accountAge")}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
+                "relative px-3 py-1.5 rounded-xl text-xs font-medium transition-colors duration-200 shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                 activeTab === "accountAge"
-                  ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm"
+                  ? "text-[var(--accent-contrast)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              🔐 Account Age
+              {activeTab === "accountAge" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              <span className="relative">🔐 Account Age</span>
             </button>
 
             <button
               onClick={() => setActiveTab("whitelist")}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
+                "relative px-3 py-1.5 rounded-xl text-xs font-medium transition-colors duration-200 shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                 activeTab === "whitelist"
-                  ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm"
+                  ? "text-[var(--accent-contrast)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              🛡️ Whitelist
+              {activeTab === "whitelist" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              <span className="relative">🛡️ Whitelist</span>
             </button>
 
             <button
               onClick={() => setActiveTab("incidents")}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
+                "relative px-3 py-1.5 rounded-xl text-xs font-medium transition-colors duration-200 shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
                 activeTab === "incidents"
-                  ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm"
+                  ? "text-[var(--accent-contrast)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              📜 Incidents & Dossiers ({incidents.length})
+              {activeTab === "incidents" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              <span className="relative">📜 Incidents & Dossiers ({incidents.length})</span>
             </button>
           </div>
 
@@ -1289,7 +1298,7 @@ export default function AntiRaidDashboardPage() {
           <div className="p-5">
             {/* 1. JOIN RAID TAB */}
             {activeTab === "overview" && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
                     <h4 className="text-sm font-semibold text-[var(--text-primary)]">Protection contre les Join Raids</h4>
@@ -1400,7 +1409,7 @@ export default function AntiRaidDashboardPage() {
 
             {/* 2. MESSAGE RAID TAB */}
             {activeTab === "message" && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
                     <h4 className="text-sm font-semibold text-[var(--text-primary)]">Protection Message & Spam Raid</h4>
@@ -1510,7 +1519,7 @@ export default function AntiRaidDashboardPage() {
 
             {/* 3. MENTION RAID TAB */}
             {activeTab === "mention" && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
                     <h4 className="text-sm font-semibold text-[var(--text-primary)]">Protection Mention Raid & Mass Pings</h4>
@@ -1583,7 +1592,7 @@ export default function AntiRaidDashboardPage() {
 
             {/* 4. BOT RAID TAB */}
             {activeTab === "bots" && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
                     <h4 className="text-sm font-semibold text-[var(--text-primary)]">Protection Bot Raid</h4>
@@ -1634,7 +1643,7 @@ export default function AntiRaidDashboardPage() {
 
             {/* 5. SERVER NUKE TAB */}
             {activeTab === "nuke" && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
                     <h4 className="text-sm font-semibold text-[var(--text-primary)]">Protection Server Nuke & Anti-Détournement</h4>
@@ -1724,7 +1733,7 @@ export default function AntiRaidDashboardPage() {
 
             {/* 6. ACCOUNT AGE TAB */}
             {activeTab === "accountAge" && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
                     <h4 className="text-sm font-semibold text-[var(--text-primary)]">Paliers d'ancienneté de compte</h4>
@@ -1749,7 +1758,8 @@ export default function AntiRaidDashboardPage() {
                   {settings.accountAge.tiers.map((tier, idx) => (
                     <div
                       key={idx}
-                      className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between"
+                      style={{ animationDelay: `${Math.min(idx, 12) * 35}ms` }}
+                      className="rise-in p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between"
                     >
                       <div>
                         <span className="text-xs font-semibold text-[var(--text-primary)]">
@@ -1774,7 +1784,7 @@ export default function AntiRaidDashboardPage() {
 
             {/* 7. WHITELIST TAB */}
             {activeTab === "whitelist" && (
-              <div className="space-y-5">
+              <div className="stagger-children space-y-5">
                 <div className="pb-3 border-b border-[var(--panel-border)]">
                   <h4 className="text-sm font-semibold text-[var(--text-primary)]">Gestion de la Whitelist & Confiance</h4>
                   <p className="text-xs text-[var(--text-muted)]">
@@ -1840,7 +1850,7 @@ export default function AntiRaidDashboardPage() {
 
             {/* 8. INCIDENTS & INVESTIGATION TAB */}
             {activeTab === "incidents" && (
-              <div className="space-y-4">
+              <div className="stagger-children space-y-4">
                 <div className="pb-3 border-b border-[var(--panel-border)] flex items-center justify-between">
                   <div>
                     <h4 className="text-sm font-semibold text-[var(--text-primary)]">Journal des Incidents Anti-Raid</h4>
@@ -1855,10 +1865,11 @@ export default function AntiRaidDashboardPage() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {incidents.map((inc) => (
+                    {incidents.map((inc, i) => (
                       <div
                         key={inc.id}
-                        className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--input-border-hover)] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                        style={{ animationDelay: `${Math.min(i, 12) * 35}ms` }}
+                        className="rise-in p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--input-border-hover)] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                       >
                         <div>
                           <div className="flex items-center gap-2 mb-1">

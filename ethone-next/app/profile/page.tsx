@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   User,
   Smile,
@@ -26,6 +27,9 @@ import ProfileStatusPicker from "@/components/profile/ProfileStatusPicker";
 import PersonalizationPanel from "@/components/profile/PersonalizationPanel";
 import ProfileSecurityAndData from "@/components/profile/ProfileSecurityAndData";
 import { cn } from "@/lib/utils";
+import { SPRING_PILL } from "@/lib/ease";
+import { stepEnter } from "@/lib/motion-variants";
+import { useMotionPref } from "@/lib/hooks/useMotionPref";
 
 type ProfileTab = "identity" | "status" | "personalization" | "security";
 
@@ -56,6 +60,7 @@ export default function ProfilePage() {
 
   const [activeTab, setActiveTab] = useState<ProfileTab>("identity");
   const [saving, setSaving] = useState(false);
+  const { reduced } = useMotionPref();
 
   // Modals state
   const [isAvatarPickerOpen, setIsAvatarPickerOpen] = useState(false);
@@ -370,26 +375,42 @@ export default function ProfilePage() {
               type="button"
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "shrink-0 flex items-center gap-1.5 rounded-xl px-4 py-2 font-semibold transition-all touch-manipulation cursor-pointer",
+                "relative shrink-0 flex items-center gap-1.5 rounded-xl border px-4 py-2 font-semibold transition-colors touch-manipulation cursor-pointer",
                 isActive
-                  ? "bg-[var(--accent-primary)] text-white shadow-sm"
-                  : "border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                  ? "border-transparent text-[var(--accent-contrast)]"
+                  : "border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
               )}
             >
-              <TabIcon className="h-3.5 w-3.5" />
-              <span>{tab.label}</span>
+              {isActive && (
+                <motion.span
+                  layoutId="activeProfileTab"
+                  transition={SPRING_PILL}
+                  className="absolute inset-0 z-0 rounded-xl bg-[var(--accent-primary)] shadow-[0_0_12px_var(--glow-color)]"
+                />
+              )}
+              <TabIcon className="relative z-10 h-3.5 w-3.5" />
+              <span className="relative z-10">{tab.label}</span>
             </button>
           );
         })}
       </div>
 
       {/* Main Tab Content */}
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pr-1 pb-6 space-y-6">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pr-1 pb-6">
+      <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={activeTab}
+        variants={stepEnter}
+        initial={reduced ? "animate" : "initial"}
+        animate="animate"
+        exit="exit"
+        className="space-y-6"
+      >
         {/* Tab 1: Identity & Profile */}
         {activeTab === "identity" && (
           <div className="space-y-5">
             {/* Avatar Quick Management */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4 shadow-[var(--panel-shadow)] transition-[border-color,box-shadow] duration-200 [transition-timing-function:var(--ease-snap)] hover:border-[var(--accent-primary)]/25 hover:shadow-[var(--panel-shadow),var(--shadow-glow)]">
               <div>
                 <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <Camera className="h-4 w-4 text-[var(--accent-primary)]" />
@@ -404,7 +425,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 rounded-2xl bg-[var(--accent-primary)] hover:opacity-90 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-transform active:scale-95 cursor-pointer"
+                  className="flex items-center gap-2 rounded-2xl bg-[var(--accent-primary)] px-4 py-2.5 text-xs font-bold text-[var(--accent-contrast)] shadow-[0_0_12px_var(--glow-color)] transition-[transform,box-shadow,filter] duration-150 [transition-timing-function:var(--ease-snap)] hover:brightness-110 hover:shadow-[0_0_20px_var(--glow-color)] active:scale-95 cursor-pointer"
                 >
                   <Upload className="h-4 w-4" />
                   <span>Importer & Recadrer une image</span>
@@ -437,8 +458,8 @@ export default function ProfilePage() {
                       className={cn(
                         "rounded-[var(--panel-radius)] border p-2.5 text-center transition-all cursor-pointer",
                         form.avatarFrameId === frame.id
-                          ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 shadow-xs font-bold text-white"
-                          : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white"
+                          ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 shadow-xs font-bold text-[var(--text-primary)]"
+                          : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                       )}
                     >
                       <span className="text-xs block truncate">{frame.name}</span>
@@ -449,7 +470,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Profile Identity Form */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4 shadow-[var(--panel-shadow)] transition-[border-color,box-shadow] duration-200 [transition-timing-function:var(--ease-snap)] hover:border-[var(--accent-primary)]/25 hover:shadow-[var(--panel-shadow),var(--shadow-glow)]">
               <div>
                 <h3 className="text-base font-bold text-[var(--text-primary)]">
                   Coordonnées publiques & Biographie
@@ -517,7 +538,7 @@ export default function ProfilePage() {
                   type="button"
                   onClick={handleSaveIdentity}
                   disabled={saving}
-                  className="flex items-center gap-2 rounded-2xl bg-[var(--accent-primary)] hover:opacity-90 px-6 py-2.5 text-xs font-bold text-white shadow-md transition-transform active:scale-95 cursor-pointer"
+                  className="flex items-center gap-2 rounded-2xl bg-[var(--accent-primary)] px-6 py-2.5 text-xs font-bold text-[var(--accent-contrast)] shadow-[0_0_12px_var(--glow-color)] transition-[transform,box-shadow,filter] duration-150 [transition-timing-function:var(--ease-snap)] hover:brightness-110 hover:shadow-[0_0_20px_var(--glow-color)] active:scale-95 disabled:opacity-60 cursor-pointer"
                 >
                   {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                   <span>Enregistrer les modifications</span>
@@ -530,7 +551,7 @@ export default function ProfilePage() {
         {/* Tab 2: Status & Presence */}
         {activeTab === "status" && (
           <div className="space-y-4">
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4 shadow-[var(--panel-shadow)] transition-[border-color,box-shadow] duration-200 [transition-timing-function:var(--ease-snap)] hover:border-[var(--accent-primary)]/25 hover:shadow-[var(--panel-shadow),var(--shadow-glow)]">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -545,7 +566,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => setIsStatusPickerOpen(true)}
-                  className="rounded-2xl bg-[var(--accent-primary)] hover:opacity-90 px-4 py-2 text-xs font-bold text-white shadow-sm cursor-pointer"
+                  className="rounded-2xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] shadow-[0_0_12px_var(--glow-color)] transition-[box-shadow,filter] duration-150 [transition-timing-function:var(--ease-snap)] hover:brightness-110 hover:shadow-[0_0_20px_var(--glow-color)] cursor-pointer"
                 >
                   Ouvrir le sélecteur complet
                 </button>
@@ -565,8 +586,8 @@ export default function ProfilePage() {
                     className={cn(
                       "flex items-center gap-2 rounded-[var(--panel-radius)] border p-3 text-xs font-bold transition-all cursor-pointer",
                       preferences.presenceStatus === s.id
-                        ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-white shadow-xs"
-                        : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white"
+                        ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--text-primary)] shadow-xs"
+                        : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
                     <span className={cn("h-2.5 w-2.5 rounded-full", s.color)} />
@@ -599,6 +620,8 @@ export default function ProfilePage() {
             onResetPersonalization={resetPersonalization}
           />
         )}
+      </motion.div>
+      </AnimatePresence>
       </div>
 
       {/* Interactive Avatar Cropper Modal */}

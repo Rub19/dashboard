@@ -39825,6 +39825,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_38_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_38_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_38_3_de);
 
+const v1_38_4_fr: ChangelogEntry = {
+  version: "v1.38.4",
+  date: "2026-10-01",
+  title: "Motion System : Profil",
+  items: [
+    "Le profil a maintenant une entrée animée, un indicateur d'onglet glissant et une vraie transition entre les onglets (il n'en avait aucune).",
+    "Corrigé : sur les thèmes clairs ou à accent blanc, plusieurs boutons et textes du profil étaient blanc sur blanc et donc invisibles — ils utilisent maintenant les couleurs du thème actif.",
+    "Les sections du profil réagissent au survol avec le même effet de profondeur que le reste de l'interface.",
+  ],
+};
+
+const v1_38_4_en: ChangelogEntry = {
+  version: "v1.38.4",
+  date: "2026-10-01",
+  title: "Motion System: Profile",
+  items: [
+    "Profile now has an entrance animation, a sliding tab indicator and real transitions between tabs (it had none).",
+    "Fixed: on light or white-accent themes, several Profile buttons and labels were white-on-white and invisible — they now use the active theme's colors.",
+    "Profile sections respond on hover with the same depth effect as the rest of the interface.",
+  ],
+};
+
+const v1_38_4_es: ChangelogEntry = {
+  version: "v1.38.4",
+  date: "2026-10-01",
+  title: "Motion System: Perfil",
+  items: [
+    "El perfil ahora tiene animación de entrada, indicador de pestaña deslizante y transiciones entre pestañas.",
+    "Corregido: en temas claros o de acento blanco, varios botones del perfil eran blanco sobre blanco e invisibles.",
+  ],
+};
+
+const v1_38_4_de: ChangelogEntry = {
+  version: "v1.38.4",
+  date: "2026-10-01",
+  title: "Motion System: Profil",
+  items: [
+    "Das Profil hat jetzt eine Einstiegsanimation, einen gleitenden Tab-Indikator und echte Übergänge zwischen Tabs.",
+    "Behoben: Bei hellen Themes oder weißem Akzent waren mehrere Profil-Buttons weiß auf weiß und unsichtbar.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_38_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_38_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_38_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_38_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

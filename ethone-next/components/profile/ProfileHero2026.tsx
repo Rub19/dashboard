@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
+import { cardEnter } from "@/lib/motion-variants";
+import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import {
   Camera,
   Copy,
@@ -62,6 +65,7 @@ export default function ProfileHero2026({
   const { settings } = useSettings();
 
   const [copied, setCopied] = useState(false);
+  const { reduced } = useMotionPref();
 
   const displayName = previewDisplayName || identity?.displayName || "Compte";
   const username =
@@ -94,7 +98,12 @@ export default function ProfileHero2026({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-gradient-to-b from-[var(--surface-raised)]/90 via-[var(--panel-bg)]/80 to-[var(--surface-raised)]/60 p-5 sm:p-7 shadow-lg backdrop-blur-xl">
+    <motion.div
+      variants={cardEnter}
+      initial={reduced ? "animate" : "initial"}
+      animate="animate"
+      className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-gradient-to-b from-[var(--surface-raised)]/90 via-[var(--panel-bg)]/80 to-[var(--surface-raised)]/60 p-5 sm:p-7 shadow-[var(--panel-shadow),var(--shadow-glow)] backdrop-blur-xl"
+    >
       {/* Dynamic Background Aura */}
       <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-[var(--accent-primary)]/15 blur-3xl pointer-events-none" />
 
@@ -118,7 +127,7 @@ export default function ProfileHero2026({
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-[var(--accent-primary)] text-3xl font-black text-white">
+                <div className="flex h-full w-full items-center justify-center bg-[var(--accent-primary)] text-3xl font-black text-[var(--accent-contrast)]">
                   {initials}
                 </div>
               )}
@@ -156,7 +165,7 @@ export default function ProfileHero2026({
                 title="Copier le @username"
               >
                 <span>@{username}</span>
-                {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                {copied ? <Check className="h-3 w-3 text-[var(--success)]" /> : <Copy className="h-3 w-3" />}
               </button>
 
               <span className="inline-flex items-center gap-1 rounded-full border border-sky-500/30 bg-sky-950/30 px-2 py-0.5 text-[10px] font-semibold text-sky-300">
@@ -204,8 +213,8 @@ export default function ProfileHero2026({
                   className={cn(
                     "flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-medium transition-all cursor-pointer",
                     activeWorkspace === ws.id
-                      ? "bg-[var(--accent-primary)] text-white font-bold shadow-xs"
-                      : "text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-hover)]"
+                      ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-bold shadow-xs"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
                   )}
                 >
                   <ws.icon className="h-3 w-3" />
@@ -225,6 +234,6 @@ export default function ProfileHero2026({
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

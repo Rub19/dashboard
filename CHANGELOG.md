@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.38.4 — 2026-10-01
+
+**Motion System : Profil**
+
+- Le profil a maintenant une entrée animée, un indicateur d'onglet glissant et une vraie transition entre les onglets (il n'en avait aucune).
+- Corrigé : sur les thèmes clairs ou à accent blanc, plusieurs boutons et textes du profil étaient blanc sur blanc et donc invisibles — ils utilisent maintenant les couleurs du thème actif.
+- Les sections du profil réagissent au survol avec le même effet de profondeur que le reste de l'interface.
+
 ## v1.38.3 — 2026-09-30
 
 **Motion System : Brain**

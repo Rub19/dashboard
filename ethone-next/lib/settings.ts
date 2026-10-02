@@ -1,3 +1,4 @@
+import type { FontFamilySetting, FontId } from "@/lib/fonts";
 import { supabase } from "./supabase";
 import {
   resolveLegacyTheme,
@@ -99,7 +100,9 @@ export type Settings = {
   iconPack: "lucide" | "phosphor" | "tabler" | "heroicons" | "radix";
   densityMode: DensityMode;
   fontSize: number;
-  fontFamily: "sans" | "outfit" | "mono" | "serif" | "inter" | "jetbrains" | "editorial" | "oswald" | "poppins";
+  fontFamily: FontFamilySetting;
+  /** Police choisie par thème (bouton « Modifier » d'une carte de thème), utilisée quand fontFamily = "sans". */
+  themeFonts: Partial<Record<string, FontId>>;
   density: number;
   densityCustom: {
     fontScale: number;
@@ -289,6 +292,7 @@ export const DEFAULTS: Settings = {
   densityMode: "comfortable",
   fontSize: 100,
   fontFamily: "sans",
+  themeFonts: {},
   density: 50,
   densityCustom: {
     fontScale: 100,

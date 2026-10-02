@@ -1,5 +1,6 @@
 "use client";
 
+import { effectiveFont } from "@/lib/fonts";
 import { useEffect, useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
@@ -52,7 +53,7 @@ export default function HtmlLang() {
     // data-rail removed: it collided with a global [data-rail] { width: 72px; } rule.
     html.style.setProperty("--dock-offset", railExpanded ? "122px" : "0px");
     html.dataset.wallpaper = settings.wallpaper;
-    html.dataset.font = settings.fontFamily;
+    html.dataset.font = effectiveFont(settings);
     html.dataset.accent = settings.accentColor;
     html.dataset.theme = resolvePremiumTheme(settings.theme);
     html.dataset.aura = settings.aura;
@@ -75,6 +76,7 @@ export default function HtmlLang() {
     settings.densityCustom,
     settings.wallpaper,
     settings.fontFamily,
+    settings.themeFonts,
     settings.theme,
     settings.aura,
     activeSpace,

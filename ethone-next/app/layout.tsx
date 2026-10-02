@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Oswald, Outfit, Poppins } from "next/font/google";
+import { Inter, JetBrains_Mono, Manrope, Nunito, Oswald, Outfit, Playfair_Display, Poppins, Sora, Space_Grotesk } from "next/font/google";
 import "./legacy-v8-tokens.css";
 import "./legacy-v8-components-tokens.css";
 import "./legacy-v8-depth-tokens.css";
@@ -68,6 +68,14 @@ const outfit = Outfit({
   preload: false,
 });
 
+// Polices au choix (Apparence > Police, ou par thème via « Modifier ») : sans préchargement, le navigateur ne
+// les télécharge que si elles sont réellement utilisées.
+const spaceGrotesk = Space_Grotesk({ variable: "--font-space-grotesk", display: "swap", subsets: ["latin"], preload: false });
+const manrope = Manrope({ variable: "--font-manrope", display: "swap", subsets: ["latin"], preload: false });
+const sora = Sora({ variable: "--font-sora", display: "swap", subsets: ["latin"], preload: false });
+const nunito = Nunito({ variable: "--font-nunito", display: "swap", subsets: ["latin"], preload: false });
+const playfair = Playfair_Display({ variable: "--font-playfair", display: "swap", subsets: ["latin"], preload: false });
+
 export const metadata: Metadata = {
   title: "ETHONE",
   description: "ETHONE réinvente votre environnement numérique : un espace unifié pour organiser, créer et avancer.",
@@ -106,7 +114,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${inter.variable} ${jetbrainsMono.variable} ${oswald.variable} ${poppins.variable} ${outfit.variable} h-full max-h-dvh overflow-hidden antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${oswald.variable} ${poppins.variable} ${outfit.variable} ${spaceGrotesk.variable} ${manrope.variable} ${sora.variable} ${nunito.variable} ${playfair.variable} h-full max-h-dvh overflow-hidden antialiased`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >

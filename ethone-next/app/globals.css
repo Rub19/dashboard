@@ -28,12 +28,25 @@ html[data-color-scheme="light"] {
   --menu-kbd-bg: rgba(0, 0, 0, 0.06);
   --menu-shadow: 0 18px 44px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
+/* Matériau façon Apple : couche translucide floutée (le contenu se devine derrière), liseré de lumière en haut.
+   Redevient opaque si le système demande moins de transparence ou plus de contraste. */
 .ethone-menu {
-  background: linear-gradient(180deg, var(--menu-bg-top) 0, var(--menu-bg) 132px), var(--menu-bg);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--menu-bg-top) 88%, transparent) 0, color-mix(in srgb, var(--menu-bg) 84%, transparent) 132px),
+    color-mix(in srgb, var(--menu-bg) 84%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  backdrop-filter: blur(24px) saturate(170%);
   border: 1px solid var(--menu-border);
   border-radius: 16px;
-  box-shadow: var(--menu-shadow);
+  box-shadow: var(--menu-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.07);
   color: var(--text-primary);
+}
+html[data-color-scheme="light"] .ethone-menu { box-shadow: var(--menu-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8); }
+@media (prefers-reduced-transparency: reduce) {
+  .ethone-menu { background: var(--menu-bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  .ethone-menu { background: var(--menu-bg); -webkit-backdrop-filter: none; backdrop-filter: none; border-color: var(--text-muted); }
 }
 .ethone-menu-item {
   display: flex;
@@ -49,8 +62,10 @@ html[data-color-scheme="light"] {
   text-align: left;
   color: var(--text-primary);
   cursor: pointer;
-  transition: background-color 90ms ease;
+  transition: background-color 120ms ease, transform 100ms ease-out;
 }
+/* Retour immédiat à l'appui (pointer-down), pas au relâchement. */
+.ethone-menu-item:active { transform: scale(0.98); }
 .ethone-menu-item:hover,
 .ethone-menu-item:focus-visible {
   background: var(--menu-hover);
@@ -149,6 +164,8 @@ html[data-color-scheme="light"] {
   border-radius: 14px;
   border: 1px solid var(--menu-border);
   background: color-mix(in srgb, var(--surface-raised, #1a1c22) 55%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
 }
 .ethone-toolbar button,
 .ethone-toolbar a {
@@ -156,6 +173,7 @@ html[data-color-scheme="light"] {
   background: transparent !important;
   box-shadow: none !important;
   border-radius: 10px !important;
+  transition: background-color 150ms ease, color 150ms ease, transform 110ms ease-out !important;
 }
 .ethone-toolbar button:hover,
 .ethone-toolbar a:hover,
@@ -187,28 +205,17 @@ html[data-color-scheme="light"] {
   transition: border-color 200ms var(--ease-snap), background-color 200ms var(--ease-snap), color 200ms var(--ease-snap), box-shadow 200ms var(--ease-snap), transform 150ms var(--ease-snap);
 }
 .ethone-search-field:hover {
-  border-color: color-mix(in srgb, var(--accent-primary, #6366f1) 45%, transparent);
+  border-color: color-mix(in srgb, var(--accent-primary, #6366f1) 35%, transparent);
   background: var(--menu-hover);
   color: var(--text-primary);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-primary, #6366f1) 10%, transparent);
 }
 .ethone-search-field:active { transform: scale(0.99); }
 .ethone-search-field:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-primary, #6366f1) 35%, transparent); }
 .ethone-search-field > svg { transition: transform 300ms var(--ease-snap), color 200ms ease; }
-.ethone-search-field:hover > svg { color: var(--accent-primary); transform: scale(1.1) rotate(-8deg); }
+.ethone-search-field:hover > svg { color: var(--accent-primary); }
 .ethone-search-field > kbd { transition: color 200ms ease, background-color 200ms ease; }
 .ethone-search-field:hover > kbd { color: var(--text-primary); }
-/* Reflet discret qui traverse le champ au survol */
-.ethone-search-field::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(110deg, transparent 35%, color-mix(in srgb, var(--text-primary) 7%, transparent) 50%, transparent 65%);
-  transform: translateX(-110%);
-  transition: transform 0.8s var(--ease-snap);
-}
-.ethone-search-field:hover::after { transform: translateX(110%); }
+
 
 /* Outils de la barre du haut : icône qui grossit au survol, appui, focus clavier visible. */
 .ethone-toolbar button svg,
@@ -216,7 +223,8 @@ html[data-color-scheme="light"] {
 .ethone-toolbar button:hover svg,
 .ethone-toolbar a:hover svg { transform: scale(1.12); }
 .ethone-toolbar button:active,
-.ethone-toolbar a:active { transform: scale(0.94); }
+.ethone-toolbar a:active { transform: scale(0.92); }
+.ethone-toolbar button[aria-expanded="true"] svg { color: var(--accent-primary); transform: scale(1.06); }
 .ethone-toolbar button:focus-visible,
 .ethone-toolbar a:focus-visible { outline: none; box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-primary) 55%, transparent) !important; }
 
@@ -253,26 +261,6 @@ html[data-color-scheme="light"] {
   height: 1px;
   margin: 0.5rem 0.5rem;
   background: var(--menu-border);
-}
-
-/* Menus déroulants de la barre du haut : fondu rapide avec 4 px de glissement, coupé si « réduire les animations ». */
-@keyframes ethone-popover-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-.ethone-popover-in {
-  animation: ethone-popover-in 120ms ease-out both;
-}
-@media (prefers-reduced-motion: reduce) {
-  .ethone-popover-in {
-    animation: none;
-  }
 }
 
 /*
@@ -1155,7 +1143,12 @@ html[data-font="outfit"] { --font-theme-override: var(--font-outfit) !important;
 html[data-font="poppins"] { --font-theme-override: var(--font-poppins) !important; }
 html[data-font="oswald"] { --font-theme-override: var(--font-oswald) !important; }
 html[data-font="mono"], html[data-font="jetbrains"] { --font-theme-override: var(--font-geist-mono) !important; }
-html[data-font="serif"], html[data-font="editorial"] { --font-theme-override: ui-serif, Georgia, serif !important; }
+html[data-font="grotesk"] { --font-theme-override: var(--font-space-grotesk) !important; }
+html[data-font="manrope"] { --font-theme-override: var(--font-manrope) !important; }
+html[data-font="sora"] { --font-theme-override: var(--font-sora) !important; }
+html[data-font="nunito"] { --font-theme-override: var(--font-nunito) !important; }
+html[data-font="editorial"] { --font-theme-override: var(--font-playfair), ui-serif, Georgia, serif !important; }
+html[data-font="serif"] { --font-theme-override: ui-serif, Georgia, serif !important; }
 
 [data-aura="classic"] body { background: radial-gradient(ellipse at 50% 10%, rgba(139, 92, 246, 0.16) 0%, transparent 60%), var(--background); }
 [data-aura="boreal"] body { background: radial-gradient(ellipse at 25% 15%, rgba(6, 182, 212, 0.18) 0%, transparent 55%), radial-gradient(ellipse at 80% 20%, rgba(16, 185, 129, 0.16) 0%, transparent 50%), var(--background); }

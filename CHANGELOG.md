@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.49.2 — 2026-10-02
+
+**Police par thème, nouvelles polices et menus façon Apple**
+
+- Bouton « Modifier » sur chaque carte de thème : choisis la police de ce thème (par exemple Oswald de Burgundy sur Dyno Rose). Le nom du thème s'affiche dans sa police.
+- 5 nouvelles polices : Space Grotesk, Manrope, Sora, Nunito et Playfair (qui remplace l'ancien « Editorial »). Chargées seulement si tu les utilises.
+- Les menus de la barre du haut (profil, langue, notifications…) naissent du bouton, se matérialisent avec un léger zoom et repartent par le même chemin à la fermeture. Fond translucide flouté façon Apple (opaque si ton système demande moins de transparence).
+- Barre du haut : retour immédiat à l'appui sur les boutons, survol en douceur, icône de l'outil ouvert à la couleur du thème, champ de recherche plus sobre.
+- Cartes de thème : plus d'agrandissement au survol ni de halo autour du thème sélectionné.
+
 ## v1.49.1 — 2026-10-02
 
 **Carte de bienvenue refaite et personnalisable**

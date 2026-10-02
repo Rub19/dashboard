@@ -17,6 +17,7 @@ export const CATEGORY_KEYS: Record<string, (keyof Settings)[]> = {
     "shadow",
     "fontSize",
     "fontFamily",
+    "themeFonts",
     "densityMode",
     "density",
     "radius",

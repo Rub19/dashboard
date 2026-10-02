@@ -17,16 +17,17 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { useDismiss } from "@/lib/hooks/use-dismiss";
 import { cn } from "@/lib/utils";
 
 /**
  * Menu déroulant ancré à son bouton (profil, langue, notifications, support, focus…).
  *
- * Volontairement sobre : le panneau apparaît en fondu avec un très léger glissement (120 ms, l'animation est coupée
- * si le système demande « réduire les animations »), il est opaque, ne déforme pas le bouton, ne floute rien derrière
- * lui et ne touche pas à la mise en page. Il se ferme au clic à l'extérieur ou avec Échap.
- * L'ancienne version « goutte » (bouton qui se transforme en panneau par ressort et masque animé) a été retirée.
+ * Mouvement façon Apple : le panneau naît du bouton (transform-origin calculé sur le déclencheur), se matérialise
+ * (léger zoom + flou qui se dissipe, ressort sans rebond) et repart par le même chemin à la fermeture. Pas
+ * d'overshoot : un menu n'a pas été « lancé ». « Réduire les animations » (système ou réglage ETHONE, via
+ * MotionPreference) ne garde que le fondu. Il se ferme au clic à l'extérieur ou avec Échap.
  */
 
 type Side = "top" | "bottom";
@@ -149,7 +150,7 @@ export interface PopoverContentProps {
 export function PopoverContent({ children, className }: PopoverContentProps) {
   const { open, setOpen, side, align, gap, contentId, triggerRef, contentRef } = usePopoverContext("PopoverContent");
   const [mounted, setMounted] = useState(false);
-  const [position, setPosition] = useState<{ left: number; top: number } | null>(null);
+  const [position, setPosition] = useState<{ left: number; top: number; originX: number } | null>(null);
 
   useEffect(() => setMounted(true), []);
 
@@ -164,14 +165,16 @@ export function PopoverContent({ children, className }: PopoverContentProps) {
     left = Math.max(VIEWPORT_MARGIN, Math.min(left, window.innerWidth - panel.width - VIEWPORT_MARGIN));
     let top = side === "bottom" ? trigger.bottom + gap : trigger.top - gap - panel.height;
     top = Math.max(VIEWPORT_MARGIN, Math.min(top, window.innerHeight - panel.height - VIEWPORT_MARGIN));
-    setPosition((prev) => (prev && Math.abs(prev.left - left) < 0.5 && Math.abs(prev.top - top) < 0.5 ? prev : { left, top }));
+    // Point d'origine de l'animation : le centre du bouton, vu depuis le panneau.
+    const originX = Math.max(0, Math.min(panel.width, trigger.left + trigger.width / 2 - left));
+    setPosition((prev) =>
+      prev && Math.abs(prev.left - left) < 0.5 && Math.abs(prev.top - top) < 0.5 && Math.abs(prev.originX - originX) < 0.5 ? prev : { left, top, originX }
+    );
   }, [align, side, gap, triggerRef, contentRef]);
 
   useLayoutEffect(() => {
-    if (!open) {
-      setPosition(null);
-      return;
-    }
+    // Fermé : on garde la dernière position pendant l'animation de sortie (remise à zéro à la fin de celle-ci).
+    if (!open) return;
     place();
     const observer = new ResizeObserver(place);
     if (contentRef.current) observer.observe(contentRef.current);
@@ -184,20 +187,35 @@ export function PopoverContent({ children, className }: PopoverContentProps) {
     };
   }, [open, place, contentRef, mounted]);
 
-  if (!mounted || !open) return null;
+  if (!mounted) return null;
 
+  const fromY = side === "bottom" ? -6 : 6;
   return createPortal(
-    <div
-      ref={contentRef}
-      id={contentId}
-      role="dialog"
-      data-popover-panel=""
-      className={cn("fixed", position && "ethone-popover-in", className)}
-      // Invisible jusqu'à la première mesure : pas de flash à la mauvaise position.
-      style={{ left: position?.left ?? 0, top: position?.top ?? 0, zIndex: 10000, visibility: position ? "visible" : "hidden" }}
-    >
-      {children}
-    </div>,
+    <AnimatePresence onExitComplete={() => setPosition(null)}>
+      {open && (
+        <motion.div
+          key="popover"
+          ref={contentRef}
+          id={contentId}
+          role="dialog"
+          data-popover-panel=""
+          className={cn("fixed", className)}
+          initial={{ opacity: 0, scale: 0.94, y: fromY, filter: "blur(4px)" }}
+          animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)", transition: { type: "spring", bounce: 0, duration: 0.32 } }}
+          exit={{ opacity: 0, scale: 0.96, y: fromY, filter: "blur(3px)", transition: { duration: 0.16, ease: [0.4, 0, 1, 1] } }}
+          // Invisible jusqu'à la première mesure : pas de flash à la mauvaise position.
+          style={{
+            left: position?.left ?? 0,
+            top: position?.top ?? 0,
+            zIndex: 10000,
+            visibility: position ? "visible" : "hidden",
+            transformOrigin: `${position?.originX ?? 0}px ${side === "bottom" ? "0%" : "100%"}`,
+          }}
+        >
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>,
     document.body,
   );
 }

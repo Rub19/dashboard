@@ -1,5 +1,6 @@
 "use client";
 
+import { FONT_OPTIONS } from "@/lib/fonts";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -152,13 +153,8 @@ const AURAS = [
 // "sans" = police du thème actif ; les autres forcent leur police quel que soit le thème.
 const FONTS = [
   { id: "sans", label: "Police du thème" },
-  { id: "inter", label: "Inter" },
-  { id: "outfit", label: "Outfit" },
-  { id: "poppins", label: "Poppins (Asphalt)" },
-  { id: "oswald", label: "Oswald (Burgundy)" },
-  { id: "jetbrains", label: "JetBrains Mono" },
-  { id: "editorial", label: "Editorial Serif" },
-] as const;
+  ...FONT_OPTIONS.map((f) => ({ id: f.id, label: f.origin ? `${f.label} (${f.origin})` : f.label })),
+];
 
 const RADIUS_STYLES = [
   { id: "rounded", label: "Arrondi" },

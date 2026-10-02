@@ -55,12 +55,8 @@ export default function LanguageSwitcher() {
         <motion.div
           role="listbox"
           aria-label={i18n("language")}
-          initial={reduced ? false : { opacity: 0, y: -6, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.22, ease: EASE_SNAP }}
           onMouseLeave={() => setHovered(null)}
-          className="origin-top-right overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-1.5 shadow-[0_24px_60px_-24px_rgb(0_0_0/0.7)] backdrop-blur-2xl"
-          style={{ background: "color-mix(in srgb, var(--bg-card, var(--bg-main)) 95%, transparent)" }}
+          className="ethone-menu overflow-hidden p-1.5"
         >
           <p className="px-3 pb-1.5 pt-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
             {i18n("language")}

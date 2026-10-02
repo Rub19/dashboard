@@ -1,5 +1,6 @@
 "use client";
 
+import { effectiveFont } from "@/lib/fonts";
 import { activityJournal } from "@/lib/activity-journal";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { deepEqual } from "@/lib/equal";
@@ -340,7 +341,7 @@ export default function SettingsProvider({
     root.dataset.background = settings.backgroundEffect;
     root.dataset.backgroundQuality = settings.backgroundQuality;
     root.dataset.wallpaper = settings.wallpaper;
-    root.dataset.font = settings.fontFamily;
+    root.dataset.font = effectiveFont(settings);
     root.dataset.accent = settings.accentColor;
     root.dataset.layout = settings.layoutPreset;
     root.dataset.radiusStyle = settings.radiusStyle;

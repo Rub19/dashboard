@@ -9,6 +9,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useSettingsForm } from "./SettingsFormContext";
 import { ACCENTS } from "@/components/SettingsProvider";
 import { type Settings, DEFAULTS } from "@/lib/settings";
+import { FONT_OPTIONS } from "@/lib/fonts";
 import { resolveAccent } from "@/lib/theme-engine";
 import { cn } from "@/lib/utils";
 import BentoCard from "@/components/ui/BentoCard";
@@ -39,26 +40,17 @@ const PACKS = [
   { id: "radix", label: "Radix" },
 ] as const;
 
-// "sans" = police du thème actif ; les autres forcent leur police quel que soit le thème.
+// "sans" = police du thème actif (d'origine, ou choisie via « Modifier » sur la carte du thème) ;
+// les autres forcent leur police quel que soit le thème. Liste unique : lib/fonts.ts.
 const FONTS = [
   { id: "sans", label: "Police du thème" },
-  { id: "inter", label: "Inter" },
-  { id: "outfit", label: "Outfit" },
-  { id: "poppins", label: "Poppins (Asphalt)" },
-  { id: "oswald", label: "Oswald (Burgundy)" },
-  { id: "jetbrains", label: "JetBrains Mono" },
-  { id: "editorial", label: "Editorial Serif" },
-] as const;
+  ...FONT_OPTIONS.map((f) => ({ id: f.id, label: f.origin ? `${f.label} (${f.origin})` : f.label })),
+];
 
 /** Aperçu « Aa » de chaque police dans sa propre famille (même chargement que l'interface). */
 const FONT_PREVIEW: Record<string, string> = {
   sans: "var(--font-theme-override, var(--font-geist-sans))",
-  inter: "var(--font-geist-sans)",
-  outfit: "var(--font-outfit)",
-  poppins: "var(--font-poppins)",
-  oswald: "var(--font-oswald)",
-  jetbrains: "var(--font-geist-mono)",
-  editorial: "ui-serif, Georgia, serif",
+  ...Object.fromEntries(FONT_OPTIONS.map((f) => [f.id, f.css])),
 };
 
 const DOCK_SCALES = [
@@ -285,9 +277,9 @@ export default function AppearanceSettings() {
           <div className="py-2">
             <p className="text-sm font-medium text-[var(--text-primary)]">Police</p>
             <p className="mb-3 text-xs text-[var(--text-muted)]">
-              « Police du thème » suit le thème actif ; les autres s&apos;appliquent à tous les thèmes et sont enregistrées dans vos presets.
+              « Police du thème » suit le thème actif : sa police d&apos;origine, ou celle que tu lui choisis avec « Modifier » sur sa carte (Studio de thèmes). Les autres s&apos;appliquent à tous les thèmes.
             </p>
-            <div role="radiogroup" aria-label="Police" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div role="radiogroup" aria-label="Police" className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
               {FONTS.map((f) => {
                 const active = settings.fontFamily === f.id;
                 return (

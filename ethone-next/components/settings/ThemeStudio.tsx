@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Check,
@@ -13,7 +13,10 @@ import {
   Upload,
   Layers,
   Trash2,
+  Pencil,
+  X,
 } from "@/components/icons/ph";
+import { FONT_OPTIONS, isFontId, themeOriginFontLabel, type FontId } from "@/lib/fonts";
 import { useToast } from "@/components/ToastProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import {
@@ -40,6 +43,27 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
   // Tabs: 'preset' | 'accents' | 'builder' | 'import-export'
   const [activeTab, setActiveTab] = useState<"preset" | "accents" | "builder" | "import-export">("preset");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  // Carte dont l'éditeur de police est ouvert (bouton « Modifier »).
+  const [fontEditorFor, setFontEditorFor] = useState<string | null>(null);
+  useEffect(() => {
+    if (!fontEditorFor) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setFontEditorFor(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [fontEditorFor]);
+  const themeFonts = settings.themeFonts || {};
+  /** Police réellement affichée pour un thème (même règle que effectiveFont dans lib/fonts). */
+  const fontCssFor = (theme: ThemeDefinition) => {
+    const id = settings.fontFamily !== "sans" ? settings.fontFamily : themeFonts[theme.id];
+    const opt = FONT_OPTIONS.find((f) => f.id === id);
+    return opt ? opt.css : theme.fontFamily || "var(--font-geist-sans)";
+  };
+  const setThemeFont = (themeId: string, fontId: FontId | null) => {
+    const next = { ...themeFonts };
+    if (fontId && isFontId(fontId)) next[themeId] = fontId;
+    else delete next[themeId];
+    update({ themeFonts: next });
+  };
 
   // Preview / Rollback state
   const [previewThemeId, setPreviewThemeId] = useState<string | null>(null);
@@ -428,13 +452,12 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
               return (
                 <motion.div
                   key={theme.id}
-                  whileHover={{ scale: 1.015 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleSelectTheme(theme.id, true)}
+                  whileTap={fontEditorFor === theme.id ? undefined : { scale: 0.985 }}
+                  onClick={() => fontEditorFor !== theme.id && handleSelectTheme(theme.id, true)}
                   className={cn(
-                    "group relative flex flex-col justify-between overflow-hidden rounded-[var(--panel-radius)] border-2 p-4 text-left transition-all cursor-pointer shadow-lg",
+                    "group relative flex flex-col justify-between overflow-hidden rounded-[var(--panel-radius)] border-2 p-4 text-left transition-colors cursor-pointer shadow-lg",
                     isSelected
-                      ? "border-[var(--accent-primary)] shadow-[0_0_24px_var(--glow-color)]"
+                      ? "border-[var(--accent-primary)]"
                       : "border-[var(--panel-border)]/60 hover:border-[var(--panel-border)]"
                   )}
                   style={{
@@ -455,7 +478,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                   {/* Header info */}
                   <div>
                     <div className="flex items-center gap-2 mb-1.5 pr-8">
-                      <h4 className="text-sm font-bold truncate" style={{ color: theme.textPrimary }}>
+                      <h4 className="text-base font-bold truncate" style={{ color: theme.textPrimary, fontFamily: fontCssFor(theme) }}>
                         {theme.label}
                       </h4>
                       {theme.isCustom && (
@@ -544,6 +567,20 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                       <span>Prévisualiser</span>
                     </button>
 
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFontEditorFor(theme.id);
+                      }}
+                      aria-expanded={fontEditorFor === theme.id}
+                      className="text-[11px] font-semibold opacity-70 hover:opacity-100 flex items-center gap-1 transition-opacity"
+                    >
+                      <Pencil className="h-3 w-3" />
+                      <span>Modifier</span>
+                      {themeFonts[theme.id] && <span className="opacity-70">· {FONT_OPTIONS.find((f) => f.id === themeFonts[theme.id])?.label}</span>}
+                    </button>
+
                     <div className="flex items-center gap-1">
                       <button
                         type="button"
@@ -569,6 +606,60 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                       )}
                     </div>
                   </div>
+
+                  {/* Éditeur de police : émerge du pied de la carte (là où est « Modifier ») et y retourne. */}
+                  <AnimatePresence>
+                    {fontEditorFor === theme.id && (
+                      <motion.div
+                        key="font-editor"
+                        onClick={(e) => e.stopPropagation()}
+                        role="dialog"
+                        aria-label={"Police du thème " + theme.label}
+                        initial={{ opacity: 0, y: 18, scale: 0.97, filter: "blur(6px)" }}
+                        animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                        exit={{ opacity: 0, y: 18, scale: 0.97, filter: "blur(6px)" }}
+                        transition={{ type: "spring", bounce: 0, duration: 0.35 }}
+                        style={{ transformOrigin: "bottom center" }}
+                        className="absolute inset-x-2 bottom-2 z-30 max-h-[calc(100%-1rem)] cursor-default overflow-y-auto rounded-[calc(var(--panel-radius)-4px)] border border-[var(--panel-border)] bg-[var(--bg-card)]/95 p-3 text-[var(--text-primary)] shadow-[0_18px_40px_-12px_rgba(0,0,0,0.55)] backdrop-blur-xl os-scroll"
+                      >
+                        <div className="mb-2 flex items-center justify-between gap-2">
+                          <span className="text-xs font-semibold">Police de {theme.label}</span>
+                          <button type="button" onClick={() => setFontEditorFor(null)} aria-label="Fermer" className="grid h-6 w-6 place-items-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] active:scale-90">
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                        {settings.fontFamily !== "sans" && (
+                          <p className="mb-2 rounded-[var(--inset-radius)] bg-[var(--warning)]/10 px-2 py-1.5 text-[11px] text-[var(--text-muted)]">
+                            Ta police globale l&apos;emporte sur tous les thèmes.{" "}
+                            <button type="button" onClick={() => update({ fontFamily: "sans" })} className="font-semibold text-[var(--accent-primary)] hover:underline">
+                              Utiliser la police du thème
+                            </button>
+                          </p>
+                        )}
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {[{ id: null as FontId | null, label: "D'origine (" + themeOriginFontLabel(theme.fontFamily) + ")", css: theme.fontFamily || "var(--font-geist-sans)" }, ...FONT_OPTIONS].map((f) => {
+                            const active = (themeFonts[theme.id] ?? null) === f.id;
+                            return (
+                              <button
+                                key={f.id ?? "origin"}
+                                type="button"
+                                onClick={() => setThemeFont(theme.id, f.id)}
+                                aria-pressed={active}
+                                className={cn(
+                                  "relative isolate flex items-center gap-2 rounded-[var(--inset-radius)] border px-2 py-1.5 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]",
+                                  active ? "border-transparent" : "border-[var(--panel-border)] hover:border-[var(--text-primary)]/20"
+                                )}
+                              >
+                                {active && <motion.span layoutId={"theme-font-" + theme.id} transition={{ type: "spring", bounce: 0, duration: 0.3 }} className="absolute inset-0 -z-10 rounded-[inherit] border border-[var(--accent-primary)]/60 bg-[var(--accent-primary)]/12" />}
+                                <span className="text-base leading-none" style={{ fontFamily: f.css }}>Aa</span>
+                                <span className="min-w-0 truncate text-[11px]">{f.label}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               );
             })}

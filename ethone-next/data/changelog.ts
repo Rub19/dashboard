@@ -41431,6 +41431,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_49_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_49_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_49_1_de);
 
+const v1_49_2_fr: ChangelogEntry = {
+  version: "v1.49.2",
+  date: "2026-10-02",
+  title: "Police par thème, nouvelles polices et menus façon Apple",
+  items: [
+    "Bouton « Modifier » sur chaque carte de thème : choisis la police de ce thème (par exemple Oswald de Burgundy sur Dyno Rose). Le nom du thème s'affiche dans sa police.",
+    "5 nouvelles polices : Space Grotesk, Manrope, Sora, Nunito et Playfair (qui remplace l'ancien « Editorial »). Chargées seulement si tu les utilises.",
+    "Les menus de la barre du haut (profil, langue, notifications…) naissent du bouton, se matérialisent avec un léger zoom et repartent par le même chemin à la fermeture. Fond translucide flouté façon Apple (opaque si ton système demande moins de transparence).",
+    "Barre du haut : retour immédiat à l'appui sur les boutons, survol en douceur, icône de l'outil ouvert à la couleur du thème, champ de recherche plus sobre.",
+    "Cartes de thème : plus d'agrandissement au survol ni de halo autour du thème sélectionné.",
+  ],
+};
+
+const v1_49_2_en: ChangelogEntry = {
+  version: "v1.49.2",
+  date: "2026-10-02",
+  title: "Per-theme font, new fonts and Apple-style menus",
+  items: [
+    "\"Edit\" button on every theme card: pick that theme's font (e.g. Burgundy's Oswald on Dyno Rose). The theme name shows in its font.",
+    "5 new fonts: Space Grotesk, Manrope, Sora, Nunito and Playfair (replacing the old \"Editorial\"). Only loaded if you use them.",
+    "Top bar menus (profile, language, notifications…) grow from their button, materialize with a slight zoom and leave the same way. Apple-style translucent blurred background (opaque if your system asks for less transparency).",
+    "Top bar: instant press feedback on buttons, smooth hover, the open tool's icon uses the theme colour, calmer search field.",
+    "Theme cards: no more hover zoom or glow around the selected theme.",
+  ],
+};
+
+const v1_49_2_es: ChangelogEntry = {
+  version: "v1.49.2",
+  date: "2026-10-02",
+  title: "Fuente por tema, nuevas fuentes y menús estilo Apple",
+  items: [
+    "Botón «Modificar» en cada tema para elegir su fuente, 5 fuentes nuevas y menús de la barra superior que nacen del botón.",
+  ],
+};
+
+const v1_49_2_de: ChangelogEntry = {
+  version: "v1.49.2",
+  date: "2026-10-02",
+  title: "Schrift pro Theme, neue Schriften und Menüs im Apple-Stil",
+  items: [
+    "„Bearbeiten“ auf jeder Theme-Karte für die Schrift, 5 neue Schriften und Menüs, die aus ihrem Button wachsen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_49_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_49_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_49_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_49_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

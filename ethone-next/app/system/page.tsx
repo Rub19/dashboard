@@ -105,8 +105,8 @@ function WorkspaceCard({
               <Icon name={w.icon} className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-sm font-semibold text-white">{i18n(w.id)}</p>
-              <p className="text-[11px] text-zinc-400">{w.flow}</p>
+              <p className="text-sm font-semibold text-[var(--text-primary)]">{i18n(w.id)}</p>
+              <p className="text-[11px] text-[var(--text-muted)]">{w.flow}</p>
             </div>
           </div>
           {isActive && (
@@ -116,13 +116,13 @@ function WorkspaceCard({
           )}
         </div>
 
-        <p className="text-xs leading-relaxed text-zinc-400">{i18n(`${w.id}Desc`)}</p>
+        <p className="text-xs leading-relaxed text-[var(--text-muted)]">{i18n(`${w.id}Desc`)}</p>
 
         <div className="flex flex-wrap gap-2">
           {w.steps.map((step, i) => (
             <span
               key={i}
-              className="rounded-md bg-white/[0.04] px-2 py-1 text-[10px] text-zinc-300"
+              className="rounded-md bg-white/[0.04] px-2 py-1 text-[10px] text-[var(--text-primary)]/85"
             >
               <b className="mr-1 text-[var(--accent)]">{i + 1}</b>
               {step}
@@ -135,7 +135,7 @@ function WorkspaceCard({
             {w.widgets.map((widgetId) => (
               <span
                 key={widgetId}
-                className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.04] text-zinc-400"
+                className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.04] text-[var(--text-muted)]"
                 title={widgetId}
               >
                 <Icon name={WIDGET_ICONS[widgetId]} className="h-3.5 w-3.5" />
@@ -155,7 +155,7 @@ function WorkspaceCard({
             </Button>
             <Link
               href={w.id === "gaming" ? "/flows" : "/spaces"}
-              className="text-xs text-zinc-400 hover:text-[var(--accent)]"
+              className="text-xs text-[var(--text-muted)] hover:text-[var(--accent)]"
             >
               {i18n("openAction")}
             </Link>
@@ -186,8 +186,8 @@ function StatCard({
           <Icon name={icon} className="h-5 w-5" />
         </span>
         <div>
-          <p className="text-2xl font-bold text-white">{value}</p>
-          <p className="text-xs text-zinc-400">{label}</p>
+          <p className="text-2xl font-bold text-[var(--text-primary)]">{value}</p>
+          <p className="text-xs text-[var(--text-muted)]">{label}</p>
         </div>
       </div>
     </BentoCard>
@@ -245,9 +245,9 @@ export default function SystemPage() {
     <div className="flex h-full min-h-0 w-full flex-col overflow-hidden">
       <div className="stagger-children min-h-0 w-full flex-1 space-y-6 overflow-y-auto p-6 pb-10 no-scrollbar">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Mission Control</p>
-          <h1 className="text-2xl font-bold text-white">{i18n("systemTitle")}</h1>
-          <p className="text-sm text-zinc-400">{i18n("systemDescription")}</p>
+          <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">Mission Control</p>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{i18n("systemTitle")}</h1>
+          <p className="text-sm text-[var(--text-muted)]">{i18n("systemDescription")}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -255,7 +255,7 @@ export default function SystemPage() {
             icon="layout-grid"
             value={spaces.length}
             label={i18n("spaces")}
-            tone="bg-violet-500/10 text-violet-400"
+            tone="bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
           />
           <StatCard
             icon="activity"
@@ -273,7 +273,7 @@ export default function SystemPage() {
             icon="zap"
             value={activeFlowsCount}
             label={i18n("flows")}
-            tone="bg-sky-500/10 text-sky-400"
+            tone="bg-[var(--info)]/10 text-[var(--info)]"
           />
         </div>
 
@@ -295,7 +295,7 @@ export default function SystemPage() {
             scrollable={false}
           >
             {recentSpaces.length === 0 ? (
-              <div className="flex h-full items-center text-sm text-zinc-400">
+              <div className="flex h-full items-center text-sm text-[var(--text-muted)]">
                 {i18n("noSpaces")}
               </div>
             ) : (
@@ -312,14 +312,14 @@ export default function SystemPage() {
                       <div className="flex items-center gap-2">
                         <span
                           className={`flex h-8 w-8 items-center justify-center rounded-lg ${
-                            workspace?.accent.icon ?? "bg-zinc-500/10 text-zinc-400"
+                            workspace?.accent.icon ?? "bg-[var(--text-muted)]/10 text-[var(--text-muted)]"
                           }`}
                         >
                           <Icon name={workspace?.icon ?? "layout-grid"} className="h-4 w-4" />
                         </span>
                         <div>
-                          <p className="text-sm font-medium text-white">{space.label}</p>
-                          <p className="text-[10px] text-zinc-400">
+                          <p className="text-sm font-medium text-[var(--text-primary)]">{space.label}</p>
+                          <p className="text-[10px] text-[var(--text-muted)]">
                             {new Date(space.updated_at).toLocaleDateString()}
                           </p>
                         </div>
@@ -342,7 +342,7 @@ export default function SystemPage() {
             scrollable={false}
           >
             {recentFlows.length === 0 ? (
-              <div className="flex h-full items-center text-sm text-zinc-400">
+              <div className="flex h-full items-center text-sm text-[var(--text-muted)]">
                 {i18n("noFlows")}
               </div>
             ) : (
@@ -359,14 +359,14 @@ export default function SystemPage() {
                       <div className="flex items-center gap-2">
                         <span
                           className={`flex h-8 w-8 items-center justify-center rounded-lg ${
-                            workspace?.accent.icon ?? "bg-zinc-500/10 text-zinc-400"
+                            workspace?.accent.icon ?? "bg-[var(--text-muted)]/10 text-[var(--text-muted)]"
                           }`}
                         >
                           <Icon name={workspace?.icon ?? "workflow"} className="h-4 w-4" />
                         </span>
                         <div>
-                          <p className="text-sm font-medium text-white">{flow.label}</p>
-                          <p className="text-[10px] text-zinc-400">
+                          <p className="text-sm font-medium text-[var(--text-primary)]">{flow.label}</p>
+                          <p className="text-[10px] text-[var(--text-muted)]">
                             {flow.count} {i18n("executions")}
                           </p>
                         </div>
@@ -388,14 +388,14 @@ export default function SystemPage() {
           <BentoCard noHeader scrollable={false}>
             <Link
               href="/spaces"
-              className="flex h-full items-center gap-3 text-zinc-200 hover:text-[var(--accent)]"
+              className="flex h-full items-center gap-3 text-[var(--text-primary)] hover:text-[var(--accent)]"
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                 <Icon name="layout-grid" className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-sm font-semibold text-white">{i18n("spacesTitle")}</p>
-                <p className="text-xs text-zinc-400">{i18n("spacesDescription")}</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">{i18n("spacesTitle")}</p>
+                <p className="text-xs text-[var(--text-muted)]">{i18n("spacesDescription")}</p>
               </div>
             </Link>
           </BentoCard>
@@ -403,14 +403,14 @@ export default function SystemPage() {
           <BentoCard noHeader scrollable={false}>
             <Link
               href="/flows"
-              className="flex h-full items-center gap-3 text-zinc-200 hover:text-[var(--accent)]"
+              className="flex h-full items-center gap-3 text-[var(--text-primary)] hover:text-[var(--accent)]"
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
                 <Icon name="workflow" className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-sm font-semibold text-white">{i18n("flowsTitle")}</p>
-                <p className="text-xs text-zinc-400">{i18n("flowsDescription")}</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">{i18n("flowsTitle")}</p>
+                <p className="text-xs text-[var(--text-muted)]">{i18n("flowsDescription")}</p>
               </div>
             </Link>
           </BentoCard>

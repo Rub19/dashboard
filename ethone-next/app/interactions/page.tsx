@@ -275,7 +275,7 @@ const CATEGORY_MAP: Record<string, string> = {
 const CATEGORY_META: Record<string, { color: string; icon: React.ElementType }> = {
   "Interface & Navigation": { color: "bg-[var(--accent-primary)]", icon: LayoutGrid },
   "Actions IA / Brain": { color: "bg-[var(--info)]", icon: Sparkles },
-  "Raccourcis & Commandes": { color: "bg-purple-400", icon: Command },
+  "Raccourcis & Commandes": { color: "bg-[var(--accent-primary)]", icon: Command },
   "Fichiers & Upload": { color: "bg-amber-400", icon: FileUp },
 };
 
@@ -300,7 +300,7 @@ function iconForKind(kind: string): { icon: React.ElementType; color: string; la
     case "eventCreate":
       return { icon: Calendar, color: "text-amber-400", label: "Événement créé" };
     case "fileCreate":
-      return { icon: FileUp, color: "text-purple-400", label: "Fichier ajouté" };
+      return { icon: FileUp, color: "text-[var(--accent-primary)]", label: "Fichier ajouté" };
     case "spaceSwitch":
       return { icon: LayoutGrid, color: "text-[var(--text-primary)]/85", label: "Espace changé" };
     case "sync":

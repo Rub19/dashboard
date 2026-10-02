@@ -82,7 +82,7 @@ export default function WidgetPickerModal({
               "shrink-0 rounded-xl px-3 py-1.5 font-semibold transition-all cursor-pointer",
               selectedCategory === "all"
                 ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-xs"
-                : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-white"
+                : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
             Tous ({Object.keys(WIDGET_REGISTRY).length})
@@ -94,8 +94,8 @@ export default function WidgetPickerModal({
             className={cn(
               "shrink-0 flex items-center gap-1.5 rounded-xl px-3 py-1.5 font-semibold transition-all cursor-pointer",
               selectedCategory === "brain"
-                ? "bg-purple-600 text-white shadow-xs"
-                : "bg-purple-950/20 text-purple-300 hover:bg-purple-900/30"
+                ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-xs"
+                : "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/30"
             )}
           >
             <Sparkles className="h-3 w-3" />
@@ -113,7 +113,7 @@ export default function WidgetPickerModal({
                   "shrink-0 rounded-xl px-3 py-1.5 font-semibold transition-all cursor-pointer",
                   active
                     ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-xs"
-                    : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-white"
+                    : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
               >
                 {cat.label}
@@ -154,7 +154,7 @@ export default function WidgetPickerModal({
                     </div>
 
                     {manifest.brainMatchScore && manifest.brainMatchScore >= 90 && (
-                      <span className="flex items-center gap-1 rounded-md bg-purple-500/15 px-1.5 py-0.5 text-[9px] font-bold text-purple-300">
+                      <span className="flex items-center gap-1 rounded-md bg-[var(--accent-primary)]/15 px-1.5 py-0.5 text-[9px] font-bold text-[var(--accent-primary)]">
                         <Sparkles className="h-2.5 w-2.5" />
                         {manifest.brainMatchScore}%
                       </span>
@@ -175,7 +175,7 @@ export default function WidgetPickerModal({
                     {manifest.permissions.map((p) => (
                       <span
                         key={p}
-                        className="rounded-md bg-white/5 px-1.5 py-0.5 text-[9px] font-mono text-zinc-400"
+                        className="rounded-md bg-[var(--text-primary)]/5 px-1.5 py-0.5 text-[9px] font-mono text-[var(--text-muted)]"
                       >
                         {p}
                       </span>

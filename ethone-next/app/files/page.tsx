@@ -524,19 +524,19 @@ export default function FilesPage() {
                 </div>
 
                 {quota && quota.total > 0 && (
-                  <div className="rounded-[var(--panel-radius)] border border-blue-500/30 bg-blue-500/10 p-4 space-y-2">
+                  <div className="rounded-[var(--panel-radius)] border border-[var(--info)]/30 bg-[var(--info)]/10 p-4 space-y-2">
                     <div className="flex items-center justify-between">
-                      <p className="text-xs font-bold text-blue-300 flex items-center gap-2">
-                        <Cloud className="h-4 w-4 text-blue-400" />
+                      <p className="text-xs font-bold text-[var(--info)] flex items-center gap-2">
+                        <Cloud className="h-4 w-4 text-[var(--info)]" />
                         Quota Google Drive
                       </p>
-                      <span className="font-mono text-xs font-bold text-blue-300">
+                      <span className="font-mono text-xs font-bold text-[var(--info)]">
                         {formatBytes(quota.used)} / {formatBytes(quota.total)}
                       </span>
                     </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-blue-950/60">
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--info)]/60">
                       <div
-                        className="h-full rounded-full bg-blue-500 transition-all"
+                        className="h-full rounded-full bg-[var(--info)] transition-all"
                         style={{ width: `${Math.min(100, Math.round((quota.used / quota.total) * 100))}%` }}
                       />
                     </div>

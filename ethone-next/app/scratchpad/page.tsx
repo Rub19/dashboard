@@ -174,7 +174,7 @@ export default function ScratchpadPage() {
               }}
               className="flex w-full items-center gap-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-2 text-left text-sm hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)] disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
             >
-              <Copy className="h-4 w-4 text-zinc-400" />
+              <Copy className="h-4 w-4 text-[var(--text-muted)]" />
               <span>{i18n("scratchpadCopy", "Copier tout le texte")}</span>
             </button>
             <button

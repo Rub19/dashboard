@@ -138,11 +138,11 @@ interface BotModule {
 const MODULE_TINTS: Record<string, string> = {
   overview: "text-indigo-400", security: "text-[var(--accent-primary)]", commands: "text-sky-400", suggestions: "text-yellow-300",
   leveling: "text-amber-400", giveaways: "text-pink-400", tickets: "text-orange-400", welcome: "text-fuchsia-400",
-  moderation: "text-red-400", logs: "text-slate-300", music: "text-[var(--accent-primary)]", invites: "text-teal-400",
+  moderation: "text-red-400", logs: "text-[var(--text-primary)]/85", music: "text-[var(--accent-primary)]", invites: "text-teal-400",
   voice: "text-cyan-400", backups: "text-blue-400", ai: "text-violet-400", forms: "text-lime-400",
   polls: "text-purple-400", roles: "text-rose-400", analytics: "text-indigo-300", events: "text-orange-300",
   server: "text-zinc-300", starboard: "text-yellow-400", sticky: "text-amber-300", reminders: "text-sky-300",
-  afk: "text-blue-300", counting: "text-teal-300", stats: "text-sky-300", statroles: "text-amber-300", secureroles: "text-[var(--accent-primary)]", settings: "text-zinc-300", birthdays: "text-pink-300", tags: "text-cyan-300", serverstats: "text-[var(--accent-primary)]",
+  afk: "text-blue-300", counting: "text-teal-300", stats: "text-sky-300", statroles: "text-amber-300", secureroles: "text-[var(--accent-primary)]", settings: "text-[var(--text-primary)]/85", birthdays: "text-pink-300", tags: "text-cyan-300", serverstats: "text-[var(--accent-primary)]",
   highlights: "text-lime-300", bot: "text-indigo-400",
 };
 

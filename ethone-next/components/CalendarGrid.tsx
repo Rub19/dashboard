@@ -175,9 +175,9 @@ export default function CalendarGrid({
                 {dayDots.slice(0, 4).map((category, idx) => {
                   const color =
                     category === "meeting"
-                      ? "bg-blue-500"
+                      ? "bg-[var(--info)]"
                       : category === "bill"
-                      ? "bg-purple-500"
+                      ? "bg-[var(--accent-primary)]"
                       : "bg-[var(--accent-primary)]";
                   return (
                     <span

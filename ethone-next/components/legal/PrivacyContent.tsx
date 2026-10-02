@@ -1,6 +1,7 @@
 "use client";
 
 import { useI18n } from "@/lib/hooks/useI18n";
+import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/support";
 
 export default function PrivacyContent() {
   const i18n = useI18n();
@@ -85,8 +86,8 @@ export default function PrivacyContent() {
             <h2 className="text-lg font-semibold text-[var(--text-primary)]">{i18n("privacyS5Title", "5. Vos droits")}</h2>
             <p className="mt-2">
               {i18n("privacyS5Part1", "Vous pouvez à tout moment : déconnecter une intégration depuis la page Connexions, retirer le Bot d'un serveur, ou demander la suppression de votre compte et des données associées en nous contactant à")}{" "}
-              <a href="mailto:rub19.mailpro@gmail.com" className="underline underline-offset-2">
-                rub19.mailpro@gmail.com
+              <a href={SUPPORT_MAILTO} className="underline underline-offset-2">
+                {SUPPORT_EMAIL}
               </a>
               . {i18n("privacyS5Part2", "Nous traiterons toute demande de suppression dans un délai raisonnable.")}
             </p>
@@ -111,8 +112,8 @@ export default function PrivacyContent() {
             <h2 className="text-lg font-semibold text-[var(--text-primary)]">{i18n("privacyS9Title", "9. Contact")}</h2>
             <p className="mt-2">
               {i18n("privacyS9BodyPrefix", "Pour toute question sur cette politique ou vos données :")}{" "}
-              <a href="mailto:rub19.mailpro@gmail.com" className="underline underline-offset-2">
-                rub19.mailpro@gmail.com
+              <a href={SUPPORT_MAILTO} className="underline underline-offset-2">
+                {SUPPORT_EMAIL}
               </a>
               .
             </p>

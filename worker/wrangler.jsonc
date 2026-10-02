@@ -14,6 +14,8 @@
   },
   "vars": {
     "ENVIRONMENT": "production",
+    "SUPPORT_ADDRESS": "support@ethone.dev",
+    "SUPPORT_FORWARD_TO": "rub19.mailpro@gmail.com",
     "WORKER_VERSION": "1.0.0",
     "ALLOWED_ORIGINS": "https://ethone.dev",
     "TURNSTILE_HOSTNAMES": "ethone.dev",

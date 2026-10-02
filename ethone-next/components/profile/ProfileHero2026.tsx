@@ -38,12 +38,12 @@ interface ProfileHero2026Props {
 
 const PRESENCE_CONFIG: Record<PresenceStatus, { label: string; dot: string; glow: string }> = {
   online: { label: "En ligne", dot: "bg-emerald-500", glow: "shadow-emerald-500/50" },
-  focus: { label: "Deep Work (Focus)", dot: "bg-purple-500", glow: "shadow-purple-500/50" },
+  focus: { label: "Deep Work (Focus)", dot: "bg-[var(--accent-primary)]", glow: "shadow-[color:var(--accent-primary)]/50" },
   gaming: { label: "En jeu (Gaming)", dot: "bg-rose-500", glow: "shadow-rose-500/50" },
   busy: { label: "Occupé", dot: "bg-amber-500", glow: "shadow-amber-500/50" },
   dnd: { label: "Ne pas déranger", dot: "bg-red-500", glow: "shadow-red-500/50" },
-  away: { label: "Absent", dot: "bg-zinc-400", glow: "shadow-zinc-400/50" },
-  offline: { label: "Hors ligne", dot: "bg-zinc-600", glow: "shadow-zinc-600/50" },
+  away: { label: "Absent", dot: "bg-[var(--text-muted)]/40", glow: "shadow-zinc-400/50" },
+  offline: { label: "Hors ligne", dot: "bg-[var(--text-primary)]/20", glow: "shadow-zinc-600/50" },
 };
 
 export default function ProfileHero2026({
@@ -134,8 +134,8 @@ export default function ProfileHero2026({
 
               {/* Hover overlay */}
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Camera className="h-6 w-6 text-white" />
-                <span className="text-[10px] font-semibold text-white mt-1">Changer</span>
+                <Camera className="h-6 w-6 text-[var(--text-primary)]" />
+                <span className="text-[10px] font-semibold text-[var(--text-primary)] mt-1">Changer</span>
               </div>
             </div>
 
@@ -168,7 +168,7 @@ export default function ProfileHero2026({
                 {copied ? <Check className="h-3 w-3 text-[var(--success)]" /> : <Copy className="h-3 w-3" />}
               </button>
 
-              <span className="inline-flex items-center gap-1 rounded-full border border-sky-500/30 bg-sky-950/30 px-2 py-0.5 text-[10px] font-semibold text-sky-300">
+              <span className="inline-flex items-center gap-1 rounded-full border border-[var(--info)]/30 bg-[var(--info)]/30 px-2 py-0.5 text-[10px] font-semibold text-[var(--info)]">
                 <ShieldCheck className="h-3 w-3" />
                 <span>Identité Vérifiée</span>
               </span>
@@ -178,7 +178,7 @@ export default function ProfileHero2026({
             {customStatus && customStatus.text && (
               <div
                 onClick={onOpenStatusPicker}
-                className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-purple-500/30 bg-purple-950/20 px-2.5 py-1 text-xs font-medium text-purple-200 hover:bg-purple-950/40 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/20 px-2.5 py-1 text-xs font-medium text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/40 transition-colors cursor-pointer"
               >
                 <span>{customStatus.emoji}</span>
                 <span>{customStatus.text}</span>

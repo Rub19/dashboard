@@ -98,7 +98,7 @@ export default function ProfileSecurityAndData({
               <span className="text-xs font-bold text-[var(--text-primary)]">
                 Supabase Auth (Cloudflare Isolated)
               </span>
-              <span className="text-xs text-sky-400 font-semibold">Chiffré</span>
+              <span className="text-xs text-[var(--info)] font-semibold">Chiffré</span>
             </div>
           </div>
         </div>
@@ -120,7 +120,7 @@ export default function ProfileSecurityAndData({
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-sky-400" />
+              <ShieldCheck className="h-4 w-4 text-[var(--info)]" />
               <span>Services & Intégrations connectées</span>
             </h3>
             <p className="text-xs text-[var(--text-muted)] mt-0.5">
@@ -151,7 +151,7 @@ export default function ProfileSecurityAndData({
                   <span>Lié</span>
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 rounded-md border border-zinc-700/50 bg-zinc-900/40 px-2 py-0.5 text-[10px] font-medium text-zinc-400">
+                <span className="inline-flex items-center gap-1 rounded-md border border-[var(--text-primary)]/8 bg-[var(--surface-raised)]/40 px-2 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
                   <span>Non lié</span>
                 </span>
               )}
@@ -207,7 +207,7 @@ export default function ProfileSecurityAndData({
               <AlertTriangle className="h-5 w-5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white">Réinitialiser la personnalisation ?</h4>
+              <h4 className="text-sm font-bold text-[var(--text-primary)]">Réinitialiser la personnalisation ?</h4>
               <p className="text-[11px] text-[var(--text-muted)]">Cette action réinitialise les préférences Brain.</p>
             </div>
           </div>
@@ -220,7 +220,7 @@ export default function ProfileSecurityAndData({
             <button
               type="button"
               onClick={() => setIsResetConfirmOpen(false)}
-              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-white"
+              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             >
               Annuler
             </button>

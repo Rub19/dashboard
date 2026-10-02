@@ -19,6 +19,7 @@ import {
   RefreshCw,
 } from "@/components/icons/ph";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
+import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/support";
 import { cn } from "@/lib/utils";
 
 /** Libellés réels de chaque navigateur (version française) : adresse de la page des extensions, emplacement du mode
@@ -468,6 +469,13 @@ export default function InstallTutorial({ zip, size, version }: { zip: string; s
           ))}
           <p className="flex items-center gap-1.5 pt-1 text-xs text-[var(--text-muted)]">
             <FolderInput className="h-3.5 w-3.5" /> Chrome, Edge, Brave et Opera, sur ordinateur. Firefox et Safari ne sont pas pris en charge.
+          </p>
+          <p className="text-xs text-[var(--text-muted)]">
+            Toujours bloqué ? Écris à{" "}
+            <a href={SUPPORT_MAILTO} className="font-semibold text-[var(--accent-primary)] underline decoration-transparent underline-offset-4 transition-[text-decoration-color] hover:decoration-current">
+              {SUPPORT_EMAIL}
+            </a>
+            .
           </p>
         </section>
       </div>

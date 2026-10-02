@@ -7,6 +7,7 @@ import ClientImage from "@/components/ClientImage";
 import { useRouter } from "next/navigation";
 import { LogOut } from "@/components/icons/ph";
 import { Icon } from "@/lib/icons";
+import { SUPPORT_MAILTO } from "@/lib/support";
 import { useAuth } from "@/components/AuthProvider";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { useSettings } from "@/components/SettingsProvider";
@@ -312,6 +313,11 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
               <span>{i18n("tbPalette", "Palette de commandes")}</span>
               <span className="ethone-menu-hint font-mono">{mod === "⌘" ? "⌘K" : "Ctrl K"}</span>
             </button>
+
+            <a href={SUPPORT_MAILTO} onClick={() => setOpen(false)} className="ethone-menu-item">
+              <Icon name="envelope-simple" />
+              <span>{i18n("tbContactSupport", "Contacter le support")}</span>
+            </a>
 
             <button
               type="button"

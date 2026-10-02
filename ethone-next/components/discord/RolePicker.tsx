@@ -261,17 +261,17 @@ export default function RolePicker({
             </select>
 
             {/* Indicateur de chargement ou icône bouclier */}
-            <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500">
+            <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
               {loading ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-400" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-[var(--accent-primary)]" />
               ) : (
-                <Shield className="w-3.5 h-3.5 text-zinc-400" />
+                <Shield className="w-3.5 h-3.5 text-[var(--text-muted)]" />
               )}
             </div>
           </div>
         ) : (
           <div className="relative flex-1 min-w-0">
-            <div className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500">
+            <div className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
               <Shield className="w-3.5 h-3.5" />
             </div>
             <input
@@ -296,7 +296,7 @@ export default function RolePicker({
                 type="button"
                 onClick={() => onChange("")}
                 disabled={disabled}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                 title="Effacer"
               >
                 <X className="w-3.5 h-3.5" />
@@ -319,8 +319,8 @@ export default function RolePicker({
             "shrink-0 flex items-center justify-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.05] font-semibold transition-all cursor-pointer active:scale-[0.97] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-50",
             isSmall ? "h-8 px-2 text-[10px]" : "h-9 px-2.5 text-xs",
             mode === "id"
-              ? "text-indigo-400 border-indigo-500/40 bg-indigo-500/10"
-              : "text-zinc-400"
+              ? "text-[var(--accent-primary)] border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10"
+              : "text-[var(--text-muted)]"
           )}
         >
           {mode === "select" ? (
@@ -339,7 +339,7 @@ export default function RolePicker({
 
       {/* Détail du rôle sélectionné */}
       {matchedRole && (
-        <div className="flex items-center gap-1.5 px-1 text-[11px] text-zinc-400">
+        <div className="flex items-center gap-1.5 px-1 text-[11px] text-[var(--text-muted)]">
           <Check className="w-3 h-3 text-[var(--success)]" />
           <span className="truncate">
             Rôle :{" "}
@@ -350,7 +350,7 @@ export default function RolePicker({
               @{matchedRole.name}
             </span>
           </span>
-          <span className="text-zinc-600 font-mono text-[10px]">
+          <span className="text-[var(--text-muted)]/70 font-mono text-[10px]">
             ({matchedRole.id})
           </span>
         </div>

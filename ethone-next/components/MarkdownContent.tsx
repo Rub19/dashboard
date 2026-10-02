@@ -135,7 +135,7 @@ function parseMarkdown(raw: string): React.ReactNode[] {
           key={nodeKey++}
           className="my-3 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/60 shadow-lg"
         >
-          <div className="flex items-center justify-between border-b border-[var(--panel-border)] bg-white/5 px-3.5 py-1.5 text-xs text-[var(--text-muted)]">
+          <div className="flex items-center justify-between border-b border-[var(--panel-border)] bg-[var(--text-primary)]/5 px-3.5 py-1.5 text-xs text-[var(--text-muted)]">
             <span className="font-mono text-[11px] uppercase tracking-wider">{lang || "code"}</span>
             <button
               type="button"
@@ -146,7 +146,7 @@ function parseMarkdown(raw: string): React.ReactNode[] {
               <span>Copier</span>
             </button>
           </div>
-          <pre className="p-3 font-mono text-xs text-zinc-200 overflow-x-auto os-scroll leading-relaxed">
+          <pre className="p-3 font-mono text-xs text-[var(--text-primary)] overflow-x-auto os-scroll leading-relaxed">
             <code>{codeString}</code>
           </pre>
         </div>

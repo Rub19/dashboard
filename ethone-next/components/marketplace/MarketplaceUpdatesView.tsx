@@ -108,7 +108,7 @@ export default function MarketplaceUpdatesView({
                   <div>
                     <h4 className="text-sm font-bold text-[var(--text-primary)]">{item.name}</h4>
                     <div className="flex items-center gap-2 mt-0.5 text-xs text-[var(--text-muted)]">
-                      <span>Installé : <code className="text-zinc-400">v{record.version}</code></span>
+                      <span>Installé : <code className="text-[var(--text-muted)]">v{record.version}</code></span>
                       <span>→</span>
                       <span>Disponible : <code className="text-amber-300 font-semibold">v{item.version}</code></span>
                     </div>
@@ -120,7 +120,7 @@ export default function MarketplaceUpdatesView({
                     <button
                       type="button"
                       onClick={() => onRollback(item.id)}
-                      className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"
+                      className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                       title="Restaurer la version précédente"
                     >
                       <History className="h-3.5 w-3.5" />

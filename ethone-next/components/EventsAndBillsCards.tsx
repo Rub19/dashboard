@@ -57,7 +57,7 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 top-full z-20 mt-1.5 min-w-[8rem] rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-zinc-900 p-1 shadow-xl backdrop-blur-xl">
+            <div className="absolute right-0 top-full z-20 mt-1.5 min-w-[8rem] rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--surface-raised)]/60 p-1 shadow-xl backdrop-blur-xl">
               {EVENT_SOURCES.map((s) => (
                 <button
                   key={s}
@@ -257,7 +257,7 @@ export function InvoicesCard({
               <span className="text-[9px] opacity-70">{WEEK_DAYS[idx]}</span>
               <span className="leading-none">{day.getDate()}</span>
               {hasItem && !active && (
-                <span className="h-1 w-1 rounded-full bg-zinc-500" />
+                <span className="h-1 w-1 rounded-full bg-[var(--text-muted)]/40" />
               )}
             </button>
           );

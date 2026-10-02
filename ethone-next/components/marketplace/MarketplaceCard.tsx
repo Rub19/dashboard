@@ -56,7 +56,7 @@ function renderVerificationBadge(tier: VerificationTier) {
       );
     case "audited":
       return (
-        <span className="inline-flex items-center gap-1 rounded-md border border-sky-500/30 bg-sky-950/30 px-1.5 py-0.5 text-[10px] font-semibold text-sky-300">
+        <span className="inline-flex items-center gap-1 rounded-md border border-[var(--info)]/30 bg-[var(--info)]/30 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--info)]">
           <Award className="h-3 w-3" />
           <span>Sécurité Auditée</span>
         </span>
@@ -77,7 +77,7 @@ function renderVerificationBadge(tier: VerificationTier) {
       );
     default:
       return (
-        <span className="inline-flex items-center gap-1 rounded-md border border-zinc-700/50 bg-zinc-900/40 px-1.5 py-0.5 text-[10px] font-medium text-zinc-400">
+        <span className="inline-flex items-center gap-1 rounded-md border border-[var(--text-primary)]/8 bg-[var(--surface-raised)]/40 px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
           <span>Communauté</span>
         </span>
       );
@@ -152,7 +152,7 @@ export default function MarketplaceCard({
                 onWhyBrain(item, brainMatch);
               }}
               title="Voir pourquoi cette recommandation a été choisie par Brain"
-              className="shrink-0 flex items-center gap-1 rounded-[var(--inset-radius)] border border-purple-500/40 bg-purple-950/40 px-2 py-0.5 text-[11px] font-bold text-purple-300 hover:bg-purple-900/60 transition-colors shadow-xs"
+              className="shrink-0 flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/40 px-2 py-0.5 text-[11px] font-bold text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/60 transition-colors shadow-xs"
             >
               <Brain className="h-3 w-3" />
               <span>{brainMatch.score}%</span>
@@ -221,7 +221,7 @@ export default function MarketplaceCard({
               type="button"
               onClick={handleInstallClick}
               disabled={installing}
-              className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] hover:opacity-90 px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition-transform active:scale-95 cursor-pointer"
+              className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] hover:opacity-90 px-3 py-1.5 text-xs font-semibold text-[var(--accent-contrast)] shadow-xs transition-transform active:scale-95 cursor-pointer"
             >
               {installing ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -235,7 +235,7 @@ export default function MarketplaceCard({
           {/* AnimatedDropdown Contextual Menu */}
           <div onClick={(e) => e.stopPropagation()}>
             <AnimatedDropdown>
-              <AnimatedDropdownTrigger className="h-7 w-7 p-0 rounded-lg text-[var(--text-muted)] hover:text-white bg-transparent shadow-none">
+              <AnimatedDropdownTrigger className="h-7 w-7 p-0 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent shadow-none">
                 <MoreVertical className="h-3.5 w-3.5" />
               </AnimatedDropdownTrigger>
 
@@ -249,7 +249,7 @@ export default function MarketplaceCard({
 
                 {brainMatch && (
                   <AnimatedDropdownItem
-                    icon={<Brain className="h-3.5 w-3.5 text-purple-400" />}
+                    icon={<Brain className="h-3.5 w-3.5 text-[var(--accent-primary)]" />}
                     onClick={() => onWhyBrain(item, brainMatch)}
                   >
                     Pourquoi ce choix ?
@@ -266,7 +266,7 @@ export default function MarketplaceCard({
                 </AnimatedDropdownItem>
 
                 <AnimatedDropdownItem
-                  icon={<Bookmark className={cn("h-3.5 w-3.5", isSaved && "fill-sky-500 text-sky-500")} />}
+                  icon={<Bookmark className={cn("h-3.5 w-3.5", isSaved && "fill-[var(--info)] text-[var(--info)]")} />}
                   onClick={() => onToggleSaved(item.id)}
                 >
                   {isSaved ? "Ne plus garder" : "Sauvegarder"}

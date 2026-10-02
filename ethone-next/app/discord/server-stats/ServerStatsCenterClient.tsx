@@ -287,7 +287,7 @@ export default function ServerStatsCenterClient() {
                       options={[10, 15, 30, 60, 180, 360].map((m) => ({ id: String(m), label: `${m} min` }))}
                     />
                   </div>
-                  <button type="button" role="switch" aria-checked={overview.enabled} disabled={busy} onClick={() => void setConfig({ enabled: !overview.enabled })} className={cn("cursor-pointer rounded-full px-3 py-1 font-semibold transition", overview.enabled ? "bg-[var(--success)]/15 text-[var(--success)]" : "bg-zinc-500/15 text-[var(--text-muted)]")}>
+                  <button type="button" role="switch" aria-checked={overview.enabled} disabled={busy} onClick={() => void setConfig({ enabled: !overview.enabled })} className={cn("cursor-pointer rounded-full px-3 py-1 font-semibold transition", overview.enabled ? "bg-[var(--success)]/15 text-[var(--success)]" : "bg-[var(--text-muted)]/15 text-[var(--text-muted)]")}>
                     {overview.enabled ? "Actif" : "En pause"}
                   </button>
                 </div>
@@ -356,14 +356,14 @@ export default function ServerStatsCenterClient() {
                       {list.map((t) => (
                         <button key={t.token} type="button" title={`${t.label} — ex. ${t.example}${t.needsStats ? " (module Statistiques requis)" : ""}`} onClick={() => insert(t.token)} className="cursor-pointer rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 py-1 font-mono text-xs text-[var(--text-muted)] transition hover:border-[var(--accent-primary)]/50 hover:text-[var(--text-primary)]">
                           {t.token}
-                          {t.needsStats && <span className="ml-1 text-sky-300">•</span>}
+                          {t.needsStats && <span className="ml-1 text-[var(--info)]">•</span>}
                         </button>
                       ))}
                     </div>
                   </div>
                 ))}
                 <p className="text-xs text-[var(--text-muted)]">
-                  <span className="text-sky-300">•</span> = nécessite le module <Link href={`/discord/stats?guildId=${guildId}`} className="underline">Statistiques</Link>. Discord limite le renommage d&apos;un salon à 2 fois toutes les 10 minutes : l&apos;horloge s&apos;affiche à la dizaine de minutes près.
+                  <span className="text-[var(--info)]">•</span> = nécessite le module <Link href={`/discord/stats?guildId=${guildId}`} className="underline">Statistiques</Link>. Discord limite le renommage d&apos;un salon à 2 fois toutes les 10 minutes : l&apos;horloge s&apos;affiche à la dizaine de minutes près.
                 </p>
               </div>
               <button type="button" disabled={busy || !channelId} onClick={() => void saveCounter()} className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">

@@ -11,11 +11,11 @@ import type { TeamMember, TeamRole, TeamStatus } from "@/lib/team-manager";
 const FILTERS = ["all", "admins", "members", "pending"] as const;
 
 const ROLE_META: Record<TeamRole, { label: string; color: string; border: string; bg: string }> = {
-  owner: { label: "Propriétaire", color: "text-violet-400", border: "border-violet-500/30", bg: "bg-violet-500/10" },
-  admin: { label: "Admin", color: "text-purple-400", border: "border-purple-500/30", bg: "bg-purple-500/10" },
+  owner: { label: "Propriétaire", color: "text-[var(--accent-primary)]", border: "border-[var(--accent-primary)]/30", bg: "bg-[var(--accent-primary)]/10" },
+  admin: { label: "Admin", color: "text-[var(--accent-primary)]", border: "border-[var(--accent-primary)]/30", bg: "bg-[var(--accent-primary)]/10" },
   senior: { label: "Développeur", color: "text-[var(--info)]", border: "border-[var(--info)]", bg: "bg-[var(--info)]" },
-  junior: { label: "Éditeur", color: "text-sky-400", border: "border-sky-500/30", bg: "bg-sky-500/10" },
-  assistant: { label: "Éditeur", color: "text-sky-400", border: "border-sky-500/30", bg: "bg-sky-500/10" },
+  junior: { label: "Éditeur", color: "text-[var(--info)]", border: "border-[var(--info)]/30", bg: "bg-[var(--info)]/10" },
+  assistant: { label: "Éditeur", color: "text-[var(--info)]", border: "border-[var(--info)]/30", bg: "bg-[var(--info)]/10" },
   viewer: { label: "Lecteur", color: "text-[var(--text-muted)]", border: "border-[var(--panel-border)]", bg: "bg-[var(--text-muted)]/10" },
 };
 

@@ -58,7 +58,7 @@ function GuildIcon({ guild }: { guild: DiscordGuild }) {
   const url = guild.iconUrl || guildIconUrl(guild.id, guild.icon);
   if (error || !url) {
     return (
-      <span className="flex h-6 w-6 items-center justify-center rounded-md bg-zinc-700 text-[10px] font-semibold uppercase text-[var(--text-primary)]">
+      <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[var(--text-primary)]/15 text-[10px] font-semibold uppercase text-[var(--text-primary)]">
         {initials(guild.name)}
       </span>
     );
@@ -292,7 +292,7 @@ export default function DiscordConfig() {
                   height={48}
                   className="h-12 w-12 rounded-full object-cover"
                   fallback={
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-800 text-sm font-bold text-[var(--text-muted)]">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--text-primary)]/10 text-sm font-bold text-[var(--text-muted)]">
                       {initials(profile?.user?.globalName || profile?.user?.username)}
                     </div>
                   }

@@ -1409,7 +1409,7 @@ export default function ServerManagementClient({
               <div className="md:col-span-2 p-5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-blue-400" />
+                    <FileText className="h-4 w-4 text-[var(--info)]" />
                     Flux d'Activité Récent du Serveur
                   </h3>
                   <button

@@ -516,7 +516,7 @@ function MissionControlHUD() {
                       onClick={() => navigateAndClose("/connections")}
                       className="group flex w-full items-center gap-2.5 rounded-[var(--inset-radius)] border border-transparent p-2 text-left hover:bg-[var(--surface-2)]/60 transition-colors cursor-pointer"
                     >
-                      <span className={cn("h-2 w-2 shrink-0 rounded-full", STATUS_DOT[record.status] || "bg-zinc-500")} />
+                      <span className={cn("h-2 w-2 shrink-0 rounded-full", STATUS_DOT[record.status] || "bg-[var(--text-muted)]/40")} />
                       <div className="min-w-0 flex-1">
                         <span className="block text-xs font-medium text-[var(--text-primary)] truncate">
                           {record.title || record.label}

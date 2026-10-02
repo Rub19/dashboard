@@ -32,7 +32,7 @@ const CATEGORIES = ["Tous", "Général", "Dev", "Design", "Organisation", "Perso
 
 const PRIORITY_OPTIONS: { id: TaskPriority; label: string; dotColor: string }[] = [
   { id: "low", label: "Basse", dotColor: "bg-[var(--text-muted)]" },
-  { id: "medium", label: "Moyenne", dotColor: "bg-sky-400" },
+  { id: "medium", label: "Moyenne", dotColor: "bg-[var(--info)]" },
   { id: "high", label: "Haute", dotColor: "bg-amber-400" },
   { id: "urgent", label: "Urgente", dotColor: "bg-rose-500" },
 ];

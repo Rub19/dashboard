@@ -51,9 +51,9 @@ const STATUS_CONFIG: Record<
   { label: string; bg: string; text: string; border: string }
 > = {
   NEW: { label: "Nouveau", bg: "bg-amber-500/10", text: "text-amber-400", border: "border-amber-500/30" },
-  REVIEWING: { label: "En cours", bg: "bg-blue-500/10", text: "text-blue-400", border: "border-blue-500/30" },
+  REVIEWING: { label: "En cours", bg: "bg-[var(--info)]/10", text: "text-[var(--info)]", border: "border-[var(--info)]/30" },
   ACTIONED: { label: "Sanctionné", bg: "bg-[var(--accent-primary)]/10", text: "text-[var(--accent-primary)]", border: "border-[var(--accent-primary)]/30" },
-  DISMISSED: { label: "Classé sans suite", bg: "bg-slate-500/10", text: "text-[var(--text-muted)]", border: "border-slate-500/30" },
+  DISMISSED: { label: "Classé sans suite", bg: "bg-[var(--text-muted)]/10", text: "text-[var(--text-muted)]", border: "border-[var(--text-primary)]/6" },
   ESCALATED: { label: "Escaladé", bg: "bg-rose-500/10", text: "text-rose-400", border: "border-rose-500/30" },
 };
 
@@ -296,7 +296,7 @@ export default function ReportsCenterClient() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsNewReportOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition-colors flex items-center gap-1.5"
+              className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-[var(--text-muted)]/70 text-xs font-bold transition-colors flex items-center gap-1.5"
             >
               <Plus className="w-4 h-4" />
               <span>Consigner un Signalement</span>
@@ -437,7 +437,7 @@ export default function ReportsCenterClient() {
                           {!report.assignedModerator && (
                             <button
                               onClick={() => handleAssignToMe(report.id)}
-                              className="px-3 py-1.5 rounded-xl bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 text-xs font-semibold transition-colors"
+                              className="px-3 py-1.5 rounded-xl bg-[var(--info)]/10 text-[var(--info)] hover:bg-[var(--info)]/20 text-xs font-semibold transition-colors"
                             >
                               Prendre en charge
                             </button>
@@ -533,7 +533,7 @@ export default function ReportsCenterClient() {
               <button
                 type="submit"
                 disabled={isSubmittingNewReport}
-                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition-all disabled:opacity-50"
+                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-[var(--text-muted)]/70 text-xs font-bold transition-all disabled:opacity-50"
               >
                 {isSubmittingNewReport ? "Création..." : "Enregistrer"}
               </button>

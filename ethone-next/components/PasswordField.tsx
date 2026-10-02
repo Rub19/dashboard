@@ -23,7 +23,7 @@ function StrengthMeter({ result, show }: { result: PasswordFieldResult; show: bo
               backgroundColor: i < result.score ? result.color : "#3f3f46",
             }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className={`h-full flex-1 rounded-xl ${i < result.score ? colors[result.score] : "bg-zinc-700"}`}
+            className={`h-full flex-1 rounded-xl ${i < result.score ? colors[result.score] : "bg-[var(--text-primary)]/15"}`}
           />
         ))}
       </div>

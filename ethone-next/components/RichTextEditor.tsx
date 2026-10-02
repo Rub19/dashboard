@@ -292,7 +292,7 @@ export default function RichTextEditor({
       const selection = window.getSelection();
       if (selection && !selection.isCollapsed) {
         const text = selection.toString();
-        document.execCommand("insertHTML", false, `<code class="rounded bg-zinc-800/60 px-1 py-0.5 font-mono text-xs text-[var(--accent-primary)]">${escapeHtml(text)}</code>`);
+        document.execCommand("insertHTML", false, `<code class="rounded bg-[var(--text-primary)]/6 px-1 py-0.5 font-mono text-xs text-[var(--accent-primary)]">${escapeHtml(text)}</code>`);
       }
     } else {
       document.execCommand(cmd, false, value);

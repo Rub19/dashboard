@@ -258,7 +258,7 @@ export default function OverviewClient() {
                 )}
               </OverviewCard>
 
-              <OverviewCard icon={<ShieldCheck className="h-4 w-4" />} color="bg-blue-500/15 text-blue-400" title="Modération" href={`/discord/moderation?guildId=${gid}`}>
+              <OverviewCard icon={<ShieldCheck className="h-4 w-4" />} color="bg-[var(--info)]/15 text-[var(--info)]" title="Modération" href={`/discord/moderation?guildId=${gid}`}>
                 {moderation.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
@@ -432,7 +432,7 @@ export default function OverviewClient() {
                   href={`/discord/moderation?guildId=${gid}`}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
                 >
-                  <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />
+                  <ShieldCheck className="h-3.5 w-3.5 text-[var(--info)]" />
                   Voir la modération
                 </Link>
                 <Link

@@ -18,7 +18,8 @@
     "wrangler": "4.119.0"
   },
   "dependencies": {
-    "@simplewebauthn/server": "^13.3.2"
+    "@simplewebauthn/server": "^13.3.2",
+    "postal-mime": "^4.0.2"
   },
   "overrides": {
     "undici": "7.29.1",

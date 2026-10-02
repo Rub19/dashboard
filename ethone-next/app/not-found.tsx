@@ -61,7 +61,7 @@ export default function NotFound() {
   return (
     <main className="flex min-h-[80dvh] w-full flex-col items-center justify-center px-6 py-12">
       <div className="flex w-full max-w-2xl flex-col items-center gap-8 rounded-2xl v8-panel p-8 shadow-2xl shadow-black/50">
-        <div className="group relative select-none font-mono font-bold leading-none tracking-tighter text-white [font-size:clamp(5rem,18vw,11rem)]">
+        <div className="group relative select-none font-mono font-bold leading-none tracking-tighter text-[var(--text-primary)] [font-size:clamp(5rem,18vw,11rem)]">
           <span
             aria-hidden
             className="pointer-events-none absolute inset-0 text-[#ff0040] opacity-0 mix-blend-screen transition-[transform,opacity] duration-150 ease-out group-hover:translate-x-[3px] group-hover:opacity-70 motion-reduce:hidden"
@@ -80,21 +80,21 @@ export default function NotFound() {
         </div>
 
         <div className="flex flex-col items-center gap-2 text-center">
-          <p className="text-lg font-semibold text-zinc-100">{title}</p>
-          <p className="max-w-sm text-sm text-zinc-400">{description}</p>
+          <p className="text-lg font-semibold text-[var(--text-primary)]">{title}</p>
+          <p className="max-w-sm text-sm text-[var(--text-muted)]">{description}</p>
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-[var(--text-primary)] transition-opacity hover:opacity-90"
           >
             <Icon name="home" className="h-4 w-4" />
             {i18n("notFoundBack")}
           </Link>
           <Link
             href="/connections/"
-            className="inline-flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] px-5 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="inline-flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] px-5 py-2.5 text-sm font-medium text-[var(--text-primary)]/85 transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
           >
             <Icon name="plug" className="h-4 w-4" />
             {i18n("connections")}

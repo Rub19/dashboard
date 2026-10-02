@@ -476,22 +476,22 @@ export default function ChannelPicker({
             >
               {matchedChannel ? (
                 <>
-                  <TypeIcon c={matchedChannel} className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
+                  <TypeIcon c={matchedChannel} className="w-3.5 h-3.5 shrink-0 text-[var(--text-muted)]" />
                   <span className="truncate">{matchedChannel.name}</span>
                 </>
               ) : currentId ? (
                 <span className="truncate"># Salon sélectionné ({currentId})</span>
               ) : (
-                <span className="truncate text-zinc-400">{allowClear ? emptyLabel : "— Sélectionner un salon —"}</span>
+                <span className="truncate text-[var(--text-muted)]">{allowClear ? emptyLabel : "— Sélectionner un salon —"}</span>
               )}
             </button>
 
             {/* Indicateur de chargement ou chevron */}
-            <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500">
+            <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
               {loading ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-400" />
               ) : (
-                <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
+                <ChevronDown className="w-3.5 h-3.5 text-[var(--text-muted)]" />
               )}
             </div>
 
@@ -537,7 +537,7 @@ export default function ChannelPicker({
                             data-active={active}
                             onClick={() => pick(row)}
                             onMouseEnter={() => setActiveKey(row.key)}
-                            className={cn("mx-1 flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-[var(--text-muted)]", active && "bg-zinc-800/80")}
+                            className={cn("mx-1 flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-[var(--text-muted)]", active && "bg-[var(--text-primary)]/8")}
                           >
                             <X className="w-3.5 h-3.5 shrink-0" />
                             <span className="truncate">{emptyLabel}</span>
@@ -560,7 +560,7 @@ export default function ChannelPicker({
                             "mx-1 flex items-center gap-2 rounded-lg py-1.5 pr-2 text-sm",
                             row.depth === 1 ? "pl-7" : "pl-2",
                             row.selectable ? "cursor-pointer text-[var(--text-primary)]" : "cursor-default text-[var(--text-muted)]",
-                            active && "bg-zinc-800/80",
+                            active && "bg-[var(--text-primary)]/8",
                             selected && "text-amber-300"
                           )}
                         >
@@ -614,7 +614,7 @@ export default function ChannelPicker({
           </div>
         ) : (
           <div className="relative flex-1 min-w-0">
-            <div className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500">
+            <div className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
               <Hash className="w-3.5 h-3.5" />
             </div>
             <input
@@ -638,7 +638,7 @@ export default function ChannelPicker({
               <button
                 type="button"
                 onClick={() => onChange("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]/85 transition-colors cursor-pointer"
                 title="Effacer"
               >
                 <X className="w-3.5 h-3.5" />

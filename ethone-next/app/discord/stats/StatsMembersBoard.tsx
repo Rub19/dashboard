@@ -321,7 +321,7 @@ export default function StatsMembersBoard({
                         </span>
                         <span className="h-1.5 w-24 overflow-hidden rounded-full bg-[var(--panel-border)]">
                           <span
-                            className="block h-full rounded-full bg-sky-400/80"
+                            className="block h-full rounded-full bg-[var(--info)]/80"
                             style={{ width: `${(r.messages / maxMsg) * 100}%` }}
                           />
                         </span>

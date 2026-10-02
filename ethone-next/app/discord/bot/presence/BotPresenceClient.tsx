@@ -690,7 +690,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         {activityType === "Playing" && <Flame className="w-3.5 h-3.5 text-orange-400" />}
                         {activityType === "Streaming" && <Video className="w-3.5 h-3.5 text-[var(--accent-primary)]" />}
                         {activityType === "Listening" && <Headphones className="w-3.5 h-3.5 text-[var(--accent-primary)]" />}
-                        {activityType === "Watching" && <Tv className="w-3.5 h-3.5 text-blue-400" />}
+                        {activityType === "Watching" && <Tv className="w-3.5 h-3.5 text-[var(--info)]" />}
                         {activityType === "Competing" && <Trophy className="w-3.5 h-3.5 text-amber-400" />}
                         <span>{ACTIVITY_VERB[activityType]}</span>
                       </span>
@@ -830,7 +830,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       { type: "Playing", label: ACTIVITY_VERB.Playing, icon: Flame, color: "text-orange-400" },
                       { type: "Streaming", label: ACTIVITY_VERB.Streaming, icon: Video, color: "text-[var(--accent-primary)]" },
                       { type: "Listening", label: ACTIVITY_VERB.Listening, icon: Headphones, color: "text-[var(--accent-primary)]" },
-                      { type: "Watching", label: ACTIVITY_VERB.Watching, icon: Tv, color: "text-blue-400" },
+                      { type: "Watching", label: ACTIVITY_VERB.Watching, icon: Tv, color: "text-[var(--info)]" },
                       { type: "Competing", label: ACTIVITY_VERB.Competing, icon: Trophy, color: "text-amber-400" },
                     ].map((item) => {
                       const Icon = item.icon;
@@ -1337,7 +1337,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <tr>
                       <td className="py-3 px-3 font-semibold text-[var(--text-primary)]">18:00 - 23:00 (Soirée)</td>
                       <td className="py-3 px-3 text-[var(--accent-primary)] font-medium">Gaming Session</td>
-                      <td className="py-3 px-3 text-blue-400 font-medium">Music Lounge</td>
+                      <td className="py-3 px-3 text-[var(--info)] font-medium">Music Lounge</td>
                       <td className="py-3 px-3">
                         <span className="text-[var(--accent-primary)] hover:underline cursor-pointer">Modifier</span>
                       </td>
@@ -1371,11 +1371,11 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-blue-950/20 border border-blue-500/30 flex items-start gap-3 text-xs text-blue-200">
-                <Info className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+              <div className="p-4 rounded-xl bg-[var(--info)]/20 border border-[var(--info)]/30 flex items-start gap-3 text-xs text-[var(--info)]">
+                <Info className="w-5 h-5 text-[var(--info)] shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-bold text-[var(--text-primary)]">Précision Technique Discord Gateway</h4>
-                  <p className="mt-0.5 text-blue-300/90">
+                  <p className="mt-0.5 text-[var(--info)]/90">
                     L'architecture de Discord ne permet pas techniquement d'avoir une présence visuelle distincte par serveur (la présence est liée à la connexion Gateway WebSocket globale du bot). ETHONE enregistre ici le <strong>profil de référence préféré</strong> de chaque serveur pour les automatisations et les bascules contextuelles.
                   </p>
                 </div>

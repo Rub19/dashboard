@@ -194,7 +194,7 @@ export default function ProfileSelectionPage() {
 
       <FlatCard>
         <div className="flex items-start gap-3">
-          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${ACCENT_CLASSES[preview.accent] || "bg-violet-500"}`}>
+          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${ACCENT_CLASSES[preview.accent] || "bg-[var(--accent-primary)]"}`}>
             {preview.avatar.kind === "image" ? (
               <Image
                 unoptimized
@@ -207,7 +207,7 @@ export default function ProfileSelectionPage() {
             ) : preview.avatar.kind === "symbol" ? (
               <span className="text-lg leading-none">{preview.avatar.value}</span>
             ) : (
-              <span className="text-xs font-bold text-white">{preview.avatar.value}</span>
+              <span className="text-xs font-bold text-[var(--text-primary)]">{preview.avatar.value}</span>
             )}
           </span>
           <div className="min-w-0 flex-1 space-y-1">
@@ -244,7 +244,7 @@ export default function ProfileSelectionPage() {
             </div>
 
             <div className="mt-3 flex items-center gap-2">
-              <span className={`inline-block h-3 w-3 rounded-full ${ACCENT_CLASSES[p.accent] || "bg-violet-500"} backdrop-blur-[var(--panel-blur)]`} />
+              <span className={`inline-block h-3 w-3 rounded-full ${ACCENT_CLASSES[p.accent] || "bg-[var(--accent-primary)]"} backdrop-blur-[var(--panel-blur)]`} />
               <span className="text-xs text-[var(--muted)]">{i18n(`accent${p.accent.charAt(0).toUpperCase() + p.accent.slice(1)}` as `${string}`)}</span>
             </div>
 
@@ -264,8 +264,8 @@ export default function ProfileSelectionPage() {
       {activeProfile && (
         <FlatCard>
           <div className="flex items-center gap-3">
-            <span className={`flex h-8 w-8 items-center justify-center rounded-full ${ACCENT_CLASSES[activeProfile.accent] || "bg-violet-500"}`}>
-              <Icon name={WORKSPACE_ICONS[activeProfile.workspace] || "user-round"} className="h-4 w-4 text-white" />
+            <span className={`flex h-8 w-8 items-center justify-center rounded-full ${ACCENT_CLASSES[activeProfile.accent] || "bg-[var(--accent-primary)]"}`}>
+              <Icon name={WORKSPACE_ICONS[activeProfile.workspace] || "user-round"} className="h-4 w-4 text-[var(--text-primary)]" />
             </span>
             <div>
               <p className="text-sm font-medium">{activeProfile.name}</p>

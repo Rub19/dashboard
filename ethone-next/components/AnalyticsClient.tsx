@@ -237,7 +237,7 @@ export default function AnalyticsClient() {
           onClick={() => router.push("/focus")}
           className="group flex items-center gap-3 p-3.5 text-left transition-colors hover:bg-[var(--surface-raised)]/70 cursor-pointer"
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-purple-500/15 text-purple-400">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
             <Timer className="h-4 w-4" />
           </span>
           <div className="min-w-0">

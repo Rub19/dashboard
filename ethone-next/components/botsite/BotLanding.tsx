@@ -17,6 +17,7 @@ import LightBorder from "@/components/ui/LightBorder";
 import { EASE_SNAP, SPRING_MOUSE, SPRING_PILL } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { BOT_COPY, BOT_LANGS, BOT_LANG_KEY, detectBotLang, type BotCopy, type BotLang } from "./botLandingI18n";
+import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/support";
 
 /**
  * Page vitrine publique du bot Discord (discord.ethone.dev / ethone.dev/bot). Aucune donnée inventée : les compteurs et
@@ -953,6 +954,7 @@ export default function BotLanding() {
             {[
               [DASHBOARD_URL, c.nav.dashboard, false],
               [SUPPORT_URL, c.nav.support, true],
+              [SUPPORT_MAILTO, SUPPORT_EMAIL, false],
               ["/terms", c.footer.terms, false],
               ["/privacy", c.footer.privacy, false],
             ].map(([href, label, external]) => (

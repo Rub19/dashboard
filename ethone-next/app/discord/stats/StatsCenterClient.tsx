@@ -167,7 +167,7 @@ function RankList({ rows, unit, isMember, onPick }: { rows: Ranked[]; unit: stri
               {...(clickable && onPick ? { type: "button" as const, onClick: () => onPick(r.id) } : {})}
               className={cn("relative flex w-full items-center gap-3 overflow-hidden rounded-xl bg-[var(--surface-raised)]/40 px-3 py-2 text-left text-xs", clickable && "cursor-pointer transition hover:bg-[var(--surface-raised)]/70")}
             >
-              <span aria-hidden className="absolute inset-y-0 left-0 bg-sky-400/10" style={{ width: `${(r.value / max) * 100}%` }} />
+              <span aria-hidden className="absolute inset-y-0 left-0 bg-[var(--info)]/10" style={{ width: `${(r.value / max) * 100}%` }} />
               <span className="relative w-5 shrink-0 text-center font-bold text-[var(--text-muted)]">{i + 1}</span>
               {isMember && (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -410,7 +410,7 @@ export default function StatsCenterClient() {
 
             <div className="flex gap-1 overflow-x-auto border-b border-[var(--panel-border)] pb-px" role="tablist">
               {TABS.map(([id, label]) => (
-                <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={cn("cursor-pointer whitespace-nowrap rounded-t-lg px-4 py-2 text-xs font-semibold transition", tab === id ? "border-b-2 border-sky-400 bg-[var(--surface-raised)]/40 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
+                <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={cn("cursor-pointer whitespace-nowrap rounded-t-lg px-4 py-2 text-xs font-semibold transition", tab === id ? "border-b-2 border-[var(--info)] bg-[var(--surface-raised)]/40 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
                   {label}
                 </button>
               ))}

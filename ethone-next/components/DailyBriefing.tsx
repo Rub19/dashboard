@@ -25,9 +25,9 @@ export default function DailyBriefing({
   const focusTime = state.total > 0 ? Math.round((state.total - state.remaining) / 60) : 0;
 
   const stats = [
-    { icon: "mail", label: i18n("unread"), value: unreadCount || 0, color: "text-sky-400" },
+    { icon: "mail", label: i18n("unread"), value: unreadCount || 0, color: "text-[var(--info)]" },
     { icon: "bell", label: i18n("important"), value: importantCount || 0, color: "text-amber-400" },
-    { icon: "files", label: i18n("totalFiles"), value: dashboard?.totalFiles ?? 0, color: "text-violet-400" },
+    { icon: "files", label: i18n("totalFiles"), value: dashboard?.totalFiles ?? 0, color: "text-[var(--accent-primary)]" },
     { icon: "timer", label: i18n("focusMinutes"), value: focusTime, color: "text-rose-400" },
   ];
 

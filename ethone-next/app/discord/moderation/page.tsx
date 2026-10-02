@@ -709,7 +709,7 @@ export default function ModerationCenterPage() {
 
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 col-span-2 sm:col-span-1">
               <span className="text-xs text-[var(--text-muted)] font-semibold block">Reports pending</span>
-              <p className="text-2xl font-extrabold text-blue-400 mt-1 font-mono">{(stats as any).pendingReports || 0}</p>
+              <p className="text-2xl font-extrabold text-[var(--info)] mt-1 font-mono">{(stats as any).pendingReports || 0}</p>
               <span className="text-xs text-[var(--text-muted)]">Signalements en attente</span>
             </div>
           </div>
@@ -981,7 +981,7 @@ export default function ModerationCenterPage() {
                                     isRevoked
                                       ? "bg-[var(--surface-raised)] text-[var(--text-muted)] border-[var(--panel-border)]"
                                       : isExpired
-                                      ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                                      ? "bg-[var(--info)]/10 text-[var(--info)] border-[var(--info)]/20"
                                       : "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/20"
                                   )}
                                 >
@@ -1038,14 +1038,14 @@ export default function ModerationCenterPage() {
                   <span className="text-xs text-orange-300/80">Dossiers sous votre responsabilité</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 space-y-1">
-                  <span className="text-xs text-blue-300 font-semibold block">Signalements en Attente</span>
+                <div className="p-4 rounded-2xl bg-[var(--info)]/10 border border-[var(--info)]/20 space-y-1">
+                  <span className="text-xs text-[var(--info)] font-semibold block">Signalements en Attente</span>
                   <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">
                     {(stats as any).pendingReports || 0}
                   </p>
                   <Link
                     href={selectedGuild ? `/discord/moderation/reports?guildId=${selectedGuild.id}` : "/discord/moderation/reports"}
-                    className="text-xs text-blue-300 hover:underline flex items-center gap-1 font-semibold mt-1"
+                    className="text-xs text-[var(--info)] hover:underline flex items-center gap-1 font-semibold mt-1"
                   >
                     <span>Ouvrir la file des signalements</span>
                     <ChevronRight className="w-3 h-3" />
@@ -1207,7 +1207,7 @@ export default function ModerationCenterPage() {
                       </div>
                       <div className="h-2 w-full rounded-full bg-[var(--surface-raised)]/40 overflow-hidden">
                         <div
-                          className="h-full bg-blue-500 rounded-full"
+                          className="h-full bg-[var(--info)] rounded-full"
                           style={{
                             width: `${
                               stats.totalCases > 0
@@ -1247,9 +1247,9 @@ export default function ModerationCenterPage() {
           {/* ======================================================== */}
           {activeTab === "staff" && (
             <div className="stagger-children space-y-4 animate-in fade-in duration-200">
-              <div className="rounded-2xl border border-blue-500/20 bg-blue-500/15 p-4">
+              <div className="rounded-2xl border border-[var(--info)]/20 bg-[var(--info)]/15 p-4">
                 <div className="flex items-start gap-3">
-                  <ShieldCheck className="h-5 w-5 text-blue-400 mt-0.5" />
+                  <ShieldCheck className="h-5 w-5 text-[var(--info)] mt-0.5" />
                   <div>
                     <h3 className="text-xs font-bold text-[var(--text-primary)]">
                       Protection Contre les Abus Staff (Staff Abuse Guard)

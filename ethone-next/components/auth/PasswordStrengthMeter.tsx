@@ -48,7 +48,7 @@ export default function PasswordStrengthMeter({ password }: PasswordStrengthMete
               key={level}
               className={cn(
                 "h-1 flex-1 rounded-full transition-all duration-300",
-                level <= score ? strength.barColor : "bg-white/10"
+                level <= score ? strength.barColor : "bg-[var(--text-primary)]/10"
               )}
             />
           ))}
@@ -58,25 +58,25 @@ export default function PasswordStrengthMeter({ password }: PasswordStrengthMete
         </span>
       </div>
 
-      <div className="flex flex-wrap gap-2 text-[10px] text-zinc-400">
-        <span className={cn("flex items-center gap-1 transition-colors", hasMinLength ? "text-emerald-400" : "text-zinc-500")}>
-          {hasMinLength ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />}
+      <div className="flex flex-wrap gap-2 text-[10px] text-[var(--text-muted)]">
+        <span className={cn("flex items-center gap-1 transition-colors", hasMinLength ? "text-emerald-400" : "text-[var(--text-muted)]")}>
+          {hasMinLength ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-primary)]/20" />}
           12+ caractères
         </span>
-        <span className={cn("flex items-center gap-1 transition-colors", hasUppercase ? "text-emerald-400" : "text-zinc-500")}>
-          {hasUppercase ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />}
+        <span className={cn("flex items-center gap-1 transition-colors", hasUppercase ? "text-emerald-400" : "text-[var(--text-muted)]")}>
+          {hasUppercase ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-primary)]/20" />}
           1 majuscule
         </span>
-        <span className={cn("flex items-center gap-1 transition-colors", hasLowercase ? "text-emerald-400" : "text-zinc-500")}>
-          {hasLowercase ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />}
+        <span className={cn("flex items-center gap-1 transition-colors", hasLowercase ? "text-emerald-400" : "text-[var(--text-muted)]")}>
+          {hasLowercase ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-primary)]/20" />}
           1 minuscule
         </span>
-        <span className={cn("flex items-center gap-1 transition-colors", hasNumber ? "text-emerald-400" : "text-zinc-500")}>
-          {hasNumber ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />}
+        <span className={cn("flex items-center gap-1 transition-colors", hasNumber ? "text-emerald-400" : "text-[var(--text-muted)]")}>
+          {hasNumber ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-primary)]/20" />}
           1 chiffre
         </span>
-        <span className={cn("flex items-center gap-1 transition-colors", hasSpecial ? "text-emerald-400" : "text-zinc-500")}>
-          {hasSpecial ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />}
+        <span className={cn("flex items-center gap-1 transition-colors", hasSpecial ? "text-emerald-400" : "text-[var(--text-muted)]")}>
+          {hasSpecial ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-primary)]/20" />}
           1 symbole
         </span>
       </div>

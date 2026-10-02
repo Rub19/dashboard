@@ -115,7 +115,7 @@ const MODULES: ModuleInfo[] = [
     preview: (
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center text-[var(--text-primary)]">
+          <div className="w-7 h-7 rounded-lg bg-[var(--accent-primary)] flex items-center justify-center text-[var(--text-primary)]">
             <Play className="w-3.5 h-3.5 fill-white" />
           </div>
           <div className="flex-1 min-w-0">
@@ -124,7 +124,7 @@ const MODULES: ModuleInfo[] = [
           </div>
         </div>
         <div className="w-full bg-[var(--surface-2)] h-1 rounded-full overflow-hidden">
-          <div className="bg-violet-400 h-full w-[65%]" />
+          <div className="bg-[var(--accent-primary)] h-full w-[65%]" />
         </div>
       </div>
     ),
@@ -229,7 +229,7 @@ const MODULES: ModuleInfo[] = [
     color: "text-indigo-400 bg-indigo-500/10 border-indigo-500/30",
     preview: (
       <div className="space-y-1 font-mono text-[11px]">
-        <div className="text-indigo-300">/regles</div>
+        <div className="text-[var(--accent-primary)]">/regles</div>
         <div className="p-1.5 rounded bg-[var(--surface-2)] border border-[var(--panel-border)] text-[10px] text-[var(--text-muted)]">
           Embed: &quot;Charte du serveur - Respectez les membres...&quot;
         </div>

@@ -92,7 +92,7 @@ function weeksForPeriod(days: number): number {
 
 const CATEGORY_META: Record<ActivityCategory, { color: string; bg: string; border: string }> = {
   productivity: { color: "text-[var(--info)]", bg: "bg-[var(--info)]", border: "border-[var(--info)]" },
-  work: { color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
+  work: { color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]/10", border: "border-[var(--accent-primary)]/20" },
   system: { color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]/15", border: "border-[var(--accent-primary)]/40" },
   brain: { color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
 };
@@ -724,7 +724,7 @@ export default function ActivityHub() {
               label={i18n("averagePerDay", "Moyenne / jour")}
               value={stats.average}
               sub={`${stats.activeDays} ${i18n("activeDays", "jours actifs")}`}
-              icon={<CheckCircle2 className="h-5 w-5 text-purple-400" />}
+              icon={<CheckCircle2 className="h-5 w-5 text-[var(--accent-primary)]" />}
               tone="purple"
             />
             <StatCard
@@ -1110,10 +1110,10 @@ export default function ActivityHub() {
                   {selectedEvent.description}
                 </p>
                 <div className="pt-2 flex flex-wrap items-center gap-2 font-mono text-[10px] text-[var(--text-muted)]">
-                  <span className="rounded bg-white/5 px-2 py-0.5">
+                  <span className="rounded bg-[var(--text-primary)]/5 px-2 py-0.5">
                     {formatLocalDate(new Date(selectedEvent.timestamp), mounted)}
                   </span>
-                  <span className="rounded bg-white/5 px-2 py-0.5">
+                  <span className="rounded bg-[var(--text-primary)]/5 px-2 py-0.5">
                     {formatLocalTime(selectedEvent.timestamp, mounted)}
                   </span>
                   <span className="rounded bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] px-2 py-0.5 font-bold uppercase">

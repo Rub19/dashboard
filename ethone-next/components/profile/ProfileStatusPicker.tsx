@@ -29,12 +29,12 @@ const STATUS_OPTIONS: Array<{
   dot: string;
 }> = [
   { id: "online", label: "En ligne", description: "Disponible et actif sur le dashboard.", dot: "bg-emerald-500" },
-  { id: "focus", label: "Focus (Deep Work)", description: "Concentration intense, notifications réduites.", dot: "bg-purple-500" },
+  { id: "focus", label: "Focus (Deep Work)", description: "Concentration intense, notifications réduites.", dot: "bg-[var(--accent-primary)]" },
   { id: "gaming", label: "En jeu (Gaming)", description: "Partie en cours, Discord et trackers actifs.", dot: "bg-rose-500" },
   { id: "busy", label: "Occupé", description: "Ne peut pas être interrompu pour le moment.", dot: "bg-amber-500" },
   { id: "dnd", label: "Ne pas déranger", description: "Silence total sur toutes les alertes système.", dot: "bg-red-500" },
-  { id: "away", label: "Absent", description: "Inactif ou temporairement éloigné de l'écran.", dot: "bg-zinc-400" },
-  { id: "offline", label: "Invisible / Hors ligne", description: "Apparaître déconnecté pour les autres.", dot: "bg-zinc-600" },
+  { id: "away", label: "Absent", description: "Inactif ou temporairement éloigné de l'écran.", dot: "bg-[var(--text-muted)]/40" },
+  { id: "offline", label: "Invisible / Hors ligne", description: "Apparaître déconnecté pour les autres.", dot: "bg-[var(--text-primary)]/20" },
 ];
 
 const EMOJI_PRESETS = ["💻", "🎧", "⚡", "🎮", "☕", "🚀", "📖", "🌴"];
@@ -89,7 +89,7 @@ export default function ProfileStatusPicker({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-[var(--text-muted)] hover:text-white"
+            className="rounded-lg p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           >
             <X className="h-4 w-4" />
           </button>
@@ -146,7 +146,7 @@ export default function ProfileStatusPicker({
             onClick={onToggleAutoStatus}
             className={cn(
               "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
-              autoStatusEnabled ? "bg-[var(--accent-primary)]" : "bg-zinc-700"
+              autoStatusEnabled ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/15"
             )}
           >
             <span
@@ -174,7 +174,7 @@ export default function ProfileStatusPicker({
                   onClick={() => setSelectedEmoji(emoji)}
                   className={cn(
                     "h-7 w-7 rounded-lg text-sm flex items-center justify-center transition-all cursor-pointer",
-                    selectedEmoji === emoji ? "bg-[var(--panel-border)] scale-110" : "hover:bg-white/10"
+                    selectedEmoji === emoji ? "bg-[var(--panel-border)] scale-110" : "hover:bg-[var(--text-primary)]/10"
                   )}
                 >
                   {emoji}
@@ -209,7 +209,7 @@ export default function ProfileStatusPicker({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-white cursor-pointer"
+              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
             >
               Fermer
             </button>
@@ -217,7 +217,7 @@ export default function ProfileStatusPicker({
             <button
               type="button"
               onClick={handleSaveCustom}
-              className="rounded-xl bg-[var(--accent-primary)] hover:opacity-90 px-5 py-2 text-xs font-bold text-white shadow-md transition-transform active:scale-95 cursor-pointer"
+              className="rounded-xl bg-[var(--accent-primary)] hover:opacity-90 px-5 py-2 text-xs font-bold text-[var(--accent-contrast)] shadow-md transition-transform active:scale-95 cursor-pointer"
             >
               Enregistrer
             </button>

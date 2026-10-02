@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.51.0 — 2026-10-02
+
+**Adresse support@ethone.dev, réception des e-mails réparée**
+
+- Nouvelle adresse support@ethone.dev : arrive dans la boîte ETHONE du compte admin et est transférée vers sa boîte personnelle. Affichée dans le menu du profil (« Contacter le support »), la confidentialité, les CGU, le tutoriel et la popup de l'extension, la vitrine et l'aide du bot.
+- Confidentialité et CGU : l'adresse personnelle n'est plus affichée publiquement, remplacée par support@ethone.dev.
+- Mail : les e-mails entrants sont désormais décodés correctement (texte, HTML, pièces jointes) ; ils arrivaient vides.
+- Démarrage : l'app s'ouvre dès que tout est prêt, même dans un onglet en arrière-plan (le navigateur y ralentissait le démarrage de plusieurs secondes).
+- Activité : suppression des anciens « Thème modifié » et « Accent modifié » enregistrés à chaque chargement par un bug.
+- Couleurs : environ 90 écrans de plus suivent le thème (gris, indigo, violet et bleu figés remplacés ; couleurs de marque et palettes conservées).
+- Extension 1.1.1 : lien d'aide vers support@ethone.dev dans la popup.
+
 ## v1.50.9 — 2026-10-02
 
 **Interrupteurs cohérents**

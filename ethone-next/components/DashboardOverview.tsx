@@ -529,7 +529,7 @@ export default function DashboardOverview() {
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new CustomEvent("v8:open-command-palette"))}
-                className="flex h-9 items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer shadow-xs"
+                className="flex h-9 items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer shadow-xs"
                 title="Ouvrir la palette de commandes (Ctrl + K)"
               >
                 <Search className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
@@ -606,12 +606,12 @@ export default function DashboardOverview() {
               onClick={() => router.push("/brain")}
               className="group flex items-center gap-3 p-3.5 text-left transition-colors hover:bg-[var(--surface-raised)]/70 cursor-pointer"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-purple-500/15 text-purple-400">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
                 <Brain className="h-4 w-4" />
               </span>
               <div className="min-w-0">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">ETHONE Brain</p>
-                <p className="truncate text-xs font-semibold text-purple-300">Intelligence connectée</p>
+                <p className="truncate text-xs font-semibold text-[var(--accent-primary)]">Intelligence connectée</p>
               </div>
             </button>
           </div>
@@ -631,7 +631,7 @@ export default function DashboardOverview() {
                       "flex items-center gap-1 rounded-[var(--inset-radius)] border px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
                       layoutLocked
                         ? "border-[var(--warning)]/40 bg-[var(--warning)]/10 text-[var(--warning)]"
-                        : "border-[var(--panel-border)] text-[var(--text-muted)] hover:text-white"
+                        : "border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                     title="Verrouiller la disposition"
                   >
@@ -652,7 +652,7 @@ export default function DashboardOverview() {
                   <button
                     type="button"
                     onClick={handleResetLayout}
-                    className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-1 text-xs font-semibold text-[var(--text-muted)] hover:text-white transition-all cursor-pointer"
+                    className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-1 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
                     title="Réinitialiser l'agencement"
                   >
                     <RotateCcw className="h-3 w-3" />

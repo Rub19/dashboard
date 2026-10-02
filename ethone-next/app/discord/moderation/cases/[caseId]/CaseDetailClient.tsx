@@ -272,7 +272,7 @@ export default function CaseDetailClient() {
                     modCase.status === "ACTIVE"
                       ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/30"
                       : modCase.status === "EXPIRED"
-                      ? "bg-blue-500/10 text-blue-400 border-blue-500/30"
+                      ? "bg-[var(--info)]/10 text-[var(--info)] border-[var(--info)]/30"
                       : "bg-[var(--surface-raised)] text-[var(--text-muted)] border-[var(--panel-border)]"
                   )}
                 >

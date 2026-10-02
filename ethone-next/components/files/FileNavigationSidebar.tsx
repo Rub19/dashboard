@@ -181,7 +181,7 @@ export default function FileNavigationSidebar({
               type="button"
               onClick={onSyncDrive}
               disabled={syncingDrive}
-              className="flex items-center gap-1 text-[10px] text-blue-400 hover:text-blue-300 cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1 text-[10px] text-[var(--info)] hover:text-[var(--info)] cursor-pointer disabled:opacity-50"
               title="Synchroniser Google Drive"
             >
               <RefreshCw className={cn("h-3 w-3", syncingDrive && "animate-spin")} />
@@ -205,19 +205,19 @@ export default function FileNavigationSidebar({
 
         {/* Google Drive Quota if connected */}
         {quota && quota.total > 0 && (
-          <div className="rounded-[var(--inset-radius)] border border-blue-500/20 bg-blue-500/5 p-2 text-xs">
+          <div className="rounded-[var(--inset-radius)] border border-[var(--info)]/20 bg-[var(--info)]/5 p-2 text-xs">
             <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5 font-semibold text-blue-300">
-                <Cloud className="h-3.5 w-3.5 text-blue-400" />
+              <span className="flex items-center gap-1.5 font-semibold text-[var(--info)]">
+                <Cloud className="h-3.5 w-3.5 text-[var(--info)]" />
                 Drive
               </span>
-              <span className="text-[11px] text-blue-300/70">
+              <span className="text-[11px] text-[var(--info)]/70">
                 {formatBytes(quota.used)} / {formatBytes(quota.total)}
               </span>
             </div>
-            <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-blue-950/60">
+            <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-[var(--info)]/60">
               <div
-                className="h-full rounded-full bg-blue-500 transition-all"
+                className="h-full rounded-full bg-[var(--info)] transition-all"
                 style={{ width: `${Math.min(100, Math.round((quota.used / quota.total) * 100))}%` }}
               />
             </div>

@@ -487,7 +487,7 @@ export default function PollCreateClient() {
               <label
                 className={cn(
                   "flex cursor-pointer items-start gap-3 rounded-2xl border p-5 transition-colors",
-                  nativeMode ? "border-sky-500/50 bg-sky-500/10" : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)]"
+                  nativeMode ? "border-[var(--info)]/50 bg-[var(--info)]/10" : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)]"
                 )}
               >
                 <input

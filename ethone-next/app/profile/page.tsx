@@ -575,7 +575,7 @@ export default function ProfilePage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
                 {[
                   { id: "online", label: "En ligne", color: "bg-emerald-500" },
-                  { id: "focus", label: "Focus", color: "bg-purple-500" },
+                  { id: "focus", label: "Focus", color: "bg-[var(--accent-primary)]" },
                   { id: "gaming", label: "En jeu", color: "bg-rose-500" },
                   { id: "dnd", label: "Ne pas déranger", color: "bg-red-500" },
                 ].map((s) => (

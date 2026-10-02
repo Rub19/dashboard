@@ -191,7 +191,7 @@ export default function FlowsPage() {
       label: "Automatisations actives",
     },
     {
-      icon: <CheckCircle2 className="h-5 w-5 text-purple-400" />,
+      icon: <CheckCircle2 className="h-5 w-5 text-[var(--accent-primary)]" />,
       value: executions,
       label: "Runs",
     },

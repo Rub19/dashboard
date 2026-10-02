@@ -583,7 +583,7 @@ export function AuditCenterClient() {
       case "MEDIUM":
         return "bg-amber-500/20 text-amber-300 border-amber-500/30";
       case "LOW":
-        return "bg-blue-500/20 text-blue-300 border-blue-500/30";
+        return "bg-[var(--info)]/20 text-[var(--info)] border-[var(--info)]/30";
       case "INFO":
       default:
         return "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border-[var(--accent-primary)]/30";
@@ -599,7 +599,7 @@ export function AuditCenterClient() {
       case "MODERATION":
         return <Scale className="h-3.5 w-3.5 text-orange-400" />;
       case "MEMBERS":
-        return <User className="h-3.5 w-3.5 text-blue-400" />;
+        return <User className="h-3.5 w-3.5 text-[var(--info)]" />;
       case "MESSAGES":
         return <FileText className="h-3.5 w-3.5 text-[var(--accent-primary)]" />;
       case "ROLES":
@@ -1190,7 +1190,7 @@ export function AuditCenterClient() {
                   if (sev === "CRITICAL") barColor = "bg-rose-500";
                   if (sev === "HIGH") barColor = "bg-orange-500";
                   if (sev === "MEDIUM") barColor = "bg-amber-400";
-                  if (sev === "LOW") barColor = "bg-blue-500";
+                  if (sev === "LOW") barColor = "bg-[var(--info)]";
 
                   return (
                     <div key={sev} className="space-y-1">

@@ -1,3 +1,4 @@
+import PostalMime from "postal-mime";
 import { requestExternal } from "../utils/external-request.js";
 import { httpError } from "../middleware/errors.js";
 import {
@@ -671,9 +672,28 @@ export async function mailAliasUpdateRoute({ request, env, auth }) {
   return { data: updated };
 }
 
+/** Pièces jointes : on garde la description (nom, type, taille), pas le contenu, dans la ligne du message. */
+export function attachmentSummaries(attachments) {
+  return (Array.isArray(attachments) ? attachments : []).slice(0, 50).map((a) => ({
+    filename: safeText(a?.filename || "piece-jointe", 255),
+    mime_type: safeText(a?.mimeType || "application/octet-stream", 120),
+    size: a?.content?.byteLength ?? 0,
+    disposition: a?.disposition || null,
+  }));
+}
+
 export async function mailReceiveHandler(message, env, context) {
-  const to = message.to || "";
+  const to = (message.to || "").toLowerCase();
   const from = message.from || "";
+
+  // support@ethone.dev : copie immédiate vers la boîte personnelle de l'admin (adresse vérifiée dans Cloudflare
+  // Email Routing), en plus du rangement dans sa boîte ETHONE ci-dessous.
+  const supportAddress = (env.SUPPORT_ADDRESS || "support@ethone.dev").toLowerCase();
+  if (to === supportAddress && env.SUPPORT_FORWARD_TO) {
+    await message.forward(env.SUPPORT_FORWARD_TO).catch((error) => {
+      if (env.ENVIRONMENT !== "production") console.error("Support forward error:", error);
+    });
+  }
   const subject = message.headers.get("subject") || "";
   const replyTo = message.headers.get("reply-to") || null;
   const messageId = message.headers.get("message-id") || null;
@@ -687,8 +707,10 @@ export async function mailReceiveHandler(message, env, context) {
 
   const alias = await resolveAliasByEmail(env, to);
 
-  const text = await message.text().catch(() => "");
-  const html = await message.html().catch(() => "");
+  // Les e-mails entrants Cloudflare n'exposent que le flux brut (message.raw) : on le décode avec postal-mime.
+  const parsed = await PostalMime.parse(message.raw).catch(() => null);
+  const text = parsed?.text || "";
+  const html = parsed?.html || "";
 
   const references = referencesHeader
     .split(/\s+/)
@@ -706,7 +728,7 @@ export async function mailReceiveHandler(message, env, context) {
 
   const now = new Date().toISOString();
   const fromName = message.headers.get("from")?.replace(/<[^>]+>/, "").trim() || from;
-  const attachments = Array.isArray(message.attachments) ? message.attachments : [];
+  const attachments = attachmentSummaries(parsed?.attachments);
 
   const authResults = parseAuthResults(message.headers);
   const sourceIp = extractSourceIp(message);

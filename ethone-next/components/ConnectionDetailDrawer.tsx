@@ -311,7 +311,7 @@ export default function ConnectionDetailDrawer({
                   hapticLightImpact();
                   onClose();
                 }}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-white/5 border border-[var(--panel-border)] text-zinc-400 transition hover:bg-white/10 hover:text-white cursor-pointer"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--text-primary)]/5 border border-[var(--panel-border)] text-[var(--text-muted)] transition hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] cursor-pointer"
                 aria-label={i18n("close", "Fermer")}
               >
                 <X className="h-5 w-5" />
@@ -345,9 +345,9 @@ export default function ConnectionDetailDrawer({
 
               {/* Discord Mode Switch if Discord */}
               {integration.id === "discord" && (
-                <div className="space-y-3 rounded-[var(--panel-radius)] border border-indigo-500/30 bg-indigo-500/10 p-4">
+                <div className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-[var(--accent-primary)] flex items-center gap-1.5">
                       <Radio className="h-4 w-4" /> Mode de Connexion Discord
                     </span>
                   </div>
@@ -358,8 +358,8 @@ export default function ConnectionDetailDrawer({
                       className={cn(
                         "rounded-[var(--inset-radius)] py-2 px-3 text-xs font-bold transition-all border text-center cursor-pointer",
                         discordMode === "oauth"
-                          ? "bg-indigo-600 border-indigo-400 text-white shadow-md"
-                          : "bg-white/5 border-[var(--panel-border)] text-zinc-400 hover:text-white"
+                          ? "bg-[var(--accent-primary)] border-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md"
+                          : "bg-[var(--text-primary)]/5 border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                       )}
                     >
                       Bot Discord 2.0 (Page Bot)
@@ -370,14 +370,14 @@ export default function ConnectionDetailDrawer({
                       className={cn(
                         "rounded-[var(--inset-radius)] py-2 px-3 text-xs font-bold transition-all border text-center cursor-pointer",
                         discordMode === "lanyard"
-                          ? "bg-indigo-600 border-indigo-400 text-white shadow-md"
-                          : "bg-white/5 border-[var(--panel-border)] text-zinc-400 hover:text-white"
+                          ? "bg-[var(--accent-primary)] border-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md"
+                          : "bg-[var(--text-primary)]/5 border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                       )}
                     >
                       Lanyard (ID Discord)
                     </button>
                   </div>
-                  <p className="text-[11px] text-zinc-400 leading-relaxed">
+                  <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
                     {discordMode === "oauth"
                       ? "Connexion officielle avec le même Bot Discord que sur la page Bot (/discord) pour gérer vos serveurs et profil."
                       : "Synchronisation temps réel de votre statut, musique Spotify et jeu en cours via Lanyard sans permission invasive."}
@@ -431,17 +431,17 @@ export default function ConnectionDetailDrawer({
                               className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none font-mono"
                             />
                             {integration.id === "discord" && (
-                              <div className="rounded-[var(--inset-radius)] border border-indigo-500/20 bg-indigo-500/10 p-3 text-[11px] text-indigo-300 space-y-1.5 leading-relaxed">
-                                <p className="font-semibold text-indigo-200">
+                              <div className="rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 p-3 text-[11px] text-[var(--accent-primary)] space-y-1.5 leading-relaxed">
+                                <p className="font-semibold text-[var(--accent-primary)]">
                                   📌 Comment trouver votre ID Discord personnel ?
                                 </p>
-                                <ol className="list-decimal list-inside space-y-0.5 text-zinc-300">
+                                <ol className="list-decimal list-inside space-y-0.5 text-[var(--text-primary)]/85">
                                   <li>Dans Discord : <strong>Paramètres</strong> &gt; <strong>Avancés</strong> &gt; Activez <strong>Mode développeur</strong>.</li>
                                   <li>Faites un clic droit sur <strong>votre profil / avatar</strong> (en bas à gauche) &gt; <strong>Copier l&apos;identifiant d&apos;utilisateur</strong>.</li>
                                   <li>Collez-le ci-dessus et cliquez sur <strong>Connecter</strong>.</li>
                                 </ol>
-                                <p className="pt-1 text-[10px] text-zinc-400">
-                                  ⚠️ <em>Remarque : Votre compte Discord doit avoir rejoint le serveur Lanyard (<a href="https://discord.gg/lanyard" target="_blank" rel="noreferrer" className="text-indigo-400 underline font-medium">discord.gg/lanyard</a>) pour activer la diffusion de présence.</em>
+                                <p className="pt-1 text-[10px] text-[var(--text-muted)]">
+                                  ⚠️ <em>Remarque : Votre compte Discord doit avoir rejoint le serveur Lanyard (<a href="https://discord.gg/lanyard" target="_blank" rel="noreferrer" className="text-[var(--accent-primary)] underline font-medium">discord.gg/lanyard</a>) pour activer la diffusion de présence.</em>
                                 </p>
                               </div>
                             )}
@@ -539,22 +539,22 @@ export default function ConnectionDetailDrawer({
               {/* Discord OAuth2 Dedicated Configuration */}
               {integration.id === "discord" && discordMode === "oauth" && (
                 <Section title="Connexion OAuth2 Discord (Bot ETHONE)">
-                  <div className="space-y-3.5 rounded-[var(--panel-radius)] border border-indigo-500/30 bg-indigo-500/5 p-4">
+                  <div className="space-y-3.5 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/5 p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-xs font-bold text-white flex items-center gap-1.5">
+                        <p className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
                           <CheckCircle2 className="h-4 w-4 text-[var(--accent-primary)]" />
                           <span>Bot Discord Officiel Configuré</span>
                         </p>
-                        <p className="text-[11px] text-zinc-400 mt-0.5">
-                          ID de l&apos;application : <code className="text-indigo-300 font-mono">1545139931154878464</code>
+                        <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
+                          ID de l&apos;application : <code className="text-[var(--accent-primary)] font-mono">1545139931154878464</code>
                         </p>
                       </div>
                       <a
                         href="https://discord.com/developers/applications"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] text-indigo-400 hover:underline font-semibold shrink-0"
+                        className="inline-flex items-center gap-1 text-[11px] text-[var(--accent-primary)] hover:underline font-semibold shrink-0"
                       >
                         <span>Discord Dev Portal</span>
                         <ExternalLink className="h-3 w-3" />
@@ -572,12 +572,12 @@ export default function ConnectionDetailDrawer({
                           setCredValues((p) => ({ ...p, clientId: e.target.value }))
                         }
                         placeholder="Ex: 1545139931154878464"
-                        className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-indigo-500 focus:outline-none"
+                        className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
                       />
                     </div>
 
-                    <div className="rounded-[var(--inset-radius)] border border-indigo-500/20 bg-indigo-500/10 p-3">
-                      <p className="text-[11px] text-indigo-200 leading-relaxed">
+                    <div className="rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 p-3">
+                      <p className="text-[11px] text-[var(--accent-primary)] leading-relaxed">
                         💡 Cliquez sur <strong>« Connecter »</strong> ci-dessous pour ouvrir directement la page d&apos;autorisation Discord et lier votre compte en 1 clic.
                       </p>
                     </div>
@@ -594,9 +594,9 @@ export default function ConnectionDetailDrawer({
                       </a>
                       <a
                         href="/discord"
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-indigo-500/40 bg-indigo-600/20 px-3.5 py-2.5 text-xs font-semibold text-indigo-200 transition-all hover:bg-indigo-600/35 hover:text-white hover:border-indigo-400/60"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/20 px-3.5 py-2.5 text-xs font-semibold text-[var(--accent-primary)] transition-all hover:bg-[var(--accent-primary)]/35 hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/60"
                       >
-                        <Bot className="h-4 w-4 text-indigo-400" />
+                        <Bot className="h-4 w-4 text-[var(--accent-primary)]" />
                         <span>Ouvrir le Dashboard Discord Bot 2.0</span>
                       </a>
                     </div>
@@ -617,7 +617,7 @@ export default function ConnectionDetailDrawer({
                             ? "bg-[var(--accent-primary)]"
                             : status === "error"
                             ? "bg-[var(--danger)]"
-                            : "bg-zinc-500"
+                            : "bg-[var(--text-muted)]/40"
                         )}
                       />
                       <span>{statusLabel}</span>
@@ -689,7 +689,7 @@ export default function ConnectionDetailDrawer({
                       {permissions.map((p) => (
                         <span
                           key={p}
-                          className="rounded-[var(--inset-radius)] bg-white/5 border border-[var(--panel-border)] px-2 py-0.5 font-mono text-[10px] text-zinc-300"
+                          className="rounded-[var(--inset-radius)] bg-[var(--text-primary)]/5 border border-[var(--panel-border)] px-2 py-0.5 font-mono text-[10px] text-[var(--text-primary)]/85"
                         >
                           {p}
                         </span>
@@ -732,7 +732,7 @@ export default function ConnectionDetailDrawer({
               <button
                 type="button"
                 onClick={onTest}
-                className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/10 transition-all active:scale-95 cursor-pointer"
+                className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 transition-all active:scale-95 cursor-pointer"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 <span>Tester la connexion</span>
@@ -744,7 +744,7 @@ export default function ConnectionDetailDrawer({
                     <button
                       type="button"
                       onClick={() => setConfirmDisconnect(false)}
-                      className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 py-2 text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
+                      className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
                     >
                       Annuler
                     </button>

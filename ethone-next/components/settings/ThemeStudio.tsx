@@ -487,11 +487,11 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                         </span>
                       )}
                       {isLight ? (
-                        <span className="rounded-md bg-sky-500/20 px-1.5 py-0.5 text-[9px] font-bold text-sky-400">
+                        <span className="rounded-md bg-[var(--info)]/20 px-1.5 py-0.5 text-[9px] font-bold text-[var(--info)]">
                           Light
                         </span>
                       ) : (
-                        <span className="rounded-md bg-zinc-700/40 px-1.5 py-0.5 text-[9px] font-bold text-zinc-300">
+                        <span className="rounded-md bg-[var(--text-primary)]/6 px-1.5 py-0.5 text-[9px] font-bold text-[var(--text-primary)]/85">
                           Dark
                         </span>
                       )}
@@ -588,7 +588,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                           e.stopPropagation();
                           handleExportTheme(theme);
                         }}
-                        className="p-1 rounded-lg hover:bg-white/10 opacity-70 hover:opacity-100 transition-all"
+                        className="p-1 rounded-lg hover:bg-[var(--text-primary)]/10 opacity-70 hover:opacity-100 transition-all"
                         title="Exporter la configuration JSON"
                       >
                         <Download className="h-3 w-3" />

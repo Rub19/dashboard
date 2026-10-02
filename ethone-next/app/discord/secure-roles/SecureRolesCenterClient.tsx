@@ -56,7 +56,7 @@ interface Overview {
 const STATUS: Record<MemberRow["status"], { label: string; cls: string }> = {
   none: { label: "Pas invité", cls: "bg-[var(--surface-raised)] text-[var(--text-muted)]" },
   invited: { label: "Invité", cls: "bg-amber-500/15 text-amber-300" },
-  pending: { label: "Configuration en cours", cls: "bg-sky-500/15 text-sky-300" },
+  pending: { label: "Configuration en cours", cls: "bg-[var(--info)]/15 text-[var(--info)]" },
   active: { label: "Protégé", cls: "bg-[var(--success)]/15 text-[var(--success)]" },
 };
 const AUDIT_LABEL: Record<string, string> = {

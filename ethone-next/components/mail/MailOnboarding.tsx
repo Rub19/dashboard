@@ -187,7 +187,7 @@ export default function MailOnboarding({
           }}
           className="group relative flex flex-col items-start gap-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/15 text-blue-400">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--info)]/15 text-[var(--info)]">
             <Globe className="h-5 w-5" />
           </div>
           <div>

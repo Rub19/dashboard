@@ -107,7 +107,7 @@ export default function WidgetConfigModal({
         )}
 
         {widgetId !== "live" && widgetId !== "productivity" && widgetId !== "daystream" && widgetId !== "system" && (
-          <p className="text-zinc-400 py-2">
+          <p className="text-[var(--text-muted)] py-2">
             Ce widget utilise les paramètres par défaut d'ETHONE OS.
           </p>
         )}

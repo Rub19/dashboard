@@ -80,11 +80,11 @@ export default function CalendarInvoicesPage() {
 
           <div className="flex flex-wrap items-center gap-2 text-[10px] text-[var(--text-muted)]">
             <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--info)]" />
               Réunion
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
               Facture
             </span>
             <span className="flex items-center gap-1.5">

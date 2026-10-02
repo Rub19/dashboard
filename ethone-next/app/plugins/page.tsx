@@ -304,9 +304,9 @@ export default function PluginsPage() {
           transition={{ duration: 0.25, ease: EASE_SNAP }}
           className="shrink-0 overflow-hidden"
         >
-        <div className="flex items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-purple-500/30 bg-purple-950/25 px-4 py-2 text-xs backdrop-blur-md">
-          <div className="flex items-center gap-2 text-purple-200">
-            <Brain className="h-4 w-4 text-purple-400 shrink-0" />
+        <div className="flex items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/25 px-4 py-2 text-xs backdrop-blur-md">
+          <div className="flex items-center gap-2 text-[var(--accent-primary)]">
+            <Brain className="h-4 w-4 text-[var(--accent-primary)] shrink-0" />
             <span>
               <strong>Intention Brain détectée :</strong> {searchIntent.intentLabel}
             </span>
@@ -315,7 +315,7 @@ export default function PluginsPage() {
           <button
             type="button"
             onClick={() => setSearch("")}
-            className="text-[11px] text-purple-300 hover:text-[var(--text-primary)] underline cursor-pointer"
+            className="text-[11px] text-[var(--accent-primary)] hover:text-[var(--text-primary)] underline cursor-pointer"
           >
             Effacer
           </button>

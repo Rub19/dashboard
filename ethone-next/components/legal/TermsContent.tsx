@@ -1,6 +1,7 @@
 "use client";
 
 import { useI18n } from "@/lib/hooks/useI18n";
+import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/support";
 
 export default function TermsContent() {
   const i18n = useI18n();
@@ -72,8 +73,8 @@ export default function TermsContent() {
             <h2 className="text-lg font-semibold text-[var(--text-primary)]">{i18n("termsS8Title", "8. Contact")}</h2>
             <p className="mt-2">
               {i18n("termsS8BodyPrefix", "Pour toute question relative à ces Conditions, vous pouvez nous contacter à :")}{" "}
-              <a href="mailto:rub19.mailpro@gmail.com" className="text-[var(--brand,#C1234F)] underline underline-offset-2">
-                rub19.mailpro@gmail.com
+              <a href={SUPPORT_MAILTO} className="text-[var(--brand,#C1234F)] underline underline-offset-2">
+                {SUPPORT_EMAIL}
               </a>
               .
             </p>

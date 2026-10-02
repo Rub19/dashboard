@@ -121,10 +121,10 @@ const TYPE_CONFIG: Record<
   },
   default: {
     icon: Dot,
-    dot: "bg-zinc-500",
+    dot: "bg-[var(--text-muted)]/40",
     iconColor: "text-[var(--text-muted)]",
-    badgeBg: "bg-zinc-500/10",
-    badgeBorder: "border-zinc-500/20",
+    badgeBg: "bg-[var(--text-muted)]/10",
+    badgeBorder: "border-[var(--text-primary)]/4",
     badgeText: "text-[var(--text-primary)]",
     borderColor: "rgba(161,161,170,0.25)",
   },
@@ -157,7 +157,7 @@ function ChangelogItem({ item, title, dim }: { item: string; title: string; dim?
       <span
         className={cn(
           "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full",
-          type === "default" ? "bg-zinc-500/20" : cfg.badgeBg,
+          type === "default" ? "bg-[var(--text-muted)]/20" : cfg.badgeBg,
         )}
       >
         <Icon className={cn("h-2.5 w-2.5", cfg.iconColor)} />

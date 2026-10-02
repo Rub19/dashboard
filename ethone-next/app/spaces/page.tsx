@@ -218,7 +218,7 @@ export default function SpacesPage() {
 
         <FlatCard>
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-violet-500/10 text-violet-400">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
               <Icon name="layers" className="h-5 w-5" />
             </span>
             <div>

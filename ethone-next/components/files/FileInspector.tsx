@@ -89,7 +89,7 @@ export default function FileInspector({
             className={cn(
               "flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-medium",
               isGoogleDrive
-                ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
+                ? "bg-[var(--info)]/15 text-[var(--info)] border-[var(--info)]/30"
                 : "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/25"
             )}
           >

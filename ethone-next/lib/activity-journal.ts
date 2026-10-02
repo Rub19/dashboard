@@ -125,13 +125,34 @@ export function restoreEventTypes(entries: ActivityEntry[]): ActivityEntry[] {
   });
 }
 
+/** Avant v1.50.5, « Thème modifié » / « Accent modifié » s'ajoutaient à chaque chargement de page (passage des
+ * réglages par défaut aux réglages enregistrés) : impossible de distinguer les vrais, on retire tous ceux d'avant. */
+const SPURIOUS_APPEARANCE_BEFORE = "2026-10-02T16:20:00.000Z";
+const APPEARANCE_EVENTS = new Set(["v8.theme.toggle", "v8.appearance.cycle"]);
+
+export function dropSpuriousAppearanceEvents(entries: ActivityEntry[]): ActivityEntry[] {
+  return entries.filter(
+    (entry) => !(entry && APPEARANCE_EVENTS.has(entry.eventType || "") && String(entry.timestamp || "") < SPURIOUS_APPEARANCE_BEFORE)
+  );
+}
+
 function loadState(): JournalState {
   if (!isClient()) return { entries: [] };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return { entries: [] };
     const parsed = JSON.parse(raw) as JournalState;
-    return { entries: Array.isArray(parsed?.entries) ? restoreEventTypes(parsed.entries) : [] };
+    if (!Array.isArray(parsed?.entries)) return { entries: [] };
+    const entries = dropSpuriousAppearanceEvents(restoreEventTypes(parsed.entries));
+    // Nettoyage enregistré tout de suite (sinon il ne serait écrit qu'au prochain événement).
+    if (entries.length !== parsed.entries.length) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ entries }));
+      } catch {
+        /* stockage plein ou indisponible : le filtre s'appliquera au prochain chargement */
+      }
+    }
+    return { entries };
   } catch {
     return { entries: [] };
   }

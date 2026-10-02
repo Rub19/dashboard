@@ -984,7 +984,7 @@ export default function UserModerationProfileClient() {
                       ) : item.type === "REPORT" ? (
                         <AlertTriangle className="w-4 h-4 text-amber-400" />
                       ) : (
-                        <FileText className="w-4 h-4 text-blue-400" />
+                        <FileText className="w-4 h-4 text-[var(--info)]" />
                       )}
                     </div>
                     <div className="flex-1 space-y-1">
@@ -1262,7 +1262,7 @@ export default function UserModerationProfileClient() {
               <button
                 onClick={handleRevertCase}
                 disabled={isSubmittingRevert}
-                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition-all disabled:opacity-50"
+                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-[var(--text-muted)]/70 text-xs font-bold transition-all disabled:opacity-50"
               >
                 {isSubmittingRevert ? "Traitement..." : "Confirmer le pardon"}
               </button>

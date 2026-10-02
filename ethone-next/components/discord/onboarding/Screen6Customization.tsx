@@ -8,9 +8,9 @@ export default function Screen6Customization() {
   const [securityLevel, setSecurityLevel] = useState<"standard" | "strict" | "maximum">("strict");
 
   const colors = [
-    { id: "indigo", name: "Indigo", bg: "bg-indigo-500", border: "border-indigo-500", text: "text-indigo-400" },
+    { id: "indigo", name: "Indigo", bg: "bg-[var(--accent-primary)]", border: "border-[var(--accent-primary)]", text: "text-[var(--accent-primary)]" },
     { id: "teal", name: "Teal", bg: "bg-teal-500", border: "border-teal-500", text: "text-teal-400" },
-    { id: "violet", name: "Violet", bg: "bg-violet-500", border: "border-violet-500", text: "text-violet-400" },
+    { id: "violet", name: "Violet", bg: "bg-[var(--accent-primary)]", border: "border-[var(--accent-primary)]", text: "text-[var(--accent-primary)]" },
     { id: "emerald", name: "Emerald", bg: "bg-[var(--accent-primary)]", border: "border-[var(--accent-primary)]", text: "text-[var(--accent-primary)]" },
     { id: "rose", name: "Rose", bg: "bg-rose-500", border: "border-rose-500", text: "text-rose-400" },
   ];
@@ -53,7 +53,7 @@ export default function Screen6Customization() {
                       accentColor === c.id ? "ring-2 ring-[var(--text-primary)]" : "opacity-70 hover:opacity-100"
                     }`}
                   >
-                    {accentColor === c.id && <Check className="w-3.5 h-3.5 text-white" />}
+                    {accentColor === c.id && <Check className="w-3.5 h-3.5 text-[var(--text-primary)]" />}
                   </button>
                 ))}
               </div>

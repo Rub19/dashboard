@@ -320,9 +320,11 @@ export default function BootProvider({ children }: { children: ReactNode }) {
       else target = 100;
       setBootProgress((prev) => Math.max(prev, Math.round(target)));
 
-      if (canShowApp && shellLoadedRef.current && elapsed >= BOOT_MIN_DURATION_MS) {
+      // Onglet caché : personne ne voit la barre, on ouvre l'app sans délai d'animation.
+      const hidden = typeof document !== "undefined" && document.hidden;
+      if (canShowApp && shellLoadedRef.current && (hidden || elapsed >= BOOT_MIN_DURATION_MS)) {
         fullAtRef.current = fullAtRef.current ?? Date.now();
-        if (Date.now() - fullAtRef.current >= BOOT_FULL_HOLD_MS) {
+        if (hidden || Date.now() - fullAtRef.current >= BOOT_FULL_HOLD_MS) {
           setBootReady(true);
           return;
         }
@@ -331,7 +333,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
       schedule();
     };
 
-    schedule();
+    tick();
     return () => {
       cancelAnimationFrame(raf);
       if (timer) clearTimeout(timer);

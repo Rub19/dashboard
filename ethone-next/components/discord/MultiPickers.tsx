@@ -21,7 +21,7 @@ function Chips({ ids, names, prefix, onRemove, disabled }: { ids: string[]; name
         <span key={id} className="inline-flex items-center gap-1 rounded-md bg-[#5865F2]/20 px-2 py-1 text-xs text-[#c9cdfb]">
           {prefix}
           {names[id] ?? id}
-          <button type="button" disabled={disabled} onClick={() => onRemove(id)} aria-label="Retirer" className="cursor-pointer rounded p-0.5 text-[#c9cdfb]/70 hover:bg-white/10 hover:text-white">
+          <button type="button" disabled={disabled} onClick={() => onRemove(id)} aria-label="Retirer" className="cursor-pointer rounded p-0.5 text-[#c9cdfb]/70 hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]">
             <X className="h-3 w-3" />
           </button>
         </span>
@@ -79,9 +79,9 @@ export function TagInput({ value, onChange, placeholder, disabled, max = 200 }: 
     <div className="space-y-2">
       <div className="flex flex-wrap gap-1.5">
         {value.map((t) => (
-          <span key={t} className="inline-flex items-center gap-1 rounded-md bg-zinc-800 px-2 py-1 text-xs text-zinc-200">
+          <span key={t} className="inline-flex items-center gap-1 rounded-md bg-[var(--text-primary)]/10 px-2 py-1 text-xs text-[var(--text-primary)]">
             {t}
-            <button type="button" disabled={disabled} onClick={() => onChange(value.filter((v) => v !== t))} aria-label="Retirer" className="cursor-pointer rounded p-0.5 text-zinc-400 hover:bg-white/10 hover:text-white">
+            <button type="button" disabled={disabled} onClick={() => onChange(value.filter((v) => v !== t))} aria-label="Retirer" className="cursor-pointer rounded p-0.5 text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]">
               <X className="h-3 w-3" />
             </button>
           </span>
@@ -99,7 +99,7 @@ export function TagInput({ value, onChange, placeholder, disabled, max = 200 }: 
           }
         }}
         onBlur={add}
-        className="h-10 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface)] px-3 text-sm text-white outline-none focus:border-[#5865F2]/70"
+        className="h-10 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[#5865F2]/70"
       />
     </div>
   );
@@ -126,7 +126,7 @@ export function MemberIdsInput({ value, onChange }: { value: string[]; onChange:
         {value.map((id) => (
           <span key={id} className="inline-flex items-center gap-1 rounded-md bg-[#5865F2]/20 px-2 py-1 font-mono text-xs text-[#c9cdfb]">
             {id}
-            <button type="button" onClick={() => onChange(value.filter((v) => v !== id))} aria-label="Retirer" className="cursor-pointer rounded px-1 text-[#c9cdfb]/70 hover:bg-white/10 hover:text-white">
+            <button type="button" onClick={() => onChange(value.filter((v) => v !== id))} aria-label="Retirer" className="cursor-pointer rounded px-1 text-[#c9cdfb]/70 hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]">
               ×
             </button>
           </span>
@@ -134,7 +134,7 @@ export function MemberIdsInput({ value, onChange }: { value: string[]; onChange:
       </div>
       <div className="flex gap-2">
         <input value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), add())} placeholder="Identifiant du membre (clic droit → Copier l'identifiant)" className={inputCls + (bad ? " border-rose-500/60" : "")} />
-        <button type="button" onClick={add} className="cursor-pointer rounded-xl border border-zinc-700 px-4 text-xs font-semibold text-white transition hover:bg-white/5">
+        <button type="button" onClick={add} className="cursor-pointer rounded-xl border border-[var(--text-primary)]/16 px-4 text-xs font-semibold text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/5">
           Ajouter
         </button>
       </div>

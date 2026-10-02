@@ -54,7 +54,7 @@ const toIso = (local: string) => (local ? new Date(local).toISOString() : null);
 function status(b: Boost): { label: string; cls: string } {
   const now = Date.now();
   if (!b.enabled) return { label: "Désactivé", cls: "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]" };
-  if (b.startTime && new Date(b.startTime).getTime() > now) return { label: "Programmé", cls: "bg-sky-500/15 text-sky-300" };
+  if (b.startTime && new Date(b.startTime).getTime() > now) return { label: "Programmé", cls: "bg-[var(--info)]/15 text-[var(--info)]" };
   if (b.endTime && new Date(b.endTime).getTime() < now) return { label: "Terminé", cls: "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]" };
   return { label: "Actif", cls: "bg-[var(--success)]/15 text-[var(--success)]" };
 }

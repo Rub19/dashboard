@@ -88,7 +88,7 @@ export const helpCommand: Command = {
             new ButtonBuilder().setCustomId('help_btn_home').setLabel(t.help_btn_catalogue).setEmoji('📚').setStyle(ButtonStyle.Primary),
             ...(cat ? [new ButtonBuilder().setCustomId(`help_btn_nav:${cat.id}`).setLabel(localizeCategory(cat, t).name).setEmoji(catEmoji(cat)).setStyle(ButtonStyle.Secondary)] : []),
           ),
-          footer(`${ctx.guildConfig.botName} · ${t.help_card_footer}`),
+          footer(`${ctx.guildConfig.botName} · ${t.help_card_footer} · support@ethone.dev`),
         ]);
         await ctx.reply({ components: [card], componentsV2: true });
         return;

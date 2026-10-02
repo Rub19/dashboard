@@ -48,7 +48,7 @@ function MediaEqualizer({ className = "" }: { className?: string }) {
 
 const SOURCE_ICON: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
   spotify: { icon: <Music className="h-3 w-3" />, color: "bg-[var(--accent-primary)] text-[var(--text-primary)]", label: "Spotify" },
-  jellyfin: { icon: <Server className="h-3 w-3" />, color: "bg-violet-500 text-[var(--text-primary)]", label: "Jellyfin" },
+  jellyfin: { icon: <Server className="h-3 w-3" />, color: "bg-[var(--accent-primary)] text-[var(--text-primary)]", label: "Jellyfin" },
 };
 
 export default function MediaWidget({ className = "" }: { className?: string }) {
@@ -133,7 +133,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
 
   if (!nowPlaying && !loading) {
     return (
-      <div className={`w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/70 p-4 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
+      <div className={`w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card)]/70 p-4 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
         <div className="flex flex-col items-center justify-center gap-3 text-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03]">
             <Music className="h-5 w-5 text-[var(--text-muted)]" />
@@ -179,7 +179,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
   }
 
   return (
-    <div className={`group w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/70 p-4 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
+    <div className={`group w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card)]/70 p-4 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
       <div className="flex items-center gap-4">
         <div className="relative shrink-0">
           <div className="relative h-16 w-16 overflow-hidden rounded-[var(--inset-radius)] border border-[var(--panel-border)] shadow-lg">
@@ -195,7 +195,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
             />
           </div>
           <div
-            className={`absolute -bottom-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-[var(--panel-border)] shadow-sm ${sourceMeta?.color ?? "bg-zinc-500 text-[var(--text-primary)]"}`}
+            className={`absolute -bottom-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-[var(--panel-border)] shadow-sm ${sourceMeta?.color ?? "bg-[var(--text-muted)]/40 text-[var(--text-primary)]"}`}
             title={sourceMeta?.label ?? nowPlaying?.source}
           >
             {sourceMeta?.icon ?? <Music className="h-3 w-3" />}
@@ -218,7 +218,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
           <div className="space-y-1">
             <div
               onClick={handleSeek}
-              className="h-1 w-full cursor-pointer overflow-hidden rounded-xl bg-white/10 transition-all duration-200 hover:h-2"
+              className="h-1 w-full cursor-pointer overflow-hidden rounded-xl bg-[var(--text-primary)]/10 transition-all duration-200 hover:h-2"
               aria-label={i18n("seek")}
               role="slider"
               aria-valuemin={0}
@@ -226,7 +226,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
               aria-valuenow={progress}
             >
               <div
-                className="h-full rounded-xl bg-white/60 transition-[width] duration-150"
+                className="h-full rounded-xl bg-[var(--text-primary)]/60 transition-[width] duration-150"
                 style={{ width: `${progressPct}%` }}
               />
             </div>
@@ -282,14 +282,14 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
               {volume > 0 ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
             </button>
             {showVolume && (
-              <div className="absolute right-0 top-1/2 z-10 flex w-24 -translate-y-1/2 items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/95 px-2 py-1.5 shadow-xl backdrop-blur-md">
+              <div className="absolute right-0 top-1/2 z-10 flex w-24 -translate-y-1/2 items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/95 px-2 py-1.5 shadow-xl backdrop-blur-md">
                 <input
                   type="range"
                   min={0}
                   max={100}
                   value={volume}
                   onChange={(e) => setVolume(Number(e.target.value))}
-                  className="h-1 w-full cursor-pointer appearance-none rounded-xl bg-white/10 accent-white"
+                  className="h-1 w-full cursor-pointer appearance-none rounded-xl bg-[var(--text-primary)]/10 accent-white"
                 />
               </div>
             )}

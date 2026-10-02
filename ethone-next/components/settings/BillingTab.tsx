@@ -81,7 +81,7 @@ export default function BillingTab() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">—</span>
-            <span className="rounded-[var(--inset-radius)] border border-zinc-500/20 bg-zinc-500/10 px-2 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
+            <span className="rounded-[var(--inset-radius)] border border-[var(--text-primary)]/4 bg-[var(--text-muted)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
               {i18n("noPlan", "Aucun abonnement")}
             </span>
           </div>

@@ -130,7 +130,7 @@ export default function AvatarCropperModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-[var(--text-muted)] hover:text-white"
+            className="rounded-lg p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           >
             <X className="h-4 w-4" />
           </button>
@@ -168,7 +168,7 @@ export default function AvatarCropperModal({
 
             {/* Center crosshair indicator */}
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-30">
-              <Move className="h-6 w-6 text-white" />
+              <Move className="h-6 w-6 text-[var(--text-primary)]" />
             </div>
           </div>
 
@@ -185,14 +185,14 @@ export default function AvatarCropperModal({
               <ZoomIn className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
               <span>Niveau de zoom</span>
             </span>
-            <span className="font-mono text-zinc-400">{zoom.toFixed(1)}x</span>
+            <span className="font-mono text-[var(--text-muted)]">{zoom.toFixed(1)}x</span>
           </div>
 
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setZoom((z) => Math.max(0.8, Number((z - 0.2).toFixed(1))))}
-              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5 text-[var(--text-muted)] hover:text-white cursor-pointer"
+              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
             >
               <ZoomOut className="h-4 w-4" />
             </button>
@@ -210,7 +210,7 @@ export default function AvatarCropperModal({
             <button
               type="button"
               onClick={() => setZoom((z) => Math.min(3, Number((z + 0.2).toFixed(1))))}
-              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5 text-[var(--text-muted)] hover:text-white cursor-pointer"
+              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
             >
               <ZoomIn className="h-4 w-4" />
             </button>
@@ -222,7 +222,7 @@ export default function AvatarCropperModal({
                 setOffset({ x: 0, y: 0 });
               }}
               title="Réinitialiser le centrage"
-              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5 text-[var(--text-muted)] hover:text-white cursor-pointer"
+              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
             >
               <RotateCcw className="h-4 w-4" />
             </button>
@@ -234,7 +234,7 @@ export default function AvatarCropperModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-white cursor-pointer"
+            className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
           >
             Annuler
           </button>
@@ -242,7 +242,7 @@ export default function AvatarCropperModal({
           <button
             type="button"
             onClick={handleCrop}
-            className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] hover:opacity-90 px-5 py-2 text-xs font-bold text-white shadow-md transition-transform active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] hover:opacity-90 px-5 py-2 text-xs font-bold text-[var(--accent-contrast)] shadow-md transition-transform active:scale-95 cursor-pointer"
           >
             <Check className="h-4 w-4" />
             <span>Valider et appliquer</span>

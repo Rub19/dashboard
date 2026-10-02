@@ -1105,7 +1105,7 @@ export default function AntiRaidDashboardPage() {
               <span className="text-xs text-[var(--text-muted)] uppercase font-medium">Joins / min</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-[var(--text-primary)] font-mono">{metrics.joinsPerMinute}</span>
-                <Users className="w-4 h-4 text-blue-400/60" />
+                <Users className="w-4 h-4 text-[var(--info)]/60" />
               </div>
             </div>
 

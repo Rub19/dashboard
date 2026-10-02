@@ -194,7 +194,7 @@ function Dock() {
   }
 
   const dockButton =
-    "group/dock-item relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-all duration-150 ease-out hover:bg-white/[0.08] hover:text-white hover:scale-110 active:scale-95 will-change-transform";
+    "group/dock-item relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-all duration-150 ease-out hover:bg-white/[0.08] hover:text-[var(--text-primary)] hover:scale-110 active:scale-95 will-change-transform";
 
   return (
     <>
@@ -215,7 +215,7 @@ function Dock() {
               title="Afficher le Dock"
               className="flex items-center gap-1.5 rounded-full border border-[var(--panel-border)] bg-black/80 px-3.5 py-1.5 text-[10px] font-bold text-zinc-300 backdrop-blur-[var(--panel-blur)] shadow-xl hover:border-purple-500/40 hover:bg-purple-500/15 hover:text-white transition-all active:scale-95 cursor-pointer"
             >
-              <ChevronUp className="h-3 w-3 text-purple-400" />
+              <ChevronUp className="h-3 w-3 text-[var(--accent-primary)]" />
               <span>Dock</span>
             </button>
           </motion.div>
@@ -299,7 +299,7 @@ function Dock() {
                 <LayoutGrid className="w-4.5 h-4.5" />
               </button>
 
-              <div className="mx-0.5 h-5 w-[1px] shrink-0 bg-white/10" aria-hidden="true" />
+              <div className="mx-0.5 h-5 w-[1px] shrink-0 bg-[var(--text-primary)]/10" aria-hidden="true" />
 
               <button
                 type="button"

@@ -62,11 +62,11 @@ function getIcon(category?: string, priority?: string) {
     case "tracker":
       return <Activity className="h-4 w-4 text-amber-400" />;
     case "system":
-      return <Settings className="h-4 w-4 text-sky-400" />;
+      return <Settings className="h-4 w-4 text-[var(--info)]" />;
     case "integration":
       return <Plug className="h-4 w-4 text-emerald-400" />;
     case "mail":
-      return <Mail className="h-4 w-4 text-indigo-400" />;
+      return <Mail className="h-4 w-4 text-[var(--accent-primary)]" />;
     default:
       return <Bell className="h-4 w-4 text-[var(--accent-primary)]" />;
   }
@@ -210,7 +210,7 @@ export default function NotificationItem({
           <div onClick={(e) => e.stopPropagation()}>
             <AnimatedDropdown modal={false} onOpenChange={() => setSnoozeExpanded(false)}>
             <AnimatedDropdownTrigger
-              className="h-7 w-7 p-0 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 shadow-xs"
+              className="h-7 w-7 p-0 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 shadow-xs"
             >
               <MoreHorizontal className="h-3.5 w-3.5" />
             </AnimatedDropdownTrigger>
@@ -235,7 +235,7 @@ export default function NotificationItem({
                     Marquer comme important
                   </AnimatedDropdownItem>
                   <AnimatedDropdownItem
-                    icon={<BellOff className="h-3.5 w-3.5 text-sky-400" />}
+                    icon={<BellOff className="h-3.5 w-3.5 text-[var(--info)]" />}
                     onClick={() => {
                       if (isMuted(n.category)) {
                         unmuteCategory(n.category);

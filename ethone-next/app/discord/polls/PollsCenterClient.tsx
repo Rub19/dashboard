@@ -106,7 +106,7 @@ const DEMO_POLLS: PollSummary[] = [];
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
   SINGLE_CHOICE: { label: "Choix Unique", color: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/30", icon: Vote },
-  MULTIPLE_CHOICE: { label: "Choix Multiple", color: "bg-blue-500/10 text-blue-400 border-blue-500/30", icon: Layers },
+  MULTIPLE_CHOICE: { label: "Choix Multiple", color: "bg-[var(--info)]/10 text-[var(--info)] border-[var(--info)]/30", icon: Layers },
   RANKING: { label: "Vote Préférentiel", color: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/30", icon: Award },
   WEIGHTED_VOTE: { label: "Pondéré par Rôles", color: "bg-amber-500/10 text-amber-400 border-amber-500/30", icon: ShieldCheck },
   ANONYMOUS_POLL: { label: "Bulletin Secret", color: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/30", icon: Sparkles },
@@ -584,7 +584,7 @@ export default function PollsCenterClient() {
 
                         {poll.native && (
                           <span
-                            className="rounded-full border border-sky-500/30 bg-sky-500/10 px-2.5 py-0.5 text-xs font-semibold text-sky-400"
+                            className="rounded-full border border-[var(--info)]/30 bg-[var(--info)]/10 px-2.5 py-0.5 text-xs font-semibold text-[var(--info)]"
                             title="Sondage natif Discord : vote et affichage gérés par Discord"
                           >
                             Natif
@@ -636,7 +636,7 @@ export default function PollsCenterClient() {
                       <div className="mt-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-1.5">
                         <div className="flex items-center justify-between text-xs">
                           <span className="text-[var(--text-muted)] font-medium flex items-center gap-1.5">
-                            <Users className="h-3.5 w-3.5 text-sky-400" />
+                            <Users className="h-3.5 w-3.5 text-[var(--info)]" />
                             Votes Discord
                           </span>
                           <span className="font-bold text-[var(--text-primary)]">{poll.totalVotes}</span>

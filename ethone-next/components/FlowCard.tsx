@@ -61,7 +61,7 @@ export default function FlowCard({
   title,
   description,
   icon,
-  iconClass = "bg-sky-500/10 text-sky-400",
+  iconClass = "bg-[var(--info)]/10 text-[var(--info)]",
   steps,
   active = false,
   count,

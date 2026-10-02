@@ -26,7 +26,7 @@ export function ProfileHeader() {
           <div
             className={cn(
               "relative h-20 w-20 overflow-hidden rounded-full ring-2 ring-offset-2 ring-offset-[#141414]",
-              identity?.avatar_frame_id ? "ring-amber-400" : "ring-zinc-700"
+              identity?.avatar_frame_id ? "ring-amber-400" : "ring-[var(--text-primary)]/16"
             )}
           >
             <ClientImage
@@ -36,7 +36,7 @@ export function ProfileHeader() {
               height={128}
               className="h-full w-full object-cover"
               fallback={
-                <span className="flex h-full w-full items-center justify-center bg-[var(--accent)] text-xl font-bold text-white">
+                <span className="flex h-full w-full items-center justify-center bg-[var(--accent)] text-xl font-bold text-[var(--text-primary)]">
                   {initials}
                 </span>
               }

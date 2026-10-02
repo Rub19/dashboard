@@ -86,7 +86,7 @@ export default function PersonalizationPanel({
                   "flex items-center gap-2 rounded-[var(--panel-radius)] border p-3 text-xs font-semibold transition-all cursor-pointer",
                   isSelected
                     ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--text-primary)] shadow-xs"
-                    : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-hover)]"
+                    : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
                 )}
               >
                 <IconComponent className={cn("h-4 w-4 shrink-0", isSelected ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
@@ -99,14 +99,14 @@ export default function PersonalizationPanel({
       </div>
 
       {/* 2. Inferred Preferences by Brain */}
-      <div className="rounded-[var(--panel-radius)] border border-purple-500/30 bg-purple-950/15 p-5 sm:p-6 backdrop-blur-md space-y-3">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 p-5 sm:p-6 backdrop-blur-md space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-bold text-purple-100 flex items-center gap-2">
-              <Brain className="h-4 w-4 text-purple-400" />
+            <h3 className="text-base font-bold text-[var(--accent-primary)] flex items-center gap-2">
+              <Brain className="h-4 w-4 text-[var(--accent-primary)]" />
               <span>Préférences inférées par le Brain (Confiance cognitive)</span>
             </h3>
-            <p className="text-xs text-purple-200/70 mt-0.5">
+            <p className="text-xs text-[var(--accent-primary)]/70 mt-0.5">
               Tendances détectées automatiquement d'après vos habitudes, widgets et temps d'utilisation réel.
             </p>
           </div>
@@ -114,7 +114,7 @@ export default function PersonalizationPanel({
           <button
             type="button"
             onClick={() => setShowTransparencyInfo(!showTransparencyInfo)}
-            className="flex items-center gap-1 text-xs font-medium text-purple-300 hover:text-white underline cursor-pointer"
+            className="flex items-center gap-1 text-xs font-medium text-[var(--accent-primary)] hover:text-[var(--text-primary)] underline cursor-pointer"
           >
             <HelpCircle className="h-3.5 w-3.5" />
             <span>Pourquoi ces choix ?</span>
@@ -123,7 +123,7 @@ export default function PersonalizationPanel({
 
         {/* Transparency note */}
         {showTransparencyInfo && (
-          <div className="rounded-[var(--panel-radius)] border border-purple-500/30 bg-purple-900/30 p-3 text-xs text-purple-100/90 leading-relaxed space-y-1">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/30 p-3 text-xs text-[var(--accent-primary)]/90 leading-relaxed space-y-1">
             <strong className="block font-bold">Transparence Algorithmique ETHONE :</strong>
             <p>
               Le moteur Brain analyse localement la fréquence d'utilisation de vos espaces, les types d'extensions installées et les intégrations connectées. Aucun profil publicitaire n'est créé et vos données ne quittent jamais votre environnement sécurisé.
@@ -135,15 +135,15 @@ export default function PersonalizationPanel({
           {inferredPreferences.map((pref) => (
             <div
               key={pref.id}
-              className="rounded-[var(--panel-radius)] border border-purple-500/20 bg-purple-950/30 p-3.5 space-y-1.5"
+              className="rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/30 p-3.5 space-y-1.5"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-white">{pref.label}</span>
-                <span className="rounded-full border border-purple-400/40 bg-purple-900/50 px-2 py-0.5 text-[10px] font-bold text-purple-200">
+                <span className="text-xs font-bold text-[var(--text-primary)]">{pref.label}</span>
+                <span className="rounded-full border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/50 px-2 py-0.5 text-[10px] font-bold text-[var(--accent-primary)]">
                   {pref.confidence}% confiance
                 </span>
               </div>
-              <p className="text-[11px] text-purple-200/70 leading-relaxed">
+              <p className="text-[11px] text-[var(--accent-primary)]/70 leading-relaxed">
                 {pref.reason}
               </p>
             </div>
@@ -244,7 +244,7 @@ export default function PersonalizationPanel({
                   onClick={() => onTogglePrivacy(toggle.key)}
                   className={cn(
                     "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
-                    isEnabled ? "bg-[var(--accent-primary)]" : "bg-zinc-700"
+                    isEnabled ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/15"
                   )}
                 >
                   <span

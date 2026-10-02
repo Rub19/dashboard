@@ -42031,6 +42031,71 @@ CHANGELOG_BY_LANG.en.unshift(v1_50_9_en);
 CHANGELOG_BY_LANG.es.unshift(v1_50_9_es);
 CHANGELOG_BY_LANG.de.unshift(v1_50_9_de);
 
+const v1_51_0_fr: ChangelogEntry = {
+  version: "v1.51.0",
+  date: "2026-10-02",
+  title: "Adresse support@ethone.dev, réception des e-mails réparée",
+  items: [
+    "Nouvelle adresse support@ethone.dev : arrive dans la boîte ETHONE du compte admin et est transférée vers sa boîte personnelle. Affichée dans le menu du profil (« Contacter le support »), la confidentialité, les CGU, le tutoriel et la popup de l'extension, la vitrine et l'aide du bot.",
+    "Confidentialité et CGU : l'adresse personnelle n'est plus affichée publiquement, remplacée par support@ethone.dev.",
+    "Mail : les e-mails entrants sont désormais décodés correctement (texte, HTML, pièces jointes) ; ils arrivaient vides.",
+    "Démarrage : l'app s'ouvre dès que tout est prêt, même dans un onglet en arrière-plan (le navigateur y ralentissait le démarrage de plusieurs secondes).",
+    "Activité : suppression des anciens « Thème modifié » et « Accent modifié » enregistrés à chaque chargement par un bug.",
+    "Couleurs : environ 90 écrans de plus suivent le thème (gris, indigo, violet et bleu figés remplacés ; couleurs de marque et palettes conservées).",
+    "Extension 1.1.1 : lien d'aide vers support@ethone.dev dans la popup.",
+  ],
+};
+
+const v1_51_0_en: ChangelogEntry = {
+  version: "v1.51.0",
+  date: "2026-10-02",
+  title: "support@ethone.dev address, incoming mail fixed",
+  items: [
+    "New support@ethone.dev address: lands in the admin account's ETHONE inbox and is forwarded to their personal inbox. Shown in the profile menu (“Contact support”), privacy policy, terms, the extension tutorial and popup, the bot showcase and help.",
+    "Privacy policy and terms: the personal address is no longer shown publicly, replaced by support@ethone.dev.",
+    "Mail: incoming e-mails are now decoded properly (text, HTML, attachments); they used to arrive empty.",
+    "Startup: the app opens as soon as everything is ready, even in a background tab (the browser slowed startup there by several seconds).",
+    "Activity: removed the old “Theme changed” and “Accent changed” entries a bug recorded on every page load.",
+    "Colours: about 90 more screens follow the theme (hardcoded grey, indigo, violet and blue replaced; brand colours and palettes kept).",
+    "Extension 1.1.1: help link to support@ethone.dev in the popup.",
+  ],
+};
+
+const v1_51_0_es: ChangelogEntry = {
+  version: "v1.51.0",
+  date: "2026-10-02",
+  title: "Dirección support@ethone.dev, recepción de correos reparada",
+  items: [
+    "Nueva dirección support@ethone.dev: llega al buzón ETHONE de la cuenta admin y se reenvía a su buzón personal. Visible en el menú del perfil («Contactar con soporte»), privacidad, condiciones, el tutorial y la ventana de la extensión, el escaparate y la ayuda del bot.",
+    "Privacidad y condiciones: la dirección personal ya no se muestra públicamente, sustituida por support@ethone.dev.",
+    "Correo: los mensajes entrantes ahora se decodifican bien (texto, HTML, adjuntos); llegaban vacíos.",
+    "Inicio: la app se abre en cuanto todo está listo, incluso en una pestaña en segundo plano (el navegador ralentizaba el inicio varios segundos).",
+    "Actividad: eliminadas las antiguas entradas «Tema modificado» y «Acento modificado» que un error registraba en cada carga.",
+    "Colores: unas 90 pantallas más siguen el tema (gris, índigo, violeta y azul fijos sustituidos; se conservan colores de marca y paletas).",
+    "Extensión 1.1.1: enlace de ayuda a support@ethone.dev en la ventana.",
+  ],
+};
+
+const v1_51_0_de: ChangelogEntry = {
+  version: "v1.51.0",
+  date: "2026-10-02",
+  title: "Adresse support@ethone.dev, E-Mail-Empfang repariert",
+  items: [
+    "Neue Adresse support@ethone.dev: landet im ETHONE-Postfach des Admin-Kontos und wird an dessen persönliches Postfach weitergeleitet. Sichtbar im Profilmenü („Support kontaktieren“), Datenschutz, AGB, im Tutorial und Popup der Erweiterung, im Bot-Schaufenster und in der Bot-Hilfe.",
+    "Datenschutz und AGB: Die persönliche Adresse wird nicht mehr öffentlich angezeigt, ersetzt durch support@ethone.dev.",
+    "Mail: Eingehende E-Mails werden jetzt korrekt dekodiert (Text, HTML, Anhänge); sie kamen bisher leer an.",
+    "Start: Die App öffnet sich, sobald alles bereit ist, auch in einem Hintergrund-Tab (der Browser verlangsamte dort den Start um mehrere Sekunden).",
+    "Aktivität: Alte Einträge „Theme geändert“ und „Akzent geändert“, die ein Fehler bei jedem Laden erzeugte, wurden entfernt.",
+    "Farben: rund 90 weitere Ansichten folgen dem Theme (fest eingestelltes Grau, Indigo, Violett und Blau ersetzt; Markenfarben und Paletten bleiben).",
+    "Erweiterung 1.1.1: Hilfe-Link zu support@ethone.dev im Popup.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_51_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_51_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_51_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_51_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

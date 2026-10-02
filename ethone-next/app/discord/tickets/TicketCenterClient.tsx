@@ -750,7 +750,7 @@ export function TicketCenterClient() {
       case "HIGH":
         return "bg-amber-500/20 text-amber-300 border-amber-500/40";
       case "NORMAL":
-        return "bg-blue-500/20 text-blue-300 border-blue-500/40";
+        return "bg-[var(--info)]/20 text-[var(--info)] border-[var(--info)]/40";
       case "LOW":
       default:
         return "bg-[var(--surface-raised)]/60 text-[var(--text-muted)] border-[var(--panel-border)]";
@@ -877,13 +877,13 @@ export function TicketCenterClient() {
           <p className="text-xs text-amber-300/80 mt-1">Réponse membre ou staff requise</p>
         </div>
 
-        <div className="rounded-2xl border border-blue-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
+        <div className="rounded-2xl border border-[var(--info)]/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
           <div className="flex items-center justify-between text-[var(--text-muted)] text-xs">
             <span>Clôturés Aujourd&apos;hui</span>
-            <CheckCircle2 className="h-4 w-4 text-blue-400" />
+            <CheckCircle2 className="h-4 w-4 text-[var(--info)]" />
           </div>
           <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{overview?.closedToday ?? 0}</p>
-          <p className="text-xs text-blue-300/80 mt-1">Sur {overview?.totalTickets ?? 0} tickets au total</p>
+          <p className="text-xs text-[var(--info)]/80 mt-1">Sur {overview?.totalTickets ?? 0} tickets au total</p>
         </div>
 
         <div className="rounded-2xl border border-[var(--accent-primary)]/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
@@ -1649,7 +1649,7 @@ export function TicketCenterClient() {
                             ? "bg-rose-500"
                             : prio === "HIGH"
                             ? "bg-amber-500"
-                            : "bg-blue-500"
+                            : "bg-[var(--info)]"
                         )}
                         style={{
                           width: `${Math.min(

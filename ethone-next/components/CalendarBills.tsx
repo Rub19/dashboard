@@ -213,7 +213,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
                     <span
                       key={`dot-${item.id}`}
                       className={`h-1.5 w-1.5 rounded-full ${
-                        item.category === "monthly" ? "bg-purple-500" : item.category === "yearly" ? "bg-yellow-500" : "bg-blue-500"
+                        item.category === "monthly" ? "bg-[var(--accent-primary)]" : item.category === "yearly" ? "bg-yellow-500" : "bg-[var(--info)]"
                       }`}
                     />
                   ))}
@@ -227,7 +227,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
         <div className="flex flex-col items-start justify-between gap-4 border-t border-[var(--panel-border)] bg-[var(--panel-bg)]/[0.03] px-6 py-4 sm:flex-row sm:items-center backdrop-blur-[var(--panel-blur)]">
           <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-purple-500" />
+              <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
               MONTHLY
             </span>
             <span className="flex items-center gap-1.5">

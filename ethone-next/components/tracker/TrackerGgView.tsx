@@ -237,7 +237,7 @@ export default function TrackerGgView() {
               onChange={(e) => setIdentifier(e.target.value)}
               placeholder={game.idHint}
               aria-label={game.idLabel}
-              className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-zinc-500 outline-none"
+              className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
             />
           </div>
 
@@ -263,7 +263,7 @@ export default function TrackerGgView() {
               disabled={syncing}
               className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 px-3 py-1.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
             >
-              <RefreshCw className={cn("h-3.5 w-3.5 text-indigo-400", syncing && "animate-spin")} />
+              <RefreshCw className={cn("h-3.5 w-3.5 text-[var(--accent-primary)]", syncing && "animate-spin")} />
               <span>{syncing ? "Synchro..." : "Actualiser"}</span>
             </button>
           </div>
@@ -297,7 +297,7 @@ export default function TrackerGgView() {
           {tiles.map((s) => (
             <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-[var(--text-muted)]">
-                <BarChart3 className="h-3.5 w-3.5 text-indigo-400" />
+                <BarChart3 className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                 {s.label}
               </div>
               <div className="mt-1 text-lg font-bold text-[var(--text-primary)] truncate">{s.value}</div>

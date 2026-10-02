@@ -53,7 +53,7 @@ export function dateKey(iso = ""): string {
 
 export function heatLevelClass(count: number, isSelected = false): string {
   if (isSelected) {
-    return "bg-[var(--accent-primary)] ring-2 ring-white dark:ring-zinc-100 ring-offset-1 ring-offset-[var(--bg-main)] shadow-[0_0_8px_var(--glow-color)] rounded-sm";
+    return "bg-[var(--accent-primary)] ring-2 ring-white dark:ring-[var(--text-primary)]/20 ring-offset-1 ring-offset-[var(--bg-main)] shadow-[0_0_8px_var(--glow-color)] rounded-sm";
   }
   if (count === 0) {
     return "bg-[var(--text-primary)]/[0.04] border border-[var(--text-primary)]/[0.06] rounded-sm hover:border-[var(--text-primary)]/20";

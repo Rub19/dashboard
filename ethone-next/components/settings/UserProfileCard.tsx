@@ -87,7 +87,7 @@ export default function UserProfileCard({
       case "gold-vip":
         return "ring-2 ring-amber-400 shadow-[0_0_18px_rgba(251,191,36,0.6)]";
       case "aurora-borealis":
-        return "ring-2 ring-purple-500 shadow-[0_0_18px_rgba(168,85,247,0.5)]";
+        return "ring-2 ring-[var(--accent-primary)] shadow-[0_0_18px_rgba(168,85,247,0.5)]";
       case "glass-frost":
         return "ring-2 ring-white/50 shadow-[0_0_12px_rgba(255,255,255,0.25)]";
       case "flame-ember":

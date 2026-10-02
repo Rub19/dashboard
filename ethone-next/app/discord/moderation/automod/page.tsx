@@ -895,7 +895,7 @@ export default function AutoModCommandCenterPage() {
                     Smart Engine
                   </span>
                   {config.smartMode && (
-                    <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/30 flex items-center gap-1">
+                    <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[var(--info)]/10 text-[var(--info)] border border-[var(--info)]/30 flex items-center gap-1">
                       <Sparkles className="h-2.5 w-2.5" /> Anti-Raid Linked
                     </span>
                   )}
@@ -1063,7 +1063,7 @@ export default function AutoModCommandCenterPage() {
                 <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 relative overflow-hidden group">
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-[var(--text-muted)] font-medium">Mode Intelligent</span>
-                    <Sparkles className="h-4 w-4 text-blue-400" />
+                    <Sparkles className="h-4 w-4 text-[var(--info)]" />
                   </div>
                   <div className="mt-2 flex items-baseline gap-2">
                     <span className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)]">
@@ -1076,7 +1076,7 @@ export default function AutoModCommandCenterPage() {
                     </span>
                     <button
                       onClick={handleToggleSmartMode}
-                      className="text-xs font-semibold text-blue-400 hover:text-blue-300 underline"
+                      className="text-xs font-semibold text-[var(--info)] hover:text-[var(--info)] underline"
                     >
                       Basculer
                     </button>
@@ -1119,15 +1119,15 @@ export default function AutoModCommandCenterPage() {
               </div>
 
               {/* BANNIÈRE PASSERELLE ANTI-RAID */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-blue-500/20 bg-blue-500/10 p-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-[var(--info)]/20 bg-[var(--info)]/10 p-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--info)]/20 border border-[var(--info)]/30 text-[var(--info)]">
                     <Shield className="h-5 w-5" />
                   </div>
                   <div>
                     <h3 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                       Synergie Bidirectionnelle avec le Centre Anti-Raid
-                      <span className="text-xs uppercase font-mono px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300">
+                      <span className="text-xs uppercase font-mono px-1.5 py-0.5 rounded bg-[var(--info)]/20 text-[var(--info)]">
                         EventBus Connecté
                       </span>
                     </h3>
@@ -1138,7 +1138,7 @@ export default function AutoModCommandCenterPage() {
                 </div>
                 <Link
                   href={selectedGuild ? `/discord/security/anti-raid?guildId=${selectedGuild.id}` : "/discord/security/anti-raid"}
-                  className="flex h-8 shrink-0 items-center gap-2 rounded-xl bg-blue-600 px-3 text-xs font-semibold text-white hover:bg-blue-500 transition-all active:scale-95"
+                  className="flex h-8 shrink-0 items-center gap-2 rounded-xl bg-[var(--info)] px-3 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--info)] transition-all active:scale-95"
                 >
                   <span>Ouvrir Anti-Raid</span>
                   <ExternalLink className="h-3.5 w-3.5" />

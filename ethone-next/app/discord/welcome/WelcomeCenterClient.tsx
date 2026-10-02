@@ -906,13 +906,13 @@ export function WelcomeCenterClient() {
           <p className="text-xs text-[var(--accent-primary)]/80 mt-1">Salons + DMs délivrés</p>
         </div>
 
-        <div className="rounded-2xl border border-blue-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
+        <div className="rounded-2xl border border-[var(--info)]/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
           <div className="flex items-center justify-between text-[var(--text-muted)] text-xs">
             <span>Taux de Vérification</span>
-            <Shield className="h-4 w-4 text-blue-400" />
+            <Shield className="h-4 w-4 text-[var(--info)]" />
           </div>
           <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{overview?.verificationRate ?? "—"}</p>
-          <p className="text-xs text-blue-300/80 mt-1">Membres ayant validé le règlement</p>
+          <p className="text-xs text-[var(--info)]/80 mt-1">Membres ayant validé le règlement</p>
         </div>
 
         <div className="rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--surface-raised)]/40 p-4 shadow-sm">

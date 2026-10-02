@@ -135,7 +135,7 @@ export default function TftTrackerView() {
                 value={riotName}
                 onChange={(e) => setRiotName(e.target.value)}
                 placeholder="Riot Name (ex: Rub19)"
-                className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-zinc-500 outline-none"
+                className="w-full bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
               />
             </div>
             <div className="flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--input-border)] bg-[var(--bg-surface-elevated)] px-3 py-2 transition-colors focus-within:border-[var(--accent-primary)]/60 w-28 shrink-0">
@@ -145,7 +145,7 @@ export default function TftTrackerView() {
                 value={riotTag}
                 onChange={(e) => setRiotTag(e.target.value)}
                 placeholder="TAG"
-                className="w-full bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] placeholder-zinc-500 outline-none"
+                className="w-full bg-transparent font-mono text-xs font-bold text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
               />
             </div>
             <button
@@ -170,7 +170,7 @@ export default function TftTrackerView() {
               disabled={syncing}
               className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 px-3 py-1.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
             >
-              <RefreshCw className={cn("h-3.5 w-3.5 text-indigo-400", syncing && "animate-spin")} />
+              <RefreshCw className={cn("h-3.5 w-3.5 text-[var(--accent-primary)]", syncing && "animate-spin")} />
               <span>{syncing ? "Synchro..." : "Actualiser"}</span>
             </button>
           </div>

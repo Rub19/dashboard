@@ -61,7 +61,7 @@ class WidgetErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySta
           <p className="text-xs font-bold text-rose-300">
             {this.props.fallbackTitle || "Erreur du widget"}
           </p>
-          <p className="max-w-[240px] text-[11px] text-zinc-400">
+          <p className="max-w-[240px] text-[11px] text-[var(--text-muted)]">
             {this.state.error?.message || "Une erreur inattendue est survenue dans ce composant."}
           </p>
           <button
@@ -153,7 +153,7 @@ export default function WidgetContainer({
         {/* Quick Menu Trigger */}
         <AnimatedDropdown>
           <AnimatedDropdownTrigger
-            className="flex h-6 w-6 items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-white/5 hover:text-white transition-all cursor-pointer"
+            className="flex h-6 w-6 items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)] transition-all cursor-pointer"
             aria-label="Options du widget"
           >
             <MoreHorizontal className="h-3.5 w-3.5" />

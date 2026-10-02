@@ -108,7 +108,7 @@ interface SuggestionConfig {
 
 const STATUS_META: Record<SuggestionStatus, { label: string; cls: string }> = {
   pending: { label: "En attente", cls: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
-  under_review: { label: "En discussion", cls: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+  under_review: { label: "En discussion", cls: "bg-[var(--info)]/10 text-[var(--info)] border-[var(--info)]/20" },
   planned: { label: "Planifiée", cls: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/20" },
   accepted: { label: "Approuvée", cls: "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20" },
   in_progress: { label: "En développement", cls: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/20" },
@@ -751,7 +751,7 @@ export default function SuggestionsCenterClient() {
                               </div>
                             )}
                             <div className="flex gap-2 pt-1">
-                              <button onClick={() => openStudio(sug)} className="flex-1 py-1.5 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-amber-600 text-[var(--text-primary)] hover:text-white text-xs font-semibold transition-colors cursor-pointer">
+                              <button onClick={() => openStudio(sug)} className="flex-1 py-1.5 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-amber-600 text-[var(--text-primary)] hover:text-[var(--text-primary)] text-xs font-semibold transition-colors cursor-pointer">
                                 Répondre / Statut
                               </button>
                               <button onClick={() => deleteSuggestion(sug)} className="px-2.5 py-1.5 rounded-xl border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-rose-400 hover:border-rose-500/40 transition-colors cursor-pointer" title="Supprimer">

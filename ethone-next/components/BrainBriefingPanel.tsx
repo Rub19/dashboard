@@ -158,10 +158,10 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
             <button
               type="button"
               onClick={handleSpeakBriefing}
-              className={`inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-purple-500/30 px-2.5 py-1.5 text-[11px] font-semibold transition-all ${
+              className={`inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 px-2.5 py-1.5 text-[11px] font-semibold transition-all ${
                 speaking
-                  ? "bg-purple-500/20 text-purple-300 animate-pulse"
-                  : "bg-purple-500/10 text-purple-400 hover:bg-purple-500/20"
+                  ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] animate-pulse"
+                  : "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20"
               }`}
             >
               <Icon name="volume" className="h-3 w-3" />

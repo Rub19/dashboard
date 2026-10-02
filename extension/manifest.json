@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ETHONE",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Enregistre une page, un passage ou une note rapide dans tes notes et tâches ETHONE, et ouvre ton espace en un clic.",
   "homepage_url": "https://ethone.dev/extension",
   "icons": {

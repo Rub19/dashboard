@@ -66,7 +66,7 @@ export default function MarketplaceHero({
               </div>
             )}
             <div className="flex items-center gap-1.5">
-              <ShieldCheck className="h-3.5 w-3.5 text-sky-400" />
+              <ShieldCheck className="h-3.5 w-3.5 text-[var(--info)]" />
               <span>100% Sécurisé & Audité</span>
             </div>
           </div>
@@ -74,31 +74,31 @@ export default function MarketplaceHero({
 
         {/* Right: Brain Highlight Banner */}
         {topPick && (
-          <div className="shrink-0 w-full lg:w-80 rounded-[var(--panel-radius)] border border-purple-500/30 bg-purple-950/20 p-4 backdrop-blur-md shadow-md">
+          <div className="shrink-0 w-full lg:w-80 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/20 p-4 backdrop-blur-md shadow-md">
             <div className="flex items-center justify-between gap-2 mb-2.5">
-              <span className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-purple-500/40 bg-purple-900/40 px-2 py-0.5 text-[11px] font-bold text-purple-200">
-                <Brain className="h-3.5 w-3.5 text-purple-300" />
+              <span className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/40 px-2 py-0.5 text-[11px] font-bold text-[var(--accent-primary)]">
+                <Brain className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                 <span>{topPick.match.score}% Match Brain</span>
               </span>
 
               <button
                 type="button"
                 onClick={() => onViewBrainDrawer(topPick.item, topPick.match)}
-                className="text-[11px] font-medium text-purple-300 hover:text-white underline cursor-pointer"
+                className="text-[11px] font-medium text-[var(--accent-primary)] hover:text-[var(--text-primary)] underline cursor-pointer"
               >
                 Pourquoi ?
               </button>
             </div>
 
-            <h4 className="text-sm font-bold text-white truncate">{topPick.item.name}</h4>
-            <p className="mt-1 line-clamp-2 text-xs text-purple-200/80 leading-relaxed">
+            <h4 className="text-sm font-bold text-[var(--text-primary)] truncate">{topPick.item.name}</h4>
+            <p className="mt-1 line-clamp-2 text-xs text-[var(--accent-primary)]/80 leading-relaxed">
               {topPick.match.highlightedBenefit}
             </p>
 
             <button
               type="button"
               onClick={() => onSelectItem(topPick.item)}
-              className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-500 px-3 py-2 text-xs font-semibold text-white shadow-xs transition-transform active:scale-95 cursor-pointer"
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-primary)] hover:bg-[var(--accent-primary)] px-3 py-2 text-xs font-semibold text-[var(--accent-contrast)] shadow-xs transition-transform active:scale-95 cursor-pointer"
             >
               <span>Découvrir l'extension</span>
               <ArrowRight className="h-3.5 w-3.5" />

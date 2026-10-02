@@ -390,7 +390,7 @@ export default function CommandPalette() {
                                 </span>
                               )}
                               {isRecent && !isPinned && (
-                                <span className="rounded-md bg-zinc-700/40 px-1 py-0.2 text-[9px] font-medium text-zinc-300">
+                                <span className="rounded-md bg-[var(--text-primary)]/6 px-1 py-0.2 text-[9px] font-medium text-[var(--text-primary)]/85">
                                   Récent
                                 </span>
                               )}

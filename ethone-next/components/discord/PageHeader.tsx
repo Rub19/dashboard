@@ -11,11 +11,11 @@ import { cn } from "@/lib/utils";
 
 const TINTS = {
   emerald: { tile: "from-[var(--accent-primary)]/25 to-[var(--accent-primary)]/5 border-[var(--accent-primary)]/30", icon: "text-[var(--accent-primary)]" },
-  sky: { tile: "from-sky-400/25 to-sky-400/5 border-sky-400/30", icon: "text-sky-300" },
+  sky: { tile: "from-[var(--info)]/25 to-[var(--info)]/5 border-[var(--info)]/30", icon: "text-[var(--info)]" },
   amber: { tile: "from-amber-400/25 to-amber-400/5 border-amber-400/30", icon: "text-amber-300" },
   teal: { tile: "from-teal-400/25 to-teal-400/5 border-teal-400/30", icon: "text-teal-300" },
-  indigo: { tile: "from-indigo-400/25 to-indigo-400/5 border-indigo-400/30", icon: "text-indigo-300" },
-  zinc: { tile: "from-zinc-400/20 to-zinc-400/5 border-zinc-400/25", icon: "text-[var(--text-primary)]" },
+  indigo: { tile: "from-[var(--accent-primary)]/25 to-[var(--accent-primary)]/5 border-[var(--accent-primary)]/30", icon: "text-[var(--accent-primary)]" },
+  zinc: { tile: "from-[var(--text-muted)]/20 to-[var(--text-muted)]/5 border-[var(--text-primary)]/5", icon: "text-[var(--text-primary)]" },
 } as const;
 
 export type PageTint = keyof typeof TINTS;

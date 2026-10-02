@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.50.4 — 2026-10-02
+
+**Motion design : sondages, classement public, console du bot**
+
+- Interactions : le panneau « Journal en direct » n'est plus incliné en 3D.
+- Vote d'un sondage : chargement en squelette, apparition en cascade, sélection qui glisse d'une réponse à l'autre, coche animée, bouton qui passe à « Vote enregistré ».
+- Résultats d'un sondage et classement public : barres qui se remplissent jusqu'aux vrais chiffres, entrée en cascade, chargement en squelette.
+- Console du bot (tous les onglets) : apparition en cascade des listes, retour au clic sur les boutons, et couleurs du thème à la place du gris et de l'indigo figés.
+
 ## v1.50.3 — 2026-10-02
 
 **Tutoriel d'installation de l'extension**

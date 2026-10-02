@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -52,17 +53,27 @@ export default function PublicLeaderboard() {
   return (
     <main className="fixed inset-0 overflow-y-auto bg-[#0d0f14] px-4 py-10 text-white">
       <div className="mx-auto max-w-2xl">
-        {state === "loading" && <p className="text-center text-sm text-zinc-400">Chargement…</p>}
+        {state === "loading" && (
+          <div className="space-y-2" aria-busy="true" aria-label="Chargement du classement">
+            <div className="mb-6 flex items-center gap-4">
+              <div className="skeleton-shimmer h-14 w-14 rounded-2xl" />
+              <div className="skeleton-shimmer h-7 w-48 rounded-lg" />
+            </div>
+            {Array.from({ length: 6 }, (_, i) => (
+              <div key={i} className="skeleton-shimmer h-16 rounded-2xl" style={{ opacity: 1 - i * 0.12 }} />
+            ))}
+          </div>
+        )}
         {state === "private" && (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center">
+          <div className="rise-in rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center">
             <h1 className="text-lg font-bold">Ce classement n&apos;est pas public</h1>
             <p className="mt-2 text-sm text-zinc-400">Le propriétaire du serveur ne l&apos;a pas activé, ou le lien est incorrect.</p>
           </div>
         )}
-        {state === "offline" && <p className="text-center text-sm text-zinc-400">Le classement est momentanément indisponible. Réessayez dans un instant.</p>}
+        {state === "offline" && <p className="rise-in text-center text-sm text-zinc-400">Le classement est momentanément indisponible. Réessayez dans un instant.</p>}
         {state === "ok" && data && (
           <>
-            <header className="mb-6 flex items-center gap-4">
+            <header className="rise-in mb-6 flex items-center gap-4">
               {data.guild.icon ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={data.guild.icon} alt="" className="h-14 w-14 rounded-2xl" />
@@ -80,8 +91,16 @@ export default function PublicLeaderboard() {
               <p className="rounded-2xl border border-dashed border-white/15 p-8 text-center text-sm text-zinc-400">Personne n&apos;a encore gagné d&apos;XP sur ce serveur.</p>
             ) : (
               <ol className="space-y-2">
-                {data.entries.map((e) => (
-                  <li key={e.rank} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                {data.entries.map((e, i) => (
+                  <motion.li
+                    key={e.rank}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    // Cascade plafonnée : au-delà des 12 premiers, tout arrive ensemble.
+                    transition={{ duration: 0.4, delay: 0.1 + Math.min(i, 12) * 0.04, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3 transition-colors duration-150 hover:bg-white/[0.06]"
+                    style={e.rank <= 3 ? { borderColor: `${accent}55` } : undefined}
+                  >
                     <span className="w-9 text-center text-base font-bold text-zinc-300">{MEDALS[e.rank - 1] ?? `#${e.rank}`}</span>
                     {e.avatarUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -92,7 +111,13 @@ export default function PublicLeaderboard() {
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{e.username}</p>
                       <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-white/10" aria-label={`${e.progressPercentage}% vers le niveau suivant`}>
-                        <div className="h-full rounded-full" style={{ width: `${e.progressPercentage}%`, background: accent }} />
+                        <motion.div
+                          className="h-full rounded-full"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${e.progressPercentage}%` }}
+                          transition={{ duration: 0.8, delay: 0.3 + Math.min(i, 12) * 0.04, ease: [0.16, 1, 0.3, 1] }}
+                          style={{ background: accent }}
+                        />
                       </div>
                     </div>
                     <div className="text-right">
@@ -101,7 +126,7 @@ export default function PublicLeaderboard() {
                       </p>
                       <p className="text-[11px] text-zinc-500">{e.totalXp.toLocaleString("fr-FR")} XP</p>
                     </div>
-                  </li>
+                  </motion.li>
                 ))}
               </ol>
             )}

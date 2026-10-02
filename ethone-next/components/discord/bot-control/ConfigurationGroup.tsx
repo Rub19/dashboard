@@ -115,20 +115,20 @@ export default function ConfigurationGroup({
         <Card variant="default" padding="none" className="p-6 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Layers className="w-4 h-4 text-indigo-400" />
+              <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                <Layers className="w-4 h-4 text-[var(--accent-primary)]" />
                 Modules du Serveur ({modules.length})
               </h3>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-[var(--text-muted)]">
                 Activez/désactivez les modules pour un serveur — identique à la commande Discord{" "}
-                <code className="text-zinc-300">/module</code>
+                <code className="text-[var(--text-primary)]/85">/module</code>
               </p>
             </div>
             <select
               value={settingsGuildId}
               onChange={(e) => setSettingsGuildId(e.target.value)}
               disabled={servers.length === 0}
-              className="px-3 py-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-300 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+              className="px-3 py-1.5 rounded-lg bg-[var(--bg-card)] border border-[var(--panel-border)] text-xs text-[var(--text-primary)]/85 focus:outline-none focus:border-[var(--accent-primary)] disabled:opacity-50"
             >
               {servers.length === 0 && <option value="">Aucun serveur détecté</option>}
               {servers.map((s) => (
@@ -140,9 +140,9 @@ export default function ConfigurationGroup({
           </div>
 
           {!settingsGuildId ? (
-            <p className="text-xs text-zinc-500 italic">Sélectionnez un serveur pour voir ses modules.</p>
+            <p className="text-xs text-[var(--text-muted)] italic">Sélectionnez un serveur pour voir ses modules.</p>
           ) : modulesLoading && modules.length === 0 ? (
-            <p className="text-xs text-zinc-500 italic">Chargement des modules…</p>
+            <p className="text-xs text-[var(--text-muted)] italic">Chargement des modules…</p>
           ) : modulesError ? (
             <div className="flex flex-col items-start gap-2 rounded-xl border border-red-500/25 bg-red-500/10 p-4 text-xs text-red-300">
               <span className="flex items-center gap-2 font-medium">
@@ -151,27 +151,27 @@ export default function ConfigurationGroup({
               </span>
               <button
                 onClick={() => loadModules()}
-                className="rounded-lg border border-red-500/30 px-2.5 py-1 font-semibold transition-colors hover:bg-red-500/15 cursor-pointer"
+                className="rounded-lg border border-red-500/30 px-2.5 py-1 font-semibold transition-[color,background-color,border-color,transform] hover:bg-red-500/15 cursor-pointer active:scale-[0.97]"
               >
                 Réessayer
               </button>
             </div>
           ) : modules.length === 0 ? (
-            <p className="text-xs text-zinc-500 italic">Aucun module disponible pour ce serveur.</p>
+            <p className="text-xs text-[var(--text-muted)] italic">Aucun module disponible pour ce serveur.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="stagger-children grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {modules.map((m) => {
                 const ModIcon = MODULE_ICONS[m.icon] || Layers;
                 const disabled = m.available === false || togglingModuleId === m.id;
                 return (
-                  <div key={m.id} className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
+                  <div key={m.id} className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-2">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                        <ModIcon className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                      <span className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+                        <ModIcon className="w-3.5 h-3.5 text-[var(--accent-primary)] shrink-0" />
                         {m.name}
                       </span>
                       {m.available === false ? (
-                        <span className="px-1.5 py-0.2 rounded text-[10px] bg-zinc-700/40 text-zinc-400 border border-zinc-600/30 shrink-0">
+                        <span className="px-1.5 py-0.2 rounded text-[10px] bg-[var(--text-primary)]/6 text-[var(--text-muted)] border border-[var(--text-primary)]/6 shrink-0">
                           Bientôt disponible
                         </span>
                       ) : (
@@ -181,7 +181,7 @@ export default function ConfigurationGroup({
                           title={m.enabled ? "Désactiver ce module" : "Activer ce module"}
                           className={cn(
                             "w-9 h-5 rounded-full transition-colors relative p-0.5 shrink-0 disabled:opacity-50",
-                            m.enabled ? "bg-[var(--success)]" : "bg-zinc-700"
+                            m.enabled ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/15"
                           )}
                         >
                           <span
@@ -193,7 +193,7 @@ export default function ConfigurationGroup({
                         </button>
                       )}
                     </div>
-                    <p className="text-[11px] text-zinc-400">{m.description}</p>
+                    <p className="text-[11px] text-[var(--text-muted)]">{m.description}</p>
                   </div>
                 );
               })}
@@ -203,22 +203,22 @@ export default function ConfigurationGroup({
       )}
 
       {activeTab === "settings" && (
-        <div className="space-y-6">
+        <div className="stagger-children space-y-6">
           <Card variant="default" padding="none" className="p-6 space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[var(--panel-border)]">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Settings className="w-5 h-5 text-indigo-400" />
+                <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Settings className="w-5 h-5 text-[var(--accent-primary)]" />
                   Configuration Opérationnelle & Confidentialité
                 </h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Définissez le comportement global, la visibilité des réponses et le style d'interaction du bot
                 </p>
               </div>
               <button
                 onClick={handleSaveSettings}
                 disabled={savingSettings}
-                className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-sm disabled:opacity-50"
+                className="px-5 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:bg-[var(--accent-primary)] text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-2 transition-all shadow-sm disabled:opacity-50 active:scale-[0.97]"
               >
                 <Check className={cn("w-4 h-4", savingSettings && "animate-spin")} />
                 <span>{savingSettings ? "Enregistrement..." : "Enregistrer les modifications"}</span>
@@ -227,16 +227,16 @@ export default function ConfigurationGroup({
 
             {/* Server selector — the language field below is per-guild and reads/writes
                 the real bot config for whichever server is selected here. */}
-            <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex flex-col sm:flex-row sm:items-center gap-3">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-white shrink-0">
-                <Server className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)] shrink-0">
+                <Server className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                 Serveur concerné
               </div>
               <select
                 value={settingsGuildId}
                 onChange={(e) => setSettingsGuildId(e.target.value)}
                 disabled={servers.length === 0}
-                className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+                className="flex-1 bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] rounded-lg px-3 py-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] disabled:opacity-50"
               >
                 {servers.length === 0 && <option value="">Aucun serveur détecté</option>}
                 {servers.map((s) => (
@@ -246,19 +246,19 @@ export default function ConfigurationGroup({
                 ))}
               </select>
               {loadingGuildSettings && (
-                <span className="text-[10px] text-zinc-500 shrink-0">Chargement…</span>
+                <span className="text-[10px] text-[var(--text-muted)] shrink-0">Chargement…</span>
               )}
             </div>
 
             {/* Maintenance & Core Toggles */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center justify-between gap-4">
+              <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 flex items-center justify-between gap-4">
                 <div>
-                  <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <div className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
                     <Lock className="w-3.5 h-3.5 text-amber-400" />
                     Mode Maintenance Global
                   </div>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                  <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
                     Suspend les commandes pour les membres ordinaires pendant les mises à jour
                   </p>
                 </div>
@@ -276,7 +276,7 @@ export default function ConfigurationGroup({
                   }}
                   className={cn(
                     "w-12 h-6 rounded-full transition-colors relative p-0.5 cursor-pointer",
-                    botSettings.maintenanceMode ? "bg-amber-500" : "bg-zinc-800"
+                    botSettings.maintenanceMode ? "bg-amber-500" : "bg-[var(--text-primary)]/10"
                   )}
                 >
                   <span
@@ -288,13 +288,13 @@ export default function ConfigurationGroup({
                 </button>
               </div>
 
-              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center justify-between gap-4">
+              <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 flex items-center justify-between gap-4">
                 <div>
-                  <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <div className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
                     <Zap className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                     Auto-Reconnexion Gateway
                   </div>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                  <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
                     Rétablit instantanément les shards en cas de micro-coupure réseau
                   </p>
                 </div>
@@ -312,7 +312,7 @@ export default function ConfigurationGroup({
                   }}
                   className={cn(
                     "w-12 h-6 rounded-full transition-colors relative p-0.5 cursor-pointer",
-                    botSettings.autoReconnect ? "bg-[var(--accent-primary)]" : "bg-zinc-800"
+                    botSettings.autoReconnect ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/10"
                   )}
                 >
                   <span
@@ -326,14 +326,14 @@ export default function ConfigurationGroup({
             </div>
 
             {/* Confidentiality & Response Visibility */}
-            <div className="p-5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-4">
+            <div className="p-5 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-indigo-400" />
+                  <h4 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2">
+                    <Shield className="w-4 h-4 text-[var(--accent-primary)]" />
                     Visibilité & Confidentialité des Réponses
                   </h4>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                  <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
                     Choisissez si les réponses aux commandes (/ask, /bot, /music, etc.) sont visibles publiquement ou privées
                   </p>
                 </div>
@@ -341,7 +341,7 @@ export default function ConfigurationGroup({
                   className={cn(
                     "px-2.5 py-1 rounded-full text-xs font-semibold",
                     botSettings.responseVisibility === "EPHEMERAL"
-                      ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                      ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30"
                       : "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30"
                   )}
                 >
@@ -355,14 +355,14 @@ export default function ConfigurationGroup({
                   className={cn(
                     "p-4 rounded-xl border cursor-pointer transition-all space-y-1.5",
                     botSettings.responseVisibility === "PUBLIC"
-                      ? "bg-indigo-500/10 border-indigo-500 text-white"
-                      : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700 text-zinc-400"
+                      ? "bg-[var(--accent-primary)]/10 border-[var(--accent-primary)] text-[var(--text-primary)]"
+                      : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] hover:border-[var(--text-primary)]/16 text-[var(--text-muted)]"
                   )}
                 >
                   <div className="flex items-center gap-2 font-bold text-xs">
                     <span>👁️ Réponses Publiques</span>
                     {botSettings.responseVisibility === "PUBLIC" && (
-                      <CheckCircle2 className="w-4 h-4 text-indigo-400 ml-auto" />
+                      <CheckCircle2 className="w-4 h-4 text-[var(--accent-primary)] ml-auto" />
                     )}
                   </div>
                   <p className="text-[11px]">
@@ -375,14 +375,14 @@ export default function ConfigurationGroup({
                   className={cn(
                     "p-4 rounded-xl border cursor-pointer transition-all space-y-1.5",
                     botSettings.responseVisibility === "EPHEMERAL"
-                      ? "bg-indigo-500/10 border-indigo-500 text-white"
-                      : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700 text-zinc-400"
+                      ? "bg-[var(--accent-primary)]/10 border-[var(--accent-primary)] text-[var(--text-primary)]"
+                      : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] hover:border-[var(--text-primary)]/16 text-[var(--text-muted)]"
                   )}
                 >
                   <div className="flex items-center gap-2 font-bold text-xs">
                     <span>🔒 Réponses Privées (Éphémères)</span>
                     {botSettings.responseVisibility === "EPHEMERAL" && (
-                      <CheckCircle2 className="w-4 h-4 text-indigo-400 ml-auto" />
+                      <CheckCircle2 className="w-4 h-4 text-[var(--accent-primary)] ml-auto" />
                     )}
                   </div>
                   <p className="text-[11px]">
@@ -393,13 +393,13 @@ export default function ConfigurationGroup({
             </div>
 
             {/* Bot Personality / Tone */}
-            <div className="p-5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-4">
+            <div className="p-5 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-4">
               <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-purple-400" />
+                <h4 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[var(--accent-primary)]" />
                   Style & Personnalité du Bot (Moteur IA)
                 </h4>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
+                <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
                   Définit le ton de communication adopté lors des réponses (/ask, messages d'accueil, etc.)
                 </p>
               </div>
@@ -420,13 +420,13 @@ export default function ConfigurationGroup({
                       className={cn(
                         "p-3 rounded-xl border cursor-pointer transition-all text-center space-y-1",
                         isSelected
-                          ? "bg-purple-500/10 border-purple-500 text-white"
-                          : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700 text-zinc-400"
+                          ? "bg-[var(--accent-primary)]/10 border-[var(--accent-primary)] text-[var(--text-primary)]"
+                          : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] hover:border-[var(--text-primary)]/16 text-[var(--text-muted)]"
                       )}
                     >
                       <span className="text-2xl block">{p.emoji}</span>
                       <span className="text-xs font-bold block">{p.label}</span>
-                      <span className="text-[10px] text-zinc-400 block leading-tight">{p.desc}</span>
+                      <span className="text-[10px] text-[var(--text-muted)] block leading-tight">{p.desc}</span>
                     </div>
                   );
                 })}
@@ -435,21 +435,21 @@ export default function ConfigurationGroup({
 
             {/* Bot Identity & Prefix */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
-                <label className="text-xs font-bold text-white block">Nom affiché du Bot</label>
+              <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-2">
+                <label className="text-xs font-bold text-[var(--text-primary)] block">Nom affiché du Bot</label>
                 <input
                   type="text"
                   value={botSettings.customBotName}
                   onChange={(e) => setBotSettings((s: any) => ({ ...s, customBotName: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-primary)]"
                   placeholder="Nom du bot..."
                 />
-                <span className="text-[10px] text-zinc-400 block">Apparaît dans les titres et pieds de page des embeds Discord</span>
+                <span className="text-[10px] text-[var(--text-muted)] block">Apparaît dans les titres et pieds de page des embeds Discord</span>
               </div>
 
-              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
-                <label className="text-xs font-bold text-white block">Préfixe Textuel par Défaut</label>
-                <div className="flex items-center gap-2">
+              <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-2">
+                <label className="text-xs font-bold text-[var(--text-primary)] block">Préfixe Textuel par Défaut</label>
+                <div className="stagger-children flex items-center gap-2">
                   {["!", "?", "$", "/", ">>"].map((pref) => (
                     <button
                       key={pref}
@@ -457,8 +457,8 @@ export default function ConfigurationGroup({
                       className={cn(
                         "px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all",
                         botSettings.defaultPrefix === pref
-                          ? "bg-indigo-600 text-white"
-                          : "bg-zinc-900 text-zinc-400 border border-zinc-800 hover:text-white"
+                          ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
+                          : "bg-[var(--surface-raised)]/60 text-[var(--text-muted)] border border-[var(--panel-border)] hover:text-[var(--text-primary)]"
                       )}
                     >
                       {pref}
@@ -469,22 +469,22 @@ export default function ConfigurationGroup({
                     maxLength={5}
                     value={botSettings.defaultPrefix}
                     onChange={(e) => setBotSettings((s: any) => ({ ...s, defaultPrefix: e.target.value }))}
-                    className="w-20 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white text-center font-mono font-bold focus:outline-none focus:border-indigo-500"
+                    className="w-20 px-3 py-1.5 rounded-lg bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] text-center font-mono font-bold focus:outline-none focus:border-[var(--accent-primary)]"
                   />
                 </div>
-                <span className="text-[10px] text-zinc-400 block">Utilisable en complément des commandes Slash (ex: {botSettings.defaultPrefix}help)</span>
+                <span className="text-[10px] text-[var(--text-muted)] block">Utilisable en complément des commandes Slash (ex: {botSettings.defaultPrefix}help)</span>
               </div>
             </div>
 
             {/* Multilingual Support (4 Languages) */}
-            <div className="p-5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-4">
+            <div className="p-5 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                  <h4 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2">
                     <Globe className="w-4 h-4 text-cyan-400" />
                     Langue Officielle & Internationalisation (i18n)
                   </h4>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                  <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
                     Définit la langue utilisée par le bot pour les embeds, messages d'aide, réglages et réponses IA
                   </p>
                 </div>
@@ -508,8 +508,8 @@ export default function ConfigurationGroup({
                       className={cn(
                         "p-3.5 rounded-xl border cursor-pointer transition-all space-y-1.5",
                         isSelected
-                          ? "bg-cyan-500/10 border-cyan-500 text-white"
-                          : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700 text-zinc-400"
+                          ? "bg-cyan-500/10 border-cyan-500 text-[var(--text-primary)]"
+                          : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] hover:border-[var(--text-primary)]/16 text-[var(--text-muted)]"
                       )}
                     >
                       <div className="flex items-center gap-2 font-bold text-xs">
@@ -517,7 +517,7 @@ export default function ConfigurationGroup({
                         <span>{lang.label}</span>
                         {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 ml-auto" />}
                       </div>
-                      <p className="text-[10px] text-zinc-400 leading-tight">{lang.desc}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] leading-tight">{lang.desc}</p>
                     </div>
                   );
                 })}
@@ -525,13 +525,13 @@ export default function ConfigurationGroup({
             </div>
 
             {/* Graphic Theme Presets */}
-            <div className="p-5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-4">
+            <div className="p-5 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-4">
               <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <h4 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2">
                   <Palette className="w-4 h-4 text-pink-400" />
                   Thèmes Graphiques & Palettes de Couleurs
                 </h4>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
+                <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
                   Harmonise automatiquement la couleur principale et secondaire de tous les embeds Discord
                 </p>
               </div>
@@ -552,8 +552,8 @@ export default function ConfigurationGroup({
                       className={cn(
                         "p-3 rounded-xl border cursor-pointer transition-all space-y-2 text-center",
                         isSelected
-                          ? "bg-zinc-800/90 border-pink-500 shadow-sm text-white"
-                          : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700 text-zinc-400"
+                          ? "bg-[var(--text-primary)]/9 border-pink-500 shadow-sm text-[var(--text-primary)]"
+                          : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] hover:border-[var(--text-primary)]/16 text-[var(--text-muted)]"
                       )}
                     >
                       <div className="flex items-center justify-center gap-1.5">
@@ -562,7 +562,7 @@ export default function ConfigurationGroup({
                       </div>
                       <div>
                         <span className="text-xs font-bold block">{theme.name}</span>
-                        <span className="text-[10px] font-mono text-zinc-400 block">{theme.hex}</span>
+                        <span className="text-[10px] font-mono text-[var(--text-muted)] block">{theme.hex}</span>
                       </div>
                     </div>
                   );
@@ -572,9 +572,9 @@ export default function ConfigurationGroup({
 
             {/* Audio & Anti-Spam Sliders */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-3">
+              <div className="p-5 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-white flex items-center gap-2">
+                  <label className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <Volume2 className="w-4 h-4 text-[var(--accent-primary)]" />
                     Volume Musique par Défaut
                   </label>
@@ -591,14 +591,14 @@ export default function ConfigurationGroup({
                   onChange={(e) => setBotSettings((s: any) => ({ ...s, musicDefaultVolume: Number(e.target.value) }))}
                   className="w-full accent-[var(--accent-primary)] cursor-pointer"
                 />
-                <p className="text-[10px] text-zinc-400">
+                <p className="text-[10px] text-[var(--text-muted)]">
                   Volume initial appliqué à chaque nouvelle piste audio jouée avec /music play
                 </p>
               </div>
 
-              <div className="p-5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-3">
+              <div className="p-5 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-white flex items-center gap-2">
+                  <label className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <Timer className="w-4 h-4 text-amber-400" />
                     Cooldown Anti-Spam Commandes
                   </label>
@@ -615,20 +615,20 @@ export default function ConfigurationGroup({
                   onChange={(e) => setBotSettings((s: any) => ({ ...s, commandCooldown: Number(e.target.value) }))}
                   className="w-full accent-amber-500 cursor-pointer"
                 />
-                <p className="text-[10px] text-zinc-400">
+                <p className="text-[10px] text-[var(--text-muted)]">
                   Délai d'attente imposé aux utilisateurs entre 2 commandes consécutives (0 = désactivé)
                 </p>
               </div>
             </div>
 
             {/* Auto-Delete Invoked Commands Toggle */}
-            <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center justify-between gap-4">
+            <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 flex items-center justify-between gap-4">
               <div>
-                <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                <div className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
                   <Trash2 className="w-3.5 h-3.5 text-rose-400" />
                   Suppression Automatique des Invocations
                 </div>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
+                <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
                   Supprime automatiquement le message texte de l'utilisateur après l'exécution de la commande (mode préfixe) pour garder les salons propres
                 </p>
               </div>
@@ -646,7 +646,7 @@ export default function ConfigurationGroup({
                 }}
                 className={cn(
                   "w-12 h-6 rounded-full transition-colors relative p-0.5 cursor-pointer",
-                  botSettings.autoDeleteCommands ? "bg-rose-500" : "bg-zinc-800"
+                  botSettings.autoDeleteCommands ? "bg-rose-500" : "bg-[var(--text-primary)]/10"
                 )}
               >
                 <span
@@ -659,25 +659,25 @@ export default function ConfigurationGroup({
             </div>
 
             {/* SECTION: GESTIONNAIRE DES RÔLES & PERMISSIONS MULTILINGUE */}
-            <div className="p-5 rounded-xl bg-zinc-950/70 border border-zinc-800 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800/80">
+            <div className="p-5 rounded-xl bg-[var(--bg-card)]/70 border border-[var(--panel-border)] space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--panel-border)]/80">
                 <div>
-                  <h4 className="text-xs font-bold text-white flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-indigo-400" />
+                  <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-[var(--accent-primary)]" />
                     Rôles du Serveur & Permissions d'Administration
                   </h4>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-[11px] text-[var(--text-muted)]">
                     Détection multilingue automatique (FR, EN, ES, DE) et attribution des privilèges avec présets 1-clic
                   </p>
                 </div>
-                <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20">
                   Préset actif : {activeRolePreset === "PRESET_STRICT" ? "Strict & Sécurisé" : activeRolePreset === "PRESET_BALANCED" ? "Équilibré (Recommandé)" : "Communautaire"}
                 </span>
               </div>
 
               {/* 1-Click Preset Selection */}
               <div className="space-y-2">
-                <span className="text-[11px] font-semibold text-zinc-300 block">
+                <span className="text-[11px] font-semibold text-[var(--text-primary)]/85 block">
                   Appliquer un Préset Rapide en 1-Clic :
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
@@ -708,17 +708,17 @@ export default function ConfigurationGroup({
                       className={cn(
                         "p-3 rounded-xl text-left border transition-all space-y-1.5 disabled:opacity-50 disabled:cursor-not-allowed",
                         activeRolePreset === preset.id
-                          ? "bg-indigo-950/40 border-indigo-500/60 shadow-sm"
-                          : "bg-zinc-900/60 border-zinc-800/80 hover:bg-zinc-900 hover:border-zinc-700"
+                          ? "bg-[var(--accent-primary)]/40 border-[var(--accent-primary)]/60 shadow-sm"
+                          : "bg-[var(--surface-raised)]/60 border-[var(--panel-border)]/80 hover:bg-[var(--surface-raised)]/60 hover:border-[var(--text-primary)]/16"
                       )}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-white">{preset.name}</span>
-                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono">
+                        <span className="text-xs font-bold text-[var(--text-primary)]">{preset.name}</span>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-[var(--text-primary)]/10 text-[var(--text-muted)] font-mono">
                           {preset.badge}
                         </span>
                       </div>
-                      <p className="text-[10px] text-zinc-400 leading-relaxed">{preset.desc}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">{preset.desc}</p>
                     </button>
                   ))}
                 </div>
@@ -726,28 +726,28 @@ export default function ConfigurationGroup({
 
               {/* Detected Roles List with AI recommendations */}
               <div className="space-y-2 pt-2">
-                <span className="text-[11px] font-semibold text-zinc-300 block">
+                <span className="text-[11px] font-semibold text-[var(--text-primary)]/85 block">
                   Rôles Détectés & Recommandations Intelligentes :
                 </span>
-                <div className="divide-y divide-zinc-800/60 border border-zinc-800/80 rounded-xl overflow-hidden bg-zinc-900/40">
+                <div className="stagger-children divide-y divide-[var(--panel-border)]/60 border border-[var(--panel-border)]/80 rounded-xl overflow-hidden bg-[var(--surface-raised)]/40">
                   {detectedRolesList.map((role) => (
-                    <div key={role.id} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:bg-zinc-900/70 transition-colors">
+                    <div key={role.id} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:bg-[var(--surface-raised)]/70 transition-colors">
                       <div className="flex items-center gap-3">
                         <span className="w-3 h-3 rounded-full shrink-0 border border-black/30 shadow-sm" style={{ backgroundColor: role.color }} />
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-white">{role.name}</span>
-                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700/50">
+                            <span className="text-xs font-bold text-[var(--text-primary)]">{role.name}</span>
+                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--text-primary)]/10 text-[var(--text-primary)]/85 border border-[var(--text-primary)]/8">
                               {role.badge}
                             </span>
                           </div>
-                          <span className="text-[10px] text-zinc-400 block mt-0.5">
+                          <span className="text-[10px] text-[var(--text-muted)] block mt-0.5">
                             {role.recommendation}
                           </span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-                        <span className="text-[10px] text-zinc-400 font-mono">
+                        <span className="text-[10px] text-[var(--text-muted)] font-mono">
                           {role.members} membre{role.members > 1 ? "s" : ""}
                         </span>
                         <span className="text-[10px] px-2 py-0.5 rounded bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 font-semibold">
@@ -760,10 +760,10 @@ export default function ConfigurationGroup({
               </div>
 
               {/* Security Note */}
-              <div className="p-3 rounded-xl bg-indigo-950/20 border border-indigo-900/30 flex items-start gap-2.5">
-                <Lock className="w-3.5 h-3.5 text-indigo-400 mt-0.5 shrink-0" />
-                <p className="text-[10px] text-zinc-400 leading-relaxed">
-                  <strong className="text-zinc-200">Verrouillage de Sécurité :</strong> Les commandes de modération (<code className="text-indigo-300">/ban</code>, <code className="text-indigo-300">/kick</code>, <code className="text-indigo-300">/clear</code>, <code className="text-indigo-300">/timeout</code>, etc.) sont hermétiquement bloquées pour tous les membres sans les permissions requises. Le créateur du bot et le propriétaire du serveur disposent d'un bypass automatique.
+              <div className="p-3 rounded-xl bg-[var(--accent-primary)]/20 border border-[var(--accent-primary)]/30 flex items-start gap-2.5">
+                <Lock className="w-3.5 h-3.5 text-[var(--accent-primary)] mt-0.5 shrink-0" />
+                <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
+                  <strong className="text-[var(--text-primary)]">Verrouillage de Sécurité :</strong> Les commandes de modération (<code className="text-[var(--accent-primary)]">/ban</code>, <code className="text-[var(--accent-primary)]">/kick</code>, <code className="text-[var(--accent-primary)]">/clear</code>, <code className="text-[var(--accent-primary)]">/timeout</code>, etc.) sont hermétiquement bloquées pour tous les membres sans les permissions requises. Le créateur du bot et le propriétaire du serveur disposent d'un bypass automatique.
                 </p>
               </div>
             </div>
@@ -772,20 +772,20 @@ export default function ConfigurationGroup({
       )}
 
       {activeTab === "ai" && (
-        <div className="space-y-6">
+        <div className="stagger-children space-y-6">
           <Card variant="default" padding="none" className="p-6 space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[var(--panel-border)]">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Bot className="w-5 h-5 text-purple-400" />
+                <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Bot className="w-5 h-5 text-[var(--accent-primary)]" />
                   Assistant IA & Télémétrie des Tokens
                 </h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Moteur de raisonnement contextuel avec RAG Knowledge Base et Safety Guardrail
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-full text-xs font-mono font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                <span className="px-2.5 py-1 rounded-full text-xs font-mono font-semibold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20">
                   Modèle : {aiTelemetry.activeModel}
                 </span>
               </div>
@@ -793,56 +793,56 @@ export default function ConfigurationGroup({
 
             {/* KPI Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
-                <span className="text-[10px] text-zinc-400 block">Requêtes IA (24h)</span>
-                <span className="text-lg font-bold font-mono text-white mt-1 block">{aiTelemetry.dailyRequests}</span>
+              <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80">
+                <span className="text-[10px] text-[var(--text-muted)] block">Requêtes IA (24h)</span>
+                <span className="text-lg font-bold font-mono text-[var(--text-primary)] mt-1 block">{aiTelemetry.dailyRequests}</span>
                 <span className="text-[10px] text-[var(--accent-primary)] mt-0.5 block font-medium">
                   {aiTelemetry.dailyRequests > 0 ? `${aiTelemetry.successRate}% de succès` : "Aucune requête sur 24 h"}
                 </span>
               </div>
-              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
-                <span className="text-[10px] text-zinc-400 block">Tokens Consommés</span>
-                <span className="text-lg font-bold font-mono text-purple-300 mt-1 block">{aiTelemetry.dailyTokens.toLocaleString()}</span>
-                <span className="text-[10px] text-zinc-400 mt-0.5 block font-mono">sur 24 h glissantes</span>
+              <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80">
+                <span className="text-[10px] text-[var(--text-muted)] block">Tokens Consommés</span>
+                <span className="text-lg font-bold font-mono text-[var(--accent-primary)] mt-1 block">{aiTelemetry.dailyTokens.toLocaleString()}</span>
+                <span className="text-[10px] text-[var(--text-muted)] mt-0.5 block font-mono">sur 24 h glissantes</span>
               </div>
-              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
-                <span className="text-[10px] text-zinc-400 block">Latence Moyenne</span>
+              <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80">
+                <span className="text-[10px] text-[var(--text-muted)] block">Latence Moyenne</span>
                 <span className="text-lg font-bold font-mono text-[var(--accent-primary)] mt-1 block">{aiTelemetry.dailyRequests > 0 ? `${aiTelemetry.avgLatencyMs}ms` : "—"}</span>
-                <span className="text-[10px] text-zinc-400 mt-0.5 block">Temps d'inférence</span>
+                <span className="text-[10px] text-[var(--text-muted)] mt-0.5 block">Temps d'inférence</span>
               </div>
-              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
-                <span className="text-[10px] text-zinc-400 block">Coût estimé (24 h)</span>
+              <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80">
+                <span className="text-[10px] text-[var(--text-muted)] block">Coût estimé (24 h)</span>
                 <span className="text-lg font-bold font-mono text-[var(--accent-primary)] mt-1 block">
                   {aiTelemetry.dailyTokens > 0 ? `≈ ${aiTelemetry.estimatedCostUsd.toFixed(3)} $` : "—"}
                 </span>
-                <span className="text-[10px] text-zinc-400 mt-0.5 block">Estimation, pas une facture</span>
+                <span className="text-[10px] text-[var(--text-muted)] mt-0.5 block">Estimation, pas une facture</span>
               </div>
             </div>
 
             {/* Daily Token Gauge */}
-            <div className="p-5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
+            <div className="p-5 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-white">Budget estimé (24 h glissantes)</span>
-                <span className="font-mono text-purple-300 font-semibold">
+                <span className="font-bold text-[var(--text-primary)]">Budget estimé (24 h glissantes)</span>
+                <span className="font-mono text-[var(--accent-primary)] font-semibold">
                   {aiTelemetry.budgetUsedPercent}% de {aiTelemetry.dailyBudgetUsd.toFixed(2)} $
                 </span>
               </div>
-              <div className="w-full h-3 rounded-full bg-zinc-900 overflow-hidden p-0.5">
+              <div className="w-full h-3 rounded-full bg-[var(--surface-raised)]/60 overflow-hidden p-0.5">
                 <div
                   className="h-full rounded-full bg-[#5865F2] transition-all duration-500"
                   style={{ width: `${Math.min(100, aiTelemetry.budgetUsedPercent)}%` }}
                 />
               </div>
-              <span className="text-[10px] text-zinc-400 block pt-1">
+              <span className="text-[10px] text-[var(--text-muted)] block pt-1">
                 Le coût est estimé à partir des jetons (répartition 50/50 entre question et réponse, tarifs supposés) sur une fenêtre glissante de 24 h : rien n'est facturé par ETHONE.
               </span>
             </div>
 
             {/* Security & RAG Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
+              <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4 text-[var(--accent-primary)]" />
                     Bouclier Anti-Jailbreak & Injection
                   </span>
@@ -850,41 +850,41 @@ export default function ConfigurationGroup({
                     Actif
                   </span>
                 </div>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-[var(--text-muted)]">
                   Filtre par motifs qui analyse chaque requête pour bloquer les tentatives de fuite du prompt système et d'injection, et nettoie les réponses (secrets, mots interdits).
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
+              <div className="p-4 rounded-xl bg-[var(--bg-card)]/60 border border-[var(--panel-border)]/80 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <Database className="w-4 h-4 text-indigo-400" />
+                  <span className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+                    <Database className="w-4 h-4 text-[var(--accent-primary)]" />
                     Base de Connaissances RAG
                   </span>
-                  <span className="px-1.5 py-0.5 rounded text-[10px] bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-semibold">
+                  <span className="px-1.5 py-0.5 rounded text-[10px] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 font-semibold">
                     Par serveur
                   </span>
                 </div>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-[var(--text-muted)]">
                   Index contextuel propre à chaque serveur (page Assistant IA) que l'assistant consulte pour répondre. Il réduit les erreurs mais ne les supprime pas.
                 </p>
               </div>
             </div>
 
             {/* SECTION: SALON IA DÉDIÉ & GÉNÉRATION D'IMAGES */}
-            <div className="p-5 rounded-xl bg-zinc-950/70 border border-zinc-800 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800/80">
+            <div className="p-5 rounded-xl bg-[var(--bg-card)]/70 border border-[var(--panel-border)] space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--panel-border)]/80">
                 <div>
-                  <h4 className="text-xs font-bold text-white flex items-center gap-2">
-                    <Terminal className="w-4 h-4 text-purple-400" />
+                  <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
+                    <Terminal className="w-4 h-4 text-[var(--accent-primary)]" />
                     Salon Public Dédié pour l'IA
                   </h4>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-[11px] text-[var(--text-muted)]">
                     Permet à tous les membres d'échanger naturellement avec le bot sans préfixe ni mention
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[11px] text-zinc-400 font-mono">
+                  <span className="text-[11px] text-[var(--text-muted)] font-mono">
                     {dedicatedAiChannelEnabled ? "🟢 Salon Actif" : "⚪ Désactivé"}
                   </span>
                   <button
@@ -904,7 +904,7 @@ export default function ConfigurationGroup({
                     }}
                     className={cn(
                       "w-10 h-5 rounded-full transition-colors relative p-0.5 cursor-pointer",
-                      dedicatedAiChannelEnabled ? "bg-purple-600" : "bg-zinc-800"
+                      dedicatedAiChannelEnabled ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/10"
                     )}
                   >
                     <span
@@ -919,7 +919,7 @@ export default function ConfigurationGroup({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                 <div>
-                  <label className="text-[11px] font-semibold text-zinc-300 block mb-1.5">
+                  <label className="text-[11px] font-semibold text-[var(--text-primary)]/85 block mb-1.5">
                     Canal Textuel Dédié
                   </label>
                   <ChannelPicker
@@ -933,15 +933,15 @@ export default function ConfigurationGroup({
                     channels={aiTextChannels}
                     placeholder="Sélectionner ou saisir l'ID..."
                   />
-                  <span className="text-[10px] text-zinc-400 mt-1 block">
+                  <span className="text-[10px] text-[var(--text-muted)] mt-1 block">
                     Les membres peuvent converser librement et demander des images directement ici.
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)]/80">
                   <div>
-                    <span className="text-xs font-bold text-white block">Génération d'images (/imagine)</span>
-                    <span className="text-[10px] text-zinc-400">
+                    <span className="text-xs font-bold text-[var(--text-primary)] block">Génération d'images (/imagine)</span>
+                    <span className="text-[10px] text-[var(--text-muted)]">
                       Modèle Flux haute fidélité avec protection ToS
                     </span>
                   </div>
@@ -960,7 +960,7 @@ export default function ConfigurationGroup({
                     }}
                     className={cn(
                       "w-10 h-5 rounded-full transition-colors relative p-0.5 cursor-pointer",
-                      allowImageGen ? "bg-[var(--accent-primary)]" : "bg-zinc-800"
+                      allowImageGen ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/10"
                     )}
                   >
                     <span
@@ -975,21 +975,21 @@ export default function ConfigurationGroup({
             </div>
 
             {/* SECTION: HUMEUR DU THON */}
-            <div className="p-5 rounded-xl bg-zinc-950/70 border border-zinc-800 space-y-4">
+            <div className="p-5 rounded-xl bg-[var(--bg-card)]/70 border border-[var(--panel-border)] space-y-4">
               <div>
-                <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-amber-400" />
                   Humeur & Tempérament du Thon
                 </h4>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-[var(--text-muted)]">
                   Choisissez la personnalité qui régit les réponses de l'IA sur le serveur
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {[
-                  { id: "SAGE", name: "🐟 Sage & Bienveillant", desc: "Calme, poli, ultra-pédagogue et posé", color: "from-blue-500/20 to-indigo-500/20 border-blue-500/30" },
-                  { id: "GAMER_SARCASTIQUE", name: "🦈 Gamer Sarcastique", desc: "Humour piquant, pop-culture et esprit vif", color: "from-purple-500/20 to-pink-500/20 border-purple-500/30" },
+                  { id: "SAGE", name: "🐟 Sage & Bienveillant", desc: "Calme, poli, ultra-pédagogue et posé", color: "from-[var(--accent-primary)]/20 to-[var(--accent-primary)]/20 border-[var(--accent-primary)]/30" },
+                  { id: "GAMER_SARCASTIQUE", name: "🦈 Gamer Sarcastique", desc: "Humour piquant, pop-culture et esprit vif", color: "from-[var(--accent-primary)]/20 to-pink-500/20 border-[var(--accent-primary)]/30" },
                   { id: "PROTECTEUR", name: "🛡️ Protecteur & Sérieux", desc: "Vigilant, axé sécurité et respect des règles", color: "from-[var(--accent-primary)]/20 to-teal-500/20 border-[var(--accent-primary)]/30" },
                   { id: "CYBERPUNK", name: "⚡ Cyberpunk Futuriste", desc: "High-tech, style néon 2077 et réponses punchy", color: "from-amber-500/20 to-rose-500/20 border-amber-500/30" },
                 ].map((moodItem) => (
@@ -1003,12 +1003,12 @@ export default function ConfigurationGroup({
                     className={cn(
                       "p-3 rounded-xl text-left border transition-all relative overflow-hidden",
                       thonMood === moodItem.id
-                        ? `bg-gradient-to-br ${moodItem.color} border-indigo-500 shadow-md`
-                        : "bg-zinc-900/60 border-zinc-800/80 hover:bg-zinc-900"
+                        ? `bg-gradient-to-br ${moodItem.color} border-[var(--accent-primary)] shadow-md`
+                        : "bg-[var(--surface-raised)]/60 border-[var(--panel-border)]/80 hover:bg-[var(--surface-raised)]/60"
                     )}
                   >
-                    <span className="text-xs font-bold text-white block">{moodItem.name}</span>
-                    <span className="text-[10px] text-zinc-400 mt-1 block leading-relaxed">{moodItem.desc}</span>
+                    <span className="text-xs font-bold text-[var(--text-primary)] block">{moodItem.name}</span>
+                    <span className="text-[10px] text-[var(--text-muted)] mt-1 block leading-relaxed">{moodItem.desc}</span>
                     {thonMood === moodItem.id && (
                       <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
                     )}
@@ -1018,14 +1018,14 @@ export default function ConfigurationGroup({
             </div>
 
             {/* SECTION: SÉCURITÉ DLP & MOTS BANNIS AUTOMOD */}
-            <div className="p-5 rounded-xl bg-zinc-950/70 border border-zinc-800 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800/80">
+            <div className="p-5 rounded-xl bg-[var(--bg-card)]/70 border border-[var(--panel-border)] space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--panel-border)]/80">
                 <div>
-                  <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                  <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <ShieldAlert className="w-4 h-4 text-rose-400" />
                     Mots Bannis Personnalisés & Bouclier DLP
                   </h4>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-[11px] text-[var(--text-muted)]">
                     Filtrage en temps réel des prompts et des réponses par l'AutoMod et protection des secrets (Discord ToS)
                   </p>
                 </div>
@@ -1043,34 +1043,34 @@ export default function ConfigurationGroup({
                   onChange={(e) => setNewBannedWordInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleAddBannedWord()}
                   placeholder="Ajouter un mot ou expression bannie..."
-                  className="flex-1 px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white text-xs focus:outline-none focus:border-rose-500"
+                  className="flex-1 px-3 py-2 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-[var(--text-primary)] text-xs focus:outline-none focus:border-rose-500"
                 />
                 <button
                   onClick={handleAddBannedWord}
-                  className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-all"
+                  className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-all active:scale-[0.97]"
                 >
                   Bannir le mot
                 </button>
               </div>
 
               {/* List of active banned words */}
-              <div className="flex flex-wrap gap-1.5 pt-1">
+              <div className="stagger-children flex flex-wrap gap-1.5 pt-1">
                 {bannedWordsList.map((word) => (
                   <span
                     key={word}
-                    className="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 text-[11px] flex items-center gap-1.5 font-mono"
+                    className="px-2.5 py-1 rounded-lg bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-[var(--text-primary)]/85 text-[11px] flex items-center gap-1.5 font-mono"
                   >
                     <span>{word}</span>
                     <button
                       onClick={() => handleRemoveBannedWord(word)}
-                      className="text-zinc-400 hover:text-rose-400 transition-colors"
+                      className="text-[var(--text-muted)] hover:text-rose-400 transition-[color,background-color,border-color,transform] active:scale-[0.97]"
                     >
                       <X className="w-3 h-3" />
                     </button>
                   </span>
                 ))}
                 {bannedWordsList.length === 0 && (
-                  <span className="text-[11px] text-zinc-400 italic">Aucun mot banni configuré</span>
+                  <span className="text-[11px] text-[var(--text-muted)] italic">Aucun mot banni configuré</span>
                 )}
               </div>
             </div>

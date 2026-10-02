@@ -1239,7 +1239,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         </p>
         <Link
           href="/discord"
-          className="mt-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-2 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]/70"
+          className="mt-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-4 py-2 text-sm font-medium text-[var(--text-primary)] transition-[color,background-color,border-color,transform] hover:bg-[var(--surface-raised)]/70 active:scale-[0.97]"
         >
           Retour au Discord Hub
         </Link>
@@ -1255,7 +1255,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
           <div className="flex items-center gap-3">
             <Link
               href="/discord"
-              className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
+              className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer active:scale-[0.97]"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>Retour Discord</span>
@@ -1402,7 +1402,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <button
                   onClick={fetchData}
                   disabled={refreshing}
-                  className="px-3 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xs font-medium flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
+                  className="px-3 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xs font-medium flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer active:scale-[0.97]"
                   title="Actualiser les données"
                 >
                   <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin text-[var(--accent-primary)]")} />
@@ -1520,7 +1520,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <button
                   onClick={handleRemoteRestart}
                   disabled={restartingBot}
-                  className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm disabled:opacity-50 cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm disabled:opacity-50 cursor-pointer active:scale-[0.97]"
                   title="Redémarrer le bot sur le VPS via PM2"
                 >
                   <Power className={cn("w-3.5 h-3.5", restartingBot && "animate-spin")} />
@@ -1539,7 +1539,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
                 <button
                   onClick={() => setOwnerPanelOpen((prev) => !prev)}
-                  className="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 text-amber-300 text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
+                  className="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 text-amber-300 text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer active:scale-[0.97]"
                 >
                   <span>{ownerPanelOpen ? "Masquer Détails" : "Supervision & Logs"}</span>
                   {ownerPanelOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}

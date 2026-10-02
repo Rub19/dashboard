@@ -41725,6 +41725,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_50_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_50_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_50_3_de);
 
+const v1_50_4_fr: ChangelogEntry = {
+  version: "v1.50.4",
+  date: "2026-10-02",
+  title: "Motion design : sondages, classement public, console du bot",
+  items: [
+    "Interactions : le panneau « Journal en direct » n'est plus incliné en 3D.",
+    "Vote d'un sondage : chargement en squelette, apparition en cascade, sélection qui glisse d'une réponse à l'autre, coche animée, bouton qui passe à « Vote enregistré ».",
+    "Résultats d'un sondage et classement public : barres qui se remplissent jusqu'aux vrais chiffres, entrée en cascade, chargement en squelette.",
+    "Console du bot (tous les onglets) : apparition en cascade des listes, retour au clic sur les boutons, et couleurs du thème à la place du gris et de l'indigo figés.",
+  ],
+};
+
+const v1_50_4_en: ChangelogEntry = {
+  version: "v1.50.4",
+  date: "2026-10-02",
+  title: "Motion design: polls, public leaderboard, bot console",
+  items: [
+    "Interactions: the “Live log” panel is no longer tilted in 3D.",
+    "Poll voting: skeleton loading, cascading entrance, selection that slides between answers, animated checkmark, button that turns into “Vote saved”.",
+    "Poll results and public leaderboard: bars that fill up to the real figures, cascading entrance, skeleton loading.",
+    "Bot console (every tab): cascading lists, press feedback on buttons, and theme colours instead of hardcoded grey and indigo.",
+  ],
+};
+
+const v1_50_4_es: ChangelogEntry = {
+  version: "v1.50.4",
+  date: "2026-10-02",
+  title: "Motion design: encuestas, clasificación pública, consola del bot",
+  items: [
+    "Interacciones: el panel «Registro en directo» ya no está inclinado en 3D.",
+    "Votar en una encuesta: carga con esqueleto, entrada en cascada, selección que se desliza entre respuestas, marca animada y botón que pasa a «Voto registrado».",
+    "Resultados de encuestas y clasificación pública: barras que se llenan hasta las cifras reales, entrada en cascada, carga con esqueleto.",
+    "Consola del bot (todas las pestañas): listas en cascada, respuesta al pulsar los botones y colores del tema en lugar del gris y el índigo fijos.",
+  ],
+};
+
+const v1_50_4_de: ChangelogEntry = {
+  version: "v1.50.4",
+  date: "2026-10-02",
+  title: "Motion Design: Umfragen, öffentliche Rangliste, Bot-Konsole",
+  items: [
+    "Interaktionen: Das Panel „Live-Protokoll“ ist nicht mehr in 3D geneigt.",
+    "Abstimmen in Umfragen: Skelett beim Laden, gestaffelter Einstieg, Auswahl, die zwischen Antworten gleitet, animiertes Häkchen, Button wird zu „Stimme gespeichert“.",
+    "Umfrageergebnisse und öffentliche Rangliste: Balken füllen sich bis zu den echten Werten, gestaffelter Einstieg, Skelett beim Laden.",
+    "Bot-Konsole (alle Tabs): gestaffelte Listen, Klick-Feedback auf Buttons und Theme-Farben statt fest eingestelltem Grau und Indigo.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_50_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_50_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_50_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_50_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

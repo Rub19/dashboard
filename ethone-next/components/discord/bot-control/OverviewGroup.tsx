@@ -52,73 +52,73 @@ export default function OverviewGroup({
   return (
     <>
       {activeTab === "overview" && (
-        <div className="space-y-6 sm:space-y-8">
+        <div className="stagger-children space-y-6 sm:space-y-8">
           {/* Quick Summary Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {/* Presence summary card */}
-            <Card variant="default" padding="none" className="p-5 sm:p-6 space-y-4 hover:border-zinc-700/80 transition-all shadow-sm">
+            <Card variant="default" padding="none" className="p-5 sm:p-6 space-y-4 hover:border-[var(--text-primary)]/13 transition-all shadow-sm">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-indigo-400" />
+                <h3 className="text-xs font-bold text-[var(--text-primary)]/85 uppercase tracking-wider flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[var(--accent-primary)]" />
                   Présence en Direct
                 </h3>
                 <Link
                   href="/discord/bot/presence"
-                  className="text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 transition-colors"
+                  className="text-xs text-[var(--accent-primary)] hover:text-[var(--accent-primary)] font-medium flex items-center gap-1 transition-[color,background-color,border-color,transform] active:scale-[0.97]"
                 >
                   <span>Gérer</span>
                   <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
 
-              <Card variant="widget" padding="md" className="space-y-2.5 bg-zinc-950/60 border-zinc-800/80">
+              <Card variant="widget" padding="md" className="space-y-2.5 bg-[var(--bg-card)]/60 border-[var(--panel-border)]/80">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className={cn("w-2.5 h-2.5 rounded-full", currentCfg.dot)} />
-                    <span className="text-sm font-bold text-white">{currentCfg.label}</span>
+                    <span className="text-sm font-bold text-[var(--text-primary)]">{currentCfg.label}</span>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-900 text-zinc-400 border border-zinc-800">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--surface-raised)]/60 text-[var(--text-muted)] border border-[var(--panel-border)]">
                     WebSocket
                   </span>
                 </div>
 
                 {botCore?.activity ? (
-                  <div className="text-xs text-zinc-300 pt-1">
+                  <div className="text-xs text-[var(--text-primary)]/85 pt-1">
                     {botCore.activity.type && (
-                      <span className="text-indigo-400 font-semibold text-[11px] uppercase tracking-wide">
+                      <span className="text-[var(--accent-primary)] font-semibold text-[11px] uppercase tracking-wide">
                         {botCore.activity.type}{" "}
                       </span>
                     )}
-                    <strong className="text-white font-medium">{botCore.activity.name || "Actif"}</strong>
+                    <strong className="text-[var(--text-primary)] font-medium">{botCore.activity.name || "Actif"}</strong>
                   </div>
                 ) : (
-                  <div className="text-xs text-zinc-500 italic pt-1">
+                  <div className="text-xs text-[var(--text-muted)] italic pt-1">
                     <span>Aucune activité définie</span>
                   </div>
                 )}
-                <span className="text-[11px] text-zinc-500 block pt-1 border-t border-zinc-800/60">
+                <span className="text-[11px] text-[var(--text-muted)] block pt-1 border-t border-[var(--panel-border)]/60">
                   Portée : Globale sur la connexion Gateway Discord
                 </span>
               </Card>
             </Card>
 
             {/* Subsystems summary card */}
-            <Card variant="default" padding="none" className="p-5 sm:p-6 space-y-4 hover:border-zinc-700/80 transition-all shadow-sm">
+            <Card variant="default" padding="none" className="p-5 sm:p-6 space-y-4 hover:border-[var(--text-primary)]/13 transition-all shadow-sm">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
+                <h3 className="text-xs font-bold text-[var(--text-primary)]/85 uppercase tracking-wider flex items-center gap-2">
                   <Cpu className="w-4 h-4 text-[var(--accent-primary)]" />
                   Sous-Systèmes
                 </h3>
                 <button
                   onClick={() => handleTabChange("health")}
-                  className="text-xs text-[var(--accent-primary)] hover:text-[var(--accent-primary)] font-medium flex items-center gap-1 transition-colors cursor-pointer"
+                  className="text-xs text-[var(--accent-primary)] hover:text-[var(--accent-primary)] font-medium flex items-center gap-1 transition-[color,background-color,border-color,transform] cursor-pointer active:scale-[0.97]"
                 >
                   <span>Détails</span>
                   <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
 
-              <div className="space-y-2">
+              <div className="stagger-children space-y-2">
                 {subsystems.slice(0, 3).map((s) => {
                   const cfg = subsystemStatusConfig[s.status] || subsystemStatusConfig.operational;
                   return (
@@ -126,9 +126,9 @@ export default function OverviewGroup({
                       key={s.id}
                       variant="widget"
                       padding="none"
-                      className="px-3.5 py-2.5 flex items-center justify-between text-xs bg-zinc-950/60 border-zinc-800/80 hover:border-zinc-700/60 transition-all"
+                      className="px-3.5 py-2.5 flex items-center justify-between text-xs bg-[var(--bg-card)]/60 border-[var(--panel-border)]/80 hover:border-[var(--text-primary)]/10 transition-all"
                     >
-                      <span className="text-zinc-200 font-medium">{s.name}</span>
+                      <span className="text-[var(--text-primary)] font-medium">{s.name}</span>
                       <span className={cn("font-mono font-bold flex items-center gap-1.5", cfg.text)}>
                         <span className={cn("w-1.5 h-1.5 rounded-full", cfg.dot)} />
                         {cfg.label}
@@ -140,31 +140,31 @@ export default function OverviewGroup({
             </Card>
 
             {/* Installed guilds summary card */}
-            <Card variant="default" padding="none" className="p-5 sm:p-6 space-y-4 hover:border-zinc-700/80 transition-all shadow-sm">
+            <Card variant="default" padding="none" className="p-5 sm:p-6 space-y-4 hover:border-[var(--text-primary)]/13 transition-all shadow-sm">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
-                  <Server className="w-4 h-4 text-purple-400" />
+                <h3 className="text-xs font-bold text-[var(--text-primary)]/85 uppercase tracking-wider flex items-center gap-2">
+                  <Server className="w-4 h-4 text-[var(--accent-primary)]" />
                   Serveurs Actifs
                 </h3>
                 <button
                   onClick={() => handleTabChange("servers")}
-                  className="text-xs text-purple-400 hover:text-purple-300 font-medium flex items-center gap-1 transition-colors cursor-pointer"
+                  className="text-xs text-[var(--accent-primary)] hover:text-[var(--accent-primary)] font-medium flex items-center gap-1 transition-[color,background-color,border-color,transform] cursor-pointer active:scale-[0.97]"
                 >
                   <span>Explorer ({servers.length})</span>
                   <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
 
-              <div className="space-y-2">
+              <div className="stagger-children space-y-2">
                 {servers.slice(0, 3).map((g) => (
                   <Card
                     key={g.id}
                     variant="widget"
                     padding="none"
-                    className="px-3.5 py-2.5 flex items-center justify-between text-xs bg-zinc-950/60 border-zinc-800/80 hover:border-zinc-700/60 transition-all"
+                    className="px-3.5 py-2.5 flex items-center justify-between text-xs bg-[var(--bg-card)]/60 border-[var(--panel-border)]/80 hover:border-[var(--text-primary)]/10 transition-all"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700/80 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden shrink-0">
+                      <div className="w-7 h-7 rounded-lg bg-[var(--text-primary)]/10 border border-[var(--text-primary)]/13 flex items-center justify-center text-[10px] font-bold text-[var(--text-primary)] overflow-hidden shrink-0">
                         {g.icon ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={g.icon} alt={g.name} className="w-full h-full object-cover" />
@@ -172,9 +172,9 @@ export default function OverviewGroup({
                           g.name?.charAt(0) || "?"
                         )}
                       </div>
-                      <span className="text-zinc-200 font-medium truncate max-w-[130px]">{g.name}</span>
+                      <span className="text-[var(--text-primary)] font-medium truncate max-w-[130px]">{g.name}</span>
                     </div>
-                    <span className="text-zinc-400 font-mono text-[11px] shrink-0">{g.memberCount} membres</span>
+                    <span className="text-[var(--text-muted)] font-mono text-[11px] shrink-0">{g.memberCount} membres</span>
                   </Card>
                 ))}
               </div>
@@ -182,15 +182,15 @@ export default function OverviewGroup({
           </div>
 
           {/* Modules Grid — real per-guild toggles, same data as /module on Discord */}
-          <Card variant="default" padding="none" className="p-5 sm:p-6 space-y-4 hover:border-zinc-700/80 transition-all shadow-sm">
+          <Card variant="default" padding="none" className="p-5 sm:p-6 space-y-4 hover:border-[var(--text-primary)]/13 transition-all shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-indigo-400" />
+                <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-[var(--accent-primary)]" />
                   Modules du Bot Discord ({modules.length})
                 </h3>
-                <p className="text-xs text-zinc-400 mt-0.5">
-                  État réel par serveur, identique à la commande Discord <code className="text-zinc-300 font-mono">/module</code>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                  État réel par serveur, identique à la commande Discord <code className="text-[var(--text-primary)]/85 font-mono">/module</code>
                 </p>
               </div>
 
@@ -200,7 +200,7 @@ export default function OverviewGroup({
                   value={settingsGuildId}
                   onChange={(e) => setSettingsGuildId(e.target.value)}
                   disabled={servers.length === 0}
-                  className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500 disabled:opacity-50 cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] disabled:opacity-50 cursor-pointer"
                 >
                   {servers.length === 0 && <option value="">Aucun serveur détecté</option>}
                   {servers.map((s) => (
@@ -210,34 +210,34 @@ export default function OverviewGroup({
                   ))}
                 </select>
                 <div className="relative">
-                  <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-zinc-500" />
+                  <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[var(--text-muted)]" />
                   <input
                     type="text"
                     placeholder="Filtrer un module..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8 pr-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 w-44"
+                    className="pl-8 pr-3 py-1.5 rounded-xl bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-primary)] w-44"
                   />
                 </div>
               </div>
             </div>
 
             {!settingsGuildId ? (
-              <p className="text-xs text-zinc-500 italic pt-2">Sélectionnez un serveur pour voir ses modules.</p>
+              <p className="text-xs text-[var(--text-muted)] italic pt-2">Sélectionnez un serveur pour voir ses modules.</p>
             ) : modulesLoading && modules.length === 0 ? (
-              <p className="text-xs text-zinc-500 italic pt-2">Chargement des modules…</p>
+              <p className="text-xs text-[var(--text-muted)] italic pt-2">Chargement des modules…</p>
             ) : modulesError ? (
               <div className="mt-2 flex flex-col items-start gap-2 rounded-xl border border-red-500/25 bg-red-500/10 p-4 text-xs text-red-300">
                 <span className="font-medium">{modulesError}</span>
                 <button
                   onClick={() => loadModules()}
-                  className="rounded-lg border border-red-500/30 px-2.5 py-1 font-semibold transition-colors hover:bg-red-500/15 cursor-pointer"
+                  className="rounded-lg border border-red-500/30 px-2.5 py-1 font-semibold transition-[color,background-color,border-color,transform] hover:bg-red-500/15 cursor-pointer active:scale-[0.97]"
                 >
                   Réessayer
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-2">
+              <div className="stagger-children grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-2">
                 {filteredModules.map((m) => {
                   const ModIcon = MODULE_ICONS[m.icon] || Layers;
                   const disabled = m.available === false || togglingModuleId === m.id;
@@ -246,16 +246,16 @@ export default function OverviewGroup({
                       key={m.id}
                       variant="widget"
                       padding="md"
-                      className="bg-zinc-950/60 border-zinc-800/80 hover:border-indigo-500/30 hover:bg-zinc-900/40 transition-all flex flex-col justify-between gap-3 group"
+                      className="bg-[var(--bg-card)]/60 border-[var(--panel-border)]/80 hover:border-[var(--accent-primary)]/30 hover:bg-[var(--surface-raised)]/40 transition-all flex flex-col justify-between gap-3 group"
                     >
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-1.5">
-                          <span className="text-xs font-bold text-white truncate flex items-center gap-1.5">
-                            <ModIcon className="w-3.5 h-3.5 text-indigo-400 shrink-0 group-hover:scale-110 transition-transform" />
+                          <span className="text-xs font-bold text-[var(--text-primary)] truncate flex items-center gap-1.5">
+                            <ModIcon className="w-3.5 h-3.5 text-[var(--accent-primary)] shrink-0 group-hover:scale-110 transition-transform" />
                             {m.name}
                           </span>
                           {m.available === false ? (
-                            <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-zinc-800/60 text-zinc-400 border border-zinc-700/40 shrink-0">
+                            <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-[var(--text-primary)]/6 text-[var(--text-muted)] border border-[var(--text-primary)]/6 shrink-0">
                               Bientôt disponible
                             </span>
                           ) : (
@@ -265,7 +265,7 @@ export default function OverviewGroup({
                               title={m.enabled ? "Désactiver ce module" : "Activer ce module"}
                               className={cn(
                                 "w-9 h-5 rounded-full transition-colors relative p-0.5 shrink-0 disabled:opacity-50 cursor-pointer",
-                                m.enabled ? "bg-[var(--success)] shadow-sm shadow-[color:var(--success)]/30" : "bg-zinc-700"
+                                m.enabled ? "bg-[var(--success)] shadow-sm shadow-[color:var(--success)]/30" : "bg-[var(--text-primary)]/15"
                               )}
                             >
                               <span
@@ -277,7 +277,7 @@ export default function OverviewGroup({
                             </button>
                           )}
                         </div>
-                        <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">{m.description}</p>
+                        <p className="text-[11px] text-[var(--text-muted)] line-clamp-2 leading-relaxed">{m.description}</p>
                       </div>
                     </Card>
                   );
@@ -290,18 +290,18 @@ export default function OverviewGroup({
 
       {activeTab === "presence" && (
         <Card variant="default" padding="none" className="p-8 text-center space-y-4">
-          <div className="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mx-auto">
+          <div className="w-12 h-12 rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] flex items-center justify-center mx-auto">
             <Sparkles className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">Bot Presence & Identity Center</h3>
-            <p className="text-xs text-zinc-400 max-w-md mx-auto mt-1">
+            <h3 className="text-lg font-bold text-[var(--text-primary)]">Bot Presence & Identity Center</h3>
+            <p className="text-xs text-[var(--text-muted)] max-w-md mx-auto mt-1">
               Le module complet de gestion de la présence globale, rotation d'activités, profils prédéfinis et studio d'identité est disponible dans sa console dédiée.
             </p>
           </div>
           <Link
             href="/discord/bot/presence"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-all shadow-md"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-semibold text-xs transition-all shadow-md active:scale-[0.97]"
           >
             <span>Accéder au Centre de Présence</span>
             <ArrowRight className="w-4 h-4" />

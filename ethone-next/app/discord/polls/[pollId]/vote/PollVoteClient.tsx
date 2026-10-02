@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Check } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { POLL_BOT_API_URL, usePollData } from "../usePollData";
 import { formatApiError } from "@/lib/format-error";
@@ -15,11 +17,20 @@ export default function PollVoteClient() {
   const [done, setDone] = useState(false);
   const guildQuery = guildId ? `?guildId=${guildId}` : "";
 
-  if (loading) return <div className="flex min-h-[50vh] items-center justify-center text-xs text-[var(--text-muted)]">Chargement du sondage…</div>;
+  if (loading)
+    return (
+      <div className="mx-auto max-w-2xl space-y-4 px-4 py-10 sm:px-6" aria-busy="true" aria-label="Chargement du sondage">
+        <div className="skeleton-shimmer h-8 w-2/3 rounded-lg" />
+        <div className="skeleton-shimmer h-4 w-1/2 rounded" />
+        {[0, 1].map((i) => (
+          <div key={i} className="skeleton-shimmer h-40 rounded-[var(--panel-radius)]" />
+        ))}
+      </div>
+    );
 
   if (error || !poll) {
     return (
-      <div className="mx-auto max-w-xl px-6 py-16 text-center">
+      <div className="rise-in mx-auto max-w-xl px-6 py-16 text-center">
         <p className="text-sm font-semibold text-[var(--text-primary)]">Sondage indisponible</p>
         <p className="mt-2 text-xs text-[var(--text-muted)]">{error || "Ce sondage n'existe pas sur ce serveur."}</p>
       </div>
@@ -68,13 +79,13 @@ export default function PollVoteClient() {
 
   return (
     <div className="text-[var(--text-primary)]">
-      <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+      <div className="stagger-children mx-auto max-w-2xl px-4 py-10 sm:px-6">
         <h1 className="text-2xl font-bold tracking-tight">{poll.title}</h1>
         {poll.description && <p className="mt-2 text-sm text-[var(--text-muted)]">{poll.description}</p>}
 
-        {!votable && <p className="mt-5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">Ce sondage n&apos;accepte pas de votes pour le moment (statut : {poll.status}).</p>}
+        {!votable && <p className="mt-5 rounded-xl border border-[var(--warning)]/30 bg-[var(--warning)]/10 px-4 py-3 text-xs text-[var(--text-primary)]">Ce sondage n&apos;accepte pas de votes pour le moment (statut : {poll.status}).</p>}
 
-        <div className="mt-6 space-y-5">
+        <div className="stagger-children mt-6 space-y-5">
           {poll.questions.map((question) => {
             const multiple = poll.type === "MULTIPLE_CHOICE" || (question.maxSelections ?? 1) > 1;
             return (
@@ -86,17 +97,40 @@ export default function PollVoteClient() {
                     return (
                       <label
                         key={option.id}
-                        className={`flex cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-2.5 text-sm transition-colors ${
-                          selected ? "border-[var(--accent-primary)]/60 bg-[var(--accent-primary)]/10" : "border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/70"
+                        className={`relative isolate flex cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-2.5 text-sm transition-[border-color,background-color,transform] duration-150 active:scale-[0.985] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--accent-primary)]/50 ${
+                          selected ? "border-[var(--accent-primary)]/60" : "border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/70"
                         }`}
                       >
+                        {selected && (
+                          <motion.span
+                            layoutId={multiple ? undefined : `vote-${question.id}`}
+                            initial={multiple ? { opacity: 0 } : false}
+                            animate={{ opacity: 1 }}
+                            transition={{ type: "spring", bounce: 0, duration: 0.35 }}
+                            className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)]/10"
+                          />
+                        )}
                         <input
                           type={multiple ? "checkbox" : "radio"}
                           name={question.id}
                           checked={selected}
                           onChange={() => toggle(question.id, option.id, multiple)}
-                          className="h-4 w-4 accent-[var(--accent-primary)]"
+                          className="sr-only"
                         />
+                        <span
+                          aria-hidden
+                          className={`grid h-5 w-5 shrink-0 place-items-center border transition-colors duration-150 ${multiple ? "rounded-md" : "rounded-full"} ${
+                            selected ? "border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "border-[var(--text-muted)]/50"
+                          }`}
+                        >
+                          <AnimatePresence initial={false}>
+                            {selected && (
+                              <motion.span key="c" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.4, opacity: 0 }} transition={{ type: "spring", bounce: 0.3, duration: 0.3 }}>
+                                <Check className="h-3 w-3" />
+                              </motion.span>
+                            )}
+                          </AnimatePresence>
+                        </span>
                         <span>
                           {option.emoji ? `${option.emoji} ` : ""}
                           {option.label}
@@ -117,7 +151,19 @@ export default function PollVoteClient() {
             disabled={!votable || done || sending}
             className="cursor-pointer rounded-lg bg-[var(--accent-primary)] px-5 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
           >
-            {done ? "Vote enregistré" : sending ? "Envoi…" : "Voter"}
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.span
+                key={done ? "done" : sending ? "sending" : "idle"}
+                initial={{ opacity: 0, y: 6, filter: "blur(3px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -6, filter: "blur(3px)" }}
+                transition={{ duration: 0.18 }}
+                className="inline-flex items-center gap-1.5"
+              >
+                {done && <Check className="h-4 w-4" />}
+                {done ? "Vote enregistré" : sending ? "Envoi…" : "Voter"}
+              </motion.span>
+            </AnimatePresence>
           </button>
           <Link href={`/discord/polls/${encodeURIComponent(pollId)}${guildQuery}`} className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]">
             Voir le sondage

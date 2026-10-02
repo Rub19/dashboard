@@ -268,7 +268,8 @@ async function runFullSyncQA() {
   assert(!resolved.includes('{guildCount}'), 'Variable {guildCount} is dynamically replaced');
   assert(!resolved.includes('{version}'), 'Variable {version} is dynamically replaced');
   assert(!resolved.includes('{ping}'), 'Variable {ping} is dynamically replaced');
-  assert(resolved.includes('v2.4.0'), 'Version v2.4.0 rendered in resolved string');
+  // {version} = vraie version d'ETHONE (package du dashboard), plus de « v2.4.0 » codé en dur.
+  assert(/v\d+\.\d+\.\d+/.test(resolved), 'Real ETHONE version rendered in resolved string');
 
   // -------------------------------------------------------------
   // TEST 10: ALL 16 BOT MODULES COMPATIBILITY MATRIX

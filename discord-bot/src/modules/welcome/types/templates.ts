@@ -1,4 +1,4 @@
-import { FullWelcomeConfig } from './welcomeConfig.js';
+import { FullWelcomeConfig, WelcomeImageConfigSchema } from './welcomeConfig.js';
 import { OnboardingFlow } from './onboarding.js';
 
 export interface WelcomeTemplate {
@@ -46,7 +46,7 @@ export const PREBUILT_TEMPLATES: WelcomeTemplate[] = [
             { id: 'f-help', name: '❓ Besoin d’aide ?', value: 'Ouvre un ticket ou demande au staff.', inline: true },
           ],
         },
-        image: {
+        image: WelcomeImageConfigSchema.parse({
           enabled: true,
           template: 'modern',
           titleText: 'BIENVENUE',
@@ -54,7 +54,9 @@ export const PREBUILT_TEMPLATES: WelcomeTemplate[] = [
           tagText: 'Membre #{membercount}',
           accentColor: '#10B981',
           customBackgroundUrl: null,
-        },
+          font: 'poppins',
+          avatarShape: 'circle',
+        }),
         buttons: [
           { id: 'btn-rules', label: 'Règlement', emoji: '📜', style: 'SECONDARY', action: 'RULES', target: '' },
           { id: 'btn-verify', label: 'Vérifier mon compte', emoji: '✅', style: 'SUCCESS', action: 'VERIFY', target: '' },
@@ -123,7 +125,7 @@ export const PREBUILT_TEMPLATES: WelcomeTemplate[] = [
             { id: 'f-tournaments', name: '🏆 Tournois', value: 'Événements hebdomadaires organisés.', inline: true },
           ],
         },
-        image: {
+        image: WelcomeImageConfigSchema.parse({
           enabled: true,
           template: 'gaming',
           titleText: 'GAME ON',
@@ -131,7 +133,10 @@ export const PREBUILT_TEMPLATES: WelcomeTemplate[] = [
           tagText: 'Joueur #{membercount}',
           accentColor: '#8B5CF6',
           customBackgroundUrl: null,
-        },
+          font: 'bebas',
+          avatarShape: 'rounded',
+          backgroundColor: '#0D0A14',
+        }),
         buttons: [
           { id: 'btn-roles', label: 'Choisir mes jeux', emoji: '🎮', style: 'PRIMARY', action: 'ROLE', target: '' },
           { id: 'btn-rules', label: 'Règles du jeu', emoji: '📜', style: 'SECONDARY', action: 'RULES', target: '' },
@@ -200,7 +205,7 @@ export const PREBUILT_TEMPLATES: WelcomeTemplate[] = [
             { id: 'f-hours', name: '⏰ Horaires Staff', value: 'Actif 7j/7 avec réponse rapide.', inline: true },
           ],
         },
-        image: {
+        image: WelcomeImageConfigSchema.parse({
           enabled: false,
           template: 'minimal',
           titleText: 'SUPPORT',
@@ -208,7 +213,9 @@ export const PREBUILT_TEMPLATES: WelcomeTemplate[] = [
           tagText: 'Client #{membercount}',
           accentColor: '#3B82F6',
           customBackgroundUrl: null,
-        },
+          font: 'poppins',
+          avatarShape: 'circle',
+        }),
         buttons: [
           { id: 'btn-ticket', label: 'Ouvrir un Ticket', emoji: '🎫', style: 'PRIMARY', action: 'TICKET', target: 'support_general' },
           { id: 'btn-faq', label: 'Centre d’aide', emoji: '🔗', style: 'LINK', action: 'URL', target: 'https://discord.com' },
@@ -273,7 +280,7 @@ export const PREBUILT_TEMPLATES: WelcomeTemplate[] = [
           showThumbnail: false,
           fields: [],
         },
-        image: {
+        image: WelcomeImageConfigSchema.parse({
           enabled: false,
           template: 'minimal',
           titleText: 'WELCOME',
@@ -281,7 +288,9 @@ export const PREBUILT_TEMPLATES: WelcomeTemplate[] = [
           tagText: '#{membercount}',
           accentColor: '#71717A',
           customBackgroundUrl: null,
-        },
+          font: 'poppins',
+          avatarShape: 'circle',
+        }),
         buttons: [],
         dm: {
           enabled: false,

@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.49.1 — 2026-10-02
+
+**Carte de bienvenue refaite et personnalisable**
+
+- Nouvelle carte de bienvenue en haute définition (1600×600) avec de vraies polices (Poppins, Bebas, Serif, Mono) : avant, le serveur dessinait le texte avec une police à chasse fixe.
+- 4 mises en page réellement différentes : Classique, Centré, Minimal, Gaming. Le choix du modèle et l'image de fond existaient dans la configuration mais n'étaient jamais utilisés par le bot.
+- Personnalisable dans Bot Discord → Bienvenue → Carte de bienvenue, avec l'aperçu réel généré par le bot : couleurs (accent, fond, texte), police, forme de l'avatar (rond, arrondi, carré), textes avec variables, image de fond avec voile, nom du serveur. Même chose pour la carte de départ.
+- Nouvelle commande Discord /bienvenue : carte (tous les réglages + aperçu), apercu, test, salon, message.
+- Les images des messages de bienvenue ne cassent plus (« Image failed to load ») quand un membre change d'avatar : l'avatar est joint au message.
+- Carte de rang et images de statistiques : même police nette que la carte de bienvenue.
+
 ## v1.49.0 — 2026-10-02
 
 **Etho : activités complètes et visuels en haute définition**

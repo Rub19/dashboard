@@ -134,7 +134,8 @@ export class PresenceService {
     const client = this.client;
     // Valeurs réelles uniquement (avant : 48 membres, 22 ms, v2.4.0… inventés quand l'info manquait).
     const guildCount = client?.guilds.cache.size ?? 0;
-    const userCount = client ? client.guilds.cache.reduce((sum, g) => sum + (g.memberCount || 0), 0) : 0;
+    let userCount = 0;
+    for (const g of client?.guilds.cache.values() ?? []) userCount += g.memberCount || 0;
     const ping = client && client.ws.ping >= 0 ? `${Math.round(client.ws.ping)}ms` : '—';
     const uptime = client?.uptime ? Math.floor(client.uptime / 60000) : 0;
     const now = new Date();

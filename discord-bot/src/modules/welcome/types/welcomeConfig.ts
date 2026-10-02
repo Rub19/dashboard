@@ -64,14 +64,35 @@ export const WelcomeButtonConfigSchema = z.object({
 
 export type WelcomeButtonConfig = z.infer<typeof WelcomeButtonConfigSchema>;
 
+// Une valeur invalide retombe sur le défaut (.catch) au lieu de faire échouer toute la config du serveur.
+const hexColor = (fallback: string) => z.string().regex(/^#[0-9a-fA-F]{6}$/).default(fallback).catch(fallback);
+
+export const CARD_TEMPLATES = ['default', 'modern', 'minimal', 'gaming'] as const;
+export const CARD_FONTS = ['poppins', 'bebas', 'serif', 'mono'] as const;
+export const CARD_AVATAR_SHAPES = ['circle', 'rounded', 'square'] as const;
+
 export const WelcomeImageConfigSchema = z.object({
   enabled: z.boolean().default(true),
-  template: z.enum(['default', 'modern', 'minimal', 'gaming']).default('default'),
-  titleText: z.string().default('BIENVENUE'),
-  subtitleText: z.string().default('{username}'),
-  tagText: z.string().default('Membre #{membercount}'),
-  accentColor: z.string().default('#10B981'),
-  customBackgroundUrl: z.string().nullable().default(null),
+  /** default = Classique, modern = Centré, minimal = Minimal, gaming = Gaming. */
+  template: z.enum(CARD_TEMPLATES).default('default').catch('default'),
+  titleText: z.string().max(60).default('BIENVENUE').catch('BIENVENUE'),
+  subtitleText: z.string().max(80).default('{username}').catch('{username}'),
+  tagText: z.string().max(120).default('Membre #{membercount}').catch('Membre #{membercount}'),
+  accentColor: hexColor('#10B981'),
+  backgroundColor: hexColor('#0B0C10'),
+  textColor: hexColor('#FFFFFF'),
+  /** Image de fond (https uniquement, téléchargée via fetchPublicImage), recouverte d'un voile de backgroundColor. */
+  customBackgroundUrl: z
+    .string()
+    .url()
+    .startsWith('https://')
+    .nullable()
+    .default(null)
+    .catch(null),
+  overlayOpacity: z.number().int().min(0).max(90).default(55).catch(55),
+  avatarShape: z.enum(CARD_AVATAR_SHAPES).default('circle').catch('circle'),
+  font: z.enum(CARD_FONTS).default('poppins').catch('poppins'),
+  showServerName: z.boolean().default(true).catch(true),
 });
 
 export type WelcomeImageConfig = z.infer<typeof WelcomeImageConfigSchema>;

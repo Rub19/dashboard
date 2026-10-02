@@ -1,7 +1,10 @@
 import { createCanvas, loadImage, type SKRSContext2D } from '@napi-rs/canvas';
 import { safeText } from '../../../utils/canvasText.js';
+import { FONT_STACK, registerCardFonts } from '../../../utils/cardFonts.js';
 
-const FONT = '"DejaVu Sans", "Segoe UI", Arial, sans-serif';
+// Poppins embarquée (assets/fonts) ; repli DejaVu si le fichier manque.
+registerCardFonts();
+const FONT = FONT_STACK.poppins;
 
 export interface RankCardData {
   username: string;

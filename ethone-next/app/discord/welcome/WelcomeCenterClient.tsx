@@ -25,8 +25,7 @@ import {
   UserMinus,
   Mail,
   ArrowLeft,
-  AlertCircle,
-} from "@/components/icons/ph";
+  AlertCircle, ImageIcon } from "@/components/icons/ph";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useToast } from "@/components/ToastProvider";
@@ -39,6 +38,7 @@ import RolePicker from "@/components/discord/RolePicker";
 import { formatApiError } from "@/lib/format-error";
 
 import { motion } from "framer-motion";
+import WelcomeCardDesigner, { CARD_DEFAULTS } from "@/components/discord/WelcomeCardDesigner";
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -209,7 +209,7 @@ function OnboardingEditor({
             type="button"
             onClick={onSave}
             disabled={saving}
-            className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500 disabled:opacity-60 cursor-pointer"
+            className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 disabled:opacity-60 cursor-pointer"
           >
             {saving ? "Enregistrement..." : "Enregistrer le parcours"}
           </button>
@@ -282,7 +282,7 @@ function OnboardingEditor({
             <div key={step.id} className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-500/20 text-xs font-bold text-teal-300">{idx + 1}</span>
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/20 text-xs font-bold text-[var(--accent-primary)]">{idx + 1}</span>
                   <Select
                     value={step.type}
                     onChange={(v) => patchStep(idx, { type: v as OnboardingStep["type"] })}
@@ -384,7 +384,7 @@ function OnboardingEditor({
                   <button
                     type="button"
                     onClick={() => patchStep(idx, { roleChoices: [...(step.roleChoices || []), { roleId: "", label: "", emoji: null, description: null }] })}
-                    className="text-xs font-semibold text-teal-300 hover:text-teal-200"
+                    className="text-xs font-semibold text-[var(--accent-primary)] hover:brightness-125"
                   >
                     + Ajouter un rôle à proposer
                   </button>
@@ -445,6 +445,7 @@ export function WelcomeCenterClient() {
   const [activeTab, setActiveTab] = useState<
     | "overview"
     | "builder"
+    | "card"
     | "goodbye"
     | "dm"
     | "onboarding"
@@ -795,7 +796,7 @@ export function WelcomeCenterClient() {
           <button
             type="button"
             onClick={() => fetchAllData()}
-            className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500 cursor-pointer"
+            className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 cursor-pointer"
           >
             Réessayer
           </button>
@@ -816,13 +817,13 @@ export function WelcomeCenterClient() {
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Retour Discord</span>
           </Link>
-          <div className="flex h-12 w-12 items-center justify-center rounded-[var(--inset-radius)] bg-teal-600 icon-pop">
+          <div className="flex h-12 w-12 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)] icon-pop">
             <Sparkles className="h-6 w-6 text-[var(--text-primary)]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Bienvenue & Onboarding</h1>
-              <span className="rounded-full border border-teal-500/30 bg-teal-500/10 px-2.5 py-0.5 text-xs font-semibold text-teal-300">
+              <span className="rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2.5 py-0.5 text-xs font-semibold text-[var(--accent-primary)]">
                 Experience Designer
               </span>
             </div>
@@ -851,12 +852,12 @@ export function WelcomeCenterClient() {
             className="flex h-9 w-9 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)] transition-all cursor-pointer"
             title="Rafraîchir"
           >
-            <RefreshCw className={cn("h-4 w-4", loading && "animate-spin text-teal-400")} />
+            <RefreshCw className={cn("h-4 w-4", loading && "animate-spin text-[var(--accent-primary)]")} />
           </button>
 
           <button
             onClick={() => setShowTestModal(true)}
-            className="flex h-9 items-center gap-1.5 rounded-xl bg-teal-600 px-3.5 text-xs font-bold text-white shadow-sm hover:bg-teal-500 transition-all cursor-pointer"
+            className="flex h-9 items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 text-xs font-bold text-[var(--accent-contrast)] shadow-sm hover:brightness-110 transition-all cursor-pointer"
           >
             <Zap className="h-4 w-4" />
             <span>Tester l&apos;accueil</span>
@@ -887,13 +888,13 @@ export function WelcomeCenterClient() {
 
       {/* KPI Header Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-6">
-        <div className="rounded-2xl border border-teal-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
+        <div className="rounded-2xl border border-[var(--accent-primary)]/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
           <div className="flex items-center justify-between text-[var(--text-muted)] text-xs">
             <span>Nouveaux Membres</span>
-            <UserPlus className="h-4 w-4 text-teal-400" />
+            <UserPlus className="h-4 w-4 text-[var(--accent-primary)]" />
           </div>
           <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{overview?.newMembersToday ?? 0}</p>
-          <p className="text-xs text-teal-300/80 mt-1">Arrivées enregistrées aujourd&apos;hui</p>
+          <p className="text-xs text-[var(--accent-primary)]/80 mt-1">Arrivées enregistrées aujourd&apos;hui</p>
         </div>
 
         <div className="rounded-2xl border border-emerald-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
@@ -938,6 +939,7 @@ export function WelcomeCenterClient() {
         {[
           { id: "overview", label: "Vue d'Ensemble & Funnel", icon: BarChart3 },
           { id: "builder", label: "Welcome Message & Embed", icon: Sliders },
+          { id: "card", label: "Carte de bienvenue", icon: ImageIcon },
           { id: "goodbye", label: "Message de Départ (Goodbye)", icon: UserMinus },
           { id: "dm", label: "Message Privé (DM)", icon: Mail },
           { id: "onboarding", label: "Parcours Onboarding", icon: Users },
@@ -1046,7 +1048,7 @@ export function WelcomeCenterClient() {
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
             <div>
               <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <BarChart3 className="h-4 w-4 text-teal-400" />
+                <BarChart3 className="h-4 w-4 text-[var(--accent-primary)]" />
                 <span>Entonnoir de Conversion des Nouveaux Membres (Onboarding Funnel)</span>
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
@@ -1066,13 +1068,13 @@ export function WelcomeCenterClient() {
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-[var(--text-muted)]">{stage.count} membre(s)</span>
-                      <span className="font-bold text-teal-300 w-12 text-right">{stage.percentage}%</span>
+                      <span className="font-bold text-[var(--accent-primary)] w-12 text-right">{stage.percentage}%</span>
                     </div>
                   </div>
 
                   <div className="h-3 w-full rounded-full bg-[var(--surface-raised)]/40 overflow-hidden">
                     <div
-                      className="h-full bg-teal-500 rounded-full transition-all duration-500"
+                      className="h-full bg-[var(--accent-primary)] rounded-full transition-all duration-500"
                       style={{ width: `${Math.min(100, Math.max(0, stage.percentage))}%` }}
                     />
                   </div>
@@ -1084,7 +1086,7 @@ export function WelcomeCenterClient() {
           {/* Live Recent Events Stream */}
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
-              <Clock className="h-3.5 w-3.5 text-teal-400" />
+              <Clock className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
               <span>Activité Récente de Bienvenue</span>
             </h3>
 
@@ -1093,7 +1095,7 @@ export function WelcomeCenterClient() {
                 overview.recentEvents.map((evt: any) => (
                   <div key={evt.id} className="py-2.5 flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2.5">
-                      <span className="h-2 w-2 rounded-full bg-teal-400" />
+                      <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
                       <div>
                         <p className="font-semibold text-[var(--text-primary)]">
                           {evt.userTag}{" "}
@@ -1116,6 +1118,20 @@ export function WelcomeCenterClient() {
       )}
 
       {/* TAB 2: WELCOME MESSAGE & EMBED BUILDER */}
+      {activeTab === "card" && config && (
+        <div className="mt-6">
+          <WelcomeCardDesigner
+            apiBase={API_BASE}
+            guildId={currentGuildId}
+            welcomeImage={config.welcome?.image}
+            goodbyeImage={config.goodbye?.image}
+            onChange={(kind, patch) => setConfig((p: any) => ({ ...p, [kind]: { ...p[kind], image: { ...CARD_DEFAULTS, ...p[kind]?.image, ...patch } } }))}
+            onSave={() => handleSaveConfig()}
+            saving={saving}
+          />
+        </div>
+      )}
+
       {activeTab === "builder" && config && (
         <div className="stagger-children grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           {/* LEFT: BUILDER CONTROLS */}
@@ -1128,7 +1144,7 @@ export function WelcomeCenterClient() {
               <button
                 onClick={() => handleSaveConfig()}
                 disabled={saving}
-                className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500 transition-all cursor-pointer"
+                className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 transition-all cursor-pointer"
               >
                 {saving ? "Enregistrement..." : "Enregistrer"}
               </button>
@@ -1154,7 +1170,7 @@ export function WelcomeCenterClient() {
                       navigator.clipboard.writeText(v);
                       info("Variable copiée", `${v} est dans votre presse-papiers.`);
                     }}
-                    className="rounded-md bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-2 py-0.5 text-xs font-mono text-teal-300 hover:bg-teal-500/20 transition-colors cursor-pointer"
+                    className="rounded-md bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] px-2 py-0.5 text-xs font-mono text-[var(--accent-primary)] hover:brightness-110/20 transition-colors cursor-pointer"
                   >
                     {v}
                   </button>
@@ -1345,7 +1361,7 @@ export function WelcomeCenterClient() {
                             },
                           }));
                         }}
-                        className="text-xs font-bold text-teal-400 hover:text-teal-300"
+                        className="text-xs font-bold text-[var(--accent-primary)] hover:text-[var(--accent-primary)]"
                       >
                         + Ajouter un champ
                       </button>
@@ -1438,7 +1454,7 @@ export function WelcomeCenterClient() {
                     }));
                   }}
                   disabled={config.welcome.buttons?.length >= 5}
-                  className="text-xs font-bold text-teal-400 hover:text-teal-300 disabled:opacity-40"
+                  className="text-xs font-bold text-[var(--accent-primary)] hover:text-[var(--accent-primary)] disabled:opacity-40"
                 >
                   + Ajouter un bouton
                 </button>
@@ -1524,7 +1540,7 @@ export function WelcomeCenterClient() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <Eye className="h-4 w-4 text-teal-400" />
+                <Eye className="h-4 w-4 text-[var(--accent-primary)]" />
                 <span>Rendu Discord en Direct (Live Preview)</span>
               </h3>
               <span className="text-xs text-[var(--text-muted)] font-mono">Synchronisation instantanée</span>
@@ -1534,7 +1550,7 @@ export function WelcomeCenterClient() {
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#313338] p-4 text-[var(--text-primary)] font-sans">
               {/* Message Header */}
               <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-full bg-teal-600 flex items-center justify-center font-bold text-white text-xs shrink-0">
+                <div className="h-10 w-10 rounded-full bg-[var(--accent-primary)] flex items-center justify-center font-bold text-[var(--accent-contrast)] text-xs shrink-0">
                   ETH
                 </div>
                 <div className="flex-1 min-w-0 space-y-1">
@@ -1694,7 +1710,7 @@ export function WelcomeCenterClient() {
             <button
               onClick={() => handleSaveConfig()}
               disabled={saving}
-              className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500 transition-all cursor-pointer"
+              className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 transition-all cursor-pointer"
             >
               {saving ? "Enregistrement..." : "Enregistrer le système de départ"}
             </button>
@@ -1729,7 +1745,7 @@ export function WelcomeCenterClient() {
                     },
                   }))
                 }
-                className="h-4 w-4 rounded border-[var(--panel-border)] accent-teal-500"
+                className="h-4 w-4 rounded border-[var(--panel-border)] accent-[var(--accent-primary)]"
               />
             </label>
 
@@ -1755,7 +1771,7 @@ export function WelcomeCenterClient() {
             <button
               onClick={() => handleSaveConfig()}
               disabled={saving}
-              className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500 transition-all cursor-pointer"
+              className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 transition-all cursor-pointer"
             >
               {saving ? "Enregistrement..." : "Enregistrer le DM Welcome"}
             </button>
@@ -1824,7 +1840,7 @@ export function WelcomeCenterClient() {
             <button
               onClick={() => handleSaveVerification(verification)}
               disabled={saving}
-              className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500 transition-all cursor-pointer"
+              className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 transition-all cursor-pointer"
             >
               {saving ? "Enregistrement..." : "Enregistrer la vérification"}
             </button>
@@ -1865,7 +1881,7 @@ export function WelcomeCenterClient() {
                 <button
                   onClick={() => handleApplyTemplate(tpl.id)}
                   disabled={saving}
-                  className="w-full rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] py-2 text-xs font-bold text-[var(--text-primary)] hover:bg-teal-600 hover:text-[var(--text-primary)] hover:border-teal-500 transition-all cursor-pointer"
+                  className="w-full rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] py-2 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--accent-primary)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)] transition-all cursor-pointer"
                 >
                   Appliquer ce modèle
                 </button>
@@ -1908,13 +1924,13 @@ export function WelcomeCenterClient() {
                       className={cn(
                         "flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs transition-all cursor-pointer",
                         isSelected
-                          ? "border-teal-500 bg-teal-500/20 text-teal-200 font-bold"
+                          ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/20 text-[var(--text-primary)] font-bold"
                           : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                       )}
                     >
                       <span className="h-2 w-2 rounded-full" style={{ backgroundColor: r.color }} />
                       <span>@{r.name}</span>
-                      {isSelected && <Check className="h-3 w-3 text-teal-400" />}
+                      {isSelected && <Check className="h-3 w-3 text-[var(--accent-primary)]" />}
                     </button>
                   );
                 })}
@@ -1924,7 +1940,7 @@ export function WelcomeCenterClient() {
             <button
               onClick={() => handleSaveConfig()}
               disabled={saving}
-              className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500 transition-all cursor-pointer"
+              className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 transition-all cursor-pointer"
             >
               {saving ? "Enregistrement..." : "Enregistrer les Auto-Roles"}
             </button>
@@ -1956,7 +1972,7 @@ export function WelcomeCenterClient() {
                     },
                   }))
                 }
-                className="h-4 w-4 rounded border-[var(--panel-border)] accent-teal-500"
+                className="h-4 w-4 rounded border-[var(--panel-border)] accent-[var(--accent-primary)]"
               />
             </label>
 
@@ -1987,7 +2003,7 @@ export function WelcomeCenterClient() {
             <button
               onClick={() => handleSaveConfig()}
               disabled={saving}
-              className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500 transition-all cursor-pointer"
+              className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 transition-all cursor-pointer"
             >
               {saving ? "Enregistrement..." : "Enregistrer les conditions"}
             </button>
@@ -2052,7 +2068,7 @@ export function WelcomeCenterClient() {
             <button
               onClick={() => handleSaveConfig()}
               disabled={saving}
-              className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500 transition-all cursor-pointer"
+              className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 transition-all cursor-pointer"
             >
               {saving ? "Enregistrement..." : "Enregistrer les paramètres"}
             </button>
@@ -2081,7 +2097,7 @@ export function WelcomeCenterClient() {
                     className={cn(
                       "rounded-xl border py-2 text-xs font-bold transition-all",
                       testType === "welcome"
-                        ? "border-teal-500 bg-teal-500/20 text-teal-300"
+                        ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
                         : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
@@ -2093,7 +2109,7 @@ export function WelcomeCenterClient() {
                     className={cn(
                       "rounded-xl border py-2 text-xs font-bold transition-all",
                       testType === "goodbye"
-                        ? "border-teal-500 bg-teal-500/20 text-teal-300"
+                        ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
                         : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
@@ -2111,7 +2127,7 @@ export function WelcomeCenterClient() {
                     className={cn(
                       "rounded-xl border py-2 text-xs font-bold transition-all",
                       testTarget === "channel"
-                        ? "border-teal-500 bg-teal-500/20 text-teal-300"
+                        ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
                         : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
@@ -2123,7 +2139,7 @@ export function WelcomeCenterClient() {
                     className={cn(
                       "rounded-xl border py-2 text-xs font-bold transition-all",
                       testTarget === "dm"
-                        ? "border-teal-500 bg-teal-500/20 text-teal-300"
+                        ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
                         : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
@@ -2145,7 +2161,7 @@ export function WelcomeCenterClient() {
                 type="button"
                 onClick={handleRunTest}
                 disabled={testRunning}
-                className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500 transition-all disabled:opacity-50 cursor-pointer"
+                className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] hover:brightness-110 transition-all disabled:opacity-50 cursor-pointer"
               >
                 {testRunning ? "Envoi du test..." : "Envoyer le test"}
               </button>

@@ -136,6 +136,7 @@ async function runTests() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status: 'online', activity: { type: 'Playing', name: 'Minecraft' } }),
   }).then((r) => r.json() as any);
+  if (r2.success !== true) console.log('    réponse :', JSON.stringify(r2));
   assert(r2.success === true, 'POST /api/bot/presence updates status');
 
   // Test GET /rotation

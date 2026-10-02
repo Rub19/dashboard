@@ -38,6 +38,7 @@ import { giveawayCommand } from '../modules/giveaways/commands/giveawayCommand.j
 import { suggestCommand } from '../modules/suggestions/commands/suggestCommand.js';
 import { antiraidCommand } from '../modules/antiRaid/commands/antiraidCommand.js';
 import { verificationCommand } from '../modules/welcome/commands/verificationCommand.js';
+import { welcomeCommand } from '../modules/welcome/commands/welcomeCommand.js';
 import { economyCommand } from '../modules/economy/commands/economyCommand.js';
 import {
   dailyCommand,
@@ -145,6 +146,7 @@ class CommandRegistry {
     // Sécurité & Anti-Raid 2.0
     this.register(antiraidCommand);
     this.register(verificationCommand);
+    this.register(welcomeCommand);
     this.register(economyCommand);
     this.register(dailyCommand);
     this.register(workCommand);

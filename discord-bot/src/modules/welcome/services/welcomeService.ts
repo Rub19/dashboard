@@ -348,12 +348,24 @@ class WelcomeService {
     postTitle?: string
   ): Promise<void> {
     const files: AttachmentBuilder[] = [];
+    let hasCard = false;
+
+    // Avatar téléchargé une fois et joint au message : une URL d'avatar Discord expire dès que le membre change
+    // d'avatar, ce qui cassait l'icône d'auteur et la vignette des anciens messages (« Image failed to load »).
+    const avatarBuffer = await WelcomeCardGenerator.loadAvatar(avatarUrl);
+    const e = config.embed;
+    const embedUsesAvatar = Boolean(
+      e?.enabled && ((e.authorName && !e.authorIconUrl) || (e.showThumbnail && !e.thumbnailUrl))
+    );
+    const avatarRef = avatarBuffer && embedUsesAvatar ? 'attachment://avatar.png' : avatarUrl;
+    if (avatarBuffer && embedUsesAvatar) files.push(new AttachmentBuilder(avatarBuffer, { name: 'avatar.png' }));
 
     // 1. Génération de l'image de carte si activée
     if (config.image && config.image.enabled) {
       try {
-        const imageBuffer = await WelcomeCardGenerator.generateCard(config.image, avatarUrl, ctx);
+        const imageBuffer = await WelcomeCardGenerator.generateCard(config.image, avatarUrl, ctx, avatarBuffer);
         files.push(new AttachmentBuilder(imageBuffer, { name: 'card.png' }));
+        hasCard = true;
       } catch (err) {
         logger.error('[Welcome] Échec de la génération de la carte image :', err);
       }
@@ -385,7 +397,7 @@ class WelcomeService {
       if (config.embed.authorName) {
         embed.setAuthor({
           name: VariableParser.parse(config.embed.authorName, ctx),
-          iconURL: config.embed.authorIconUrl || avatarUrl || undefined,
+          iconURL: config.embed.authorIconUrl || avatarRef || undefined,
         });
       }
 
@@ -396,8 +408,8 @@ class WelcomeService {
         });
       }
 
-      if (config.embed.showThumbnail && avatarUrl) {
-        embed.setThumbnail(config.embed.thumbnailUrl || avatarUrl);
+      if (config.embed.showThumbnail && avatarRef) {
+        embed.setThumbnail(config.embed.thumbnailUrl || avatarRef);
       }
 
       if (config.embed.showTimestamp) {
@@ -415,7 +427,7 @@ class WelcomeService {
         }
       }
 
-      if (files.length > 0) {
+      if (hasCard) {
         embed.setImage('attachment://card.png');
       }
 

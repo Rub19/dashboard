@@ -6,6 +6,7 @@ import { PREBUILT_TEMPLATES } from '../../modules/welcome/types/templates.js';
 import { OnboardingFlowSchema } from '../../modules/welcome/types/onboarding.js';
 import { OnboardingRunner } from '../../modules/welcome/services/onboardingRunner.js';
 import { WelcomeCardGenerator } from '../../modules/welcome/images/welcomeCardGenerator.js';
+import { WelcomeImageConfigSchema } from '../../modules/welcome/types/welcomeConfig.js';
 import { VariableContext } from '../../modules/welcome/types/variables.js';
 import { logger } from '../../utils/logger.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
@@ -242,31 +243,34 @@ export function createWelcomeRouter(discordClient: Client) {
 
     const guild = discordClient.guilds.cache.get(guildId);
     const guildName = guild?.name || 'Mon Serveur';
-    const memberCount = guild?.memberCount || 1245;
+    const memberCount = guild?.memberCount ?? 0;
+    // Aperçu au nom de l'admin connecté quand on le connaît (sinon « Rub »), avec le vrai nombre de membres.
+    const viewer = req.user?.id ? await discordClient.users.fetch(req.user.id).catch(() => null) : null;
+    const name = String(username || viewer?.globalName || viewer?.username || 'Rub').slice(0, 40);
 
     const dummyCtx: VariableContext = {
-      userId: '1128633164290596884',
-      username: username || 'Rub',
-      displayName: username || 'Rub',
-      userTag: `${username || 'Rub'}#0001`,
+      userId: viewer?.id || '0',
+      username: name,
+      displayName: name,
+      userTag: name,
       mentionUser: false,
       guildId,
       guildName,
       memberCount,
     };
 
-    const conf = {
+    // Tous les réglages de la carte (modèle, couleurs, fond, police, forme…) ; ce qui manque prend la valeur par défaut.
+    const conf = WelcomeImageConfigSchema.parse({
+      ...(imageConfig && typeof imageConfig === 'object' ? imageConfig : {}),
       enabled: true,
-      template: imageConfig?.template || 'default',
-      titleText: titleText || imageConfig?.titleText || 'BIENVENUE',
-      subtitleText: subtitleText || imageConfig?.subtitleText || '{username}',
-      tagText: tagText || imageConfig?.tagText || 'Membre #{membercount}',
-      accentColor: imageConfig?.accentColor || '#10B981',
-      customBackgroundUrl: imageConfig?.customBackgroundUrl || null,
-    };
+      ...(titleText ? { titleText } : {}),
+      ...(subtitleText ? { subtitleText } : {}),
+      ...(tagText ? { tagText } : {}),
+    });
 
     const avatarUrl =
-      discordClient.user?.displayAvatarURL({ size: 256 }) ||
+      viewer?.displayAvatarURL({ size: 256, extension: 'png' }) ||
+      discordClient.user?.displayAvatarURL({ size: 256, extension: 'png' }) ||
       'https://cdn.discordapp.com/embed/avatars/0.png';
 
     try {

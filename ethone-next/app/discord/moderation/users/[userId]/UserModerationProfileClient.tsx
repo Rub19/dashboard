@@ -190,18 +190,18 @@ export default function UserModerationProfileClient() {
     if (score >= 75) return { label: "CRITIQUE", bg: "bg-red-500/20", text: "text-red-400", border: "border-red-500/30" };
     if (score >= 40) return { label: "ÉLEVÉ", bg: "bg-orange-500/20", text: "text-orange-400", border: "border-orange-500/30" };
     if (score >= 20) return { label: "MODÉRÉ", bg: "bg-amber-500/20", text: "text-amber-400", border: "border-amber-500/30" };
-    return { label: "FAIBLE", bg: "bg-emerald-500/20", text: "text-emerald-400", border: "border-emerald-500/30" };
+    return { label: "FAIBLE", bg: "bg-[var(--accent-primary)]/20", text: "text-[var(--accent-primary)]", border: "border-[var(--accent-primary)]/30" };
   }, [userProfile?.calculatedRiskScore]);
 
   // Statut actuel
   const currentStatus = useMemo(() => {
-    if (!userProfile) return { label: "Normal", color: "text-emerald-400", bg: "bg-emerald-500/10", dot: "bg-emerald-500" };
+    if (!userProfile) return { label: "Normal", color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]/10", dot: "bg-[var(--accent-primary)]" };
     if (userProfile.stats?.bans > 0) return { label: "Banni", color: "text-red-400", bg: "bg-red-500/10", dot: "bg-red-500" };
     if (userProfile.activeSanctions?.some((s: any) => s.action === "TIMEOUT"))
       return { label: "En Exclusion (Timeout)", color: "text-orange-400", bg: "bg-orange-500/10", dot: "bg-orange-500" };
     if (userProfile.activeSanctions?.some((s: any) => s.action === "QUARANTINE"))
-      return { label: "Quarantaine", color: "text-emerald-400", bg: "bg-emerald-500/10", dot: "bg-emerald-500" };
-    return { label: "Normal", color: "text-emerald-400", bg: "bg-emerald-500/10", dot: "bg-emerald-500" };
+      return { label: "Quarantaine", color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]/10", dot: "bg-[var(--accent-primary)]" };
+    return { label: "Normal", color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]/10", dot: "bg-[var(--accent-primary)]" };
   }, [userProfile]);
 
   // Calcul live de l'expiration du timeout
@@ -421,7 +421,7 @@ export default function UserModerationProfileClient() {
                     className="w-20 h-20 rounded-2xl object-cover ring-2 ring-[var(--panel-border)]"
                   />
                 ) : (
-                  <div className="w-20 h-20 rounded-2xl bg-emerald-500/15 border border-[var(--panel-border)] flex items-center justify-center text-2xl font-bold text-[var(--text-primary)]">
+                  <div className="w-20 h-20 rounded-2xl bg-[var(--accent-primary)]/15 border border-[var(--panel-border)] flex items-center justify-center text-2xl font-bold text-[var(--text-primary)]">
                     {userProfile?.username?.substring(0, 2).toUpperCase() || "??"}
                   </div>
                 )}
@@ -536,7 +536,7 @@ export default function UserModerationProfileClient() {
                       ? "bg-orange-500"
                       : (userProfile?.calculatedRiskScore || 0) >= 40
                       ? "bg-amber-500"
-                      : "bg-emerald-500"
+                      : "bg-[var(--accent-primary)]"
                   )}
                   style={{ width: `${userProfile?.calculatedRiskScore || 0}%` }}
                 />
@@ -618,7 +618,7 @@ export default function UserModerationProfileClient() {
 
             <button
               onClick={() => setActiveActionModal("QUARANTINE")}
-              className="px-3.5 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              className="px-3.5 py-2 rounded-xl bg-[var(--accent-primary)]/10 hover:bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 text-xs font-semibold flex items-center gap-1.5 transition-colors"
             >
               <Lock className="w-4 h-4" />
               <span>Quarantaine</span>
@@ -763,7 +763,7 @@ export default function UserModerationProfileClient() {
                         <span className="text-xs px-2 py-0.5 rounded-md font-bold bg-[var(--text-primary)]/10 text-[var(--text-primary)] font-mono">
                           #{c.caseNumber}
                         </span>
-                        <span className="text-xs px-2 py-0.5 rounded-md font-bold bg-emerald-500/10 text-emerald-400">
+                        <span className="text-xs px-2 py-0.5 rounded-md font-bold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                           {c.action}
                         </span>
                         <span className="text-xs text-[var(--text-muted)]">

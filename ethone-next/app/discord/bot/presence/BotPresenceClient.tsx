@@ -510,14 +510,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
   // Status visual attributes
   const statusColorMap = {
-    online: "bg-emerald-500 text-emerald-400 border-emerald-500/40",
+    online: "bg-[var(--success)] text-[var(--success)] border-[var(--success)]/40",
     idle: "bg-amber-500 text-amber-400 border-amber-500/40",
     dnd: "bg-rose-500 text-rose-400 border-rose-500/40",
     invisible: "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border-[var(--panel-border)]",
   };
 
   const statusDotColor = {
-    online: "bg-emerald-500",
+    online: "bg-[var(--success)]",
     idle: "bg-amber-400",
     dnd: "bg-rose-500",
     invisible: "bg-[var(--surface-raised)]/40",
@@ -526,17 +526,17 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] font-sans pb-44">
       {/* TOP NOTIFICATION / SCOPE BANNER */}
-      <div className="bg-[var(--surface-raised)]/40 border-b border-emerald-500/30 px-6 py-2.5">
+      <div className="bg-[var(--surface-raised)]/40 border-b border-[var(--accent-primary)]/30 px-6 py-2.5">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 text-emerald-300">
-            <Globe className="w-4 h-4 text-emerald-300 shrink-0" />
+          <div className="flex items-center gap-2 text-[var(--accent-primary)]">
+            <Globe className="w-4 h-4 text-[var(--accent-primary)] shrink-0" />
             <span>
               <strong className="text-[var(--text-primary)]">Portée Globale de Présence :</strong> Discord diffuse la présence du bot de façon unique pour toute la connexion Gateway (shard).
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-mono text-xs">
-              <ShieldCheck className="w-3 h-3 text-emerald-400" />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] font-mono text-xs">
+              <ShieldCheck className="w-3 h-3 text-[var(--accent-primary)]" />
               Bot Owner : {identity.ownerId}
             </span>
             <Link
@@ -554,16 +554,16 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       <div className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-[var(--inset-radius)] border border-emerald-500/30 flex items-center justify-center bg-[var(--surface-raised)]/40 icon-pop">
-              <Bot className="w-6 h-6 text-emerald-300" />
+            <div className="w-12 h-12 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 flex items-center justify-center bg-[var(--surface-raised)]/40 icon-pop">
+              <Bot className="w-6 h-6 text-[var(--accent-primary)]" />
             </div>
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-                  Bot Presence & Identity Center <span className="text-emerald-300 text-sm font-mono px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30">2.0</span>
+                  Bot Presence & Identity Center <span className="text-[var(--accent-primary)] text-sm font-mono px-2 py-0.5 rounded bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30">2.0</span>
                 </h1>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
                   Gateway Active
                 </span>
               </div>
@@ -592,7 +592,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               disabled={refreshing}
               className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-[var(--text-muted)] flex items-center gap-1.5 transition-colors disabled:opacity-50"
             >
-              <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin text-emerald-300")} />
+              <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin text-[var(--accent-primary)]")} />
               <span>Actualiser</span>
             </button>
           </div>
@@ -629,7 +629,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     className={cn(
                       "px-1.5 py-0.2 rounded-full text-xs font-mono",
                       isActive
-                        ? "bg-emerald-500/10 text-emerald-300"
+                        ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                         : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
                     )}
                   >
@@ -648,7 +648,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
           <div className="stagger-children space-y-8">
             {/* REAL-TIME DISCORD HUD PREVIEW WIDGET */}
             <div className="p-6 rounded-[var(--panel-radius)] border border-[var(--panel-border)] relative overflow-hidden bg-[var(--surface-raised)]/40">
-              <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--accent-primary)]/10 rounded-full blur-3xl pointer-events-none" />
 
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
                 <div className="flex items-center gap-5">
@@ -677,7 +677,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
                         {identity.username}
                       </h2>
-                      <span className="px-1.5 py-0.5 rounded text-xs font-bold bg-emerald-500 text-white tracking-wide">
+                      <span className="px-1.5 py-0.5 rounded text-xs font-bold bg-[var(--accent-primary)] text-[var(--accent-contrast)] tracking-wide">
                         BOT
                       </span>
                       <span className="text-xs text-[var(--text-muted)] font-mono">
@@ -686,10 +686,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     </div>
 
                     <div className="mt-2 flex flex-wrap items-center gap-2">
-                      <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--surface-raised)]/40 text-emerald-300 border border-[var(--panel-border)] flex items-center gap-1.5">
+                      <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--surface-raised)]/40 text-[var(--accent-primary)] border border-[var(--panel-border)] flex items-center gap-1.5">
                         {activityType === "Playing" && <Flame className="w-3.5 h-3.5 text-orange-400" />}
-                        {activityType === "Streaming" && <Video className="w-3.5 h-3.5 text-emerald-300" />}
-                        {activityType === "Listening" && <Headphones className="w-3.5 h-3.5 text-emerald-400" />}
+                        {activityType === "Streaming" && <Video className="w-3.5 h-3.5 text-[var(--accent-primary)]" />}
+                        {activityType === "Listening" && <Headphones className="w-3.5 h-3.5 text-[var(--accent-primary)]" />}
                         {activityType === "Watching" && <Tv className="w-3.5 h-3.5 text-blue-400" />}
                         {activityType === "Competing" && <Trophy className="w-3.5 h-3.5 text-amber-400" />}
                         <span>{ACTIVITY_VERB[activityType]}</span>
@@ -704,7 +704,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           href={streamUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-xs text-emerald-300 hover:text-emerald-300 hover:underline"
+                          className="inline-flex items-center gap-1 text-xs text-[var(--accent-primary)] hover:text-[var(--accent-primary)] hover:underline"
                         >
                           <ExternalLink className="w-3 h-3" />
                           <span>Stream URL</span>
@@ -714,7 +714,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
                     <div className="mt-2.5 flex items-center gap-4 text-xs text-[var(--text-muted)]">
                       <span className="flex items-center gap-1">
-                        <Globe className="w-3.5 h-3.5 text-emerald-300" />
+                        <Globe className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                         <span>Portée : Globale</span>
                       </span>
                       <span className="flex items-center gap-1">
@@ -733,22 +733,22 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 <div className="bg-[var(--surface-raised)]/40 p-4 rounded-xl border border-[var(--panel-border)] min-w-[240px]">
                   <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-2">
                     <span className="font-semibold text-[var(--text-muted)] flex items-center gap-1.5">
-                      <ShieldCheck className="w-4 h-4 text-emerald-300" />
+                      <ShieldCheck className="w-4 h-4 text-[var(--accent-primary)]" />
                       Rate Limit Gateway
                     </span>
-                    <span className="font-mono text-emerald-300">5 / 60s max</span>
+                    <span className="font-mono text-[var(--accent-primary)]">5 / 60s max</span>
                   </div>
                   <div className="w-full h-2 rounded-full bg-[var(--panel-border)] overflow-hidden">
                     <div
                       className={cn(
                         "h-full rounded-full transition-all duration-300",
-                        rateLimited ? "bg-rose-500 w-full" : "bg-emerald-500 w-1/5"
+                        rateLimited ? "bg-rose-500 w-full" : "bg-[var(--accent-primary)] w-1/5"
                       )}
                     />
                   </div>
                   <div className="mt-2 text-xs text-[var(--text-muted)] flex items-center justify-between">
                     <span>État :</span>
-                    <span className={rateLimited ? "text-rose-400 font-semibold" : "text-emerald-400 font-semibold"}>
+                    <span className={rateLimited ? "text-rose-400 font-semibold" : "text-[var(--accent-primary)] font-semibold"}>
                       {rateLimited ? "Protection Anti-Spam Active" : "Prêt pour mise à jour"}
                     </span>
                   </div>
@@ -772,7 +772,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
                   <div>
                     <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                      <Radio className="w-4 h-4 text-emerald-300" />
+                      <Radio className="w-4 h-4 text-[var(--accent-primary)]" />
                       1. Statut Visible sur Discord
                     </h3>
                     <p className="text-xs text-[var(--text-muted)]">Choisissez la pastille d'état affichée sur le profil du bot</p>
@@ -780,7 +780,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
-                      { id: "online", label: "En Ligne", color: "text-emerald-400", dot: "bg-emerald-500", desc: "Disponible et actif" },
+                      { id: "online", label: "En Ligne", color: "text-[var(--success)]", dot: "bg-[var(--success)]", desc: "Disponible et actif" },
                       { id: "idle", label: "Inactif", color: "text-amber-400", dot: "bg-amber-400", desc: "Absence temporaire" },
                       { id: "dnd", label: "Ne Pas Déranger", color: "text-rose-400", dot: "bg-rose-500", desc: "Maintenance / Busy" },
                       { id: "invisible", label: "Invisible", color: "text-[var(--text-muted)]", dot: "bg-[var(--surface-raised)]/40", desc: "Hors ligne visuel" },
@@ -793,7 +793,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           className={cn(
                             "p-3.5 rounded-xl border text-left transition-all relative",
                             isSelected
-                              ? "bg-[var(--surface-raised)]/40 border-emerald-500/30 ring-1 ring-emerald-500/30"
+                              ? "bg-[var(--surface-raised)]/40 border-[var(--accent-primary)]/30 ring-1 ring-[var(--accent-primary)]/30"
                               : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/70 hover:border-[var(--input-border-hover)]"
                           )}
                         >
@@ -805,7 +805,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           </div>
                           <p className="text-xs text-[var(--text-muted)] line-clamp-1">{s.desc}</p>
                           {isSelected && (
-                            <span className="absolute top-2 right-2 text-emerald-300">
+                            <span className="absolute top-2 right-2 text-[var(--accent-primary)]">
                               <Check className="w-3.5 h-3.5" />
                             </span>
                           )}
@@ -819,7 +819,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
                   <div>
                     <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                      <Sliders className="w-4 h-4 text-emerald-300" />
+                      <Sliders className="w-4 h-4 text-[var(--accent-primary)]" />
                       2. Type d'Activité
                     </h3>
                     <p className="text-xs text-[var(--text-muted)]">Le verbe qui précède le texte sur le profil Discord</p>
@@ -828,8 +828,8 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
                     {[
                       { type: "Playing", label: ACTIVITY_VERB.Playing, icon: Flame, color: "text-orange-400" },
-                      { type: "Streaming", label: ACTIVITY_VERB.Streaming, icon: Video, color: "text-emerald-300" },
-                      { type: "Listening", label: ACTIVITY_VERB.Listening, icon: Headphones, color: "text-emerald-400" },
+                      { type: "Streaming", label: ACTIVITY_VERB.Streaming, icon: Video, color: "text-[var(--accent-primary)]" },
+                      { type: "Listening", label: ACTIVITY_VERB.Listening, icon: Headphones, color: "text-[var(--accent-primary)]" },
                       { type: "Watching", label: ACTIVITY_VERB.Watching, icon: Tv, color: "text-blue-400" },
                       { type: "Competing", label: ACTIVITY_VERB.Competing, icon: Trophy, color: "text-amber-400" },
                     ].map((item) => {
@@ -842,7 +842,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           className={cn(
                             "p-3 rounded-xl border text-center transition-all flex flex-col items-center gap-1.5",
                             isSelected
-                              ? "bg-[var(--surface-raised)]/40 border-emerald-500/30 ring-1 ring-emerald-500/30"
+                              ? "bg-[var(--surface-raised)]/40 border-[var(--accent-primary)]/30 ring-1 ring-[var(--accent-primary)]/30"
                               : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/70 hover:border-[var(--input-border-hover)]"
                           )}
                         >
@@ -857,9 +857,9 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
                   {/* Streaming URL field */}
                   {activityType === "Streaming" && (
-                    <div className="mt-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
-                      <label className="text-xs font-semibold text-emerald-300 flex items-center gap-1.5">
-                        <Video className="w-3.5 h-3.5 text-emerald-300" />
+                    <div className="mt-4 p-4 rounded-xl bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 space-y-2">
+                      <label className="text-xs font-semibold text-[var(--accent-primary)] flex items-center gap-1.5">
+                        <Video className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                         URL du Stream (Twitch ou YouTube obligatoire pour Discord)
                       </label>
                       <input
@@ -867,9 +867,9 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         value={streamUrl}
                         onChange={(e) => setStreamUrl(e.target.value)}
                         placeholder="https://www.twitch.tv/ethone"
-                        className="w-full px-3.5 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-emerald-500/30 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] font-mono"
+                        className="w-full px-3.5 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--accent-primary)]/30 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--input-border-hover)] font-mono"
                       />
-                      <p className="text-xs text-emerald-300">
+                      <p className="text-xs text-[var(--accent-primary)]">
                         * Discord exige une URL valide Twitch ou YouTube pour afficher la pastille violette "Streame".
                       </p>
                     </div>
@@ -880,7 +880,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
                   <div>
                     <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-emerald-300" />
+                      <Sparkles className="w-4 h-4 text-[var(--accent-primary)]" />
                       3. Texte de l'Activité & Variables Dynamiques
                     </h3>
                     <p className="text-xs text-[var(--text-muted)]">
@@ -912,7 +912,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           key={v.tag}
                           onClick={() => insertTag(v.tag)}
                           title={v.desc}
-                          className="px-2.5 py-1 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-emerald-500/10 border border-[var(--panel-border)] hover:border-emerald-500/40 text-xs font-mono text-[var(--text-muted)] hover:text-emerald-300 transition-all flex items-center gap-1.5"
+                          className="px-2.5 py-1 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--accent-primary)]/10 border border-[var(--panel-border)] hover:border-[var(--accent-primary)]/40 text-xs font-mono text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-all flex items-center gap-1.5"
                         >
                           <span>+ {v.tag}</span>
                         </button>
@@ -963,7 +963,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           className={cn(
                             "p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3",
                             isActive
-                              ? "bg-emerald-500/10 border-emerald-500/30"
+                              ? "bg-[var(--accent-primary)]/10 border-[var(--accent-primary)]/30"
                               : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/70 hover:border-[var(--input-border-hover)]"
                           )}
                         >
@@ -972,7 +972,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                               <span
                                 className={cn(
                                   "w-2.5 h-2.5 rounded-full shrink-0",
-                                  statusDotColor[p.status as DiscordStatus] || "bg-emerald-500"
+                                  statusDotColor[p.status as DiscordStatus] || "bg-[var(--success)]"
                                 )}
                               />
                               <h4 className="text-xs font-bold text-[var(--text-primary)] truncate">{p.name}</h4>
@@ -988,8 +988,8 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                             className={cn(
                               "px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all",
                               isActive
-                                ? "bg-emerald-500 text-white shadow-sm"
-                                : "bg-[var(--surface-raised)]/40 hover:bg-emerald-600 text-[var(--text-muted)] hover:text-white"
+                                ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
+                                : "bg-[var(--surface-raised)]/40 hover:bg-[var(--accent-primary)] text-[var(--text-muted)] hover:text-[var(--accent-contrast)]"
                             )}
                           >
                             {isActive ? "Actif" : "Activer"}
@@ -1003,7 +1003,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 {/* Presence Metrics Card */}
                 <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
                   <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                    <Activity className="w-4 h-4 text-emerald-400" />
+                    <Activity className="w-4 h-4 text-[var(--accent-primary)]" />
                     Statistiques de Présence
                   </h3>
 
@@ -1014,7 +1014,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     </div>
                     <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                       <span className="text-xs text-[var(--text-muted)]">Rotations Exécutées</span>
-                      <p className="text-lg font-bold text-emerald-300 font-mono mt-1">{stats.rotationsExecuted}</p>
+                      <p className="text-lg font-bold text-[var(--accent-primary)] font-mono mt-1">{stats.rotationsExecuted}</p>
                     </div>
                     <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                       <span className="text-xs text-[var(--text-muted)]">Rate Limits Rencontrés</span>
@@ -1022,7 +1022,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     </div>
                     <div className="p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                       <span className="text-xs text-[var(--text-muted)]">Uptime Gateway</span>
-                      <p className="text-lg font-bold text-emerald-400 font-mono mt-1">{stats.currentUptimeHours}h</p>
+                      <p className="text-lg font-bold text-[var(--accent-primary)] font-mono mt-1">{stats.currentUptimeHours}h</p>
                     </div>
                   </div>
 
@@ -1045,7 +1045,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
-                    <ListRestart className="w-5 h-5 text-emerald-300" />
+                    <ListRestart className="w-5 h-5 text-[var(--accent-primary)]" />
                     Moteur de Rotation Automatique d'Activités
                   </h2>
                   <p className="text-xs text-[var(--text-muted)] mt-1">
@@ -1059,11 +1059,11 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     className={cn(
                       "px-4 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-2",
                       rotationConfig.enabled
-                        ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/30"
+                        ? "bg-[var(--accent-primary)]/20 border-[var(--accent-primary)]/50 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/30"
                         : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)]"
                     )}
                   >
-                    <RotateCcw className={cn("w-4 h-4", rotationConfig.enabled && "animate-spin text-emerald-400")} />
+                    <RotateCcw className={cn("w-4 h-4", rotationConfig.enabled && "animate-spin text-[var(--success)]")} />
                     <span>{rotationConfig.enabled ? "Rotation Activée" : "Rotation Désactivée"}</span>
                   </button>
 
@@ -1081,7 +1081,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-[var(--panel-border)]">
                 <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-2">
                   <label className="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1.5">
-                    <Timer className="w-3.5 h-3.5 text-emerald-300" />
+                    <Timer className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                     Intervalle de rotation (secondes)
                   </label>
                   <input
@@ -1102,7 +1102,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
                 <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-2">
                   <label className="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1.5">
-                    <Shuffle className="w-3.5 h-3.5 text-emerald-300" />
+                    <Shuffle className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                     Stratégie d'ordonnancement
                   </label>
                   <Select
@@ -1126,12 +1126,12 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
                 <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-2">
                   <label className="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                    <Clock className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                     Prochaine rotation
                   </label>
-                  <div className="px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-sm font-mono text-emerald-400 flex items-center justify-between">
+                  <div className="px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-sm font-mono text-[var(--accent-primary)] flex items-center justify-between">
                     <span>{rotationConfig.enabled ? "Dans quelques secondes" : "En pause"}</span>
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
                   </div>
                   <p className="text-xs text-[var(--text-muted)]">Horodatage précis synchronisé</p>
                 </div>
@@ -1142,7 +1142,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
             <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-emerald-300" />
+                  <Layers className="w-4 h-4 text-[var(--accent-primary)]" />
                   Activités dans le Cycle ({rotationConfig.activities.length})
                 </h3>
               </div>
@@ -1159,13 +1159,13 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       </span>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded text-xs font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                          <span className="px-2 py-0.5 rounded text-xs font-bold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
                             {item.type}
                           </span>
                           <span className="text-sm font-semibold text-[var(--text-primary)]">{item.text}</span>
                         </div>
                         {item.url && (
-                          <span className="text-xs text-emerald-300 font-mono mt-1 block">
+                          <span className="text-xs text-[var(--accent-primary)] font-mono mt-1 block">
                             Stream: {item.url}
                           </span>
                         )}
@@ -1194,7 +1194,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               {/* Add Activity to Rotation Form */}
               <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-dashed border-[var(--panel-border)] space-y-4">
                 <h4 className="text-xs font-bold text-[var(--text-muted)] flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+                  <Sparkles className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                   Ajouter une nouvelle activité à la rotation
                 </h4>
 
@@ -1242,7 +1242,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     value={newRotUrl}
                     onChange={(e) => setNewRotUrl(e.target.value)}
                     placeholder="URL Twitch / YouTube (obligatoire pour Streaming)"
-                    className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-emerald-500/30 text-xs text-[var(--text-primary)] font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--accent-primary)]/30 text-xs text-[var(--text-primary)] font-mono"
                   />
                 )}
               </div>
@@ -1268,7 +1268,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 {profiles.map((p) => (
                   <div
                     key={p.id}
-                    className="p-5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between gap-4 hover:border-emerald-500/40 transition-all"
+                    className="p-5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between gap-4 hover:border-[var(--accent-primary)]/40 transition-all"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-2">
@@ -1276,20 +1276,20 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         <span
                           className={cn(
                             "w-2.5 h-2.5 rounded-full",
-                            statusDotColor[p.status as DiscordStatus] || "bg-emerald-500"
+                            statusDotColor[p.status as DiscordStatus] || "bg-[var(--success)]"
                           )}
                         />
                       </div>
                       <p className="text-xs text-[var(--text-muted)]">{p.description}</p>
                       <div className="mt-3 p-2.5 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs font-mono text-[var(--text-muted)]">
-                        <span className="text-emerald-300 font-bold">{p.activity.type}</span> {p.activity.name}
+                        <span className="text-[var(--accent-primary)] font-bold">{p.activity.type}</span> {p.activity.name}
                       </div>
                     </div>
 
                     <button
                       onClick={() => handleApplyProfile(p.id)}
                       disabled={saving}
-                      className="w-full py-2 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-emerald-600 text-[var(--text-primary)] hover:text-white text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+                      className="w-full py-2 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--accent-primary)] text-[var(--text-primary)] hover:text-[var(--accent-contrast)] text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
                     >
                       <Play className="w-3.5 h-3.5" />
                       <span>Appliquer ce profil</span>
@@ -1303,14 +1303,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-emerald-300" />
+                    <Calendar className="w-4 h-4 text-[var(--accent-primary)]" />
                     Planning Hebdomadaire Automatique
                   </h3>
                   <p className="text-xs text-[var(--text-muted)]">
                     Définissez quel profil activer selon les plages horaires de la semaine
                   </p>
                 </div>
-                <span className="text-xs font-mono text-emerald-300 px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/30">
+                <span className="text-xs font-mono text-[var(--accent-primary)] px-2.5 py-1 rounded bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30">
                   Fuseau : Europe/Paris
                 </span>
               </div>
@@ -1328,18 +1328,18 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                   <tbody className="divide-y divide-[var(--panel-border)] text-[var(--text-muted)]">
                     <tr>
                       <td className="py-3 px-3 font-semibold text-[var(--text-primary)]">08:00 - 18:00 (Journée)</td>
-                      <td className="py-3 px-3 text-emerald-400 font-medium">Surveillance Communauté</td>
-                      <td className="py-3 px-3 text-emerald-300 font-medium">Gaming Session</td>
+                      <td className="py-3 px-3 text-[var(--accent-primary)] font-medium">Surveillance Communauté</td>
+                      <td className="py-3 px-3 text-[var(--accent-primary)] font-medium">Gaming Session</td>
                       <td className="py-3 px-3">
-                        <span className="text-emerald-300 hover:underline cursor-pointer">Modifier</span>
+                        <span className="text-[var(--accent-primary)] hover:underline cursor-pointer">Modifier</span>
                       </td>
                     </tr>
                     <tr>
                       <td className="py-3 px-3 font-semibold text-[var(--text-primary)]">18:00 - 23:00 (Soirée)</td>
-                      <td className="py-3 px-3 text-emerald-300 font-medium">Gaming Session</td>
+                      <td className="py-3 px-3 text-[var(--accent-primary)] font-medium">Gaming Session</td>
                       <td className="py-3 px-3 text-blue-400 font-medium">Music Lounge</td>
                       <td className="py-3 px-3">
-                        <span className="text-emerald-300 hover:underline cursor-pointer">Modifier</span>
+                        <span className="text-[var(--accent-primary)] hover:underline cursor-pointer">Modifier</span>
                       </td>
                     </tr>
                     <tr>
@@ -1347,7 +1347,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                       <td className="py-3 px-3 text-amber-400 font-medium">Mode Nuit (Inactif)</td>
                       <td className="py-3 px-3 text-amber-400 font-medium">Mode Nuit (Inactif)</td>
                       <td className="py-3 px-3">
-                        <span className="text-emerald-300 hover:underline cursor-pointer">Modifier</span>
+                        <span className="text-[var(--accent-primary)] hover:underline cursor-pointer">Modifier</span>
                       </td>
                     </tr>
                   </tbody>
@@ -1363,7 +1363,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
             <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
               <div>
                 <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <Server className="w-5 h-5 text-emerald-300" />
+                  <Server className="w-5 h-5 text-[var(--accent-primary)]" />
                   Serveurs Installés & Préférences Déclaratives
                 </h2>
                 <p className="text-xs text-[var(--text-muted)] mt-1">
@@ -1401,8 +1401,8 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           </div>
                           <div>
                             <span className="font-semibold text-[var(--text-primary)] block">{g.guildName}</span>
-                            <span className="text-xs text-emerald-400 flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                            <span className="text-xs text-[var(--accent-primary)] flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
                               Bot Installé
                             </span>
                           </div>
@@ -1444,7 +1444,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
             <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-6">
               <div>
                 <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <User className="w-5 h-5 text-emerald-300" />
+                  <User className="w-5 h-5 text-[var(--accent-primary)]" />
                   Bot Identity Studio
                 </h2>
                 <p className="text-xs text-[var(--text-muted)] mt-1">
@@ -1466,7 +1466,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 {/* Avatar Studio */}
                 <div className="p-6 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
                   <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4 text-emerald-300" />
+                    <ImageIcon className="w-4 h-4 text-[var(--accent-primary)]" />
                     Avatar du Bot
                   </h3>
 
@@ -1479,7 +1479,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <div>
                       <span className="text-xs text-[var(--text-muted)] block mb-1">Changements restants :</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold font-mono text-emerald-400">
+                        <span className="text-lg font-bold font-mono text-[var(--accent-primary)]">
                           {identity.avatarChangesRemaining} / 2
                         </span>
                         <span className="text-xs text-[var(--text-muted)] font-mono">(ce cycle de 60m)</span>
@@ -1488,8 +1488,8 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                   </div>
 
                   <div className="pt-2 space-y-2">
-                    <label className="w-full py-2.5 px-4 rounded-xl border border-dashed border-[var(--panel-border)] hover:border-emerald-500/40 hover:bg-emerald-500/10 text-xs text-[var(--text-muted)] flex items-center justify-center gap-2 cursor-pointer transition-all">
-                      <Upload className="w-4 h-4 text-emerald-300" />
+                    <label className="w-full py-2.5 px-4 rounded-xl border border-dashed border-[var(--panel-border)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/10 text-xs text-[var(--text-muted)] flex items-center justify-center gap-2 cursor-pointer transition-all">
+                      <Upload className="w-4 h-4 text-[var(--accent-primary)]" />
                       <span>{newAvatarFile ? newAvatarFile.name : "Téléverser un nouvel avatar (PNG/JPG)"}</span>
                       <input
                         type="file"
@@ -1533,14 +1533,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                 {/* Username Studio */}
                 <div className="p-6 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
                   <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                    <User className="w-4 h-4 text-emerald-300" />
+                    <User className="w-4 h-4 text-[var(--accent-primary)]" />
                     Nom d'Utilisateur
                   </h3>
 
                   <div>
                     <span className="text-xs text-[var(--text-muted)] block mb-1">Changements restants :</span>
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-lg font-bold font-mono text-emerald-400">
+                      <span className="text-lg font-bold font-mono text-[var(--accent-primary)]">
                         {identity.usernameChangesRemaining} / 2
                       </span>
                       <span className="text-xs text-[var(--text-muted)] font-mono">(ce cycle de 2h)</span>
@@ -1572,9 +1572,9 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               {/* Owner security badge */}
               <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2 text-[var(--text-muted)]">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <ShieldCheck className="w-4 h-4 text-[var(--accent-primary)]" />
                   <span>Bot Owner Autorisé pour l'Identité :</span>
-                  <code className="text-emerald-300 font-mono">{identity.ownerId}</code>
+                  <code className="text-[var(--accent-primary)] font-mono">{identity.ownerId}</code>
                 </div>
                 <span className="text-[var(--text-muted)] text-xs">Discord REST v10</span>
               </div>
@@ -1589,7 +1589,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
-                    <History className="w-5 h-5 text-emerald-300" />
+                    <History className="w-5 h-5 text-[var(--accent-primary)]" />
                     Journal d'Audit des Changements de Présence
                   </h2>
                   <p className="text-xs text-[var(--text-muted)] mt-1">
@@ -1625,17 +1625,17 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           <div className="flex items-center gap-1.5">
                             <span className="text-[var(--text-muted)] line-through text-xs">{item.previousStatus}</span>
                             <ArrowRight className="w-3 h-3 text-[var(--text-muted)]" />
-                            <span className={cn("px-1.5 py-0.2 rounded text-xs font-bold", statusColorMap[item.newStatus as DiscordStatus] || "text-emerald-400")}>
+                            <span className={cn("px-1.5 py-0.2 rounded text-xs font-bold", statusColorMap[item.newStatus as DiscordStatus] || "text-[var(--success)]")}>
                               {item.newStatus}
                             </span>
                           </div>
                         </td>
                         <td className="py-3 px-3 text-[var(--text-primary)]">
-                          <span className="font-semibold text-emerald-300">{item.newActivity}</span>
+                          <span className="font-semibold text-[var(--accent-primary)]">{item.newActivity}</span>
                         </td>
                         <td className="py-3 px-3 text-[var(--text-muted)] text-xs">{item.reason || "Mise à jour"}</td>
                         <td className="py-3 px-3 text-right">
-                          <span className="px-2 py-0.5 rounded text-xs font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                          <span className="px-2 py-0.5 rounded text-xs font-bold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
                             {item.scope || "global"}
                           </span>
                         </td>

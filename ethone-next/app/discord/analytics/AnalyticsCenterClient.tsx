@@ -120,7 +120,7 @@ const DISPLAY_DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]; // Lun..Dim, matching French UI
 
 function formatDelta(kpi: AnalyticsKPI) {
   if (kpi.trend === "up") {
-    return { text: `+${kpi.percentageChange}%`, colorClass: "text-emerald-400", Icon: ArrowUpRight };
+    return { text: `+${kpi.percentageChange}%`, colorClass: "text-[var(--accent-primary)]", Icon: ArrowUpRight };
   }
   if (kpi.trend === "down") {
     return { text: `${kpi.percentageChange}%`, colorClass: "text-rose-400", Icon: ArrowDownRight };
@@ -131,7 +131,7 @@ function formatDelta(kpi: AnalyticsKPI) {
 function healthStatusLabel(status: ServerHealthScore["status"]) {
   switch (status) {
     case "excellent":
-      return { text: "Excellente santé", colorClass: "text-emerald-400" };
+      return { text: "Excellente santé", colorClass: "text-[var(--accent-primary)]" };
     case "good":
       return { text: "Bonne santé", colorClass: "text-cyan-400" };
     case "average":
@@ -142,7 +142,7 @@ function healthStatusLabel(status: ServerHealthScore["status"]) {
 }
 
 function insightTrendClass(trend: AutomaticInsight["trend"]) {
-  if (trend === "positive") return "border-emerald-500/20 bg-emerald-500/10 text-emerald-300";
+  if (trend === "positive") return "border-[var(--success)]/20 bg-[var(--success)]/10 text-[var(--success)]";
   if (trend === "warning") return "border-amber-500/20 bg-amber-500/10 text-amber-300";
   return "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)]";
 }
@@ -303,11 +303,11 @@ export default function AnalyticsCenterClient() {
     ? [
         { label: `Messages (${period})`, kpi: overview.kpis.messages, colorClass: "text-[var(--text-primary)]" },
         { label: "Membres Totaux", kpi: overview.kpis.members, colorClass: "text-cyan-400" },
-        { label: "Membres Actifs", kpi: overview.kpis.activeUsers, colorClass: "text-emerald-300" },
+        { label: "Membres Actifs", kpi: overview.kpis.activeUsers, colorClass: "text-[var(--accent-primary)]" },
         { label: "Commandes Exécutées", kpi: overview.kpis.commands, colorClass: "text-amber-400" },
-        { label: "Heures en Vocal", kpi: overview.kpis.voiceHours, colorClass: "text-emerald-300" },
+        { label: "Heures en Vocal", kpi: overview.kpis.voiceHours, colorClass: "text-[var(--accent-primary)]" },
         { label: "Sanctions Modération", kpi: overview.kpis.moderationActions, colorClass: "text-rose-400" },
-        { label: "Tickets Support", kpi: overview.kpis.tickets, colorClass: "text-emerald-400" },
+        { label: "Tickets Support", kpi: overview.kpis.tickets, colorClass: "text-[var(--accent-primary)]" },
       ]
     : [];
 
@@ -381,9 +381,9 @@ export default function AnalyticsCenterClient() {
 
         {/* Bot Not Installed Banner */}
         {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5 text-xs text-emerald-300">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-5 text-xs text-[var(--accent-primary)]">
             <div className="flex items-start gap-3">
-              <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-300 shrink-0 mt-0.5">
+              <div className="p-2.5 rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shrink-0 mt-0.5">
                 <Bot className="h-6 w-6" />
               </div>
               <div>
@@ -440,12 +440,12 @@ export default function AnalyticsCenterClient() {
 
         {/* Toast */}
         {toastMsg && (
-          <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between text-xs text-emerald-300 animate-fadeIn">
+          <div className="p-3 bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 rounded-xl flex items-center justify-between text-xs text-[var(--accent-primary)] animate-fadeIn">
             <span className="flex items-center gap-2 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-[var(--success)]" />
               {toastMsg}
             </span>
-            <button onClick={() => setToastMsg(null)} className="text-emerald-400 hover:text-[var(--text-primary)]">
+            <button onClick={() => setToastMsg(null)} className="text-[var(--accent-primary)] hover:text-[var(--text-primary)]">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -562,7 +562,7 @@ export default function AnalyticsCenterClient() {
                 <p className="text-2xl font-bold text-[var(--text-primary)]">{overview.messageTypeBreakdown.textPct}%</p>
                 <div className="h-1.5 w-full bg-[var(--panel-border)] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-emerald-500 rounded-full"
+                    className="h-full bg-[var(--accent-primary)] rounded-full"
                     style={{ width: `${overview.messageTypeBreakdown.textPct}%` }}
                   />
                 </div>
@@ -581,10 +581,10 @@ export default function AnalyticsCenterClient() {
 
               <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-5 space-y-2">
                 <span className="text-xs text-[var(--text-muted)] font-medium">Liens & Intégrations</span>
-                <p className="text-2xl font-bold text-emerald-300">{overview.messageTypeBreakdown.linkPct}%</p>
+                <p className="text-2xl font-bold text-[var(--accent-primary)]">{overview.messageTypeBreakdown.linkPct}%</p>
                 <div className="h-1.5 w-full bg-[var(--panel-border)] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-emerald-500 rounded-full"
+                    className="h-full bg-[var(--accent-primary)] rounded-full"
                     style={{ width: `${overview.messageTypeBreakdown.linkPct}%` }}
                   />
                 </div>
@@ -599,7 +599,7 @@ export default function AnalyticsCenterClient() {
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <Users className="w-5 h-5 text-emerald-400" />
+                  <Users className="w-5 h-5 text-[var(--accent-primary)]" />
                   Flux des Membres ({period})
                 </h3>
               </div>
@@ -608,7 +608,7 @@ export default function AnalyticsCenterClient() {
                 <div className="p-4 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between">
                   <div className="space-y-0.5">
                     <span className="text-xs text-[var(--text-muted)]">Nouveaux arrivants</span>
-                    <p className="text-xl font-bold text-emerald-400">+{joinsTotal} membres</p>
+                    <p className="text-xl font-bold text-[var(--accent-primary)]">+{joinsTotal} membres</p>
                   </div>
                 </div>
 
@@ -657,11 +657,11 @@ export default function AnalyticsCenterClient() {
                 <div className="space-y-1.5 pt-2">
                   <div className="flex justify-between text-xs">
                     <span className="text-[var(--text-muted)] font-semibold">Rétention ({period})</span>
-                    <span className="text-emerald-400 font-bold font-mono">{overview.retentionRate}%</span>
+                    <span className="text-[var(--accent-primary)] font-bold font-mono">{overview.retentionRate}%</span>
                   </div>
                   <div className="h-2.5 w-full bg-[var(--panel-border)] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-emerald-500 rounded-full"
+                      className="h-full bg-[var(--accent-primary)] rounded-full"
                       style={{ width: `${Math.min(100, overview.retentionRate)}%` }}
                     />
                   </div>
@@ -753,7 +753,7 @@ export default function AnalyticsCenterClient() {
             {/* Channels Share */}
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
               <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <Hash className="w-5 h-5 text-emerald-300" />
+                <Hash className="w-5 h-5 text-[var(--accent-primary)]" />
                 Part de Voix des Salons Textuels
               </h3>
 
@@ -773,7 +773,7 @@ export default function AnalyticsCenterClient() {
                       </div>
                       <div className="h-2 w-full bg-[var(--panel-border)] rounded-full overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-emerald-500"
+                          className="h-full rounded-full bg-[var(--accent-primary)]"
                           style={{ width: `${ch.percentage}%` }}
                         />
                       </div>
@@ -877,7 +877,7 @@ export default function AnalyticsCenterClient() {
                   <span className="text-[var(--text-muted)] block">Statut</span>
                   <span
                     className={`font-mono ${
-                      overview.botHealth.status === "healthy" ? "text-emerald-400" : "text-amber-400"
+                      overview.botHealth.status === "healthy" ? "text-[var(--success)]" : "text-amber-400"
                     }`}
                   >
                     {overview.botHealth.status === "healthy" ? "Opérationnel" : "Dégradé"}

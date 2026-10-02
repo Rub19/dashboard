@@ -5,11 +5,12 @@ import {
   GuildMember,
   PermissionFlagsBits,
   SlashCommandBuilder,
+  SlashCommandStringOption,
 } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { welcomeService } from '../services/welcomeService.js';
 import { WelcomeCardGenerator } from '../images/welcomeCardGenerator.js';
-import { CARD_TEMPLATES, WelcomeImageConfigSchema } from '../types/welcomeConfig.js';
+import { CARD_FONT_LABEL, CARD_SHAPE_LABEL, CARD_TEMPLATES, WelcomeImageConfigSchema, parseHexColor } from '../types/welcomeConfig.js';
 import { VariableContext } from '../types/variables.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
@@ -19,10 +20,9 @@ const TEMPLATE_LABEL: Record<(typeof CARD_TEMPLATES)[number], string> = {
   minimal: 'Minimal',
   gaming: 'Gaming',
 };
-const FONT_LABEL = { poppins: 'Poppins', bebas: 'Bebas (condensée)', serif: 'Serif', mono: 'Mono' } as const;
-const SHAPE_LABEL = { circle: 'Rond', rounded: 'Arrondi', square: 'Carré' } as const;
-
-const hex = (v: string | null) => (v && /^#?[0-9a-fA-F]{6}$/.test(v.trim()) ? `#${v.trim().replace('#', '').toUpperCase()}` : null);
+const FONT_LABEL = CARD_FONT_LABEL;
+const SHAPE_LABEL = CARD_SHAPE_LABEL;
+const hex = parseHexColor;
 
 function previewContext(member: GuildMember): VariableContext {
   return {
@@ -38,19 +38,25 @@ function previewContext(member: GuildMember): VariableContext {
   };
 }
 
-async function cardFor(member: GuildMember): Promise<AttachmentBuilder> {
-  const cfg = welcomeService.getConfig(member.guild.id).welcome.image;
+type Kind = 'welcome' | 'goodbye';
+const KIND_LABEL: Record<Kind, string> = { welcome: 'bienvenue', goodbye: 'départ' };
+// Option « type » ajoutée à chaque sous-commande : la carte et le message de départ se règlent comme ceux de bienvenue.
+const kindOption = (o: SlashCommandStringOption) =>
+  o.setName('type').setDescription('Bienvenue (par défaut) ou départ').addChoices({ name: 'Bienvenue', value: 'welcome' }, { name: 'Départ', value: 'goodbye' });
+
+async function cardFor(member: GuildMember, kind: Kind = 'welcome'): Promise<AttachmentBuilder> {
+  const cfg = welcomeService.getConfig(member.guild.id)[kind].image;
   const buf = await WelcomeCardGenerator.generateCard(
     { ...cfg, enabled: true },
     member.displayAvatarURL({ size: 256, extension: 'png' }),
     previewContext(member)
   );
-  return new AttachmentBuilder(buf, { name: 'apercu-bienvenue.png' });
+  return new AttachmentBuilder(buf, { name: `apercu-${kind === 'welcome' ? 'bienvenue' : 'depart'}.png` });
 }
 
 export const welcomeCommand: Command = {
   name: 'bienvenue',
-  description: 'Message et carte de bienvenue : personnalisation, aperçu, test',
+  description: 'Messages et cartes de bienvenue et de départ : personnalisation, aperçu, test',
   category: 'Configuration',
   userPermissions: [PermissionFlagsBits.ManageGuild],
   slashData: new SlashCommandBuilder()
@@ -60,7 +66,8 @@ export const welcomeCommand: Command = {
     .addSubcommand((sub) =>
       sub
         .setName('carte')
-        .setDescription('Personnalise la carte image envoyée à chaque arrivée (affiche un aperçu)')
+        .setDescription('Personnalise la carte image envoyée à chaque arrivée ou départ (affiche un aperçu)')
+        .addStringOption(kindOption)
         .addStringOption((o) =>
           o.setName('modele').setDescription('Mise en page').addChoices(...CARD_TEMPLATES.map((t) => ({ name: TEMPLATE_LABEL[t], value: t })))
         )
@@ -79,23 +86,26 @@ export const welcomeCommand: Command = {
         .addStringOption((o) => o.setName('fond_couleur').setDescription('Couleur de fond, ex. #0B0C10'))
         .addStringOption((o) => o.setName('texte_couleur').setDescription('Couleur du texte, ex. #FFFFFF'))
         .addBooleanOption((o) => o.setName('nom_serveur').setDescription('Afficher le nom du serveur sur la carte'))
-        .addBooleanOption((o) => o.setName('active').setDescription('Envoyer la carte avec le message de bienvenue'))
+        .addBooleanOption((o) => o.setName('active').setDescription('Envoyer la carte avec le message'))
+        .addBooleanOption((o) => o.setName('mp').setDescription('Bienvenue : joindre aussi la carte au message privé (s’il est activé)'))
     )
-    .addSubcommand((sub) => sub.setName('apercu').setDescription('Montre ta carte de bienvenue telle qu’elle sera envoyée'))
-    .addSubcommand((sub) => sub.setName('test').setDescription('Envoie un vrai message de bienvenue de test dans le salon configuré'))
+    .addSubcommand((sub) => sub.setName('apercu').setDescription('Montre ta carte telle qu’elle sera envoyée').addStringOption(kindOption))
+    .addSubcommand((sub) => sub.setName('test').setDescription('Envoie un vrai message de test dans le salon configuré').addStringOption(kindOption))
     .addSubcommand((sub) =>
       sub
         .setName('salon')
-        .setDescription('Choisit le salon de bienvenue et active / désactive le message')
+        .setDescription('Choisit le salon de bienvenue ou de départ et active / désactive le message')
         .addChannelOption((o) =>
-          o.setName('salon').setDescription('Salon où envoyer la bienvenue').addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement).setRequired(true)
+          o.setName('salon').setDescription('Salon où envoyer le message').addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement).setRequired(true)
         )
-        .addBooleanOption((o) => o.setName('actif').setDescription('Activer le message de bienvenue (oui par défaut)'))
+        .addBooleanOption((o) => o.setName('actif').setDescription('Activer le message (oui par défaut)'))
+        .addStringOption(kindOption)
     )
     .addSubcommand((sub) =>
       sub
         .setName('message')
-        .setDescription("Titre et texte de l'embed de bienvenue (variables : {user} {server} {membercount}…)")
+        .setDescription("Titre et texte de l'embed de bienvenue ou de départ (variables : {user} {server} {membercount}…)")
+        .addStringOption(kindOption)
         .addStringOption((o) => o.setName('titre').setDescription("Titre de l'embed").setMaxLength(256))
         .addStringOption((o) => o.setName('texte').setDescription("Texte de l'embed (\\n pour aller à la ligne)").setMaxLength(2000))
         .addStringOption((o) => o.setName('couleur').setDescription("Couleur de la barre de l'embed, ex. #10B981"))
@@ -110,6 +120,7 @@ export const welcomeCommand: Command = {
     const guildId = ctx.guild.id;
     const member = interaction.member as GuildMember;
     const sub = interaction.options.getSubcommand();
+    const kind = (interaction.options.getString('type') ?? 'welcome') as Kind;
     const save = (update: Parameters<typeof welcomeService.updateConfig>[1]) => {
       const updated = welcomeService.updateConfig(guildId, update);
       emitConfigUpdated('welcome', guildId, updated, 'DISCORD_COMMAND', ctx.author.id);
@@ -146,17 +157,22 @@ export const welcomeCommand: Command = {
       if (showServer !== null) patch.showServerName = showServer;
       const active = o.getBoolean('active');
       if (active !== null) patch.enabled = active;
+      const mp = o.getBoolean('mp');
+      if (mp !== null && kind === 'goodbye') errors.push("`mp` : seul l'accueil envoie un message privé, l'option est ignorée pour le départ.");
 
       await ctx.deferReply({ ephemeral: true });
-      const current = welcomeService.getConfig(guildId).welcome.image;
-      const image = WelcomeImageConfigSchema.parse({ ...current, ...patch });
-      if (Object.keys(patch).length) save({ welcome: { image } } as never);
-      const file = await cardFor(member);
-      const changed = Object.keys(patch).length;
+      const conf = welcomeService.getConfig(guildId);
+      const image = WelcomeImageConfigSchema.parse({ ...conf[kind].image, ...patch });
+      if (Object.keys(patch).length) save({ [kind]: { image } } as never);
+      if (mp !== null && kind === 'welcome') save({ welcome: { dm: { ...conf.welcome.dm, attachCard: mp } } } as never);
+      const file = await cardFor(member, kind);
+      const changed = Object.keys(patch).length + (mp !== null && kind === 'welcome' ? 1 : 0);
+      const dm = welcomeService.getConfig(guildId).welcome.dm;
       await ctx.editReply({
         content: [
-          changed ? `✅ Carte mise à jour (${changed} réglage${changed > 1 ? 's' : ''}).` : 'Aperçu de la carte actuelle :',
+          changed ? `✅ Carte de ${KIND_LABEL[kind]} mise à jour (${changed} réglage${changed > 1 ? 's' : ''}).` : `Aperçu de la carte de ${KIND_LABEL[kind]} actuelle :`,
           `Modèle **${TEMPLATE_LABEL[image.template]}** · police **${FONT_LABEL[image.font]}** · avatar **${SHAPE_LABEL[image.avatarShape]}** · accent \`${image.accentColor}\`${image.enabled ? '' : ' · ⚠️ carte désactivée'}`,
+          ...(kind === 'welcome' && dm.attachCard ? [`Carte jointe au message privé${dm.enabled ? '' : ' (⚠️ message privé désactivé)'}.`] : []),
           ...errors.map((e) => `⚠️ ${e}`),
           '-# Tous les réglages sont aussi dans le dashboard : ethone.dev → Bot Discord → Bienvenue.',
         ].join('\n'),
@@ -167,17 +183,17 @@ export const welcomeCommand: Command = {
 
     if (sub === 'apercu') {
       await ctx.deferReply({ ephemeral: true });
-      await ctx.editReply({ content: 'Ta carte de bienvenue telle qu’elle sera envoyée :', files: [await cardFor(member)] });
+      await ctx.editReply({ content: `Ta carte de ${KIND_LABEL[kind]} telle qu’elle sera envoyée :`, files: [await cardFor(member, kind)] });
       return;
     }
 
     if (sub === 'test') {
       await ctx.deferReply({ ephemeral: true });
       try {
-        const res = await welcomeService.sendTest(ctx.guild, 'welcome', 'channel', ctx.author);
-        await ctx.editReply({ content: `✅ Message de test envoyé dans <#${welcomeService.getConfig(guildId).welcome.channelId}>${res.channelName ? ` (#${res.channelName})` : ''}.` });
+        const res = await welcomeService.sendTest(ctx.guild, kind, 'channel', ctx.author);
+        await ctx.editReply({ content: `✅ Message de ${KIND_LABEL[kind]} de test envoyé dans <#${welcomeService.getConfig(guildId)[kind].channelId}>${res.channelName ? ` (#${res.channelName})` : ''}.` });
       } catch (err: any) {
-        await ctx.editReply({ content: `❌ ${err?.message || 'Envoi impossible.'} Choisis d'abord un salon avec \`/bienvenue salon\`.` });
+        await ctx.editReply({ content: `❌ ${err?.message || 'Envoi impossible.'} Choisis d'abord un salon avec \`/bienvenue salon${kind === 'goodbye' ? ' type:Départ' : ''}\`.` });
       }
       return;
     }
@@ -185,12 +201,18 @@ export const welcomeCommand: Command = {
     if (sub === 'salon') {
       const channel = interaction.options.getChannel('salon', true);
       const enabled = interaction.options.getBoolean('actif') ?? true;
-      save({ welcome: { channelId: channel.id, enabled } } as never);
+      save({ [kind]: { channelId: channel.id, enabled } } as never);
       await ctx.reply({
         embeds: [
           ctx
             .createEmbed(enabled ? 'success' : 'neutral')
-            .setDescription(enabled ? `✅ Les nouveaux membres seront accueillis dans <#${channel.id}>.` : `⚪ Bienvenue désactivée (salon gardé : <#${channel.id}>).`),
+            .setDescription(
+              enabled
+                ? kind === 'welcome'
+                  ? `✅ Les nouveaux membres seront accueillis dans <#${channel.id}>.`
+                  : `✅ Les départs seront annoncés dans <#${channel.id}>.`
+                : `⚪ Message de ${KIND_LABEL[kind]} désactivé (salon gardé : <#${channel.id}>).`
+            ),
         ],
         ephemeral: true,
       });
@@ -217,8 +239,8 @@ export const welcomeCommand: Command = {
         await ctx.reply({ content: 'Indique au moins `titre`, `texte` ou `couleur`.', ephemeral: true });
         return;
       }
-      save({ welcome: { embed: { ...embed, enabled: true } } } as never);
-      await ctx.reply({ content: '✅ Embed de bienvenue mis à jour. Vérifie le rendu avec `/bienvenue test`.', ephemeral: true });
+      save({ [kind]: { embed: { ...embed, enabled: true } } } as never);
+      await ctx.reply({ content: `✅ Embed de ${KIND_LABEL[kind]} mis à jour. Vérifie le rendu avec \`/bienvenue test${kind === 'goodbye' ? ' type:Départ' : ''}\`.`, ephemeral: true });
     }
   },
 };

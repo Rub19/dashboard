@@ -132,7 +132,7 @@ class WelcomeService {
 
     // 7. Envoi du Welcome en DM si activé
     if (welcomeConfig.dm && welcomeConfig.dm.enabled) {
-      await this.sendDmWelcome(member, welcomeConfig.dm, ctx);
+      await this.sendDmWelcome(member, welcomeConfig.dm, ctx, welcomeConfig.image);
     }
 
     // 8. Résolution du salon de bienvenue
@@ -227,10 +227,16 @@ class WelcomeService {
 
     if (target === 'dm') {
       const recipient = adminUser || clientMember.user;
+      const card =
+        type === 'welcome' && conf.welcome.dm.attachCard
+          ? await this.dmCard(conf.welcome.image, recipient.displayAvatarURL({ size: 256, extension: 'png' }), ctx)
+          : null;
       try {
         await recipient.send({
+          files: card ? [card] : [],
           embeds: [
             new EmbedBuilder()
+              .setImage(card ? 'attachment://card.png' : null)
               .setColor(0x10b981)
               .setTitle(`🧪 Test Welcome MP • ${guild.name}`)
               .setDescription(
@@ -264,16 +270,30 @@ class WelcomeService {
     return { success: true, channelName: channel.name };
   }
 
+  /** Carte de bienvenue pour un MP (générée même si la carte du salon est désactivée) ; null si le rendu échoue. */
+  private async dmCard(imageConfig: WelcomeMessageConfig['image'], avatarUrl: string, ctx: VariableContext): Promise<AttachmentBuilder | null> {
+    try {
+      const buf = await WelcomeCardGenerator.generateCard({ ...imageConfig, enabled: true }, avatarUrl, ctx);
+      return new AttachmentBuilder(buf, { name: 'card.png' });
+    } catch (err) {
+      logger.error('[Welcome] Carte du MP impossible à générer :', err);
+      return null;
+    }
+  }
+
   // ==========================================
   // Envoi du Welcome en DM
   // ==========================================
   private async sendDmWelcome(
     member: GuildMember,
     dmConfig: any,
-    ctx: VariableContext
+    ctx: VariableContext,
+    imageConfig: WelcomeMessageConfig['image']
   ): Promise<void> {
     try {
       const payload: any = {};
+      const card = dmConfig.attachCard ? await this.dmCard(imageConfig, member.user.displayAvatarURL({ size: 256, extension: 'png' }), ctx) : null;
+      if (card) payload.files = [card];
       if (dmConfig.messageContent) {
         payload.content = VariableParser.parse(dmConfig.messageContent, ctx);
       }
@@ -305,6 +325,8 @@ class WelcomeService {
         if (dmConfig.embed.showTimestamp) {
           embed.setTimestamp();
         }
+
+        if (card) embed.setImage('attachment://card.png');
 
         payload.embeds = [embed];
       }

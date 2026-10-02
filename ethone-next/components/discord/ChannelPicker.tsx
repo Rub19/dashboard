@@ -681,7 +681,7 @@ export default function ChannelPicker({
 
       {/* Indication visuelle en mode ID si le salon est reconnu */}
       {mode === "id" && matchedChannel && (
-        <div className="flex items-center gap-1 text-[11px] text-emerald-400 pl-1">
+        <div className="flex items-center gap-1 text-[11px] text-[var(--accent-primary)] pl-1">
           <Check className="w-3 h-3" />
           <span>
             Salon reconnu : <strong className="text-[var(--text-primary)]">#{matchedChannel.name}</strong>

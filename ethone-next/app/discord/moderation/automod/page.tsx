@@ -330,9 +330,9 @@ const RISK_BADGES: Record<
   { text: string; bg: string; border: string; label: string; icon: string }
 > = {
   SAFE: {
-    text: "text-emerald-400",
-    bg: "bg-emerald-500/10",
-    border: "border-emerald-500/30",
+    text: "text-[var(--accent-primary)]",
+    bg: "bg-[var(--accent-primary)]/10",
+    border: "border-[var(--accent-primary)]/30",
     label: "🟢 SAFE",
     icon: "🟢",
   },
@@ -938,11 +938,11 @@ export default function AutoModCommandCenterPage() {
               className={cn(
                 "flex h-8 items-center gap-1.5 rounded-xl border px-3 text-xs font-semibold transition-all active:scale-95",
                 config.enabled
-                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20"
+                  ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20"
                   : "border-red-500/30 bg-red-500/10 text-red-300 hover:bg-red-500/20"
               )}
             >
-              <div className={cn("h-2 w-2 rounded-full", config.enabled ? "bg-emerald-400" : "bg-red-500")} />
+              <div className={cn("h-2 w-2 rounded-full", config.enabled ? "bg-[var(--success)]" : "bg-red-500")} />
               <span>{config.enabled ? "Actif" : "En pause"}</span>
             </button>
 
@@ -1087,7 +1087,7 @@ export default function AutoModCommandCenterPage() {
                 <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 relative overflow-hidden group">
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-[var(--text-muted)] font-medium">Actions Exécutées</span>
-                    <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                    <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
                   </div>
                   <div className="mt-2 flex items-baseline gap-2">
                     <span className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
@@ -1167,7 +1167,7 @@ export default function AutoModCommandCenterPage() {
 
                 {incidents.length === 0 ? (
                   <div className="pop-in text-center py-12 text-[var(--text-muted)]">
-                    <CheckCircle2 className="h-8 w-8 text-emerald-500/40 mx-auto mb-2" />
+                    <CheckCircle2 className="h-8 w-8 text-[var(--success)]/40 mx-auto mb-2" />
                     <p className="text-xs font-medium text-[var(--text-muted)]">Aucune infraction récente enregistrée</p>
                     <p className="text-xs text-[var(--text-muted)] mt-0.5">Le serveur est calme et les messages sont conformes.</p>
                   </div>
@@ -1314,11 +1314,11 @@ export default function AutoModCommandCenterPage() {
                         className={cn(
                           "h-9 w-full rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer",
                           editingRule.enabled
-                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                            ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                             : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                         )}
                       >
-                        <div className={cn("h-2 w-2 rounded-full", editingRule.enabled ? "bg-emerald-400" : "bg-[var(--text-muted)]")} />
+                        <div className={cn("h-2 w-2 rounded-full", editingRule.enabled ? "bg-[var(--success)]" : "bg-[var(--text-muted)]")} />
                         <span>{editingRule.enabled ? "Règle Active" : "Règle Désactivée"}</span>
                       </button>
                     </div>
@@ -1603,7 +1603,7 @@ export default function AutoModCommandCenterPage() {
                           className={cn(
                             "h-7 px-2.5 rounded-xl text-xs font-bold border transition-all",
                             rule.enabled
-                              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                              ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                               : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                           )}
                         >
@@ -1667,7 +1667,7 @@ export default function AutoModCommandCenterPage() {
                     >
                       <Icon className="h-3.5 w-3.5" />
                       <span>{d.label}</span>
-                      <div className={cn("h-1.5 w-1.5 rounded-full ml-0.5", isDetectorEnabled ? "bg-emerald-400" : "bg-[var(--text-primary)]/20")} />
+                      <div className={cn("h-1.5 w-1.5 rounded-full ml-0.5", isDetectorEnabled ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/20")} />
                     </button>
                   );
                 })}
@@ -1689,7 +1689,7 @@ export default function AutoModCommandCenterPage() {
                       onClick={() => setConfig({ ...config, spam: { ...config.spam, enabled: !config.spam.enabled } })}
                       className={cn(
                         "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
-                        config.spam.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
+                        config.spam.enabled ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.spam.enabled ? "Activé" : "Désactivé"}
@@ -1748,7 +1748,7 @@ export default function AutoModCommandCenterPage() {
                       onClick={() => setConfig({ ...config, flood: { ...config.flood, enabled: !config.flood.enabled } })}
                       className={cn(
                         "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
-                        config.flood.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
+                        config.flood.enabled ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.flood.enabled ? "Activé" : "Désactivé"}
@@ -1796,7 +1796,7 @@ export default function AutoModCommandCenterPage() {
                       onClick={() => setConfig({ ...config, links: { ...config.links, enabled: !config.links.enabled } })}
                       className={cn(
                         "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
-                        config.links.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
+                        config.links.enabled ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.links.enabled ? "Activé" : "Désactivé"}
@@ -1876,7 +1876,7 @@ export default function AutoModCommandCenterPage() {
                       onClick={() => setConfig({ ...config, invites: { ...config.invites, enabled: !config.invites.enabled } })}
                       className={cn(
                         "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
-                        config.invites.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
+                        config.invites.enabled ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.invites.enabled ? "Activé" : "Désactivé"}
@@ -1902,7 +1902,7 @@ export default function AutoModCommandCenterPage() {
                       onClick={() => setConfig({ ...config, mentions: { ...config.mentions, enabled: !config.mentions.enabled } })}
                       className={cn(
                         "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
-                        config.mentions.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
+                        config.mentions.enabled ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.mentions.enabled ? "Activé" : "Désactivé"}
@@ -1950,7 +1950,7 @@ export default function AutoModCommandCenterPage() {
                       onClick={() => setConfig({ ...config, ghostPing: { ...config.ghostPing, enabled: !config.ghostPing.enabled } })}
                       className={cn(
                         "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
-                        config.ghostPing.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
+                        config.ghostPing.enabled ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.ghostPing.enabled ? "Activé" : "Désactivé"}
@@ -1985,7 +1985,7 @@ export default function AutoModCommandCenterPage() {
                       onClick={() => setConfig({ ...config, caps: { ...config.caps, enabled: !config.caps.enabled } })}
                       className={cn(
                         "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
-                        config.caps.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
+                        config.caps.enabled ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.caps.enabled ? "Activé" : "Désactivé"}
@@ -2033,7 +2033,7 @@ export default function AutoModCommandCenterPage() {
                       onClick={() => setConfig({ ...config, keywords: { ...config.keywords, enabled: !config.keywords.enabled } })}
                       className={cn(
                         "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
-                        config.keywords.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
+                        config.keywords.enabled ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.keywords.enabled ? "Activé" : "Désactivé"}
@@ -2112,7 +2112,7 @@ export default function AutoModCommandCenterPage() {
                       onClick={() => setConfig({ ...config, regex: { ...config.regex, enabled: !config.regex.enabled } })}
                       className={cn(
                         "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
-                        config.regex.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
+                        config.regex.enabled ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.regex.enabled ? "Activé" : "Désactivé"}
@@ -2196,7 +2196,7 @@ export default function AutoModCommandCenterPage() {
                       onClick={() => setConfig({ ...config, profiles: { ...config.profiles, enabled: !config.profiles.enabled } })}
                       className={cn(
                         "h-7 px-3 rounded-xl text-xs font-bold border transition-all",
-                        config.profiles.enabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
+                        config.profiles.enabled ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]" : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
                       )}
                     >
                       {config.profiles.enabled ? "Activé" : "Désactivé"}
@@ -2459,7 +2459,7 @@ export default function AutoModCommandCenterPage() {
                     <button
                       type="button"
                       onClick={() => setSandboxMessage("Bonjour à tous, comment allez-vous aujourd'hui ?")}
-                      className="text-xs text-emerald-400 hover:underline"
+                      className="text-xs text-[var(--accent-primary)] hover:underline"
                     >
                       [Propre]
                     </button>

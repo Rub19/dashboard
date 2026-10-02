@@ -35,7 +35,7 @@ const ACCESS_LABELS: Record<VoiceHubItem["accessMode"], string> = {
 function RoomPanelPreview() {
   const btn = (label: string, tone = "bg-[#4e5058]") => <span className={cn("rounded-md px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)]", tone)}>{label}</span>;
   return (
-    <div className="mx-auto w-full max-w-md rounded-xl border-l-4 border-emerald-500 bg-[#2b2d31] p-4 text-left text-sm text-[#dbdee1]">
+    <div className="mx-auto w-full max-w-md rounded-xl border-l-4 border-[var(--accent-primary)] bg-[#2b2d31] p-4 text-left text-sm text-[#dbdee1]">
       <p className="text-[15px] font-bold text-[var(--text-primary)]">🔊 Salon de Lucas</p>
       <p className="mt-1 text-xs text-[#949ba4]">Tu es le propriétaire : gère ton salon avec les boutons ci-dessous.</p>
       <div className="mt-3 flex flex-wrap gap-2">
@@ -44,7 +44,7 @@ function RoomPanelPreview() {
         {btn("🙈 Privé")}
         {btn("✅ Liste blanche")}
         {btn("⛔ Liste noire")}
-        {btn("⚙️ Réglages", "bg-emerald-500")}
+        {btn("⚙️ Réglages", "bg-[var(--accent-primary)]")}
       </div>
     </div>
   );
@@ -239,7 +239,7 @@ export default function VoiceHubsPanel({ guildId, hubs, onChanged }: Props) {
                   <div>
                     <div className="flex items-center justify-between gap-2">
                       <span className="truncate text-sm font-bold text-[var(--text-primary)]">{hub.name}</span>
-                      <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-xs font-bold uppercase", hub.enabled ? "bg-emerald-500/10 text-emerald-400" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]")}>{hub.enabled ? "Actif" : "Désactivé"}</span>
+                      <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-xs font-bold uppercase", hub.enabled ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]")}>{hub.enabled ? "Actif" : "Désactivé"}</span>
                     </div>
                     <div className="mt-2 space-y-1 text-xs text-[var(--text-muted)]">
                       <p>

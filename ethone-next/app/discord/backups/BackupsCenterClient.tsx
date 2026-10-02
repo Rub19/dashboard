@@ -466,7 +466,7 @@ export default function BackupsCenterClient() {
   const healthy = kpis.healthStatus === "HEALTHY";
 
   const TYPE_BADGE: Record<BackupType, string> = {
-    FULL: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
+    FULL: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/30",
     PARTIAL: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
     PRE_CHANGE: "bg-amber-500/20 text-amber-300 border-amber-500/30",
     ROLLBACK: "bg-rose-500/20 text-rose-300 border-rose-500/30",
@@ -489,7 +489,7 @@ export default function BackupsCenterClient() {
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-[var(--inset-radius)] border border-emerald-500/30 icon-pop">
+              <div className="p-2.5 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 icon-pop">
                 <Archive className="w-6 h-6" />
               </div>
               <div>
@@ -513,11 +513,11 @@ export default function BackupsCenterClient() {
               />
             )}
             <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
-              <RefreshCw className={cn("w-4 h-4 text-emerald-300", loading && "animate-spin")} />
+              <RefreshCw className={cn("w-4 h-4 text-[var(--accent-primary)]", loading && "animate-spin")} />
               Actualiser
             </button>
             <Link href={`/discord/backups/compare${guildQuery}`} className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors">
-              <GitCompare className="w-4 h-4 text-emerald-300" />
+              <GitCompare className="w-4 h-4 text-[var(--accent-primary)]" />
               Comparer
             </Link>
             <Link href={`/discord/backups/settings${guildQuery}`} className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors">
@@ -560,11 +560,11 @@ export default function BackupsCenterClient() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {[
             { label: "Total sauvegardes", value: String(kpis.totalBackups), cls: "text-[var(--text-primary)]", sub: `${kpis.verifiedCount} vérifiée(s)` },
-            { label: "Dernière sauvegarde", value: relative(kpis.lastBackupAt), cls: "text-emerald-400", sub: kpis.lastBackupAt ? new Date(kpis.lastBackupAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }) : "Aucune" },
-            { label: "Stockage utilisé", value: `${(kpis.storageUsedBytes / 1024 / 1024).toFixed(2)} MB`, cls: "text-emerald-300", sub: "Fichiers JSON signés" },
+            { label: "Dernière sauvegarde", value: relative(kpis.lastBackupAt), cls: "text-[var(--accent-primary)]", sub: kpis.lastBackupAt ? new Date(kpis.lastBackupAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }) : "Aucune" },
+            { label: "Stockage utilisé", value: `${(kpis.storageUsedBytes / 1024 / 1024).toFixed(2)} MB`, cls: "text-[var(--accent-primary)]", sub: "Fichiers JSON signés" },
             { label: "Planification", value: kpis.scheduledEnabled ? FREQ_LABEL[kpis.frequency] || kpis.frequency : "Désactivée", cls: "text-amber-400", sub: kpis.nextScheduledAt ? `Prochaine : ${new Date(kpis.nextScheduledAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}` : "Aucune auto-sauvegarde" },
             { label: "Snapshots protégés", value: String(kpis.protectedCount), cls: "text-rose-400", sub: "Exclus de la rétention" },
-            { label: "Santé DR", value: healthy ? "Protégé" : kpis.healthStatus === "WARNING" ? "À surveiller" : "Critique", cls: healthy ? "text-emerald-400" : kpis.healthStatus === "WARNING" ? "text-amber-400" : "text-rose-400", sub: healthy ? "Snapshot récent valide" : "Crée une sauvegarde" },
+            { label: "Santé DR", value: healthy ? "Protégé" : kpis.healthStatus === "WARNING" ? "À surveiller" : "Critique", cls: healthy ? "text-[var(--success)]" : kpis.healthStatus === "WARNING" ? "text-amber-400" : "text-rose-400", sub: healthy ? "Snapshot récent valide" : "Crée une sauvegarde" },
           ].map((k) => (
             <div key={k.label} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
               <span className="text-xs text-[var(--text-muted)] font-medium">{k.label}</span>
@@ -575,10 +575,10 @@ export default function BackupsCenterClient() {
         </div>
 
         {/* Bandeau santé */}
-        <div className={cn("border border-[var(--panel-border)] rounded-2xl p-6 relative overflow-hidden bg-[var(--surface-raised)]/40", healthy ? " to-emerald-950/40" : "from-amber-950/40 to-rose-950/30")}>
+        <div className={cn("border border-[var(--panel-border)] rounded-2xl p-6 relative overflow-hidden bg-[var(--surface-raised)]/40", healthy ? " to-[var(--success)]/40" : "from-amber-950/40 to-rose-950/30")}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className={cn("w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0", healthy ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-amber-500/10 border-amber-500/20 text-amber-400")}>
+              <div className={cn("w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0", healthy ? "bg-[var(--success)]/10 border-[var(--success)]/20 text-[var(--success)]" : "bg-amber-500/10 border-amber-500/20 text-amber-400")}>
                 {healthy ? <ShieldCheck className="w-6 h-6" /> : <AlertTriangle className="w-6 h-6" />}
               </div>
               <div>
@@ -646,7 +646,7 @@ export default function BackupsCenterClient() {
                     <td className="px-5 py-4">
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2">
-                          <Link href={`/discord/backups/${bkp.backupId}${guildQuery}`} className="font-semibold text-[var(--text-primary)] hover:text-emerald-300 transition-colors text-sm">{bkp.name}</Link>
+                          <Link href={`/discord/backups/${bkp.backupId}${guildQuery}`} className="font-semibold text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-colors text-sm">{bkp.name}</Link>
                           {bkp.isProtected && <span className="p-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20" title="Protégé"><Lock className="w-3 h-3" /></span>}
                         </div>
                         <p className="font-mono text-xs text-[var(--text-muted)]">{bkp.backupId}</p>
@@ -669,7 +669,7 @@ export default function BackupsCenterClient() {
                     </td>
                     <td className="px-4 py-4">
                       {bkp.status === "COMPLETED" ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><CheckCircle2 className="w-3 h-3" /> Vérifié</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-[var(--success)]/10 text-[var(--success)] border border-[var(--success)]/20"><CheckCircle2 className="w-3 h-3" /> Vérifié</span>
                       ) : (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20"><AlertTriangle className="w-3 h-3" /> {bkp.status}</span>
                       )}
@@ -680,8 +680,8 @@ export default function BackupsCenterClient() {
                         {!isDemo && (
                           <a href={`${base}/${bkp.backupId}/download`} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors" title="Télécharger (.ethone-backup.json)"><Download className="w-3.5 h-3.5" /></a>
                         )}
-                        <button onClick={() => handleOpenRestore(bkp)} className="p-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 transition-colors cursor-pointer" title="Restaurer"><RotateCcw className="w-3.5 h-3.5" /></button>
-                        <Link href={`/discord/backups/compare?backupA=${bkp.backupId}&backupB=LIVE${selectedGuild ? `&guildId=${selectedGuild.id}` : ""}`} className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 transition-colors" title="Comparer avec le direct"><GitCompare className="w-3.5 h-3.5" /></Link>
+                        <button onClick={() => handleOpenRestore(bkp)} className="p-1.5 rounded-lg bg-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]/30 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 transition-colors cursor-pointer" title="Restaurer"><RotateCcw className="w-3.5 h-3.5" /></button>
+                        <Link href={`/discord/backups/compare?backupA=${bkp.backupId}&backupB=LIVE${selectedGuild ? `&guildId=${selectedGuild.id}` : ""}`} className="p-1.5 rounded-lg bg-[var(--accent-primary)]/10 hover:bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 transition-colors" title="Comparer avec le direct"><GitCompare className="w-3.5 h-3.5" /></Link>
                         <button onClick={() => handleToggleProtect(bkp)} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer" title={bkp.isProtected ? "Retirer protection" : "Protéger"}>
                           {bkp.isProtected ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
                         </button>
@@ -701,7 +701,7 @@ export default function BackupsCenterClient() {
             <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-2xl max-w-xl w-full p-6 space-y-6 relative">
               <button onClick={() => !isCreating && setShowCreateModal(false)} className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"><X className="w-5 h-5" /></button>
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-xl border border-emerald-500/30"><Archive className="w-5 h-5" /></div>
+                <div className="p-2.5 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] rounded-xl border border-[var(--accent-primary)]/30"><Archive className="w-5 h-5" /></div>
                 <div>
                   <h3 className="text-lg font-bold text-[var(--text-primary)]">Créer une Sauvegarde</h3>
                   <p className="text-xs text-[var(--text-muted)]">Le bot capture la structure Discord et les modules ETHONE en temps réel.</p>
@@ -725,7 +725,7 @@ export default function BackupsCenterClient() {
                         ["SERVER_CONFIG", "Configuration serveur"], ["EMOJIS", "Emojis"], ["ETHONE_CONFIG", "Modules ETHONE"],
                       ] as [BackupComponent, string][]).map(([key, label]) => (
                         <label key={key} className="flex items-center gap-2 p-2 bg-[var(--surface-raised)]/40 rounded-lg border border-[var(--panel-border)] cursor-pointer">
-                          <input type="checkbox" checked={included[key]} onChange={(e) => setIncluded((prev) => ({ ...prev, [key]: e.target.checked }))} className="rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
+                          <input type="checkbox" checked={included[key]} onChange={(e) => setIncluded((prev) => ({ ...prev, [key]: e.target.checked }))} className="rounded text-[var(--accent-primary)] bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
                           <span className="text-[var(--text-muted)]">{label}</span>
                         </label>
                       ))}
@@ -736,7 +736,7 @@ export default function BackupsCenterClient() {
                       <span className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5"><Lock className="w-3.5 h-3.5 text-amber-400" /> Protéger ce snapshot</span>
                       <p className="text-xs text-[var(--text-muted)]">Exclu de la suppression manuelle et de la rétention automatique.</p>
                     </div>
-                    <input type="checkbox" checked={backupProtect} onChange={(e) => setBackupProtect(e.target.checked)} className="w-4 h-4 rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
+                    <input type="checkbox" checked={backupProtect} onChange={(e) => setBackupProtect(e.target.checked)} className="w-4 h-4 rounded text-[var(--accent-primary)] bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
                   </div>
                   <div className="flex justify-end gap-2 pt-2">
                     <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-muted)] transition-colors cursor-pointer">Annuler</button>
@@ -745,7 +745,7 @@ export default function BackupsCenterClient() {
                 </div>
               ) : (
                 <div className="py-8 space-y-4 text-center">
-                  <div className="w-14 h-14 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-300 animate-pulse"><Archive className="w-7 h-7" /></div>
+                  <div className="w-14 h-14 mx-auto rounded-full bg-[var(--success)]/10 border border-[var(--success)]/30 flex items-center justify-center text-[var(--success)] animate-pulse"><Archive className="w-7 h-7" /></div>
                   <p className="text-sm font-bold text-[var(--text-primary)]">Le bot scanne le serveur et signe le snapshot...</p>
                   <p className="text-xs text-[var(--text-muted)]">Quelques secondes selon la taille du serveur.</p>
                 </div>
@@ -760,7 +760,7 @@ export default function BackupsCenterClient() {
             <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-2xl max-w-xl w-full p-6 space-y-6 relative">
               <button onClick={() => setShowRestoreModal(false)} className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"><X className="w-5 h-5" /></button>
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20"><RotateCcw className="w-5 h-5" /></div>
+                <div className="p-2.5 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] rounded-xl border border-[var(--accent-primary)]/20"><RotateCcw className="w-5 h-5" /></div>
                 <div>
                   <h3 className="text-lg font-bold text-[var(--text-primary)]">Restaurer le serveur</h3>
                   <p className="text-xs text-[var(--text-muted)]">Cible : <strong>{selectedBackupForAction.name}</strong></p>
@@ -780,8 +780,8 @@ export default function BackupsCenterClient() {
                     <label className="text-xs font-semibold text-[var(--text-muted)]">Niveau de sécurité :</label>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       {([
-                        ["SAFE", "🛡️ Safe", "Re-crée ce qui manque, ne supprime rien.", "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"],
-                        ["STANDARD", "⚖️ Standard", "Synchronise salons et propriétés.", "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"],
+                        ["SAFE", "🛡️ Safe", "Re-crée ce qui manque, ne supprime rien.", "bg-[var(--accent-primary)]/10 border-[var(--accent-primary)]/30 text-[var(--accent-primary)]"],
+                        ["STANDARD", "⚖️ Standard", "Synchronise salons et propriétés.", "bg-[var(--accent-primary)]/10 border-[var(--accent-primary)]/30 text-[var(--accent-primary)]"],
                         ["DESTRUCTIVE", "⚠️ Destructif", "Supprime ce qui n'est pas dans le snapshot.", "bg-rose-500/10 border-rose-500/30 text-rose-300"],
                       ] as [SafetyLevel, string, string, string][]).map(([lvl, label, desc, activeCls]) => (
                         <button key={lvl} onClick={() => changeRestoreLevel(lvl)} className={cn("p-3 rounded-xl border text-left transition-colors cursor-pointer", restoreLevel === lvl ? activeCls : "bg-[var(--surface-raised)]/40 border-[var(--panel-border)] text-[var(--text-muted)]")}>
@@ -795,7 +795,7 @@ export default function BackupsCenterClient() {
                     <span className="font-semibold text-[var(--text-muted)] block">Plan calculé par le bot {planLoading && <span className="text-[var(--text-muted)]">(calcul...)</span>} :</span>
                     <div className="grid grid-cols-4 gap-2 text-center">
                       {[
-                        ["Créés", restorePlan?.counts.willCreate, "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"],
+                        ["Créés", restorePlan?.counts.willCreate, "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/20"],
                         ["Modifiés", restorePlan?.counts.willModify, "bg-amber-500/10 text-amber-400 border-amber-500/20"],
                         ["Supprimés", restorePlan?.counts.willDelete, "bg-rose-500/10 text-rose-400 border-rose-500/20"],
                         ["Ignorés", restorePlan?.counts.willSkip, "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border-[var(--panel-border)]"],
@@ -809,7 +809,7 @@ export default function BackupsCenterClient() {
                     {restorePlan && restorePlan.actions.length > 0 && (
                       <div className="max-h-28 overflow-y-auto space-y-0.5 pt-1 border-t border-[var(--panel-border)] font-mono text-xs text-[var(--text-muted)]">
                         {restorePlan.actions.slice(0, 40).map((a, i) => (
-                          <div key={i}><span className={cn("font-bold", a.action === "DELETE" ? "text-rose-400" : a.action === "CREATE" ? "text-emerald-400" : a.action === "MODIFY" ? "text-amber-400" : "text-[var(--text-muted)]")}>{a.action}</span> {a.type.toLowerCase()} · {a.name}</div>
+                          <div key={i}><span className={cn("font-bold", a.action === "DELETE" ? "text-rose-400" : a.action === "CREATE" ? "text-[var(--accent-primary)]" : a.action === "MODIFY" ? "text-amber-400" : "text-[var(--text-muted)]")}>{a.action}</span> {a.type.toLowerCase()} · {a.name}</div>
                         ))}
                       </div>
                     )}
@@ -827,7 +827,7 @@ export default function BackupsCenterClient() {
                 </div>
               ) : (
                 <div className="py-6 space-y-5 text-center">
-                  <div className={cn("w-14 h-14 mx-auto rounded-full border flex items-center justify-center", restoreJob.status === "COMPLETED" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : ["FAILED", "ROLLED_BACK"].includes(restoreJob.status) ? "bg-rose-500/10 border-rose-500/20 text-rose-400" : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 animate-spin")}>
+                  <div className={cn("w-14 h-14 mx-auto rounded-full border flex items-center justify-center", restoreJob.status === "COMPLETED" ? "bg-[var(--success)]/10 border-[var(--success)]/20 text-[var(--success)]" : ["FAILED", "ROLLED_BACK"].includes(restoreJob.status) ? "bg-rose-500/10 border-rose-500/20 text-rose-400" : "bg-[var(--success)]/10 border-[var(--success)]/20 text-[var(--success)] animate-spin")}>
                     {restoreJob.status === "COMPLETED" ? <CheckCircle2 className="w-7 h-7" /> : <RotateCcw className="w-7 h-7" />}
                   </div>
                   <div className="space-y-1">
@@ -835,7 +835,7 @@ export default function BackupsCenterClient() {
                     <p className="text-xs text-[var(--text-muted)] font-mono">{restoreJob.status} · {restoreJob.progressPercent}%</p>
                   </div>
                   <div className="w-full bg-[var(--panel-border)] h-2.5 rounded-full overflow-hidden border border-[var(--panel-border)] max-w-md mx-auto">
-                    <div className="bg-emerald-600 h-full transition-all duration-300 rounded-full" style={{ width: `${restoreJob.progressPercent}%` }} />
+                    <div className="bg-[var(--accent-primary)] h-full transition-all duration-300 rounded-full" style={{ width: `${restoreJob.progressPercent}%` }} />
                   </div>
                   {restoreJob.errors?.length > 0 && <p className="text-xs text-rose-300 text-left max-h-24 overflow-y-auto">{restoreJob.errors.join("\n")}</p>}
                   {["COMPLETED", "PARTIAL", "FAILED", "ROLLED_BACK"].includes(restoreJob.status) && (
@@ -853,7 +853,7 @@ export default function BackupsCenterClient() {
             <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-2xl max-w-md w-full p-6 space-y-5 relative">
               <button onClick={() => setShowTestModal(false)} className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"><X className="w-5 h-5" /></button>
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-xl border border-emerald-500/30"><ShieldCheck className="w-5 h-5" /></div>
+                <div className="p-2.5 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] rounded-xl border border-[var(--accent-primary)]/30"><ShieldCheck className="w-5 h-5" /></div>
                 <div>
                   <h3 className="text-base font-bold text-[var(--text-primary)]">Test d'intégrité</h3>
                   <p className="text-xs text-[var(--text-muted)]">Dry-run sans impact sur le serveur</p>
@@ -862,8 +862,8 @@ export default function BackupsCenterClient() {
               {testLoading && <p className="text-xs text-[var(--text-muted)]">Vérification de la signature...</p>}
               {testResult && (
                 <div className="space-y-3 text-xs">
-                  <div className={cn("p-3 border rounded-xl space-y-1", testResult.valid ? "bg-emerald-500/10 border-emerald-500/20" : "bg-rose-500/10 border-rose-500/20")}>
-                    <span className={cn("font-bold flex items-center gap-1.5", testResult.valid ? "text-emerald-400" : "text-rose-400")}>
+                  <div className={cn("p-3 border rounded-xl space-y-1", testResult.valid ? "bg-[var(--success)]/10 border-[var(--success)]/20" : "bg-rose-500/10 border-rose-500/20")}>
+                    <span className={cn("font-bold flex items-center gap-1.5", testResult.valid ? "text-[var(--success)]" : "text-rose-400")}>
                       {testResult.valid ? <CheckCircle2 className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />} {testResult.readiness}
                     </span>
                     {testResult.notes.map((n, i) => <p key={i} className="text-[var(--text-muted)]">{n}</p>)}

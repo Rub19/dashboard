@@ -169,7 +169,7 @@ export default function BackupSettingsClient() {
 
         <div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-2.5">
-            <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-emerald-300"><Settings className="h-5 w-5" /></span> Paramètres de sauvegarde & rétention
+            <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-[var(--accent-primary)]"><Settings className="h-5 w-5" /></span> Paramètres de sauvegarde & rétention
           </h1>
           <p className="text-sm text-[var(--text-muted)] mt-1">
             Planification automatique, conservation et garde-fous de restauration.
@@ -181,7 +181,7 @@ export default function BackupSettingsClient() {
         <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-xl border border-emerald-500/30"><Clock className="w-5 h-5" /></div>
+              <div className="p-2.5 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] rounded-xl border border-[var(--accent-primary)]/30"><Clock className="w-5 h-5" /></div>
               <div>
                 <h3 className="font-semibold text-[var(--text-primary)] text-base">Sauvegardes automatiques</h3>
                 <p className="text-xs text-[var(--text-muted)]">Le bot capture un snapshot complet à intervalle régulier.</p>
@@ -270,7 +270,7 @@ export default function BackupSettingsClient() {
         {/* Sécurité */}
         <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20"><Shield className="w-5 h-5" /></div>
+            <div className="p-2.5 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] rounded-xl border border-[var(--accent-primary)]/20"><Shield className="w-5 h-5" /></div>
             <div>
               <h3 className="font-semibold text-[var(--text-primary)] text-base">Sécurité & Disaster Recovery</h3>
               <p className="text-xs text-[var(--text-muted)]">Snapshots de secours et garde-fous de restauration.</p>
@@ -282,7 +282,7 @@ export default function BackupSettingsClient() {
                 <span className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2"><Zap className="w-4 h-4 text-amber-400" /> Snapshot pré-changement automatique</span>
                 <p className="text-xs text-[var(--text-muted)] max-w-lg">Sauvegarde automatique avant toute restauration ou opération majeure.</p>
               </div>
-              <input type="checkbox" checked={settings.autoBackupBeforeMajorChanges} onChange={(e) => patch({ autoBackupBeforeMajorChanges: e.target.checked })} className="w-4 h-4 rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
+              <input type="checkbox" checked={settings.autoBackupBeforeMajorChanges} onChange={(e) => patch({ autoBackupBeforeMajorChanges: e.target.checked })} className="w-4 h-4 rounded text-[var(--accent-primary)] bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
@@ -328,7 +328,7 @@ export default function BackupSettingsClient() {
               <div key={b.backupId} className="p-3.5 flex items-center justify-between gap-3 hover:bg-[var(--surface-raised)]/70 transition-colors">
                 <div className="space-y-0.5 min-w-0">
                   <div className="flex items-center gap-2">
-                    <Link href={`/discord/backups/${b.backupId}${guildQuery}`} className="font-semibold text-sm text-[var(--text-primary)] hover:text-emerald-300 truncate">{b.name}</Link>
+                    <Link href={`/discord/backups/${b.backupId}${guildQuery}`} className="font-semibold text-sm text-[var(--text-primary)] hover:text-[var(--accent-primary)] truncate">{b.name}</Link>
                     <span className="px-2 py-0.5 rounded text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1 shrink-0"><Lock className="w-2.5 h-2.5" /> PROTÉGÉ</span>
                   </div>
                   <span className="text-xs text-[var(--text-muted)] block truncate">{new Date(b.createdAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })} · {(b.sizeBytes / 1024).toFixed(0)} Ko · {b.backupId}</span>

@@ -87,7 +87,7 @@ export default function PollVoteClient() {
                       <label
                         key={option.id}
                         className={`flex cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-2.5 text-sm transition-colors ${
-                          selected ? "border-emerald-500/60 bg-emerald-500/10" : "border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/70"
+                          selected ? "border-[var(--accent-primary)]/60 bg-[var(--accent-primary)]/10" : "border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/70"
                         }`}
                       >
                         <input

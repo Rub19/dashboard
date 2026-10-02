@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { CARD_AVATAR_SHAPES, CARD_FONTS } from '../../welcome/types/welcomeConfig.js';
 
 export const LevelUpChannelTypeSchema = z.enum([
   'same_channel',
@@ -14,6 +15,21 @@ export type RewardAnnounceType = z.infer<typeof RewardAnnounceTypeSchema>;
 
 export const RewardDistributionTypeSchema = z.enum(['cumulative', 'progressive']);
 export type RewardDistributionType = z.infer<typeof RewardDistributionTypeSchema>;
+
+// Une valeur invalide retombe sur le défaut au lieu de faire échouer toute la config.
+const hex = (fallback: string) => z.string().regex(/^#[0-9a-fA-F]{6}$/).default(fallback).catch(fallback);
+
+/** Apparence de la carte /rank (la couleur d'accent reste accentColor, partagée avec les annonces). */
+export const RankCardStyleSchema = z.object({
+  backgroundColor: hex('#10131A'),
+  textColor: hex('#F2F4F8'),
+  /** Image de fond https (téléchargée via fetchPublicImage), recouverte d'un voile de backgroundColor. */
+  backgroundUrl: z.string().url().startsWith('https://').max(500).nullable().default(null).catch(null),
+  overlayOpacity: z.number().int().min(0).max(90).default(60).catch(60),
+  avatarShape: z.enum(CARD_AVATAR_SHAPES).default('circle').catch('circle'),
+  font: z.enum(CARD_FONTS).default('poppins').catch('poppins'),
+});
+export type RankCardStyle = z.infer<typeof RankCardStyleSchema>;
 
 const snowflakeOrNull = z.string().regex(/^\d{5,25}$/).nullable().default(null);
 
@@ -58,6 +74,7 @@ export const LevelingConfigSchema = z.object({
 
   // --- Personnalisation ---
   accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).default('#f59e0b'),
+  rankCard: RankCardStyleSchema.default({}).catch(() => RankCardStyleSchema.parse({})),
 
   // --- Annonce des récompenses de rôle ---
   rewardAnnounceType: RewardAnnounceTypeSchema.default('with_levelup'),

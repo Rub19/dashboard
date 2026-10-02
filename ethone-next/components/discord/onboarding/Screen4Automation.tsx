@@ -31,7 +31,7 @@ export default function Screen4Automation() {
       title: "Vérification des Règles",
       desc: "Validation interactive des conditions d'accès",
       icon: ShieldCheck,
-      color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+      color: "text-[var(--accent-primary)] bg-[var(--accent-primary)]/10 border-[var(--accent-primary)]/20",
     },
     {
       step: "05",

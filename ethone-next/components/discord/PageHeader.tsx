@@ -10,7 +10,7 @@ import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { cn } from "@/lib/utils";
 
 const TINTS = {
-  emerald: { tile: "from-emerald-400/25 to-emerald-400/5 border-emerald-400/30", icon: "text-emerald-300" },
+  emerald: { tile: "from-[var(--accent-primary)]/25 to-[var(--accent-primary)]/5 border-[var(--accent-primary)]/30", icon: "text-[var(--accent-primary)]" },
   sky: { tile: "from-sky-400/25 to-sky-400/5 border-sky-400/30", icon: "text-sky-300" },
   amber: { tile: "from-amber-400/25 to-amber-400/5 border-amber-400/30", icon: "text-amber-300" },
   teal: { tile: "from-teal-400/25 to-teal-400/5 border-teal-400/30", icon: "text-teal-300" },

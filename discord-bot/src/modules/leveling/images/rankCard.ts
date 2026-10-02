@@ -1,10 +1,14 @@
-import { createCanvas, loadImage, type SKRSContext2D } from '@napi-rs/canvas';
+import { createCanvas, loadImage, type Image, type SKRSContext2D } from '@napi-rs/canvas';
 import { safeText } from '../../../utils/canvasText.js';
 import { FONT_STACK, registerCardFonts } from '../../../utils/cardFonts.js';
+import { drawCover, rgba, shapePath } from '../../../utils/cardDraw.js';
+import { fetchPublicImage } from '../../../utils/publicImageFetch.js';
+import { RankCardStyleSchema, type RankCardStyle } from '../types/levelingConfig.js';
 
-// Poppins embarquée (assets/fonts) ; repli DejaVu si le fichier manque.
+// Polices embarquées (assets/fonts) ; repli DejaVu si un fichier manque.
 registerCardFonts();
-const FONT = FONT_STACK.poppins;
+// Repère 934 x 300 rendu en 2x pour rester net dans Discord (même en plein écran).
+const SCALE = 2;
 
 export interface RankCardData {
   username: string;
@@ -21,6 +25,8 @@ export interface RankCardData {
   accent: string;
   /** Rôle-récompense suivant (nom déjà lisible) et niveau requis, s'il en existe un. */
   nextReward?: { name: string; level: number } | null;
+  /** Apparence réglée par le serveur (fond, texte, police, forme d'avatar) ; défauts sinon. */
+  style?: Partial<RankCardStyle> | null;
 }
 
 const fmt = (n: number) => new Intl.NumberFormat('fr-FR').format(Math.round(n));
@@ -46,20 +52,38 @@ function fit(c: SKRSContext2D, text: string, maxWidth: number): string {
 export async function renderRankCard(d: RankCardData): Promise<Buffer> {
   const W = 934;
   const H = 300;
-  const canvas = createCanvas(W, H);
+  const canvas = createCanvas(W * SCALE, H * SCALE);
   const c = canvas.getContext('2d');
+  c.scale(SCALE, SCALE);
   const accent = /^#[0-9a-fA-F]{6}$/.test(d.accent) ? d.accent : '#f59e0b';
+  const st = RankCardStyleSchema.parse(d.style ?? {});
+  const FONT = FONT_STACK[st.font];
+  const TEXT = st.textColor;
+  const MUTED = rgba(st.textColor, 0.58);
 
-  // Fond : dégradé sombre + halo d'accent
-  const bg = c.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, '#10131a');
-  bg.addColorStop(1, '#171b26');
-  roundRect(c, 0, 0, W, H, 26);
-  c.fillStyle = bg;
-  c.fill();
+  let bgImg: Image | null = null;
+  if (st.backgroundUrl) {
+    const buf = await fetchPublicImage(st.backgroundUrl);
+    if (buf) bgImg = await loadImage(buf).catch(() => null);
+  }
+
+  // Fond : couleur (+ image voilée) puis halo d'accent
   c.save();
   roundRect(c, 0, 0, W, H, 26);
   c.clip();
+  c.fillStyle = st.backgroundColor;
+  c.fillRect(0, 0, W, H);
+  if (bgImg) {
+    drawCover(c, bgImg, W, H);
+    c.fillStyle = rgba(st.backgroundColor, st.overlayOpacity / 100);
+    c.fillRect(0, 0, W, H);
+  } else {
+    const shade = c.createLinearGradient(0, 0, W, H);
+    shade.addColorStop(0, 'rgba(0,0,0,0)');
+    shade.addColorStop(1, 'rgba(255,255,255,0.04)');
+    c.fillStyle = shade;
+    c.fillRect(0, 0, W, H);
+  }
   const glow = c.createRadialGradient(W - 80, 30, 10, W - 80, 30, 380);
   glow.addColorStop(0, `${accent}44`);
   glow.addColorStop(1, `${accent}00`);
@@ -67,21 +91,19 @@ export async function renderRankCard(d: RankCardData): Promise<Buffer> {
   c.fillRect(0, 0, W, H);
   c.restore();
   roundRect(c, 1, 1, W - 2, H - 2, 25);
-  c.strokeStyle = 'rgba(255,255,255,0.08)';
+  c.strokeStyle = rgba(st.textColor, 0.08);
   c.lineWidth = 2;
   c.stroke();
 
-  // Avatar rond avec anneau d'accent
+  // Avatar (forme réglable) avec anneau d'accent
   const ax = 40;
   const ay = 46;
   const ar = 100;
-  c.beginPath();
-  c.arc(ax + ar, ay + ar, ar + 6, 0, Math.PI * 2);
+  shapePath(c, ax + ar, ay + ar, ar + 6, st.avatarShape);
   c.fillStyle = accent;
   c.fill();
   c.save();
-  c.beginPath();
-  c.arc(ax + ar, ay + ar, ar, 0, Math.PI * 2);
+  shapePath(c, ax + ar, ay + ar, ar, st.avatarShape);
   c.clip();
   let drawn = false;
   if (d.avatarUrl) {
@@ -94,7 +116,9 @@ export async function renderRankCard(d: RankCardData): Promise<Buffer> {
     }
   }
   if (!drawn) {
-    c.fillStyle = '#242a38';
+    c.fillStyle = st.backgroundColor;
+    c.fillRect(ax, ay, ar * 2, ar * 2);
+    c.fillStyle = rgba(st.textColor, 0.1);
     c.fillRect(ax, ay, ar * 2, ar * 2);
     c.fillStyle = accent;
     c.font = `bold 84px ${FONT}`;
@@ -110,17 +134,17 @@ export async function renderRankCard(d: RankCardData): Promise<Buffer> {
   c.textBaseline = 'alphabetic';
 
   // Pseudo
-  c.fillStyle = '#f2f4f8';
+  c.fillStyle = TEXT;
   c.font = `bold 40px ${FONT}`;
   c.fillText(fit(c, safeText(d.username, 'Membre'), right - left - 260), left, 92);
 
   // Rang et niveau à droite
   c.textAlign = 'right';
-  c.fillStyle = '#8b93a7';
+  c.fillStyle = MUTED;
   c.font = `bold 18px ${FONT}`;
   c.fillText('RANG', right - 190, 70);
   c.fillText('NIVEAU', right, 70);
-  c.fillStyle = '#f2f4f8';
+  c.fillStyle = TEXT;
   c.font = `bold 46px ${FONT}`;
   c.fillText(`#${d.rank}`, right - 190, 116);
   c.fillStyle = accent;
@@ -128,7 +152,7 @@ export async function renderRankCard(d: RankCardData): Promise<Buffer> {
 
   // Sous-titre : messages
   c.textAlign = 'left';
-  c.fillStyle = '#8b93a7';
+  c.fillStyle = MUTED;
   c.font = `16px ${FONT}`;
   c.fillText(fit(c, `${fmt(d.messages)} message${d.messages > 1 ? 's' : ''}  ·  ${fmt(d.totalXp)} XP au total`, right - 300 - left), left, 132);
 
@@ -138,7 +162,7 @@ export async function renderRankCard(d: RankCardData): Promise<Buffer> {
   const barW = right - left;
   const barH = 34;
   roundRect(c, barX, barY, barW, barH, barH / 2);
-  c.fillStyle = 'rgba(255,255,255,0.08)';
+  c.fillStyle = rgba(st.textColor, 0.1);
   c.fill();
   const pct = Math.min(100, Math.max(0, d.progressPercentage));
   if (pct > 0) {
@@ -150,27 +174,27 @@ export async function renderRankCard(d: RankCardData): Promise<Buffer> {
     c.fillStyle = grad;
     c.fill();
   }
-  c.fillStyle = '#ffffff';
+  c.fillStyle = TEXT;
   c.font = `bold 16px ${FONT}`;
   c.textAlign = 'center';
   c.fillText(`${pct}%`, barX + barW / 2, barY + 23);
 
   c.textAlign = 'left';
-  c.fillStyle = '#c9cfdd';
+  c.fillStyle = rgba(st.textColor, 0.8);
   c.font = `15px ${FONT}`;
   c.fillText(`${fmt(d.currentLevelXp)} / ${fmt(d.nextLevelXp)} XP`, barX, barY + barH + 30);
   c.textAlign = 'right';
-  c.fillStyle = '#8b93a7';
+  c.fillStyle = MUTED;
   c.fillText(`Niveau ${d.level + 1} dans ${fmt(Math.max(0, d.nextLevelXp - d.currentLevelXp))} XP`, right, barY + barH + 30);
 
   // Prochaine récompense
   c.textAlign = 'left';
   if (d.nextReward) {
-    c.fillStyle = '#8b93a7';
+    c.fillStyle = MUTED;
     c.font = `15px ${FONT}`;
     c.fillText(fit(c, `Prochaine récompense : ${safeText(d.nextReward.name, 'rôle')} au niveau ${d.nextReward.level}`, right - left), left, H - 34);
   }
-  c.fillStyle = 'rgba(255,255,255,0.28)';
+  c.fillStyle = rgba(st.textColor, 0.28);
   c.font = `12px ${FONT}`;
   c.textAlign = 'right';
   c.fillText('ETHONE', right, H - 20);

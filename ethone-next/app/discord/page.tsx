@@ -136,13 +136,13 @@ interface BotModule {
 
 /** Teinte douce de chaque module dans la grille du hub (repérage rapide sans nuire à la lisibilité). */
 const MODULE_TINTS: Record<string, string> = {
-  overview: "text-indigo-400", security: "text-emerald-400", commands: "text-sky-400", suggestions: "text-yellow-300",
+  overview: "text-indigo-400", security: "text-[var(--accent-primary)]", commands: "text-sky-400", suggestions: "text-yellow-300",
   leveling: "text-amber-400", giveaways: "text-pink-400", tickets: "text-orange-400", welcome: "text-fuchsia-400",
-  moderation: "text-red-400", logs: "text-slate-300", music: "text-green-400", invites: "text-teal-400",
+  moderation: "text-red-400", logs: "text-slate-300", music: "text-[var(--accent-primary)]", invites: "text-teal-400",
   voice: "text-cyan-400", backups: "text-blue-400", ai: "text-violet-400", forms: "text-lime-400",
   polls: "text-purple-400", roles: "text-rose-400", analytics: "text-indigo-300", events: "text-orange-300",
   server: "text-zinc-300", starboard: "text-yellow-400", sticky: "text-amber-300", reminders: "text-sky-300",
-  afk: "text-blue-300", counting: "text-teal-300", stats: "text-sky-300", statroles: "text-amber-300", secureroles: "text-emerald-300", settings: "text-zinc-300", birthdays: "text-pink-300", tags: "text-cyan-300", serverstats: "text-emerald-300",
+  afk: "text-blue-300", counting: "text-teal-300", stats: "text-sky-300", statroles: "text-amber-300", secureroles: "text-[var(--accent-primary)]", settings: "text-zinc-300", birthdays: "text-pink-300", tags: "text-cyan-300", serverstats: "text-[var(--accent-primary)]",
   highlights: "text-lime-300", bot: "text-indigo-400",
 };
 
@@ -1220,7 +1220,7 @@ export default function DiscordDashboardPage() {
                   Propriétaire
                 </span>
               ) : canManageGuild(selectedGuild) ? (
-                <span className="hidden shrink-0 items-center gap-1 rounded-full border border-[var(--panel-border)] px-2.5 py-0.5 text-xs font-semibold text-emerald-300 sm:inline-flex">
+                <span className="hidden shrink-0 items-center gap-1 rounded-full border border-[var(--panel-border)] px-2.5 py-0.5 text-xs font-semibold text-[var(--accent-primary)] sm:inline-flex">
                   <ShieldCheck className="h-3 w-3" />
                   Gérer
                 </span>
@@ -1278,7 +1278,7 @@ export default function DiscordDashboardPage() {
                         Importer une configuration
                       </button>
                       <button type="button" role="menuitem" className={menuItemCls} onClick={() => { setMoreOpen(false); handleCopyId(); }} title={`Copier l'identifiant du serveur (${selectedGuild.id})`}>
-                        {copiedId ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+                        {copiedId ? <Check className="h-4 w-4 text-[var(--success)]" /> : <Copy className="h-4 w-4" />}
                         Copier l&apos;ID du serveur
                       </button>
                       {botAbsent && (
@@ -1602,7 +1602,7 @@ export default function DiscordDashboardPage() {
                           }}
                           className={cn(
                             "relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors",
-                            guildSettings.antiRaidEnabled ? "bg-emerald-500" : "bg-white/15"
+                            guildSettings.antiRaidEnabled ? "bg-[var(--success)]" : "bg-white/15"
                           )}
                         >
                           <span className={cn("absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform", guildSettings.antiRaidEnabled ? "translate-x-5" : "translate-x-0")} />
@@ -1629,7 +1629,7 @@ export default function DiscordDashboardPage() {
                           }}
                           className={cn(
                             "relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors",
-                            guildSettings.antiSpamEnabled ? "bg-emerald-500" : "bg-white/15"
+                            guildSettings.antiSpamEnabled ? "bg-[var(--success)]" : "bg-white/15"
                           )}
                         >
                           <span className={cn("absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform", guildSettings.antiSpamEnabled ? "translate-x-5" : "translate-x-0")} />
@@ -1647,8 +1647,8 @@ export default function DiscordDashboardPage() {
                                 Désactivée (Spam libre)
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-300">
-                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                              <span className="inline-flex items-center gap-1 rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2.5 py-0.5 text-xs font-medium text-[var(--accent-primary)]">
+                                <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
                                 Actif ({guildSettings.mentionLimit}/msg)
                               </span>
                             )}
@@ -1692,7 +1692,7 @@ export default function DiscordDashboardPage() {
                                   isActive
                                     ? val === 0
                                       ? "border-amber-500/40 bg-amber-500/15 text-amber-300"
-                                      : "border-emerald-500 bg-emerald-500 text-white"
+                                      : "border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
                                     : "border-[var(--panel-border)] text-[var(--text-muted)] hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)]"
                                 )}
                               >
@@ -2328,19 +2328,19 @@ export default function DiscordDashboardPage() {
                         <p className="text-sm font-medium text-[var(--text-primary)]">Fonctionnalités actives du tracker</p>
                         <div className="grid gap-3 text-sm text-[var(--text-muted)] sm:grid-cols-2">
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Snapshot en temps réel de toutes les invitations de la guilde</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Algorithme heuristique anti-triche (âge du compte, burst, churn)</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Suivi de la rétention des membres (24h, 3j, 7j, 30j)</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Attribution de rôles par paliers avec vérification de hiérarchie</span>
                           </div>
                         </div>
@@ -2373,19 +2373,19 @@ export default function DiscordDashboardPage() {
                         <p className="text-sm font-medium text-[var(--text-primary)]">Fonctionnalités vocales actives</p>
                         <div className="grid gap-3 text-sm text-[var(--text-muted)] sm:grid-cols-2">
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Création instantanée dès la connexion à un salon Hub</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Suppression automatique avec délai de grâce anti-accidents</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Panneau de contrôle intégré dans Discord (Renommer, Lock, Limite)</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Stratégies intelligentes de transfert de propriété</span>
                           </div>
                         </div>
@@ -2418,19 +2418,19 @@ export default function DiscordDashboardPage() {
                         <p className="text-sm font-medium text-[var(--text-primary)]">Garanties &amp; Protections de Secours</p>
                         <div className="grid gap-3 text-sm text-[var(--text-muted)] sm:grid-cols-2">
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Snapshots immuables certifiés SHA-256</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Rollback automatique capturé avant toute restauration</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Comparateur visuel de diffs (Ajouté, Modifié, Supprimé)</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Sauvegardes protégées inviolables contre la purge</span>
                           </div>
                         </div>
@@ -2463,19 +2463,19 @@ export default function DiscordDashboardPage() {
                         <p className="text-sm font-medium text-[var(--text-primary)]">Fonctionnalités IA Disponibles</p>
                         <div className="grid gap-3 text-sm text-[var(--text-muted)] sm:grid-cols-2">
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>RAG sémantique (sources globales, par salon ou restreintes aux rôles)</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Bouclier de sécurité anti-jailbreak &amp; prompt injection strict</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Commandes slash /ask et /summarize natives avec boutons d&apos;action</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Intégration Helpdesk &amp; escalade en ticket privé pour le staff</span>
                           </div>
                         </div>
@@ -2508,19 +2508,19 @@ export default function DiscordDashboardPage() {
                         <p className="text-sm font-medium text-[var(--text-primary)]">Fonctionnalités Clés du Form Builder</p>
                         <div className="grid gap-3 text-sm text-[var(--text-muted)] sm:grid-cols-2">
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Builder drag &amp; drop 20 types de champs (Texte, Rôles, Fichiers, Étoiles)</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Moteur de logique conditionnelle dynamique et étapes multi-steps</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Panneau Discord interactif (Bouton d&apos;application + Modal natif)</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Review staff privée, attribution de rôles automatique et scoring pondéré</span>
                           </div>
                         </div>
@@ -2553,19 +2553,19 @@ export default function DiscordDashboardPage() {
                         <p className="text-sm font-medium text-[var(--text-primary)]">Garanties &amp; Fonctionnalités de Vote</p>
                         <div className="grid gap-3 text-sm text-[var(--text-muted)] sm:grid-cols-2">
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>9 modes de scrutin (Choix unique, multiple, préférentiel, pondéré, etc.)</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Calcul automatique de quorum et majorité qualifiée</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Pondération des voix paramétrable selon les rôles du serveur</span>
                           </div>
                           <div className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-primary)]" />
                             <span>Bulletins secrets avec anonymisation intégrale garantie</span>
                           </div>
                         </div>

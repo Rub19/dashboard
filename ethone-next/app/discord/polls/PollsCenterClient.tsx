@@ -105,11 +105,11 @@ export interface PollSummary {
 const DEMO_POLLS: PollSummary[] = [];
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
-  SINGLE_CHOICE: { label: "Choix Unique", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30", icon: Vote },
+  SINGLE_CHOICE: { label: "Choix Unique", color: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/30", icon: Vote },
   MULTIPLE_CHOICE: { label: "Choix Multiple", color: "bg-blue-500/10 text-blue-400 border-blue-500/30", icon: Layers },
-  RANKING: { label: "Vote Préférentiel", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30", icon: Award },
+  RANKING: { label: "Vote Préférentiel", color: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/30", icon: Award },
   WEIGHTED_VOTE: { label: "Pondéré par Rôles", color: "bg-amber-500/10 text-amber-400 border-amber-500/30", icon: ShieldCheck },
-  ANONYMOUS_POLL: { label: "Bulletin Secret", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30", icon: Sparkles },
+  ANONYMOUS_POLL: { label: "Bulletin Secret", color: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/30", icon: Sparkles },
   YES_NO: { label: "Oui / Non", color: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30", icon: CheckCircle2 },
   RATING: { label: "Note Satisfaction", color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/30", icon: Sparkles },
   ELECTION: { label: "Élection", color: "bg-pink-500/10 text-pink-400 border-pink-500/30", icon: Calendar },
@@ -365,7 +365,7 @@ export default function PollsCenterClient() {
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-3 py-1 text-xs font-semibold text-[var(--accent-primary)]">
                 <Vote className="h-3.5 w-3.5" />
                 Sondages & Votes
               </div>
@@ -392,7 +392,7 @@ export default function PollsCenterClient() {
               className="inline-flex items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] disabled:opacity-50"
               title="Rafraîchir les sondages et salons"
             >
-              <RefreshCw className={cn("h-4 w-4", (loading || channelsLoading) && "animate-spin text-emerald-400")} />
+              <RefreshCw className={cn("h-4 w-4", (loading || channelsLoading) && "animate-spin text-[var(--accent-primary)]")} />
             </button>
             <Link
               href={`/discord/polls/create?guildId=${guildParam}`}
@@ -409,7 +409,7 @@ export default function PollsCenterClient() {
           <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-[var(--text-muted)]">Sondages Totaux</span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                 <Vote className="h-4 w-4" />
               </div>
             </div>
@@ -417,8 +417,8 @@ export default function PollsCenterClient() {
               <span className="text-2xl font-bold text-[var(--text-primary)]">{kpis.total}</span>
               <span className="text-xs text-[var(--text-muted)]">configurés</span>
             </div>
-            <div className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            <div className="mt-2 flex items-center gap-1.5 text-xs text-[var(--accent-primary)]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
               {kpis.active} actifs actuellement
             </div>
           </div>
@@ -426,7 +426,7 @@ export default function PollsCenterClient() {
           <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-[var(--text-muted)]">Suffrages Exprimés</span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                 <Users className="h-4 w-4" />
               </div>
             </div>
@@ -434,7 +434,7 @@ export default function PollsCenterClient() {
               <span className="text-2xl font-bold text-[var(--text-primary)]">{kpis.totalVotes}</span>
               <span className="text-xs text-[var(--text-muted)]">voix enregistrées</span>
             </div>
-            <div className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400">
+            <div className="mt-2 flex items-center gap-1.5 text-xs text-[var(--accent-primary)]">
               <TrendingUp className="h-3.5 w-3.5" />
               {kpis.total > 0 && kpis.totalVotes > 0
                 ? `${(kpis.totalVotes / kpis.total).toFixed(1)} voix par sondage en moyenne`
@@ -445,7 +445,7 @@ export default function PollsCenterClient() {
           <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-[var(--text-muted)]">Participation Moyenne</span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                 <BarChart3 className="h-4 w-4" />
               </div>
             </div>
@@ -453,7 +453,7 @@ export default function PollsCenterClient() {
               <span className="text-2xl font-bold text-[var(--text-primary)]">{kpis.avgParticipation === null ? "—" : `${kpis.avgParticipation}%`}</span>
               <span className="text-xs text-[var(--text-muted)]">des membres éligibles</span>
             </div>
-            <div className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400">
+            <div className="mt-2 flex items-center gap-1.5 text-xs text-[var(--accent-primary)]">
               <CheckCircle2 className="h-3.5 w-3.5" />
               {kpis.withVotes > 0 ? `Calculée sur ${kpis.withVotes} sondage${kpis.withVotes > 1 ? "s" : ""} avec des votes` : "Pas encore de données"}
             </div>
@@ -499,7 +499,7 @@ export default function PollsCenterClient() {
                   className={cn(
                     "rounded-lg px-3 py-1 text-xs font-medium transition-all",
                     selectedStatus === st
-                      ? "bg-emerald-500 text-white shadow"
+                      ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow"
                       : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   )}
                 >
@@ -598,8 +598,8 @@ export default function PollsCenterClient() {
                       {/* Status indicator */}
                       <div>
                         {poll.status === "ACTIVE" && (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-xs font-semibold text-emerald-400">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 px-2.5 py-0.5 text-xs font-semibold text-[var(--accent-primary)]">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
                             En cours
                           </span>
                         )}
@@ -616,7 +616,7 @@ export default function PollsCenterClient() {
                           </span>
                         )}
                         {poll.status === "DRAFT" && (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-xs font-semibold text-emerald-400">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 px-2.5 py-0.5 text-xs font-semibold text-[var(--accent-primary)]">
                             Brouillon
                           </span>
                         )}
@@ -624,7 +624,7 @@ export default function PollsCenterClient() {
                     </div>
 
                     {/* Title & Description */}
-                    <h3 className="text-base font-bold text-[var(--text-primary)] group-hover:text-emerald-400 transition-colors line-clamp-1">
+                    <h3 className="text-base font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors line-clamp-1">
                       {poll.title}
                     </h3>
                     <p className="mt-1 text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed">
@@ -652,7 +652,7 @@ export default function PollsCenterClient() {
                     <div className="mt-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
                       <div className="flex items-center justify-between text-xs mb-1.5">
                         <span className="text-[var(--text-muted)] font-medium flex items-center gap-1.5">
-                          <Users className="h-3.5 w-3.5 text-emerald-400" />
+                          <Users className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                           Participation
                         </span>
                         <span className="font-bold text-[var(--text-primary)]">
@@ -661,7 +661,7 @@ export default function PollsCenterClient() {
                       </div>
                       <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]/50">
                         <div
-                          className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                          className="h-full rounded-full bg-[var(--accent-primary)] transition-all duration-500"
                           style={{ width: `${Math.min(100, poll.participationRate)}%` }}
                         />
                       </div>
@@ -673,7 +673,7 @@ export default function PollsCenterClient() {
                           <span
                             className={cn(
                               "font-semibold",
-                              poll.quorumMet ? "text-emerald-400" : "text-amber-400"
+                              poll.quorumMet ? "text-[var(--accent-primary)]" : "text-amber-400"
                             )}
                           >
                             {poll.quorumMet ? "✅ Atteint" : "⏳ En attente"} ({poll.quorumPercentage}%)
@@ -696,7 +696,7 @@ export default function PollsCenterClient() {
                         href={`/discord/polls/${poll.id}/results?guildId=${guildParam}`}
                         className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 py-2 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)]"
                       >
-                        <BarChart3 className="h-3.5 w-3.5 text-emerald-400" />
+                        <BarChart3 className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                         Résultats
                       </Link>
 
@@ -721,7 +721,7 @@ export default function PollsCenterClient() {
                       {!poll.native && (
                       <button
                         onClick={() => setDeployModalPoll(poll)}
-                        className="inline-flex items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2 text-emerald-400 hover:brightness-110 hover:text-[var(--text-primary)] btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
+                        className="inline-flex items-center justify-center rounded-xl border border-[var(--success)]/30 bg-[var(--success)]/10 p-2 text-[var(--success)] hover:brightness-110 hover:text-[var(--text-primary)] btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                         title="Déployer sur Discord"
                       >
                         <Send className="h-3.5 w-3.5" />
@@ -774,7 +774,7 @@ export default function PollsCenterClient() {
           <div className="relative w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                   <Send className="h-4 w-4" />
                 </div>
                 <h3 className="text-base font-bold text-[var(--text-primary)]">Déployer sur Discord</h3>
@@ -801,10 +801,10 @@ export default function PollsCenterClient() {
                   type="button"
                   onClick={() => fetchChannels(true)}
                   disabled={channelsLoading}
-                  className="inline-flex items-center gap-1 text-xs font-medium text-[var(--text-muted)] hover:text-emerald-400 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors disabled:opacity-50"
                   title="Rafraîchir les salons"
                 >
-                  <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-emerald-400")} />
+                  <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-[var(--accent-primary)]")} />
                   <span>Rafraîchir</span>
                 </button>
               </div>

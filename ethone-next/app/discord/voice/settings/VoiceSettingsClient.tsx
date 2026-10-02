@@ -194,7 +194,7 @@ export default function VoiceSettingsClient() {
     return (
       <div className="flex min-h-[450px] items-center justify-center">
         <div className="flex items-center gap-3 text-[var(--text-muted)]">
-          <RefreshCw className="h-5 w-5 animate-spin text-emerald-400" />
+          <RefreshCw className="h-5 w-5 animate-spin text-[var(--accent-primary)]" />
           <span className="text-sm font-medium">Chargement des paramètres...</span>
         </div>
       </div>
@@ -214,7 +214,7 @@ export default function VoiceSettingsClient() {
             <span>Retour aux Salons Vocaux</span>
           </Link>
           <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)] flex items-center gap-2 mt-2">
-            <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-emerald-400"><Sliders className="h-5 w-5" /></span>
+            <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-[var(--accent-primary)]"><Sliders className="h-5 w-5" /></span>
             <span>Configuration Personal Voice</span>
           </h1>
           <p className="text-xs text-[var(--text-muted)] mt-1">
@@ -246,9 +246,9 @@ export default function VoiceSettingsClient() {
       </div>
 
       {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-4 text-xs text-[var(--accent-primary)]">
           <div className="flex items-start gap-3">
-            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-300 shrink-0 mt-0.5">
+            <div className="p-2 rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shrink-0 mt-0.5">
               <Bot className="h-5 w-5" />
             </div>
             <div>
@@ -274,7 +274,7 @@ export default function VoiceSettingsClient() {
         {/* Section 1: Salons Personnels */}
         <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
               <Radio className="h-4 w-4" />
             </div>
             <div>
@@ -313,7 +313,7 @@ export default function VoiceSettingsClient() {
                   className="inline-flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer disabled:opacity-50"
                   title="Rafraîchir les catégories Discord"
                 >
-                  <RefreshCw className={cn("h-3 w-3", loadingCategories && "animate-spin text-emerald-300")} />
+                  <RefreshCw className={cn("h-3 w-3", loadingCategories && "animate-spin text-[var(--accent-primary)]")} />
                   <span>Actualiser</span>
                 </button>
               </div>

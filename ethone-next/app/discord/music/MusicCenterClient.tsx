@@ -726,13 +726,13 @@ export default function MusicCenterClient() {
               <div className="flex items-center gap-2">
                 <h1 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <span>Music Center</span>
-                  <span className="flex h-2 w-2 rounded-full bg-emerald-500" />
+                  <span className="flex h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
                 </h1>
                 <span
                   className={cn(
                     "text-xs uppercase font-bold px-2 py-0.5 rounded-full border",
                     isPlaying
-                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                      ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/30"
                       : musicState?.status === "PAUSED"
                       ? "bg-amber-500/10 text-amber-300 border-amber-500/30"
                       : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border-[var(--panel-border)]"
@@ -741,7 +741,7 @@ export default function MusicCenterClient() {
                   {musicState?.status || "IDLE"}
                 </span>
                 {musicState?.voiceChannel && (
-                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
                     🔊 {musicState.voiceChannel.name}
                   </span>
                 )}
@@ -760,7 +760,7 @@ export default function MusicCenterClient() {
                   {stateError.startsWith("Le bot ne te reconnaît pas") && (
                     <a
                       href={`${BOT_API_URL}/api/auth/login?return_to=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`}
-                      className="ml-2 font-bold text-emerald-300 underline underline-offset-2"
+                      className="ml-2 font-bold text-[var(--accent-primary)] underline underline-offset-2"
                     >
                       Connecter le bot à mon compte Discord
                     </a>
@@ -992,7 +992,7 @@ export default function MusicCenterClient() {
                       className={cn(
                         "flex h-9 items-center gap-1.5 px-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer",
                         musicState?.shuffle
-                          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
+                          ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                           : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
                       )}
                       title="Mode Aléatoire"
@@ -1006,7 +1006,7 @@ export default function MusicCenterClient() {
                       className={cn(
                         "flex h-9 items-center gap-1.5 px-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer",
                         musicState?.repeatMode !== "OFF"
-                          ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                          ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                           : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
                       )}
                       title="Mode de répétition"
@@ -1265,7 +1265,7 @@ export default function MusicCenterClient() {
                 <button
                   onClick={handleImportPreview}
                   disabled={importLoading || !importUrl.trim()}
-                  className="rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50 cursor-pointer"
+                  className="rounded-xl bg-[var(--accent-primary)] px-4 py-2.5 text-xs font-bold text-[var(--accent-contrast)] disabled:opacity-50 cursor-pointer"
                 >
                   {importLoading ? "Chargement…" : "Afficher les titres"}
                 </button>
@@ -1275,8 +1275,8 @@ export default function MusicCenterClient() {
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-xs font-bold text-[var(--text-muted)]">{importTracks.length} titres</span>
                     <div className="flex gap-2">
-                      <button onClick={() => handleImportPlayAll(false)} className="rounded-xl bg-emerald-600/20 border border-emerald-500/30 px-3 py-1.5 text-xs font-bold text-emerald-300 cursor-pointer">Tout jouer</button>
-                      <button onClick={() => handleImportPlayAll(true)} className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 text-xs font-bold text-emerald-300 cursor-pointer">Tout mélanger</button>
+                      <button onClick={() => handleImportPlayAll(false)} className="rounded-xl bg-[var(--accent-primary)]/20 border border-[var(--accent-primary)]/30 px-3 py-1.5 text-xs font-bold text-[var(--accent-primary)] cursor-pointer">Tout jouer</button>
+                      <button onClick={() => handleImportPlayAll(true)} className="rounded-xl bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 px-3 py-1.5 text-xs font-bold text-[var(--accent-primary)] cursor-pointer">Tout mélanger</button>
                     </div>
                   </div>
                   <div className="max-h-[32rem] overflow-y-auto space-y-1.5 pr-1">
@@ -1284,7 +1284,7 @@ export default function MusicCenterClient() {
                       <button
                         key={`${tr.title}-${i}`}
                         onClick={() => handlePlayQuery(`${tr.title} ${tr.artist}`)}
-                        className="flex w-full items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-left hover:border-emerald-500/40 hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
+                        className="flex w-full items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-left hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
                       >
                         <span className="w-8 text-right text-xs font-mono text-[var(--text-muted)]">{i + 1}</span>
                         {tr.thumbnail && <img src={tr.thumbnail} alt="" className="h-9 w-9 rounded-md object-cover shrink-0" />}
@@ -1295,7 +1295,7 @@ export default function MusicCenterClient() {
                         <span className="text-xs font-mono text-[var(--text-muted)]">
                           {tr.duration > 0 ? `${Math.floor(tr.duration / 60)}:${String(tr.duration % 60).padStart(2, "0")}` : "—"}
                         </span>
-                        <Play className="h-3.5 w-3.5 text-emerald-300 shrink-0" />
+                        <Play className="h-3.5 w-3.5 text-[var(--accent-primary)] shrink-0" />
                       </button>
                     ))}
                   </div>
@@ -1479,7 +1479,7 @@ export default function MusicCenterClient() {
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all disabled:opacity-50 cursor-pointer"
                   title="Rafraîchir les salons vocaux et rôles du serveur"
                 >
-                  <RefreshCw className={cn("h-3.5 w-3.5", refreshingMeta && "animate-spin text-emerald-300")} />
+                  <RefreshCw className={cn("h-3.5 w-3.5", refreshingMeta && "animate-spin text-[var(--accent-primary)]")} />
                   <span>Rafraîchir salons & rôles</span>
                 </button>
               </div>
@@ -1495,7 +1495,7 @@ export default function MusicCenterClient() {
                     onClick={() => handleSaveSettings({ djMode: !settings.djMode })}
                     className={cn(
                       "flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 cursor-pointer",
-                      settings.djMode ? "bg-emerald-500" : "bg-[var(--surface-raised)]/40"
+                      settings.djMode ? "bg-[var(--accent-primary)]" : "bg-[var(--surface-raised)]/40"
                     )}
                   >
                     <span
@@ -1536,7 +1536,7 @@ export default function MusicCenterClient() {
                     onClick={() => handleSaveSettings({ autoplay: !settings.autoplay })}
                     className={cn(
                       "flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 cursor-pointer",
-                      settings.autoplay ? "bg-emerald-500" : "bg-[var(--surface-raised)]/40"
+                      settings.autoplay ? "bg-[var(--accent-primary)]" : "bg-[var(--surface-raised)]/40"
                     )}
                   >
                     <span
@@ -1552,7 +1552,7 @@ export default function MusicCenterClient() {
                 <div className="space-y-2 pb-3 border-b border-[var(--panel-border)]">
                   <div className="flex justify-between text-xs font-medium">
                     <span className="text-[var(--text-primary)]">Taille maximale de la file</span>
-                    <span className="font-mono text-emerald-300 font-bold">{settings.maxQueueSize} titres</span>
+                    <span className="font-mono text-[var(--accent-primary)] font-bold">{settings.maxQueueSize} titres</span>
                   </div>
                   <input
                     type="range"
@@ -1604,7 +1604,7 @@ export default function MusicCenterClient() {
                         className={cn(
                           "px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer",
                           settings.autoDisconnectSeconds === btn.sec
-                            ? "bg-emerald-500 text-white"
+                            ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
                             : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                         )}
                       >
@@ -1645,7 +1645,7 @@ export default function MusicCenterClient() {
                 </div>
                 <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
                   <span className="text-xs text-[var(--text-muted)] uppercase font-semibold">Temps d'Écoute</span>
-                  <p className="text-2xl font-black text-emerald-300 mt-1">
+                  <p className="text-2xl font-black text-[var(--accent-primary)] mt-1">
                     {Math.round(stats.totalListeningSeconds / 3600)} h {Math.round((stats.totalListeningSeconds % 3600) / 60)} min
                   </p>
                 </div>
@@ -1675,7 +1675,7 @@ export default function MusicCenterClient() {
                           <span className="font-bold text-[var(--text-primary)]">{tr.title}</span>
                           <span className="text-[var(--text-muted)]">• {tr.artist}</span>
                         </div>
-                        <span className="font-mono font-bold text-emerald-300">{tr.count} écoutes</span>
+                        <span className="font-mono font-bold text-[var(--accent-primary)]">{tr.count} écoutes</span>
                       </div>
                     ))}
                   </div>
@@ -1698,7 +1698,7 @@ export default function MusicCenterClient() {
                               <span className="mr-2 font-mono text-[var(--text-muted)]">#{idx + 1}</span>
                               {m.userTag}
                             </span>
-                            <span className="font-mono font-bold text-emerald-300">{m.count} demandes</span>
+                            <span className="font-mono font-bold text-[var(--accent-primary)]">{m.count} demandes</span>
                           </div>
                           <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--panel-border)]">
                             <div className="h-full rounded-full bg-[var(--surface-raised)]/40" style={{ width: `${(m.count / max) * 100}%` }} />

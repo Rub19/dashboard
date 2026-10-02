@@ -70,6 +70,11 @@ const hexColor = (fallback: string) => z.string().regex(/^#[0-9a-fA-F]{6}$/).def
 export const CARD_TEMPLATES = ['default', 'modern', 'minimal', 'gaming'] as const;
 export const CARD_FONTS = ['poppins', 'bebas', 'serif', 'mono'] as const;
 export const CARD_AVATAR_SHAPES = ['circle', 'rounded', 'square'] as const;
+/** Libellés affichés dans les commandes Discord (carte de bienvenue, carte de rang). */
+export const CARD_FONT_LABEL: Record<(typeof CARD_FONTS)[number], string> = { poppins: 'Poppins', bebas: 'Bebas (condensée)', serif: 'Serif', mono: 'Mono' };
+export const CARD_SHAPE_LABEL: Record<(typeof CARD_AVATAR_SHAPES)[number], string> = { circle: 'Rond', rounded: 'Arrondi', square: 'Carré' };
+/** #RRGGBB normalisé, ou null si la saisie n'est pas une couleur. */
+export const parseHexColor = (v: string | null) => (v && /^#?[0-9a-fA-F]{6}$/.test(v.trim()) ? `#${v.trim().replace('#', '').toUpperCase()}` : null);
 
 export const WelcomeImageConfigSchema = z.object({
   enabled: z.boolean().default(true),
@@ -99,6 +104,8 @@ export type WelcomeImageConfig = z.infer<typeof WelcomeImageConfigSchema>;
 
 export const WelcomeDMConfigSchema = z.object({
   enabled: z.boolean().default(false),
+  /** Joint la carte de bienvenue (même design que dans le salon) au message privé. */
+  attachCard: z.boolean().default(false).catch(false),
   messageContent: z.string().default('👋 Bonjour {user}, bienvenue sur **{server}** !'),
   embed: WelcomeEmbedConfigSchema.default({
     enabled: true,

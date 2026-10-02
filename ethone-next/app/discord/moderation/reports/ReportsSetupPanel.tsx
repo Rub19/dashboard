@@ -136,7 +136,7 @@ export default function ReportsSetupPanel({ guildId }: { guildId: string }) {
     <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
       <button type="button" onClick={() => setOpen((v) => !v)} className="flex w-full cursor-pointer items-center justify-between gap-3 text-left" aria-expanded={open}>
         <span className="text-sm font-semibold text-[var(--text-primary)]">
-          Système de signalement <span className="ml-2 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-300">actif</span>
+          Système de signalement <span className="ml-2 rounded-full bg-[var(--success)]/15 px-2 py-0.5 text-xs font-semibold text-[var(--success)]">actif</span>
         </span>
         <span className="text-xs text-[var(--text-muted)]">{open ? "Masquer les réglages" : "Réglages"}</span>
       </button>
@@ -163,7 +163,7 @@ export default function ReportsSetupPanel({ guildId }: { guildId: string }) {
               <span className="block text-xs font-semibold text-[var(--text-primary)]">Mentionner l&apos;équipe à chaque nouveau signalement</span>
               <span className="mt-0.5 block text-xs text-[var(--text-muted)]">{config.staffRoleId ? "Le rôle de l'équipe est prévenu." : "Choisissez d'abord un rôle d'équipe."}</span>
             </span>
-            <span className={cn("relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors", config.pingStaff ? "bg-emerald-500" : "bg-[var(--text-primary)]/15")}>
+            <span className={cn("relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors", config.pingStaff ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/15")}>
               <span className={cn("block h-4 w-4 rounded-full bg-white shadow transition-transform", config.pingStaff ? "translate-x-4" : "translate-x-0")} />
             </span>
           </button>

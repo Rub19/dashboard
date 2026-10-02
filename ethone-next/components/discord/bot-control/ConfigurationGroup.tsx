@@ -181,7 +181,7 @@ export default function ConfigurationGroup({
                           title={m.enabled ? "Désactiver ce module" : "Activer ce module"}
                           className={cn(
                             "w-9 h-5 rounded-full transition-colors relative p-0.5 shrink-0 disabled:opacity-50",
-                            m.enabled ? "bg-emerald-500" : "bg-zinc-700"
+                            m.enabled ? "bg-[var(--success)]" : "bg-zinc-700"
                           )}
                         >
                           <span
@@ -291,7 +291,7 @@ export default function ConfigurationGroup({
               <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center justify-between gap-4">
                 <div>
                   <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <Zap className="w-3.5 h-3.5 text-emerald-400" />
+                    <Zap className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                     Auto-Reconnexion Gateway
                   </div>
                   <p className="text-[11px] text-zinc-400 mt-0.5">
@@ -312,7 +312,7 @@ export default function ConfigurationGroup({
                   }}
                   className={cn(
                     "w-12 h-6 rounded-full transition-colors relative p-0.5 cursor-pointer",
-                    botSettings.autoReconnect ? "bg-emerald-500" : "bg-zinc-800"
+                    botSettings.autoReconnect ? "bg-[var(--accent-primary)]" : "bg-zinc-800"
                   )}
                 >
                   <span
@@ -342,7 +342,7 @@ export default function ConfigurationGroup({
                     "px-2.5 py-1 rounded-full text-xs font-semibold",
                     botSettings.responseVisibility === "EPHEMERAL"
                       ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
-                      : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                      : "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30"
                   )}
                 >
                   {botSettings.responseVisibility === "EPHEMERAL" ? "🔒 Mode Privé (Éphémère)" : "👁️ Mode Public"}
@@ -575,10 +575,10 @@ export default function ConfigurationGroup({
               <div className="p-5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-bold text-white flex items-center gap-2">
-                    <Volume2 className="w-4 h-4 text-emerald-400" />
+                    <Volume2 className="w-4 h-4 text-[var(--accent-primary)]" />
                     Volume Musique par Défaut
                   </label>
-                  <span className="font-mono text-xs font-bold text-emerald-400 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
+                  <span className="font-mono text-xs font-bold text-[var(--accent-primary)] px-2 py-0.5 rounded bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20">
                     {botSettings.musicDefaultVolume}%
                   </span>
                 </div>
@@ -589,7 +589,7 @@ export default function ConfigurationGroup({
                   step={5}
                   value={botSettings.musicDefaultVolume}
                   onChange={(e) => setBotSettings((s: any) => ({ ...s, musicDefaultVolume: Number(e.target.value) }))}
-                  className="w-full accent-emerald-500 cursor-pointer"
+                  className="w-full accent-[var(--accent-primary)] cursor-pointer"
                 />
                 <p className="text-[10px] text-zinc-400">
                   Volume initial appliqué à chaque nouvelle piste audio jouée avec /music play
@@ -750,7 +750,7 @@ export default function ConfigurationGroup({
                         <span className="text-[10px] text-zinc-400 font-mono">
                           {role.members} membre{role.members > 1 ? "s" : ""}
                         </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 font-semibold">
                           Synchronisé
                         </span>
                       </div>
@@ -796,7 +796,7 @@ export default function ConfigurationGroup({
               <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
                 <span className="text-[10px] text-zinc-400 block">Requêtes IA (24h)</span>
                 <span className="text-lg font-bold font-mono text-white mt-1 block">{aiTelemetry.dailyRequests}</span>
-                <span className="text-[10px] text-emerald-400 mt-0.5 block font-medium">
+                <span className="text-[10px] text-[var(--accent-primary)] mt-0.5 block font-medium">
                   {aiTelemetry.dailyRequests > 0 ? `${aiTelemetry.successRate}% de succès` : "Aucune requête sur 24 h"}
                 </span>
               </div>
@@ -807,12 +807,12 @@ export default function ConfigurationGroup({
               </div>
               <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
                 <span className="text-[10px] text-zinc-400 block">Latence Moyenne</span>
-                <span className="text-lg font-bold font-mono text-emerald-400 mt-1 block">{aiTelemetry.dailyRequests > 0 ? `${aiTelemetry.avgLatencyMs}ms` : "—"}</span>
+                <span className="text-lg font-bold font-mono text-[var(--accent-primary)] mt-1 block">{aiTelemetry.dailyRequests > 0 ? `${aiTelemetry.avgLatencyMs}ms` : "—"}</span>
                 <span className="text-[10px] text-zinc-400 mt-0.5 block">Temps d'inférence</span>
               </div>
               <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
                 <span className="text-[10px] text-zinc-400 block">Coût estimé (24 h)</span>
-                <span className="text-lg font-bold font-mono text-emerald-400 mt-1 block">
+                <span className="text-lg font-bold font-mono text-[var(--accent-primary)] mt-1 block">
                   {aiTelemetry.dailyTokens > 0 ? `≈ ${aiTelemetry.estimatedCostUsd.toFixed(3)} $` : "—"}
                 </span>
                 <span className="text-[10px] text-zinc-400 mt-0.5 block">Estimation, pas une facture</span>
@@ -843,10 +843,10 @@ export default function ConfigurationGroup({
               <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    <ShieldCheck className="w-4 h-4 text-[var(--accent-primary)]" />
                     Bouclier Anti-Jailbreak & Injection
                   </span>
-                  <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
+                  <span className="px-1.5 py-0.5 rounded text-[10px] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 font-semibold">
                     Actif
                   </span>
                 </div>
@@ -960,7 +960,7 @@ export default function ConfigurationGroup({
                     }}
                     className={cn(
                       "w-10 h-5 rounded-full transition-colors relative p-0.5 cursor-pointer",
-                      allowImageGen ? "bg-emerald-600" : "bg-zinc-800"
+                      allowImageGen ? "bg-[var(--accent-primary)]" : "bg-zinc-800"
                     )}
                   >
                     <span
@@ -990,7 +990,7 @@ export default function ConfigurationGroup({
                 {[
                   { id: "SAGE", name: "🐟 Sage & Bienveillant", desc: "Calme, poli, ultra-pédagogue et posé", color: "from-blue-500/20 to-indigo-500/20 border-blue-500/30" },
                   { id: "GAMER_SARCASTIQUE", name: "🦈 Gamer Sarcastique", desc: "Humour piquant, pop-culture et esprit vif", color: "from-purple-500/20 to-pink-500/20 border-purple-500/30" },
-                  { id: "PROTECTEUR", name: "🛡️ Protecteur & Sérieux", desc: "Vigilant, axé sécurité et respect des règles", color: "from-emerald-500/20 to-teal-500/20 border-emerald-500/30" },
+                  { id: "PROTECTEUR", name: "🛡️ Protecteur & Sérieux", desc: "Vigilant, axé sécurité et respect des règles", color: "from-[var(--accent-primary)]/20 to-teal-500/20 border-[var(--accent-primary)]/30" },
                   { id: "CYBERPUNK", name: "⚡ Cyberpunk Futuriste", desc: "High-tech, style néon 2077 et réponses punchy", color: "from-amber-500/20 to-rose-500/20 border-amber-500/30" },
                 ].map((moodItem) => (
                   <button
@@ -1010,7 +1010,7 @@ export default function ConfigurationGroup({
                     <span className="text-xs font-bold text-white block">{moodItem.name}</span>
                     <span className="text-[10px] text-zinc-400 mt-1 block leading-relaxed">{moodItem.desc}</span>
                     {thonMood === moodItem.id && (
-                      <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-400" />
+                      <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
                     )}
                   </button>
                 ))}
@@ -1029,7 +1029,7 @@ export default function ConfigurationGroup({
                     Filtrage en temps réel des prompts et des réponses par l'AutoMod et protection des secrets (Discord ToS)
                   </p>
                 </div>
-                <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
+                <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 flex items-center gap-1.5">
                   <Lock className="w-3 h-3" />
                   DLP Anti-Leak Actif
                 </span>

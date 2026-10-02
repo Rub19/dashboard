@@ -109,9 +109,9 @@ interface SuggestionConfig {
 const STATUS_META: Record<SuggestionStatus, { label: string; cls: string }> = {
   pending: { label: "En attente", cls: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
   under_review: { label: "En discussion", cls: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
-  planned: { label: "Planifiée", cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
-  accepted: { label: "Approuvée", cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
-  in_progress: { label: "En développement", cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+  planned: { label: "Planifiée", cls: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/20" },
+  accepted: { label: "Approuvée", cls: "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20" },
+  in_progress: { label: "En développement", cls: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/20" },
   completed: { label: "Réalisée", cls: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" },
   rejected: { label: "Rejetée", cls: "bg-rose-500/10 text-rose-400 border-rose-500/20" },
   duplicate: { label: "Doublon", cls: "bg-[var(--surface-raised)]/60 text-[var(--text-muted)] border-[var(--panel-border)]" },
@@ -595,9 +595,9 @@ export default function SuggestionsCenterClient() {
           {[
             { label: "Suggestions totales", value: overview.totalCount, cls: "text-[var(--text-primary)]", sub: `${Object.keys(overview.categoryDistribution).length} catégorie(s)` },
             { label: "En attente staff", value: overview.pendingCount + overview.underReviewCount, cls: "text-amber-400", sub: "À examiner" },
-            { label: "Approuvées / En cours", value: inProgressCount, cls: "text-emerald-400", sub: "Validées par le staff" },
+            { label: "Approuvées / En cours", value: inProgressCount, cls: "text-[var(--success)]", sub: "Validées par le staff" },
             { label: "Réalisées", value: overview.completedCount, cls: "text-cyan-400", sub: "Livrées sur Discord" },
-            { label: "Total votes", value: overview.totalVotes, cls: "text-emerald-400", sub: "👍 / 👎 cumulés" },
+            { label: "Total votes", value: overview.totalVotes, cls: "text-[var(--accent-primary)]", sub: "👍 / 👎 cumulés" },
             { label: "Taux d'adoption", value: adoptionRate === null ? "—" : `${adoptionRate}%`, cls: "text-rose-400", sub: adoptionRate === null ? "Aucune décision encore" : "Idées retenues" },
           ].map((k) => (
             <div key={k.label} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
@@ -732,7 +732,7 @@ export default function SuggestionsCenterClient() {
                             <div className="space-y-1">
                               <div className="flex items-center justify-between text-xs">
                                 <span className="flex items-center gap-2">
-                                  <span className="flex items-center gap-1 text-emerald-400"><ThumbsUp className="w-3 h-3" />{sug.upvotesCount}</span>
+                                  <span className="flex items-center gap-1 text-[var(--accent-primary)]"><ThumbsUp className="w-3 h-3" />{sug.upvotesCount}</span>
                                   <span className="flex items-center gap-1 text-rose-400"><ThumbsDown className="w-3 h-3" />{sug.downvotesCount}</span>
                                   {sug.comments.length > 0 && <span className="flex items-center gap-1 text-[var(--text-muted)]"><MessageSquare className="w-3 h-3" />{sug.comments.length}</span>}
                                 </span>
@@ -740,7 +740,7 @@ export default function SuggestionsCenterClient() {
                               </div>
                               {approval !== null && (
                                 <div className="h-1.5 w-full bg-[var(--bg-surface-elevated)] rounded-full overflow-hidden border border-[var(--panel-border)]">
-                                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${approval}%` }} />
+                                  <div className="h-full bg-[var(--accent-primary)] rounded-full" style={{ width: `${approval}%` }} />
                                 </div>
                               )}
                             </div>
@@ -878,7 +878,7 @@ export default function SuggestionsCenterClient() {
                       <span className={cn("px-2 py-0.5 rounded text-xs font-bold border", STATUS_META[s.status].cls)}>{STATUS_META[s.status].label}</span>
                     </div>
                     <h3 className="text-sm font-bold text-[var(--text-primary)]">{s.title}</h3>
-                    <p className="text-xs text-[var(--text-muted)]">{s.authorTag} · score <span className="text-emerald-400 font-bold">{s.score}</span> · 👍 {s.upvotesCount} / 👎 {s.downvotesCount}</p>
+                    <p className="text-xs text-[var(--text-muted)]">{s.authorTag} · score <span className="text-[var(--accent-primary)] font-bold">{s.score}</span> · 👍 {s.upvotesCount} / 👎 {s.downvotesCount}</p>
                   </div>
                 ))}
               </div>

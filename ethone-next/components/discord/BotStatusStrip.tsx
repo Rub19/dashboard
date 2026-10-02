@@ -30,7 +30,7 @@ function formatUptime(ms: number): string {
 function Pill({ label, value, tone }: { label: string; value: string; tone?: "ok" | "bad" }) {
   return (
     <span className="inline-flex h-9 items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3.5 text-sm">
-      {tone && <span className={cn("h-2 w-2 rounded-full", tone === "ok" ? "bg-emerald-400" : "bg-red-400")} />}
+      {tone && <span className={cn("h-2 w-2 rounded-full", tone === "ok" ? "bg-[var(--success)]" : "bg-red-400")} />}
       <span className="text-[var(--text-muted)]">{label}</span>
       <span className="font-semibold text-[var(--text-primary)]">{value}</span>
     </span>

@@ -49,7 +49,7 @@ function Switch({ checked, onChange, label, hint, disabled }: { checked: boolean
         <span className="block text-xs font-semibold text-[var(--text-primary)]">{label}</span>
         {hint && <span className="mt-0.5 block text-xs leading-snug text-[var(--text-muted)]">{hint}</span>}
       </span>
-      <span className={cn("relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors duration-200", checked ? "bg-emerald-500" : "bg-[var(--panel-border)]")}>
+      <span className={cn("relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors duration-200", checked ? "bg-[var(--accent-primary)]" : "bg-[var(--panel-border)]")}>
         <span className={cn("pointer-events-none block h-4 w-4 rounded-full bg-white shadow transition-transform duration-200", checked ? "translate-x-4" : "translate-x-0")} />
       </span>
     </button>

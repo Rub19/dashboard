@@ -270,7 +270,7 @@ export default function CaseDetailClient() {
                   className={cn(
                     "text-xs uppercase font-bold px-2 py-0.5 rounded-full border",
                     modCase.status === "ACTIVE"
-                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                      ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/30"
                       : modCase.status === "EXPIRED"
                       ? "bg-blue-500/10 text-blue-400 border-blue-500/30"
                       : "bg-[var(--surface-raised)] text-[var(--text-muted)] border-[var(--panel-border)]"
@@ -361,8 +361,8 @@ export default function CaseDetailClient() {
             )}
 
             {modCase.metadata?.revertedAt && (
-              <div className="rounded-xl border border-green-500/20 bg-green-500/10 p-3 text-xs space-y-1">
-                <p className="font-bold text-green-300">Sanction Révoquée (Pardon)</p>
+              <div className="rounded-xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 p-3 text-xs space-y-1">
+                <p className="font-bold text-[var(--accent-primary)]">Sanction Révoquée (Pardon)</p>
                 <p className="text-[var(--text-muted)]">Par : {modCase.metadata.revertedBy}</p>
                 <p className="text-[var(--text-muted)]">Motif de levée : {modCase.metadata.revertReason}</p>
               </div>

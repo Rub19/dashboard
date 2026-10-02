@@ -262,7 +262,7 @@ function GroupEditor({ group, roles, depth, onChange, onDelete }: { group: Group
   const setChild = (i: number, node: Node) => onChange({ ...group, children: group.children.map((c, idx) => (idx === i ? node : c)) });
   const delChild = (i: number) => onChange({ ...group, children: group.children.filter((_, idx) => idx !== i) });
   return (
-    <div className={cn("space-y-2 rounded-2xl border p-3", depth === 0 ? "border-[var(--panel-border)] bg-[var(--surface-raised)]/40" : "border-emerald-500/20 bg-emerald-500/[0.03]")}>
+    <div className={cn("space-y-2 rounded-2xl border p-3", depth === 0 ? "border-[var(--panel-border)] bg-[var(--surface-raised)]/40" : "border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/[0.03]")}>
       <div className="flex items-center gap-2 text-xs">
         <span className="font-semibold text-[var(--text-muted)]">Correspond si</span>
         <Select
@@ -432,7 +432,7 @@ export default function StatrolesCenterClient() {
 
         {state === "ok" && overview && cfg && (
           <>
-            <div className={cn("flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between", cfg.enabled ? "border-emerald-500/25 bg-emerald-500/[0.05]" : "border-amber-500/25 bg-amber-500/[0.06]")}>
+            <div className={cn("flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between", cfg.enabled ? "border-[var(--success)]/25 bg-[var(--success)]/[0.05]" : "border-amber-500/25 bg-amber-500/[0.06]")}>
               <div className="text-xs leading-relaxed text-[var(--text-primary)]">
                 {cfg.enabled ? (
                   <>
@@ -483,7 +483,7 @@ export default function StatrolesCenterClient() {
                     const role = roleName.get(r.roleId);
                     return (
                       <li key={r.id} className="flex flex-wrap items-center gap-3 rounded-xl bg-[var(--surface-raised)]/40 px-4 py-3 text-xs">
-                        <span className={cn("h-2 w-2 shrink-0 rounded-full", r.enabled ? "bg-emerald-400" : "bg-[var(--text-primary)]/20")} />
+                        <span className={cn("h-2 w-2 shrink-0 rounded-full", r.enabled ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/20")} />
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-semibold text-[var(--text-primary)]">{r.name}</p>
                           <p className="truncate text-xs text-[var(--text-muted)]">
@@ -562,7 +562,7 @@ export default function StatrolesCenterClient() {
                     <span className="block text-xs font-semibold text-[var(--text-primary)]">{label}</span>
                     <span className="mt-0.5 block text-xs text-[var(--text-muted)]">{hint}</span>
                   </span>
-                  <span className={cn("relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors", editing[key] ? "bg-emerald-500" : "bg-[var(--text-primary)]/15")}>
+                  <span className={cn("relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors", editing[key] ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/15")}>
                     <span className={cn("block h-4 w-4 rounded-full bg-white shadow transition-transform", editing[key] ? "translate-x-4" : "translate-x-0")} />
                   </span>
                 </button>

@@ -194,7 +194,7 @@ function Switch({ checked, onChange, label, disabled }: { checked: boolean; onCh
       onClick={() => onChange(!checked)}
       className={cn(
         "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors disabled:cursor-not-allowed disabled:opacity-50",
-        checked ? "bg-emerald-500" : "bg-white/15"
+        checked ? "bg-[var(--accent-primary)]" : "bg-white/15"
       )}
     >
       <span className={cn("block h-5 w-5 rounded-full bg-white shadow transition-transform", checked ? "translate-x-5" : "translate-x-0")} />
@@ -391,7 +391,7 @@ export default function AutomodNativeClient() {
         </Link>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] text-emerald-400 icon-pop">
+            <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] text-[var(--accent-primary)] icon-pop">
               <ShieldCheck className="h-5 w-5" />
             </span>
             <div>
@@ -411,7 +411,7 @@ export default function AutomodNativeClient() {
       </div>
 
       <div className={cn(cardCls, "flex items-start gap-3")}>
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent-primary)]" />
         <p className="text-sm text-[var(--text-muted)]">
           <span className="font-semibold text-[var(--text-primary)]">Exécuté directement par Discord, même si le bot est hors ligne.</span> Ces règles apparaissent aussi dans Paramètres du serveur, AutoMod. Le bot doit avoir la
           permission « Gérer le serveur » (et « Exclure temporairement des membres » pour l&apos;exclusion temporaire).
@@ -431,7 +431,7 @@ export default function AutomodNativeClient() {
         <div className={cardCls}>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-start gap-3">
-              <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+              <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent-primary)]" />
               <div>
                 <p className="text-sm font-semibold text-[var(--text-primary)]">Règles recommandées</p>
                 <p className="text-xs text-[var(--text-muted)]">Listes prédéfinies (grossièretés, contenu sexuel, insultes), spam suspect et limite de 8 mentions. Les types déjà présents sont conservés.</p>
@@ -577,7 +577,7 @@ export default function AutomodNativeClient() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold text-[var(--text-primary)]">{r.name}</p>
-                  <span className="mt-1 inline-block rounded-md border border-emerald-500/30 px-2 py-0.5 text-xs text-emerald-400">
+                  <span className="mt-1 inline-block rounded-md border border-[var(--accent-primary)]/30 px-2 py-0.5 text-xs text-[var(--accent-primary)]">
                     {r.triggerType === "unknown" ? "Type inconnu" : TRIGGERS[r.triggerType].label}
                   </span>
                 </div>

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.50.0 — 2026-10-02
+
+**Cartes du bot personnalisables partout**
+
+- Carte /rank personnalisable : fond (couleur ou image https avec voile), couleur du texte, police, forme de l'avatar, avec aperçu réel dans Niveaux → Personnalisation et sur Discord avec /xp carte.
+- La carte /rank est maintenant rendue en double résolution (plus nette dans Discord).
+- /bienvenue gère aussi le départ : option « type » sur carte, apercu, test, salon et message.
+- La carte de bienvenue peut être jointe au message privé d'accueil (case dans Bienvenue → MP, ou /bienvenue carte mp:oui).
+- Pages du bot : les verts figés suivent maintenant la couleur d'accent du thème (et la couleur de succès pour les états).
+
 ## v1.49.3 — 2026-10-02
 
 **Raccourcis selon la plateforme**

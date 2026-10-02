@@ -240,9 +240,9 @@ export default function TagsCenterClient() {
         )}
 
         {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-4 text-xs text-[var(--accent-primary)]">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-300 shrink-0 mt-0.5">
+              <div className="p-2 rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shrink-0 mt-0.5">
                 <Bot className="h-5 w-5" />
               </div>
               <div>
@@ -290,7 +290,7 @@ export default function TagsCenterClient() {
             )}
 
             {/* Editor */}
-            <div className="rounded-2xl border border-emerald-500/30 bg-[var(--surface-raised)]/40 p-4 sm:p-5 space-y-3">
+            <div className="rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--surface-raised)]/40 p-4 sm:p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <Plus className="h-4 w-4" />

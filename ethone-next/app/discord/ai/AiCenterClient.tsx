@@ -443,13 +443,13 @@ export default function AiCenterClient() {
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-[var(--inset-radius)] border border-emerald-500/30 icon-pop">
+              <div className="p-2.5 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 icon-pop">
                 <Bot className="w-6 h-6" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
                   ETHONE AI Assistant
-                  <span className={cn("px-2 py-0.5 rounded text-xs font-semibold border", settings.enabled ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border-[var(--panel-border)]")}>
+                  <span className={cn("px-2 py-0.5 rounded text-xs font-semibold border", settings.enabled ? "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border-[var(--panel-border)]")}>
                     {settings.enabled ? "🟢 Activé" : "⚪ Désactivé"}
                   </span>
                 </h1>
@@ -472,11 +472,11 @@ export default function AiCenterClient() {
               />
             )}
             <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
-              <RefreshCw className={cn("w-4 h-4 text-emerald-300", loading && "animate-spin")} />
+              <RefreshCw className={cn("w-4 h-4 text-[var(--accent-primary)]", loading && "animate-spin")} />
               Actualiser
             </button>
             <button onClick={handlePublish} disabled={saving} className={cn("px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50", dirty ? "bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50" : "bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)]")}>
-              {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 text-emerald-400" />}
+              {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 text-[var(--success)]" />}
               {dirty ? `Publier v${settings.publishedVersion + 1}` : `v${settings.publishedVersion} publiée`}
             </button>
           </div>
@@ -511,10 +511,10 @@ export default function AiCenterClient() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {[
             { label: "Requêtes aujourd'hui", value: analytics.requestsToday.toLocaleString("fr-FR"), cls: "text-[var(--text-primary)]", sub: `${analytics.handoffCount} handoff(s) ticket` },
-            { label: "Conversations actives", value: String(analytics.activeConversations), cls: "text-emerald-300", sub: `${channelRules.length} règle(s) de salon` },
+            { label: "Conversations actives", value: String(analytics.activeConversations), cls: "text-[var(--accent-primary)]", sub: `${channelRules.length} règle(s) de salon` },
             { label: "Temps de réponse moyen", value: analytics.avgResponseTimeMs > 0 ? `${analytics.avgResponseTimeMs} ms` : "—", cls: "text-cyan-400", sub: settings.model },
-            { label: "Satisfaction", value: satisfaction === null ? "—" : `${satisfaction}% 👍`, cls: "text-emerald-400", sub: `${analytics.helpfulCount} 👍 · ${analytics.unhelpfulCount} 👎` },
-            { label: "Tokens consommés", value: analytics.tokensConsumed >= 1000 ? `${(analytics.tokensConsumed / 1000).toFixed(1)}k` : String(analytics.tokensConsumed), cls: "text-emerald-300", sub: `Budget : ${(settings.dailyBudgetTokens / 1000).toFixed(0)}k / jour` },
+            { label: "Satisfaction", value: satisfaction === null ? "—" : `${satisfaction}% 👍`, cls: "text-[var(--accent-primary)]", sub: `${analytics.helpfulCount} 👍 · ${analytics.unhelpfulCount} 👎` },
+            { label: "Tokens consommés", value: analytics.tokensConsumed >= 1000 ? `${(analytics.tokensConsumed / 1000).toFixed(1)}k` : String(analytics.tokensConsumed), cls: "text-[var(--accent-primary)]", sub: `Budget : ${(settings.dailyBudgetTokens / 1000).toFixed(0)}k / jour` },
             { label: "Sources RAG", value: String(knowledgeList.length), cls: "text-amber-400", sub: `${knowledgeList.reduce((a, k) => a + k.tokenCount, 0).toLocaleString("fr-FR")} tokens indexés` },
           ].map((k) => (
             <div key={k.label} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
@@ -553,7 +553,7 @@ export default function AiCenterClient() {
           <div className="stagger-children grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-5 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-lg shrink-0">🤖</div>
+                <div className="w-12 h-12 rounded-2xl bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 flex items-center justify-center text-lg shrink-0">🤖</div>
                 <div>
                   <h3 className="font-bold text-[var(--text-primary)] text-base">{personality.name}</h3>
                   <p className="text-xs text-[var(--text-muted)]">{personality.description}</p>
@@ -561,13 +561,13 @@ export default function AiCenterClient() {
               </div>
               <div className="divide-y divide-[var(--panel-border)] text-xs pt-2">
                 <div className="py-2 flex justify-between"><span className="text-[var(--text-muted)]">Ton</span><span className="font-semibold text-[var(--text-primary)]">{personality.tone}</span></div>
-                <div className="py-2 flex justify-between"><span className="text-[var(--text-muted)]">Mode par défaut</span><span className="font-semibold text-emerald-300">{settings.defaultMode}</span></div>
+                <div className="py-2 flex justify-between"><span className="text-[var(--text-muted)]">Mode par défaut</span><span className="font-semibold text-[var(--accent-primary)]">{settings.defaultMode}</span></div>
                 <div className="py-2 flex justify-between"><span className="text-[var(--text-muted)]">Fournisseur / modèle</span><span className="font-semibold text-[var(--text-primary)] font-mono truncate max-w-[55%]">{settings.provider} · {settings.model}</span></div>
-                <div className="py-2 flex justify-between"><span className="text-[var(--text-muted)]">Version publiée</span><span className="font-semibold text-emerald-400">v{settings.publishedVersion} · {relative(settings.lastPublishedAt)}</span></div>
+                <div className="py-2 flex justify-between"><span className="text-[var(--text-muted)]">Version publiée</span><span className="font-semibold text-[var(--accent-primary)]">v{settings.publishedVersion} · {relative(settings.lastPublishedAt)}</span></div>
               </div>
               <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                 <span className="text-xs font-semibold text-[var(--text-primary)]">Assistant activé</span>
-                <input type="checkbox" checked={settings.enabled} onChange={(e) => { setSettings((s) => ({ ...s, enabled: e.target.checked })); setDirty(true); }} className="w-4 h-4 rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
+                <input type="checkbox" checked={settings.enabled} onChange={(e) => { setSettings((s) => ({ ...s, enabled: e.target.checked })); setDirty(true); }} className="w-4 h-4 rounded text-[var(--success)] bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
               </div>
               <button onClick={() => setActiveTab("personality")} className="w-full py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer">Modifier la personnalité</button>
             </div>
@@ -596,13 +596,13 @@ export default function AiCenterClient() {
               </form>
               {isPlaying && (
                 <div className="p-6 bg-[var(--surface-raised)]/40 rounded-xl border border-[var(--panel-border)] text-center space-y-2">
-                  <div className="w-6 h-6 border-2 border-emerald-500/30 border-t-transparent rounded-full animate-spin mx-auto" />
+                  <div className="w-6 h-6 border-2 border-[var(--accent-primary)]/30 border-t-transparent rounded-full animate-spin mx-auto" />
                   <p className="text-xs text-[var(--text-muted)]">{personality.name} réfléchit...</p>
                 </div>
               )}
               {playResult && (
                 <div className="space-y-4">
-                  <div className="p-5 bg-[var(--surface-raised)]/40 border border-emerald-500/30 rounded-xl space-y-3">
+                  <div className="p-5 bg-[var(--surface-raised)]/40 border border-[var(--accent-primary)]/30 rounded-xl space-y-3">
                     <div className="flex items-center gap-2.5">
                       <span className="text-base">🤖</span>
                       <span className="font-bold text-sm text-[var(--text-primary)]">{personality.name}</span>
@@ -613,7 +613,7 @@ export default function AiCenterClient() {
                       <div className="pt-2 border-t border-[var(--panel-border)] text-xs">
                         <span className="text-[var(--text-muted)] font-semibold block mb-1">📚 Sources utilisées :</span>
                         <div className="flex flex-wrap gap-1.5">
-                          {playResult.sourcesUsed.map((src) => <span key={src} className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 text-xs">• {src}</span>)}
+                          {playResult.sourcesUsed.map((src) => <span key={src} className="px-2 py-0.5 rounded bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 text-xs">• {src}</span>)}
                         </div>
                       </div>
                     )}
@@ -669,10 +669,10 @@ export default function AiCenterClient() {
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">Curseurs de personnalité</span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                   {([
-                    ["friendly", "Convivialité", "text-emerald-300", "accent-[var(--accent-primary)]"],
+                    ["friendly", "Convivialité", "text-[var(--accent-primary)]", "accent-[var(--accent-primary)]"],
                     ["humor", "Humour", "text-amber-400", "accent-amber-500"],
                     ["formality", "Formalité", "text-cyan-400", "accent-cyan-500"],
-                    ["verbosity", "Longueur des réponses", "text-emerald-300", "accent-[var(--accent-primary)]"],
+                    ["verbosity", "Longueur des réponses", "text-[var(--accent-primary)]", "accent-[var(--accent-primary)]"],
                     ["creativity", "Créativité", "text-pink-400", "accent-pink-500"],
                   ] as [keyof Personality["sliders"], string, string, string][]).map(([key, label, txt, accent]) => (
                     <div key={key} className="space-y-1.5 bg-[var(--surface-raised)]/40 p-3 rounded-xl border border-[var(--panel-border)]">
@@ -684,17 +684,17 @@ export default function AiCenterClient() {
               </div>
               <div className="space-y-2 pt-2 border-t border-[var(--panel-border)]">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-emerald-400" /> Instructions système</label>
-                  <span className="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">🛡️ Shield anti-injection actif</span>
+                  <label className="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-[var(--accent-primary)]" /> Instructions système</label>
+                  <span className="px-2 py-0.5 rounded text-xs font-semibold bg-[var(--success)]/10 text-[var(--success)] border border-[var(--success)]/20">🛡️ Shield anti-injection actif</span>
                 </div>
                 <textarea rows={5} value={personality.systemInstructions} onChange={(e) => setPersonality({ systemInstructions: e.target.value })} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-3 text-xs font-mono text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)]" />
               </div>
               <div className="flex items-center justify-between p-3.5 bg-[var(--surface-raised)]/40 rounded-xl border border-[var(--panel-border)]">
                 <div className="space-y-0.5">
-                  <span className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2"><Globe className="w-3.5 h-3.5 text-emerald-300" /> Répondre dans la langue du membre</span>
+                  <span className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2"><Globe className="w-3.5 h-3.5 text-[var(--accent-primary)]" /> Répondre dans la langue du membre</span>
                   <p className="text-xs text-[var(--text-muted)]">Détecte français, anglais, espagnol...</p>
                 </div>
-                <input type="checkbox" checked={personality.replyInUserLanguage} onChange={(e) => setPersonality({ replyInUserLanguage: e.target.checked })} className="w-4 h-4 rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
+                <input type="checkbox" checked={personality.replyInUserLanguage} onChange={(e) => setPersonality({ replyInUserLanguage: e.target.checked })} className="w-4 h-4 rounded text-[var(--accent-primary)] bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
               </div>
             </div>
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
@@ -736,7 +736,7 @@ export default function AiCenterClient() {
                       <td className="px-4 py-4"><span className="px-2 py-0.5 rounded text-xs font-bold bg-[var(--surface-raised)]/40 text-[var(--text-muted)]">{kn.type}</span></td>
                       <td className="px-4 py-4 text-[var(--text-muted)]">{kn.scope}</td>
                       <td className="px-4 py-4 font-mono text-[var(--text-muted)]">{kn.tokenCount}</td>
-                      <td className="px-4 py-4"><span className={cn("px-2 py-0.5 rounded-full text-xs font-semibold border", kn.status === "READY" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : kn.status === "ERROR" ? "bg-rose-500/10 text-rose-400 border-rose-500/20" : "bg-amber-500/10 text-amber-400 border-amber-500/20")}>{kn.status}</span></td>
+                      <td className="px-4 py-4"><span className={cn("px-2 py-0.5 rounded-full text-xs font-semibold border", kn.status === "READY" ? "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20" : kn.status === "ERROR" ? "bg-rose-500/10 text-rose-400 border-rose-500/20" : "bg-amber-500/10 text-amber-400 border-amber-500/20")}>{kn.status}</span></td>
                       <td className="px-4 py-4 text-[var(--text-muted)]">{relative(kn.updatedAt)}</td>
                       <td className="px-5 py-4 text-right">
                         <button onClick={() => handleDeleteKnowledge(kn.id)} className="p-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-rose-500/20 text-[var(--text-muted)] hover:text-rose-400 transition-colors cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
@@ -813,7 +813,7 @@ export default function AiCenterClient() {
               {channelRules.map((rule) => (
                 <div key={rule.channelId} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[var(--surface-raised)]/70 transition-colors">
                   <div className="flex items-center gap-3 min-w-0">
-                    <Hash className="w-4 h-4 text-emerald-300 shrink-0" />
+                    <Hash className="w-4 h-4 text-[var(--accent-primary)] shrink-0" />
                     <div className="min-w-0">
                       <span className="font-semibold text-[var(--text-primary)] text-sm block truncate">#{rule.channelName}</span>
                       <span className="text-xs text-[var(--text-muted)] font-mono">{rule.channelId}</span>
@@ -835,7 +835,7 @@ export default function AiCenterClient() {
                       ]}
                     />
                     <label className="flex items-center gap-1.5 text-xs text-[var(--text-muted)] cursor-pointer">
-                      <input type="checkbox" checked={rule.threadModeEnabled} onChange={(e) => saveChannelRule({ ...rule, threadModeEnabled: e.target.checked })} className="rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
+                      <input type="checkbox" checked={rule.threadModeEnabled} onChange={(e) => saveChannelRule({ ...rule, threadModeEnabled: e.target.checked })} className="rounded text-[var(--success)] bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
                       Thread dédié
                     </label>
                     <label className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
@@ -890,7 +890,7 @@ export default function AiCenterClient() {
               ] as [keyof Tools, string, string][]).map(([key, title, desc]) => (
                 <div key={key} className="p-4 bg-[var(--surface-raised)]/40 rounded-xl border border-[var(--panel-border)] flex items-start justify-between gap-3">
                   <div className="space-y-1"><span className="font-semibold text-[var(--text-primary)] block">{title}</span><p className="text-[var(--text-muted)]">{desc}</p></div>
-                  <input type="checkbox" checked={settings.tools[key]} onChange={(e) => { setSettings((s) => ({ ...s, tools: { ...s.tools, [key]: e.target.checked } })); setDirty(true); }} className="w-4 h-4 mt-0.5 rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
+                  <input type="checkbox" checked={settings.tools[key]} onChange={(e) => { setSettings((s) => ({ ...s, tools: { ...s.tools, [key]: e.target.checked } })); setDirty(true); }} className="w-4 h-4 mt-0.5 rounded text-[var(--accent-primary)] bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
                 </div>
               ))}
             </div>
@@ -906,7 +906,7 @@ export default function AiCenterClient() {
                   <h3 className="text-base font-bold text-[var(--text-primary)]">Mémoire de conversation</h3>
                   <p className="text-xs text-[var(--text-muted)]">Contexte récent conservé pour des échanges fluides.</p>
                 </div>
-                <input type="checkbox" checked={settings.memory.enabled} onChange={(e) => { setSettings((s) => ({ ...s, memory: { ...s.memory, enabled: e.target.checked } })); setDirty(true); }} className="w-4 h-4 rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
+                <input type="checkbox" checked={settings.memory.enabled} onChange={(e) => { setSettings((s) => ({ ...s, memory: { ...s.memory, enabled: e.target.checked } })); setDirty(true); }} className="w-4 h-4 rounded text-[var(--success)] bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
               </div>
               {settings.memory.enabled && (
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-[var(--panel-border)] text-xs">
@@ -919,14 +919,14 @@ export default function AiCenterClient() {
                     <input type="number" min={1} max={168} value={settings.memory.retentionHours} onChange={(e) => { setSettings((s) => ({ ...s, memory: { ...s.memory, retentionHours: Number(e.target.value) || 0 } })); setDirty(true); }} className="w-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)]" />
                   </div>
                   <label className="flex items-center gap-2 pt-5 text-[var(--text-muted)] cursor-pointer">
-                    <input type="checkbox" checked={settings.memory.userCanForget} onChange={(e) => { setSettings((s) => ({ ...s, memory: { ...s.memory, userCanForget: e.target.checked } })); setDirty(true); }} className="rounded text-emerald-400 bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
+                    <input type="checkbox" checked={settings.memory.userCanForget} onChange={(e) => { setSettings((s) => ({ ...s, memory: { ...s.memory, userCanForget: e.target.checked } })); setDirty(true); }} className="rounded text-[var(--accent-primary)] bg-[var(--surface-raised)]/40 border-[var(--panel-border)]" />
                     Les membres peuvent /forget
                   </label>
                 </div>
               )}
             </div>
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
-              <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-emerald-400" /> Droit à l'oubli (RGPD)</h3>
+              <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-[var(--accent-primary)]" /> Droit à l'oubli (RGPD)</h3>
               <p className="text-xs text-[var(--text-muted)]">Efface immédiatement toutes les conversations mémorisées pour un identifiant Discord.</p>
               <div className="flex items-center gap-2">
                 <input type="text" placeholder="ID Discord de l'utilisateur" value={userToForgetId} onChange={(e) => setUserToForgetId(e.target.value)} className="flex-1 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl px-4 py-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--input-border-hover)] font-mono" />
@@ -942,9 +942,9 @@ export default function AiCenterClient() {
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
               <h3 className="text-base font-bold text-[var(--text-primary)]">Satisfaction & retours</h3>
               <div className="grid grid-cols-2 gap-3 text-center">
-                <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                  <ThumbsUp className="w-6 h-6 text-emerald-400 mx-auto mb-1" />
-                  <p className="text-2xl font-bold text-emerald-400">{analytics.helpfulCount}</p>
+                <div className="p-4 bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20 rounded-xl">
+                  <ThumbsUp className="w-6 h-6 text-[var(--accent-primary)] mx-auto mb-1" />
+                  <p className="text-2xl font-bold text-[var(--accent-primary)]">{analytics.helpfulCount}</p>
                   <span className="text-xs text-[var(--text-muted)]">Utiles{satisfaction !== null && ` (${satisfaction}%)`}</span>
                 </div>
                 <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl">
@@ -968,7 +968,7 @@ export default function AiCenterClient() {
                 <div key={l} className="flex items-center justify-between p-3 bg-[var(--surface-raised)]/40 rounded-xl border border-[var(--panel-border)]"><span className="text-[var(--text-muted)]">{l}</span><span className="font-mono font-bold text-[var(--text-primary)]">{v}</span></div>
               ))}
               <div className="h-1.5 w-full rounded-full bg-[var(--panel-border)] border border-[var(--panel-border)] overflow-hidden">
-                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(100, settings.dailyBudgetTokens > 0 ? (analytics.tokensConsumed / settings.dailyBudgetTokens) * 100 : 0)}%` }} />
+                <div className="h-full bg-[var(--accent-primary)] rounded-full" style={{ width: `${Math.min(100, settings.dailyBudgetTokens > 0 ? (analytics.tokensConsumed / settings.dailyBudgetTokens) * 100 : 0)}%` }} />
               </div>
             </div>
           </div>
@@ -980,7 +980,7 @@ export default function AiCenterClient() {
             <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-2xl max-w-lg w-full p-6 space-y-5 relative">
               <button onClick={() => setShowAddKnowledgeModal(false)} className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"><X className="w-5 h-5" /></button>
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-xl border border-emerald-500/30"><BookOpen className="w-5 h-5" /></div>
+                <div className="p-2.5 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] rounded-xl border border-[var(--accent-primary)]/30"><BookOpen className="w-5 h-5" /></div>
                 <div>
                   <h3 className="text-base font-bold text-[var(--text-primary)]">Ajouter une source</h3>
                   <p className="text-xs text-[var(--text-muted)]">Indexée immédiatement pour le moteur RAG.</p>

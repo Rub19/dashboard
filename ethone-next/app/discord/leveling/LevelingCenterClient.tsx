@@ -26,7 +26,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
-import LevelingSettingsPanel, { type LevelingSettings } from "./LevelingSettingsPanel";
+import LevelingSettingsPanel, { RANK_CARD_DEFAULTS, type LevelingSettings } from "./LevelingSettingsPanel";
 import LevelingBoostsPanel from "./LevelingBoostsPanel";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
@@ -99,6 +99,7 @@ const DEFAULT_CONFIG: LevelingConfig = {
   leaderboardPublic: false,
   leaderboardOnDiscord: true,
   accentColor: "#f59e0b",
+  rankCard: RANK_CARD_DEFAULTS,
   rewardAnnounceType: "with_levelup",
   rewardChannelId: null,
   rewardMessage: "🏅 {user}, tu obtiens le rôle **{role}** en atteignant le niveau **{level}** !",
@@ -394,7 +395,7 @@ export default function LevelingCenterClient() {
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-[var(--inset-radius)] border border-emerald-500/30 icon-pop">
+              <div className="p-2.5 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 icon-pop">
                 <Award className="w-6 h-6" />
               </div>
               <div>
@@ -424,7 +425,7 @@ export default function LevelingCenterClient() {
               onClick={() => setActiveTab("card_designer")}
               className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer"
             >
-              <Palette className="w-4 h-4 text-emerald-300" />
+              <Palette className="w-4 h-4 text-[var(--accent-primary)]" />
               Rank Card Designer
             </button>
             <button
@@ -472,7 +473,7 @@ export default function LevelingCenterClient() {
 
           <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
             <span className="text-xs text-[var(--text-muted)] font-medium">Niveau Max Atteint</span>
-            <p className="text-2xl font-bold text-emerald-300">
+            <p className="text-2xl font-bold text-[var(--accent-primary)]">
               {overview.topUser ? `Lvl ${overview.topUser.level}` : "—"}
             </p>
             <span className="text-xs text-[var(--text-muted)]">{overview.topUser?.username || "Aucun membre actif"}</span>
@@ -480,7 +481,7 @@ export default function LevelingCenterClient() {
 
           <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
             <span className="text-xs text-[var(--text-muted)] font-medium">XP Total Distribué</span>
-            <p className="text-2xl font-bold text-emerald-300">{overview.totalXpDistributed.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-[var(--accent-primary)]">{overview.totalXpDistributed.toLocaleString()}</p>
           </div>
 
           <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
@@ -529,6 +530,7 @@ export default function LevelingCenterClient() {
             disabled={isDemo}
             onSave={saveConfig}
             onOpenBoosts={() => setActiveTab("boosts")}
+            rankPreviewUrl={`${base}/rank-card/preview`}
           />
         )}
 
@@ -595,14 +597,14 @@ export default function LevelingCenterClient() {
                       <div className="flex items-center gap-6">
                         <div className="w-full md:w-56 space-y-1">
                           <div className="flex justify-between text-xs font-mono">
-                            <span className="text-emerald-300 font-bold">Niveau {member.level}</span>
+                            <span className="text-[var(--accent-primary)] font-bold">Niveau {member.level}</span>
                             <span className="text-[var(--text-muted)]">
                               {member.currentLevelXp} / {member.nextLevelXp} XP ({member.progressPercentage}%)
                             </span>
                           </div>
                           <div className="h-2 w-full bg-[var(--panel-border)] rounded-full overflow-hidden border border-[var(--panel-border)]">
                             <div
-                              className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                              className="h-full bg-[var(--accent-primary)] rounded-full transition-all duration-500"
                               style={{ width: `${member.progressPercentage}%` }}
                             />
                           </div>
@@ -612,7 +614,7 @@ export default function LevelingCenterClient() {
                           onClick={() => setSelectedMember(member)}
                           className="px-3 py-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-primary)] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                         >
-                          <Edit2 className="w-3.5 h-3.5 text-emerald-300" />
+                          <Edit2 className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                           Gérer XP
                         </button>
                       </div>
@@ -629,7 +631,7 @@ export default function LevelingCenterClient() {
           <div className="stagger-children grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-6 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5">
               <div className="flex items-center gap-2">
-                <Palette className="w-5 h-5 text-emerald-300" />
+                <Palette className="w-5 h-5 text-[var(--accent-primary)]" />
                 <h3 className="text-base font-bold text-[var(--text-primary)]">Aperçu visuel de carte de rang</h3>
               </div>
               <p className="text-xs text-amber-400/90 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3">
@@ -653,7 +655,7 @@ export default function LevelingCenterClient() {
                         onClick={() => setCardBgTheme(th.id as any)}
                         className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
                           cardBgTheme === th.id
-                            ? "border-emerald-500/30 shadow-sm bg-[var(--surface-raised)]/40"
+                            ? "border-[var(--accent-primary)]/30 shadow-sm bg-[var(--surface-raised)]/40"
                             : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                         }`}
                       >
@@ -685,7 +687,7 @@ export default function LevelingCenterClient() {
 
             <div className="lg:col-span-6 space-y-3">
               <span className="text-xs font-bold text-[var(--text-muted)] flex items-center gap-1.5">
-                <Eye className="w-4 h-4 text-emerald-300" />
+                <Eye className="w-4 h-4 text-[var(--accent-primary)]" />
                 Rendu indicatif (concept, pas le vrai /rank)
               </span>
 
@@ -773,7 +775,7 @@ export default function LevelingCenterClient() {
                 rewards.map((rw) => (
                   <div key={rw.id} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-5 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="px-2.5 py-1 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] font-mono font-bold text-xs text-emerald-300">
+                      <span className="px-2.5 py-1 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] font-mono font-bold text-xs text-[var(--accent-primary)]">
                         Niveau {rw.level}+
                       </span>
                       <button
@@ -797,7 +799,7 @@ export default function LevelingCenterClient() {
           <div className="stagger-children space-y-6 max-w-4xl">
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-6">
               <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <Sliders className="w-4 h-4 text-emerald-300" />
+                <Sliders className="w-4 h-4 text-[var(--accent-primary)]" />
                 Réglages des Gains d'XP & Cooldowns
               </h3>
 
@@ -815,7 +817,7 @@ export default function LevelingCenterClient() {
                       value={config.minXp}
                       onChange={(e) => setConfig((p) => ({ ...p, minXp: Number(e.target.value) }))}
                       onBlur={() => saveConfig({ minXp: config.minXp })}
-                      className="w-16 h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-center text-xs font-bold text-emerald-300"
+                      className="w-16 h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-center text-xs font-bold text-[var(--accent-primary)]"
                     />
                     <span className="text-[var(--text-muted)]">—</span>
                     <input
@@ -825,7 +827,7 @@ export default function LevelingCenterClient() {
                       value={config.maxXp}
                       onChange={(e) => setConfig((p) => ({ ...p, maxXp: Number(e.target.value) }))}
                       onBlur={() => saveConfig({ maxXp: config.maxXp })}
-                      className="w-16 h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-center text-xs font-bold text-emerald-300"
+                      className="w-16 h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-center text-xs font-bold text-[var(--accent-primary)]"
                     />
                   </div>
                 </div>
@@ -842,7 +844,7 @@ export default function LevelingCenterClient() {
                     value={config.cooldownSeconds}
                     onChange={(e) => setConfig((p) => ({ ...p, cooldownSeconds: Number(e.target.value) }))}
                     onBlur={() => saveConfig({ cooldownSeconds: config.cooldownSeconds })}
-                    className="w-20 h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-center text-xs font-bold text-emerald-300"
+                    className="w-20 h-9 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-center text-xs font-bold text-[var(--accent-primary)]"
                   />
                 </div>
 
@@ -883,7 +885,7 @@ export default function LevelingCenterClient() {
                     type="button"
                     onClick={() => saveConfig({ allowBots: !config.allowBots })}
                     className={`px-3 py-1 rounded-lg text-xs font-bold cursor-pointer ${
-                      config.allowBots ? "bg-emerald-500 text-white" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
+                      config.allowBots ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
                     }`}
                   >
                     {config.allowBots ? "Activé" : "Désactivé"}
@@ -988,7 +990,7 @@ export default function LevelingCenterClient() {
             <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-2xl max-w-md w-full p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h4 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <Edit2 className="w-4 h-4 text-emerald-300" />
+                  <Edit2 className="w-4 h-4 text-[var(--accent-primary)]" />
                   Modifier l'XP de {selectedMember.username}
                 </h4>
                 <button onClick={() => setSelectedMember(null)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
@@ -1001,7 +1003,7 @@ export default function LevelingCenterClient() {
                   Niveau actuel : <strong className="text-[var(--text-primary)]">Lvl {selectedMember.level}</strong>
                 </p>
                 <p className="text-[var(--text-muted)]">
-                  XP Total : <strong className="text-emerald-300">{selectedMember.totalXp.toLocaleString()} XP</strong>
+                  XP Total : <strong className="text-[var(--accent-primary)]">{selectedMember.totalXp.toLocaleString()} XP</strong>
                 </p>
               </div>
 

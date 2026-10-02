@@ -94,7 +94,7 @@ function Switch({ checked, onChange, label, hint }: { checked: boolean; onChange
       <span
         className={cn(
           "relative inline-flex mt-0.5 h-5 w-9 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200",
-          checked ? "bg-emerald-500" : "bg-[var(--surface-raised)]/80"
+          checked ? "bg-[var(--accent-primary)]" : "bg-[var(--surface-raised)]/80"
         )}
       >
         <span
@@ -358,9 +358,9 @@ export default function StickyCenterClient() {
         )}
 
         {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-4 text-xs text-[var(--accent-primary)]">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-300 shrink-0 mt-0.5">
+              <div className="p-2 rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shrink-0 mt-0.5">
                 <Bot className="h-5 w-5" />
               </div>
               <div>
@@ -432,7 +432,7 @@ export default function StickyCenterClient() {
                         <span className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text-primary)]">
                           <Hash className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                           {channelName(row.channelId)}
-                          <span className={cn("ml-1 rounded px-1.5 py-0.5 text-xs font-bold", row.enabled ? "bg-emerald-500/15 text-emerald-300" : "bg-[var(--surface-raised)]/80 text-[var(--text-muted)]")}>
+                          <span className={cn("ml-1 rounded px-1.5 py-0.5 text-xs font-bold", row.enabled ? "bg-[var(--success)]/15 text-[var(--success)]" : "bg-[var(--surface-raised)]/80 text-[var(--text-muted)]")}>
                             {row.enabled ? "Actif" : "En pause"}
                           </span>
                         </span>

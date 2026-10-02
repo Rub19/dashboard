@@ -6,6 +6,7 @@ import { logger } from '../../../utils/logger.js';
 import { safeText } from '../../../utils/canvasText.js';
 import { FONT_STACK, registerCardFonts } from '../../../utils/cardFonts.js';
 import { fetchPublicImage } from '../../../utils/publicImageFetch.js';
+import { drawCover, rgba, shapePath } from '../../../utils/cardDraw.js';
 
 // Repère de dessin 800 x 300, rendu en 2x (1600 x 600) pour rester net dans Discord, y compris en plein écran.
 const W = 800;
@@ -13,11 +14,6 @@ const H = 300;
 const SCALE = 2;
 
 type Ctx = SKRSContext2D;
-
-function rgba(hex: string, alpha: number): string {
-  const n = parseInt(hex.slice(1), 16);
-  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
-}
 
 /** Police à la plus grande taille (≤ max) qui fait tenir `text` dans `maxWidth`. */
 function fitFont(c: Ctx, text: string, weight: string, family: string, max: number, min: number, maxWidth: number): void {
@@ -35,13 +31,6 @@ function ellipsize(c: Ctx, text: string, maxWidth: number): string {
   let t = text;
   while (t.length > 1 && c.measureText(`${t}…`).width > maxWidth) t = t.slice(0, -1);
   return `${t}…`;
-}
-
-function shapePath(c: Ctx, x: number, y: number, r: number, shape: WelcomeImageConfig['avatarShape']): void {
-  c.beginPath();
-  if (shape === 'circle') c.arc(x, y, r, 0, Math.PI * 2);
-  else c.roundRect(x - r, y - r, r * 2, r * 2, shape === 'rounded' ? r * 0.28 : r * 0.06);
-  c.closePath();
 }
 
 function drawAvatar(c: Ctx, img: Image | null, x: number, y: number, r: number, cfg: WelcomeImageConfig, initial: string, ring = true): void {
@@ -78,10 +67,7 @@ function drawBackground(c: Ctx, cfg: WelcomeImageConfig, bg: Image | null): void
   c.fillRect(0, 0, W, H);
   if (bg) {
     // Couverture (cover) puis voile pour garder le texte lisible.
-    const s = Math.max(W / bg.width, H / bg.height);
-    const w = bg.width * s;
-    const h = bg.height * s;
-    c.drawImage(bg, (W - w) / 2, (H - h) / 2, w, h);
+    drawCover(c, bg, W, H);
     c.fillStyle = rgba(cfg.backgroundColor, cfg.overlayOpacity / 100);
     c.fillRect(0, 0, W, H);
   }

@@ -318,9 +318,9 @@ const DEFAULT_ANTI_RAID_SETTINGS: AntiRaidSettings = {
 
 const THREAT_COLORS: Record<ThreatLevel, { text: string; bg: string; border: string; glow: string; label: string; icon: string }> = {
   SAFE: {
-    text: "text-emerald-400",
-    bg: "bg-emerald-500/10",
-    border: "border-emerald-500/30",
+    text: "text-[var(--accent-primary)]",
+    bg: "bg-[var(--accent-primary)]/10",
+    border: "border-[var(--accent-primary)]/30",
     glow: "",
     label: "🟢 SAFE",
     icon: "🟢",
@@ -828,9 +828,9 @@ export default function AntiRaidDashboardPage() {
       {/* 2. SCROLLABLE CONTAINER (pb-36 clears bottom dock) */}
       <div className="px-4 sm:px-6 py-6 space-y-6">
         {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-4 text-xs text-[var(--accent-primary)]">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300 shrink-0 mt-0.5">
+              <div className="p-2 rounded-xl bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] shrink-0 mt-0.5">
                 <Bot className="h-5 w-5" />
               </div>
               <div>
@@ -855,7 +855,7 @@ export default function AntiRaidDashboardPage() {
         <div
           className={cn(
             "flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border p-4 transition-colors",
-            settings.enabled ? "border-emerald-500/25 bg-emerald-500/[0.06]" : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40"
+            settings.enabled ? "border-[var(--success)]/25 bg-[var(--success)]/[0.06]" : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40"
           )}
         >
           <div>
@@ -883,7 +883,7 @@ export default function AntiRaidDashboardPage() {
             }}
             className={cn(
               "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200 outline-none select-none",
-              settings.enabled ? "bg-emerald-500 " : "bg-[var(--text-primary)]/15 border border-[var(--panel-border)]"
+              settings.enabled ? "bg-[var(--success)] " : "bg-[var(--text-primary)]/15 border border-[var(--panel-border)]"
             )}
           >
             <span
@@ -984,7 +984,7 @@ export default function AntiRaidDashboardPage() {
                       ? "bg-orange-500"
                       : metrics.currentRiskScore >= 20
                       ? "bg-amber-400"
-                      : "bg-emerald-500"
+                      : "bg-[var(--accent-primary)]"
                   )}
                   style={{ width: `${Math.min(100, Math.max(5, metrics.currentRiskScore))}%` }}
                 />
@@ -1009,7 +1009,7 @@ export default function AntiRaidDashboardPage() {
                 className={cn(
                   "px-3 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-1.5",
                   metrics.lockdownActive
-                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
+                    ? "bg-[var(--accent-primary)]/10 border-[var(--accent-primary)]/30 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20"
                     : "bg-red-500/10 border-red-500/30 text-red-300 hover:bg-red-500/20"
                 )}
               >
@@ -1032,8 +1032,8 @@ export default function AntiRaidDashboardPage() {
                 className={cn(
                   "px-3 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 cursor-pointer",
                   settings.raidMode.blockAllInvites
-                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20"
-                    : "bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20"
+                    ? "bg-[var(--accent-primary)]/10 border-[var(--accent-primary)]/30 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20"
+                    : "bg-[var(--accent-primary)]/10 border-[var(--accent-primary)]/30 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20"
                 )}
               >
                 <Radio className="w-3.5 h-3.5" />
@@ -1077,7 +1077,7 @@ export default function AntiRaidDashboardPage() {
                 className="mt-2 w-full py-1.5 px-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                 title="Garantit que toutes les invitations sont actives et débloquées"
               >
-                <Unlock className="w-3 h-3 text-emerald-400" />
+                <Unlock className="w-3 h-3 text-[var(--accent-primary)]" />
                 Forcer Invitations en OFF (Débloqué)
               </button>
             )}
@@ -1093,7 +1093,7 @@ export default function AntiRaidDashboardPage() {
         <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 sm:p-5 ">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-400" />
+              <div className="w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
               <h3 className="text-sm font-semibold text-[var(--text-primary)] tracking-wide">Live Security Activity</h3>
               <span className="text-xs text-[var(--text-muted)]">(Fenêtre glissante 60s)</span>
             </div>
@@ -1113,7 +1113,7 @@ export default function AntiRaidDashboardPage() {
               <span className="text-xs text-[var(--text-muted)] uppercase font-medium">Messages / min</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-[var(--text-primary)] font-mono">{metrics.messagesPerMinute}</span>
-                <Hash className="w-4 h-4 text-emerald-400/60" />
+                <Hash className="w-4 h-4 text-[var(--accent-primary)]/60" />
               </div>
             </div>
 
@@ -1137,7 +1137,7 @@ export default function AntiRaidDashboardPage() {
               <span className="text-xs text-[var(--text-muted)] uppercase font-medium">Bots Ajoutés</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-[var(--text-primary)] font-mono">{metrics.botsAddedPerMinute}</span>
-                <Sparkles className="w-4 h-4 text-emerald-400/60" />
+                <Sparkles className="w-4 h-4 text-[var(--accent-primary)]/60" />
               </div>
             </div>
 
@@ -1153,7 +1153,7 @@ export default function AntiRaidDashboardPage() {
               <span className="text-xs text-[var(--text-muted)] uppercase font-medium">Rôles Modifiés</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-[var(--text-primary)] font-mono">{metrics.rolesChangedPerMinute}</span>
-                <Shield className="w-4 h-4 text-emerald-400/60" />
+                <Shield className="w-4 h-4 text-[var(--accent-primary)]/60" />
               </div>
             </div>
 
@@ -1937,7 +1937,7 @@ export default function AntiRaidDashboardPage() {
               </div>
               <div className="p-2.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                 <span className="text-[var(--text-muted)] block text-xs">RÉSOLUTION</span>
-                <span className="text-emerald-400 font-bold text-base">{selectedIncident.status}</span>
+                <span className="text-[var(--success)] font-bold text-base">{selectedIncident.status}</span>
               </div>
             </div>
 

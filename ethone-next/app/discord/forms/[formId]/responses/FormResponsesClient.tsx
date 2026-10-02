@@ -385,7 +385,7 @@ export default function FormResponsesClient() {
                             className="h-8 w-8 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/50"
                           />
                           <div>
-                            <span className="font-bold text-[var(--text-primary)] group-hover:text-emerald-300 transition-colors block">
+                            <span className="font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors block">
                               {resp.userTag}
                             </span>
                             <span className="text-xs text-[var(--text-muted)] font-mono">ID: {resp.userId}</span>
@@ -402,7 +402,7 @@ export default function FormResponsesClient() {
                             className={cn(
                               "text-xs font-bold uppercase px-1.5 py-0.5 rounded",
                               resp.score >= 70
-                                ? "bg-emerald-500/20 text-emerald-400"
+                                ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
                                 : resp.score >= 40
                                 ? "bg-amber-500/20 text-amber-400"
                                 : "bg-rose-500/20 text-rose-400"
@@ -418,8 +418,8 @@ export default function FormResponsesClient() {
                           className={cn(
                             "text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border",
                             isPending && "bg-amber-500/10 text-amber-300 border-amber-500/30",
-                            isReviewing && "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
-                            isApproved && "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
+                            isReviewing && "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/30",
+                            isApproved && "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/30",
                             isRejected && "bg-rose-500/10 text-rose-300 border-rose-500/30"
                           )}
                         >
@@ -450,7 +450,7 @@ export default function FormResponsesClient() {
                             e.stopPropagation();
                             setActiveResponse(resp);
                           }}
-                          className="px-3 py-1.5 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-emerald-600 hover:text-white text-xs font-semibold text-[var(--text-muted)] transition-all cursor-pointer"
+                          className="px-3 py-1.5 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-[var(--accent-primary)] hover:text-[var(--accent-contrast)] text-xs font-semibold text-[var(--text-muted)] transition-all cursor-pointer"
                         >
                           Examiner
                         </button>
@@ -482,7 +482,7 @@ export default function FormResponsesClient() {
                     <span
                       className={cn(
                         "text-xs font-bold uppercase px-2 py-0.5 rounded-full border",
-                        activeResponse.status === "APPROVED" && "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+                        activeResponse.status === "APPROVED" && "bg-[var(--success)]/20 text-[var(--success)] border-[var(--success)]/30",
                         activeResponse.status === "REJECTED" && "bg-rose-500/20 text-rose-400 border-rose-500/30",
                         activeResponse.status === "PENDING" && "bg-amber-500/20 text-amber-400 border-amber-500/30"
                       )}
@@ -516,7 +516,7 @@ export default function FormResponsesClient() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-lg font-bold text-emerald-400">{activeResponse.score} / 100</span>
+                  <span className="text-lg font-bold text-[var(--accent-primary)]">{activeResponse.score} / 100</span>
                   <span className="text-xs text-[var(--text-muted)] block">Niveau : {activeResponse.scoreLabel}</span>
                 </div>
               </div>

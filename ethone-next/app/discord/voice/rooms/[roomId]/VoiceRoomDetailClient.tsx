@@ -207,7 +207,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
     return (
       <div className="flex min-h-[450px] items-center justify-center">
         <div className="flex items-center gap-3 text-[var(--text-muted)]">
-          <RefreshCw className="h-5 w-5 animate-spin text-emerald-400" />
+          <RefreshCw className="h-5 w-5 animate-spin text-[var(--accent-primary)]" />
           <span className="text-sm font-medium">Chargement du salon vocal...</span>
         </div>
       </div>
@@ -248,7 +248,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
           </Link>
           <div className="flex items-center gap-3 mt-2">
             <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)] flex items-center gap-2">
-              <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-emerald-400"><Radio className="h-5 w-5" /></span>
+              <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-[var(--accent-primary)]"><Radio className="h-5 w-5" /></span>
               <span>{room.name}</span>
             </h1>
             {room.isLocked && (
@@ -276,7 +276,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
             className={cn(
               "flex h-9 px-3.5 items-center gap-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
               room.isLocked
-                ? "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20"
+                ? "bg-[var(--accent-primary)]/10 hover:bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20"
                 : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
@@ -329,7 +329,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
         <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
           <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Whitelist</span>
           <div className="mt-1 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-emerald-400">{whitelist.length}</span>
+            <span className="text-2xl font-black text-[var(--accent-primary)]">{whitelist.length}</span>
             <span className="text-xs text-[var(--text-muted)]">autorisés</span>
           </div>
         </div>
@@ -345,7 +345,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
         <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
           <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Qualité Audio</span>
           <div className="mt-1 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-emerald-300">{Math.round(room.bitrate / 1000)}</span>
+            <span className="text-2xl font-black text-[var(--accent-primary)]">{Math.round(room.bitrate / 1000)}</span>
             <span className="text-xs text-[var(--text-muted)]">kbps</span>
           </div>
         </div>
@@ -409,7 +409,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
                 {(room.currentUsers || []).map((user) => (
                   <tr key={user.id} className="hover:bg-[var(--surface-raised)]/70 transition-colors">
                     <td className="p-3.5 font-bold text-[var(--text-primary)] flex items-center gap-2">
-                      <div className="h-2 w-2 rounded-full bg-emerald-400" />
+                      <div className="h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
                       <span>{user.tag}</span>
                     </td>
                     <td className="p-3.5">
@@ -428,10 +428,10 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
                         {user.isMuted ? (
                           <span className="text-rose-400 flex items-center gap-1"><MicOff className="h-3 w-3" /> Muet</span>
                         ) : (
-                          <span className="text-emerald-400 flex items-center gap-1"><Mic className="h-3 w-3" /> Micro actif</span>
+                          <span className="text-[var(--success)] flex items-center gap-1"><Mic className="h-3 w-3" /> Micro actif</span>
                         )}
                         {user.isStreaming && (
-                          <span className="text-emerald-300 flex items-center gap-1"><Tv className="h-3 w-3" /> En direct</span>
+                          <span className="text-[var(--accent-primary)] flex items-center gap-1"><Tv className="h-3 w-3" /> En direct</span>
                         )}
                       </div>
                     </td>
@@ -464,10 +464,10 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
       {/* TAB: Whitelist */}
       {activeTab === "whitelist" && (
         <div className="stagger-children space-y-6">
-          <div className="rounded-2xl border border-emerald-500/20 bg-[var(--surface-raised)]/40 p-5 space-y-4">
+          <div className="rounded-2xl border border-[var(--accent-primary)]/20 bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <div>
               <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <Shield className="h-4 w-4 text-emerald-400" />
+                <Shield className="h-4 w-4 text-[var(--accent-primary)]" />
                 <span>Ajouter un membre en Whitelist</span>
               </h3>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
@@ -570,7 +570,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
                     <span className="font-mono text-rose-300 font-semibold">{id}</span>
                     <button
                       onClick={() => handleBanlist(id, "remove")}
-                      className="text-[var(--text-muted)] hover:text-emerald-400 transition-colors p-1"
+                      className="text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors p-1"
                       title="Débannir"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -590,7 +590,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
           <div className="relative border-l border-[var(--panel-border)] ml-3 space-y-4 pl-4">
             {timeline.map((ev) => (
               <div key={ev.id} className="relative">
-                <div className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                <div className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-[var(--accent-primary)]" />
                 <p className="text-xs text-[var(--text-primary)] font-bold">{ev.type}</p>
                 <p className="text-xs text-[var(--text-muted)]">
                   Par <span className="text-[var(--text-muted)]">{ev.actorTag}</span> • {new Date(ev.timestamp).toLocaleTimeString()}

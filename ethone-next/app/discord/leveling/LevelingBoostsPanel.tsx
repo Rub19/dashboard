@@ -56,7 +56,7 @@ function status(b: Boost): { label: string; cls: string } {
   if (!b.enabled) return { label: "Désactivé", cls: "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]" };
   if (b.startTime && new Date(b.startTime).getTime() > now) return { label: "Programmé", cls: "bg-sky-500/15 text-sky-300" };
   if (b.endTime && new Date(b.endTime).getTime() < now) return { label: "Terminé", cls: "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]" };
-  return { label: "Actif", cls: "bg-emerald-500/15 text-emerald-300" };
+  return { label: "Actif", cls: "bg-[var(--success)]/15 text-[var(--success)]" };
 }
 
 interface Preview {
@@ -196,7 +196,7 @@ export default function LevelingBoostsPanel({ guildId, boosts, disabled, onChang
             <div className="flex flex-wrap items-center gap-2">
               <input type="number" min={0} max={10} step={0.05} value={multiplier} onChange={(e) => setMultiplier(Math.max(0, Math.min(10, Number(e.target.value) || 0)))} className={cn(inputCls, "w-28 text-center font-mono")} />
               {PRESETS.map(([v, l]) => (
-                <button key={v} type="button" onClick={() => setMultiplier(v)} className={cn("cursor-pointer rounded-lg px-2.5 py-1.5 text-xs font-semibold transition", multiplier === v ? "bg-emerald-500 text-white" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70")}>
+                <button key={v} type="button" onClick={() => setMultiplier(v)} className={cn("cursor-pointer rounded-lg px-2.5 py-1.5 text-xs font-semibold transition", multiplier === v ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70")}>
                   {l}
                 </button>
               ))}
@@ -237,7 +237,7 @@ export default function LevelingBoostsPanel({ guildId, boosts, disabled, onChang
                 <li key={b.id} className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
                   <div className="min-w-0">
                     <p className="flex flex-wrap items-center gap-2 text-sm">
-                      <span className={cn("rounded-md px-2 py-0.5 font-mono text-xs font-bold", kind === "bonus" ? "bg-emerald-500/15 text-emerald-300" : kind === "malus" ? "bg-rose-500/15 text-rose-300" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]")}>{fmtMult(b.multiplier)}</span>
+                      <span className={cn("rounded-md px-2 py-0.5 font-mono text-xs font-bold", kind === "bonus" ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]" : kind === "malus" ? "bg-rose-500/15 text-rose-300" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]")}>{fmtMult(b.multiplier)}</span>
                       <span className="font-semibold text-[var(--text-primary)]">{b.name}</span>
                       <span className={cn("rounded-full px-2 py-0.5 text-xs font-bold uppercase", st.cls)}>{st.label}</span>
                     </p>
@@ -291,7 +291,7 @@ export default function LevelingBoostsPanel({ guildId, boosts, disabled, onChang
         {preview && (
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 text-sm">
             <p className="text-[var(--text-primary)]">
-              <strong>{preview.member.name}</strong> gagnerait <strong className="text-emerald-300">{new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 }).format(preview.xp)} XP</strong>
+              <strong>{preview.member.name}</strong> gagnerait <strong className="text-[var(--accent-primary)]">{new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 }).format(preview.xp)} XP</strong>
               <span className="text-[var(--text-muted)]"> (base {new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 }).format(preview.baseXp)} × {fmtMult(preview.multiplier)})</span>
             </p>
             {preview.applied.length === 0 ? (

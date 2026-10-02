@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ImageIcon } from "@/components/icons/ph";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import { MultiChannelPicker, MultiRolePicker } from "@/components/discord/MultiPickers";
 import { Field, NumberField, Section, Switch, ToggleField, inputCls } from "@/components/discord/SettingsUI";
@@ -31,9 +32,101 @@ export interface LevelingSettings {
   leaderboardPublic: boolean;
   leaderboardOnDiscord: boolean;
   accentColor: string;
+  rankCard: RankCardStyle;
   rewardAnnounceType: "with_levelup" | "same_channel" | "specific_channel" | "dm" | "disabled";
   rewardChannelId: string | null;
   rewardMessage: string;
+}
+
+export interface RankCardStyle {
+  backgroundColor: string;
+  textColor: string;
+  backgroundUrl: string | null;
+  overlayOpacity: number;
+  avatarShape: "circle" | "rounded" | "square";
+  font: "poppins" | "bebas" | "serif" | "mono";
+}
+
+// Mêmes défauts que RankCardStyleSchema côté bot.
+export const RANK_CARD_DEFAULTS: RankCardStyle = {
+  backgroundColor: "#10131A",
+  textColor: "#F2F4F8",
+  backgroundUrl: null,
+  overlayOpacity: 60,
+  avatarShape: "circle",
+  font: "poppins",
+};
+
+const HEX = /^#[0-9a-fA-F]{6}$/;
+const FONTS: Array<[RankCardStyle["font"], string]> = [
+  ["poppins", "Poppins"],
+  ["bebas", "Bebas (condensée)"],
+  ["serif", "Serif"],
+  ["mono", "Mono"],
+];
+const SHAPES: Array<[RankCardStyle["avatarShape"], string]> = [
+  ["circle", "Rond"],
+  ["rounded", "Arrondi"],
+  ["square", "Carré"],
+];
+
+function ColorField({ label, value, fallback, onChange }: { label: string; value: string; fallback: string; onChange: (v: string) => void }) {
+  return (
+    <Field label={label}>
+      <div className="flex items-center gap-2">
+        <input type="color" value={HEX.test(value) ? value : fallback} onChange={(e) => onChange(e.target.value)} className="h-10 w-14 cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent" aria-label={label} />
+        <input value={value} maxLength={7} onChange={(e) => onChange(e.target.value)} className={cn(inputCls, "font-mono", !HEX.test(value) && "border-[var(--danger)]/60")} />
+      </div>
+    </Field>
+  );
+}
+
+/** Vraie carte /rank générée par le bot (tes stats sur ce serveur), 500 ms après le dernier changement. */
+function RankCardPreview({ url, accentColor, rankCard }: { url: string; accentColor: string; rankCard: RankCardStyle }) {
+  const [src, setSrc] = useState<string | null>(null);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const key = JSON.stringify({ accentColor, rankCard });
+
+  useEffect(() => {
+    const ctrl = new AbortController();
+    const t = window.setTimeout(async () => {
+      setLoading(true);
+      setError(false);
+      try {
+        const res = await fetch(url, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: key, signal: ctrl.signal });
+        if (!res.ok) throw new Error();
+        const next = URL.createObjectURL(await res.blob());
+        setSrc((old) => {
+          if (old) URL.revokeObjectURL(old);
+          return next;
+        });
+      } catch {
+        if (!ctrl.signal.aborted) setError(true);
+      } finally {
+        if (!ctrl.signal.aborted) setLoading(false);
+      }
+    }, 500);
+    return () => {
+      ctrl.abort();
+      window.clearTimeout(t);
+    };
+  }, [url, key]);
+
+  useEffect(() => () => setSrc((old) => (old && URL.revokeObjectURL(old), null)), []);
+
+  return (
+    <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40" style={{ aspectRatio: "934 / 300" }}>
+      {/* eslint-disable-next-line @next/next/no-img-element -- image blob générée par le bot */}
+      {src && <img src={src} alt="Aperçu de la carte /rank" className={cn("h-full w-full object-contain transition-opacity duration-200", loading && "opacity-60")} />}
+      {!src && !error && <div className="skeleton-shimmer absolute inset-0" />}
+      {error && (
+        <p className="absolute inset-0 flex items-center justify-center gap-2 text-xs text-[var(--text-muted)]">
+          <ImageIcon className="h-4 w-4" /> Aperçu indisponible : le bot ne répond pas.
+        </p>
+      )}
+    </div>
+  );
 }
 
 const LEVELUP_TYPES: Array<[LevelingSettings["levelUpChannelType"], string]> = [
@@ -86,6 +179,8 @@ interface Props {
   disabled: boolean;
   onSave: (patch: Partial<LevelingSettings>) => Promise<void>;
   onOpenBoosts: () => void;
+  /** Route du bot qui génère l'aperçu de la carte /rank (absente en mode démo). */
+  rankPreviewUrl?: string;
 }
 
 /**
@@ -93,12 +188,20 @@ interface Props {
  * options supplémentaires, classements, personnalisation et récompenses. Les modifications sont regroupées : la barre du bas
  * enregistre tout d'un coup ; l'interrupteur général s'applique tout de suite.
  */
-export default function LevelingSettingsPanel({ guildId, config, saving, disabled, onSave, onOpenBoosts }: Props) {
+export default function LevelingSettingsPanel({ guildId, config: rawConfig, saving, disabled, onSave, onOpenBoosts, rankPreviewUrl }: Props) {
+  // Un bot pas encore à jour ne renvoie pas rankCard : on complète avec les défauts.
+  const config: LevelingSettings = { ...rawConfig, rankCard: { ...RANK_CARD_DEFAULTS, ...(rawConfig.rankCard ?? {}) } };
+  const configKey = JSON.stringify(config);
   const [draft, setDraft] = useState<LevelingSettings>(config);
-  useEffect(() => setDraft(config), [config]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setDraft(config), [configKey]);
   const set = (patch: Partial<LevelingSettings>) => setDraft((d) => ({ ...d, ...patch }));
+  const setCard = (patch: Partial<RankCardStyle>) => setDraft((d) => ({ ...d, rankCard: { ...d.rankCard, ...patch } }));
+  const [bgDraft, setBgDraft] = useState(config.rankCard.backgroundUrl ?? "");
+  useEffect(() => setBgDraft(draft.rankCard.backgroundUrl ?? ""), [draft.rankCard.backgroundUrl]);
+  const bgInvalid = bgDraft.trim() !== "" && !/^https:\/\/\S+$/i.test(bgDraft.trim());
   const dirty = JSON.stringify(draft) !== JSON.stringify(config);
-  const invalid = draft.minXp > draft.maxXp || !/^#[0-9a-fA-F]{6}$/.test(draft.accentColor) || (draft.levelUpChannelType === "specific_channel" && !draft.levelUpChannelId) || (draft.rewardAnnounceType === "specific_channel" && !draft.rewardChannelId);
+  const invalid = draft.minXp > draft.maxXp || !HEX.test(draft.accentColor) || !HEX.test(draft.rankCard.backgroundColor) || !HEX.test(draft.rankCard.textColor) || bgInvalid || (draft.levelUpChannelType === "specific_channel" && !draft.levelUpChannelId) || (draft.rewardAnnounceType === "specific_channel" && !draft.rewardChannelId);
   const publicUrl = typeof window !== "undefined" ? `${window.location.origin}/leaderboard?guildId=${guildId}` : "";
 
   return (
@@ -186,13 +289,62 @@ export default function LevelingSettingsPanel({ guildId, config, saving, disable
         </div>
       </Section>
 
-      <Section title="Personnalisation">
-        <Field label="Couleur du système de niveaux" hint="Utilisée pour les annonces et le classement sur Discord.">
-          <div className="flex items-center gap-2">
-            <input type="color" value={/^#[0-9a-fA-F]{6}$/.test(draft.accentColor) ? draft.accentColor : "#f59e0b"} onChange={(e) => set({ accentColor: e.target.value })} className="h-10 w-14 cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent" aria-label="Couleur" />
-            <input value={draft.accentColor} maxLength={7} onChange={(e) => set({ accentColor: e.target.value })} className={cn(inputCls, "font-mono", !/^#[0-9a-fA-F]{6}$/.test(draft.accentColor) && "border-rose-500/60")} />
+      <Section title="Personnalisation" text="Couleurs des annonces et apparence de la carte /rank (aussi réglable sur Discord avec /xp carte).">
+        <ColorField label="Couleur du système de niveaux" value={draft.accentColor} fallback="#f59e0b" onChange={(v) => set({ accentColor: v })} />
+        <ColorField label="Fond de la carte /rank" value={draft.rankCard.backgroundColor} fallback={RANK_CARD_DEFAULTS.backgroundColor} onChange={(v) => setCard({ backgroundColor: v })} />
+        <ColorField label="Texte de la carte" value={draft.rankCard.textColor} fallback={RANK_CARD_DEFAULTS.textColor} onChange={(v) => setCard({ textColor: v })} />
+        <Field label="Police de la carte">
+          <Select value={draft.rankCard.font} onChange={(v) => setCard({ font: v as RankCardStyle["font"] })} className="w-full" aria-label="Police de la carte" options={FONTS.map(([id, label]) => ({ id, label }))} />
+        </Field>
+        <Field label="Forme de l'avatar">
+          <div role="radiogroup" aria-label="Forme de l'avatar" className="flex gap-1 rounded-xl border border-[var(--panel-border)] p-1">
+            {SHAPES.map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                role="radio"
+                aria-checked={draft.rankCard.avatarShape === id}
+                onClick={() => setCard({ avatarShape: id })}
+                className={cn(
+                  "flex-1 cursor-pointer rounded-lg px-2 py-1.5 text-xs font-semibold transition-colors active:scale-[0.97]",
+                  draft.rankCard.avatarShape === id ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         </Field>
+        <Field label="Image de fond (lien https)" hint={bgInvalid ? "Le lien doit commencer par https://" : "Laisse vide pour un fond uni."}>
+          <input
+            value={bgDraft}
+            maxLength={500}
+            placeholder="https://…"
+            onChange={(e) => setBgDraft(e.target.value)}
+            onBlur={() => {
+              const v = bgDraft.trim();
+              if (!v) setCard({ backgroundUrl: null });
+              else if (/^https:\/\/\S+$/i.test(v)) setCard({ backgroundUrl: v });
+            }}
+            className={cn(inputCls, bgInvalid && "border-[var(--danger)]/60")}
+          />
+        </Field>
+        {draft.rankCard.backgroundUrl && (
+          <NumberField label="Voile sur l'image (%)" value={draft.rankCard.overlayOpacity} min={0} max={90} hint="Assombrit l'image pour garder le texte lisible." onChange={(n) => setCard({ overlayOpacity: n })} />
+        )}
+        <div className="space-y-2 lg:col-span-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-semibold text-[var(--text-primary)]">Aperçu de la carte /rank</span>
+            <button type="button" onClick={() => set({ rankCard: RANK_CARD_DEFAULTS })} className="cursor-pointer text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+              Apparence par défaut
+            </button>
+          </div>
+          {rankPreviewUrl && !disabled ? (
+            <RankCardPreview url={rankPreviewUrl} accentColor={draft.accentColor} rankCard={draft.rankCard} />
+          ) : (
+            <p className="text-xs text-[var(--text-muted)]">L&apos;aperçu apparaît quand le bot est sur ce serveur.</p>
+          )}
+        </div>
       </Section>
 
       <Section title="Récompenses de niveau" text="Les rôles eux-mêmes se créent dans l'onglet « Rôles Récompenses ».">

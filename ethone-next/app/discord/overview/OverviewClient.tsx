@@ -159,7 +159,7 @@ export default function OverviewClient() {
         {/* Header */}
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="flex items-center gap-3">
-            <div className="rounded-[var(--inset-radius)] border border-emerald-500/30 bg-emerald-500/15 p-2.5 text-emerald-400 icon-pop">
+            <div className="rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 p-2.5 text-[var(--accent-primary)] icon-pop">
               <LayoutDashboard className="h-6 w-6" />
             </div>
             <div>
@@ -192,9 +192,9 @@ export default function OverviewClient() {
 
         {/* Bot Invitation Banner if absent */}
         {selectedGuild && botGuildIds !== null && !isBotPresent && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-4 text-xs text-[var(--accent-primary)]">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300 shrink-0 mt-0.5">
+              <div className="p-2 rounded-xl bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] shrink-0 mt-0.5">
                 <Bot className="h-5 w-5" />
               </div>
               <div>
@@ -223,7 +223,7 @@ export default function OverviewClient() {
         ) : (
           <>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <OverviewCard icon={<Server className="h-4 w-4" />} color="bg-emerald-500/15 text-emerald-400" title="Statut" href="/discord/bot">
+              <OverviewCard icon={<Server className="h-4 w-4" />} color="bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]" title="Statut" href="/discord/bot">
                 {guild.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
@@ -233,7 +233,7 @@ export default function OverviewClient() {
                 ) : (
                   <>
                     <div className="flex items-center gap-2">
-                      <span className={`h-2 w-2 rounded-full ${guild.data.botStatus.online ? "bg-emerald-400" : "bg-rose-400"}`} />
+                      <span className={`h-2 w-2 rounded-full ${guild.data.botStatus.online ? "bg-[var(--success)]" : "bg-rose-400"}`} />
                       <span className="text-lg font-bold">{guild.data.botStatus.online ? "En ligne" : "Hors ligne"}</span>
                     </div>
                     <p className="mt-1 text-xs text-[var(--text-muted)]">
@@ -289,7 +289,7 @@ export default function OverviewClient() {
                     <p
                       className={`text-lg font-bold ${
                         security.data.status === "protected"
-                          ? "text-emerald-400"
+                          ? "text-[var(--accent-primary)]"
                           : security.data.status === "warning"
                             ? "text-amber-400"
                             : "text-rose-400"
@@ -304,7 +304,7 @@ export default function OverviewClient() {
                 )}
               </OverviewCard>
 
-              <OverviewCard icon={<Music2 className="h-4 w-4" />} color="bg-emerald-500/15 text-emerald-400" title="Musique" href={`/discord/music?guildId=${gid}`}>
+              <OverviewCard icon={<Music2 className="h-4 w-4" />} color="bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]" title="Musique" href={`/discord/music?guildId=${gid}`}>
                 {music.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
@@ -338,7 +338,7 @@ export default function OverviewClient() {
                 )}
               </OverviewCard>
 
-              <OverviewCard icon={<Gift className="h-4 w-4" />} color="bg-emerald-500/15 text-emerald-400" title="Giveaways" href={`/discord/giveaways?guildId=${gid}`}>
+              <OverviewCard icon={<Gift className="h-4 w-4" />} color="bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]" title="Giveaways" href={`/discord/giveaways?guildId=${gid}`}>
                 {giveaways.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
@@ -353,7 +353,7 @@ export default function OverviewClient() {
                 )}
               </OverviewCard>
 
-              <OverviewCard icon={<DatabaseBackup className="h-4 w-4" />} color="bg-emerald-500/15 text-emerald-400" title="Backups" href={`/discord/backups?guildId=${gid}`}>
+              <OverviewCard icon={<DatabaseBackup className="h-4 w-4" />} color="bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]" title="Backups" href={`/discord/backups?guildId=${gid}`}>
                 {backups.loading ? (
                   <CardSkeleton />
                 ) : !isBotPresent ? (
@@ -365,7 +365,7 @@ export default function OverviewClient() {
                     <p
                       className={`text-lg font-bold ${
                         backups.data.kpis.healthStatus === "HEALTHY"
-                          ? "text-emerald-400"
+                          ? "text-[var(--accent-primary)]"
                           : backups.data.kpis.healthStatus === "WARNING"
                             ? "text-amber-400"
                             : "text-rose-400"
@@ -382,7 +382,7 @@ export default function OverviewClient() {
             {/* Recent Activity */}
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
               <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
-                <Activity className="h-4 w-4 text-emerald-400" />
+                <Activity className="h-4 w-4 text-[var(--accent-primary)]" />
                 Activité récente
               </h3>
               {guild.loading ? (
@@ -425,7 +425,7 @@ export default function OverviewClient() {
                   href={`/discord/giveaways?guildId=${gid}&tab=create`}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
                 >
-                  <Plus className="h-3.5 w-3.5 text-emerald-400" />
+                  <Plus className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                   Lancer un giveaway
                 </Link>
                 <Link
@@ -439,14 +439,14 @@ export default function OverviewClient() {
                   href={`/discord/backups?guildId=${gid}`}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
                 >
-                  <DatabaseBackup className="h-3.5 w-3.5 text-emerald-400" />
+                  <DatabaseBackup className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                   Gérer les sauvegardes
                 </Link>
                 <Link
                   href={`/discord/music?guildId=${gid}`}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
                 >
-                  <Music2 className="h-3.5 w-3.5 text-emerald-400" />
+                  <Music2 className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                   Ouvrir la musique
                 </Link>
               </div>

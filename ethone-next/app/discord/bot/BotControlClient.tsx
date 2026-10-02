@@ -1189,7 +1189,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
   // Status visual mapping (discrete, refined, non-aggressive)
   const statusConfig = {
-    online: { label: "En Ligne", dot: "bg-emerald-400", border: "border-emerald-500/20", text: "text-emerald-400" },
+    online: { label: "En Ligne", dot: "bg-[var(--success)]", border: "border-[var(--success)]/20", text: "text-[var(--success)]" },
     idle: { label: "Inactif", dot: "bg-amber-400", border: "border-amber-500/20", text: "text-amber-400" },
     dnd: { label: "Ne Pas Déranger", dot: "bg-rose-400", border: "border-rose-500/20", text: "text-rose-400" },
     invisible: { label: "Invisible", dot: "bg-[var(--surface-raised)]/40", border: "border-[var(--panel-border)]", text: "text-[var(--text-muted)]" },
@@ -1200,7 +1200,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   // Subsystem health status mapping — mirrors BotSubsystemHealth's status values
   // (operational / degraded / critical) returned by GET /api/bot/overview.
   const subsystemStatusConfig: Record<string, { label: string; dot: string; text: string }> = {
-    operational: { label: "Opérationnel", dot: "bg-emerald-400", text: "text-emerald-400" },
+    operational: { label: "Opérationnel", dot: "bg-[var(--success)]", text: "text-[var(--success)]" },
     degraded: { label: "Dégradé", dot: "bg-amber-400", text: "text-amber-400" },
     critical: { label: "Critique", dot: "bg-rose-400", text: "text-rose-400" },
   };
@@ -1208,7 +1208,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   // Diagnostic check status mapping — mirrors POST /api/bot/diagnostics/run's
   // per-check status ('pass'/'warn'/'critical', normalized to passed/warning/critical).
   const diagnosticStatusConfig: Record<string, { label: string; icon: any; chip: string; badge: string }> = {
-    passed: { label: "Opérationnel", icon: Check, chip: "bg-emerald-500/10 text-emerald-400", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+    passed: { label: "Opérationnel", icon: Check, chip: "bg-[var(--success)]/10 text-[var(--success)]", badge: "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20" },
     warning: { label: "Avertissement", icon: AlertTriangle, chip: "bg-amber-500/10 text-amber-400", badge: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
     critical: { label: "Critique", icon: XCircle, chip: "bg-rose-500/10 text-rose-400", badge: "bg-rose-500/10 text-rose-400 border-rose-500/20" },
   };
@@ -1271,7 +1271,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 className={cn(
                   "w-1.5 h-1.5 rounded-full",
                   connectionState === "connected"
-                    ? "bg-emerald-400"
+                    ? "bg-[var(--accent-primary)]"
                     : connectionState === "connecting"
                     ? "bg-amber-400 animate-pulse"
                     : "bg-rose-400"
@@ -1281,7 +1281,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 {connectionState === "connected" ? "Sync SSE Active" : "Reconnexion..."}
               </span>
               {isSyncing && (
-                <span className="text-emerald-300 animate-spin text-xs ml-1">●</span>
+                <span className="text-[var(--accent-primary)] animate-spin text-xs ml-1">●</span>
               )}
             </div>
 
@@ -1329,9 +1329,9 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   )}
 
                   {botCore?.activity ? (
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)]">
                       {botCore.activity.type && (
-                        <span className="font-semibold text-emerald-300 uppercase text-xs tracking-wider">
+                        <span className="font-semibold text-[var(--accent-primary)] uppercase text-xs tracking-wider">
                           {botCore.activity.type}
                         </span>
                       )}
@@ -1354,10 +1354,10 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <div className="px-3.5 py-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--input-border-hover)] transition-all">
                   <div className="flex items-center justify-between gap-1 text-xs text-[var(--text-muted)]">
                     <span>Ping Gateway</span>
-                    <Wifi className="w-3 h-3 text-emerald-400" />
+                    <Wifi className="w-3 h-3 text-[var(--accent-primary)]" />
                   </div>
                   <div className="flex items-baseline gap-1 mt-0.5">
-                    <span className="text-sm font-bold font-mono text-emerald-400">{botCore.pingMs}</span>
+                    <span className="text-sm font-bold font-mono text-[var(--accent-primary)]">{botCore.pingMs}</span>
                     <span className="text-xs text-[var(--text-muted)] font-mono">ms</span>
                   </div>
                 </div>
@@ -1366,7 +1366,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <div className="px-3.5 py-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--input-border-hover)] transition-all">
                   <div className="flex items-center justify-between gap-1 text-xs text-[var(--text-muted)]">
                     <span>Uptime</span>
-                    <Timer className="w-3 h-3 text-emerald-300" />
+                    <Timer className="w-3 h-3 text-[var(--accent-primary)]" />
                   </div>
                   <div className="mt-0.5">
                     <span className="text-xs font-bold font-mono text-[var(--text-primary)] truncate block">
@@ -1379,10 +1379,10 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <div className="px-3.5 py-2 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--input-border-hover)] transition-all">
                   <div className="flex items-center justify-between gap-1 text-xs text-[var(--text-muted)]">
                     <span>Membres</span>
-                    <Users className="w-3 h-3 text-emerald-300" />
+                    <Users className="w-3 h-3 text-[var(--accent-primary)]" />
                   </div>
                   <div className="mt-0.5">
-                    <span className="text-sm font-bold font-mono text-emerald-300">
+                    <span className="text-sm font-bold font-mono text-[var(--accent-primary)]">
                       {Number(botCore.userCount || 0).toLocaleString("fr-FR")}
                     </span>
                   </div>
@@ -1405,7 +1405,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   className="px-3 py-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xs font-medium flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
                   title="Actualiser les données"
                 >
-                  <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin text-emerald-300")} />
+                  <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin text-[var(--accent-primary)]")} />
                   <span className="hidden sm:inline">Actualiser</span>
                 </button>
               </div>
@@ -1506,7 +1506,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   </div>
                   <div className="mt-1 flex flex-wrap items-center gap-2.5 text-xs text-[var(--text-muted)]">
                     <span className="flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
                       PM2: <strong className="text-[var(--text-primary)] font-mono">ethone-bot</strong>
                     </span>
                     <span className="text-[var(--text-muted)]">•</span>
@@ -1555,10 +1555,10 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   <div className="p-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                     <span className="text-xs text-[var(--text-muted)] block uppercase font-mono">Processus VPS PM2</span>
                     <span className="text-sm font-bold text-[var(--text-primary)] font-mono mt-1 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
                       ethone-bot
                     </span>
-                    <span className="text-xs text-emerald-400 mt-0.5 block font-mono">Status: Online</span>
+                    <span className="text-xs text-[var(--success)] mt-0.5 block font-mono">Status: Online</span>
                   </div>
 
                   <div className="p-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
@@ -1572,7 +1572,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   <div className="p-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
                     <span className="text-xs text-[var(--text-muted)] block uppercase font-mono">Gateway Shard</span>
                     <span className="text-sm font-bold text-[var(--text-primary)] font-mono mt-1 block">{botCore.pingMs} ms (WebSocket)</span>
-                    <span className="text-xs text-emerald-400 mt-0.5 block">Shard 0 Connecté</span>
+                    <span className="text-xs text-[var(--success)] mt-0.5 block">Shard 0 Connecté</span>
                   </div>
 
                   <div className="p-3.5 rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
@@ -1580,7 +1580,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                     <span className="text-sm font-bold text-[var(--text-primary)] font-mono mt-1 block">
                       {ownerLogs.length} action(s)
                     </span>
-                    <span className="text-xs text-emerald-300 mt-0.5 block font-mono">RLS Sécurisée</span>
+                    <span className="text-xs text-[var(--accent-primary)] mt-0.5 block font-mono">RLS Sécurisée</span>
                   </div>
                 </div>
 
@@ -1600,7 +1600,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                           <span className="text-xs text-[var(--text-muted)] font-mono">
                             {log.created_at ? new Date(log.created_at).toLocaleString("fr-FR") : "À l'instant"}
                           </span>
-                          <span className="px-2 py-0.2 rounded text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+                          <span className="px-2 py-0.2 rounded text-xs bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 font-mono">
                             {log.status || "SUCCESS"}
                           </span>
                         </div>

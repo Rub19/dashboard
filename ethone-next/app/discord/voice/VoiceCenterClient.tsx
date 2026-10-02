@@ -300,7 +300,7 @@ export default function VoiceCenterClient() {
   );
 
   return (
-    <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)] space-y-8 selection:bg-emerald-500/20">
+    <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)] space-y-8 selection:bg-[var(--accent-primary)]/20">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
@@ -313,7 +313,7 @@ export default function VoiceCenterClient() {
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>Retour Discord</span>
             </Link>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20 text-[var(--accent-primary)] text-xs font-semibold">
               <Radio className="h-3.5 w-3.5" />
               <span>Personal Voice Rooms • 100% Interactif</span>
             </div>
@@ -349,7 +349,7 @@ export default function VoiceCenterClient() {
             className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
             title="Rafraîchir"
           >
-            <RefreshCw className={cn("h-4 w-4", refreshing && "animate-spin text-emerald-400")} />
+            <RefreshCw className={cn("h-4 w-4", refreshing && "animate-spin text-[var(--accent-primary)]")} />
           </button>
 
           <Link
@@ -389,49 +389,49 @@ export default function VoiceCenterClient() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-emerald-500/30 transition-all">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-[var(--accent-primary)]/30 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Salons Actifs</span>
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
               <Radio className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-3xl font-black text-[var(--text-primary)]">{data?.kpis.activeVoiceChannelsCount || 0}</span>
-            <span className="text-xs text-emerald-400 font-semibold flex items-center gap-0.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block mr-1" />
+            <span className="text-xs text-[var(--accent-primary)] font-semibold flex items-center gap-0.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] inline-block mr-1" />
               En direct
             </span>
           </div>
           <p className="text-xs text-[var(--text-muted)] mt-1">Salons temporaires ouverts</p>
         </div>
 
-        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-emerald-500/40 transition-all">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-[var(--accent-primary)]/40 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Membres Connectés</span>
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
               <Users className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-3xl font-black text-[var(--text-primary)]">{data?.kpis.usersInVoiceCount || 0}</span>
-            <span className="text-xs text-emerald-300 font-semibold">
+            <span className="text-xs text-[var(--accent-primary)] font-semibold">
               Pic : {data?.kpis.peakConcurrentUsers || 0}
             </span>
           </div>
           <p className="text-xs text-[var(--text-muted)] mt-1">Utilisateurs en conversation</p>
         </div>
 
-        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-emerald-500/40 transition-all">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-[var(--accent-primary)]/40 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Sessions Aujourd'hui</span>
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
               <Flame className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-3xl font-black text-[var(--text-primary)]">{data?.kpis.sessionsTodayCount || 0}</span>
-            <span className="text-xs text-emerald-300 font-semibold">créations</span>
+            <span className="text-xs text-[var(--accent-primary)] font-semibold">créations</span>
           </div>
           <p className="text-xs text-[var(--text-muted)] mt-1">Passages en salon vocal</p>
         </div>
@@ -454,10 +454,10 @@ export default function VoiceCenterClient() {
       </div>
 
       {/* DISCORD PANEL DEPLOYER (Personal Voice Rooms Banner) */}
-      <div className="rounded-2xl border border-emerald-500/30 bg-[var(--surface-raised)]/40 p-6">
+      <div className="rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--surface-raised)]/40 p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300 uppercase tracking-wider">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--accent-primary)] uppercase tracking-wider">
               <Sparkles className="h-3.5 w-3.5" />
               <span>Déploiement Instantané</span>
             </div>
@@ -556,7 +556,7 @@ export default function VoiceCenterClient() {
         <div className="stagger-children space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <Radio className="h-4 w-4 text-emerald-400" />
+              <Radio className="h-4 w-4 text-[var(--accent-primary)]" />
               <span>Salons Temporaires Actifs ({filteredRooms.length})</span>
             </h3>
             <span className="text-xs text-[var(--text-muted)]">Auto-nettoyage activé dès que vide</span>
@@ -582,7 +582,7 @@ export default function VoiceCenterClient() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-black text-[var(--text-primary)] group-hover:text-emerald-400 transition-colors">
+                          <span className="text-sm font-black text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
                             {room.name}
                           </span>
                           {room.isLocked && (
@@ -627,7 +627,7 @@ export default function VoiceCenterClient() {
                           <span>Participants ({room.currentUsers?.length || 0}{room.userLimit > 0 ? ` / ${room.userLimit}` : ""})</span>
                         </span>
                         <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-                          <span className="flex items-center gap-1 text-emerald-400">
+                          <span className="flex items-center gap-1 text-[var(--accent-primary)]">
                             <Shield className="h-2.5 w-2.5" />
                             Whitelist ({(room.allowedUserIds || room.whitelist || []).length})
                           </span>
@@ -647,10 +647,10 @@ export default function VoiceCenterClient() {
                               key={user.id}
                               className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-muted)]"
                             >
-                              <div className="h-2 w-2 rounded-full bg-emerald-400" />
+                              <div className="h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
                               <span className="font-medium">{user.tag}</span>
                               {user.isMuted && <MicOff className="h-3 w-3 text-rose-400" />}
-                              {user.isStreaming && <Tv className="h-3 w-3 text-emerald-300" />}
+                              {user.isStreaming && <Tv className="h-3 w-3 text-[var(--accent-primary)]" />}
                             </div>
                           ))}
                         </div>
@@ -666,7 +666,7 @@ export default function VoiceCenterClient() {
                         className="flex h-7 px-2.5 items-center gap-1 rounded-md bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xs font-semibold transition-all cursor-pointer"
                         title={room.isLocked ? "Déverrouiller le salon" : "Verrouiller le salon"}
                       >
-                        {room.isLocked ? <Unlock className="h-3 w-3 text-emerald-400" /> : <Lock className="h-3 w-3 text-rose-400" />}
+                        {room.isLocked ? <Unlock className="h-3 w-3 text-[var(--accent-primary)]" /> : <Lock className="h-3 w-3 text-rose-400" />}
                         <span>{room.isLocked ? "Déverrouiller" : "Verrouiller"}</span>
                       </button>
 
@@ -725,7 +725,7 @@ export default function VoiceCenterClient() {
                     <td className="p-3.5 font-medium text-[var(--text-primary)]">{sess.userTag}</td>
                     <td className="p-3.5">{sess.roomName}</td>
                     <td className="p-3.5 text-[var(--text-muted)]">{new Date(sess.joinedAt).toLocaleTimeString()}</td>
-                    <td className="p-3.5 text-emerald-400 font-medium">{Math.round(sess.durationSeconds / 60)} min</td>
+                    <td className="p-3.5 text-[var(--accent-primary)] font-medium">{Math.round(sess.durationSeconds / 60)} min</td>
                   </tr>
                 ))}
               </tbody>

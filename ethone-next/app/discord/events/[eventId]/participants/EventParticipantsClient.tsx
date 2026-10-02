@@ -216,7 +216,7 @@ export default function EventParticipantsClient() {
               </Link>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] flex items-center gap-3">
-              <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-emerald-400"><Users className="h-5 w-5" /></span>
+              <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-[var(--accent-primary)]"><Users className="h-5 w-5" /></span>
               Participants
               {isDemo && (
                 <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-300">
@@ -250,7 +250,7 @@ export default function EventParticipantsClient() {
               onClick={handleExportJSON}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-muted)] transition-colors"
             >
-              <Download className="w-3.5 h-3.5 text-emerald-400" />
+              <Download className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
               JSON
             </button>
           </div>
@@ -330,14 +330,14 @@ export default function EventParticipantsClient() {
                       </td>
 
                       {/* Ticket */}
-                      <td className="p-4 font-mono font-bold text-emerald-400">
+                      <td className="p-4 font-mono font-bold text-[var(--accent-primary)]">
                         {p.ticketNumber}
                       </td>
 
                       {/* RSVP Badge */}
                       <td className="p-4">
                         {p.rsvp === "GOING" && (
-                          <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20">
                             Confirmé
                           </span>
                         )}
@@ -347,7 +347,7 @@ export default function EventParticipantsClient() {
                           </span>
                         )}
                         {p.rsvp === "WAITLIST" && (
-                          <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20">
                             File #{p.waitlistPosition}
                           </span>
                         )}
@@ -364,11 +364,11 @@ export default function EventParticipantsClient() {
                           onClick={() => handleToggleAttendance(p.userId)}
                           className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
                             isAttended
-                              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                              ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30"
                               : "bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)] border border-[var(--panel-border)]"
                           }`}
                         >
-                          <CheckCircle2 className={`w-3.5 h-3.5 ${isAttended ? "text-emerald-400" : "text-[var(--text-muted)]"}`} />
+                          <CheckCircle2 className={`w-3.5 h-3.5 ${isAttended ? "text-[var(--success)]" : "text-[var(--text-muted)]"}`} />
                           {isAttended ? "Pointé (Présent)" : "Non pointé"}
                         </button>
                       </td>
@@ -383,7 +383,7 @@ export default function EventParticipantsClient() {
                         {isWaitlist && (
                           <button
                             onClick={() => handlePromote(p.userId)}
-                            className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
+                            className="p-1.5 rounded-lg bg-[var(--accent-primary)]/10 hover:bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20"
                             title="Promouvoir en confirmé"
                           >
                             <UserCheck className="w-3.5 h-3.5" />

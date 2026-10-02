@@ -41521,6 +41521,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_49_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_49_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_49_3_de);
 
+const v1_50_0_fr: ChangelogEntry = {
+  version: "v1.50.0",
+  date: "2026-10-02",
+  title: "Cartes du bot personnalisables partout",
+  items: [
+    "Carte /rank personnalisable : fond (couleur ou image https avec voile), couleur du texte, police, forme de l'avatar, avec aperçu réel dans Niveaux → Personnalisation et sur Discord avec /xp carte.",
+    "La carte /rank est maintenant rendue en double résolution (plus nette dans Discord).",
+    "/bienvenue gère aussi le départ : option « type » sur carte, apercu, test, salon et message.",
+    "La carte de bienvenue peut être jointe au message privé d'accueil (case dans Bienvenue → MP, ou /bienvenue carte mp:oui).",
+    "Pages du bot : les verts figés suivent maintenant la couleur d'accent du thème (et la couleur de succès pour les états).",
+  ],
+};
+
+const v1_50_0_en: ChangelogEntry = {
+  version: "v1.50.0",
+  date: "2026-10-02",
+  title: "Customizable bot cards everywhere",
+  items: [
+    "Customizable /rank card: background (colour or https image with overlay), text colour, font and avatar shape, with a live preview in Levels → Customization and on Discord with /xp carte.",
+    "The /rank card is now rendered at double resolution (sharper in Discord).",
+    "/bienvenue now handles goodbyes too: a “type” option on carte, apercu, test, salon and message.",
+    "The welcome card can be attached to the welcome DM (checkbox in Welcome → DM, or /bienvenue carte mp:yes).",
+    "Bot pages: hardcoded greens now follow the theme accent colour (and the success colour for statuses).",
+  ],
+};
+
+const v1_50_0_es: ChangelogEntry = {
+  version: "v1.50.0",
+  date: "2026-10-02",
+  title: "Tarjetas del bot personalizables en todas partes",
+  items: [
+    "Tarjeta /rank personalizable: fondo (color o imagen https con velo), color del texto, fuente y forma del avatar, con vista previa real en Niveles → Personalización y en Discord con /xp carte.",
+    "La tarjeta /rank ahora se genera a doble resolución (más nítida en Discord).",
+    "/bienvenue también gestiona las despedidas: opción «type» en carte, apercu, test, salon y message.",
+    "La tarjeta de bienvenida puede adjuntarse al mensaje privado de bienvenida (casilla en Bienvenida → MP, o /bienvenue carte mp:sí).",
+    "Páginas del bot: los verdes fijos ahora siguen el color de acento del tema (y el color de éxito para los estados).",
+  ],
+};
+
+const v1_50_0_de: ChangelogEntry = {
+  version: "v1.50.0",
+  date: "2026-10-02",
+  title: "Anpassbare Bot-Karten überall",
+  items: [
+    "Anpassbare /rank-Karte: Hintergrund (Farbe oder https-Bild mit Schleier), Textfarbe, Schrift und Avatarform, mit echter Vorschau unter Level → Anpassung und auf Discord mit /xp carte.",
+    "Die /rank-Karte wird jetzt in doppelter Auflösung gerendert (schärfer in Discord).",
+    "/bienvenue verwaltet jetzt auch Abschiede: Option „type“ bei carte, apercu, test, salon und message.",
+    "Die Willkommenskarte kann der Willkommens-DM beigefügt werden (Kästchen unter Willkommen → DM oder /bienvenue carte mp:ja).",
+    "Bot-Seiten: fest eingestellte Grüntöne folgen jetzt der Akzentfarbe des Themes (und der Erfolgsfarbe für Status).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_50_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_50_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_50_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_50_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

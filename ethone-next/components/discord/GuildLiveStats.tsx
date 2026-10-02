@@ -60,7 +60,7 @@ function Delta({ kpi }: { kpi: Kpi }) {
   if (!kpi || kpi.trend === "neutral" || !Number.isFinite(kpi.percentageChange)) return <span className="text-[10px] text-zinc-500">stable</span>;
   const up = kpi.trend === "up";
   return (
-    <span className={cn("inline-flex items-center gap-0.5 text-[10px] font-semibold", up ? "text-emerald-400" : "text-rose-400")}>
+    <span className={cn("inline-flex items-center gap-0.5 text-[10px] font-semibold", up ? "text-[var(--success)]" : "text-rose-400")}>
       {up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
       {up ? "+" : ""}{Math.round(kpi.percentageChange)}%
     </span>
@@ -135,8 +135,8 @@ export default function GuildLiveStats({ guildId }: { guildId: string }) {
 
   const health = data?.healthScore;
   const bot = data?.botHealth;
-  const healthColor = health?.status === "excellent" || health?.status === "good" ? "text-emerald-400" : health?.status === "average" ? "text-amber-400" : "text-rose-400";
-  const botColor = bot?.status === "healthy" ? "bg-emerald-400" : bot?.status === "degraded" ? "bg-amber-400" : "bg-rose-400";
+  const healthColor = health?.status === "excellent" || health?.status === "good" ? "text-[var(--success)]" : health?.status === "average" ? "text-amber-400" : "text-rose-400";
+  const botColor = bot?.status === "healthy" ? "bg-[var(--success)]" : bot?.status === "degraded" ? "bg-amber-400" : "bg-rose-400";
 
   return (
     <div className="space-y-3">
@@ -205,11 +205,11 @@ export default function GuildLiveStats({ guildId }: { guildId: string }) {
                 <span className="text-[10px] text-zinc-400 mb-1 capitalize">{health?.status}</span>
               </div>
               <div className="h-1.5 w-full rounded-full bg-black/40 overflow-hidden">
-                <div className={cn("h-full rounded-full", health?.status === "critical" ? "bg-rose-500" : health?.status === "average" ? "bg-amber-400" : "bg-emerald-400")} style={{ width: `${health?.score ?? 0}%` }} />
+                <div className={cn("h-full rounded-full", health?.status === "critical" ? "bg-rose-500" : health?.status === "average" ? "bg-amber-400" : "bg-[var(--success)]")} style={{ width: `${health?.score ?? 0}%` }} />
               </div>
               <ul className="space-y-0.5">
                 {data.insights.slice(0, 3).map((i) => (
-                  <li key={i.id} className={cn("text-[10px] leading-snug", i.trend === "positive" ? "text-emerald-300" : i.trend === "warning" ? "text-amber-300" : "text-zinc-400")}>• {i.text}</li>
+                  <li key={i.id} className={cn("text-[10px] leading-snug", i.trend === "positive" ? "text-[var(--success)]" : i.trend === "warning" ? "text-amber-300" : "text-zinc-400")}>• {i.text}</li>
                 ))}
                 {data.insights.length === 0 && <li className="text-[10px] text-zinc-500">Pas encore assez de données pour des insights.</li>}
               </ul>

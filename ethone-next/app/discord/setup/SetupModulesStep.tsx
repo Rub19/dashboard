@@ -113,13 +113,13 @@ export default function SetupModulesStep({ guildId }: { guildId: string }) {
                   disabled={busy}
                   onClick={() => applyPreset(p.ids)}
                   className={`cursor-pointer rounded-2xl border p-4 text-left transition-all hover:-translate-y-0.5 disabled:opacity-60 ${
-                    active ? "border-emerald-500/30 bg-emerald-500/10 ring-1 ring-emerald-500/30" : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)]"
+                    active ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 ring-1 ring-[var(--accent-primary)]/30" : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)]"
                   }`}
                 >
                   <div className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
                     <span className="text-lg">{p.emoji}</span>
                     {p.label}
-                    {active && <span className="ml-auto rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-emerald-300">Actuel</span>}
+                    {active && <span className="ml-auto rounded-full bg-[var(--accent-primary)]/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-[var(--accent-primary)]">Actuel</span>}
                   </div>
                   <p className="mt-1.5 text-xs leading-relaxed text-[var(--text-muted)]">{p.text}</p>
                 </button>
@@ -144,12 +144,12 @@ export default function SetupModulesStep({ guildId }: { guildId: string }) {
                         aria-checked={on}
                         onClick={() => toggle(id)}
                         className={`flex cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-colors ${
-                          on ? "border-emerald-500/30 bg-emerald-500/[0.06]" : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)]"
+                          on ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/[0.06]" : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--input-border-hover)]"
                         }`}
                       >
                         {meta ? <EthoneIcon name={meta.icon} className={`h-5 w-5 shrink-0 ${on ? meta.tint : "text-[var(--text-muted)]"}`} /> : <span className="h-5 w-5 shrink-0" />}
                         <span className={`flex-1 truncate text-sm font-medium ${on ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]"}`}>{meta?.title ?? EXTRA_TITLES[id] ?? id}</span>
-                        <span className={`relative h-[18px] w-8 shrink-0 rounded-full transition-colors ${on ? "bg-emerald-500" : "bg-[var(--surface-raised)]/40"}`}>
+                        <span className={`relative h-[18px] w-8 shrink-0 rounded-full transition-colors ${on ? "bg-[var(--accent-primary)]" : "bg-[var(--surface-raised)]/40"}`}>
                           <span className={`absolute top-[2px] h-[14px] w-[14px] rounded-full bg-white transition-all ${on ? "left-[16px]" : "left-[2px]"}`} />
                         </span>
                       </button>

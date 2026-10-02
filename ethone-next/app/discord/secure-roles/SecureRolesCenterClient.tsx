@@ -57,7 +57,7 @@ const STATUS: Record<MemberRow["status"], { label: string; cls: string }> = {
   none: { label: "Pas invité", cls: "bg-[var(--surface-raised)] text-[var(--text-muted)]" },
   invited: { label: "Invité", cls: "bg-amber-500/15 text-amber-300" },
   pending: { label: "Configuration en cours", cls: "bg-sky-500/15 text-sky-300" },
-  active: { label: "Protégé", cls: "bg-emerald-500/15 text-emerald-300" },
+  active: { label: "Protégé", cls: "bg-[var(--success)]/15 text-[var(--success)]" },
 };
 const AUDIT_LABEL: Record<string, string> = {
   secured: "Rôle sécurisé",
@@ -71,7 +71,7 @@ const AUDIT_LABEL: Record<string, string> = {
   blocked: "Tentative bloquée",
   reset: "Réinitialisation",
 };
-const AUDIT_TONE: Record<string, string> = { failed: "text-amber-300", locked: "text-rose-300", blocked: "text-rose-300", elevated: "text-emerald-300" };
+const AUDIT_TONE: Record<string, string> = { failed: "text-amber-300", locked: "text-rose-300", blocked: "text-rose-300", elevated: "text-[var(--accent-primary)]" };
 const DURATIONS = [5, 10, 15, 30, 60, 120, 240];
 
 const PERM_FR: Record<string, string> = {
@@ -101,7 +101,7 @@ const fmtTime = (iso: string) => new Date(iso).toLocaleString("fr-FR", { day: "2
 function Item({ n, title, text }: { n: string; title: string; text: string }) {
   return (
     <div className="flex gap-3">
-      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-xs font-bold text-emerald-300">{n}</span>
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--accent-primary)]/15 text-xs font-bold text-[var(--accent-primary)]">{n}</span>
       <div>
         <p className="text-sm font-semibold text-[var(--text-primary)]">{title}</p>
         <p className="mt-0.5 text-xs leading-relaxed text-[var(--text-muted)]">{text}</p>
@@ -117,7 +117,7 @@ function WelcomeModal({ onClose }: { onClose: () => void }) {
       <div className="w-full max-w-lg rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 ">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-300">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
               <EthoneIcon name="mod-security" className="h-6 w-6" />
             </span>
             <h2 className="text-lg font-bold text-[var(--text-primary)]">Protégez votre équipe avec les rôles sécurisés</h2>
@@ -305,7 +305,7 @@ export default function SecureRolesCenterClient() {
                         <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: r.color && r.color !== "#000000" ? r.color : "#71717a" }} />
                         <span className="truncate">{r.name}</span>
                         <span className="text-xs font-normal text-[var(--text-muted)]">{r.memberCount} membre(s)</span>
-                        {r.secured && <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-bold uppercase text-emerald-300">Sécurisé</span>}
+                        {r.secured && <span className="rounded-full bg-[var(--accent-primary)]/15 px-2 py-0.5 text-xs font-bold uppercase text-[var(--accent-primary)]">Sécurisé</span>}
                       </p>
                       {!r.secured && (
                         <p className="mt-1 flex flex-wrap gap-1">

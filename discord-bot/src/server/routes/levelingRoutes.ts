@@ -9,6 +9,8 @@ import { XpBoostScopeSchema, XpBoostTargetTypeSchema } from '../../modules/level
 import { z } from 'zod';
 import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
 import { handleClientError } from '../utils/routeError.js';
+import { RankCardStyleSchema } from '../../modules/leveling/types/levelingConfig.js';
+import { renderRankCardFor } from '../../modules/leveling/services/rankCardService.js';
 
 export function createLevelingRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -89,6 +91,26 @@ export function createLevelingRouter(discordClient: Client) {
       res.json({ success: true, config: updated });
     } catch (err: any) {
       handleClientError(err, res, 'Configuration invalide');
+    }
+  });
+
+  // Aperçu de la carte /rank avec un style non enregistré, sur les vraies stats de l'admin connecté.
+  router.post('/rank-card/preview', rateLimit('CONFIG', { byGuild: true, actionName: 'leveling_rank_preview', customLimit: 60, customWindowMs: 60_000 }), async (req: Request, res: Response): Promise<void> => {
+    const guild = discordClient.guilds.cache.get(String(req.params.guildId));
+    const viewer = req.user?.id ? await discordClient.users.fetch(req.user.id).catch(() => null) : null;
+    const user = viewer ?? discordClient.user;
+    if (!guild || !user) {
+      res.status(404).json({ error: 'Serveur introuvable' });
+      return;
+    }
+    const accent = typeof req.body?.accentColor === 'string' && /^#[0-9a-fA-F]{6}$/.test(req.body.accentColor) ? req.body.accentColor : undefined;
+    const style = RankCardStyleSchema.parse(req.body?.rankCard && typeof req.body.rankCard === 'object' ? req.body.rankCard : {});
+    try {
+      const png = await renderRankCardFor(guild, user, { accent, style });
+      res.setHeader('Content-Type', 'image/png');
+      res.send(png);
+    } catch (err: any) {
+      handleClientError(err, res, 'Échec de la génération de l’image');
     }
   });
 

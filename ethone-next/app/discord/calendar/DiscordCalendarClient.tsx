@@ -412,7 +412,7 @@ export default function DiscordCalendarClient() {
                 onClick={() => setViewMode(mode)}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                   viewMode === mode
-                    ? "bg-emerald-500 text-white shadow"
+                    ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 }`}
               >
@@ -453,7 +453,7 @@ export default function DiscordCalendarClient() {
                       <span
                         className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full ${
                           isToday
-                            ? "bg-emerald-500 text-white shadow-sm"
+                            ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
                             : cell.isCurrentMonth
                             ? "text-[var(--text-muted)]"
                             : "text-[var(--text-muted)]"
@@ -462,7 +462,7 @@ export default function DiscordCalendarClient() {
                         {cell.day}
                       </span>
                       {dayEvents.length > 0 && (
-                        <span className="text-xs text-emerald-400 font-semibold">
+                        <span className="text-xs text-[var(--accent-primary)] font-semibold">
                           {dayEvents.length} évt
                         </span>
                       )}
@@ -517,7 +517,7 @@ export default function DiscordCalendarClient() {
                         <span className="px-2 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider bg-[var(--surface-raised)]/50 border border-[var(--panel-border)] text-[var(--text-muted)]">
                           {ev.category}
                         </span>
-                        <span className="text-xs text-emerald-400 font-semibold">
+                        <span className="text-xs text-[var(--accent-primary)] font-semibold">
                           {start.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })} • {start.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
                         </span>
                       </div>
@@ -533,7 +533,7 @@ export default function DiscordCalendarClient() {
                         {ev.location}
                       </div>
                       <div className="text-xs text-[var(--text-muted)] mt-0.5 flex items-center gap-1">
-                        <Users className="w-3.5 h-3.5 text-emerald-400" />
+                        <Users className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                         {ev.attendeesCount} {ev.maxCapacity ? `/ ${ev.maxCapacity}` : "inscrits"}
                       </div>
                     </div>
@@ -574,7 +574,7 @@ export default function DiscordCalendarClient() {
                     {activeModalEvent.emoji}
                   </span>
                   <div>
-                    <span className="px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                    <span className="px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
                       {activeModalEvent.category}
                     </span>
                     <h3 className="text-xl font-bold text-[var(--text-primary)] mt-1">{activeModalEvent.title}</h3>
@@ -606,7 +606,7 @@ export default function DiscordCalendarClient() {
                   </div>
                   <div>
                     <span className="text-[var(--text-muted)] block mb-0.5">Statut</span>
-                    <span className="text-emerald-400 font-semibold uppercase">
+                    <span className="text-[var(--accent-primary)] font-semibold uppercase">
                       {activeModalEvent.status}
                     </span>
                   </div>

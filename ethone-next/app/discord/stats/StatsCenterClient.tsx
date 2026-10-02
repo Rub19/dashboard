@@ -122,7 +122,7 @@ function Delta({ value, invert }: { value: number | null | undefined; invert?: b
   if (value === null || value === undefined) return <span className="text-xs text-[var(--text-muted)]">pas de période précédente</span>;
   const good = invert ? value <= 0 : value >= 0;
   return (
-    <span className={cn("text-xs font-semibold", value === 0 ? "text-[var(--text-muted)]" : good ? "text-emerald-400" : "text-rose-400")}>
+    <span className={cn("text-xs font-semibold", value === 0 ? "text-[var(--text-muted)]" : good ? "text-[var(--success)]" : "text-rose-400")}>
       {value > 0 ? "▲ +" : value < 0 ? "▼ " : "= "}
       {fmt(value)} %<span className="ml-1 font-normal text-[var(--text-muted)]">vs période précédente</span>
     </span>
@@ -377,7 +377,7 @@ export default function StatsCenterClient() {
 
         {state === "ok" && ov && (
           <>
-            <div className={cn("flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between", enabled ? "border-emerald-500/25 bg-emerald-500/[0.05]" : "border-amber-500/25 bg-amber-500/[0.06]")}>
+            <div className={cn("flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between", enabled ? "border-[var(--success)]/25 bg-[var(--success)]/[0.05]" : "border-amber-500/25 bg-amber-500/[0.06]")}>
               <p className="text-xs leading-relaxed text-[var(--text-primary)]">
                 {enabled ? (
                   <>

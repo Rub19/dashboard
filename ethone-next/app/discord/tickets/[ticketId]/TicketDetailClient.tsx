@@ -321,7 +321,7 @@ export default function TicketDetailClient() {
     return (
       <div className="flex min-h-[50vh] items-center justify-center text-[var(--text-primary)]">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent-primary)] border-t-transparent" />
           <p className="text-xs text-[var(--text-muted)]">Chargement des détails du ticket #{ticketId}...</p>
         </div>
       </div>
@@ -358,7 +358,7 @@ export default function TicketDetailClient() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold font-mono tracking-tight text-[var(--text-primary)]">#{ticket.id}</h1>
-              <span className="rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 text-xs font-semibold">
+              <span className="rounded-lg bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 px-2 py-0.5 text-xs font-semibold">
                 {ticket.categoryName}
               </span>
             </div>
@@ -472,7 +472,7 @@ export default function TicketDetailClient() {
           {/* Answers to Form Fields */}
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <FileText className="h-4 w-4 text-emerald-400" />
+              <FileText className="h-4 w-4 text-[var(--accent-primary)]" />
               <span>Formulaire de Demande Initiale</span>
             </h2>
 
@@ -518,7 +518,7 @@ export default function TicketDetailClient() {
           {/* Activity Timeline */}
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <Clock className="h-4 w-4 text-emerald-400" />
+              <Clock className="h-4 w-4 text-[var(--accent-primary)]" />
               <span>Chronologie d&apos;Activité & Traçabilité</span>
             </h2>
 
@@ -526,7 +526,7 @@ export default function TicketDetailClient() {
               {ticket.activityTimeline && ticket.activityTimeline.length > 0 ? (
                 ticket.activityTimeline.map((act: any) => (
                   <div key={act.id} className="relative text-xs space-y-0.5">
-                    <span className="absolute -left-[19px] top-1 h-2 w-2 rounded-full bg-emerald-400" />
+                    <span className="absolute -left-[19px] top-1 h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
                     <div className="flex items-center justify-between text-[var(--text-muted)] text-xs">
                       <span className="font-semibold text-[var(--text-muted)]">{act.actorTag}</span>
                       <span>{new Date(act.timestamp).toLocaleTimeString("fr-FR")}</span>
@@ -547,7 +547,7 @@ export default function TicketDetailClient() {
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 space-y-4">
             <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Demandeur</h2>
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-[var(--surface-raised)]/50 flex items-center justify-center font-bold text-emerald-400 text-sm border border-[var(--panel-border)] overflow-hidden">
+              <div className="h-12 w-12 rounded-full bg-[var(--surface-raised)]/50 flex items-center justify-center font-bold text-[var(--accent-primary)] text-sm border border-[var(--panel-border)] overflow-hidden">
                 {ticket.userAvatar ? (
                   <img src={ticket.userAvatar} alt="" className="h-full w-full object-cover" />
                 ) : (

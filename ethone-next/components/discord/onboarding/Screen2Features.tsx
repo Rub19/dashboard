@@ -74,7 +74,7 @@ const MODULES: ModuleInfo[] = [
     badge: "Haute Sécurité",
     desc: "Détection de vagues de joins, lock d'urgence automatique, vérification CAPTCHA.",
     icon: ShieldCheck,
-    color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
+    color: "text-[var(--accent-primary)] bg-[var(--accent-primary)]/10 border-[var(--accent-primary)]/30",
     preview: (
       <div className="space-y-2">
         <div className="flex items-center justify-between text-[11px] font-mono pb-1 border-b border-[var(--panel-border)]">
@@ -156,7 +156,7 @@ const MODULES: ModuleInfo[] = [
     badge: "Helpdesk",
     desc: "Panels de tickets avec formulaires personnalisés, assignation au staff et transcripts HTML.",
     icon: Ticket,
-    color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
+    color: "text-[var(--accent-primary)] bg-[var(--accent-primary)]/10 border-[var(--accent-primary)]/30",
     preview: (
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-[11px] pb-1 border-b border-[var(--panel-border)]">

@@ -63,6 +63,7 @@ export const PREBUILT_TEMPLATES: WelcomeTemplate[] = [
         ],
         dm: {
           enabled: false,
+          attachCard: false,
           messageContent: 'Bienvenue sur {server} !',
           embed: {
             enabled: true,
@@ -143,6 +144,7 @@ export const PREBUILT_TEMPLATES: WelcomeTemplate[] = [
         ],
         dm: {
           enabled: false,
+          attachCard: false,
           messageContent: 'Prépare-toi à jouer sur {server} !',
           embed: {
             enabled: true,
@@ -222,6 +224,7 @@ export const PREBUILT_TEMPLATES: WelcomeTemplate[] = [
         ],
         dm: {
           enabled: true,
+          attachCard: false,
           messageContent: 'Merci de faire appel au support de **{server}**.',
           embed: {
             enabled: true,
@@ -294,6 +297,7 @@ export const PREBUILT_TEMPLATES: WelcomeTemplate[] = [
         buttons: [],
         dm: {
           enabled: false,
+          attachCard: false,
           messageContent: '',
           embed: {
             enabled: false,

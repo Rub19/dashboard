@@ -264,11 +264,11 @@ export default function AntiNukePage() {
               className={cn(
                 "flex h-8 items-center gap-1.5 rounded-xl border px-3 text-xs font-semibold transition-all active:scale-95",
                 config.enabled
-                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20"
+                  ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20"
                   : "border-red-500/30 bg-red-500/10 text-red-300 hover:bg-red-500/20"
               )}
             >
-              <div className={cn("h-2 w-2 rounded-full", config.enabled ? "bg-emerald-400" : "bg-red-500")} />
+              <div className={cn("h-2 w-2 rounded-full", config.enabled ? "bg-[var(--success)]" : "bg-red-500")} />
               <span>{config.enabled ? "Actif" : "En pause"}</span>
             </button>
           </div>
@@ -278,9 +278,9 @@ export default function AntiNukePage() {
       <main className="px-4 sm:px-6 py-6">
         <div className="max-w-5xl mx-auto space-y-6">
           {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-4 text-xs text-[var(--accent-primary)]">
               <div className="flex items-start gap-3">
-                <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300 shrink-0 mt-0.5">
+                <div className="p-2 rounded-xl bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] shrink-0 mt-0.5">
                   <Bot className="h-5 w-5" />
                 </div>
                 <div>
@@ -306,7 +306,7 @@ export default function AntiNukePage() {
               <span className="text-xs text-[var(--text-muted)] font-medium">Protection</span>
               <div className="mt-2 flex items-center gap-2">
                 {config.enabled ? (
-                  <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                  <ShieldCheck className="h-5 w-5 text-[var(--accent-primary)]" />
                 ) : (
                   <AlertTriangle className="h-5 w-5 text-red-400" />
                 )}
@@ -392,7 +392,7 @@ export default function AntiNukePage() {
             <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Incidents récents ({incidents.length})</h2>
             {incidents.length === 0 ? (
               <div className="pop-in text-center py-10 text-[var(--text-muted)]">
-                <CheckCircle2 className="h-7 w-7 text-emerald-500/40 mx-auto mb-2" />
+                <CheckCircle2 className="h-7 w-7 text-[var(--success)]/40 mx-auto mb-2" />
                 <p className="text-xs font-medium text-[var(--text-muted)]">Aucun incident détecté</p>
               </div>
             ) : (
@@ -419,7 +419,7 @@ export default function AntiNukePage() {
                           Résoudre
                         </button>
                       ) : (
-                        <span className="shrink-0 text-xs font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                        <span className="shrink-0 text-xs font-bold px-2 py-0.5 rounded bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
                           Résolu
                         </span>
                       )}

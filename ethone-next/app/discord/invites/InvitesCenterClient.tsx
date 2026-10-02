@@ -387,10 +387,10 @@ export default function InvitesCenterClient() {
           <div className="text-xs text-[var(--text-muted)] mt-1">Générées & suivies</div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-emerald-500/20">
+        <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--accent-primary)]/20">
           <div className="text-xs text-[var(--text-muted)] font-medium truncate mb-1">Valid Joins</div>
-          <div className="text-xl font-bold text-emerald-400 font-mono">{kpis.validInvites}</div>
-          <div className="text-xs text-emerald-400/80 mt-1">Membres authentiques</div>
+          <div className="text-xl font-bold text-[var(--success)] font-mono">{kpis.validInvites}</div>
+          <div className="text-xs text-[var(--accent-primary)]/80 mt-1">Membres authentiques</div>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-rose-500/20">
@@ -411,12 +411,12 @@ export default function InvitesCenterClient() {
           <div className="text-xs text-pink-400/80 mt-1">Fidélisation globale</div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-emerald-500/30">
+        <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--accent-primary)]/30">
           <div className="text-xs text-[var(--text-muted)] font-medium truncate mb-1">Top Recruteur</div>
-          <div className="text-base font-bold text-emerald-300 truncate">
+          <div className="text-base font-bold text-[var(--accent-primary)] truncate">
             {kpis.topInviter ? kpis.topInviter.tag.split("#")[0] : "Aucun"}
           </div>
-          <div className="text-xs text-emerald-300 mt-1 font-mono">
+          <div className="text-xs text-[var(--accent-primary)] mt-1 font-mono">
             {kpis.topInviter ? `${kpis.topInviter.invites} invites` : "0"}
           </div>
         </div>
@@ -443,7 +443,7 @@ export default function InvitesCenterClient() {
               <TrendingUp className="w-4 h-4 text-pink-400" />
               <span>Entonnoir de Croissance Communautaire (Growth Funnel)</span>
             </h3>
-            <span className="text-xs font-mono text-emerald-400 font-semibold">Taux Global : {kpis.retentionRate}%</span>
+            <span className="text-xs font-mono text-[var(--accent-primary)] font-semibold">Taux Global : {kpis.retentionRate}%</span>
           </div>
 
           <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-5">
@@ -459,9 +459,9 @@ export default function InvitesCenterClient() {
               <div className="text-xs text-[var(--text-muted)]">{joinsPct}%</div>
             </div>
 
-            <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-emerald-500/20">
-              <div className="text-xs text-emerald-400 font-mono mb-0.5">3. VALIDÉES</div>
-              <div className="text-sm font-bold text-emerald-400 font-mono">{funnel.validJoins || kpis.validInvites}</div>
+            <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--accent-primary)]/20">
+              <div className="text-xs text-[var(--success)] font-mono mb-0.5">3. VALIDÉES</div>
+              <div className="text-sm font-bold text-[var(--success)] font-mono">{funnel.validJoins || kpis.validInvites}</div>
               <div className="text-xs text-[var(--text-muted)]">{validPct}%</div>
             </div>
 
@@ -471,9 +471,9 @@ export default function InvitesCenterClient() {
               <div className="text-xs text-[var(--text-muted)]">{retainedPct}%</div>
             </div>
 
-            <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-emerald-500/30">
-              <div className="text-xs text-emerald-300 font-mono mb-0.5">5. RÉCOMPENSES</div>
-              <div className="text-sm font-bold text-emerald-300 font-mono">{funnel.rewardedMembers}</div>
+            <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--accent-primary)]/30">
+              <div className="text-xs text-[var(--accent-primary)] font-mono mb-0.5">5. RÉCOMPENSES</div>
+              <div className="text-sm font-bold text-[var(--accent-primary)] font-mono">{funnel.rewardedMembers}</div>
               <div className="text-xs text-[var(--text-muted)]">{rewardedPct}%</div>
             </div>
           </div>
@@ -484,7 +484,7 @@ export default function InvitesCenterClient() {
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
-                <Radio className="w-3.5 h-3.5 text-emerald-400" />
+                <Radio className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                 <span>Activité Parrainage Direct</span>
               </h3>
               <span className="text-xs text-[var(--text-muted)]">Temps réel</span>
@@ -605,7 +605,7 @@ export default function InvitesCenterClient() {
                       </div>
                     </td>
                     <td className="py-3.5 px-3 font-mono font-semibold text-[var(--text-primary)]">{entry.totalInvites}</td>
-                    <td className="py-3.5 px-3 font-mono font-bold text-emerald-400">{entry.validInvites}</td>
+                    <td className="py-3.5 px-3 font-mono font-bold text-[var(--success)]">{entry.validInvites}</td>
                     <td className="py-3.5 px-3 font-mono text-[var(--text-muted)]">{entry.leftMembers}</td>
                     <td className="py-3.5 px-3 font-mono text-rose-400">{entry.suspiciousInvites}</td>
                     <td className="py-3.5 px-3">
@@ -617,7 +617,7 @@ export default function InvitesCenterClient() {
                       </div>
                     </td>
                     <td className="py-3.5 px-3">
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 text-xs font-mono font-bold">
+                      <span className="px-2 py-0.5 rounded-full bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 text-xs font-mono font-bold">
                         {entry.rewardsEarned} Paliers
                       </span>
                     </td>
@@ -672,7 +672,7 @@ export default function InvitesCenterClient() {
                       </span>
                     </td>
                     <td className="py-3.5 px-3 text-[var(--text-primary)] font-medium">{link.creator}</td>
-                    <td className="py-3.5 px-3 font-mono text-emerald-400 font-bold">{link.uses}</td>
+                    <td className="py-3.5 px-3 font-mono text-[var(--accent-primary)] font-bold">{link.uses}</td>
                     <td className="py-3.5 px-3 font-mono text-[var(--text-muted)]">{link.maxUses}</td>
                     <td className="py-3.5 px-3 text-[var(--text-muted)]">{link.expires}</td>
                     <td className="py-3.5 px-3">
@@ -740,7 +740,7 @@ export default function InvitesCenterClient() {
 
                     <h4 className="text-sm font-bold text-[var(--text-primary)] mb-1">{r.name}</h4>
                     <div className="text-xs text-[var(--text-muted)] flex items-center gap-1.5 mb-3">
-                      <Award className="w-3.5 h-3.5 text-emerald-300" />
+                      <Award className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                       <span>Rôle : @{r.roleName}</span>
                     </div>
 
@@ -752,7 +752,7 @@ export default function InvitesCenterClient() {
                     )}
                   </div>
 
-                  <div className="pt-3 border-t border-[var(--panel-border)] text-xs text-emerald-400 flex items-center gap-1 font-medium">
+                  <div className="pt-3 border-t border-[var(--panel-border)] text-xs text-[var(--accent-primary)] flex items-center gap-1 font-medium">
                     <CheckCircle2 className="w-3 h-3" /> Règle Active • Idempotente
                   </div>
                 </div>
@@ -783,7 +783,7 @@ export default function InvitesCenterClient() {
                     <div>
                       <div className="flex items-center gap-2">
                         <h4 className="text-base font-bold text-[var(--text-primary)]">{c.name}</h4>
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold font-mono">
+                        <span className="px-2 py-0.5 rounded-full bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] text-xs font-bold font-mono">
                           {c.status}
                         </span>
                       </div>
@@ -841,11 +841,11 @@ export default function InvitesCenterClient() {
 
               <div className="space-y-4">
                 {[
-                  { label: "Après 1 Heure", pct: 95, color: "bg-emerald-500" },
+                  { label: "Après 1 Heure", pct: 95, color: "bg-[var(--accent-primary)]" },
                   { label: "Après 24 Heures", pct: 91, color: "bg-teal-500" },
-                  { label: "Après 3 Jours", pct: 84, color: "bg-emerald-500" },
+                  { label: "Après 3 Jours", pct: 84, color: "bg-[var(--accent-primary)]" },
                   { label: "Après 7 Jours", pct: 76, color: "bg-pink-500" },
-                  { label: "Après 30 Jours", pct: 61, color: "bg-emerald-500" },
+                  { label: "Après 30 Jours", pct: 61, color: "bg-[var(--accent-primary)]" },
                 ].map((item) => (
                   <div key={item.label}>
                     <div className="flex justify-between text-xs mb-1">
@@ -864,7 +864,7 @@ export default function InvitesCenterClient() {
             <div className="p-6 rounded-3xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex flex-col justify-between">
               <div>
                 <h3 className="text-sm font-bold text-[var(--text-primary)] mb-1 flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-emerald-300" />
+                  <Layers className="w-4 h-4 text-[var(--accent-primary)]" />
                   <span>Répartition des Sources d'Arrivée</span>
                 </h3>
                 <p className="text-xs text-[var(--text-muted)] mb-6">
@@ -874,11 +874,11 @@ export default function InvitesCenterClient() {
                 <div className="space-y-3">
                   <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between text-xs">
                     <span className="text-[var(--text-muted)] font-medium">Liens d'Invitations Personnelles</span>
-                    <span className="font-mono font-bold text-emerald-400">78% (984 joins)</span>
+                    <span className="font-mono font-bold text-[var(--accent-primary)]">78% (984 joins)</span>
                   </div>
                   <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between text-xs">
                     <span className="text-[var(--text-muted)] font-medium">Vanity URL (discord.gg/nom)</span>
-                    <span className="font-mono font-bold text-emerald-300">18% (231 joins)</span>
+                    <span className="font-mono font-bold text-[var(--accent-primary)]">18% (231 joins)</span>
                   </div>
                   <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] flex items-center justify-between text-xs">
                     <span className="text-[var(--text-muted)] font-medium">Découverte / Direct</span>

@@ -105,7 +105,7 @@ interface EventItem {
 }
 
 const TEMPLATES = [
-  { id: "tpl-gaming", name: "Gaming Night", emoji: "🎮", category: "GAMING", desc: "Sessions jeux multijoueurs avec attribution vocale", color: "border-emerald-500/30" },
+  { id: "tpl-gaming", name: "Gaming Night", emoji: "🎮", category: "GAMING", desc: "Sessions jeux multijoueurs avec attribution vocale", color: "border-[var(--accent-primary)]/30" },
   { id: "tpl-tournament", name: "Tournoi Compétitif", emoji: "🏆", category: "TOURNAMENT", desc: "Tournoi avec jauge stricte et liste d'attente", color: "border-amber-500/30" },
   { id: "tpl-watchparty", name: "Watch Party Anime/Film", emoji: "🍿", category: "WATCH_PARTY", desc: "Projection live et synchronisation vocale", color: "border-pink-500/30" },
   { id: "tpl-meeting", name: "Réunion Staff / AMA", emoji: "🎙️", category: "MEETING", desc: "Scène conférence avec questions en direct", color: "border-cyan-500/30" },
@@ -334,7 +334,7 @@ export default function EventsCenterClient() {
                 <ArrowLeft className="h-3.5 w-3.5" />
                 <span>Retour Discord</span>
               </Link>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20">
                 <Calendar className="w-3.5 h-3.5" />
                 Événements
               </span>
@@ -343,8 +343,8 @@ export default function EventsCenterClient() {
                   Bot temporairement injoignable
                 </span>
               ) : isBotPresent ? (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
                   Synchronisé
                 </span>
               ) : null}
@@ -425,26 +425,26 @@ export default function EventsCenterClient() {
           <div className="relative p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] overflow-hidden group hover:border-[var(--input-border-hover)] transition-all">
             <div className="flex items-center justify-between text-[var(--text-muted)] text-xs font-medium uppercase tracking-wider">
               <span>Événements à Venir</span>
-              <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+              <div className="p-2 rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                 <Calendar className="w-4 h-4" />
               </div>
             </div>
             <div className="text-3xl font-extrabold text-[var(--text-primary)] mt-3">{stats.upcoming}</div>
-            <div className="text-xs text-emerald-400/80 mt-1 flex items-center gap-1 font-medium">
+            <div className="text-xs text-[var(--accent-primary)]/80 mt-1 flex items-center gap-1 font-medium">
               <Sparkles className="w-3.5 h-3.5" />
               {stats.total} programmés au total
             </div>
           </div>
 
-          <div className="relative p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] overflow-hidden group hover:border-emerald-500/40 transition-all">
+          <div className="relative p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] overflow-hidden group hover:border-[var(--accent-primary)]/40 transition-all">
             <div className="flex items-center justify-between text-[var(--text-muted)] text-xs font-medium uppercase tracking-wider">
               <span>Taux de Présence</span>
-              <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+              <div className="p-2 rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                 <BarChart3 className="w-4 h-4" />
               </div>
             </div>
             <div className="text-3xl font-extrabold text-[var(--text-primary)] mt-3">{stats.avgAttendance}</div>
-            <div className="text-xs text-emerald-400/80 mt-1 flex items-center gap-1 font-medium">
+            <div className="text-xs text-[var(--accent-primary)]/80 mt-1 flex items-center gap-1 font-medium">
               <CheckCircle2 className="w-3.5 h-3.5" />
               Pointages automatiques Discord
             </div>
@@ -453,12 +453,12 @@ export default function EventsCenterClient() {
           <div className="relative p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] overflow-hidden group hover:border-[var(--input-border-hover)] transition-all">
             <div className="flex items-center justify-between text-[var(--text-muted)] text-xs font-medium uppercase tracking-wider">
               <span>Inscriptions Confirmées</span>
-              <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+              <div className="p-2 rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                 <Users className="w-4 h-4" />
               </div>
             </div>
             <div className="text-3xl font-extrabold text-[var(--text-primary)] mt-3">{stats.totalRegistrations}</div>
-            <div className="text-xs text-emerald-400/80 mt-1 flex items-center gap-1 font-medium">
+            <div className="text-xs text-[var(--accent-primary)]/80 mt-1 flex items-center gap-1 font-medium">
               <Ticket className="w-3.5 h-3.5" />
               Participants uniques
             </div>
@@ -483,7 +483,7 @@ export default function EventsCenterClient() {
         <div className="mb-10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-emerald-400" />
+              <Sparkles className="w-4 h-4 text-[var(--accent-primary)]" />
               Création Rapide avec Modèles
             </h2>
             <span className="text-xs text-[var(--text-muted)]">Pré-configurés avec rôles, canaux et règles</span>
@@ -498,12 +498,12 @@ export default function EventsCenterClient() {
               >
                 <div>
                   <div className="text-2xl mb-2">{tpl.emoji}</div>
-                  <h3 className="font-bold text-[var(--text-primary)] text-base group-hover:text-emerald-300 transition-colors">
+                  <h3 className="font-bold text-[var(--text-primary)] text-base group-hover:text-[var(--accent-primary)] transition-colors">
                     {tpl.name}
                   </h3>
                   <p className="text-xs text-[var(--text-muted)] mt-1 line-clamp-2">{tpl.desc}</p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-[var(--panel-border)] flex items-center justify-between text-xs font-semibold text-emerald-400">
+                <div className="mt-4 pt-3 border-t border-[var(--panel-border)] flex items-center justify-between text-xs font-semibold text-[var(--accent-primary)]">
                   <span>Utiliser ce template</span>
                   <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -604,7 +604,7 @@ export default function EventsCenterClient() {
                           Terminé
                         </span>
                       ) : (
-                        <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-emerald-500/80 text-[var(--text-primary)]">
+                        <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-[var(--accent-primary)]/80 text-[var(--text-primary)]">
                           Planifié
                         </span>
                       )}
@@ -615,7 +615,7 @@ export default function EventsCenterClient() {
                   <div className="p-5 flex-1 flex flex-col justify-between">
                     <div>
                       {/* Date & Location */}
-                      <div className="flex items-center gap-4 text-xs text-emerald-400 font-semibold mb-2">
+                      <div className="flex items-center gap-4 text-xs text-[var(--accent-primary)] font-semibold mb-2">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3.5 h-3.5" />
                           {startDate.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })} • {startDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
@@ -629,7 +629,7 @@ export default function EventsCenterClient() {
                       </div>
 
                       <Link href={`/discord/events/${event.id}`}>
-                        <h3 className="text-lg font-bold text-[var(--text-primary)] group-hover:text-emerald-300 transition-colors line-clamp-2">
+                        <h3 className="text-lg font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors line-clamp-2">
                           {event.title}
                         </h3>
                       </Link>
@@ -643,7 +643,7 @@ export default function EventsCenterClient() {
                     <div className="mt-5 pt-4 border-t border-[var(--panel-border)]">
                       <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-1.5">
                         <span className="flex items-center gap-1.5 font-medium">
-                          <Users className="w-3.5 h-3.5 text-emerald-400" />
+                          <Users className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                           {event.stats.goingCount} {maxCap ? `/ ${maxCap}` : "confirmés"}
                         </span>
                         {event.stats.waitlistCount > 0 && (
@@ -661,7 +661,7 @@ export default function EventsCenterClient() {
                                 ? "bg-red-500"
                                 : fillRate > 75
                                 ? "bg-amber-500"
-                                : "bg-emerald-500"
+                                : "bg-[var(--accent-primary)]"
                             }`}
                             style={{ width: `${fillRate}%` }}
                           />
@@ -672,7 +672,7 @@ export default function EventsCenterClient() {
                       <div className="mt-4 flex items-center gap-2">
                         <button
                           onClick={() => handleQuickRSVP(event.id)}
-                          className="flex-1 py-2 px-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                          className="flex-1 py-2 px-3 rounded-xl bg-[var(--accent-primary)]/10 hover:bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           Participer
@@ -690,7 +690,7 @@ export default function EventsCenterClient() {
                           className="p-2 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--panel-border)] transition-colors"
                           title="Copier le lien Discord"
                         >
-                          {copiedId === event.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                          {copiedId === event.id ? <Check className="w-3.5 h-3.5 text-[var(--success)]" /> : <Copy className="w-3.5 h-3.5" />}
                         </button>
 
                         <button

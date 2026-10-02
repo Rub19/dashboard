@@ -106,12 +106,12 @@ export default function OverviewGroup({
             <Card variant="default" padding="none" className="p-5 sm:p-6 space-y-4 hover:border-zinc-700/80 transition-all shadow-sm">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
-                  <Cpu className="w-4 h-4 text-emerald-400" />
+                  <Cpu className="w-4 h-4 text-[var(--accent-primary)]" />
                   Sous-Systèmes
                 </h3>
                 <button
                   onClick={() => handleTabChange("health")}
-                  className="text-xs text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-1 transition-colors cursor-pointer"
+                  className="text-xs text-[var(--accent-primary)] hover:text-[var(--accent-primary)] font-medium flex items-center gap-1 transition-colors cursor-pointer"
                 >
                   <span>Détails</span>
                   <ArrowRight className="w-3 h-3" />
@@ -265,7 +265,7 @@ export default function OverviewGroup({
                               title={m.enabled ? "Désactiver ce module" : "Activer ce module"}
                               className={cn(
                                 "w-9 h-5 rounded-full transition-colors relative p-0.5 shrink-0 disabled:opacity-50 cursor-pointer",
-                                m.enabled ? "bg-emerald-500 shadow-sm shadow-emerald-500/30" : "bg-zinc-700"
+                                m.enabled ? "bg-[var(--success)] shadow-sm shadow-[color:var(--success)]/30" : "bg-zinc-700"
                               )}
                             >
                               <span

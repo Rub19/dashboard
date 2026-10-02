@@ -352,7 +352,7 @@ export default function EventDetailClient() {
               href={`/discord/events/${eventId}/participants`}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-surface)]/80 hover:bg-[var(--bg-surface)] border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
             >
-              <Users className="w-3.5 h-3.5 text-emerald-400" />
+              <Users className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
               Participants ({event.stats.goingCount})
             </Link>
 
@@ -360,7 +360,7 @@ export default function EventDetailClient() {
               href={`/discord/events/${eventId}/analytics`}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-surface)]/80 hover:bg-[var(--bg-surface)] border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
             >
-              <BarChart2 className="w-3.5 h-3.5 text-emerald-400" />
+              <BarChart2 className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
               Analytics
             </Link>
 
@@ -379,12 +379,12 @@ export default function EventDetailClient() {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="flex-1">
               <div className="flex items-center gap-2.5 mb-3 flex-wrap">
-                <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
                   {event.emoji} {event.category}
                 </span>
 
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
                   {event.status === "SCHEDULED" ? "Planifié sur Discord" : event.status}
                 </span>
 
@@ -404,8 +404,8 @@ export default function EventDetailClient() {
               </h1>
 
               <div className="flex items-center gap-6 mt-4 text-xs font-semibold text-[var(--text-muted)] flex-wrap">
-                <span className="flex items-center gap-2 text-emerald-300">
-                  <Clock className="w-4 h-4 text-emerald-400" />
+                <span className="flex items-center gap-2 text-[var(--accent-primary)]">
+                  <Clock className="w-4 h-4 text-[var(--accent-primary)]" />
                   {startDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })} • {startDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
                 </span>
 
@@ -442,8 +442,8 @@ export default function EventDetailClient() {
                 disabled={rsvpPending}
                 className={`flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-60 ${
                   userRsvp === "GOING"
-                    ? "bg-emerald-500 text-white shadow-sm"
-                    : "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20"
+                    ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
+                    : "bg-[var(--accent-primary)]/10 hover:bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20"
                 }`}
               >
                 <CheckCircle2 className="w-4 h-4" />
@@ -481,7 +481,7 @@ export default function EventDetailClient() {
                 disabled={isCheckedIn || checkinPending}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 disabled:opacity-80 ${
                   isCheckedIn
-                    ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 cursor-default"
+                    ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 cursor-default"
                     : "bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                 }`}
               >
@@ -494,7 +494,7 @@ export default function EventDetailClient() {
                 className="p-2.5 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)] border border-[var(--panel-border)] transition-colors"
                 title="Partager"
               >
-                {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
+                {copied ? <Check className="w-4 h-4 text-[var(--success)]" /> : <Share2 className="w-4 h-4" />}
               </button>
             </div>
           </div>
@@ -513,20 +513,20 @@ export default function EventDetailClient() {
 
             <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
               <h2 className="text-lg font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
-                <Shield className="w-4 h-4 text-emerald-400" />
+                <Shield className="w-4 h-4 text-[var(--accent-primary)]" />
                 Règles & Accès
               </h2>
               <ul className="space-y-2.5 text-xs text-[var(--text-muted)]">
                 <li className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[var(--success)] shrink-0" />
                   <span>Tous les membres du serveur avec le rôle @Membre peuvent participer.</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[var(--success)] shrink-0" />
                   <span>Casque et microphone recommandés pour les sessions vocales interactives.</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[var(--success)] shrink-0" />
                   <span>Le pointage (Check-in) est ouvert jusqu’à 30 minutes après le début de la session.</span>
                 </li>
               </ul>
@@ -539,7 +539,7 @@ export default function EventDetailClient() {
             <div className="p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
               <h3 className="text-sm font-bold text-[var(--text-primary)] mb-3 flex items-center justify-between">
                 <span>Inscriptions</span>
-                <Users className="w-4 h-4 text-emerald-400" />
+                <Users className="w-4 h-4 text-[var(--accent-primary)]" />
               </h3>
 
               <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-2">
@@ -552,7 +552,7 @@ export default function EventDetailClient() {
               {!event.capacity.unlimited && (
                 <div className="w-full h-2 rounded-full bg-[var(--surface-raised)]/80 overflow-hidden mb-3">
                   <div
-                    className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                    className="h-full bg-[var(--accent-primary)] rounded-full transition-all duration-500"
                     style={{ width: `${fillRate}%` }}
                   />
                 </div>
@@ -571,13 +571,13 @@ export default function EventDetailClient() {
             </div>
 
             {/* Quick Bot Sync status */}
-            <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
-              <div className="flex items-center gap-2 mb-2 text-xs font-bold text-emerald-300">
+            <div className="p-5 rounded-2xl bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20">
+              <div className="flex items-center gap-2 mb-2 text-xs font-bold text-[var(--accent-primary)]">
                 <Sparkles className="w-4 h-4" />
                 Discord Bot Synchronisé
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Les commandes <code className="px-1.5 py-0.5 rounded bg-[var(--surface-raised)] text-emerald-300">/event info {event.id}</code> et <code className="px-1.5 py-0.5 rounded bg-[var(--surface-raised)] text-emerald-300">/event rsvp</code> sont actives sur votre serveur.
+                Les commandes <code className="px-1.5 py-0.5 rounded bg-[var(--surface-raised)] text-[var(--accent-primary)]">/event info {event.id}</code> et <code className="px-1.5 py-0.5 rounded bg-[var(--surface-raised)] text-[var(--accent-primary)]">/event rsvp</code> sont actives sur votre serveur.
               </p>
             </div>
           </div>

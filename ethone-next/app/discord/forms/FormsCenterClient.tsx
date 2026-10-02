@@ -419,7 +419,7 @@ export default function FormsCenterClient() {
         <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
           <div className="flex items-center justify-between text-[var(--text-muted)] mb-1">
             <span className="text-xs font-medium">Total Formulaires</span>
-            <Layers className="h-4 w-4 text-emerald-400" />
+            <Layers className="h-4 w-4 text-[var(--accent-primary)]" />
           </div>
           <div className="text-2xl font-bold text-[var(--text-primary)]">{stats.total}</div>
           <p className="text-xs text-[var(--text-muted)] mt-0.5">Créés sur ce serveur</p>
@@ -428,9 +428,9 @@ export default function FormsCenterClient() {
         <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
           <div className="flex items-center justify-between text-[var(--text-muted)] mb-1">
             <span className="text-xs font-medium">Formulaires Actifs</span>
-            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <CheckCircle2 className="h-4 w-4 text-[var(--success)]" />
           </div>
-          <div className="text-2xl font-bold text-emerald-400">{stats.active}</div>
+          <div className="text-2xl font-bold text-[var(--accent-primary)]">{stats.active}</div>
           <p className="text-xs text-[var(--text-muted)] mt-0.5">Ouverts aux réponses</p>
         </div>
 
@@ -455,9 +455,9 @@ export default function FormsCenterClient() {
         <div className="col-span-2 sm:col-span-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4">
           <div className="flex items-center justify-between text-[var(--text-muted)] mb-1">
             <span className="text-xs font-medium">Taux de Complétion</span>
-            <TrendingUp className="h-4 w-4 text-emerald-400" />
+            <TrendingUp className="h-4 w-4 text-[var(--accent-primary)]" />
           </div>
-          <div className="text-2xl font-bold text-emerald-400">{stats.avgCompletion}%</div>
+          <div className="text-2xl font-bold text-[var(--accent-primary)]">{stats.avgCompletion}%</div>
           <p className="text-xs text-[var(--text-muted)] mt-0.5">Moyenne globale</p>
         </div>
       </div>
@@ -553,7 +553,7 @@ export default function FormsCenterClient() {
                     <span
                       className={cn(
                         "text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border flex items-center gap-1 shrink-0",
-                        isPublished && "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
+                        isPublished && "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/30",
                         isDraft && "bg-amber-500/10 text-amber-300 border-amber-500/30",
                         isClosed && "bg-[var(--surface-raised)]/60 text-[var(--text-muted)] border-[var(--panel-border)]"
                       )}
@@ -561,7 +561,7 @@ export default function FormsCenterClient() {
                       <span
                         className={cn(
                           "h-1.5 w-1.5 rounded-full",
-                          isPublished && "bg-emerald-400",
+                          isPublished && "bg-[var(--accent-primary)]",
                           isDraft && "bg-amber-400",
                           isClosed && "bg-[var(--surface-raised)]/60"
                         )}
@@ -571,7 +571,7 @@ export default function FormsCenterClient() {
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className="text-base font-bold text-[var(--text-primary)] group-hover:text-emerald-300 transition-colors line-clamp-1">
+                  <h3 className="text-base font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors line-clamp-1">
                     {form.title}
                   </h3>
                   <p className="text-xs text-[var(--text-muted)] mt-1 line-clamp-2 leading-relaxed">
@@ -590,7 +590,7 @@ export default function FormsCenterClient() {
                     </div>
                     <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] p-2 rounded-xl">
                       <span className="text-xs text-[var(--text-muted)] block">Champs</span>
-                      <span className="text-xs font-bold text-emerald-400">{form.fieldsCount}</span>
+                      <span className="text-xs font-bold text-[var(--accent-primary)]">{form.fieldsCount}</span>
                     </div>
                   </div>
                 </div>
@@ -635,7 +635,7 @@ export default function FormsCenterClient() {
                     </button>
                     <button
                       onClick={() => handleTogglePublish(form.id)}
-                      className="flex h-8 w-8 items-center justify-center rounded-xl text-[var(--text-muted)] hover:text-emerald-400 hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
+                      className="flex h-8 w-8 items-center justify-center rounded-xl text-[var(--text-muted)] hover:text-[var(--accent-primary)] hover:bg-[var(--surface-raised)]/70 transition-all cursor-pointer"
                       title={isPublished ? "Désactiver le formulaire" : "Publier"}
                     >
                       <CheckCircle2 className="h-3.5 w-3.5" />
@@ -679,12 +679,12 @@ export default function FormsCenterClient() {
               {TEMPLATES.map((tmpl) => (
                 <div
                   key={tmpl.id}
-                  className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 hover:border-[var(--input-border-hover)] hover:bg-emerald-500/15 transition-all flex flex-col justify-between"
+                  className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 hover:border-[var(--input-border-hover)] hover:bg-[var(--accent-primary)]/15 transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="text-lg">{tmpl.icon}</span>
-                      <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[var(--accent-primary)] bg-[var(--accent-primary)]/10 px-2 py-0.5 rounded-full border border-[var(--accent-primary)]/20">
                         {tmpl.category}
                       </span>
                     </div>

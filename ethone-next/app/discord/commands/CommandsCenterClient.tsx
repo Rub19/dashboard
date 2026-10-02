@@ -430,7 +430,7 @@ export default function CommandsCenterClient() {
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-emerald-500/10 text-emerald-300 rounded-[var(--inset-radius)] border border-emerald-500/30 icon-pop">
+              <div className="p-2.5 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 icon-pop">
                 <Code2 className="w-6 h-6" />
               </div>
               <div>
@@ -454,7 +454,7 @@ export default function CommandsCenterClient() {
               />
             )}
             <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
-              <RefreshCw className={cn("w-4 h-4 text-emerald-300", loading && "animate-spin")} />
+              <RefreshCw className={cn("w-4 h-4 text-[var(--accent-primary)]", loading && "animate-spin")} />
               Actualiser
             </button>
             <button onClick={() => setActiveTab("builder")} className="px-4 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-2 cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
@@ -492,12 +492,12 @@ export default function CommandsCenterClient() {
         {/* KPI réels */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {[
-            { label: "Commandes", value: commands.length, cls: "text-emerald-300", sub: `${commands.filter((c) => c.enabled).length} active(s)` },
+            { label: "Commandes", value: commands.length, cls: "text-[var(--success)]", sub: `${commands.filter((c) => c.enabled).length} active(s)` },
             { label: "Exécutions totales", value: totalUsage, cls: "text-[var(--text-primary)]", sub: "Cumul depuis la création" },
             { label: "Slash (/)", value: commands.filter((c) => c.triggerType !== "prefix").length, cls: "text-cyan-400", sub: "Natif Discord" },
-            { label: "Préfixe (!)", value: commands.filter((c) => c.triggerType !== "slash").length, cls: "text-emerald-300", sub: "Message texte" },
+            { label: "Préfixe (!)", value: commands.filter((c) => c.triggerType !== "slash").length, cls: "text-[var(--accent-primary)]", sub: "Message texte" },
             { label: "Restreintes", value: restricted, cls: "text-amber-400", sub: "Rôle / permission requis" },
-            { label: "Templates", value: templates.length, cls: "text-emerald-400", sub: "Prêts à installer" },
+            { label: "Templates", value: templates.length, cls: "text-[var(--success)]", sub: "Prêts à installer" },
           ].map((k) => (
             <div key={k.label} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
               <span className="text-xs text-[var(--text-muted)] font-medium">{k.label}</span>
@@ -546,14 +546,14 @@ export default function CommandsCenterClient() {
                 {commands.map((cmd) => {
                   const r = primaryResponse(cmd);
                   return (
-                    <div key={cmd.id} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-emerald-500/40 rounded-2xl p-5 space-y-4 transition-all flex flex-col justify-between">
+                    <div key={cmd.id} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--accent-primary)]/40 rounded-2xl p-5 space-y-4 transition-all flex flex-col justify-between">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 min-w-0">
-                            <span className="font-mono font-bold text-sm text-emerald-300 bg-[var(--surface-raised)]/40 px-2.5 py-1 rounded-lg border border-[var(--panel-border)] truncate">{triggerLabel(cmd)}</span>
+                            <span className="font-mono font-bold text-sm text-[var(--accent-primary)] bg-[var(--surface-raised)]/40 px-2.5 py-1 rounded-lg border border-[var(--panel-border)] truncate">{triggerLabel(cmd)}</span>
                             <span className="px-2 py-0.5 rounded text-xs font-bold bg-[var(--surface-raised)]/40 text-[var(--text-muted)] shrink-0">{r?.embed ? "Embed" : "Texte"}</span>
                           </div>
-                          <button type="button" onClick={() => toggleCommand(cmd)} className={cn("px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition-colors shrink-0", cmd.enabled ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]")}>
+                          <button type="button" onClick={() => toggleCommand(cmd)} className={cn("px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition-colors shrink-0", cmd.enabled ? "bg-[var(--success)]/10 text-[var(--success)] border border-[var(--success)]/20" : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]")}>
                             {cmd.enabled ? "🟢 Active" : "⚪ Désactivée"}
                           </button>
                         </div>
@@ -572,17 +572,17 @@ export default function CommandsCenterClient() {
                           </div>
                           <div>
                             <span className="text-[var(--text-muted)] block text-xs uppercase">Utilisations</span>
-                            <span className="text-emerald-300 font-bold font-mono">{(cmd.usageCount || 0).toLocaleString("fr-FR")}</span>
+                            <span className="text-[var(--accent-primary)] font-bold font-mono">{(cmd.usageCount || 0).toLocaleString("fr-FR")}</span>
                           </div>
                         </div>
                       </div>
                       <div className="pt-3 border-t border-[var(--panel-border)] flex items-center justify-between gap-2">
                         <button onClick={() => { setSimInput(`/${cmd.name}`); setActiveTab("simulator"); runSimulation(cmd.name); }} className="px-3 py-1.5 rounded-lg bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-[var(--text-primary)] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer">
-                          <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+                          <Terminal className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                           Tester
                         </button>
                         <div className="flex items-center gap-1">
-                          <button onClick={() => duplicateCommand(cmd)} className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-emerald-300 hover:bg-emerald-500/10 transition-colors cursor-pointer" title="Dupliquer">
+                          <button onClick={() => duplicateCommand(cmd)} className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/10 transition-colors cursor-pointer" title="Dupliquer">
                             <Copy className="w-4 h-4" />
                           </button>
                           <button onClick={() => deleteCommand(cmd)} className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer" title="Supprimer">
@@ -603,7 +603,7 @@ export default function CommandsCenterClient() {
           <div className="stagger-children grid grid-cols-1 lg:grid-cols-12 gap-6">
             <form onSubmit={handleCreateCommand} className="lg:col-span-7 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-emerald-300" />
+                <Sparkles className="w-5 h-5 text-[var(--accent-primary)]" />
                 <h3 className="text-base font-bold text-[var(--text-primary)]">Créateur de Commande</h3>
               </div>
               <div className="space-y-4 text-xs">
@@ -616,7 +616,7 @@ export default function CommandsCenterClient() {
                     <label className="block font-semibold text-[var(--text-muted)] mb-1">Déclencheur</label>
                     <div className="flex gap-1.5">
                       {([{ id: "both", label: "/ et !" }, { id: "slash", label: "Slash (/)" }, { id: "prefix", label: "Préfixe (!)" }] as { id: TriggerType; label: string }[]).map((t) => (
-                        <button key={t.id} type="button" onClick={() => setBuilderType(t.id)} className={cn("flex-1 h-10 rounded-xl text-xs font-semibold transition-all cursor-pointer", builderType === t.id ? "bg-emerald-500 text-white" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)]")}>
+                        <button key={t.id} type="button" onClick={() => setBuilderType(t.id)} className={cn("flex-1 h-10 rounded-xl text-xs font-semibold transition-all cursor-pointer", builderType === t.id ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)]")}>
                           {t.label}
                         </button>
                       ))}
@@ -641,7 +641,7 @@ export default function CommandsCenterClient() {
                   <label className="block font-semibold text-[var(--text-muted)] mb-1.5">Variables dynamiques :</label>
                   <div className="flex flex-wrap gap-1.5">
                     {VARIABLES.map((item) => (
-                      <button key={item.v} type="button" onClick={() => insertVariable(item.v)} className="px-2.5 py-1 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-emerald-500/40 text-emerald-300 font-mono text-xs transition-colors cursor-pointer" title={item.desc}>
+                      <button key={item.v} type="button" onClick={() => insertVariable(item.v)} className="px-2.5 py-1 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--accent-primary)]/40 text-[var(--accent-primary)] font-mono text-xs transition-colors cursor-pointer" title={item.desc}>
                         {item.v}
                       </button>
                     ))}
@@ -650,8 +650,8 @@ export default function CommandsCenterClient() {
                 <div>
                   <label className="block font-semibold text-[var(--text-muted)] mb-1">Format de réponse</label>
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => setBuilderResponseType("EMBED")} className={cn("flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer", builderResponseType === "EMBED" ? "bg-emerald-500 text-white shadow-sm" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)]")}>🎨 Embed</button>
-                    <button type="button" onClick={() => setBuilderResponseType("TEXT")} className={cn("flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer", builderResponseType === "TEXT" ? "bg-emerald-500 text-white shadow-sm" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)]")}>📝 Texte</button>
+                    <button type="button" onClick={() => setBuilderResponseType("EMBED")} className={cn("flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer", builderResponseType === "EMBED" ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)]")}>🎨 Embed</button>
+                    <button type="button" onClick={() => setBuilderResponseType("TEXT")} className={cn("flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer", builderResponseType === "TEXT" ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)]")}>📝 Texte</button>
                   </div>
                 </div>
                 {builderResponseType === "TEXT" ? (
@@ -681,14 +681,14 @@ export default function CommandsCenterClient() {
             </form>
 
             <div className="lg:col-span-5 space-y-3">
-              <span className="text-xs font-bold text-[var(--text-muted)] flex items-center gap-1.5"><Eye className="w-4 h-4 text-emerald-300" /> Aperçu Discord</span>
+              <span className="text-xs font-bold text-[var(--text-muted)] flex items-center gap-1.5"><Eye className="w-4 h-4 text-[var(--accent-primary)]" /> Aperçu Discord</span>
               <div className="bg-[#2B2D31] rounded-2xl p-4 space-y-3 border border-[var(--panel-border)] font-sans">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-primary)] font-bold text-xs bg-[var(--surface-raised)]/40">ET</div>
                   <div>
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs font-bold text-[var(--text-primary)]">Etho</span>
-                      <span className="bg-emerald-500 text-white text-xs font-bold px-1 rounded">BOT</span>
+                      <span className="bg-[var(--accent-primary)] text-[var(--accent-contrast)] text-xs font-bold px-1 rounded">BOT</span>
                     </div>
                     <span className="text-xs text-[var(--text-muted)]">À l'instant</span>
                   </div>
@@ -718,7 +718,7 @@ export default function CommandsCenterClient() {
           <div className="stagger-children grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-7 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><Terminal className="w-5 h-5 text-emerald-400" /> Simulateur</h3>
+                <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><Terminal className="w-5 h-5 text-[var(--accent-primary)]" /> Simulateur</h3>
                 <span className="text-xs text-[var(--text-muted)] font-mono">{isDemo ? "Aperçu local" : "Rendu par le bot (dry-run)"}</span>
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
@@ -734,7 +734,7 @@ export default function CommandsCenterClient() {
               <div className="pt-2 flex items-center gap-2 text-xs text-[var(--text-muted)] flex-wrap">
                 <span>Raccourcis :</span>
                 {commands.map((c) => (
-                  <button key={c.id} type="button" onClick={() => { setSimInput(`/${c.name}`); runSimulation(c.name); }} className="px-2.5 py-1 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-emerald-500/40 text-emerald-300 font-mono cursor-pointer">
+                  <button key={c.id} type="button" onClick={() => { setSimInput(`/${c.name}`); runSimulation(c.name); }} className="px-2.5 py-1 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-[var(--accent-primary)]/40 text-[var(--accent-primary)] font-mono cursor-pointer">
                     /{c.name}
                   </button>
                 ))}
@@ -754,7 +754,7 @@ export default function CommandsCenterClient() {
                     <div>
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs font-bold text-[var(--text-primary)]">Etho</span>
-                        <span className="bg-emerald-500 text-white text-xs font-bold px-1 rounded">BOT</span>
+                        <span className="bg-[var(--accent-primary)] text-[var(--accent-contrast)] text-xs font-bold px-1 rounded">BOT</span>
                       </div>
                       <span className="text-xs text-[var(--text-muted)]">À l'instant</span>
                     </div>
@@ -777,7 +777,7 @@ export default function CommandsCenterClient() {
         {/* Templates */}
         {activeTab === "templates" && (
           <div className="stagger-children space-y-4">
-            <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2"><LayoutTemplate className="w-4 h-4 text-emerald-300" /> Templates prêts à l'emploi</h2>
+            <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2"><LayoutTemplate className="w-4 h-4 text-[var(--success)]" /> Templates prêts à l'emploi</h2>
             {templates.length === 0 ? (
               <p className="text-xs text-[var(--text-muted)]">{isDemo ? "Connecte un serveur pour charger les templates du bot." : "Aucun template disponible."}</p>
             ) : (
@@ -785,7 +785,7 @@ export default function CommandsCenterClient() {
                 {templates.map((t) => (
                   <div key={t.name} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-5 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono font-bold text-sm text-emerald-300">/{t.name}</span>
+                      <span className="font-mono font-bold text-sm text-[var(--accent-primary)]">/{t.name}</span>
                       <span className="px-2 py-0.5 rounded text-xs font-bold bg-[var(--surface-raised)]/40 text-[var(--text-muted)]">{t.category || "Général"}</span>
                     </div>
                     <p className="text-xs text-[var(--text-muted)]">{t.description || "Template de commande."}</p>

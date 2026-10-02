@@ -761,11 +761,11 @@ export function TicketCenterClient() {
   const getStatusBadge = (s: TicketStatus) => {
     switch (s) {
       case "OPEN":
-        return "bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
+        return "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border-[var(--accent-primary)]/40";
       case "WAITING_STAFF":
         return "bg-orange-500/20 text-orange-300 border-orange-500/40";
       case "WAITING_USER":
-        return "bg-emerald-500/10 text-emerald-300 border-emerald-500/40";
+        return "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/40";
       case "PENDING":
         return "bg-amber-500/20 text-amber-300 border-amber-500/40";
       case "RESOLVED":
@@ -780,13 +780,13 @@ export function TicketCenterClient() {
       {/* Top Bar / Guild Selector */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-[var(--inset-radius)] bg-emerald-600 icon-pop">
+          <div className="flex h-12 w-12 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)] icon-pop">
             <Ticket className="h-6 w-6 text-[var(--text-primary)]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Tickets Center</h1>
-              <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-300">
+              <span className="rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2.5 py-0.5 text-xs font-semibold text-[var(--accent-primary)]">
                 Helpdesk Pro
               </span>
             </div>
@@ -817,7 +817,7 @@ export function TicketCenterClient() {
             className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] text-[var(--text-muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
             title="Rafraîchir les données"
           >
-            <RefreshCw className={cn("h-4 w-4", loading && "animate-spin text-emerald-400")} />
+            <RefreshCw className={cn("h-4 w-4", loading && "animate-spin text-[var(--accent-primary)]")} />
           </button>
 
           <Link
@@ -859,13 +859,13 @@ export function TicketCenterClient() {
         </div>
       ) : (
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-6">
-        <div className="rounded-2xl border border-emerald-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
+        <div className="rounded-2xl border border-[var(--accent-primary)]/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
           <div className="flex items-center justify-between text-[var(--text-muted)] text-xs">
             <span>Tickets Ouverts</span>
-            <Ticket className="h-4 w-4 text-emerald-400" />
+            <Ticket className="h-4 w-4 text-[var(--accent-primary)]" />
           </div>
           <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{overview?.open ?? 0}</p>
-          <p className="text-xs text-emerald-300/80 mt-1">En attente de prise en charge</p>
+          <p className="text-xs text-[var(--accent-primary)]/80 mt-1">En attente de prise en charge</p>
         </div>
 
         <div className="rounded-2xl border border-amber-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
@@ -886,13 +886,13 @@ export function TicketCenterClient() {
           <p className="text-xs text-blue-300/80 mt-1">Sur {overview?.totalTickets ?? 0} tickets au total</p>
         </div>
 
-        <div className="rounded-2xl border border-emerald-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
+        <div className="rounded-2xl border border-[var(--accent-primary)]/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
           <div className="flex items-center justify-between text-[var(--text-muted)] text-xs">
             <span>Temps de Réponse</span>
-            <Zap className="h-4 w-4 text-emerald-400" />
+            <Zap className="h-4 w-4 text-[var(--accent-primary)]" />
           </div>
           <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{overview?.averageResponseTime || "3m 42s"}</p>
-          <p className="text-xs text-emerald-300/80 mt-1">Moyenne première réponse</p>
+          <p className="text-xs text-[var(--accent-primary)]/80 mt-1">Moyenne première réponse</p>
         </div>
 
         <div className="rounded-2xl border border-teal-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm col-span-2 sm:col-span-1">
@@ -1053,7 +1053,7 @@ export function TicketCenterClient() {
                       <td className="py-3 px-4 font-mono font-bold text-[var(--text-primary)]">
                         <Link
                           href={`/discord/tickets/${t.id}?guildId=${currentGuildId}`}
-                          className="hover:text-emerald-400 transition-colors inline-flex items-center gap-1"
+                          className="hover:text-[var(--accent-primary)] transition-colors inline-flex items-center gap-1"
                         >
                           <span>#{t.id}</span>
                           {t.relatedCaseId && (
@@ -1067,7 +1067,7 @@ export function TicketCenterClient() {
                       {/* Demandeur */}
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
-                          <div className="h-6 w-6 rounded-full bg-[var(--surface-raised)]/50 flex items-center justify-center text-xs font-bold text-emerald-400 border border-[var(--panel-border)] overflow-hidden">
+                          <div className="h-6 w-6 rounded-full bg-[var(--surface-raised)]/50 flex items-center justify-center text-xs font-bold text-[var(--accent-primary)] border border-[var(--panel-border)] overflow-hidden">
                             {t.userAvatar ? (
                               <img src={t.userAvatar} alt="" className="h-full w-full object-cover" />
                             ) : (
@@ -1119,14 +1119,14 @@ export function TicketCenterClient() {
                       <td className="py-3 px-4">
                         {t.claimedBy ? (
                           <div className="flex items-center gap-1.5">
-                            <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                            <span className="font-medium text-emerald-300">{t.claimedBy.tag}</span>
+                            <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
+                            <span className="font-medium text-[var(--accent-primary)]">{t.claimedBy.tag}</span>
                           </div>
                         ) : (
                           <button
                             onClick={() => handleQuickClaim(t)}
                             disabled={actionLoading}
-                            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2 py-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-emerald-600/30 transition-all cursor-pointer"
+                            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2 py-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--accent-primary)]/30 transition-all cursor-pointer"
                           >
                             + Prendre en charge
                           </button>
@@ -1150,7 +1150,7 @@ export function TicketCenterClient() {
                         <div className="flex items-center justify-end gap-1.5">
                           <Link
                             href={`/discord/tickets/${t.id}?guildId=${currentGuildId}`}
-                            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-emerald-600/20 transition-all"
+                            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--accent-primary)]/20 transition-all"
                             title="Ouvrir le détail complet"
                           >
                             <ChevronRight className="h-4 w-4" />
@@ -1356,7 +1356,7 @@ export function TicketCenterClient() {
                   </div>
                   <div className="flex items-center justify-between text-[var(--text-muted)]">
                     <span>Champs du formulaire</span>
-                    <span className="font-bold text-emerald-400">
+                    <span className="font-bold text-[var(--accent-primary)]">
                       {cat.formFields?.length || 0} question(s)
                     </span>
                   </div>
@@ -1495,13 +1495,13 @@ export function TicketCenterClient() {
                 className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20">
                     <Zap className="h-4 w-4" />
                   </div>
                   <div>
                     <h3 className="font-bold text-[var(--text-primary)] text-xs">{a.name}</h3>
                     <p className="text-xs text-[var(--text-muted)]">
-                      Quand <code className="text-emerald-300">{a.trigger}</code> ➔ Effectuer{" "}
+                      Quand <code className="text-[var(--accent-primary)]">{a.trigger}</code> ➔ Effectuer{" "}
                       <code className="text-teal-300">{a.actions[0]?.type || "Action"}</code>
                     </p>
                   </div>
@@ -1511,7 +1511,7 @@ export function TicketCenterClient() {
                   <span
                     className={cn(
                       "rounded-full px-2 py-0.5 text-xs font-bold uppercase",
-                      a.enabled ? "bg-emerald-500/20 text-emerald-300" : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)]"
+                      a.enabled ? "bg-[var(--success)]/20 text-[var(--success)]" : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)]"
                     )}
                   >
                     {a.enabled ? "Actif" : "Inactif"}
@@ -1581,7 +1581,7 @@ export function TicketCenterClient() {
                             href={`${API_BASE}/api/guilds/${currentGuildId}/tickets/transcripts/${t.id}/download`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2.5 py-1 text-xs font-semibold text-emerald-400 hover:bg-emerald-600/20"
+                            className="inline-flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-2.5 py-1 text-xs font-semibold text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20"
                           >
                             <Download className="h-3 w-3" />
                             <span>HTML</span>
@@ -1618,7 +1618,7 @@ export function TicketCenterClient() {
                     </div>
                     <div className="h-2 w-full rounded-full bg-[var(--surface-raised)]/50 overflow-hidden">
                       <div
-                        className="h-full bg-emerald-500 rounded-full"
+                        className="h-full bg-[var(--accent-primary)] rounded-full"
                         style={{
                           width: `${Math.min(
                             100,
@@ -2039,7 +2039,7 @@ export function TicketCenterClient() {
                                 : editingPanel.categoryIds.filter((id) => id !== c.id);
                               setEditingPanel({ ...editingPanel, categoryIds: updated });
                             }}
-                            className="rounded border-[var(--input-border)] bg-[var(--input-bg)] text-emerald-500"
+                            className="rounded border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--accent-primary)]"
                           />
                           <span>{c.emoji} {c.name}</span>
                         </label>

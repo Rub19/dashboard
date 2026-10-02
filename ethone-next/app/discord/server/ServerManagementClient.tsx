@@ -924,7 +924,7 @@ export default function ServerManagementClient({
   const renderStatusBadge = (status: string) => {
     if (status === "EXCELLENT" || status === "HEALTHY") {
       return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20">
           <CheckCircle2 className="h-3.5 w-3.5" />
           {status === "EXCELLENT" ? "Sécurité Optimale" : "Système Sain"}
         </span>
@@ -947,7 +947,7 @@ export default function ServerManagementClient({
   };
 
   return (
-    <div className="pb-8 text-[var(--text-primary)] selection:bg-emerald-500 selection:text-white">
+    <div className="pb-8 text-[var(--text-primary)] selection:bg-[var(--accent-primary)] selection:text-[var(--accent-contrast)]">
       {/* Top Banner & Header */}
       <header className="border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/60 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -961,7 +961,7 @@ export default function ServerManagementClient({
               >
                 <ArrowLeft className="h-4 w-4" />
               </Link>
-              <div className="h-12 w-12 rounded-2xl bg-emerald-500 flex items-center justify-center font-bold text-lg shadow-sm border border-[var(--input-border-hover)] overflow-hidden">
+              <div className="h-12 w-12 rounded-2xl bg-[var(--accent-primary)] flex items-center justify-center font-bold text-lg shadow-sm border border-[var(--input-border-hover)] overflow-hidden">
                 {overview?.guild.icon ? (
                   <img src={overview.guild.icon} alt={overview.guild.name} className="h-full w-full object-cover" />
                 ) : (
@@ -974,14 +974,14 @@ export default function ServerManagementClient({
                     {overview?.guild.name || "Chargement..."}
                   </h1>
                   {overview?.guild.ownerTag && (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 flex items-center gap-1">
                       <Crown className="h-3 w-3 text-amber-400" />
                       {overview.guild.ownerTag}
                     </span>
                   )}
                   {overview?.kpis && (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-                      <Sparkles className="h-3 w-3 text-emerald-400" />
+                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 flex items-center gap-1">
+                      <Sparkles className="h-3 w-3 text-[var(--accent-primary)]" />
                       Boost Niveau {overview.kpis.serverBoostLevel} ({overview.kpis.boostCount} boosts)
                     </span>
                   )}
@@ -1017,7 +1017,7 @@ export default function ServerManagementClient({
                 )}
                 title="Mode de verrouillage d'urgence"
               >
-                {safeModeEnabled ? <ShieldAlert className="h-4 w-4 text-rose-400" /> : <ShieldCheck className="h-4 w-4 text-emerald-400" />}
+                {safeModeEnabled ? <ShieldAlert className="h-4 w-4 text-rose-400" /> : <ShieldCheck className="h-4 w-4 text-[var(--success)]" />}
                 <span className="hidden sm:inline">{safeModeEnabled ? "Safe Mode ACTIF" : "Safe Mode"}</span>
               </button>
 
@@ -1028,7 +1028,7 @@ export default function ServerManagementClient({
                 className="p-2 bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-all disabled:opacity-50 cursor-pointer shrink-0"
                 title="Actualiser les données"
               >
-                <RefreshCw className={cn("h-4 w-4", refreshing && "animate-spin text-emerald-400")} />
+                <RefreshCw className={cn("h-4 w-4", refreshing && "animate-spin text-[var(--accent-primary)]")} />
               </button>
             </div>
           </div>
@@ -1068,10 +1068,10 @@ export default function ServerManagementClient({
       {/* Global Search Results Overlay (If Searching) */}
       {searchResults && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="rounded-2xl border border-emerald-500/30 bg-[var(--surface-raised)]/90 p-4 ">
+          <div className="rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--surface-raised)]/90 p-4 ">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)] mb-3">
               <h3 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <Search className="h-4 w-4 text-emerald-400" />
+                <Search className="h-4 w-4 text-[var(--accent-primary)]" />
                 Résultats de recherche pour "{searchQuery}"
               </h3>
               <button
@@ -1094,9 +1094,9 @@ export default function ServerManagementClient({
                         setActiveTab("members");
                         setSearchResults(null);
                       }}
-                      className="p-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-emerald-500/20 cursor-pointer flex items-center gap-2"
+                      className="p-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--accent-primary)]/20 cursor-pointer flex items-center gap-2"
                     >
-                      <Users className="h-3.5 w-3.5 text-emerald-400" />
+                      <Users className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                       <span className="font-medium text-[var(--text-primary)]">{m.displayName || m.username}</span>
                     </div>
                   ))}
@@ -1115,7 +1115,7 @@ export default function ServerManagementClient({
                         setActiveTab("channels");
                         setSearchResults(null);
                       }}
-                      className="p-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-emerald-500/20 cursor-pointer flex items-center gap-2"
+                      className="p-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--accent-primary)]/20 cursor-pointer flex items-center gap-2"
                     >
                       <Hash className="h-3.5 w-3.5 text-cyan-400" />
                       <span className="font-medium text-[var(--text-primary)]">{c.name}</span>
@@ -1136,9 +1136,9 @@ export default function ServerManagementClient({
                         setActiveTab("roles");
                         setSearchResults(null);
                       }}
-                      className="p-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-emerald-500/20 cursor-pointer flex items-center gap-2"
+                      className="p-2 rounded-xl bg-[var(--surface-raised)]/40 hover:bg-[var(--accent-primary)]/20 cursor-pointer flex items-center gap-2"
                     >
-                      <Shield className="h-3.5 w-3.5 text-emerald-400" />
+                      <Shield className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                       <span className="font-medium text-[var(--text-primary)]">{r.name}</span>
                     </div>
                   ))}
@@ -1163,11 +1163,11 @@ export default function ServerManagementClient({
               <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 ">
                 <div className="flex items-center justify-between text-[var(--text-muted)] mb-2">
                   <span className="text-xs font-semibold">Total Membres</span>
-                  <Users className="h-4 w-4 text-emerald-400" />
+                  <Users className="h-4 w-4 text-[var(--accent-primary)]" />
                 </div>
                 <div className="text-2xl font-bold text-[var(--text-primary)]">{overview?.kpis.totalMembers || 0}</div>
                 <div className="flex items-center gap-2 mt-2 text-xs text-[var(--text-muted)]">
-                  <span className="text-emerald-400 font-semibold">{overview?.kpis.onlineMembers || 0} en ligne</span>
+                  <span className="text-[var(--success)] font-semibold">{overview?.kpis.onlineMembers || 0} en ligne</span>
                   <span>•</span>
                   <span>{overview?.kpis.humans || 0} humains</span>
                   <span>•</span>
@@ -1195,7 +1195,7 @@ export default function ServerManagementClient({
               <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 ">
                 <div className="flex items-center justify-between text-[var(--text-muted)] mb-2">
                   <span className="text-xs font-semibold">Rôles & Staff</span>
-                  <Shield className="h-4 w-4 text-emerald-400" />
+                  <Shield className="h-4 w-4 text-[var(--accent-primary)]" />
                 </div>
                 <div className="text-2xl font-bold text-[var(--text-primary)]">{overview?.kpis.rolesCount || 0} rôles</div>
                 <div className="flex items-center gap-2 mt-2 text-xs text-[var(--text-muted)]">
@@ -1211,11 +1211,11 @@ export default function ServerManagementClient({
               <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 ">
                 <div className="flex items-center justify-between text-[var(--text-muted)] mb-2">
                   <span className="text-xs font-semibold">Nitro Boosts</span>
-                  <Sparkles className="h-4 w-4 text-emerald-400" />
+                  <Sparkles className="h-4 w-4 text-[var(--accent-primary)]" />
                 </div>
                 <div className="text-2xl font-bold text-[var(--text-primary)]">Niveau {overview?.kpis.serverBoostLevel || 0}</div>
                 <div className="flex items-center gap-2 mt-2 text-xs text-[var(--text-muted)]">
-                  <span className="text-emerald-400 font-semibold">{overview?.kpis.boostCount || 0} abonnements</span>
+                  <span className="text-[var(--accent-primary)] font-semibold">{overview?.kpis.boostCount || 0} abonnements</span>
                   <span>•</span>
                   <span>{overview?.kpis.emojisCount || 0} emojis</span>
                 </div>
@@ -1228,7 +1228,7 @@ export default function ServerManagementClient({
               <div className="p-5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                    <ShieldCheck className="h-5 w-5 text-[var(--accent-primary)]" />
                     <div>
                       <h3 className="text-sm font-bold text-[var(--text-primary)]">Score de Sécurité Expliqué</h3>
                       <p className="text-xs text-[var(--text-muted)]">Évaluation transparente en temps réel</p>
@@ -1239,7 +1239,7 @@ export default function ServerManagementClient({
 
                 <div className="flex items-center gap-4 py-2">
                   <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
-                    <span className="text-2xl font-black text-emerald-400">{overview?.security.score || 0}%</span>
+                    <span className="text-2xl font-black text-[var(--accent-primary)]">{overview?.security.score || 0}%</span>
                   </div>
                   <div className="space-y-1">
                     <p className="text-xs font-semibold text-[var(--text-primary)]">
@@ -1257,13 +1257,13 @@ export default function ServerManagementClient({
                     <div key={idx} className="flex items-center justify-between text-xs p-2 rounded-xl bg-[var(--surface-raised)]/40">
                       <div className="flex items-center gap-2">
                         {factor.positive ? (
-                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                          <CheckCircle2 className="h-3.5 w-3.5 text-[var(--success)] shrink-0" />
                         ) : (
                           <AlertTriangle className="h-3.5 w-3.5 text-rose-400 shrink-0" />
                         )}
                         <span className="text-[var(--text-primary)]">{factor.title}</span>
                       </div>
-                      <span className={cn("font-mono font-bold", factor.positive ? "text-emerald-400" : "text-rose-400")}>
+                      <span className={cn("font-mono font-bold", factor.positive ? "text-[var(--success)]" : "text-rose-400")}>
                         {factor.impact > 0 ? `+${factor.impact}` : factor.impact} pts
                       </span>
                     </div>
@@ -1295,29 +1295,29 @@ export default function ServerManagementClient({
                   <div className="p-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                     <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-1">
                       <span>Gateway Discord</span>
-                      <Wifi className="h-3.5 w-3.5 text-emerald-400" />
+                      <Wifi className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                     </div>
                     <div className="text-lg font-bold text-[var(--text-primary)]">
                       {overview?.health.components.discordGateway.pingMs || 38} ms
                     </div>
-                    <span className="text-xs text-emerald-400 font-semibold">Connecté & Réactif</span>
+                    <span className="text-xs text-[var(--success)] font-semibold">Connecté & Réactif</span>
                   </div>
 
                   <div className="p-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                     <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-1">
                       <span>Base de Données</span>
-                      <Database className="h-3.5 w-3.5 text-emerald-400" />
+                      <Database className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                     </div>
                     <div className="text-lg font-bold text-[var(--text-primary)]">
                       {overview?.health.components.database.latencyMs || 2} ms
                     </div>
-                    <span className="text-xs text-emerald-400 font-semibold">Latence ultra-faible</span>
+                    <span className="text-xs text-[var(--accent-primary)] font-semibold">Latence ultra-faible</span>
                   </div>
 
                   <div className="p-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                     <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-1">
                       <span>Mémoire Heap</span>
-                      <Cpu className="h-3.5 w-3.5 text-emerald-400" />
+                      <Cpu className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                     </div>
                     <div className="text-lg font-bold text-[var(--text-primary)]">
                       {overview?.health.components.memory.heapUsedMb || 142} MB
@@ -1330,12 +1330,12 @@ export default function ServerManagementClient({
                   <div className="p-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
                     <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-1">
                       <span>Tâches Planifiées</span>
-                      <Clock className="h-3.5 w-3.5 text-emerald-400" />
+                      <Clock className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                     </div>
                     <div className="text-lg font-bold text-[var(--text-primary)]">
                       {overview?.health.components.scheduler.activeJobs || 5} actives
                     </div>
-                    <span className="text-xs text-emerald-400 font-semibold">Exécution normale</span>
+                    <span className="text-xs text-[var(--accent-primary)] font-semibold">Exécution normale</span>
                   </div>
                 </div>
 
@@ -1375,7 +1375,7 @@ export default function ServerManagementClient({
                     className="w-full p-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--text-primary)]/10 text-left flex items-center justify-between text-xs font-semibold text-[var(--text-primary)] transition-all cursor-pointer"
                   >
                     <span className="flex items-center gap-2">
-                      <Plus className="h-3.5 w-3.5 text-emerald-400" />
+                      <Plus className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                       Créer un nouveau rôle
                     </span>
                     <ChevronRight className="h-3.5 w-3.5 text-[var(--text-muted)]" />
@@ -1414,7 +1414,7 @@ export default function ServerManagementClient({
                   </h3>
                   <button
                     onClick={() => handleTabChange("audit")}
-                    className="text-xs text-emerald-400 hover:text-emerald-300 transition-all font-semibold"
+                    className="text-xs text-[var(--accent-primary)] hover:text-[var(--accent-primary)] transition-all font-semibold"
                   >
                     Voir tout le journal
                   </button>
@@ -1433,7 +1433,7 @@ export default function ServerManagementClient({
                         <div>
                           <p className="font-semibold text-[var(--text-primary)]">{act.details || act.type}</p>
                           <p className="text-xs text-[var(--text-muted)]">
-                            Par <span className="text-emerald-300">{act.actor.tag}</span>
+                            Par <span className="text-[var(--accent-primary)]">{act.actor.tag}</span>
                           </p>
                         </div>
                       </div>
@@ -1469,7 +1469,7 @@ export default function ServerManagementClient({
                     className={cn(
                       "px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer",
                       memberFilter === f.id
-                        ? "bg-emerald-500 text-white"
+                        ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
                         : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
@@ -1558,7 +1558,7 @@ export default function ServerManagementClient({
                                 ? "bg-rose-500/20 text-rose-400 border border-rose-500/30"
                                 : m.riskScore >= 20
                                 ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                                : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                                : "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30"
                             )}
                           >
                             {m.riskScore}% Risque
@@ -1613,7 +1613,7 @@ export default function ServerManagementClient({
                   <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 space-y-2">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-semibold text-[var(--text-muted)]">Score de risque du membre</span>
-                      <span className="font-bold text-emerald-400">{selectedMember.security.riskScore}% Risque</span>
+                      <span className="font-bold text-[var(--accent-primary)]">{selectedMember.security.riskScore}% Risque</span>
                     </div>
                     <div className="grid grid-cols-2 gap-3 text-xs pt-1">
                       <div>
@@ -1816,7 +1816,7 @@ export default function ServerManagementClient({
                   className="px-3 py-2 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
                   title="Rafraîchir les salons"
                 >
-                  <RefreshCw className={cn("h-3.5 w-3.5", refreshingChannels && "animate-spin text-emerald-400")} />
+                  <RefreshCw className={cn("h-3.5 w-3.5", refreshingChannels && "animate-spin text-[var(--accent-primary)]")} />
                   <span>Rafraîchir</span>
                 </button>
                 <button
@@ -1853,11 +1853,11 @@ export default function ServerManagementClient({
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
                             {ch.typeName === "voice" || ch.type === 2 ? (
-                              <Volume2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                              <Volume2 className="h-4 w-4 text-[var(--accent-primary)] shrink-0" />
                             ) : ch.typeName === "stage" || ch.type === 13 ? (
-                              <Radio className="h-4 w-4 text-emerald-400 shrink-0" />
+                              <Radio className="h-4 w-4 text-[var(--accent-primary)] shrink-0" />
                             ) : ch.typeName === "announcement" || ch.type === 5 ? (
-                              <Sparkles className="h-4 w-4 text-emerald-400 shrink-0" />
+                              <Sparkles className="h-4 w-4 text-[var(--accent-primary)] shrink-0" />
                             ) : (
                               <Hash className="h-4 w-4 text-[var(--text-muted)] shrink-0" />
                             )}
@@ -1922,7 +1922,7 @@ export default function ServerManagementClient({
                 <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4 ">
                   <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                     <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                      <Plus className="h-4 w-4 text-emerald-400" />
+                      <Plus className="h-4 w-4 text-[var(--accent-primary)]" />
                       Créer un salon Discord
                     </h3>
                     <button
@@ -1950,11 +1950,11 @@ export default function ServerManagementClient({
                           className={cn(
                             "flex items-center gap-2 p-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer",
                             newChannelType === t.type
-                              ? "border-emerald-500/30 bg-emerald-500/20 text-[var(--text-primary)]"
+                              ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/20 text-[var(--text-primary)]"
                               : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                           )}
                         >
-                          <t.icon className="h-4 w-4 text-emerald-400" />
+                          <t.icon className="h-4 w-4 text-[var(--accent-primary)]" />
                           <span>{t.label}</span>
                         </button>
                       ))}
@@ -2050,7 +2050,7 @@ export default function ServerManagementClient({
                   className="px-3 py-2 rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
                   title="Rafraîchir les rôles"
                 >
-                  <RefreshCw className={cn("h-3.5 w-3.5", refreshingRoles && "animate-spin text-emerald-400")} />
+                  <RefreshCw className={cn("h-3.5 w-3.5", refreshingRoles && "animate-spin text-[var(--accent-primary)]")} />
                   <span>Rafraîchir</span>
                 </button>
                 <button
@@ -2064,8 +2064,8 @@ export default function ServerManagementClient({
             </div>
 
             {/* Role Ceiling Info Alert */}
-            <div className="p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-xs flex items-center gap-3">
-              <Shield className="h-5 w-5 text-emerald-400 shrink-0" />
+            <div className="p-4 rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-xs flex items-center gap-3">
+              <Shield className="h-5 w-5 text-[var(--accent-primary)] shrink-0" />
               <div>
                 <p className="font-bold text-[var(--text-primary)]">Hiérarchie et Plafond du Bot Discord</p>
                 <p className="text-[var(--text-muted)] text-xs mt-0.5">
@@ -2126,7 +2126,7 @@ export default function ServerManagementClient({
                 <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4 ">
                   <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                     <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                      <Plus className="h-4 w-4 text-emerald-400" />
+                      <Plus className="h-4 w-4 text-[var(--accent-primary)]" />
                       Créer un nouveau rôle
                     </h3>
                     <button onClick={() => setIsCreateRoleOpen(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
@@ -2169,7 +2169,7 @@ export default function ServerManagementClient({
                         type="checkbox"
                         checked={newRoleHoist}
                         onChange={(e) => setNewRoleHoist(e.target.checked)}
-                        className="rounded border-[var(--input-border-hover)] bg-[var(--surface-raised)] text-emerald-400 focus:ring-0"
+                        className="rounded border-[var(--input-border-hover)] bg-[var(--surface-raised)] text-[var(--accent-primary)] focus:ring-0"
                       />
                       <span>Afficher les membres séparément dans la liste (Hoist)</span>
                     </label>
@@ -2179,7 +2179,7 @@ export default function ServerManagementClient({
                         type="checkbox"
                         checked={newRoleMentionable}
                         onChange={(e) => setNewRoleMentionable(e.target.checked)}
-                        className="rounded border-[var(--input-border-hover)] bg-[var(--surface-raised)] text-emerald-400 focus:ring-0"
+                        className="rounded border-[var(--input-border-hover)] bg-[var(--surface-raised)] text-[var(--accent-primary)] focus:ring-0"
                       />
                       <span>Permettre à tout le monde de mentionner ce rôle</span>
                     </label>
@@ -2211,9 +2211,9 @@ export default function ServerManagementClient({
         {activeTab === "permissions" && (
           <div className="stagger-children space-y-6">
             {/* Interactive Permission Debugger Section */}
-            <div className="p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 space-y-4">
+            <div className="p-6 rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 space-y-4">
               <div className="flex items-center gap-2.5">
-                <Key className="h-5 w-5 text-emerald-400" />
+                <Key className="h-5 w-5 text-[var(--accent-primary)]" />
                 <div>
                   <h3 className="text-sm font-bold text-[var(--text-primary)]">Débogueur de Permissions Discord</h3>
                   <p className="text-xs text-[var(--text-muted)]">
@@ -2295,7 +2295,7 @@ export default function ServerManagementClient({
                       className={cn(
                         "px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5",
                         debugResult.isAllowed
-                          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                          ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30"
                           : "bg-rose-500/20 text-rose-400 border border-rose-500/30"
                       )}
                     >
@@ -2323,7 +2323,7 @@ export default function ServerManagementClient({
                           className={cn(
                             "px-2 py-0.5 rounded text-xs font-bold shrink-0 ml-3",
                             step.effect === "ALLOW"
-                              ? "bg-emerald-500/20 text-emerald-400"
+                              ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
                               : step.effect === "DENY"
                               ? "bg-rose-500/20 text-rose-400"
                               : "bg-[var(--surface-raised)] text-[var(--text-muted)]"
@@ -2371,7 +2371,7 @@ export default function ServerManagementClient({
                           return (
                             <td key={r.id} className="p-3 text-center">
                               {has ? (
-                                <Check className="h-4 w-4 text-emerald-400 mx-auto" />
+                                <Check className="h-4 w-4 text-[var(--success)] mx-auto" />
                               ) : (
                                 <X className="h-4 w-4 text-[var(--text-muted)] mx-auto" />
                               )}
@@ -2402,7 +2402,7 @@ export default function ServerManagementClient({
                   </div>
                   <div className="w-full bg-[var(--surface-raised)] rounded-full h-2 mt-2">
                     <div
-                      className="bg-emerald-500 h-2 rounded-full"
+                      className="bg-[var(--accent-primary)] h-2 rounded-full"
                       style={{ width: `${Math.min(100, (emojiQuota.usedStatic / emojiQuota.maxStatic) * 100)}%` }}
                     />
                   </div>
@@ -2415,7 +2415,7 @@ export default function ServerManagementClient({
                   </div>
                   <div className="w-full bg-[var(--surface-raised)] rounded-full h-2 mt-2">
                     <div
-                      className="bg-emerald-500 h-2 rounded-full"
+                      className="bg-[var(--accent-primary)] h-2 rounded-full"
                       style={{ width: `${Math.min(100, (emojiQuota.usedAnimated / emojiQuota.maxAnimated) * 100)}%` }}
                     />
                   </div>
@@ -2428,7 +2428,7 @@ export default function ServerManagementClient({
                   </div>
                   <div className="w-full bg-[var(--surface-raised)] rounded-full h-2 mt-2">
                     <div
-                      className="bg-emerald-500 h-2 rounded-full"
+                      className="bg-[var(--accent-primary)] h-2 rounded-full"
                       style={{ width: `${Math.min(100, (emojiQuota.usedStickers / emojiQuota.maxStickers) * 100)}%` }}
                     />
                   </div>
@@ -2451,7 +2451,7 @@ export default function ServerManagementClient({
                     <img src={emoji.url} alt={emoji.name} className="h-10 w-10 object-contain mb-2" />
                     <span className="font-mono text-xs font-bold text-[var(--text-primary)] truncate max-w-full">:{emoji.name}:</span>
                     {emoji.animated && (
-                      <span className="text-xs font-bold text-emerald-400 uppercase mt-0.5">GIF</span>
+                      <span className="text-xs font-bold text-[var(--accent-primary)] uppercase mt-0.5">GIF</span>
                     )}
                   </div>
                 ))}
@@ -2461,7 +2461,7 @@ export default function ServerManagementClient({
             {/* Stickers Gallery */}
             <div className="p-5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 space-y-4">
               <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-emerald-400" />
+                <Sparkles className="h-4 w-4 text-[var(--accent-primary)]" />
                 Stickers du Serveur ({stickers.length})
               </h3>
               <div className="stagger-children grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -2487,7 +2487,7 @@ export default function ServerManagementClient({
           <div className="stagger-children space-y-4">
             <div className="flex items-center justify-between p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60">
               <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
                 <span>Sécurité garantie : les tokens secrets des webhooks ne sont jamais transmis au navigateur.</span>
               </div>
               <button
@@ -2515,7 +2515,7 @@ export default function ServerManagementClient({
                   {webhooks.map((wh) => (
                     <tr key={wh.id} className="hover:bg-[var(--surface-raised)]/70">
                       <td className="p-4 font-bold text-[var(--text-primary)] flex items-center gap-2">
-                        <Webhook className="h-4 w-4 text-emerald-400" />
+                        <Webhook className="h-4 w-4 text-[var(--accent-primary)]" />
                         {wh.name}
                       </td>
                       <td className="p-4 text-[var(--text-muted)]">#{wh.channelName}</td>
@@ -2549,7 +2549,7 @@ export default function ServerManagementClient({
               <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 flex items-center justify-center p-4">
                 <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4 ">
                   <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                    <Webhook className="h-4 w-4 text-emerald-400" />
+                    <Webhook className="h-4 w-4 text-[var(--accent-primary)]" />
                     Créer un Webhook
                   </h3>
 
@@ -2602,7 +2602,7 @@ export default function ServerManagementClient({
           <div className="stagger-children max-w-3xl space-y-6">
             <div className="p-6 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 space-y-4">
               <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <Settings className="h-4 w-4 text-emerald-400" />
+                <Settings className="h-4 w-4 text-[var(--accent-primary)]" />
                 Paramètres Discord du Serveur
               </h3>
 
@@ -2683,7 +2683,7 @@ export default function ServerManagementClient({
             <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-emerald-400" />
+                  <FileText className="h-4 w-4 text-[var(--accent-primary)]" />
                   Journal d'Audit Connecté à Logs Center
                 </h3>
                 <p className="text-xs text-[var(--text-muted)] mt-0.5">
@@ -2692,7 +2692,7 @@ export default function ServerManagementClient({
               </div>
               <Link
                 href={`/discord/logs?guildId=${guildId}`}
-                className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold hover:bg-emerald-500/30 transition-all flex items-center gap-1.5"
+                className="px-3.5 py-1.5 rounded-xl bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 text-xs font-semibold hover:bg-[var(--accent-primary)]/30 transition-all flex items-center gap-1.5"
               >
                 <span>Ouvrir Logs Center complet</span>
                 <ExternalLink className="h-3.5 w-3.5" />
@@ -2721,7 +2721,7 @@ export default function ServerManagementClient({
                     <div>
                       <p className="font-semibold text-[var(--text-primary)]">{log.details || log.type}</p>
                       <p className="text-xs text-[var(--text-muted)]">
-                        Par <span className="text-emerald-300">{log.actor}</span>
+                        Par <span className="text-[var(--accent-primary)]">{log.actor}</span>
                         {log.target && (
                           <>
                             {" "}
@@ -2764,12 +2764,12 @@ export default function ServerManagementClient({
                 <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 space-y-2">
                   <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span className="font-semibold">Discord Gateway WebSocket</span>
-                    <Wifi className="h-4 w-4 text-emerald-400" />
+                    <Wifi className="h-4 w-4 text-[var(--accent-primary)]" />
                   </div>
                   <div className="text-2xl font-bold text-[var(--text-primary)]">
                     {overview.health.components.discordGateway.pingMs} ms
                   </div>
-                  <p className="text-xs text-emerald-400 font-medium">
+                  <p className="text-xs text-[var(--accent-primary)] font-medium">
                     Statut : {overview.health.components.discordGateway.status}
                   </p>
                 </div>
@@ -2778,12 +2778,12 @@ export default function ServerManagementClient({
                 <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 space-y-2">
                   <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span className="font-semibold">Persistance & Base de Données</span>
-                    <Database className="h-4 w-4 text-emerald-400" />
+                    <Database className="h-4 w-4 text-[var(--accent-primary)]" />
                   </div>
                   <div className="text-2xl font-bold text-[var(--text-primary)]">
                     {overview.health.components.database.latencyMs} ms
                   </div>
-                  <p className="text-xs text-emerald-400 font-medium">
+                  <p className="text-xs text-[var(--accent-primary)] font-medium">
                     Statut : {overview.health.components.database.status}
                   </p>
                 </div>
@@ -2792,14 +2792,14 @@ export default function ServerManagementClient({
                 <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 space-y-2">
                   <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span className="font-semibold">Mémoire Heap Process</span>
-                    <Cpu className="h-4 w-4 text-emerald-400" />
+                    <Cpu className="h-4 w-4 text-[var(--accent-primary)]" />
                   </div>
                   <div className="text-2xl font-bold text-[var(--text-primary)]">
                     {overview.health.components.memory.heapUsedMb} MB
                   </div>
                   <div className="w-full bg-[var(--surface-raised)] rounded-full h-2">
                     <div
-                      className="bg-emerald-500 h-2 rounded-full"
+                      className="bg-[var(--accent-primary)] h-2 rounded-full"
                       style={{
                         width: `${Math.min(
                           100,
@@ -2817,12 +2817,12 @@ export default function ServerManagementClient({
                 <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 space-y-2">
                   <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span className="font-semibold">Scheduler & Background Jobs</span>
-                    <Clock className="h-4 w-4 text-emerald-400" />
+                    <Clock className="h-4 w-4 text-[var(--accent-primary)]" />
                   </div>
                   <div className="text-2xl font-bold text-[var(--text-primary)]">
                     {overview.health.components.scheduler.activeJobs} tâches
                   </div>
-                  <p className="text-xs text-emerald-400 font-medium">
+                  <p className="text-xs text-[var(--accent-primary)] font-medium">
                     Statut : {overview.health.components.scheduler.status}
                   </p>
                 </div>
@@ -2872,7 +2872,7 @@ export default function ServerManagementClient({
           <div className="w-full max-w-lg rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4 ">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
               <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
                 Détail de l'Évaluation de Sécurité ({overview.security.score}/100)
               </h3>
               <button onClick={() => setIsSecurityModalOpen(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
@@ -2886,13 +2886,13 @@ export default function ServerManagementClient({
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-[var(--text-primary)] flex items-center gap-2">
                       {factor.positive ? (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                        <CheckCircle2 className="h-4 w-4 text-[var(--success)] shrink-0" />
                       ) : (
                         <AlertTriangle className="h-4 w-4 text-rose-400 shrink-0" />
                       )}
                       {factor.title}
                     </span>
-                    <span className={cn("font-mono font-bold", factor.positive ? "text-emerald-400" : "text-rose-400")}>
+                    <span className={cn("font-mono font-bold", factor.positive ? "text-[var(--success)]" : "text-rose-400")}>
                       {factor.impact > 0 ? `+${factor.impact}` : factor.impact} pts
                     </span>
                   </div>

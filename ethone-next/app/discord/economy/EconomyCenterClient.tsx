@@ -175,7 +175,7 @@ function ToggleRow({ label, checked, onChange }: { label: string; checked: boole
   return (
     <div className="flex items-center justify-between">
       <span className="text-xs font-semibold text-[var(--text-muted)]">{label}</span>
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="w-4 h-4 rounded text-emerald-400" />
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="w-4 h-4 rounded text-[var(--accent-primary)]" />
     </div>
   );
 }
@@ -494,8 +494,8 @@ export default function EconomyCenterClient() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[
             { label: "Masse en circulation", value: `${activity.totalCirculating.toLocaleString("fr-FR")} ${config.currencySymbol}`, cls: "text-amber-300", sub: "Somme de tous les soldes" },
-            { label: "Volume 24h", value: `${activity.volume24h.toLocaleString("fr-FR")} ${config.currencySymbol}`, cls: "text-emerald-400", sub: "Montants échangés" },
-            { label: "Mouvements 24h", value: activity.transactions24h.toLocaleString("fr-FR"), cls: "text-emerald-300", sub: "Transactions enregistrées" },
+            { label: "Volume 24h", value: `${activity.volume24h.toLocaleString("fr-FR")} ${config.currencySymbol}`, cls: "text-[var(--accent-primary)]", sub: "Montants échangés" },
+            { label: "Mouvements 24h", value: activity.transactions24h.toLocaleString("fr-FR"), cls: "text-[var(--success)]", sub: "Transactions enregistrées" },
             { label: "Membres actifs", value: leaderboard.length.toLocaleString("fr-FR"), cls: "text-[var(--text-primary)]", sub: "Avec un portefeuille" },
           ].map((k) => (
             <div key={k.label} className="p-4 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-1">
@@ -508,16 +508,16 @@ export default function EconomyCenterClient() {
 
         {/* Mon portefeuille personnel */}
         {profile?.user?.id && (
-          <div className="p-6 rounded-2xl border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[var(--surface-raised)]/40">
+          <div className="p-6 rounded-2xl border border-[var(--accent-primary)]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[var(--surface-raised)]/40">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                <WalletIcon className="w-6 h-6 text-emerald-300" />
+              <div className="w-12 h-12 rounded-2xl bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/30 flex items-center justify-center shrink-0">
+                <WalletIcon className="w-6 h-6 text-[var(--accent-primary)]" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-bold text-[var(--text-primary)]">Mon Portefeuille</h3>
                   {myWallet && myWallet.rank > 0 && (
-                    <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                    <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
                       Rang #{myWallet.rank}
                     </span>
                   )}
@@ -576,7 +576,7 @@ export default function EconomyCenterClient() {
         <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <History className="w-4 h-4 text-emerald-300" />
+              <History className="w-4 h-4 text-[var(--accent-primary)]" />
               Historique des transactions
               <span className="text-xs font-normal text-[var(--text-muted)]">({transactions.length} dernières)</span>
             </h2>
@@ -617,7 +617,7 @@ export default function EconomyCenterClient() {
                         </div>
                       </div>
                       <div className="text-right shrink-0">
-                        <p className={cn("text-xs font-bold font-mono", t.amount >= 0 ? "text-emerald-400" : "text-rose-400")}>
+                        <p className={cn("text-xs font-bold font-mono", t.amount >= 0 ? "text-[var(--accent-primary)]" : "text-rose-400")}>
                           {t.amount >= 0 ? "+" : ""}{t.amount.toLocaleString("fr-FR")} {config.currencySymbol}
                         </p>
                         <p className="text-xs text-[var(--text-muted)] font-mono">solde {t.balanceAfter.toLocaleString("fr-FR")}</p>
@@ -632,7 +632,7 @@ export default function EconomyCenterClient() {
         {/* Shop */}
         <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] space-y-4">
           <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-            <ShoppingBag className="w-4 h-4 text-emerald-300" />
+            <ShoppingBag className="w-4 h-4 text-[var(--accent-primary)]" />
             Boutique de rôles
           </h2>
 
@@ -710,7 +710,7 @@ export default function EconomyCenterClient() {
               type="checkbox"
               checked={config.enabled}
               onChange={(e) => setConfig((p) => ({ ...p, enabled: e.target.checked }))}
-              className="w-4 h-4 rounded text-emerald-400"
+              className="w-4 h-4 rounded text-[var(--accent-primary)]"
             />
           </div>
 
@@ -789,7 +789,7 @@ export default function EconomyCenterClient() {
               type="checkbox"
               checked={config.transfersEnabled}
               onChange={(e) => setConfig((p) => ({ ...p, transfersEnabled: e.target.checked }))}
-              className="w-4 h-4 rounded text-emerald-400"
+              className="w-4 h-4 rounded text-[var(--accent-primary)]"
             />
           </div>
 
@@ -797,7 +797,7 @@ export default function EconomyCenterClient() {
             type="button"
             onClick={saveConfig}
             disabled={savingConfig}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-emerald-500 hover:brightness-110 text-white shadow-sm disabled:opacity-60"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] shadow-sm disabled:opacity-60"
           >
             <Save className="w-4 h-4" />
             {savingConfig ? "Enregistrement..." : "Enregistrer"}

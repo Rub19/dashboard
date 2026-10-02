@@ -531,9 +531,9 @@ export default function GiveawaysCenterClient() {
         )}
 
         {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-4 text-xs text-[var(--accent-primary)]">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-300 shrink-0 mt-0.5">
+              <div className="p-2 rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shrink-0 mt-0.5">
                 <Bot className="h-5 w-5" />
               </div>
               <div>
@@ -581,7 +581,7 @@ export default function GiveawaysCenterClient() {
           </div>
           <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-4 space-y-1">
             <span className="text-xs text-[var(--text-muted)] font-medium">Gagnants tirés</span>
-            <p className="text-2xl font-bold text-emerald-400">{overview?.totalWinners ?? "—"}</p>
+            <p className="text-2xl font-bold text-[var(--accent-primary)]">{overview?.totalWinners ?? "—"}</p>
           </div>
         </div>
 
@@ -722,9 +722,9 @@ export default function GiveawaysCenterClient() {
 
                       {requiredRoleNames.length > 0 && (
                         <div className="p-2 rounded-xl bg-[var(--surface)] border border-[var(--panel-border)] text-xs flex items-center gap-2">
-                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          <ShieldCheck className="w-3.5 h-3.5 text-[var(--accent-primary)] shrink-0" />
                           <span>
-                            Requis : <strong className="text-emerald-300">{requiredRoleNames.join(", ")}</strong>
+                            Requis : <strong className="text-[var(--accent-primary)]">{requiredRoleNames.join(", ")}</strong>
                           </span>
                         </div>
                       )}
@@ -745,7 +745,7 @@ export default function GiveawaysCenterClient() {
                           className="px-3 py-1.5 rounded-xl bg-[var(--surface)] hover:bg-[var(--surface-raised)] text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer border border-[var(--panel-border)]"
                           title="Prolonger la durée du concours"
                         >
-                          <CalendarPlus className="w-3 h-3 text-emerald-400" />
+                          <CalendarPlus className="w-3 h-3 text-[var(--accent-primary)]" />
                           Prolonger
                         </button>
                       </div>
@@ -895,7 +895,7 @@ export default function GiveawaysCenterClient() {
 
               <div className="pt-2 border-t border-[var(--panel-border)] space-y-3">
                 <h4 className="text-xs font-bold flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <ShieldCheck className="w-4 h-4 text-[var(--accent-primary)]" />
                   Conditions d'éligibilité
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -992,7 +992,7 @@ export default function GiveawaysCenterClient() {
             <div className="lg:col-span-5 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[var(--text-muted)] flex items-center gap-1.5">
-                  <Eye className="w-4 h-4 text-emerald-400" />
+                  <Eye className="w-4 h-4 text-[var(--accent-primary)]" />
                   Aperçu temps réel Discord
                 </span>
               </div>
@@ -1119,7 +1119,7 @@ export default function GiveawaysCenterClient() {
                           <span
                             className={`px-2 py-0.5 rounded text-xs font-bold ${
                               isEnded
-                                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20"
                                 : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
                             }`}
                           >
@@ -1188,19 +1188,19 @@ export default function GiveawaysCenterClient() {
           <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-6 space-y-4">
               <div className="flex items-center gap-2">
-                <Dice5 className="w-5 h-5 text-emerald-400" />
+                <Dice5 className="w-5 h-5 text-[var(--accent-primary)]" />
                 <h3 className="text-base font-bold">Tirage au sort cryptographique</h3>
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
                 Chaque gagnant est sélectionné uniformément au hasard parmi les participants éligibles encore présents
                 sur le serveur, via le générateur aléatoire cryptographiquement sécurisé de Node.js (
-                <code className="text-emerald-400 bg-[var(--surface)] px-1 py-0.5 rounded font-mono">
+                <code className="text-[var(--accent-primary)] bg-[var(--surface)] px-1 py-0.5 rounded font-mono">
                   crypto.randomInt
                 </code>
                 ), sans remise (un même membre ne peut pas être tiré deux fois pour le même concours).
               </p>
               <div className="p-3 rounded-xl bg-[var(--surface)] border border-[var(--panel-border)] text-xs space-y-1.5">
-                <div className="flex items-center gap-2 text-emerald-400 font-semibold">
+                <div className="flex items-center gap-2 text-[var(--accent-primary)] font-semibold">
                   <CheckCircle2 className="w-4 h-4 shrink-0" />
                   <span>Pas de seed manipulable</span>
                 </div>
@@ -1212,7 +1212,7 @@ export default function GiveawaysCenterClient() {
 
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-6 space-y-4">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                <ShieldCheck className="w-5 h-5 text-[var(--accent-primary)]" />
                 <h3 className="text-base font-bold">Vérification d'éligibilité en direct</h3>
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
@@ -1220,7 +1220,7 @@ export default function GiveawaysCenterClient() {
                 possédé, aucun rôle banni/exclu, ancienneté de compte respectée et niveau XP suffisant.
               </p>
               <div className="p-3 rounded-xl bg-[var(--surface)] border border-[var(--panel-border)] text-xs space-y-1.5">
-                <div className="flex items-center gap-2 text-emerald-400 font-semibold">
+                <div className="flex items-center gap-2 text-[var(--accent-primary)] font-semibold">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                   <span>Modération et exclusion manuelle</span>
                 </div>
@@ -1238,7 +1238,7 @@ export default function GiveawaysCenterClient() {
           <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 flex items-center justify-center p-4">
             <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-xl max-w-md w-full p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                <div className="flex items-center gap-2 text-[var(--accent-primary)] font-bold text-sm">
                   <CalendarPlus className="w-4 h-4" />
                   <span>Prolonger le concours</span>
                 </div>
@@ -1276,7 +1276,7 @@ export default function GiveawaysCenterClient() {
                         }}
                         className={`h-8 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                           extendValue === preset.v && extendUnit === preset.u
-                            ? "bg-emerald-500 text-white"
+                            ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
                             : "bg-[var(--surface)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                         }`}
                       >
@@ -1304,7 +1304,7 @@ export default function GiveawaysCenterClient() {
                       onClick={() => setExtendUnit("h")}
                       className={`flex-1 h-9 rounded-xl text-xs font-semibold cursor-pointer ${
                         extendUnit === "h"
-                          ? "bg-[var(--surface-raised)] border border-emerald-500/50 text-emerald-300"
+                          ? "bg-[var(--surface-raised)] border border-[var(--accent-primary)]/50 text-[var(--accent-primary)]"
                           : "bg-[var(--surface)] text-[var(--text-muted)] border border-[var(--panel-border)]"
                       }`}
                     >
@@ -1315,7 +1315,7 @@ export default function GiveawaysCenterClient() {
                       onClick={() => setExtendUnit("d")}
                       className={`flex-1 h-9 rounded-xl text-xs font-semibold cursor-pointer ${
                         extendUnit === "d"
-                          ? "bg-[var(--surface-raised)] border border-emerald-500/50 text-emerald-300"
+                          ? "bg-[var(--surface-raised)] border border-[var(--accent-primary)]/50 text-[var(--accent-primary)]"
                           : "bg-[var(--surface)] text-[var(--text-muted)] border border-[var(--panel-border)]"
                       }`}
                     >
@@ -1418,7 +1418,7 @@ export default function GiveawaysCenterClient() {
                         <span
                           className={`px-2 py-0.5 rounded text-xs font-semibold ${
                             p.isEligible
-                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                              ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20"
                               : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
                           }`}
                         >

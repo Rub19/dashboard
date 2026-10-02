@@ -897,13 +897,13 @@ export function WelcomeCenterClient() {
           <p className="text-xs text-[var(--accent-primary)]/80 mt-1">Arrivées enregistrées aujourd&apos;hui</p>
         </div>
 
-        <div className="rounded-2xl border border-emerald-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
+        <div className="rounded-2xl border border-[var(--accent-primary)]/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
           <div className="flex items-center justify-between text-[var(--text-muted)] text-xs">
             <span>Messages Envoyés</span>
-            <MessageSquare className="h-4 w-4 text-emerald-400" />
+            <MessageSquare className="h-4 w-4 text-[var(--accent-primary)]" />
           </div>
           <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{overview?.welcomeMessagesToday ?? 0}</p>
-          <p className="text-xs text-emerald-300/80 mt-1">Salons + DMs délivrés</p>
+          <p className="text-xs text-[var(--accent-primary)]/80 mt-1">Salons + DMs délivrés</p>
         </div>
 
         <div className="rounded-2xl border border-blue-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
@@ -915,13 +915,13 @@ export function WelcomeCenterClient() {
           <p className="text-xs text-blue-300/80 mt-1">Membres ayant validé le règlement</p>
         </div>
 
-        <div className="rounded-2xl border border-emerald-500/30 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
+        <div className="rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--surface-raised)]/40 p-4 shadow-sm">
           <div className="flex items-center justify-between text-[var(--text-muted)] text-xs">
             <span>Complétion Onboarding</span>
-            <Users className="h-4 w-4 text-emerald-300" />
+            <Users className="h-4 w-4 text-[var(--accent-primary)]" />
           </div>
           <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{overview?.onboardingCompletionRate ?? "—"}</p>
-          <p className="text-xs text-emerald-300 mt-1">Parcours terminé avec rôles</p>
+          <p className="text-xs text-[var(--accent-primary)] mt-1">Parcours terminé avec rôles</p>
         </div>
 
         <div className="rounded-2xl border border-amber-500/20 bg-[var(--surface-raised)]/40 p-4 shadow-sm col-span-2 sm:col-span-1">
@@ -984,7 +984,7 @@ export function WelcomeCenterClient() {
                 className={cn(
                   "rounded-full px-2 py-0.5 text-xs font-bold uppercase",
                   config?.welcome?.enabled
-                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                    ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30"
                     : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border border-[var(--panel-border)]"
                 )}
               >
@@ -1001,7 +1001,7 @@ export function WelcomeCenterClient() {
                 className={cn(
                   "rounded-full px-2 py-0.5 text-xs font-bold uppercase",
                   config?.goodbye?.enabled
-                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                    ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30"
                     : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border border-[var(--panel-border)]"
                 )}
               >
@@ -1018,7 +1018,7 @@ export function WelcomeCenterClient() {
                 className={cn(
                   "rounded-full px-2 py-0.5 text-xs font-bold uppercase",
                   verification?.enabled
-                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                    ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30"
                     : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border border-[var(--panel-border)]"
                 )}
               >
@@ -1035,7 +1035,7 @@ export function WelcomeCenterClient() {
                 className={cn(
                   "rounded-full px-2 py-0.5 text-xs font-bold uppercase",
                   onboarding?.enabled
-                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                    ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30"
                     : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border border-[var(--panel-border)]"
                 )}
               >
@@ -1558,7 +1558,7 @@ export function WelcomeCenterClient() {
                     <span className="font-semibold text-[var(--text-primary)] text-sm hover:underline cursor-pointer">
                       Etho
                     </span>
-                    <span className="rounded bg-emerald-500 px-1 py-0.2 text-xs font-bold text-white">
+                    <span className="rounded bg-[var(--accent-primary)] px-1 py-0.2 text-xs font-bold text-[var(--accent-contrast)]">
                       BOT
                     </span>
                     <span className="text-xs text-[var(--text-muted)]">Aujourd&apos;hui à 14:32</span>
@@ -1742,6 +1742,26 @@ export function WelcomeCenterClient() {
                     welcome: {
                       ...p.welcome,
                       dm: { ...p.welcome.dm, enabled: checked },
+                    },
+                  }))
+                }
+                className="h-4 w-4 rounded border-[var(--panel-border)] accent-[var(--accent-primary)]"
+              />
+            </label>
+
+            <label className="flex items-center justify-between cursor-pointer">
+              <div>
+                <p className="text-xs font-bold text-[var(--text-primary)]">Joindre la carte de bienvenue</p>
+                <p className="text-xs text-[var(--text-muted)]">La même carte que dans le salon (onglet « Carte »), même si elle y est désactivée.</p>
+              </div>
+              <Checkbox
+                checked={config.welcome.dm?.attachCard ?? false}
+                onCheckedChange={(checked) =>
+                  setConfig((p: any) => ({
+                    ...p,
+                    welcome: {
+                      ...p.welcome,
+                      dm: { ...p.welcome.dm, attachCard: checked },
                     },
                   }))
                 }

@@ -52,7 +52,7 @@ const STATUS_CONFIG: Record<
 > = {
   NEW: { label: "Nouveau", bg: "bg-amber-500/10", text: "text-amber-400", border: "border-amber-500/30" },
   REVIEWING: { label: "En cours", bg: "bg-blue-500/10", text: "text-blue-400", border: "border-blue-500/30" },
-  ACTIONED: { label: "Sanctionné", bg: "bg-emerald-500/10", text: "text-emerald-400", border: "border-emerald-500/30" },
+  ACTIONED: { label: "Sanctionné", bg: "bg-[var(--accent-primary)]/10", text: "text-[var(--accent-primary)]", border: "border-[var(--accent-primary)]/30" },
   DISMISSED: { label: "Classé sans suite", bg: "bg-slate-500/10", text: "text-[var(--text-muted)]", border: "border-slate-500/30" },
   ESCALATED: { label: "Escaladé", bg: "bg-rose-500/10", text: "text-rose-400", border: "border-rose-500/30" },
 };
@@ -458,7 +458,7 @@ export default function ReportsCenterClient() {
           </div>
         ) : (
           <div className="p-12 text-center rounded-2xl bg-[var(--surface-raised)]/30 border border-[var(--panel-border)] space-y-2">
-            <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+            <CheckCircle2 className="w-8 h-8 text-[var(--success)] mx-auto" />
             <h3 className="text-sm font-bold text-[var(--text-primary)]">File de signalements vide</h3>
             <p className="text-xs text-[var(--text-muted)]">Aucun signalement ne requiert d'attention dans cette catégorie.</p>
           </div>

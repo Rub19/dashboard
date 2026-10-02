@@ -76,8 +76,8 @@ export default function OperationsGroup({
                 </p>
               </div>
               <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-mono self-start sm:self-auto">
-                <span className={cn("w-2 h-2 rounded-full", connectionState === "connected" ? "bg-emerald-400 animate-pulse" : "bg-rose-400")} />
-                <span className={connectionState === "connected" ? "text-emerald-400" : "text-rose-400"}>
+                <span className={cn("w-2 h-2 rounded-full", connectionState === "connected" ? "bg-[var(--success)] animate-pulse" : "bg-rose-400")} />
+                <span className={connectionState === "connected" ? "text-[var(--success)]" : "text-rose-400"}>
                   {connectionState === "connected" ? "Écoute active" : "Déconnecté"}
                 </span>
               </div>
@@ -166,13 +166,13 @@ export default function OperationsGroup({
                           className={cn(
                             "px-2.5 py-0.5 rounded-full text-[10px] font-semibold border flex items-center gap-1.5 shrink-0",
                             healthy
-                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/20"
                               : degraded
                               ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
                               : "bg-rose-500/10 text-rose-400 border-rose-500/20"
                           )}
                         >
-                          <span className={cn("w-1.5 h-1.5 rounded-full", healthy ? "bg-emerald-400" : degraded ? "bg-amber-400" : "bg-rose-400")} />
+                          <span className={cn("w-1.5 h-1.5 rounded-full", healthy ? "bg-[var(--success)]" : degraded ? "bg-amber-400" : "bg-rose-400")} />
                           {healthy ? "Opérationnel" : degraded ? "Dégradé" : "Hors-ligne"}
                         </span>
                       </div>
@@ -255,7 +255,7 @@ export default function OperationsGroup({
                       <div
                         className={cn(
                           "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
-                          job.status === "failed" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" : job.status === "running" ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                          job.status === "failed" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" : job.status === "running" ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" : "bg-[var(--success)]/10 text-[var(--success)] border border-[var(--success)]/20"
                         )}
                       >
                         <ListRestart className={cn("w-4 h-4", job.status === "running" && "animate-spin")} />
@@ -345,7 +345,7 @@ export default function OperationsGroup({
                   <div className="pt-2 border-t border-zinc-900 flex items-center justify-between text-[10px]">
                     <span className="text-zinc-500 font-medium">{cmd.cat}</span>
                     {stat ? (
-                      <span className="text-emerald-400 font-mono font-semibold">
+                      <span className="text-[var(--accent-primary)] font-mono font-semibold">
                         {stat.executions24h ?? 0}× / 24h · {stat.avgLatencyMs ?? 0}ms
                       </span>
                     ) : (

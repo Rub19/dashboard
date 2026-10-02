@@ -138,7 +138,7 @@ export default function EventAnalyticsClient() {
               </Link>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] flex items-center gap-3">
-              <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-emerald-400"><BarChart3 className="h-5 w-5" /></span>
+              <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-current/25 bg-current/10 text-[var(--accent-primary)]"><BarChart3 className="h-5 w-5" /></span>
               Statistiques & Analytics de l'Événement
             </h1>
             <p className="text-xs text-[var(--text-muted)] mt-1">
@@ -162,10 +162,10 @@ export default function EventAnalyticsClient() {
           <div className="p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
             <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-2">
               <span>Taux de Présence</span>
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-[var(--success)]" />
             </div>
             <div className="text-3xl font-extrabold text-[var(--text-primary)]">{stats.attendanceRate}%</div>
-            <span className="text-xs text-emerald-400 mt-1 block">
+            <span className="text-xs text-[var(--accent-primary)] mt-1 block">
               {stats.attendedCount} présents sur {stats.goingCount} confirmés
             </span>
           </div>
@@ -195,10 +195,10 @@ export default function EventAnalyticsClient() {
           <div className="p-5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
             <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-2">
               <span>Remplissage Capacité</span>
-              <Percent className="w-4 h-4 text-emerald-400" />
+              <Percent className="w-4 h-4 text-[var(--accent-primary)]" />
             </div>
             <div className="text-3xl font-extrabold text-[var(--text-primary)]">{stats.fillRate != null ? `${stats.fillRate}%` : "—"}</div>
-            <span className="text-xs text-emerald-400 mt-1 block">
+            <span className="text-xs text-[var(--accent-primary)] mt-1 block">
               {stats.maxCapacity != null ? `${stats.goingCount} places sur ${stats.maxCapacity}` : "Capacité illimitée"}
             </span>
           </div>
@@ -210,7 +210,7 @@ export default function EventAnalyticsClient() {
           <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
             <h3 className="text-sm font-bold text-[var(--text-primary)] mb-6 flex items-center justify-between">
               <span>Évolution des Inscriptions Cumulées</span>
-              <TrendingUp className="w-4 h-4 text-emerald-400" />
+              <TrendingUp className="w-4 h-4 text-[var(--accent-primary)]" />
             </h3>
 
             {stats.registrationTimeline.length === 0 ? (
@@ -224,7 +224,7 @@ export default function EventAnalyticsClient() {
                       <span className="text-xs font-bold text-[var(--text-primary)]">{item.count}</span>
                       <div className="w-full bg-[var(--surface-raised)]/50 rounded-t-lg h-36 flex items-end p-1">
                         <div
-                          className="w-full bg-emerald-500/80 rounded-t-md transition-all duration-500"
+                          className="w-full bg-[var(--accent-primary)]/80 rounded-t-md transition-all duration-500"
                           style={{ height: `${heightPercent}%` }}
                         />
                       </div>
@@ -241,20 +241,20 @@ export default function EventAnalyticsClient() {
             <div>
               <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4 flex items-center justify-between">
                 <span>Répartition des Réponses</span>
-                <PieChart className="w-4 h-4 text-emerald-400" />
+                <PieChart className="w-4 h-4 text-[var(--accent-primary)]" />
               </h3>
 
               <div className="space-y-3.5">
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
                     <span className="text-[var(--text-muted)] font-semibold flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[var(--accent-primary)]" />
                       Confirmés (Going)
                     </span>
                     <span className="text-[var(--text-primary)] font-bold">{stats.goingCount}</span>
                   </div>
                   <div className="w-full h-2 rounded-full bg-[var(--surface-raised)]/50 overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${pct(stats.goingCount)}%` }} />
+                    <div className="h-full bg-[var(--accent-primary)] rounded-full" style={{ width: `${pct(stats.goingCount)}%` }} />
                   </div>
                 </div>
 
@@ -274,13 +274,13 @@ export default function EventAnalyticsClient() {
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
                     <span className="text-[var(--text-muted)] font-semibold flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[var(--accent-primary)]" />
                       File d'attente (Waitlist)
                     </span>
                     <span className="text-[var(--text-primary)] font-bold">{stats.waitlistCount}</span>
                   </div>
                   <div className="w-full h-2 rounded-full bg-[var(--surface-raised)]/50 overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${pct(stats.waitlistCount)}%` }} />
+                    <div className="h-full bg-[var(--accent-primary)] rounded-full" style={{ width: `${pct(stats.waitlistCount)}%` }} />
                   </div>
                 </div>
               </div>

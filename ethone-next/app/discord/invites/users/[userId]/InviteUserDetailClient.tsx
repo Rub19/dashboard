@@ -120,7 +120,7 @@ export default function InviteUserDetailClient() {
           </div>
           <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
             <div className="text-xs text-[var(--text-muted)] mb-1">Invites Valides</div>
-            <div className="text-xl font-bold text-emerald-400 font-mono">{profile?.validInvites || 0}</div>
+            <div className="text-xl font-bold text-[var(--success)] font-mono">{profile?.validInvites || 0}</div>
           </div>
           <div className="p-3 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
             <div className="text-xs text-[var(--text-muted)] mb-1">Membres Partis</div>
@@ -211,7 +211,7 @@ export default function InviteUserDetailClient() {
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs font-bold font-mono ${
                           ref.status === "VALID"
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                            ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20"
                             : ref.status === "SUSPICIOUS"
                             ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
                             : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
@@ -228,7 +228,7 @@ export default function InviteUserDetailClient() {
                               ? "text-rose-400"
                               : ref.riskScore >= 35
                               ? "text-amber-400"
-                              : "text-emerald-400"
+                              : "text-[var(--accent-primary)]"
                           }`}
                         >
                           {ref.riskScore || 0}

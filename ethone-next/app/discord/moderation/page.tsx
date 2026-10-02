@@ -164,23 +164,23 @@ const ACTION_CONFIG: Record<
   },
   UNBAN: {
     label: "Débannissement",
-    badge: "text-emerald-400",
-    border: "border-emerald-500/30",
-    bg: "bg-emerald-500/10",
+    badge: "text-[var(--accent-primary)]",
+    border: "border-[var(--accent-primary)]/30",
+    bg: "bg-[var(--accent-primary)]/10",
     icon: UserCheck,
   },
   SOFTBAN: {
     label: "Softban",
-    badge: "text-emerald-400",
-    border: "border-emerald-500/30",
-    bg: "bg-emerald-500/10",
+    badge: "text-[var(--accent-primary)]",
+    border: "border-[var(--accent-primary)]/30",
+    bg: "bg-[var(--accent-primary)]/10",
     icon: Trash2,
   },
   QUARANTINE: {
     label: "Quarantaine",
-    badge: "text-emerald-400",
-    border: "border-emerald-500/30",
-    bg: "bg-emerald-500/10",
+    badge: "text-[var(--accent-primary)]",
+    border: "border-[var(--accent-primary)]/30",
+    bg: "bg-[var(--accent-primary)]/10",
     icon: Lock,
   },
 };
@@ -768,7 +768,7 @@ export default function ModerationCenterPage() {
                                 ? "bg-red-500/20 text-red-400 border-red-500/30"
                                 : m.riskLevel === "SUSPICIOUS"
                                 ? "bg-orange-500/20 text-orange-400 border-orange-500/30"
-                                : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                                : "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border-[var(--accent-primary)]/30"
                             )}
                           >
                             RISK: {m.riskLevel || "LOW"}
@@ -982,7 +982,7 @@ export default function ModerationCenterPage() {
                                       ? "bg-[var(--surface-raised)] text-[var(--text-muted)] border-[var(--panel-border)]"
                                       : isExpired
                                       ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                                      : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                      : "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border-[var(--accent-primary)]/20"
                                   )}
                                 >
                                   {c.status}
@@ -1314,7 +1314,7 @@ export default function ModerationCenterPage() {
                     aria-label="Sanction automatique après avertissements"
                     disabled={!escalation}
                     onClick={() => escalation && saveEscalation({ enabled: !escalation.enabled })}
-                    className={`relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors disabled:opacity-40 ${escalation?.enabled ? "bg-emerald-500" : "bg-[var(--text-primary)]/15"}`}
+                    className={`relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors disabled:opacity-40 ${escalation?.enabled ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/15"}`}
                   >
                     <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${escalation?.enabled ? "translate-x-5" : "translate-x-0"}`} />
                   </button>

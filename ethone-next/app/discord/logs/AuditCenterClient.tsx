@@ -586,7 +586,7 @@ export function AuditCenterClient() {
         return "bg-blue-500/20 text-blue-300 border-blue-500/30";
       case "INFO":
       default:
-        return "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+        return "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border-[var(--accent-primary)]/30";
     }
   };
 
@@ -601,13 +601,13 @@ export function AuditCenterClient() {
       case "MEMBERS":
         return <User className="h-3.5 w-3.5 text-blue-400" />;
       case "MESSAGES":
-        return <FileText className="h-3.5 w-3.5 text-emerald-400" />;
+        return <FileText className="h-3.5 w-3.5 text-[var(--accent-primary)]" />;
       case "ROLES":
-        return <Sliders className="h-3.5 w-3.5 text-emerald-400" />;
+        return <Sliders className="h-3.5 w-3.5 text-[var(--accent-primary)]" />;
       case "CHANNELS":
         return <Hash className="h-3.5 w-3.5 text-cyan-400" />;
       case "VOICE":
-        return <Activity className="h-3.5 w-3.5 text-emerald-400" />;
+        return <Activity className="h-3.5 w-3.5 text-[var(--accent-primary)]" />;
       case "SERVER":
       case "SYSTEM":
       default:
@@ -616,7 +616,7 @@ export function AuditCenterClient() {
   };
 
   return (
-    <div className="pb-8 text-[var(--text-primary)] selection:bg-emerald-500 selection:text-white">
+    <div className="pb-8 text-[var(--text-primary)] selection:bg-[var(--accent-primary)] selection:text-[var(--accent-contrast)]">
       {/* HEADER TOP BAR */}
       <div className="sticky top-0 z-40 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/80 ">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
@@ -628,7 +628,7 @@ export function AuditCenterClient() {
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] bg-emerald-500 text-white icon-pop">
+              <div className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)] text-[var(--accent-contrast)] icon-pop">
                 <FileText className="h-4 w-4" />
               </div>
               <div>
@@ -636,7 +636,7 @@ export function AuditCenterClient() {
                   <h1 className="text-sm font-bold tracking-tight text-[var(--text-primary)] sm:text-base">
                     Audit Center
                   </h1>
-                  <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-300">
+                  <span className="rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2 py-0.5 text-xs font-semibold text-[var(--accent-primary)]">
                     Traçabilité Absolue
                   </span>
                 </div>
@@ -666,13 +666,13 @@ export function AuditCenterClient() {
               className={cn(
                 "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
                 liveStreaming
-                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 shadow-sm"
+                  ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shadow-sm"
                   : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
             >
               {liveStreaming ? (
                 <>
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
                   <span>Flux Live</span>
                 </>
               ) : (
@@ -727,7 +727,7 @@ export function AuditCenterClient() {
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 ">
             <div className="flex items-center justify-between">
               <span className="text-xs text-[var(--text-muted)]">Événements (Auj.)</span>
-              <Activity className="h-4 w-4 text-emerald-400" />
+              <Activity className="h-4 w-4 text-[var(--accent-primary)]" />
             </div>
             <p className="mt-2 text-2xl font-extrabold tracking-tight text-[var(--text-primary)] font-mono">
               {overview?.eventsToday ?? 0}
@@ -807,7 +807,7 @@ export function AuditCenterClient() {
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-2 transition-all cursor-pointer shrink-0",
               activeTab === "stream"
-                ? "bg-emerald-500 text-white shadow-sm"
+                ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
                 : "text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)]"
             )}
           >
@@ -835,7 +835,7 @@ export function AuditCenterClient() {
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-2 transition-all cursor-pointer shrink-0",
               activeTab === "analytics"
-                ? "bg-emerald-500 text-white shadow-sm"
+                ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
                 : "text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)]"
             )}
           >
@@ -849,7 +849,7 @@ export function AuditCenterClient() {
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-2 transition-all cursor-pointer shrink-0",
               activeTab === "routing"
-                ? "bg-emerald-500 text-white shadow-sm"
+                ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
                 : "text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)]"
             )}
           >
@@ -935,7 +935,7 @@ export function AuditCenterClient() {
                       className={cn(
                         "rounded-xl px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
                         selectedPeriod === p
-                          ? "bg-emerald-500 text-white shadow-sm"
+                          ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
                           : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                       )}
                     >
@@ -1016,7 +1016,7 @@ export function AuditCenterClient() {
                                 {evt.actor.tag || evt.actor.id}
                               </span>
                               {evt.actor.isBot && (
-                                <span className="rounded bg-emerald-500/20 px-1 py-0.2 text-xs font-bold text-emerald-300">
+                                <span className="rounded bg-[var(--accent-primary)]/20 px-1 py-0.2 text-xs font-bold text-[var(--accent-primary)]">
                                   BOT
                                 </span>
                               )}
@@ -1080,7 +1080,7 @@ export function AuditCenterClient() {
                             <button
                               type="button"
                               onClick={() => handleInvestigate(evt.id)}
-                              className="mt-1 inline-flex items-center gap-1 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-300 hover:brightness-110 hover:text-[var(--text-primary)] cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
+                              className="mt-1 inline-flex items-center gap-1 rounded-xl border border-[var(--success)]/30 bg-[var(--success)]/10 px-2.5 py-1 text-xs font-bold text-[var(--success)] hover:brightness-110 hover:text-[var(--text-primary)] cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
                             >
                               <Eye className="h-3 w-3" />
                               <span>Enquêter</span>
@@ -1153,7 +1153,7 @@ export function AuditCenterClient() {
             {/* RÉPARTITION PAR MODULE */}
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
               <h3 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <Layers className="h-4 w-4 text-emerald-400" />
+                <Layers className="h-4 w-4 text-[var(--accent-primary)]" />
                 Répartition des Événements par Module
               </h3>
               <div className="space-y-2.5">
@@ -1167,7 +1167,7 @@ export function AuditCenterClient() {
                       </div>
                       <div className="h-2 w-full rounded-full bg-[var(--surface-raised)]/40 overflow-hidden">
                         <div
-                          className="h-full bg-emerald-500 rounded-full"
+                          className="h-full bg-[var(--accent-primary)] rounded-full"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -1180,13 +1180,13 @@ export function AuditCenterClient() {
             {/* RÉPARTITION PAR SÉVÉRITÉ */}
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5 space-y-4">
               <h3 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <Activity className="h-4 w-4 text-emerald-400" />
+                <Activity className="h-4 w-4 text-[var(--accent-primary)]" />
                 Distribution par Niveau de Sévérité
               </h3>
               <div className="space-y-2.5">
                 {Object.entries(overview?.bySeverity || {}).map(([sev, count]) => {
                   const pct = Math.round((count / (overview?.totalEvents || 1)) * 100);
-                  let barColor = "bg-emerald-500";
+                  let barColor = "bg-[var(--accent-primary)]";
                   if (sev === "CRITICAL") barColor = "bg-rose-500";
                   if (sev === "HIGH") barColor = "bg-orange-500";
                   if (sev === "MEDIUM") barColor = "bg-amber-400";
@@ -1432,7 +1432,7 @@ export function AuditCenterClient() {
                     className={cn(
                       "rounded-xl border px-3.5 py-2 text-xs font-semibold transition-all cursor-pointer",
                       configRouting.retentionDays === r.val
-                        ? "border-emerald-500/30 bg-emerald-500/20 text-emerald-300"
+                        ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
                         : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
@@ -1466,7 +1466,7 @@ export function AuditCenterClient() {
                   <span className="block text-xs font-bold text-[var(--text-primary)]">Utiliser des webhooks</span>
                   <span className="block text-xs text-[var(--text-muted)]">Si activé, ETHONE crée un webhook par salon pour envoyer les logs (nom personnalisable ci-dessus). Sinon, le bot poste directement.</span>
                 </span>
-                <span className={cn("relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors", useWebhooks ? "bg-emerald-500" : "bg-[var(--text-primary)]/15")}>
+                <span className={cn("relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors", useWebhooks ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/15")}>
                   <span className={cn("block h-4 w-4 rounded-full bg-white shadow transition-transform", useWebhooks ? "translate-x-4" : "translate-x-0")} />
                 </span>
               </button>
@@ -1571,7 +1571,7 @@ export function AuditCenterClient() {
             </button>
 
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm">
                 <Eye className="h-5 w-5" />
               </div>
               <div>
@@ -1586,14 +1586,14 @@ export function AuditCenterClient() {
 
             {loadingInvestigation ? (
               <div className="flex flex-col items-center justify-center py-12 gap-3">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500/30 border-t-transparent" />
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent-primary)]/30 border-t-transparent" />
                 <p className="text-xs text-[var(--text-muted)]">Reconstitution de la chaîne de causalité...</p>
               </div>
             ) : investigationData ? (
               <div className="space-y-5 text-xs">
                 {/* SYNTHÈSE "QUI, QUOI, QUAND, OÙ, POURQUOI" */}
                 <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 p-4 space-y-3">
-                  <h3 className="font-bold text-[var(--text-primary)] text-xs uppercase tracking-wider text-emerald-400">
+                  <h3 className="font-bold text-[var(--text-primary)] text-xs uppercase tracking-wider text-[var(--accent-primary)]">
                     Fiche d&apos;Investigation
                   </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -1674,7 +1674,7 @@ export function AuditCenterClient() {
                 {/* CHAÎNE DE CAUSALITÉ INTERACTIVE */}
                 <div className="space-y-2">
                   <h3 className="font-bold text-[var(--text-primary)] text-xs flex items-center gap-1.5">
-                    <Clock className="h-4 w-4 text-emerald-400" />
+                    <Clock className="h-4 w-4 text-[var(--accent-primary)]" />
                     Chronologie des Événements Connexes (Chaîne de Causalité)
                   </h3>
                   <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3 space-y-2 max-h-60 overflow-y-auto">
@@ -1684,7 +1684,7 @@ export function AuditCenterClient() {
                         className={cn(
                           "flex items-start gap-3 rounded-xl p-2.5 transition-all text-xs",
                           step.eventId === investigatingEventId
-                            ? "border border-emerald-500/40 bg-emerald-500/30"
+                            ? "border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/30"
                             : "bg-[var(--surface-raised)]/40"
                         )}
                       >
@@ -1720,7 +1720,7 @@ export function AuditCenterClient() {
                           <tr>
                             <th className="px-3 py-2">Champ Modifié</th>
                             <th className="px-3 py-2 text-rose-400">État Avant (Previous)</th>
-                            <th className="px-3 py-2 text-emerald-400">État Après (Current)</th>
+                            <th className="px-3 py-2 text-[var(--accent-primary)]">État Après (Current)</th>
                           </tr>
                         </thead>
                         <tbody className="stagger-children divide-y divide-[var(--panel-border)] font-mono text-xs">
@@ -1728,7 +1728,7 @@ export function AuditCenterClient() {
                             <tr key={i} className="hover:bg-[var(--surface-raised)]/70">
                               <td className="px-3 py-2 font-bold text-[var(--text-muted)]">{d.field}</td>
                               <td className="px-3 py-2 text-rose-300 bg-rose-500/5">{d.beforeDisplay}</td>
-                              <td className="px-3 py-2 text-emerald-300 bg-emerald-500/5">{d.afterDisplay}</td>
+                              <td className="px-3 py-2 text-[var(--accent-primary)] bg-[var(--accent-primary)]/5">{d.afterDisplay}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -1755,7 +1755,7 @@ export function AuditCenterClient() {
             </button>
 
             <div className="flex items-center gap-2">
-              <Download className="h-5 w-5 text-emerald-400" />
+              <Download className="h-5 w-5 text-[var(--accent-primary)]" />
               <h3 className="font-bold text-[var(--text-primary)] text-sm">Exporter le Journal d&apos;Audit</h3>
             </div>
 
@@ -1772,7 +1772,7 @@ export function AuditCenterClient() {
                   className={cn(
                     "flex flex-col items-center justify-center p-3 rounded-2xl border text-xs font-bold transition-all cursor-pointer",
                     exportFormat === "csv"
-                      ? "border-emerald-500/30 bg-emerald-500/20 text-emerald-300"
+                      ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
                       : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   )}
                 >
@@ -1786,7 +1786,7 @@ export function AuditCenterClient() {
                   className={cn(
                     "flex flex-col items-center justify-center p-3 rounded-2xl border text-xs font-bold transition-all cursor-pointer",
                     exportFormat === "json"
-                      ? "border-emerald-500/30 bg-emerald-500/20 text-emerald-300"
+                      ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
                       : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   )}
                 >

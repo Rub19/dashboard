@@ -165,7 +165,7 @@ export default function BackupDetailClient() {
             <a href={`${base}/${snapshot.backupId}/download`} className="px-3 py-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-medium text-[var(--text-muted)] flex items-center gap-1.5 transition-colors">
               <Download className="w-3.5 h-3.5" /> Télécharger .ethone-backup
             </a>
-            <Link href={`/discord/backups/compare?backupA=${snapshot.backupId}&backupB=LIVE${guildAmp}`} className="px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/10 text-xs font-medium text-emerald-300 flex items-center gap-1.5 transition-colors">
+            <Link href={`/discord/backups/compare?backupA=${snapshot.backupId}&backupB=LIVE${guildAmp}`} className="px-3 py-1.5 rounded-lg border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 hover:bg-[var(--accent-primary)]/10 text-xs font-medium text-[var(--accent-primary)] flex items-center gap-1.5 transition-colors">
               <GitCompare className="w-3.5 h-3.5" /> Comparer avec le live
             </Link>
             <Link href={`/discord/backups${guildQuery}`} className="px-4 py-1.5 rounded-lg bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold flex items-center gap-1.5 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
@@ -180,8 +180,8 @@ export default function BackupDetailClient() {
             <div className="space-y-2 min-w-0">
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">{snapshot.name}</h1>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">{snapshot.type}</span>
-                <span className={cn("px-2.5 py-0.5 rounded-full text-xs font-semibold border flex items-center gap-1", valid ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : "bg-rose-500/20 text-rose-400 border-rose-500/30")}>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">{snapshot.type}</span>
+                <span className={cn("px-2.5 py-0.5 rounded-full text-xs font-semibold border flex items-center gap-1", valid ? "bg-[var(--success)]/20 text-[var(--success)] border-[var(--success)]/30" : "bg-rose-500/20 text-rose-400 border-rose-500/30")}>
                   {valid ? <><CheckCircle2 className="w-3 h-3" /> Intégrité vérifiée</> : <><AlertTriangle className="w-3 h-3" /> {integrity?.reason || "Intégrité invalide"}</>}
                 </span>
               </div>
@@ -196,9 +196,9 @@ export default function BackupDetailClient() {
             </div>
             <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-3 w-full md:max-w-md space-y-1 shrink-0">
               <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
-                <span className="flex items-center gap-1 text-emerald-400 font-medium"><ShieldCheck className="w-3.5 h-3.5" /> SHA-256</span>
+                <span className="flex items-center gap-1 text-[var(--accent-primary)] font-medium"><ShieldCheck className="w-3.5 h-3.5" /> SHA-256</span>
                 <button onClick={copyChecksum} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] flex items-center gap-1 transition-colors cursor-pointer">
-                  {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}{copied ? "Copié" : "Copier"}
+                  {copied ? <Check className="w-3 h-3 text-[var(--success)]" /> : <Copy className="w-3 h-3" />}{copied ? "Copié" : "Copier"}
                 </button>
               </div>
               <p className="font-mono text-xs text-[var(--text-muted)] truncate">{snapshot.checksum}</p>
@@ -206,8 +206,8 @@ export default function BackupDetailClient() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mt-6 pt-6 border-t border-[var(--panel-border)]">
             {[
-              ["Catégories", snapshot.objectCounts.categories, "text-[var(--text-primary)]"], ["Salons", snapshot.objectCounts.channels, "text-emerald-300"], ["Rôles", snapshot.objectCounts.roles, "text-amber-400"],
-              ["Permissions", snapshot.objectCounts.permissions, "text-rose-400"], ["Emojis", snapshot.objectCounts.emojis, "text-teal-400"], ["Modules ETHONE", snapshot.objectCounts.ethoneModules, "text-emerald-400"],
+              ["Catégories", snapshot.objectCounts.categories, "text-[var(--text-primary)]"], ["Salons", snapshot.objectCounts.channels, "text-[var(--accent-primary)]"], ["Rôles", snapshot.objectCounts.roles, "text-amber-400"],
+              ["Permissions", snapshot.objectCounts.permissions, "text-rose-400"], ["Emojis", snapshot.objectCounts.emojis, "text-teal-400"], ["Modules ETHONE", snapshot.objectCounts.ethoneModules, "text-[var(--accent-primary)]"],
             ].map(([l, v, c]) => (
               <div key={String(l)} className="bg-[var(--surface-raised)]/40 p-3 rounded-xl border border-[var(--panel-border)]">
                 <span className="text-xs text-[var(--text-muted)]">{l}</span>
@@ -220,11 +220,11 @@ export default function BackupDetailClient() {
         {/* Onglets */}
         <div className="flex border-b border-[var(--panel-border)] gap-2 overflow-x-auto pb-1">
           {[
-            { id: "channels", label: `Salons (${snapshot.data.channels.length})`, icon: FolderTree, c: "text-emerald-300" },
+            { id: "channels", label: `Salons (${snapshot.data.channels.length})`, icon: FolderTree, c: "text-[var(--accent-primary)]" },
             { id: "roles", label: `Rôles (${snapshot.data.roles.length})`, icon: Users, c: "text-amber-400" },
             { id: "permissions", label: `Permissions (${permissionRows.length})`, icon: Shield, c: "text-rose-400" },
             { id: "server", label: "Serveur", icon: Server, c: "text-cyan-400" },
-            { id: "ethone", label: `Modules ETHONE (${ethoneModules.length})`, icon: Sparkles, c: "text-emerald-400" },
+            { id: "ethone", label: `Modules ETHONE (${ethoneModules.length})`, icon: Sparkles, c: "text-[var(--accent-primary)]" },
             { id: "raw", label: "JSON", icon: FileCode, c: "text-[var(--text-muted)]" },
           ].map((t) => {
             const Icon = t.icon;
@@ -243,7 +243,7 @@ export default function BackupDetailClient() {
             {[...snapshot.data.categories].sort((a, b) => a.position - b.position).map((cat) => (
               <div key={cat.id} className="border border-[var(--panel-border)] rounded-xl overflow-hidden bg-[var(--surface-raised)]/40">
                 <div className="px-4 py-2.5 bg-[var(--surface-raised)]/40 border-b border-[var(--panel-border)] flex items-center justify-between text-xs font-bold text-[var(--text-muted)]">
-                  <span className="flex items-center gap-2"><FolderTree className="w-3.5 h-3.5 text-emerald-300" />{cat.name}</span>
+                  <span className="flex items-center gap-2"><FolderTree className="w-3.5 h-3.5 text-[var(--accent-primary)]" />{cat.name}</span>
                   <span className="text-[var(--text-muted)]">#{cat.position}</span>
                 </div>
                 <div className="divide-y divide-[var(--panel-border)]">
@@ -293,11 +293,11 @@ export default function BackupDetailClient() {
               {permissionRows.map(({ channel, ow }, i) => (
                 <div key={`${channel}-${ow.id}-${i}`} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-xl p-4 space-y-2 text-xs">
                   <div className="flex items-center justify-between font-semibold text-[var(--text-primary)]">
-                    <span className="text-emerald-300 truncate">{channel}</span>
+                    <span className="text-[var(--accent-primary)] truncate">{channel}</span>
                     <span className="font-normal text-[var(--text-muted)] bg-[var(--surface-raised)]/40 px-2 py-0.5 rounded border border-[var(--panel-border)] shrink-0">{ow.type === "role" ? "@" : "👤 "}{ow.targetName || ow.id}</span>
                   </div>
                   <div className="font-mono text-xs text-[var(--text-muted)] space-y-0.5">
-                    <p><span className="text-emerald-400">allow</span> {ow.allow}</p>
+                    <p><span className="text-[var(--accent-primary)]">allow</span> {ow.allow}</p>
                     <p><span className="text-rose-400">deny</span> {ow.deny}</p>
                   </div>
                 </div>
@@ -332,7 +332,7 @@ export default function BackupDetailClient() {
                 <details key={mod} className="group">
                   <summary className="p-4 flex items-center justify-between cursor-pointer hover:bg-[var(--surface-raised)]/70 text-sm">
                     <span className="font-semibold text-[var(--text-primary)]">{mod}</span>
-                    <span className="px-2 py-0.5 rounded text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">{cfg && typeof cfg === "object" ? `${Object.keys(cfg as object).length} clé(s)` : "valeur"}</span>
+                    <span className="px-2 py-0.5 rounded text-xs bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">{cfg && typeof cfg === "object" ? `${Object.keys(cfg as object).length} clé(s)` : "valeur"}</span>
                   </summary>
                   <pre className="px-4 pb-4 text-xs font-mono text-[var(--text-muted)] overflow-x-auto max-h-64">{JSON.stringify(cfg, null, 2)}</pre>
                 </details>
@@ -360,7 +360,7 @@ function ChannelRow({ chan }: { chan: Snapshot["data"]["channels"][number] }) {
   return (
     <div className="px-4 py-3 flex items-center justify-between gap-3 hover:bg-[var(--surface-raised)]/70 text-sm transition-colors">
       <div className="flex items-center gap-3 min-w-0">
-        {voice ? <Volume2 className="w-4 h-4 text-emerald-400 shrink-0" /> : <Hash className="w-4 h-4 text-[var(--text-muted)] shrink-0" />}
+        {voice ? <Volume2 className="w-4 h-4 text-[var(--accent-primary)] shrink-0" /> : <Hash className="w-4 h-4 text-[var(--text-muted)] shrink-0" />}
         <span className="font-medium text-[var(--text-primary)] truncate">{chan.name}</span>
         {chan.topic && <span className="text-xs text-[var(--text-muted)] truncate hidden sm:inline">— {chan.topic}</span>}
       </div>

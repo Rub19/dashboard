@@ -266,7 +266,7 @@ export default function InfractionsPanel({ guildId, config, onConfigChange }: Pr
         <h2 className="text-lg font-bold text-[var(--text-primary)]">Détection des infractions</h2>
         <p className="mt-1 text-sm text-[var(--text-muted)]">
           Configurez les détections automatiques. Tout est désactivé par défaut : rien n&apos;agit tant que vous n&apos;avez pas activé une détection.{" "}
-          <span className={cn("font-semibold", activeCount > 0 ? "text-emerald-300" : "text-[var(--text-muted)]")}>{activeCount} active{activeCount > 1 ? "s" : ""}.</span>
+          <span className={cn("font-semibold", activeCount > 0 ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")}>{activeCount} active{activeCount > 1 ? "s" : ""}.</span>
         </p>
         {outdated && <p className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200">Le bot n&apos;est pas encore à jour : les détections « Émojis excessifs », « Mentions interdites » et « Mise en forme interdite » ne sont pas disponibles tant qu&apos;il n&apos;est pas redéployé.</p>}
         <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">

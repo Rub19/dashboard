@@ -135,7 +135,7 @@ export default function BackupCompareClient() {
   const options = [...snapshots.map((s) => ({ id: s.backupId, label: `${s.name} (${relative(s.createdAt)})` })), { id: "LIVE", label: "⚡ Serveur live actuel" }];
 
   const STATUS_BADGE: Record<DiffStatus, string> = {
-    ADDED: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+    ADDED: "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border-[var(--accent-primary)]/30",
     MODIFIED: "bg-amber-500/20 text-amber-400 border-amber-500/30",
     REMOVED: "bg-rose-500/20 text-rose-400 border-rose-500/30",
     UNCHANGED: "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] border-[var(--panel-border)]",
@@ -149,7 +149,7 @@ export default function BackupCompareClient() {
           <Link href={`/discord/backups${guildQuery}`} className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer">
             <ArrowLeft className="h-3.5 w-3.5" /> Retour aux sauvegardes
           </Link>
-          <span className="text-xs text-[var(--text-muted)] flex items-center gap-1.5"><GitCompare className="w-3.5 h-3.5 text-emerald-300" /> Comparateur de diff</span>
+          <span className="text-xs text-[var(--text-muted)] flex items-center gap-1.5"><GitCompare className="w-3.5 h-3.5 text-[var(--accent-primary)]" /> Comparateur de diff</span>
         </div>
 
         {!isRealGuild && (
@@ -175,7 +175,7 @@ export default function BackupCompareClient() {
                     }
                   />
                 </div>
-                <button onClick={compare} disabled={comparing} className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-emerald-300 hover:bg-[var(--surface-raised)]/70 cursor-pointer disabled:opacity-50" title="Relancer la comparaison">
+                <button onClick={compare} disabled={comparing} className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--accent-primary)] hover:bg-[var(--surface-raised)]/70 cursor-pointer disabled:opacity-50" title="Relancer la comparaison">
                   {comparing ? <RefreshCw className="w-5 h-5 animate-spin" /> : <ArrowRight className="w-5 h-5" />}
                 </button>
                 <div className="w-full md:w-5/12 space-y-2">
@@ -191,7 +191,7 @@ export default function BackupCompareClient() {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[var(--panel-border)]">
                 {[
-                  { icon: PlusCircle, label: "Ajoutés", value: result ? `+${result.summary.added}` : "—", cls: "bg-emerald-500/10 border-emerald-500/20", txt: "text-emerald-400" },
+                  { icon: PlusCircle, label: "Ajoutés", value: result ? `+${result.summary.added}` : "—", cls: "bg-[var(--accent-primary)]/10 border-[var(--accent-primary)]/20", txt: "text-[var(--accent-primary)]" },
                   { icon: AlertCircle, label: "Modifiés", value: result ? `~${result.summary.modified}` : "—", cls: "bg-amber-500/10 border-amber-500/20", txt: "text-amber-400" },
                   { icon: MinusCircle, label: "Supprimés", value: result ? `-${result.summary.removed}` : "—", cls: "bg-rose-500/10 border-rose-500/20", txt: "text-rose-400" },
                   { icon: CheckCircle2, label: "Identiques", value: result ? String(result.summary.unchanged) : "—", cls: "bg-[var(--surface-raised)]/40 border-[var(--panel-border)]", txt: "text-[var(--text-muted)]" },
@@ -217,7 +217,7 @@ export default function BackupCompareClient() {
                 {([
                   ["ALL", "Tous", Layers], ["ROLES", "Rôles", Users], ["CATEGORIES", "Catégories", FolderTree], ["CHANNELS", "Salons", FolderTree], ["PERMISSIONS", "Permissions", Shield], ["ETHONE", "ETHONE", Sparkles],
                 ] as [Component, string, typeof Users][]).map(([id, label, Icon]) => (
-                  <button key={id} onClick={() => setComponentFilter(id)} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer", componentFilter === id ? "bg-emerald-500 text-white" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
+                  <button key={id} onClick={() => setComponentFilter(id)} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer", componentFilter === id ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
                     <Icon className="w-3.5 h-3.5" /> {label}
                   </button>
                 ))}
@@ -253,7 +253,7 @@ export default function BackupCompareClient() {
                         <div key={i} className="grid grid-cols-1 sm:grid-cols-[140px_1fr_1fr] gap-2 items-start">
                           <span className="text-[var(--text-muted)] font-medium font-mono">{c.field}</span>
                           <div className="bg-[var(--surface-raised)]/40 p-2 rounded-lg border border-[var(--panel-border)] text-[var(--text-muted)] break-all">{fmtValue(c.before)}</div>
-                          <div className="bg-[var(--surface-raised)]/40 p-2 rounded-lg border border-[var(--panel-border)] text-emerald-300 font-medium break-all">{fmtValue(c.after)}</div>
+                          <div className="bg-[var(--surface-raised)]/40 p-2 rounded-lg border border-[var(--panel-border)] text-[var(--accent-primary)] font-medium break-all">{fmtValue(c.after)}</div>
                         </div>
                       ))}
                     </div>

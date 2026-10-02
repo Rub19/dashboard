@@ -11,7 +11,7 @@ import { xpWriteBuffer } from '../storage/xpWriteBuffer.js';
 import { LevelCalculator } from '../services/levelCalculator.js';
 import { levelingStorage } from '../storage/levelingStorage.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
-import { renderRankCard } from '../images/rankCard.js';
+import { renderRankCardFor } from '../services/rankCardService.js';
 import { logger } from '../../../utils/logger.js';
 import { container, sectionWithThumbnail, separator, text, footer, progressBar, toneToColor, buttonRow } from '../../../utils/components.js';
 
@@ -56,24 +56,7 @@ export const rankCommand: Command = {
 
     // Carte de rang en image (avatar, progression, prochaine récompense) ; si le rendu échoue, la carte texte ci-dessous prend le relais.
     try {
-      const nextReward = levelingStorage
-        .getRewards(guild.id)
-        .filter((r) => r.enabled && r.level > progress.level)
-        .sort((a, b) => a.level - b.level)[0];
-      const png = await renderRankCard({
-        username: targetUser.username,
-        avatarUrl: targetUser.displayAvatarURL({ extension: 'png', size: 256 }),
-        rank: userRank,
-        totalMembers: leaderboard.length,
-        level: progress.level,
-        totalXp: userData.totalXp,
-        currentLevelXp: progress.currentLevelXp,
-        nextLevelXp: progress.nextLevelXp,
-        progressPercentage: progress.progressPercentage,
-        messages: userData.messagesCount,
-        accent: config.accentColor,
-        nextReward: nextReward ? { name: guild.roles.cache.get(nextReward.roleId)?.name ?? 'rôle', level: nextReward.level } : null,
-      });
+      const png = await renderRankCardFor(guild, targetUser);
       await ctx.reply({
         files: [new AttachmentBuilder(png, { name: `rank-${targetUser.id}.png` })],
         components: [new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setCustomId('rank_btn_leaderboard').setLabel('Classement').setEmoji('🏆').setStyle(ButtonStyle.Secondary))],

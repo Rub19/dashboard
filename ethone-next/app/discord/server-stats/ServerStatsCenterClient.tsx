@@ -287,7 +287,7 @@ export default function ServerStatsCenterClient() {
                       options={[10, 15, 30, 60, 180, 360].map((m) => ({ id: String(m), label: `${m} min` }))}
                     />
                   </div>
-                  <button type="button" role="switch" aria-checked={overview.enabled} disabled={busy} onClick={() => void setConfig({ enabled: !overview.enabled })} className={cn("cursor-pointer rounded-full px-3 py-1 font-semibold transition", overview.enabled ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-500/15 text-[var(--text-muted)]")}>
+                  <button type="button" role="switch" aria-checked={overview.enabled} disabled={busy} onClick={() => void setConfig({ enabled: !overview.enabled })} className={cn("cursor-pointer rounded-full px-3 py-1 font-semibold transition", overview.enabled ? "bg-[var(--success)]/15 text-[var(--success)]" : "bg-zinc-500/15 text-[var(--text-muted)]")}>
                     {overview.enabled ? "Actif" : "En pause"}
                   </button>
                 </div>
@@ -354,7 +354,7 @@ export default function ServerStatsCenterClient() {
                     <p className="mb-1 text-xs font-semibold text-[var(--text-muted)]">{group}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {list.map((t) => (
-                        <button key={t.token} type="button" title={`${t.label} — ex. ${t.example}${t.needsStats ? " (module Statistiques requis)" : ""}`} onClick={() => insert(t.token)} className="cursor-pointer rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 py-1 font-mono text-xs text-[var(--text-muted)] transition hover:border-emerald-500/50 hover:text-[var(--text-primary)]">
+                        <button key={t.token} type="button" title={`${t.label} — ex. ${t.example}${t.needsStats ? " (module Statistiques requis)" : ""}`} onClick={() => insert(t.token)} className="cursor-pointer rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2 py-1 font-mono text-xs text-[var(--text-muted)] transition hover:border-[var(--accent-primary)]/50 hover:text-[var(--text-primary)]">
                           {t.token}
                           {t.needsStats && <span className="ml-1 text-sky-300">•</span>}
                         </button>

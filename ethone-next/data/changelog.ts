@@ -42550,6 +42550,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_9_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_9_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_9_de);
 
+const v1_52_10_fr: ChangelogEntry = {
+  version: "v1.52.10",
+  date: "2026-10-03",
+  title: "Les onglets oubliés se mettent à jour seuls",
+  items: [
+    "Mises à jour : quand une nouvelle version est installée, les onglets ETHONE restés en arrière-plan sont rechargés automatiquement (un onglet oublié pouvait réécrire d'anciennes données pendant des jours). L'onglet que tu regardes n'est jamais rechargé sans toi : il affiche le message de mise à jour.",
+  ],
+};
+
+const v1_52_10_en: ChangelogEntry = {
+  version: "v1.52.10",
+  date: "2026-10-03",
+  title: "Forgotten tabs update themselves",
+  items: [
+    "Updates: when a new version is installed, ETHONE tabs left in the background are reloaded automatically (a forgotten tab could keep writing old data for days). The tab you are looking at is never reloaded without you: it shows the update message.",
+  ],
+};
+
+const v1_52_10_es: ChangelogEntry = {
+  version: "v1.52.10",
+  date: "2026-10-03",
+  title: "Las pestañas olvidadas se actualizan solas",
+  items: [
+    "Actualizaciones: cuando se instala una nueva versión, las pestañas de ETHONE que quedaron en segundo plano se recargan automáticamente (una pestaña olvidada podía seguir escribiendo datos antiguos durante días). La pestaña que estás mirando nunca se recarga sin ti: muestra el mensaje de actualización.",
+  ],
+};
+
+const v1_52_10_de: ChangelogEntry = {
+  version: "v1.52.10",
+  date: "2026-10-03",
+  title: "Vergessene Tabs aktualisieren sich selbst",
+  items: [
+    "Updates: Wenn eine neue Version installiert wird, werden im Hintergrund gebliebene ETHONE-Tabs automatisch neu geladen (ein vergessener Tab konnte tagelang alte Daten schreiben). Der Tab, den du ansiehst, wird nie ohne dich neu geladen: Er zeigt die Update-Meldung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_10_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_10_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_10_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_10_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

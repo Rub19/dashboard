@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.10 — 2026-10-03
+
+**Les onglets oubliés se mettent à jour seuls**
+
+- Mises à jour : quand une nouvelle version est installée, les onglets ETHONE restés en arrière-plan sont rechargés automatiquement (un onglet oublié pouvait réécrire d'anciennes données pendant des jours). L'onglet que tu regardes n'est jamais rechargé sans toi : il affiche le message de mise à jour.
+
 ## v1.52.9 — 2026-10-03
 
 **Profil unique, vérification de version allégée**

@@ -1,4 +1,4 @@
-const CACHE_NAME = "ethone-next-v421";
+const CACHE_NAME = "ethone-next-v422";
 const PRECACHE = ["/", "/login/", "/dashboard/", "/offline.html"];
 const STATIC_EXTENSIONS = [".js", ".css", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".woff", ".woff2", ".ico"];
 
@@ -198,8 +198,25 @@ self.addEventListener("activate", (event) => {
       .keys()
       .then((keys) => Promise.all(keys.map((key) => key !== CACHE_NAME && caches.delete(key))))
       .then(() => self.clients.claim())
+      .then(() => refreshHiddenClients())
   );
 });
+
+// Nouvelle version installée : les onglets ETHONE restés en arrière-plan sur l'ancien code sont rechargés (un onglet
+// oublié réécrivait sinon d'anciennes données pendant des jours). Jamais l'onglet visible : on ne coupe pas ce que
+// la personne est en train de faire, elle a le message « mise à jour disponible ».
+function refreshHiddenClients() {
+  return self.clients
+    .matchAll({ type: "window", includeUncontrolled: true })
+    .then((clients) =>
+      Promise.all(
+        clients
+          .filter((client) => client.visibilityState === "hidden" && "navigate" in client)
+          .map((client) => client.navigate(client.url).catch(() => null))
+      )
+    )
+    .catch(() => null);
+}
 
 self.addEventListener("push", (event) => {
   let data = {};

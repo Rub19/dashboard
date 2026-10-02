@@ -42460,6 +42460,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_7_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_7_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_7_de);
 
+const v1_52_8_fr: ChangelogEntry = {
+  version: "v1.52.8",
+  date: "2026-10-02",
+  title: "Visites suivantes beaucoup plus rapides",
+  items: [
+    "Cache : les fichiers de code et les icônes sont enfin gardés par le navigateur (un an, noms uniques par version). Avant, une règle générale « ne jamais mettre en cache » s'y ajoutait et tout le code était retéléchargé à chaque visite.",
+  ],
+};
+
+const v1_52_8_en: ChangelogEntry = {
+  version: "v1.52.8",
+  date: "2026-10-02",
+  title: "Much faster repeat visits",
+  items: [
+    "Cache: code files and icons are finally kept by the browser (one year, unique names per version). Before, a general “never cache” rule was added on top and all the code was downloaded again on every visit.",
+  ],
+};
+
+const v1_52_8_es: ChangelogEntry = {
+  version: "v1.52.8",
+  date: "2026-10-02",
+  title: "Visitas siguientes mucho más rápidas",
+  items: [
+    "Caché: los archivos de código y los iconos por fin los guarda el navegador (un año, nombres únicos por versión). Antes se sumaba una regla general de «no guardar nunca» y todo el código se volvía a descargar en cada visita.",
+  ],
+};
+
+const v1_52_8_de: ChangelogEntry = {
+  version: "v1.52.8",
+  date: "2026-10-02",
+  title: "Folgebesuche deutlich schneller",
+  items: [
+    "Cache: Code-Dateien und Icons werden endlich vom Browser behalten (ein Jahr, eindeutige Namen pro Version). Vorher kam eine allgemeine „nie cachen“-Regel hinzu und der gesamte Code wurde bei jedem Besuch neu heruntergeladen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_8_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_8_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_8_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_8_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

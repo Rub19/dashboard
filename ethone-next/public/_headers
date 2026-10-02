@@ -22,10 +22,14 @@
 /manifest.json
   Cache-Control: no-cache, no-store, must-revalidate
 
+# Fichiers à nom unique (hash) : cache d'un an. « ! Cache-Control » retire le no-store hérité de /* — sans ça,
+# Cloudflare fusionnait les deux en-têtes et le navigateur retéléchargeait tout le code à chaque visite.
 /_next/static/*
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 
 /icons/*
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 
 /version.json

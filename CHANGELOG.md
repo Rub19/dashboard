@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.8 — 2026-10-02
+
+**Visites suivantes beaucoup plus rapides**
+
+- Cache : les fichiers de code et les icônes sont enfin gardés par le navigateur (un an, noms uniques par version). Avant, une règle générale « ne jamais mettre en cache » s'y ajoutait et tout le code était retéléchargé à chaque visite.
+
 ## v1.52.7 — 2026-10-02
 
 **Notifications de mail lues une seule fois**

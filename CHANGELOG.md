@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.11 — 2026-10-03
+
+**Plus aucune écriture inutile au démarrage**
+
+- Synchronisation : une valeur identique à celle déjà enregistrée n'est plus renvoyée au serveur (protection commune à toutes les fonctions de l'app).
+- Notifications : les anciennes copies « Nouveau mail » sont retirées côté serveur, même si un appareil resté sur une ancienne version en renvoie.
+
 ## v1.52.10 — 2026-10-03
 
 **Les onglets oubliés se mettent à jour seuls**

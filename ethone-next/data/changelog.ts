@@ -42591,6 +42591,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_10_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_10_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_10_de);
 
+const v1_52_11_fr: ChangelogEntry = {
+  version: "v1.52.11",
+  date: "2026-10-03",
+  title: "Plus aucune écriture inutile au démarrage",
+  items: [
+    "Synchronisation : une valeur identique à celle déjà enregistrée n'est plus renvoyée au serveur (protection commune à toutes les fonctions de l'app).",
+    "Notifications : les anciennes copies « Nouveau mail » sont retirées côté serveur, même si un appareil resté sur une ancienne version en renvoie.",
+  ],
+};
+
+const v1_52_11_en: ChangelogEntry = {
+  version: "v1.52.11",
+  date: "2026-10-03",
+  title: "No more useless writes at startup",
+  items: [
+    "Sync: a value identical to the one already saved is no longer sent to the server (a shared guard for every part of the app).",
+    "Notifications: old duplicate “New mail” copies are removed server-side, even if a device left on an old version sends them again.",
+  ],
+};
+
+const v1_52_11_es: ChangelogEntry = {
+  version: "v1.52.11",
+  date: "2026-10-03",
+  title: "Se acabaron las escrituras inútiles al iniciar",
+  items: [
+    "Sincronización: un valor idéntico al ya guardado ya no se reenvía al servidor (protección común para toda la app).",
+    "Notificaciones: las copias antiguas de «Nuevo correo» se eliminan en el servidor, aunque un dispositivo con una versión antigua las reenvíe.",
+  ],
+};
+
+const v1_52_11_de: ChangelogEntry = {
+  version: "v1.52.11",
+  date: "2026-10-03",
+  title: "Keine unnötigen Schreibvorgänge mehr beim Start",
+  items: [
+    "Synchronisierung: Ein Wert, der dem bereits gespeicherten entspricht, wird nicht mehr an den Server gesendet (gemeinsamer Schutz für die ganze App).",
+    "Benachrichtigungen: Alte doppelte „Neue Mail“-Kopien werden serverseitig entfernt, auch wenn ein Gerät mit alter Version sie erneut sendet.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_11_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_11_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_11_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_11_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -48,6 +48,17 @@ export async function getUserState<T>(key: string, fallback: T): Promise<T> {
   return (payload[key] as T | undefined) ?? fallback;
 }
 
+/** JSON à clés triées : deux objets égaux donnent le même texte, quel que soit l'ordre des clés. */
+export function stableJson(value: unknown): string {
+  const sort = (v: unknown): unknown =>
+    Array.isArray(v)
+      ? v.map(sort)
+      : v && typeof v === "object"
+        ? Object.fromEntries(Object.keys(v as object).sort().map((k) => [k, sort((v as Record<string, unknown>)[k])]))
+        : v;
+  return JSON.stringify(sort(value)) ?? "undefined";
+}
+
 // Écritures enchaînées : chaque écriture repart de l'état laissé par la précédente. En parallèle, deux clés modifiées
 // ensemble partaient de la même copie et la seconde effaçait la première (perte silencieuse de préférences).
 let _writeChain: Promise<unknown> = Promise.resolve();
@@ -64,6 +75,9 @@ async function writeUserState<T>(key: string, value: T): Promise<void> {
   if (!userId) return;
 
   const existing = await loadPayload(userId).catch(() => ({} as Payload));
+  // Valeur déjà enregistrée à l'identique : rien à envoyer (garde commune à tous les appelants ; plusieurs
+  // réécrivaient la même valeur au chargement).
+  if (key in existing && stableJson(existing[key]) === stableJson(value)) return;
   const payload = { ...existing, [key]: value };
 
   const { error } = await supabase

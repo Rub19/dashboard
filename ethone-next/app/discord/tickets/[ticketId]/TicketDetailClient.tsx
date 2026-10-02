@@ -25,6 +25,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import { formatApiError } from "@/lib/format-error";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -319,12 +320,7 @@ export default function TicketDetailClient() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center text-[var(--text-primary)]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent-primary)] border-t-transparent" />
-          <p className="text-xs text-[var(--text-muted)]">Chargement des détails du ticket #{ticketId}...</p>
-        </div>
-      </div>
+      <ModuleSkeleton label={`Chargement du ticket #${ticketId}…`} />
     );
   }
 

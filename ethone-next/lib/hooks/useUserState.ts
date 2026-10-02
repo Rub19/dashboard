@@ -10,6 +10,9 @@ export function useUserState<T>(key: string, initial: T) {
   const [loaded, setLoaded] = useState(false);
   // Horodatage de la dernière écriture locale : les échos de nos propres écritures (et les frappes en cours) ne doivent pas être réappliqués.
   const lastLocalWrite = useRef(0);
+  // Dernière valeur connue côté serveur (JSON) : on n'écrit que ce qui a réellement changé. Avant, chaque clé était
+  // réécrite juste après avoir été lue (une écriture inutile par clé et par composant à chaque chargement).
+  const persisted = useRef<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -37,6 +40,7 @@ export function useUserState<T>(key: string, initial: T) {
       setValue(initial);
     }
     getUserState<T>(key, initial).then((remote) => {
+      persisted.current = JSON.stringify(remote);
       if (remote !== initial) setValue(remote);
       setLoaded(true);
     });
@@ -53,7 +57,10 @@ export function useUserState<T>(key: string, initial: T) {
         () => {
           if (Date.now() - lastLocalWrite.current < 3000) return;
           invalidateUserStateCache();
-          getUserState<T>(key, initial).then((remote) => setValue((current) => (JSON.stringify(current) === JSON.stringify(remote) ? current : remote)));
+          getUserState<T>(key, initial).then((remote) => {
+            persisted.current = JSON.stringify(remote);
+            setValue((current) => (JSON.stringify(current) === persisted.current ? current : remote));
+          });
         },
       );
     void Promise.resolve(channel.subscribe()).catch(() => {});
@@ -66,8 +73,11 @@ export function useUserState<T>(key: string, initial: T) {
 
   useEffect(() => {
     if (!loaded) return;
+    const json = JSON.stringify(value);
+    if (typeof window !== "undefined") localStorage.setItem(storageKey, json);
+    if (json === persisted.current) return;
+    persisted.current = json;
     lastLocalWrite.current = Date.now();
-    if (typeof window !== "undefined") localStorage.setItem(storageKey, JSON.stringify(value));
     setUserState(key, value).catch(() => {});
   }, [value, loaded, key, storageKey]);
 

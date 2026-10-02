@@ -13,6 +13,7 @@ import ChannelPicker from "@/components/discord/ChannelPicker";
 import PageHeader from "@/components/discord/PageHeader";
 import { cn } from "@/lib/utils";
 import { formatApiError, errorReason } from "@/lib/format-error";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -175,7 +176,7 @@ export default function CountingCenterClient() {
 
         <PageHeader hideBack guildId={guildId} icon="mod-counting" tint="teal" title="Comptage" subtitle="Les membres comptent 1, 2, 3… à tour de rôle dans un salon. Une erreur remet le compteur à zéro." />
 
-        {state === "loading" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">Chargement…</div>}
+        {state === "loading" && <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement…" />}
 
         {state === "offline" && (
           <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">

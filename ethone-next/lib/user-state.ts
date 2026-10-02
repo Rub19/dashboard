@@ -48,7 +48,17 @@ export async function getUserState<T>(key: string, fallback: T): Promise<T> {
   return (payload[key] as T | undefined) ?? fallback;
 }
 
-export async function setUserState<T>(key: string, value: T): Promise<void> {
+// Écritures enchaînées : chaque écriture repart de l'état laissé par la précédente. En parallèle, deux clés modifiées
+// ensemble partaient de la même copie et la seconde effaçait la première (perte silencieuse de préférences).
+let _writeChain: Promise<unknown> = Promise.resolve();
+
+export function setUserState<T>(key: string, value: T): Promise<void> {
+  const run = _writeChain.then(() => writeUserState(key, value));
+  _writeChain = run.catch(() => {});
+  return run;
+}
+
+async function writeUserState<T>(key: string, value: T): Promise<void> {
   const { data } = await supabase.auth.getSession();
   const userId = data?.session?.user?.id;
   if (!userId) return;

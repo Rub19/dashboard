@@ -8,7 +8,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { TiltCard } from "@/components/ui/TiltCard";
 import GameIcon from "@/components/icons/GameIcon";
 import { cn } from "@/lib/utils";
-import { WORKER_URL } from "@/lib/api";
+import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 
 type RiotMatch = Record<string, unknown>;
 
@@ -156,17 +156,18 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
 
     const profileEndpoint =
       game === "valorant"
-        ? `${WORKER_URL}/api/stats/valorant-profile?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
-        : `${WORKER_URL}/api/stats/lol-profile?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`;
+        ? `/api/stats/valorant-profile?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
+        : `/api/stats/lol-profile?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`;
 
     const matchesEndpoint =
       game === "valorant"
-        ? `${WORKER_URL}/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
-        : `${WORKER_URL}/api/stats/lol-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`;
+        ? `/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
+        : `/api/stats/lol-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`;
 
     Promise.allSettled([
-      fetch(profileEndpoint).then((r) => r.json()),
-      fetch(matchesEndpoint).then((r) => r.json()),
+      // Même cache que le tableau de bord : les matchs ne sont pas redemandés en double.
+      fetchWorkerCached<any>(profileEndpoint, {}, 60_000),
+      fetchWorkerCached<any>(matchesEndpoint, {}, 60_000),
     ])
       .then(([profRes, matchRes]) => {
         if (cancelled) return;

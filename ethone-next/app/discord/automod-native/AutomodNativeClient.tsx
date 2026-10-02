@@ -562,7 +562,13 @@ export default function AutomodNativeClient() {
         </div>
       )}
 
-      {!rules && !loadError && guildId && <p className="text-sm text-[var(--text-muted)]">Chargement des règles…</p>}
+      {!rules && !loadError && guildId && (
+        <div role="status" aria-busy="true" aria-label="Chargement des règles…" className="skeleton-delay space-y-2">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="skeleton-shimmer h-16 rounded-[var(--panel-radius)]" />
+          ))}
+        </div>
+      )}
 
       {rules && rules.length === 0 && !draft && (
         <div className={cardCls}>

@@ -13,6 +13,7 @@ import PageHeader from "@/components/discord/PageHeader";
 import { cn } from "@/lib/utils";
 import Select from "@/components/ui/Select";
 import { formatApiError, errorReason } from "@/lib/format-error";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -427,7 +428,7 @@ export default function StatrolesCenterClient() {
 
         <PageHeader hideBack guildId={guildId} icon="mod-roles" tint="amber" title="Statroles" subtitle="Des rôles donnés, et retirés, automatiquement selon l'activité des membres dans la durée." />
 
-        {state === "loading" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">Chargement…</div>}
+        {state === "loading" && <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement…" />}
         {state === "offline" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">Le bot n&apos;a pas répondu pour ce serveur. Vérifiez qu&apos;il est présent, puis actualisez.</div>}
 
         {state === "ok" && overview && cfg && (

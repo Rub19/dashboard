@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.0 — 2026-10-02
+
+**Plus fluide, plus fiable, de vrais chargements**
+
+- Correctif important : deux réglages modifiés en même temps pouvaient s'effacer l'un l'autre (le second écrasait le premier). Les écritures se font maintenant l'une après l'autre.
+- Démarrage plus léger : l'état de ton compte n'est plus réécrit à chaque chargement de page (jusqu'à 10 écritures inutiles par page).
+- Moins de requêtes : la météo, les matchs LoL/Valorant et les tâches ne sont plus demandés plusieurs fois en même temps par différents widgets.
+- Chargements : 35 pages du bot affichent un aperçu de la page (squelette) au lieu d'une roue et d'un texte, seulement si le chargement dure plus de 150 ms.
+- Squelettes de chargement visibles dans tous les thèmes (ils étaient presque invisibles, surtout en thème clair).
+- Carte Minecraft réparée : le service utilisé était en panne ; plusieurs sources sont maintenant essayées l'une après l'autre.
+
 ## v1.51.0 — 2026-10-02
 
 **Adresse support@ethone.dev, réception des e-mails réparée**

@@ -14,6 +14,7 @@ import ChannelPicker from "@/components/discord/ChannelPicker";
 import PageHeader from "@/components/discord/PageHeader";
 import { cn } from "@/lib/utils";
 import { formatApiError, errorReason } from "@/lib/format-error";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -247,7 +248,7 @@ export default function ServerStatsCenterClient() {
 
         <PageHeader hideBack guildId={guildId} icon="mod-serverstats" tint="emerald" title="Compteurs de salons" subtitle="Affichez les statistiques du serveur dans le nom de salons vocaux : membres, horloge, objectif, activité, membre le plus actif…" />
 
-        {state === "loading" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">Chargement…</div>}
+        {state === "loading" && <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement…" />}
         {state === "offline" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">Le bot n&apos;a pas répondu pour ce serveur. Vérifiez qu&apos;il est présent, puis actualisez.</div>}
 
         {state === "ok" && overview && (

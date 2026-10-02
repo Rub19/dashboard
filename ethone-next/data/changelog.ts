@@ -42096,6 +42096,67 @@ CHANGELOG_BY_LANG.en.unshift(v1_51_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_51_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_51_0_de);
 
+const v1_52_0_fr: ChangelogEntry = {
+  version: "v1.52.0",
+  date: "2026-10-02",
+  title: "Plus fluide, plus fiable, de vrais chargements",
+  items: [
+    "Correctif important : deux réglages modifiés en même temps pouvaient s'effacer l'un l'autre (le second écrasait le premier). Les écritures se font maintenant l'une après l'autre.",
+    "Démarrage plus léger : l'état de ton compte n'est plus réécrit à chaque chargement de page (jusqu'à 10 écritures inutiles par page).",
+    "Moins de requêtes : la météo, les matchs LoL/Valorant et les tâches ne sont plus demandés plusieurs fois en même temps par différents widgets.",
+    "Chargements : 35 pages du bot affichent un aperçu de la page (squelette) au lieu d'une roue et d'un texte, seulement si le chargement dure plus de 150 ms.",
+    "Squelettes de chargement visibles dans tous les thèmes (ils étaient presque invisibles, surtout en thème clair).",
+    "Carte Minecraft réparée : le service utilisé était en panne ; plusieurs sources sont maintenant essayées l'une après l'autre.",
+  ],
+};
+
+const v1_52_0_en: ChangelogEntry = {
+  version: "v1.52.0",
+  date: "2026-10-02",
+  title: "Smoother, more reliable, real loading states",
+  items: [
+    "Important fix: two settings changed at the same time could erase each other (the second overwrote the first). Writes now happen one after the other.",
+    "Lighter startup: your account state is no longer rewritten on every page load (up to 10 useless writes per page).",
+    "Fewer requests: weather, LoL/Valorant matches and tasks are no longer requested several times at once by different widgets.",
+    "Loading: 35 bot pages show a preview of the page (skeleton) instead of a spinner and text, only if loading takes longer than 150 ms.",
+    "Loading skeletons visible in every theme (they were nearly invisible, especially in light themes).",
+    "Minecraft card fixed: the service it used was down; several sources are now tried one after another.",
+  ],
+};
+
+const v1_52_0_es: ChangelogEntry = {
+  version: "v1.52.0",
+  date: "2026-10-02",
+  title: "Más fluido, más fiable, cargas de verdad",
+  items: [
+    "Corrección importante: dos ajustes cambiados a la vez podían borrarse entre sí (el segundo sobrescribía el primero). Ahora las escrituras se hacen una tras otra.",
+    "Inicio más ligero: el estado de tu cuenta ya no se reescribe en cada carga de página (hasta 10 escrituras inútiles por página).",
+    "Menos peticiones: el tiempo, las partidas de LoL/Valorant y las tareas ya no se piden varias veces a la vez desde distintos widgets.",
+    "Cargas: 35 páginas del bot muestran una vista previa (esqueleto) en lugar de una rueda y un texto, solo si la carga dura más de 150 ms.",
+    "Esqueletos de carga visibles en todos los temas (eran casi invisibles, sobre todo en temas claros).",
+    "Tarjeta de Minecraft reparada: el servicio que usaba estaba caído; ahora se prueban varias fuentes una tras otra.",
+  ],
+};
+
+const v1_52_0_de: ChangelogEntry = {
+  version: "v1.52.0",
+  date: "2026-10-02",
+  title: "Flüssiger, zuverlässiger, echte Ladezustände",
+  items: [
+    "Wichtige Korrektur: Zwei gleichzeitig geänderte Einstellungen konnten sich gegenseitig löschen (die zweite überschrieb die erste). Schreibvorgänge laufen jetzt nacheinander.",
+    "Leichterer Start: Dein Kontostatus wird nicht mehr bei jedem Seitenaufruf neu geschrieben (bis zu 10 unnötige Schreibvorgänge pro Seite).",
+    "Weniger Anfragen: Wetter, LoL-/Valorant-Matches und Aufgaben werden nicht mehr mehrfach gleichzeitig von verschiedenen Widgets abgefragt.",
+    "Laden: 35 Bot-Seiten zeigen eine Vorschau der Seite (Skelett) statt Spinner und Text, nur wenn das Laden länger als 150 ms dauert.",
+    "Lade-Skelette in allen Themes sichtbar (sie waren fast unsichtbar, besonders in hellen Themes).",
+    "Minecraft-Karte repariert: Der genutzte Dienst war ausgefallen; jetzt werden mehrere Quellen nacheinander versucht.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -4,6 +4,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { ADMIN_EMAIL } from "@/lib/admin";
 import OwnerShieldPanel from "@/components/discord/bot-control/OwnerShieldPanel";
 import { notFound } from "next/navigation";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 export default function DiscordOwnerShieldPage() {
   const { user, loading } = useAuth();
@@ -11,9 +12,7 @@ export default function DiscordOwnerShieldPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500" />
-      </div>
+      <ModuleSkeleton label="Chargement du Bouclier Owner…" />
     );
   }
 

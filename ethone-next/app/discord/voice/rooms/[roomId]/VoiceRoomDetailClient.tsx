@@ -22,13 +22,13 @@ import {
   Shield,
   UserX,
   Plus,
-  RefreshCw,
   AlertTriangle,
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import { confirmDialog } from "@/lib/confirmDialog";
 import { formatApiError } from "@/lib/format-error";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 interface RoomUser {
   id: string;
@@ -205,12 +205,7 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
 
   if (loading) {
     return (
-      <div className="flex min-h-[450px] items-center justify-center">
-        <div className="flex items-center gap-3 text-[var(--text-muted)]">
-          <RefreshCw className="h-5 w-5 animate-spin text-[var(--accent-primary)]" />
-          <span className="text-sm font-medium">Chargement du salon vocal...</span>
-        </div>
-      </div>
+      <ModuleSkeleton label="Chargement du salon vocal…" />
     );
   }
 

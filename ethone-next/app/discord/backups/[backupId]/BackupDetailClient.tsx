@@ -5,12 +5,13 @@ import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { usePathSegment } from "@/lib/hooks/usePathSegment";
-import { ArrowLeft, ShieldCheck, Download, RotateCcw, GitCompare, Lock, Unlock, CheckCircle2, AlertTriangle, FileCode, FolderTree, Users, Shield, Sparkles, Copy, Check, Server, Hash, Volume2, Calendar, RefreshCw } from "@/components/icons/ph";
+import { ArrowLeft, ShieldCheck, Download, RotateCcw, GitCompare, Lock, Unlock, CheckCircle2, AlertTriangle, FileCode, FolderTree, Users, Shield, Sparkles, Copy, Check, Server, Hash, Volume2, Calendar } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
 import { formatApiError, errorReason } from "@/lib/format-error";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -140,7 +141,7 @@ export default function BackupDetailClient() {
   const orphanChannels = useMemo(() => (snapshot?.data.channels || []).filter((c) => !c.parentId && c.type !== 4), [snapshot]);
 
   if (loading) {
-    return <div className="flex min-h-[50vh] items-center justify-center text-xs text-[var(--text-muted)]"><RefreshCw className="w-4 h-4 animate-spin mr-2" /> Chargement du snapshot...</div>;
+    return <ModuleSkeleton label="Chargement de la sauvegarde…" />;
   }
   if (error || !snapshot) {
     return (

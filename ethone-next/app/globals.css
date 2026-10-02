@@ -1581,6 +1581,8 @@ select[data-haptic-state="released"],
 }
 
 .skeleton-shimmer {
+  /* Fond visible dans tous les thèmes (clair compris) : avant, seul le reflet mobile se voyait. */
+  background-color: color-mix(in srgb, var(--text-primary) 7%, transparent);
   background-image: linear-gradient(
     100deg,
     transparent 0%,
@@ -1590,6 +1592,10 @@ select[data-haptic-state="released"],
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.6s ease-in-out infinite;
 }
+
+/* Squelette affiché seulement si le chargement dure : invisible les 150 premières ms, puis fondu. */
+@keyframes skeleton-delay-in { from { opacity: 0; } }
+.skeleton-delay { animation: skeleton-delay-in 0.25s ease-out 0.15s backwards; }
 
 @keyframes skeleton-shimmer {
   0% { background-position: 200% 0; }

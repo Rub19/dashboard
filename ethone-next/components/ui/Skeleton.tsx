@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 /** Bloc de chargement générique (shimmer) — remplace le flash de contenu vide le temps d'un premier fetch. */
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn("skeleton-shimmer rounded-[var(--inset-radius)] bg-white/[0.03]", className)} />;
+  return <div className={cn("skeleton-shimmer rounded-[var(--inset-radius)]", className)} />;
 }
 
 /** Carte de largeur pleine, hauteur fixe — pour une ligne de stat ou une carte de contenu en cours de chargement. */

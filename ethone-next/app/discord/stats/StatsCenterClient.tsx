@@ -20,6 +20,7 @@ import StatsHeatmap from "./StatsHeatmap";
 import StatsMembersBoard from "./StatsMembersBoard";
 import { cn } from "@/lib/utils";
 import { formatApiError, errorReason } from "@/lib/format-error";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const PERIODS = [7, 30, 60, 90, 180, 365];
@@ -368,7 +369,7 @@ export default function StatsCenterClient() {
 
         <PageHeader hideBack guildId={guildId} icon="mod-stats" tint="sky" title="Statistiques" subtitle="Messages et vocal par jour, évolution des membres, classements, rythme d'activité. Jours en UTC." />
 
-        {state === "loading" && <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">Chargement…</div>}
+        {state === "loading" && <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement…" />}
         {state === "offline" && (
           <div className="rounded-2xl border border-dashed border-[var(--panel-border)] p-8 text-center text-sm text-[var(--text-muted)]">
             Le bot n&apos;a pas répondu pour ce serveur : les statistiques ne peuvent pas être affichées. Vérifiez que le bot est présent, puis actualisez.

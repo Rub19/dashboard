@@ -35,6 +35,23 @@ export type TaskInput = Omit<Task, "id" | "completed_at" | "created_at" | "updat
 
 type SyncStatus = "idle" | "syncing" | "error";
 
+let tasksInFlight: { userId: string; at: number; promise: Promise<Task[]> } | null = null;
+
+/** Lecture des tâches partagée entre les composants montés en même temps (et réutilisée pendant 2 s). */
+function readTasksShared(userId: string): Promise<Task[]> {
+  if (tasksInFlight && tasksInFlight.userId === userId && Date.now() - tasksInFlight.at < 2000) return tasksInFlight.promise;
+  const promise = (async () => {
+    const { data, error } = await supabase.from("tasks").select("*").eq("user_id", userId).order("updated_at", { ascending: false });
+    if (error) throw error;
+    return (data as Task[]) || [];
+  })();
+  tasksInFlight = { userId, at: Date.now(), promise };
+  promise.catch(() => {
+    if (tasksInFlight?.promise === promise) tasksInFlight = null;
+  });
+  return promise;
+}
+
 export function useTasks() {
   const [items, setItems] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,6 +76,7 @@ export function useTasks() {
   }, []);
 
   const load = useCallback(async () => {
+    // Plusieurs composants montent useTasks en même temps : une seule lecture partagée par utilisateur.
     setLoading(true);
     setError(null);
     try {
@@ -70,14 +88,7 @@ export function useTasks() {
         return;
       }
 
-      const { data, error: fetchError } = await supabase
-        .from("tasks")
-        .select("*")
-        .eq("user_id", userId)
-        .order("updated_at", { ascending: false });
-
-      if (fetchError) throw fetchError;
-      setItems((data as Task[]) || []);
+      setItems(await readTasksShared(userId));
     } catch (err) {
       setError(new Error(errorMessage(err)));
     } finally {
@@ -151,6 +162,7 @@ export function useTasks() {
 
   const create = useCallback(
     async (input: TaskInput) => {
+      tasksInFlight = null; // une écriture rend la lecture partagée périmée
       const userId = await withUserId();
       if (!userId) {
         setStatus("idle");
@@ -181,6 +193,7 @@ export function useTasks() {
 
   const update = useCallback(
     async (id: string, input: Partial<TaskInput>) => {
+      tasksInFlight = null; // une écriture rend la lecture partagée périmée
       const userId = await withUserId();
       if (!userId) {
         setStatus("idle");
@@ -217,6 +230,7 @@ export function useTasks() {
       } catch (err) {
         setStatus("error");
         setError(new Error(errorMessage(err)));
+        tasksInFlight = null;
         await load();
         return null;
       }
@@ -226,6 +240,7 @@ export function useTasks() {
 
   const remove = useCallback(
     async (id: string) => {
+      tasksInFlight = null; // une écriture rend la lecture partagée périmée
       const userId = await withUserId();
       if (!userId) {
         setStatus("idle");
@@ -253,5 +268,10 @@ export function useTasks() {
     useSyncStore.getState().setStatus("tasks", status);
   }, [status]);
 
-  return { items, loading, error, status, create, update, remove, reload: load };
+  const reload = useCallback(async () => {
+    tasksInFlight = null;
+    await load();
+  }, [load]);
+
+  return { items, loading, error, status, create, update, remove, reload };
 }

@@ -42,6 +42,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import { formatApiError } from "@/lib/format-error";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 // Field palette definitions
 const FIELD_PALETTE = [
@@ -347,7 +348,7 @@ export default function FormBuilderClient() {
   };
 
   if (loading) {
-    return <div className="min-h-[50vh] text-xs text-[var(--text-muted)] flex items-center justify-center">Chargement du formulaire...</div>;
+    return <ModuleSkeleton label="Chargement du formulaire…" />;
   }
   if (loadError) {
     return (

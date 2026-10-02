@@ -1,19 +1,13 @@
 import { Suspense } from "react";
 import EconomyCenterClient from "./EconomyCenterClient";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 export const dynamic = "force-static";
 
 export default function EconomyPage() {
   return (
     <Suspense
-      fallback={
-        <div className="flex min-h-full items-center justify-center bg-[var(--bg-main)] text-[var(--text-primary)]">
-          <div className="flex flex-col items-center gap-3">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent-primary)]/30 border-t-transparent" />
-            <p className="text-xs text-[var(--text-muted)]">Chargement de l'Économie...</p>
-          </div>
-        </div>
-      }
+      fallback={<ModuleSkeleton label="Chargement de l'Économie…" />}
     >
       <EconomyCenterClient />
     </Suspense>

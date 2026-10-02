@@ -12,6 +12,7 @@ import ChannelPicker from "@/components/discord/ChannelPicker";
 import { cn } from "@/lib/utils";
 import Select from "@/components/ui/Select";
 import { formatApiError } from "@/lib/format-error";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -172,7 +173,7 @@ export default function FormSettingsClient() {
     </div>
   );
 
-  if (loading) return <div className="min-h-[50vh] text-xs text-[var(--text-muted)] flex items-center justify-center">Chargement...</div>;
+  if (loading) return <ModuleSkeleton compact label="Chargement des paramètres…" />;
   if (loadError || !panel || !antiSpam || !scoring) {
     return (
       <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)] space-y-4">

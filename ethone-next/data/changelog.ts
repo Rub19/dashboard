@@ -42247,6 +42247,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_2_de);
 
+const v1_52_3_fr: ChangelogEntry = {
+  version: "v1.52.3",
+  date: "2026-10-02",
+  title: "Plus de blocage au démarrage après une mise à jour",
+  items: [
+    "Correctif : juste après une mise en ligne, le site pouvait rester bloqué sur l'écran de démarrage (un fichier de code de l'ancienne version manquait). La page se recharge maintenant automatiquement une fois, sans jamais boucler.",
+  ],
+};
+
+const v1_52_3_en: ChangelogEntry = {
+  version: "v1.52.3",
+  date: "2026-10-02",
+  title: "No more startup freeze after an update",
+  items: [
+    "Fix: right after a release, the site could stay stuck on the startup screen (a code file from the previous version was missing). The page now reloads automatically once, without ever looping.",
+  ],
+};
+
+const v1_52_3_es: ChangelogEntry = {
+  version: "v1.52.3",
+  date: "2026-10-02",
+  title: "Se acabó el bloqueo al iniciar tras una actualización",
+  items: [
+    "Corrección: justo después de una publicación, el sitio podía quedarse bloqueado en la pantalla de inicio (faltaba un archivo de código de la versión anterior). Ahora la página se recarga sola una vez, sin entrar nunca en bucle.",
+  ],
+};
+
+const v1_52_3_de: ChangelogEntry = {
+  version: "v1.52.3",
+  date: "2026-10-02",
+  title: "Kein Hängenbleiben beim Start nach einem Update",
+  items: [
+    "Fehlerbehebung: Direkt nach einer Veröffentlichung konnte die Seite auf dem Startbildschirm hängen bleiben (eine Code-Datei der vorherigen Version fehlte). Die Seite lädt sich jetzt einmal automatisch neu, ohne jemals in eine Schleife zu geraten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -25,6 +25,7 @@ import NotificationBridge from "@/components/NotificationBridge";
 import BootProvider from "@/components/BootProvider";
 import PublicProfileProvider from "@/components/PublicProfileProvider";
 import { UploadQueueProvider } from "@/lib/upload-queue";
+import { CHUNK_RECOVERY_SCRIPT } from "@/lib/chunk-recovery";
 
 const inter = Inter({
   variable: "--font-geist-sans",
@@ -119,6 +120,8 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* En premier : si un fichier de code manque juste après une mise en ligne, recharge la page une fois. */}
+        <script dangerouslySetInnerHTML={{ __html: CHUNK_RECOVERY_SCRIPT }} />
         {/* Discord "Component Link Embeds" — when someone pastes an ethone.dev
             link in Discord, this replaces the classic OpenGraph card with a
             Components V2 layout. Must be static, server-rendered markup:

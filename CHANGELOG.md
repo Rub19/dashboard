@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.3 — 2026-10-02
+
+**Plus de blocage au démarrage après une mise à jour**
+
+- Correctif : juste après une mise en ligne, le site pouvait rester bloqué sur l'écran de démarrage (un fichier de code de l'ancienne version manquait). La page se recharge maintenant automatiquement une fois, sans jamais boucler.
+
 ## v1.52.2 — 2026-10-02
 
 **Encore moins de requêtes**

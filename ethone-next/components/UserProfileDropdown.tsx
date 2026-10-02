@@ -1,5 +1,6 @@
 "use client";
 
+import { useModKey } from "@/lib/hooks/useModKey";
 import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import ClientImage from "@/components/ClientImage";
@@ -97,6 +98,8 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
   const VERSION_LABEL = changelog[0]?.version || "v1.28.32";
 
   const isOwner = Boolean(email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+  // Raccourcis affichés selon la plateforme (⌘ sur Mac, Ctrl ailleurs).
+  const mod = useModKey();
 
   const quickLinks = [
     {
@@ -109,7 +112,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
       id: "settings",
       label: i18n("tbSettings", "Paramètres"),
       icon: "settings",
-      kbd: "⌘,",
+      kbd: mod === "⌘" ? "⌘," : "Ctrl ,",
       action: () => router.push("/settings"),
     },
     {
@@ -307,7 +310,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
             >
               <Icon name="terminal" />
               <span>{i18n("tbPalette", "Palette de commandes")}</span>
-              <span className="ethone-menu-hint font-mono">⌘K</span>
+              <span className="ethone-menu-hint font-mono">{mod === "⌘" ? "⌘K" : "Ctrl K"}</span>
             </button>
 
             <button

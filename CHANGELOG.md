@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.49.3 — 2026-10-02
+
+**Raccourcis selon la plateforme**
+
+- Menu du profil : les raccourcis affichent Ctrl sur Windows et Linux, ⌘ seulement sur Mac.
+
 ## v1.49.2 — 2026-10-02
 
 **Police par thème, nouvelles polices et menus façon Apple**

@@ -41480,6 +41480,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_49_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_49_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_49_2_de);
 
+const v1_49_3_fr: ChangelogEntry = {
+  version: "v1.49.3",
+  date: "2026-10-02",
+  title: "Raccourcis selon la plateforme",
+  items: [
+    "Menu du profil : les raccourcis affichent Ctrl sur Windows et Linux, ⌘ seulement sur Mac.",
+  ],
+};
+
+const v1_49_3_en: ChangelogEntry = {
+  version: "v1.49.3",
+  date: "2026-10-02",
+  title: "Platform-aware shortcuts",
+  items: [
+    "Profile menu: shortcuts show Ctrl on Windows and Linux, ⌘ only on Mac.",
+  ],
+};
+
+const v1_49_3_es: ChangelogEntry = {
+  version: "v1.49.3",
+  date: "2026-10-02",
+  title: "Atajos según la plataforma",
+  items: [
+    "Menú de perfil: los atajos muestran Ctrl en Windows y Linux, ⌘ solo en Mac.",
+  ],
+};
+
+const v1_49_3_de: ChangelogEntry = {
+  version: "v1.49.3",
+  date: "2026-10-02",
+  title: "Plattformgerechte Tastenkürzel",
+  items: [
+    "Profilmenü: Tastenkürzel zeigen Strg unter Windows und Linux, ⌘ nur auf dem Mac.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_49_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_49_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_49_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_49_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

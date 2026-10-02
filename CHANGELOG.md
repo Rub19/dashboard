@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.1 — 2026-10-02
+
+**Préférences Brain et notifications protégées**
+
+- Préférences Brain : plus écrites avant d'avoir reçu la version du serveur (la copie locale pouvait écraser des réglages faits sur un autre appareil), ni réécrites à l'identique à chaque chargement.
+- Notifications : la liste n'est plus réécrite à l'identique juste après son chargement.
+
 ## v1.52.0 — 2026-10-02
 
 **Plus fluide, plus fiable, de vrais chargements**

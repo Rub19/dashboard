@@ -42157,6 +42157,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_0_de);
 
+const v1_52_1_fr: ChangelogEntry = {
+  version: "v1.52.1",
+  date: "2026-10-02",
+  title: "Préférences Brain et notifications protégées",
+  items: [
+    "Préférences Brain : plus écrites avant d'avoir reçu la version du serveur (la copie locale pouvait écraser des réglages faits sur un autre appareil), ni réécrites à l'identique à chaque chargement.",
+    "Notifications : la liste n'est plus réécrite à l'identique juste après son chargement.",
+  ],
+};
+
+const v1_52_1_en: ChangelogEntry = {
+  version: "v1.52.1",
+  date: "2026-10-02",
+  title: "Brain preferences and notifications protected",
+  items: [
+    "Brain preferences: no longer written before the server copy is received (the local copy could overwrite settings changed on another device), nor rewritten unchanged on every load.",
+    "Notifications: the list is no longer rewritten unchanged right after loading.",
+  ],
+};
+
+const v1_52_1_es: ChangelogEntry = {
+  version: "v1.52.1",
+  date: "2026-10-02",
+  title: "Preferencias de Brain y notificaciones protegidas",
+  items: [
+    "Preferencias de Brain: ya no se escriben antes de recibir la versión del servidor (la copia local podía sobrescribir ajustes hechos en otro dispositivo), ni se reescriben iguales en cada carga.",
+    "Notificaciones: la lista ya no se reescribe igual justo después de cargarse.",
+  ],
+};
+
+const v1_52_1_de: ChangelogEntry = {
+  version: "v1.52.1",
+  date: "2026-10-02",
+  title: "Brain-Einstellungen und Benachrichtigungen geschützt",
+  items: [
+    "Brain-Einstellungen: werden nicht mehr geschrieben, bevor die Serverversion da ist (die lokale Kopie konnte auf einem anderen Gerät geänderte Einstellungen überschreiben), und nicht mehr unverändert bei jedem Laden neu geschrieben.",
+    "Benachrichtigungen: Die Liste wird nach dem Laden nicht mehr unverändert neu geschrieben.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

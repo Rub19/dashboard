@@ -198,10 +198,17 @@ async function loadAsync(): Promise<Notification[]> {
   }
 }
 
+// Dernière liste écrite sur le serveur : pas de réécriture identique (ex. juste après le chargement).
+let lastPersistedJson: string | null = null;
+
 async function saveAsync(items: Notification[]) {
   save(items);
+  const kept = items.slice(-MAX_ITEMS);
+  const json = JSON.stringify(kept);
+  if (json === lastPersistedJson) return;
+  lastPersistedJson = json;
   try {
-    await setUserState(STATE_KEY, items.slice(-MAX_ITEMS));
+    await setUserState(STATE_KEY, kept);
   } catch {
     // localStorage fallback
   }
@@ -420,6 +427,7 @@ export function useNotifications() {
       loadAsync().then((remote) => {
         if (remote && remote.length > 0) {
           const cleaned = remote.filter((n) => !n.demo);
+          lastPersistedJson = JSON.stringify(cleaned.slice(-MAX_ITEMS));
           const merged = mergeLists(getGlobalItems(), cleaned);
           setGlobalItems(merged, true);
         }

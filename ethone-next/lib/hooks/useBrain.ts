@@ -183,16 +183,30 @@ export function useBrain(mailClient?: BrainMailClient) {
     watcherRef.current.prime({ route: "home", space: "personal", localTime: undefined });
   }, [updateSettings]);
 
+  // Version serveur reçue + dernière version écrite : on n'écrit qu'après avoir reçu le serveur (sinon la copie locale,
+  // parfois ancienne, écrasait des préférences changées sur un autre appareil) et seulement si quelque chose a changé.
+  const remoteLoaded = useRef(false);
+  const persisted = useRef<string | null>(null);
+
   useEffect(() => {
     const local = loadBrainPreferences();
     setPreferences(local);
     loadBrainPreferencesAsync().then((remote) => {
-      if (remote) setPreferences((prev) => ({ ...prev, ...remote }));
+      setPreferences((prev) => {
+        const next = remote ? { ...prev, ...remote } : prev;
+        persisted.current = remote ? JSON.stringify(next) : null;
+        return next;
+      });
+      remoteLoaded.current = true;
     });
   }, []);
 
   useEffect(() => {
     saveBrainPreferences(preferences);
+    if (!remoteLoaded.current) return;
+    const json = JSON.stringify(preferences);
+    if (json === persisted.current) return;
+    persisted.current = json;
     saveBrainPreferencesAsync(preferences);
   }, [preferences]);
 

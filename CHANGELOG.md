@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.9 — 2026-10-03
+
+**Profil unique, vérification de version allégée**
+
+- Profil public : chargé une seule fois et partagé par toute l'app (il était monté en double, et une modification pouvait ne pas apparaître partout).
+- Vérification de mise à jour : une seule requête partagée, directement sur version.json (avant : 4 requêtes dont 2 téléchargements de page inutiles).
+- Notifications : les anciennes copies « Nouveau mail » sont aussi retirées du compte, pas seulement de l'affichage.
+
 ## v1.52.8 — 2026-10-02
 
 **Visites suivantes beaucoup plus rapides**

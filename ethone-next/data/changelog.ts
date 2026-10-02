@@ -42501,6 +42501,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_8_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_8_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_8_de);
 
+const v1_52_9_fr: ChangelogEntry = {
+  version: "v1.52.9",
+  date: "2026-10-03",
+  title: "Profil unique, vérification de version allégée",
+  items: [
+    "Profil public : chargé une seule fois et partagé par toute l'app (il était monté en double, et une modification pouvait ne pas apparaître partout).",
+    "Vérification de mise à jour : une seule requête partagée, directement sur version.json (avant : 4 requêtes dont 2 téléchargements de page inutiles).",
+    "Notifications : les anciennes copies « Nouveau mail » sont aussi retirées du compte, pas seulement de l'affichage.",
+  ],
+};
+
+const v1_52_9_en: ChangelogEntry = {
+  version: "v1.52.9",
+  date: "2026-10-03",
+  title: "Single profile, lighter version check",
+  items: [
+    "Public profile: loaded once and shared across the app (it was mounted twice, and an edit could fail to show everywhere).",
+    "Update check: a single shared request, straight to version.json (before: 4 requests including 2 useless page downloads).",
+    "Notifications: old duplicate “New mail” copies are now also removed from the account, not just from the display.",
+  ],
+};
+
+const v1_52_9_es: ChangelogEntry = {
+  version: "v1.52.9",
+  date: "2026-10-03",
+  title: "Perfil único, comprobación de versión más ligera",
+  items: [
+    "Perfil público: se carga una sola vez y se comparte en toda la app (estaba montado dos veces y un cambio podía no verse en todas partes).",
+    "Comprobación de actualizaciones: una sola petición compartida, directa a version.json (antes: 4 peticiones, 2 de ellas descargas de página inútiles).",
+    "Notificaciones: las copias antiguas de «Nuevo correo» también se eliminan de la cuenta, no solo de la pantalla.",
+  ],
+};
+
+const v1_52_9_de: ChangelogEntry = {
+  version: "v1.52.9",
+  date: "2026-10-03",
+  title: "Ein Profil, leichtere Versionsprüfung",
+  items: [
+    "Öffentliches Profil: wird einmal geladen und in der ganzen App geteilt (es war doppelt eingebunden, und eine Änderung erschien eventuell nicht überall).",
+    "Update-Prüfung: eine einzige gemeinsame Anfrage, direkt an version.json (vorher: 4 Anfragen, davon 2 unnötige Seiten-Downloads).",
+    "Benachrichtigungen: alte doppelte „Neue Mail“-Kopien werden jetzt auch aus dem Konto entfernt, nicht nur aus der Anzeige.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_9_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_9_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_9_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_9_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

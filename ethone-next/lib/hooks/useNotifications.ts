@@ -445,8 +445,11 @@ export function useNotifications() {
       globalRemoteLoaded = true;
       loadAsync().then((remote) => {
         if (remote && remote.length > 0) {
-          const cleaned = dropLegacyMailCopies(remote.filter((n) => !n.demo));
-          lastPersistedJson = notificationsFingerprint(cleaned.slice(-MAX_ITEMS));
+          const withoutDemo = remote.filter((n) => !n.demo);
+          const cleaned = dropLegacyMailCopies(withoutDemo);
+          // Empreinte de ce qui est réellement sur le serveur : si des copies ont été retirées, la liste propre y est
+          // réenregistrée une fois (sinon le nettoyage ne restait qu'à l'affichage).
+          lastPersistedJson = notificationsFingerprint(withoutDemo.slice(-MAX_ITEMS));
           const merged = mergeLists(getGlobalItems(), cleaned);
           setGlobalItems(merged, true);
         }

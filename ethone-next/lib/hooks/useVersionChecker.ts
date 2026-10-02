@@ -46,7 +46,25 @@ async function fetchVersion(): Promise<VersionData | null> {
     }
   };
 
-  return (await tryFetch("/api/version")) ?? (await tryFetch("/version.json"));
+  // /api/version n'existe qu'en développement : en production (export statique), Cloudflare y répondait par la page
+  // HTML entière (téléchargée pour rien) avant de retomber sur /version.json.
+  if (process.env.NODE_ENV === "development") {
+    return (await tryFetch("/api/version")) ?? (await tryFetch("/version.json"));
+  }
+  return tryFetch("/version.json");
+}
+
+// La pastille de version et le message de mise à jour vérifient en même temps : une seule requête partagée.
+let versionInFlight: Promise<VersionData | null> | null = null;
+function fetchVersionShared(): Promise<VersionData | null> {
+  if (!versionInFlight) {
+    versionInFlight = fetchVersion().finally(() => {
+      setTimeout(() => {
+        versionInFlight = null;
+      }, 1500);
+    });
+  }
+  return versionInFlight;
 }
 
 function parseBuildAt(value?: string): number {
@@ -153,7 +171,7 @@ export function useVersionChecker(): UseVersionChecker {
 
     checkingRef.current = true;
     try {
-      const remote = await fetchVersion();
+      const remote = await fetchVersionShared();
       if (!remote?.version) return;
 
       const current = lastDataRef.current;

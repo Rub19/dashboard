@@ -8,7 +8,6 @@ import BotStatusStrip from "@/components/discord/BotStatusStrip";
 import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import PresenceProvider from "@/components/PresenceProvider";
 import { ShortcutsProvider } from "@/components/ShortcutsProvider";
-import PublicProfileProvider from "@/components/PublicProfileProvider";
 import ProfileSync from "@/components/ProfileSync";
 import { AnimatedSidebarProvider } from "@/components/motion/animated-sidebar";
 import Sidebar from "@/components/Sidebar";
@@ -55,7 +54,6 @@ export default function Shell({ children }: { children: ReactNode }) {
       <WindowManagerProvider>
         <NativeIntegration />
         <ContextMenuProvider>
-          <PublicProfileProvider>
             <PresenceProvider>
               <ShortcutsProvider>
                 <SkipLink />
@@ -123,7 +121,6 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <KeyboardShortcuts />
               </ShortcutsProvider>
             </PresenceProvider>
-          </PublicProfileProvider>
         </ContextMenuProvider>
       </WindowManagerProvider>
     );
@@ -133,7 +130,6 @@ export default function Shell({ children }: { children: ReactNode }) {
     <WindowManagerProvider>
       <NativeIntegration />
       <ContextMenuProvider>
-        <PublicProfileProvider>
         <PresenceProvider>
           <ShortcutsProvider>
             <SkipLink />
@@ -180,7 +176,6 @@ export default function Shell({ children }: { children: ReactNode }) {
             <KeyboardShortcuts />
           </ShortcutsProvider>
         </PresenceProvider>
-      </PublicProfileProvider>
       </ContextMenuProvider>
     </WindowManagerProvider>
   );

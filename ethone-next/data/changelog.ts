@@ -41876,6 +41876,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_50_6_en);
 CHANGELOG_BY_LANG.es.unshift(v1_50_6_es);
 CHANGELOG_BY_LANG.de.unshift(v1_50_6_de);
 
+const v1_50_7_fr: ChangelogEntry = {
+  version: "v1.50.7",
+  date: "2026-10-02",
+  title: "Nouvel écran de démarrage",
+  items: [
+    "Écran de démarrage refait : le logo se matérialise, le nom arrive lettre par lettre, puis l'écran s'efface en dévoilant l'app au lieu de disparaître d'un coup.",
+    "Barre de chargement : elle suit les vraies étapes (connexion, profil, préparation de l'espace) avec leur libellé, au lieu de paliers de temps fixes, et ne recule jamais.",
+    "Correctif : plus de second écran de chargement après la barre à 100 % (le module de l'app est préchargé pendant le démarrage).",
+    "Correctif : les pages publiques (Extension, Confidentialité…) s'affichent directement, sans écran de démarrage.",
+  ],
+};
+
+const v1_50_7_en: ChangelogEntry = {
+  version: "v1.50.7",
+  date: "2026-10-02",
+  title: "New startup screen",
+  items: [
+    "Startup screen redone: the logo materializes, the name arrives letter by letter, then the screen fades away to reveal the app instead of vanishing abruptly.",
+    "Loading bar: it follows the real steps (sign-in, profile, workspace) with their label instead of fixed time steps, and never goes backwards.",
+    "Fix: no more second loading screen after the bar reaches 100% (the app module is preloaded during startup).",
+    "Fix: public pages (Extension, Privacy…) show right away, without a startup screen.",
+  ],
+};
+
+const v1_50_7_es: ChangelogEntry = {
+  version: "v1.50.7",
+  date: "2026-10-02",
+  title: "Nueva pantalla de inicio",
+  items: [
+    "Pantalla de inicio rehecha: el logo se materializa, el nombre aparece letra a letra y luego la pantalla se desvanece mostrando la app en lugar de desaparecer de golpe.",
+    "Barra de carga: sigue los pasos reales (conexión, perfil, espacio) con su texto en lugar de tramos de tiempo fijos, y nunca retrocede.",
+    "Corrección: ya no aparece una segunda pantalla de carga tras llegar al 100 % (el módulo de la app se precarga durante el inicio).",
+    "Corrección: las páginas públicas (Extensión, Privacidad…) se muestran directamente, sin pantalla de inicio.",
+  ],
+};
+
+const v1_50_7_de: ChangelogEntry = {
+  version: "v1.50.7",
+  date: "2026-10-02",
+  title: "Neuer Startbildschirm",
+  items: [
+    "Startbildschirm neu gestaltet: Das Logo materialisiert sich, der Name erscheint Buchstabe für Buchstabe, dann blendet der Bildschirm aus und gibt die App frei, statt abrupt zu verschwinden.",
+    "Ladebalken: folgt den echten Schritten (Anmeldung, Profil, Arbeitsbereich) mit Beschriftung statt festen Zeitstufen und läuft nie zurück.",
+    "Fehlerbehebung: kein zweiter Ladebildschirm mehr nach 100 % (das App-Modul wird während des Starts vorgeladen).",
+    "Fehlerbehebung: Öffentliche Seiten (Erweiterung, Datenschutz…) erscheinen sofort, ohne Startbildschirm.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_50_7_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_50_7_en);
+CHANGELOG_BY_LANG.es.unshift(v1_50_7_es);
+CHANGELOG_BY_LANG.de.unshift(v1_50_7_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

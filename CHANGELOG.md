@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.50.7 — 2026-10-02
+
+**Nouvel écran de démarrage**
+
+- Écran de démarrage refait : le logo se matérialise, le nom arrive lettre par lettre, puis l'écran s'efface en dévoilant l'app au lieu de disparaître d'un coup.
+- Barre de chargement : elle suit les vraies étapes (connexion, profil, préparation de l'espace) avec leur libellé, au lieu de paliers de temps fixes, et ne recule jamais.
+- Correctif : plus de second écran de chargement après la barre à 100 % (le module de l'app est préchargé pendant le démarrage).
+- Correctif : les pages publiques (Extension, Confidentialité…) s'affichent directement, sans écran de démarrage.
+
 ## v1.50.6 — 2026-10-02
 
 **Motion design : événements, sondages, Bouclier Owner et dernières pages**

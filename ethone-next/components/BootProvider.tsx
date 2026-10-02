@@ -15,7 +15,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import Loading from "@/components/Loading";
 import BrandMark from "@/components/BrandMark";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 // Shell (sidebar, topbar, floating dock, command palette, live widgets, and
 // everything else the authenticated app pulls in) was a static import here,
@@ -26,10 +26,10 @@ import { motion } from "framer-motion";
 // client-side, after a real session resolves, which can't happen during the
 // build's prerender pass. Making it a dynamic import removes ~2MB of JS from
 // every public page's initial load without changing when/whether it renders.
-const Shell = dynamic(() => import("@/components/Shell"), {
-  ssr: false,
-  loading: () => <Loading message="Initialisation d'ETHONE" progress={100} />,
-});
+// Le module est préchargé pendant le démarrage (voir shellLoaded) : l'écran de démarrage reste affiché jusqu'à ce
+// qu'il soit prêt, au lieu d'enchaîner un second écran de chargement une fois la barre arrivée à 100 %.
+const loadShell = () => import("@/components/Shell");
+const Shell = dynamic(loadShell, { ssr: false, loading: () => null });
 
 export type BootState =
   | "booting"
@@ -65,9 +65,8 @@ const BOOT_TIMEOUT_MS = 8_000;
 // here means every cold load/refresh pays it even when session+profile are
 // already warm/cached.
 const BOOT_MIN_DURATION_MS = 160;
-const SEGMENT_1 = 40;
-const SEGMENT_2 = 80;
-const SEGMENT_3 = 120;
+// Temps pendant lequel la barre reste visible à 100 % avant la sortie animée.
+const BOOT_FULL_HOLD_MS = 260;
 
 // Pages d'information (vitrine du bot, conditions, confidentialité) : lisibles par tous, connectés ou non. Contrairement
 // à /login, un utilisateur déjà connecté n'en est pas renvoyé vers l'accueil.
@@ -117,13 +116,27 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   });
 
   const [error, setError] = useState<string | null>(null);
-  const [bootProgress, setBootProgress] = useState(0);
-  const [bootReady, setBootReady] = useState(false);
+  // Pages publiques : prêtes tout de suite (aucun écran de démarrage, contenu présent dans le HTML exporté).
+  const [bootProgress, setBootProgress] = useState(() => (resolvePublicRoute(pathname) ? 100 : 0));
+  const [bootReady, setBootReady] = useState(() => resolvePublicRoute(pathname));
+  const [shellLoaded, setShellLoaded] = useState(false);
+  const shellLoadedRef = useRef(false);
+  const fullAtRef = useRef<number | null>(null);
   const bootReadyRef = useRef(false);
   const bootStartRef = useRef<number | null>(null);
   const donationReturnRef = useRef(false);
 
   const publicRoute = resolvePublicRoute(pathname);
+
+  useEffect(() => {
+    if (publicRoute || shellLoadedRef.current) return;
+    const done = () => {
+      shellLoadedRef.current = true;
+      setShellLoaded(true);
+    };
+    // En cas d'échec, next/dynamic réessaiera au rendu : on ne bloque pas le démarrage.
+    loadShell().then(done, done);
+  }, [publicRoute]);
 
   useEffect(() => {
     bootReadyRef.current = bootReady;
@@ -217,6 +230,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     setBootReady(false);
     setBootProgress(0);
     bootStartRef.current = null;
+    fullAtRef.current = null;
     refreshSession();
   }, [refreshSession]);
 
@@ -296,31 +310,22 @@ export default function BootProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      let target = 0;
-      if (elapsed < SEGMENT_1) {
-        target = (elapsed / SEGMENT_1) * 25;
-      } else if (elapsed < SEGMENT_2) {
-        target = 25 + ((elapsed - SEGMENT_1) / (SEGMENT_2 - SEGMENT_1)) * 35;
-      } else if (elapsed < SEGMENT_3) {
-        target = 60 + ((elapsed - SEGMENT_2) / (SEGMENT_3 - SEGMENT_2)) * 30;
-      } else if (elapsed < BOOT_MIN_DURATION_MS) {
-        target = 90 + ((elapsed - SEGMENT_3) / (BOOT_MIN_DURATION_MS - SEGMENT_3)) * 10;
-      } else {
-        target = 100;
-      }
+      // Vraies étapes : connexion -> profil -> module de l'app. Dans chaque étape la barre avance vers sa cible en
+      // ralentissant (jamais figée, jamais en avance sur ce qui est vraiment prêt) et ne recule jamais.
+      const creep = (from: number, to: number) => from + (to - from) * (1 - Math.exp(-elapsed / 700));
+      let target: number;
+      if (!authResolved) target = creep(4, 50);
+      else if (!profileLoaded) target = Math.max(55, creep(55, 82));
+      else if (!shellLoadedRef.current) target = Math.max(86, creep(86, 96));
+      else target = 100;
+      setBootProgress((prev) => Math.max(prev, Math.round(target)));
 
-      if (!authResolved) {
-        target = Math.min(target, 55);
-      } else if (!profileLoaded) {
-        target = Math.min(target, 80);
-      }
-
-      const next = Math.min(100, Math.max(0, Math.round(target)));
-      setBootProgress(next);
-
-      if (next >= 100 && canShowApp) {
-        setBootReady(true);
-        return;
+      if (canShowApp && shellLoadedRef.current && elapsed >= BOOT_MIN_DURATION_MS) {
+        fullAtRef.current = fullAtRef.current ?? Date.now();
+        if (Date.now() - fullAtRef.current >= BOOT_FULL_HOLD_MS) {
+          setBootReady(true);
+          return;
+        }
       }
 
       schedule();
@@ -331,12 +336,12 @@ export default function BootProvider({ children }: { children: ReactNode }) {
       cancelAnimationFrame(raf);
       if (timer) clearTimeout(timer);
     };
-  }, [publicRoute, state, authLoading, authError, profileLoaded]);
+  }, [publicRoute, state, authLoading, authError, profileLoaded, shellLoaded]);
 
   if (state === "error") {
     return (
       <BootContext.Provider value={{ state, retry, continueOffline }}>
-        <div className="fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center gap-5 bg-[var(--background)] p-6">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center gap-5 bg-[var(--bg-main)] p-6">
           <motion.div
             className="flex flex-col items-center gap-3"
             initial={{ opacity: 0, y: 8 }}
@@ -372,7 +377,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   if (state === "offline") {
     return (
       <BootContext.Provider value={{ state, retry, continueOffline }}>
-        <div className="fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center gap-5 bg-[var(--background)] p-6">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center gap-5 bg-[var(--bg-main)] p-6">
           <motion.div
             className="flex flex-col items-center gap-3"
             initial={{ opacity: 0, y: 8 }}
@@ -405,26 +410,24 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     );
   }
 
-  if (!bootReady) {
-    const message = state === "recovering" ? "Redirection..." : "Initialisation d'ETHONE";
-    return (
-      <BootContext.Provider value={{ state, retry, continueOffline }}>
-        <Loading message={message} progress={bootProgress} />
-      </BootContext.Provider>
-    );
-  }
+  const authResolvedNow = !authLoading && !authError;
+  const message =
+    state === "recovering"
+      ? "Redirection…"
+      : !authResolvedNow
+        ? "Connexion sécurisée…"
+        : !profileLoaded
+          ? "Chargement de ton profil…"
+          : "Préparation de ton espace…";
 
-  if (publicRoute) {
-    return (
-      <BootContext.Provider value={{ state, retry, continueOffline }}>
-        {children}
-      </BootContext.Provider>
-    );
-  }
+  // Arrivée sur une page privée depuis une page publique (après la connexion) : on attend aussi le module de l'app.
+  const showApp = bootReady && (publicRoute || shellLoaded);
 
+  // L'app se monte sous l'écran de démarrage, qui s'efface ensuite en la dévoilant (au lieu de disparaître d'un coup).
   return (
     <BootContext.Provider value={{ state, retry, continueOffline }}>
-      <Shell>{children}</Shell>
+      {showApp && (publicRoute ? children : <Shell>{children}</Shell>)}
+      <AnimatePresence>{!showApp && <Loading key="boot" message={message} progress={bootProgress} />}</AnimatePresence>
     </BootContext.Provider>
   );
 }

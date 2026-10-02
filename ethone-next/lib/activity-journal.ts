@@ -108,13 +108,30 @@ type JournalState = {
   entries: ActivityEntry[];
 };
 
+/** Titre d'un événement connu -> son type réel (route:home, v8.theme.toggle…). */
+const TYPE_BY_TITLE: ReadonlyMap<string, string> = new Map([
+  ...Object.entries(ROUTE_EVENTS).map(([route, t]) => [t.title, `route:${route}`] as const),
+  ...Object.entries(ACTION_EVENTS).map(([id, t]) => [t.title, id] as const),
+]);
+
+/** Jusqu'à v1.50.4, record() enregistrait localement le type converti pour la base (« shared », « uploaded »)
+ * au lieu du vrai type : le compteur de sessions restait à 0 et les filtres ne trouvaient rien. On retrouve
+ * le type d'origine grâce au titre, qui identifie chaque événement connu. */
+export function restoreEventTypes(entries: ActivityEntry[]): ActivityEntry[] {
+  return entries.map((entry) => {
+    if (!entry || !DB_EVENT_TYPES.has(entry.eventType || "")) return entry;
+    const original = TYPE_BY_TITLE.get(entry.title);
+    return original ? { ...entry, eventType: original } : entry;
+  });
+}
+
 function loadState(): JournalState {
   if (!isClient()) return { entries: [] };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return { entries: [] };
     const parsed = JSON.parse(raw) as JournalState;
-    return { entries: Array.isArray(parsed?.entries) ? parsed.entries : [] };
+    return { entries: Array.isArray(parsed?.entries) ? restoreEventTypes(parsed.entries) : [] };
   } catch {
     return { entries: [] };
   }
@@ -236,7 +253,8 @@ export function createActivityJournal(): ActivityJournal {
       description: event.description || "",
       timestamp: event.timestamp || nowIso(),
       tone: event.tone,
-      eventType: safeEventType(event.eventType, (event.category as ActivityCategory) || "system"),
+      // Type réel conservé en local (route:home, v8.theme.toggle…) : sync() le convertit pour la base.
+      eventType: event.eventType || categoryToEventType(event.category),
       details: event.details || {},
       synced: false,
     };

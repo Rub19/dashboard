@@ -41778,6 +41778,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_50_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_50_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_50_4_de);
 
+const v1_50_5_fr: ChangelogEntry = {
+  version: "v1.50.5",
+  date: "2026-10-02",
+  title: "Compteur de sessions réparé",
+  items: [
+    "Activité : le compteur « Sessions » ne restait plus à 0. Le journal gardait le type converti pour la base au lieu du vrai type ; les entrées passées sont récupérées, les filtres Sessions, Réglages, Widgets… retrouvent leurs événements.",
+    "Journal : « Thème modifié » n'est plus ajouté à chaque chargement de page, seulement quand tu changes réellement de thème ou d'accent.",
+  ],
+};
+
+const v1_50_5_en: ChangelogEntry = {
+  version: "v1.50.5",
+  date: "2026-10-02",
+  title: "Sessions counter fixed",
+  items: [
+    "Activity: the “Sessions” counter no longer stays at 0. The journal stored the database-converted type instead of the real one; past entries are recovered, and the Sessions, Settings, Widgets… filters find their events again.",
+    "Journal: “Theme changed” is no longer added on every page load, only when you actually change the theme or accent.",
+  ],
+};
+
+const v1_50_5_es: ChangelogEntry = {
+  version: "v1.50.5",
+  date: "2026-10-02",
+  title: "Contador de sesiones reparado",
+  items: [
+    "Actividad: el contador «Sesiones» ya no se queda en 0. El registro guardaba el tipo convertido para la base en lugar del real; las entradas pasadas se recuperan y los filtros Sesiones, Ajustes, Widgets… vuelven a encontrar sus eventos.",
+    "Registro: «Tema modificado» ya no se añade en cada carga de página, solo cuando cambias de verdad el tema o el acento.",
+  ],
+};
+
+const v1_50_5_de: ChangelogEntry = {
+  version: "v1.50.5",
+  date: "2026-10-02",
+  title: "Sitzungszähler repariert",
+  items: [
+    "Aktivität: Der Zähler „Sitzungen“ bleibt nicht mehr bei 0. Das Protokoll speicherte den für die Datenbank umgewandelten Typ statt des echten; frühere Einträge werden wiederhergestellt, die Filter Sitzungen, Einstellungen, Widgets… finden ihre Ereignisse wieder.",
+    "Protokoll: „Theme geändert“ wird nicht mehr bei jedem Seitenaufruf hinzugefügt, nur wenn du Theme oder Akzent wirklich änderst.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_50_5_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_50_5_en);
+CHANGELOG_BY_LANG.es.unshift(v1_50_5_es);
+CHANGELOG_BY_LANG.de.unshift(v1_50_5_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.50.5 — 2026-10-02
+
+**Compteur de sessions réparé**
+
+- Activité : le compteur « Sessions » ne restait plus à 0. Le journal gardait le type converti pour la base au lieu du vrai type ; les entrées passées sont récupérées, les filtres Sessions, Réglages, Widgets… retrouvent leurs événements.
+- Journal : « Thème modifié » n'est plus ajouté à chaque chargement de page, seulement quand tu changes réellement de thème ou d'accent.
+
 ## v1.50.4 — 2026-10-02
 
 **Motion design : sondages, classement public, console du bot**

@@ -405,6 +405,15 @@ export default function SettingsProvider({
       settingsRef.current = next;
       setSettings(next);
 
+      // Journal : uniquement les changements faits par l'utilisateur. L'ancien suivi par effet notait aussi le
+      // passage des réglages par défaut aux réglages enregistrés, soit un « Thème modifié » à chaque chargement.
+      if (next.theme !== prev.theme || next.darkMode !== prev.darkMode) {
+        activityJournal.capture("v8.theme.toggle", { ok: true, theme: next.theme, darkMode: next.darkMode });
+      }
+      if (next.accentColor !== prev.accentColor) {
+        activityJournal.capture("v8.appearance.cycle", { ok: true, accentColor: next.accentColor });
+      }
+
       try {
         saveSettings(next, active || undefined, currentUserId);
       } catch {
@@ -445,19 +454,7 @@ export default function SettingsProvider({
   );
 
   const saveTimeoutRef = useRef<number | null>(null);
-  const previousSettingsRef = useRef<Settings | null>(null);
   const previousEffectSettingsRef = useRef<Settings | null>(null);
-  useEffect(() => {
-    const prev = previousSettingsRef.current;
-    previousSettingsRef.current = settings;
-    if (!prev) return;
-    if (settings.theme !== prev.theme || settings.darkMode !== prev.darkMode) {
-      activityJournal.capture("v8.theme.toggle", { ok: true, theme: settings.theme, darkMode: settings.darkMode });
-    }
-    if (settings.accentColor !== prev.accentColor) {
-      activityJournal.capture("v8.appearance.cycle", { ok: true, accentColor: settings.accentColor });
-    }
-  }, [settings]);
 
   useEffect(() => () => {
     if (saveTimeoutRef.current) {

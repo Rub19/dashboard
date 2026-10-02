@@ -2,11 +2,15 @@ import { requestExternal } from "../utils/external-request.js";
 import { httpError } from "../middleware/errors.js";
 import { safePublicUrl, safeText } from "../utils/normalize.js";
 
-// Mojang shut down the api.mojang.com/sessionserver.mojang.com username lookup endpoints
-// in September 2023. mowojang.matdoes.dev is a maintained drop-in mirror that serves the
-// exact same request/response shape, so the rest of this module is unchanged.
-const PROFILE_ORIGIN = "https://mowojang.matdoes.dev";
-const SESSION_ORIGIN = "https://mowojang.matdoes.dev";
+// Plusieurs sources, la première qui répond gagne : PlayerDB (hébergé chez Cloudflare, joignable depuis un Worker, une
+// seule réponse avec pseudo + textures), puis l'API officielle Mojang (qui refuse souvent les IP de Cloudflare), puis
+// le miroir mowojang. Avant, seul le miroir était utilisé : en panne (HTTP 521), la carte Minecraft était cassée.
+const PLAYERDB_ORIGIN = "https://playerdb.co";
+const LOOKUP_SOURCES = [
+  { origin: "https://api.minecraftservices.com", path: (name) => `/minecraft/profile/lookup/name/${encodeURIComponent(name)}` },
+  { origin: "https://mowojang.matdoes.dev", path: (name) => `/users/profiles/minecraft/${encodeURIComponent(name)}` },
+];
+const SESSION_SOURCES = ["https://sessionserver.mojang.com", "https://mowojang.matdoes.dev"];
 const NAME_HISTORY_ORIGIN = "https://uuid.legacyminecraft.com";
 const ASHCON_ORIGIN = "https://api.ashcon.app";
 
@@ -25,33 +29,70 @@ function decodeTextures(properties) {
   }
 }
 
-export async function getMinecraftProfile(env, username) {
-  const lookupUrl = new URL(`/users/profiles/minecraft/${encodeURIComponent(username)}`, PROFILE_ORIGIN);
-  const lookup = await requestExternal(lookupUrl, {
+/** Première source qui répond ; un « introuvable » (404) est une vraie réponse, pas une panne : on s'arrête. */
+async function firstAvailable(attempts) {
+  let lastError;
+  for (const attempt of attempts) {
+    try {
+      return await attempt();
+    } catch (error) {
+      if (error?.status === 404) throw error;
+      lastError = error;
+    }
+  }
+  throw lastError;
+}
+
+/** PlayerDB renvoie pseudo, identifiant et textures en une fois : adapté au format Mojang ({ id, name, properties }). */
+async function playerDbProfile(env, username) {
+  const res = await requestExternal(new URL(`/api/player/minecraft/${encodeURIComponent(username)}`, PLAYERDB_ORIGIN), {
     env,
-    expectedOrigin: PROFILE_ORIGIN,
+    expectedOrigin: PLAYERDB_ORIGIN,
     service: "minecraft",
-    dedupeKey: `lookup:${username.toLowerCase()}`,
-    retries: 1,
-    maxBytes: 8 * 1024
+    dedupeKey: `playerdb:${username.toLowerCase()}`,
+    retries: 0,
+    maxBytes: 32 * 1024
   });
+  const player = res.data?.data?.player;
+  if (!res.data?.success || !player?.raw_id) throw httpError("PROVIDER_NOT_FOUND", 404);
+  return { data: { id: player.raw_id, name: player.username, properties: player.properties || [] } };
+}
+
+export async function getMinecraftProfile(env, username) {
+  const lookup = await firstAvailable([
+    () => playerDbProfile(env, username),
+    ...LOOKUP_SOURCES.map(({ origin, path }) => () =>
+      requestExternal(new URL(path(username), origin), {
+        env,
+        expectedOrigin: origin,
+        service: "minecraft",
+        dedupeKey: `lookup:${origin}:${username.toLowerCase()}`,
+        retries: 0,
+        maxBytes: 8 * 1024
+      })
+    )
+  ]);
   const uuid = safeText(lookup.data?.id, 32);
   if (!uuid) throw httpError("PROVIDER_NOT_FOUND", 404);
 
-  const profileUrl = new URL(`/session/minecraft/profile/${encodeURIComponent(uuid)}`, SESSION_ORIGIN);
-  const profile = await requestExternal(profileUrl, {
-    env,
-    expectedOrigin: SESSION_ORIGIN,
-    service: "minecraft",
-    dedupeKey: `profile:${uuid}`,
-    retries: 1,
-    maxBytes: 16 * 1024
-  });
+  // Profil complet (textures) : PlayerDB l'a déjà renvoyé avec la recherche.
+  const profile = Array.isArray(lookup.data?.properties) && lookup.data.properties.length ? lookup : await firstAvailable(
+    SESSION_SOURCES.map((origin) => () =>
+      requestExternal(new URL(`/session/minecraft/profile/${encodeURIComponent(uuid)}`, origin), {
+        env,
+        expectedOrigin: origin,
+        service: "minecraft",
+        dedupeKey: `profile:${origin}:${uuid}`,
+        retries: 0,
+        maxBytes: 16 * 1024
+      })
+    )
+  );
 
   const textures = decodeTextures(profile.data?.properties);
 
   let nameHistory = [];
-  const historySources = [SESSION_ORIGIN, NAME_HISTORY_ORIGIN];
+  const historySources = [SESSION_SOURCES[1], NAME_HISTORY_ORIGIN];
   for (const origin of historySources) {
     try {
       const historyResponse = await requestExternal(new URL(`/user/profiles/${encodeURIComponent(uuid)}/names`, origin), {

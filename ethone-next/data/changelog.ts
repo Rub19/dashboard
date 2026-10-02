@@ -41623,6 +41623,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_50_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_50_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_50_1_de);
 
+const v1_50_2_fr: ChangelogEntry = {
+  version: "v1.50.2",
+  date: "2026-10-02",
+  title: "Extension prête pour le Chrome Web Store",
+  items: [
+    "Politique de confidentialité : nouvelle section « Extension Chrome ETHONE » (ce qui est lu, quand, et ce qui n'est jamais collecté), en 5 langues.",
+    "Dossier de publication de l'extension prêt : paquet Web Store, captures 1280×800, vignette 440×280, textes FR/EN et justifications des autorisations.",
+  ],
+};
+
+const v1_50_2_en: ChangelogEntry = {
+  version: "v1.50.2",
+  date: "2026-10-02",
+  title: "Extension ready for the Chrome Web Store",
+  items: [
+    "Privacy policy: new “ETHONE Chrome extension” section (what is read, when, and what is never collected), in 5 languages.",
+    "Extension publishing kit ready: Web Store package, 1280×800 screenshots, 440×280 tile, FR/EN texts and permission justifications.",
+  ],
+};
+
+const v1_50_2_es: ChangelogEntry = {
+  version: "v1.50.2",
+  date: "2026-10-02",
+  title: "Extensión lista para la Chrome Web Store",
+  items: [
+    "Política de privacidad: nueva sección «Extensión de Chrome ETHONE» (qué se lee, cuándo y qué nunca se recopila), en 5 idiomas.",
+    "Kit de publicación de la extensión listo: paquete para la Web Store, capturas 1280×800, miniatura 440×280, textos FR/EN y justificación de permisos.",
+  ],
+};
+
+const v1_50_2_de: ChangelogEntry = {
+  version: "v1.50.2",
+  date: "2026-10-02",
+  title: "Erweiterung bereit für den Chrome Web Store",
+  items: [
+    "Datenschutzerklärung: neuer Abschnitt „ETHONE-Chrome-Erweiterung“ (was gelesen wird, wann, und was nie erfasst wird), in 5 Sprachen.",
+    "Veröffentlichungspaket der Erweiterung fertig: Web-Store-Paket, Screenshots 1280×800, Kachel 440×280, Texte FR/EN und Begründung der Berechtigungen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_50_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_50_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_50_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_50_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

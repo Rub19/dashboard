@@ -22,3 +22,7 @@ python extension/pack.py
 ```
 
 Le zip part dans `ethone-next/public/downloads/ethone-extension.zip`, servi par la page `/extension`. Monter `version` dans `manifest.json` à chaque changement.
+
+## Publier sur le Chrome Web Store
+
+`python extension/pack.py` produit aussi `extension/store/ethone-webstore.zip` (manifest à la racine). Textes, justifications des autorisations, réponses de confidentialité et images : voir [`store/FICHE-WEB-STORE.md`](store/FICHE-WEB-STORE.md). Captures : `node extension/store/shots.mjs`.

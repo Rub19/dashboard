@@ -13,7 +13,7 @@ export default function PrivacyContent() {
         </a>
 
         <h1 className="mt-6 text-3xl font-bold text-[var(--text-primary)]">{i18n("privacyPageTitle", "Politique de confidentialité")}</h1>
-        <p className="mt-2 text-sm text-[var(--text-muted)]">{i18n("legalUpdatedLine", "Dernière mise à jour : 8 septembre 2026")}</p>
+        <p className="mt-2 text-sm text-[var(--text-muted)]">{i18n("privacyUpdatedLine", "Dernière mise à jour : 2 octobre 2026")}</p>
 
         <div className="stagger-children mt-10 space-y-8 text-[15px] leading-relaxed text-[var(--text-primary)]/85">
           <section>
@@ -116,6 +116,11 @@ export default function PrivacyContent() {
               </a>
               .
             </p>
+          </section>
+
+          <section id="extension" className="scroll-mt-24">
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">{i18n("privacyS10Title", "10. Extension Chrome ETHONE")}</h2>
+            <p className="mt-2">{i18n("privacyS10Body", "L'extension ne lit une page que lorsque vous l'utilisez (bouton, raccourci, clic droit ou barre d'adresse) : elle récupère alors le titre, l'adresse et le texte sélectionné de l'onglet actif, ou la note que vous tapez, et les transmet à ethone.dev, qui les enregistre dans vos notes ou tâches avec votre session déjà ouverte. Elle ne stocke aucun mot de passe ni jeton, n'injecte aucun script dans les sites visités, ne suit pas votre navigation et ne vend ni ne partage ces données. Sa seule requête automatique vérifie la disponibilité du service (ethone.dev/version.json).")}</p>
           </section>
 
           <p className="pt-4 text-sm text-[var(--text-muted)]">

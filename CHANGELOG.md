@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.50.2 — 2026-10-02
+
+**Extension prête pour le Chrome Web Store**
+
+- Politique de confidentialité : nouvelle section « Extension Chrome ETHONE » (ce qui est lu, quand, et ce qui n'est jamais collecté), en 5 langues.
+- Dossier de publication de l'extension prêt : paquet Web Store, captures 1280×800, vignette 440×280, textes FR/EN et justifications des autorisations.
+
 ## v1.50.1 — 2026-10-02
 
 **Un seul designer de carte /rank**

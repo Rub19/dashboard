@@ -154,7 +154,13 @@ export function useProfiles() {
         setLoaded(true);
       }
     });
-    const handleAuthChange = () => fetchAll(true);
+    // « ethone:identity:update » avec un contenu = avatar, pseudo, profil public : la liste des profils ne change pas.
+    // Sans contenu = nettoyage à la déconnexion / changement de compte : là, on recharge. Avant, chaque mise à jour
+    // d'identité au démarrage relançait /api/profiles de force (3 requêtes par chargement).
+    const handleAuthChange = (event: Event) => {
+      if ((event as CustomEvent).detail) return;
+      fetchAll(true);
+    };
     if (typeof window !== "undefined") {
       window.addEventListener("ethone:identity:update", handleAuthChange);
     }

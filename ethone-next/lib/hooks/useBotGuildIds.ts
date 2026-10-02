@@ -34,33 +34,45 @@ function saveStoredBotGuildIds(ids: string[]): void {
 // Un seul appel par lot d'identifiants, partagé entre toutes les pages et tous les composants
 // (sinon chaque page /discord/* refaisait le même appel à chaque montage).
 const cache = new Map<string, { at: number; ids: string[] }>();
-const inflight = new Map<string, Promise<string[]>>();
+const inflight = new Map<string, Promise<BotPresence>>();
 
-async function fetchPresent(key: string): Promise<string[]> {
+/** Réponse de /api/guild-presence : serveurs où le bot est présent, et statut HTTP (0 = bot injoignable). */
+export interface BotPresence {
+  present: string[];
+  status: number;
+}
+
+/** Appel partagé (cache 60 s + requête en cours réutilisée) : utilisé par useBotGuildIds et la page Discord. */
+export async function fetchBotPresence(guildIds: string[]): Promise<BotPresence> {
+  const key = guildIds.join(",");
   const hit = cache.get(key);
-  if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.ids;
+  if (hit && Date.now() - hit.at < CACHE_TTL_MS) return { present: hit.ids, status: 200 };
   const pending = inflight.get(key);
   if (pending) return pending;
 
-  const promise = (async () => {
+  const promise = (async (): Promise<BotPresence> => {
     try {
       const res = await fetch(`${BOT_API_URL}/api/guild-presence?ids=${encodeURIComponent(key)}`, {
         credentials: "include",
       });
-      if (!res.ok) return [];
+      if (!res.ok) return { present: [], status: res.status };
       const json = await res.json();
       const ids: string[] = Array.isArray(json?.present) ? json.present.map(String) : [];
       cache.set(key, { at: Date.now(), ids });
       saveStoredBotGuildIds(ids);
-      return ids;
+      return { present: ids, status: 200 };
     } catch {
-      return [];
+      return { present: [], status: 0 };
     } finally {
       inflight.delete(key);
     }
   })();
   inflight.set(key, promise);
   return promise;
+}
+
+async function fetchPresent(key: string): Promise<string[]> {
+  return (await fetchBotPresence(key ? key.split(",") : [])).present;
 }
 
 /**

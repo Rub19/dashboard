@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.2 — 2026-10-02
+
+**Encore moins de requêtes**
+
+- Profils : la liste n'est plus rechargée de force à chaque mise à jour d'avatar ou de pseudo (3 requêtes par chargement), seulement au changement de compte.
+- Page Discord : la présence du bot sur tes serveurs passe par le même appel partagé que les autres pages (plus de requête relancée à chaque rendu).
+
 ## v1.52.1 — 2026-10-02
 
 **Préférences Brain et notifications protégées**

@@ -82,6 +82,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { choreography, revealUp, staggerItem } from "@/lib/motion-variants";
 import { EASE_SNAP } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
+import { fetchBotPresence } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const PICKED_STORAGE_KEY = "ethone:discord:picked";
@@ -619,12 +620,12 @@ export default function DiscordDashboardPage() {
     const api = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
     if (!api || allGuilds.length === 0) return;
     let cancelled = false;
-    const ids = allGuilds.map((g) => g.id).join(",");
-    fetch(`${api}/api/guild-presence?ids=${encodeURIComponent(ids)}`, { credentials: "include" })
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+    // Même appel partagé que les autres pages du bot (cache 60 s) : plus de requête relancée à chaque rendu.
+    fetchBotPresence(allGuilds.map((g) => g.id))
       .then((res) => {
+        if (res.status !== 200) throw new Error(String(res.status));
         if (cancelled) return;
-        const present: string[] = Array.isArray(res?.present) ? res.present.map(String) : [];
+        const present = res.present;
         setBotGuildIds(new Set(present));
         try {
           localStorage.setItem("ethone:discord:bot_guild_ids", JSON.stringify(present));

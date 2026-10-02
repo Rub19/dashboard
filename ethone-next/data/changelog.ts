@@ -42202,6 +42202,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_1_de);
 
+const v1_52_2_fr: ChangelogEntry = {
+  version: "v1.52.2",
+  date: "2026-10-02",
+  title: "Encore moins de requêtes",
+  items: [
+    "Profils : la liste n'est plus rechargée de force à chaque mise à jour d'avatar ou de pseudo (3 requêtes par chargement), seulement au changement de compte.",
+    "Page Discord : la présence du bot sur tes serveurs passe par le même appel partagé que les autres pages (plus de requête relancée à chaque rendu).",
+  ],
+};
+
+const v1_52_2_en: ChangelogEntry = {
+  version: "v1.52.2",
+  date: "2026-10-02",
+  title: "Even fewer requests",
+  items: [
+    "Profiles: the list is no longer force-reloaded on every avatar or name update (3 requests per load), only when the account changes.",
+    "Discord page: the bot's presence on your servers uses the same shared call as the other pages (no more request on every render).",
+  ],
+};
+
+const v1_52_2_es: ChangelogEntry = {
+  version: "v1.52.2",
+  date: "2026-10-02",
+  title: "Aún menos peticiones",
+  items: [
+    "Perfiles: la lista ya no se recarga a la fuerza en cada cambio de avatar o nombre (3 peticiones por carga), solo al cambiar de cuenta.",
+    "Página de Discord: la presencia del bot en tus servidores usa la misma llamada compartida que las demás páginas (ya no se repite en cada render).",
+  ],
+};
+
+const v1_52_2_de: ChangelogEntry = {
+  version: "v1.52.2",
+  date: "2026-10-02",
+  title: "Noch weniger Anfragen",
+  items: [
+    "Profile: Die Liste wird nicht mehr bei jeder Avatar- oder Namensänderung zwangsweise neu geladen (3 Anfragen pro Laden), nur beim Kontowechsel.",
+    "Discord-Seite: Die Präsenz des Bots auf deinen Servern nutzt denselben gemeinsamen Aufruf wie die anderen Seiten (keine Anfrage mehr bei jedem Rendern).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

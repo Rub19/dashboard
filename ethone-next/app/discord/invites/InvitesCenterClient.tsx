@@ -524,7 +524,7 @@ export default function InvitesCenterClient() {
                   : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70 border border-[var(--panel-border)]"
               }`}
             >
-              {isActive && <motion.span layoutId="invites-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+              {isActive && <motion.span layoutId="invites-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
               <Icon className="w-4 h-4" />
               <span>{tab.label}</span>
             </button>

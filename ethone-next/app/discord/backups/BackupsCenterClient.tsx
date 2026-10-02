@@ -615,7 +615,7 @@ export default function BackupsCenterClient() {
               { id: "PRE_CHANGE", label: "Pre-Change" }, { id: "ROLLBACK", label: "Rollback" }, { id: "PROTECTED", label: "🔒 Protégées" },
             ].map((tab) => (
               <button key={tab.id} onClick={() => setSelectedType(tab.id)} className={cn("relative isolate px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]", selectedType === tab.id ? "text-[var(--accent-contrast)]" : "bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
-                {selectedType === tab.id && <motion.span layoutId="backups-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+                {selectedType === tab.id && <motion.span layoutId="backups-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                 {tab.label}
               </button>
             ))}

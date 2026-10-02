@@ -476,7 +476,7 @@ export default function AvatarPickerModal({
                       : "border border-[var(--panel-border)] bg-[var(--surface-2)]/40 text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
                   )}
                 >
-                  {isActive && <motion.span layoutId="avatarpickermodal-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+                  {isActive && <motion.span layoutId="avatarpickermodal-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                   <Icon className="h-3.5 w-3.5" />
                   <span>{tab.label}</span>
                 </button>

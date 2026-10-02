@@ -513,7 +513,7 @@ export default function LevelingCenterClient() {
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 }`}
               >
-                {isActive && <motion.span layoutId="leveling-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
+                {isActive && <motion.span layoutId="leveling-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
                 <Icon className={`w-4 h-4 ${isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]"}`} />
                 {tab.label}
               </button>

@@ -656,7 +656,7 @@ export default function UserModerationProfileClient() {
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              {activeTab === tab.id && <motion.span layoutId="usermoderationprofile-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+              {activeTab === tab.id && <motion.span layoutId="usermoderationprofile-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
               <span>{tab.label}</span>
               {typeof tab.count === "number" && (
                 <span

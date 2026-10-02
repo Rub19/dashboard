@@ -223,7 +223,7 @@ const MODULES: BotModule[] = [
     title: "Vue d'ensemble",
     description: "Statut du bot, modération, sécurité, musique, tickets, giveaways, backups et activité récente en un coup d'œil.",
     icon: MODULE_ICONS.overview,
-    color: "text-indigo-400",
+    color: "text-[var(--accent-primary)]",
     badge: "Mission Control",
   },
   {
@@ -231,7 +231,7 @@ const MODULES: BotModule[] = [
     title: "Sécurité & Anti-Raid",
     description: "Protection contre les raids, mass joins, anti-spam et verrouillage d'urgence.",
     icon: MODULE_ICONS.security,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Sécurité",
   },
   {
@@ -239,7 +239,7 @@ const MODULES: BotModule[] = [
     title: "Command Builder",
     description: "Créez vos commandes Discord personnalisées avec réponses textes et embeds.",
     icon: MODULE_ICONS.commands,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Custom",
   },
   {
@@ -247,7 +247,7 @@ const MODULES: BotModule[] = [
     title: "Boîte à Suggestions",
     description: "Système de boîte à idées avec votes communautaires et statuts.",
     icon: MODULE_ICONS.suggestions,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Communauté",
   },
   {
@@ -255,7 +255,7 @@ const MODULES: BotModule[] = [
     title: "Leveling & Rôles XP",
     description: "Gain d'expérience par messages et distribution automatique de rôles.",
     icon: MODULE_ICONS.leveling,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Progression",
   },
   {
@@ -263,7 +263,7 @@ const MODULES: BotModule[] = [
     title: "Tirages au sort",
     description: "Création et gestion de concours avec sélection aléatoire de gagnants.",
     icon: MODULE_ICONS.giveaways,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Événements",
   },
   {
@@ -271,7 +271,7 @@ const MODULES: BotModule[] = [
     title: "Tickets Center",
     description: "Helpdesk professionnel, formulaires, équipes de staff, transcripts et statistiques.",
     icon: MODULE_ICONS.tickets,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Helpdesk",
   },
   {
@@ -279,7 +279,7 @@ const MODULES: BotModule[] = [
     title: "Bienvenue & Onboarding",
     description: "Messages d'accueil, embeds, cartes de bienvenue, auto-rôles, vérification et onboarding complet.",
     icon: MODULE_ICONS.welcome,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Onboarding",
   },
   {
@@ -287,7 +287,7 @@ const MODULES: BotModule[] = [
     title: "Modération & Sanctions",
     description: "Réglages des avertissements, mutes, expulsions et bannissements.",
     icon: MODULE_ICONS.moderation,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Staff",
   },
   {
@@ -295,7 +295,7 @@ const MODULES: BotModule[] = [
     title: "Journal d'Audit",
     description: "Configuration des salons de logs pour messages et événements serveurs.",
     icon: MODULE_ICONS.logs,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Surveillance",
   },
   {
@@ -303,7 +303,7 @@ const MODULES: BotModule[] = [
     title: "Lecteur Musique",
     description: "Contrôle en direct de la musique vocale, queue, playlists et mode DJ.",
     icon: MODULE_ICONS.music,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Live Audio",
   },
   {
@@ -311,7 +311,7 @@ const MODULES: BotModule[] = [
     title: "Invites & Parrainages",
     description: "Tracking précis des invitations Discord, détection des faux joins, scores de risque et récompenses.",
     icon: MODULE_ICONS.invites,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Croissance",
   },
   {
@@ -319,7 +319,7 @@ const MODULES: BotModule[] = [
     title: "Salons Vocaux",
     description: "Join-to-Create, salons temporaires automatiques, hubs et contrôle Discord.",
     icon: MODULE_ICONS.voice,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Vocal",
   },
   {
@@ -327,7 +327,7 @@ const MODULES: BotModule[] = [
     title: "Sauvegardes & Disaster Recovery",
     description: "Snapshots immuables, restauration sécurisée, comparateur diff et planification automatique.",
     icon: MODULE_ICONS.backups,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Recovery",
   },
   {
@@ -335,7 +335,7 @@ const MODULES: BotModule[] = [
     title: "AI Assistant",
     description: "Assistant IA Discord intelligent, base RAG sémantique, builder de personnalité et outils support.",
     icon: MODULE_ICONS.ai,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "GenAI",
   },
   {
@@ -343,7 +343,7 @@ const MODULES: BotModule[] = [
     title: "Forms & Applications",
     description: "Form Builder no-code, candidatures staff, logique conditionnelle, scoring et review.",
     icon: MODULE_ICONS.forms,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Recrutement",
   },
   {
@@ -351,7 +351,7 @@ const MODULES: BotModule[] = [
     title: "Sondages & Votes",
     description: "Sondages démocratiques, votes pondérés par rôles, décisions staff, quorums et bulletins secrets.",
     icon: MODULE_ICONS.polls,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Démocratie",
   },
   {
@@ -359,7 +359,7 @@ const MODULES: BotModule[] = [
     title: "Reaction Roles & Auto-Roles",
     description: "Panneaux de sélection de rôles par boutons et menus déroulants, join-roles et rôles temporaires.",
     icon: MODULE_ICONS.roles,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Rôles",
   },
   {
@@ -367,7 +367,7 @@ const MODULES: BotModule[] = [
     title: "Vue d'Ensemble & Insights",
     description: "Informations générales sur l'état du serveur et statistiques d'utilisation.",
     icon: MODULE_ICONS.analytics,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Données",
   },
   {
@@ -375,7 +375,7 @@ const MODULES: BotModule[] = [
     title: "Événements & Calendrier",
     description: "Planification d'événements, calendrier interactif, gestion des RSVP, jauges et rappels automatiques Discord.",
     icon: MODULE_ICONS.events,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Événements",
   },
   {
@@ -383,7 +383,7 @@ const MODULES: BotModule[] = [
     title: "Server Management Center",
     description: "Centre de gestion globale : diagnostics santé, score de sécurité, membres, salons, rôles, permissions et emojis.",
     icon: MODULE_ICONS.server,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Serveur",
   },
   {
@@ -391,7 +391,7 @@ const MODULES: BotModule[] = [
     title: "Starboard",
     description: "Le hall of fame des messages : republication automatique des messages les plus étoilés du serveur.",
     icon: MODULE_ICONS.starboard,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Communauté",
   },
   {
@@ -399,7 +399,7 @@ const MODULES: BotModule[] = [
     title: "Sticky Messages",
     description: "Garde un message important toujours visible en bas d'un salon : le bot le repositionne automatiquement.",
     icon: MODULE_ICONS.sticky,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Communauté",
   },
   {
@@ -407,7 +407,7 @@ const MODULES: BotModule[] = [
     title: "Reminders",
     description: "« Rappelle-moi » : programme des rappels personnels que le bot t'envoie à l'échéance, ponctuels ou récurrents.",
     icon: MODULE_ICONS.reminders,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Utilitaires",
   },
   {
@@ -415,7 +415,7 @@ const MODULES: BotModule[] = [
     title: "Paramètres",
     description: "Langue, fuseau horaire, contacts d'urgence prévenus en cas de problème sérieux, préfixe et commandes du bot.",
     icon: MODULE_ICONS.settings,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Serveur",
   },
   {
@@ -423,7 +423,7 @@ const MODULES: BotModule[] = [
     title: "Rôles sécurisés",
     description: "Les permissions sensibles de votre équipe (bannir, gérer les rôles…) ne s'activent qu'après un code à usage unique : un compte volé n'a aucun pouvoir.",
     icon: MODULE_ICONS.secureroles,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Sécurité",
   },
   {
@@ -431,7 +431,7 @@ const MODULES: BotModule[] = [
     title: "Statroles",
     description: "Rôles donnés et retirés automatiquement selon l'activité : messages, vocal, ancienneté, avec un constructeur de conditions.",
     icon: MODULE_ICONS.statroles,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Communauté",
   },
   {
@@ -439,7 +439,7 @@ const MODULES: BotModule[] = [
     title: "Statistiques",
     description: "Messages et vocal par jour, évolution des membres, classements et fiche par membre, comme Statbot.",
     icon: MODULE_ICONS.stats,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Gestion",
   },
   {
@@ -447,7 +447,7 @@ const MODULES: BotModule[] = [
     title: "Comptage",
     description: "Jeu collectif : les membres comptent 1, 2, 3… à tour de rôle dans un salon, avec record et classement.",
     icon: MODULE_ICONS.counting,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Animation",
   },
   {
@@ -455,7 +455,7 @@ const MODULES: BotModule[] = [
     title: "AFK",
     description: "Statut absent : le bot prévient ceux qui te mentionnent et retire ton statut dès que tu reparles.",
     icon: MODULE_ICONS.afk,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Utilitaires",
   },
   {
@@ -463,7 +463,7 @@ const MODULES: BotModule[] = [
     title: "Birthdays",
     description: "Anniversaires des membres : annonce quotidienne dans un salon + rôle du jour automatique.",
     icon: MODULE_ICONS.birthdays,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Communauté",
   },
   {
@@ -471,7 +471,7 @@ const MODULES: BotModule[] = [
     title: "Tags",
     description: "Réponses réutilisables du serveur : FAQ, formats de candidature, liens récurrents, via /tag.",
     icon: MODULE_ICONS.tags,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Utilitaires",
   },
   {
@@ -479,7 +479,7 @@ const MODULES: BotModule[] = [
     title: "Server Stats",
     description: "Salons compteurs : le nom d'un salon affiche le nombre de membres, de boosts, de membres en ligne…",
     icon: MODULE_ICONS.serverstats,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Utilitaires",
   },
   {
@@ -487,7 +487,7 @@ const MODULES: BotModule[] = [
     title: "Highlights",
     description: "Mots-clés personnels surveillés : reçois un DM quand quelqu'un d'autre les mentionne dans le serveur.",
     icon: MODULE_ICONS.highlights,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Personnel",
   },
   {
@@ -495,7 +495,7 @@ const MODULES: BotModule[] = [
     title: "Bot Control Center",
     description: "Console centrale du bot : télémétrie temps réel, santé des modules, commandes, bus d'événements, diagnostics et intelligence.",
     icon: MODULE_ICONS.bot,
-    color: "text-zinc-400",
+    color: "text-[var(--text-muted)]",
     badge: "Bot Core",
   },
 ];
@@ -1190,7 +1190,7 @@ export default function DiscordDashboardPage() {
               <button
                 type="button"
                 onClick={() => setMenuOpen(true)}
-                className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)] lg:hidden"
+                className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--text-muted)] transition-[color,background-color,border-color,transform] hover:bg-white/[0.06] hover:text-[var(--text-primary)] lg:hidden active:scale-[0.97]"
                 aria-label="Ouvrir le menu des modules"
               >
                 <Menu className="h-4 w-4" />
@@ -1200,7 +1200,7 @@ export default function DiscordDashboardPage() {
               <button
                 type="button"
                 onClick={changeGuild}
-                className="inline-flex h-9 min-w-0 cursor-pointer items-center gap-2 rounded-lg px-2 text-sm font-semibold text-[var(--text-primary)] transition-colors hover:bg-white/[0.06]"
+                className="inline-flex h-9 min-w-0 cursor-pointer items-center gap-2 rounded-lg px-2 text-sm font-semibold text-[var(--text-primary)] transition-[color,background-color,border-color,transform] hover:bg-white/[0.06] active:scale-[0.97]"
                 title="Changer de serveur"
                 aria-label={`Serveur ${selectedGuild.name} : changer de serveur`}
               >
@@ -1308,7 +1308,7 @@ export default function DiscordDashboardPage() {
                   {botAbsent && (
                     <div className={calloutCls}>
                       <div className="flex items-start gap-3">
-                        <Bot className="mt-0.5 h-5 w-5 shrink-0 text-indigo-300" />
+                        <Bot className="mt-0.5 h-5 w-5 shrink-0 text-[var(--accent-primary)]" />
                         <div>
                           <p className="text-sm font-semibold text-[var(--text-primary)]">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
                           <p className="mt-0.5 text-xs text-[var(--text-muted)]">
@@ -1402,13 +1402,13 @@ export default function DiscordDashboardPage() {
                         </p>
                       </div>
                       <div className="flex shrink-0 items-center gap-1">
-                        <button type="button" onClick={handleMusicPrev} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-colors hover:bg-white/[0.07] hover:text-[var(--text-primary)]" title="Précédent" aria-label="Piste précédente">
+                        <button type="button" onClick={handleMusicPrev} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-[color,background-color,border-color,transform] hover:bg-white/[0.07] hover:text-[var(--text-primary)] active:scale-[0.97]" title="Précédent" aria-label="Piste précédente">
                           <SkipBack className="h-4 w-4" />
                         </button>
-                        <button type="button" onClick={handleMusicPlayPause} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl bg-white/[0.07] text-[var(--text-primary)] transition-colors hover:bg-white/[0.13]" title={liveMusicState.status === "PLAYING" ? "Pause" : "Lecture"} aria-label={liveMusicState.status === "PLAYING" ? "Pause" : "Lecture"}>
+                        <button type="button" onClick={handleMusicPlayPause} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl bg-white/[0.07] text-[var(--text-primary)] transition-[color,background-color,border-color,transform] hover:bg-white/[0.13] active:scale-[0.97]" title={liveMusicState.status === "PLAYING" ? "Pause" : "Lecture"} aria-label={liveMusicState.status === "PLAYING" ? "Pause" : "Lecture"}>
                           {liveMusicState.status === "PLAYING" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                         </button>
-                        <button type="button" onClick={handleMusicSkip} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-colors hover:bg-white/[0.07] hover:text-[var(--text-primary)]" title="Suivant" aria-label="Piste suivante">
+                        <button type="button" onClick={handleMusicSkip} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-[color,background-color,border-color,transform] hover:bg-white/[0.07] hover:text-[var(--text-primary)] active:scale-[0.97]" title="Suivant" aria-label="Piste suivante">
                           <SkipForward className="h-4 w-4" />
                         </button>
                         <Link href={`/discord/music?guildId=${selectedGuild.id}`} className={cn(secondaryBtn, "ml-1")}>
@@ -1461,7 +1461,7 @@ export default function DiscordDashboardPage() {
                             <motion.span
                               initial={motionReduced ? false : { scale: 0.6, rotate: -12, opacity: 0 }}
                               animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                              transition={{ type: "spring", stiffness: 320, damping: 20 }}
+                              transition={{ type: "spring", stiffness: 320, damping: 36 }}
                               className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-current/10", MODULE_TINTS[activeMeta.id])}
                             >
                               <activeMeta.icon className="h-6 w-6" />
@@ -1500,7 +1500,7 @@ export default function DiscordDashboardPage() {
                                   panelOn ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/15"
                                 )}
                               >
-                                <motion.span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow" initial={false} animate={{ x: panelOn ? 20 : 0 }} transition={{ type: "spring", stiffness: 450, damping: 35 }} />
+                                <motion.span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow" initial={false} animate={{ x: panelOn ? 20 : 0 }} transition={{ type: "spring", stiffness: 450, damping: 43 }} />
                               </button>
                             )}
                             {fullPage && (
@@ -1602,7 +1602,7 @@ export default function DiscordDashboardPage() {
                           }}
                           className={cn(
                             "relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors",
-                            guildSettings.antiRaidEnabled ? "bg-[var(--success)]" : "bg-white/15"
+                            guildSettings.antiRaidEnabled ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/15"
                           )}
                         >
                           <span className={cn("absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform", guildSettings.antiRaidEnabled ? "translate-x-5" : "translate-x-0")} />
@@ -1629,7 +1629,7 @@ export default function DiscordDashboardPage() {
                           }}
                           className={cn(
                             "relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors",
-                            guildSettings.antiSpamEnabled ? "bg-[var(--success)]" : "bg-white/15"
+                            guildSettings.antiSpamEnabled ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/15"
                           )}
                         >
                           <span className={cn("absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform", guildSettings.antiSpamEnabled ? "translate-x-5" : "translate-x-0")} />
@@ -2292,7 +2292,7 @@ export default function DiscordDashboardPage() {
                               <button
                                 onClick={handleMusicSkip}
                                 aria-label="Piste suivante"
-                                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-colors hover:bg-white/[0.07] hover:text-[var(--text-primary)]"
+                                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-[color,background-color,border-color,transform] hover:bg-white/[0.07] hover:text-[var(--text-primary)] active:scale-[0.97]"
                               >
                                 <SkipForward className="h-3.5 w-3.5" />
                               </button>

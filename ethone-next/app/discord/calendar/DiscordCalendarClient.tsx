@@ -398,7 +398,7 @@ export default function DiscordCalendarClient() {
                     : "bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)]"
                 }`}
               >
-                {selectedCategory === f.id && <motion.span layoutId="discordcalendar-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+                {selectedCategory === f.id && <motion.span layoutId="discordcalendar-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                 {f.label}
               </button>
             ))}

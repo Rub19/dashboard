@@ -125,7 +125,7 @@ export default function PollVoteClient() {
                         >
                           <AnimatePresence initial={false}>
                             {selected && (
-                              <motion.span key="c" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.4, opacity: 0 }} transition={{ type: "spring", bounce: 0.3, duration: 0.3 }}>
+                              <motion.span key="c" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.4, opacity: 0 }} transition={{ type: "spring", bounce: 0, duration: 0.3 }}>
                                 <Check className="h-3 w-3" />
                               </motion.span>
                             )}

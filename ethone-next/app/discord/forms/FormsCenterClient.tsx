@@ -482,7 +482,7 @@ export default function FormsCenterClient() {
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              {selectedStatus === tab.id && <motion.span layoutId="forms-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+              {selectedStatus === tab.id && <motion.span layoutId="forms-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
               {tab.label}
             </button>
           ))}

@@ -540,7 +540,7 @@ export default function AiCenterClient() {
             const isActive = activeTab === tab.id;
             return (
               <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("relative px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]", isActive ? "border-transparent text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
-                {isActive && <motion.span layoutId="ai-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
+                {isActive && <motion.span layoutId="ai-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
                 <Icon className={cn("w-4 h-4", isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
                 {tab.label}
               </button>

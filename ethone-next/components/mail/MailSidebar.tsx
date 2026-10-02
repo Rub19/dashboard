@@ -77,7 +77,7 @@ export default function MailSidebar({
   return (
     <motion.aside
       animate={{ width: collapsed ? "4rem" : "15rem" }}
-      transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 350, damping: 32 }}
+      transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 350, damping: 38 }}
       className="v8-panel relative flex h-full shrink-0 flex-col justify-between overflow-hidden p-2.5 select-none"
     >
       <div className="space-y-3">
@@ -139,7 +139,7 @@ export default function MailSidebar({
                 {isActive && (
                   <motion.span
                     layoutId="mail-folder"
-                    transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 43 }}
                     className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)]/[0.12]"
                   />
                 )}

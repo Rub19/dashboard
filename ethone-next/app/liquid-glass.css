@@ -380,3 +380,19 @@
   animation-timing-function: linear;
   animation-fill-mode: forwards;
 }
+
+/* Le système demande moins de transparence ou plus de contraste : les matériaux « verre » deviennent pleins (couleur de
+   surface du thème), sans flou, pour que le texte reste lisible quel que soit le contenu derrière. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root { --panel-bg: var(--bg-surface) !important; }
+  .liquid-glass, .liquid-glass-card, .liquid-glass-modal, .liquid-glass-sheet, .liquid-glass-brain, .liquid-glass-input,
+  .liquid-glass-btn, .liquid-glass-btn-ghost, .v8-panel {
+    background: var(--bg-surface) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  [class*="backdrop-blur"] { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+}
+@media (prefers-contrast: more) {
+  .liquid-glass, .liquid-glass-card, .liquid-glass-modal, .liquid-glass-sheet, .liquid-glass-brain, .v8-panel { border-color: var(--text-muted) !important; }
+}

@@ -48,7 +48,7 @@ export default function SettingsToggle({
     >
       <motion.span
         layout
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        transition={{ type: "spring", stiffness: 500, damping: 45 }}
         className={cn(
           "pointer-events-none block h-5 w-5 rounded-full shadow-sm transition-transform",
           checked

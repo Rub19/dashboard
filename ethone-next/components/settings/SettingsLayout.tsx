@@ -191,7 +191,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
             <motion.div
               initial={reduced ? false : { rotate: -90, scale: 0.6, opacity: 0 }}
               animate={{ rotate: 0, scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.05 }}
+              transition={{ type: "spring", stiffness: 260, damping: 33, delay: 0.05 }}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
             >
               <Icon name="settings" className="h-5 w-5" aria-hidden="true" />
@@ -353,7 +353,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
           initial={reduced ? false : { opacity: 0, y: 24, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={reduced ? undefined : { opacity: 0, y: 16, scale: 0.97, transition: { duration: 0.15 } }}
-          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+          transition={{ type: "spring", stiffness: 380, damping: 39 }}
           className="fixed bottom-[max(5rem,env(safe-area-inset-bottom)+4.5rem)] left-[max(1rem,env(safe-area-inset-left))] right-[max(1rem,env(safe-area-inset-right))] z-[var(--z-modal)] mx-auto w-max max-w-[min(90%,32rem)]"
           aria-live="polite"
           aria-atomic="true"

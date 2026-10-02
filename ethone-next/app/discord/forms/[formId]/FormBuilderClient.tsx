@@ -393,7 +393,7 @@ export default function FormBuilderClient() {
               previewMode === "edit" ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
-            {previewMode === "edit" && <motion.span layoutId="form-preview-mode" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+            {previewMode === "edit" && <motion.span layoutId="form-preview-mode" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
             <Sliders className="h-3 w-3" />
             <span>Éditeur</span>
           </button>
@@ -404,7 +404,7 @@ export default function FormBuilderClient() {
               previewMode === "desktop" ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
-            {previewMode === "desktop" && <motion.span layoutId="form-preview-mode" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+            {previewMode === "desktop" && <motion.span layoutId="form-preview-mode" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
             <Monitor className="h-3 w-3" />
             <span className="hidden md:inline">Aperçu Web</span>
           </button>
@@ -415,7 +415,7 @@ export default function FormBuilderClient() {
               previewMode === "mobile" ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
-            {previewMode === "mobile" && <motion.span layoutId="form-preview-mode" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+            {previewMode === "mobile" && <motion.span layoutId="form-preview-mode" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
             <Smartphone className="h-3 w-3" />
             <span className="hidden md:inline">Mobile</span>
           </button>
@@ -426,7 +426,7 @@ export default function FormBuilderClient() {
               previewMode === "discord" ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             )}
           >
-            {previewMode === "discord" && <motion.span layoutId="form-preview-mode" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+            {previewMode === "discord" && <motion.span layoutId="form-preview-mode" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
             <MessageSquare className="h-3 w-3" />
             <span className="hidden md:inline">Modal Discord</span>
           </button>
@@ -520,7 +520,7 @@ export default function FormBuilderClient() {
                           : "bg-[var(--surface-raised)]/50 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
                       )}
                     >
-                      {activeSectionId === sec.id && <motion.span layoutId="form-section-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+                      {activeSectionId === sec.id && <motion.span layoutId="form-section-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                       <span className="h-4 w-4 rounded-full bg-[var(--surface-raised)]/40 flex items-center justify-center text-xs">
                         {idx + 1}
                       </span>
@@ -579,7 +579,7 @@ export default function FormBuilderClient() {
                       return (
                         <motion.div
                           layout="position"
-                          transition={{ type: "spring", stiffness: 420, damping: 36 }}
+                          transition={{ type: "spring", stiffness: 420, damping: 41 }}
                           key={field.id}
                           onClick={() => setSelectedFieldId(field.id)}
                           className={cn(

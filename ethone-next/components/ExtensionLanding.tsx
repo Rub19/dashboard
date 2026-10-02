@@ -89,7 +89,7 @@ export default function ExtensionLanding() {
           <motion.div
             initial={reduced ? false : { opacity: 0, y: 24, rotate: 2, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, rotate: 0, scale: 1 }}
-            transition={{ type: "spring", stiffness: 140, damping: 18, delay: 0.15 }}
+            transition={{ type: "spring", stiffness: 140, damping: 24, delay: 0.15 }}
             aria-hidden
             className="mx-auto w-full max-w-[340px] space-y-3 rounded-[calc(var(--panel-radius)+4px)] border border-[var(--panel-border)] bg-[var(--bg-card)] p-3.5 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.7)]"
           >

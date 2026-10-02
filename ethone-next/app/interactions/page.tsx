@@ -475,7 +475,7 @@ export default function InteractionsPage() {
                     selectedYear === y ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   }`}
                 >
-                  {selectedYear === y && <motion.span layoutId="interactions-year" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+                  {selectedYear === y && <motion.span layoutId="interactions-year" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                   {y}
                 </button>
               ))}

@@ -243,7 +243,7 @@ export default function NotificationCenter() {
               {active && (
                 <motion.span
                   layoutId="notification-filter"
-                  transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 43 }}
                   className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--menu-hover)]"
                 />
               )}

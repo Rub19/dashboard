@@ -97,7 +97,7 @@ export default function ClipPage() {
               <motion.span
                 initial={reduced ? false : { scale: 0.4, rotate: -20, opacity: 0 }}
                 animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                transition={{ type: "spring", stiffness: 420, damping: 18 }}
+                transition={{ type: "spring", stiffness: 420, damping: 41 }}
                 className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[var(--success)]/15 text-[var(--success)]"
               >
                 <Check className="h-7 w-7" />
@@ -166,7 +166,7 @@ export default function ClipPage() {
                       {target === id && (
                         <motion.span
                           layoutId="clip-target"
-                          transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                          transition={{ type: "spring", stiffness: 450, damping: 43 }}
                           className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm"
                         />
                       )}

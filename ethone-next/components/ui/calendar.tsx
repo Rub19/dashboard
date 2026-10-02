@@ -256,7 +256,7 @@ export function Calendar({
               {selected && (
                 <motion.span
                   layoutId="calendar-selected-day"
-                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                  transition={{ type: "spring", stiffness: 420, damping: 41 }}
                   className="absolute inset-0 -z-10 rounded-[inherit] border border-[var(--accent-primary)]/50 bg-[var(--accent-primary)]/15"
                 />
               )}

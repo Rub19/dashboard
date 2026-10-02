@@ -91,7 +91,7 @@ const TodoList = memo(function TodoList({ tasks, loading, onToggle, onDelete, on
             {filter === tab.id && (
               <motion.span
                 layoutId={pillId}
-                transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                transition={{ type: "spring", stiffness: 450, damping: 43 }}
                 className="absolute inset-0 -z-10 rounded-[inherit] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.08] shadow-sm"
               />
             )}

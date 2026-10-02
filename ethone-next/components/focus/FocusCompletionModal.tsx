@@ -62,7 +62,7 @@ export default function FocusCompletionModal({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+            transition={{ type: "spring", stiffness: 400, damping: 40 }}
             className="w-full max-w-sm rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 shadow-2xl backdrop-blur-xl"
           >
             {/* Icon */}

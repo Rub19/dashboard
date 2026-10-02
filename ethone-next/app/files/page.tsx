@@ -418,7 +418,7 @@ export default function FilesPage() {
                   )}
                   title="Grille"
                 >
-                  {viewMode === "grid" && <motion.span layoutId="files-view" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-xs" />}
+                  {viewMode === "grid" && <motion.span layoutId="files-view" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-xs" />}
                   <Grid2X2 className="h-3.5 w-3.5" />
                 </button>
                 <button
@@ -431,7 +431,7 @@ export default function FilesPage() {
                   )}
                   title="Liste"
                 >
-                  {viewMode === "list" && <motion.span layoutId="files-view" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-xs" />}
+                  {viewMode === "list" && <motion.span layoutId="files-view" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-xs" />}
                   <ListIcon className="h-3.5 w-3.5" />
                 </button>
               </div>

@@ -209,8 +209,9 @@ function HeroTitle({ c }: { c: BotCopy }) {
         <motion.span
           className="inline-block bg-clip-text text-transparent"
           style={{ backgroundImage: "linear-gradient(90deg,#a78bfa,#38bdf8,#34d399,#38bdf8,#a78bfa)", backgroundSize: "200% auto" }}
-          animate={reduced ? undefined : { backgroundPosition: ["0% 50%", "100% 50%"] }}
-          transition={{ duration: 8, repeat: Infinity, repeatType: "mirror", ease: "linear" }}
+          initial={reduced ? false : { backgroundPosition: "0% 50%" }}
+          animate={reduced ? undefined : { backgroundPosition: "100% 50%" }}
+          transition={{ duration: 2.4, delay: 0.4, ease: EASE_SNAP }}
         >
           {c.hero.titleAccent}
         </motion.span>
@@ -319,12 +320,7 @@ function ProductPreview({ c, scrollRef }: { c: BotCopy; scrollRef: RefObject<HTM
   const { scrollYProgress } = useScroll({ target: ref, container: scrollRef, offset: ["start end", "center center"] });
   const tiltScroll = useTransform(scrollYProgress, [0, 1], [18, 0]);
   const scale = useTransform(scrollYProgress, [0, 1], [0.94, 1]);
-  const hx = useMotionValue(0);
-  const hy = useMotionValue(0);
-  const sx = useSpring(hx, SPRING_MOUSE);
-  const sy = useSpring(hy, SPRING_MOUSE);
-  const rotateX = useTransform([tiltScroll, sy], ([a, b]: number[]) => a + b * -5);
-  const rotateY = useTransform(sx, (v) => v * 6);
+  const rotateX = tiltScroll;
 
   useEffect(() => {
     if (!inView) return;
@@ -339,16 +335,6 @@ function ProductPreview({ c, scrollRef }: { c: BotCopy; scrollRef: RefObject<HTM
     return () => timers.forEach(clearTimeout);
   }, [inView, reduced]);
 
-  const onMove = (e: React.PointerEvent) => {
-    if (reduced) return;
-    const r = e.currentTarget.getBoundingClientRect();
-    hx.set((e.clientX - r.left) / r.width - 0.5);
-    hy.set((e.clientY - r.top) / r.height - 0.5);
-  };
-  const onLeave = () => {
-    hx.set(0);
-    hy.set(0);
-  };
 
   return (
     <motion.div
@@ -361,9 +347,7 @@ function ProductPreview({ c, scrollRef }: { c: BotCopy; scrollRef: RefObject<HTM
       <div aria-hidden className="absolute -inset-x-10 -inset-y-12 -z-10" style={{ background: "radial-gradient(closest-side, rgba(99,102,241,0.26), rgba(56,189,248,0.08) 55%, transparent)" }} />
       <motion.div
         ref={ref}
-        onPointerMove={onMove}
-        onPointerLeave={onLeave}
-        style={reduced ? undefined : { rotateX, rotateY, scale, transformStyle: "preserve-3d" }}
+        style={reduced ? undefined : { rotateX, scale, transformStyle: "preserve-3d" }}
         className="will-change-transform"
       >
         <LightBorder light="--etho-light" speed={8} radius="1rem" className="shadow-[0_40px_100px_-30px_rgba(0,0,0,0.85)]" innerClassName="backdrop-blur">
@@ -422,7 +406,7 @@ function ProductPreview({ c, scrollRef }: { c: BotCopy; scrollRef: RefObject<HTM
                         key="embed"
                         initial={reduced ? false : { opacity: 0, y: 10, scale: 0.97 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        transition={{ type: "spring", stiffness: 320, damping: 26 }}
+                        transition={{ type: "spring", stiffness: 320, damping: 36 }}
                         className="mt-2 origin-top-left rounded-md border-l-4 border-indigo-400 bg-[#1a1b28] p-3"
                       >
                         <p className="text-sm font-semibold text-white">{c.preview.embedTitle}</p>
@@ -724,7 +708,7 @@ export default function BotLanding() {
           <motion.div
             initial={reduced ? false : { opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: "spring", stiffness: 260, damping: 22, delay: 0.1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 33, delay: 0.1 }}
             className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-xs font-medium text-zinc-300 backdrop-blur"
           >
             <span className="relative flex h-2 w-2">
@@ -935,8 +919,6 @@ export default function BotLanding() {
                   <motion.div
                     aria-hidden
                     className="mx-auto mb-7 w-fit"
-                    animate={reduced ? undefined : { y: [0, -6, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/icons/ethone-icon-192.png" alt="" width={56} height={56} className="h-14 w-14 rounded-2xl shadow-[0_20px_40px_-12px_rgba(99,102,241,0.55)] ring-1 ring-white/10" />

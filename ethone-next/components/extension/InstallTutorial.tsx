@@ -196,7 +196,7 @@ function PinArt({ b }: { b: BrowserId }) {
     <Window title="Barre d'outils">
       <div className="relative">
         <div className="flex items-center justify-end gap-2 rounded-[var(--inset-radius)] bg-[var(--surface-raised)]/40 p-2">
-          <motion.span initial={{ opacity: 0, scale: 0.4 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.6, type: "spring", bounce: 0.35, duration: 0.5 }} className="grid h-7 w-7 place-items-center rounded-md bg-[var(--accent-primary)] text-[11px] font-black text-[var(--accent-contrast)]">
+          <motion.span initial={{ opacity: 0, scale: 0.4 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.6, type: "spring", bounce: 0, duration: 0.5 }} className="grid h-7 w-7 place-items-center rounded-md bg-[var(--accent-primary)] text-[11px] font-black text-[var(--accent-contrast)]">
             E
           </motion.span>
           <span className="grid h-7 w-7 place-items-center rounded-md border border-[var(--panel-border)] text-[var(--text-muted)]">

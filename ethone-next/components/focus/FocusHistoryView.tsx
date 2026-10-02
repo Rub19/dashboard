@@ -182,7 +182,7 @@ export default function FocusHistoryView() {
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]/40"
                 )}
               >
-                {filter === f.id && <motion.span layoutId="focushistoryview-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+                {filter === f.id && <motion.span layoutId="focushistoryview-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                 {f.label}
               </button>
             ))}

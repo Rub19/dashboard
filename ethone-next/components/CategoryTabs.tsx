@@ -80,7 +80,7 @@ export default function CategoryTabs({
                 transition={{
                   type: "spring",
                   stiffness: 400,
-                  damping: 32,
+                  damping: 36,
                   mass: 0.8,
                 }}
               />

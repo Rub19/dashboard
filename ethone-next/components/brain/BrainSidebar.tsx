@@ -164,7 +164,7 @@ export default function BrainSidebar({
         {isActive && (
           <motion.span
             layoutId="brain-conversation"
-            transition={{ type: "spring", stiffness: 450, damping: 35 }}
+            transition={{ type: "spring", stiffness: 450, damping: 43 }}
             className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)]/15 shadow-sm"
           />
         )}

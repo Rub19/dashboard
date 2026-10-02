@@ -160,7 +160,7 @@ export default function DockControlCenter({
             initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 350, damping: 28 }}
+            transition={{ type: "spring", stiffness: 350, damping: 38 }}
             style={{ transformOrigin: "bottom center" }}
             className="fixed bottom-[calc(7rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-popover)] w-80 max-w-[calc(100vw-1rem)] -translate-x-1/2 overflow-hidden"
             role="dialog"

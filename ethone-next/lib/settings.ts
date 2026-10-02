@@ -311,7 +311,7 @@ export const DEFAULTS: Settings = {
   homeGrid: "4",
   homeHero: "full",
   glassEnabled: true,
-  cardTilt: true,
+  cardTilt: false,
   dockVisible: true,
   dockItems: ["home", "brain", "notes", "tasks", "calendar", "weather", "activity", "connections", "settings"],
   dockItemsDefaultsVersion: 1,

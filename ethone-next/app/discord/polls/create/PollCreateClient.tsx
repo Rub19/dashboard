@@ -472,7 +472,7 @@ export default function PollCreateClient() {
                     : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
               >
-                {isActive && <motion.span layoutId="pollcreate-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
+                {isActive && <motion.span layoutId="pollcreate-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
                 <Icon className={cn("h-4 w-4", isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
                 {tab.label}
               </button>
@@ -650,7 +650,7 @@ export default function PollCreateClient() {
                         {isSel && (
                           <motion.span
                             layoutId="poll-type-selected"
-                            transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                            transition={{ type: "spring", stiffness: 420, damping: 41 }}
                             className="absolute inset-0 -z-10 rounded-[inherit] border border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 shadow-sm"
                           />
                         )}

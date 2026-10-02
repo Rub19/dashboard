@@ -230,7 +230,7 @@ export default function BackupDetailClient() {
             const Icon = t.icon;
             return (
               <button key={t.id} onClick={() => setActiveTab(t.id as typeof activeTab)} className={cn("relative px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]", activeTab === t.id ? "border-transparent text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]")}>
-                {activeTab === t.id && <motion.span layoutId="backupdetail-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
+                {activeTab === t.id && <motion.span layoutId="backupdetail-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]" />}
                 <Icon className={cn("w-4 h-4", t.c)} /> {t.label}
               </button>
             );

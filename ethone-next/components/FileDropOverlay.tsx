@@ -122,7 +122,7 @@ export default function FileDropOverlay({ onDrop, disabled }: FileDropOverlayPro
             transition={{
               type: "spring",
               stiffness: 350,
-              damping: 28,
+              damping: 38,
             }}
             className="relative flex h-[min(65vh,380px)] w-[min(90vw,540px)] flex-col items-center justify-center rounded-[var(--panel-radius)] border-2 border-dashed border-[var(--accent-primary)] bg-[var(--panel-bg)]/[0.95] p-8 text-center shadow-2xl backdrop-blur-3xl"
           >

@@ -893,7 +893,7 @@ export default function MusicCenterClient() {
                         )}
                         title="Ajouter aux favoris"
                       >
-                        <motion.span key={String(isFav)} initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 18 }} className="grid place-items-center"><Heart className={cn("h-4 w-4", isFav && "fill-rose-400")} /></motion.span>
+                        <motion.span key={String(isFav)} initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 45 }} className="grid place-items-center"><Heart className={cn("h-4 w-4", isFav && "fill-rose-400")} /></motion.span>
                       </button>
                       <div className="text-right hidden sm:block">
                         <span className="text-xs text-[var(--text-muted)] uppercase font-semibold">Demandé par</span>
@@ -959,7 +959,7 @@ export default function MusicCenterClient() {
                           initial={{ scale: 0.4, rotate: -90, opacity: 0 }}
                           animate={{ scale: 1, rotate: 0, opacity: 1 }}
                           exit={{ scale: 0.4, rotate: 90, opacity: 0 }}
-                          transition={{ type: "spring", stiffness: 450, damping: 28 }}
+                          transition={{ type: "spring", stiffness: 450, damping: 43 }}
                           className="grid place-items-center"
                         >
                           {isPlaying ? <Pause className="h-5 w-5 fill-current" /> : <Play className="h-5 w-5 fill-current ml-0.5" />}
@@ -1156,7 +1156,7 @@ export default function MusicCenterClient() {
                       : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
                   )}
                 >
-                  {isActive && <motion.span layoutId="music-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10" />}
+                  {isActive && <motion.span layoutId="music-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10" />}
                   <Icon className="relative h-3.5 w-3.5" />
                   <span className="relative">{tab.label}</span>
                 </button>

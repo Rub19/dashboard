@@ -199,7 +199,7 @@ function IslandBubble({
       {active && (
         <motion.span
           layoutId="island-bubble-active"
-          transition={{ type: "spring", stiffness: 450, damping: 35 }}
+          transition={{ type: "spring", stiffness: 450, damping: 43 }}
           className="absolute inset-0 rounded-full bg-[var(--text-primary)]/[0.12] ring-1 ring-[var(--text-primary)]/20"
         />
       )}

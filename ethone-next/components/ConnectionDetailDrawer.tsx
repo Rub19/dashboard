@@ -281,7 +281,7 @@ export default function ConnectionDetailDrawer({
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 320, damping: 30 }}
+            transition={{ type: "spring", stiffness: 320, damping: 36 }}
             onClick={(e) => e.stopPropagation()}
             className="fixed right-0 top-0 bottom-0 h-full w-full max-w-xl border-l border-[var(--panel-border)] bg-[#090d14] shadow-2xl backdrop-blur-2xl flex flex-col z-[100000] overflow-hidden"
           >

@@ -295,7 +295,7 @@ export default function AppearanceSettings() {
                     )}
                   >
                     {active && (
-                      <motion.span layoutId="font-pick" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/10" />
+                      <motion.span layoutId="font-pick" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/10" />
                     )}
                     <span className="relative text-xl leading-none text-[var(--text-primary)]" style={{ fontFamily: FONT_PREVIEW[f.id] }}>
                       Aa

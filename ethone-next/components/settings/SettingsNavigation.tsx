@@ -167,7 +167,7 @@ export default function SettingsNavigation({
           <motion.div
             layoutId="settings-nav-active-pill"
             className="absolute inset-0 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/[0.08]"
-            transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 30 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 39 }}
           >
             <span className="absolute inset-y-3 -left-px w-[3px] rounded-full bg-[var(--accent-primary)]" />
           </motion.div>

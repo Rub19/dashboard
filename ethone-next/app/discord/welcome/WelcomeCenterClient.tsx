@@ -962,7 +962,7 @@ export function WelcomeCenterClient() {
                   : "text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)]"
               )}
             >
-              {isActive && <motion.span layoutId="welcome-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              {isActive && <motion.span layoutId="welcome-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
               <Icon className="relative h-3.5 w-3.5" />
               <span className="relative">{tab.label}</span>
             </button>

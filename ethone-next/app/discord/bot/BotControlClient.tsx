@@ -1461,7 +1461,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                       : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
                   )}
                 >
-                  {isActive && <motion.span layoutId="botcontrol-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+                  {isActive && <motion.span layoutId="botcontrol-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                   <Icon className={cn("w-3.5 h-3.5", isActive ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)]")} />
                   <span>{meta.label}</span>
                   {count !== undefined && (

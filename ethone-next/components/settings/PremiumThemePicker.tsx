@@ -65,7 +65,7 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.5 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 40 }}
                     className="absolute right-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded-full"
                     style={{ backgroundColor: def.accentPrimary, color: def.bgMain }}
                   >

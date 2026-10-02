@@ -546,7 +546,7 @@ export default function EventsCenterClient() {
                     : "bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)] border border-[var(--panel-border)]"
                 }`}
               >
-                {selectedFilter === tab.id && <motion.span layoutId="events-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+                {selectedFilter === tab.id && <motion.span layoutId="events-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
                 {tab.label}
               </button>
             ))}

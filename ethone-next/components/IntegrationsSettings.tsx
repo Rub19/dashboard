@@ -348,7 +348,7 @@ export default function IntegrationsSettings() {
             <motion.div
               initial={{ scale: 0.6, rotate: -15, opacity: 0 }}
               animate={{ scale: 1, rotate: 0, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 320, damping: 20 }}
+              transition={{ type: "spring", stiffness: 320, damping: 36 }}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)]"
             >
               <Plug className="h-5 w-5" />

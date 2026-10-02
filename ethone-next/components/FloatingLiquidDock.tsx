@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence, type PanInfo } from "framer-motion";
+import { shouldDismissSheet } from "@/lib/ease";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import BrandMark from "@/components/BrandMark";
@@ -165,9 +166,7 @@ export default function FloatingLiquidDock() {
   }, []);
 
   function handleSheetDragEnd(_event: unknown, info: PanInfo) {
-    if (info.offset.y > 100 || info.velocity.y > 600) {
-      setSheetOpen(false);
-    }
+    if (shouldDismissSheet(info.offset.y, info.velocity.y)) setSheetOpen(false);
   }
 
   const handleNextTheme = () => {

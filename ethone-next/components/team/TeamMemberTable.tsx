@@ -143,7 +143,7 @@ export default function TeamMemberTable({ members, loading, onUpdateRole, onRemo
                 <motion.div
                   layoutId="teamFilterPill"
                   className="absolute inset-0 rounded-[var(--inset-radius)] bg-[var(--accent-primary)] border border-[var(--accent-primary)]"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 40 }}
                 />
               )}
               <span className="relative z-10">{i18n(`teamFilter${id}`) || FILTER_LABELS[id]}</span>

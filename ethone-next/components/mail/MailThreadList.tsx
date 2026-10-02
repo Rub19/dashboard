@@ -236,7 +236,7 @@ export default function MailThreadList({
                     : "text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
                 )}
               >
-                {isActive && <motion.span layoutId="mail-filter" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)]" />}
+                {isActive && <motion.span layoutId="mail-filter" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)]" />}
                 {id === "starred" && <Star className="h-3 w-3" />}
                 {id === "attachments" && <Paperclip className="h-3 w-3" />}
                 <span>{FILTER_LABELS[id]}</span>

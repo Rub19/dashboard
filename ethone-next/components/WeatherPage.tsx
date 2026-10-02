@@ -613,7 +613,7 @@ export default function WeatherPage() {
                         className="relative z-10"
                         initial={reduced ? false : { rotate: 0 }}
                         animate={{ rotate: ((windDir ?? 0) + 180 + 45) % 360 }}
-                        transition={{ type: "spring", stiffness: 60, damping: 9, delay: 0.3 }}
+                        transition={{ type: "spring", stiffness: 60, damping: 16, delay: 0.3 }}
                       >
                         <Navigation className="h-6 w-6 fill-[var(--accent-primary)]/20 text-[var(--accent-primary)]" />
                       </motion.div>

@@ -368,7 +368,7 @@ export default function EventCreateClient() {
                     {isCurrent && (
                       <motion.span
                         layoutId="event-step-ring"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        transition={{ type: "spring", stiffness: 380, damping: 39 }}
                         className="absolute -inset-1.5 rounded-full border-2 border-[var(--accent-primary)]/35"
                       />
                     )}

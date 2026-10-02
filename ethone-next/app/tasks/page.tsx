@@ -95,7 +95,7 @@ function CompactSelect<T extends string>({
           initial={{ opacity: 0, y: -4, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -4, scale: 0.97, transition: { duration: 0.1 } }}
-          transition={{ type: "spring", stiffness: 520, damping: 34 }}
+          transition={{ type: "spring", stiffness: 520, damping: 46 }}
           style={{ transformOrigin: "top left" }}
           className="absolute left-0 top-full mt-1 z-50 min-w-[120px] rounded-xl border border-[var(--panel-border)] bg-[var(--bg-main)]/95 p-1 shadow-xl backdrop-blur-xl"
         >
@@ -287,7 +287,7 @@ export default function TasksPage() {
               )}
               title="Vue Liste"
             >
-              {viewMode === "list" && <motion.span layoutId="tasks-view" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--surface-2)]" />}
+              {viewMode === "list" && <motion.span layoutId="tasks-view" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--surface-2)]" />}
               <LayoutList className="h-4 w-4" />
             </button>
             <button
@@ -300,7 +300,7 @@ export default function TasksPage() {
               )}
               title="Vue Kanban"
             >
-              {viewMode === "kanban" && <motion.span layoutId="tasks-view" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--surface-2)]" />}
+              {viewMode === "kanban" && <motion.span layoutId="tasks-view" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--surface-2)]" />}
               <Kanban className="h-4 w-4" />
             </button>
           </div>
@@ -387,7 +387,7 @@ export default function TasksPage() {
                   : "text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
               )}
             >
-              {activeTab === tab.id && <motion.span layoutId="tasks-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+              {activeTab === tab.id && <motion.span layoutId="tasks-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
               {tab.label} <span className="opacity-60">({tab.count})</span>
             </button>
           ))}

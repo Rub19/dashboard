@@ -2,6 +2,7 @@
 
 import { useEffect, useId } from "react";
 import { motion, AnimatePresence, useReducedMotion, type PanInfo } from "framer-motion";
+import { shouldDismissSheet } from "@/lib/ease";
 import { X } from "@/components/icons/ph";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { hapticLightImpact } from "@/lib/haptics";
@@ -45,11 +46,7 @@ export default function Sheet({
   }, [open, onOpenChange]);
 
   const onDragEnd = (_event: unknown, info: PanInfo) => {
-    const threshold = 80;
-    const velocity = 500;
-    if (info.offset.y > threshold || info.velocity.y > velocity) {
-      onOpenChange(false);
-    }
+    if (shouldDismissSheet(info.offset.y, info.velocity.y)) onOpenChange(false);
   };
 
   return (

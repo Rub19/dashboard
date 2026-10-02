@@ -161,7 +161,7 @@ export default function FocusPage() {
                   activeTab === t ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
               >
-                {activeTab === t && <motion.span layoutId="focus-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow" />}
+                {activeTab === t && <motion.span layoutId="focus-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow" />}
                 {t === "focus" ? "Focus" : "Historique"}
               </button>
             ))}
@@ -287,7 +287,7 @@ export default function FocusPage() {
                         : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]/40"
                     )}
                   >
-                    {isActive && <motion.span layoutId="focus-mode" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-md" />}
+                    {isActive && <motion.span layoutId="focus-mode" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-md" />}
                     <span>{mode.label}</span>
                     <span className="text-[10px] opacity-75">({mode.duration})</span>
                   </button>

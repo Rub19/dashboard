@@ -26,7 +26,7 @@ export const DURATION_DELIBERATE = 0.5;
 export const SPRING_PRESS = {
   type: "spring",
   stiffness: 360,
-  damping: 26,
+  damping: 27,
   mass: 0.5,
 } as const;
 
@@ -77,5 +77,18 @@ export const SPRING_GLIDE = {
 export const SPRING_PILL = {
   type: "spring",
   stiffness: 450,
-  damping: 35,
+  damping: 43,
 } as const;
+
+/** Distance parcourue par un lancer jusqu'à l'arrêt (formule d'Apple, Designing Fluid Interfaces) : velocity en px/s,
+ * decelerationRate ≈ 0.998 comme le défilement natif. */
+export function projectMomentum(velocity: number, decelerationRate = 0.998): number {
+  return ((velocity / 1000) * decelerationRate) / (1 - decelerationRate);
+}
+
+/** Fermer une feuille glissée vers le bas ? On regarde où le geste allait (position + élan projeté), et seulement s'il
+ * descend encore au moment du relâcher : relâcher en remontant la garde ouverte, même après l'avoir tirée loin. */
+export function shouldDismissSheet(offsetY: number, velocityY: number, threshold = 140): boolean {
+  if (velocityY < -50) return false;
+  return offsetY + projectMomentum(Math.max(0, velocityY)) > threshold;
+}

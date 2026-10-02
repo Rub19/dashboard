@@ -41929,6 +41929,67 @@ CHANGELOG_BY_LANG.en.unshift(v1_50_7_en);
 CHANGELOG_BY_LANG.es.unshift(v1_50_7_es);
 CHANGELOG_BY_LANG.de.unshift(v1_50_7_de);
 
+const v1_50_8_fr: ChangelogEntry = {
+  version: "v1.50.8",
+  date: "2026-10-02",
+  title: "Revue façon Apple : ressorts, transparence, gestes",
+  items: [
+    "Animations : les pastilles d'onglets, interrupteurs, panneaux et menus (107 ressorts) arrivent pile en place, sans dépasser ni rebondir, à la même vitesse. Le rebond reste réservé aux éléments qu'on lance du doigt.",
+    "Accessibilité : si le système demande moins de transparence ou plus de contraste, les surfaces en verre deviennent pleines et sans flou (contour net en contraste élevé).",
+    "Feuilles mobiles : la fermeture tient compte du sens et de l'élan du geste ; relâcher en remontant ne ferme plus la feuille.",
+    "Vitrine du bot : plus d'inclinaison qui suit la souris ; le dégradé du titre balaie une seule fois et l'icône finale ne flotte plus en boucle.",
+    "Accueil Discord : couleurs du thème à la place du gris et de l'indigo figés (les couleurs propres à chaque module sont conservées).",
+    "Inclinaison 3D des cartes désactivée par défaut pour les nouveaux comptes (réglage toujours disponible dans Apparence).",
+  ],
+};
+
+const v1_50_8_en: ChangelogEntry = {
+  version: "v1.50.8",
+  date: "2026-10-02",
+  title: "Apple-style review: springs, transparency, gestures",
+  items: [
+    "Animations: tab pills, switches, panels and menus (107 springs) land exactly in place, without overshoot or bounce, at the same speed. Bounce is kept for elements you fling with your finger.",
+    "Accessibility: when the system asks for reduced transparency or more contrast, glass surfaces become solid with no blur (crisp outline in high contrast).",
+    "Mobile sheets: closing takes the gesture's direction and momentum into account; releasing while moving up no longer closes the sheet.",
+    "Bot showcase: no more mouse-following tilt; the title gradient sweeps once and the final icon no longer floats in a loop.",
+    "Discord home: theme colours instead of hardcoded grey and indigo (each module's own colour is kept).",
+    "3D card tilt off by default for new accounts (setting still available in Appearance).",
+  ],
+};
+
+const v1_50_8_es: ChangelogEntry = {
+  version: "v1.50.8",
+  date: "2026-10-02",
+  title: "Revisión al estilo Apple: muelles, transparencia, gestos",
+  items: [
+    "Animaciones: las pastillas de pestañas, interruptores, paneles y menús (107 muelles) llegan justo a su sitio, sin pasarse ni rebotar, a la misma velocidad. El rebote se reserva a los elementos que se lanzan con el dedo.",
+    "Accesibilidad: si el sistema pide menos transparencia o más contraste, las superficies de cristal se vuelven sólidas y sin desenfoque (borde nítido en alto contraste).",
+    "Hojas móviles: el cierre tiene en cuenta la dirección y el impulso del gesto; soltar mientras se sube ya no cierra la hoja.",
+    "Escaparate del bot: sin inclinación que sigue al ratón; el degradado del título pasa una sola vez y el icono final ya no flota en bucle.",
+    "Inicio de Discord: colores del tema en lugar del gris y el índigo fijos (se conserva el color propio de cada módulo).",
+    "Inclinación 3D de las tarjetas desactivada por defecto en cuentas nuevas (ajuste disponible en Apariencia).",
+  ],
+};
+
+const v1_50_8_de: ChangelogEntry = {
+  version: "v1.50.8",
+  date: "2026-10-02",
+  title: "Apple-Review: Federn, Transparenz, Gesten",
+  items: [
+    "Animationen: Tab-Markierungen, Schalter, Panels und Menüs (107 Federn) landen genau an ihrem Platz, ohne Überschwingen oder Federn, bei gleicher Geschwindigkeit. Federn gibt es nur noch bei Elementen, die man mit dem Finger wirft.",
+    "Barrierefreiheit: Wenn das System weniger Transparenz oder mehr Kontrast verlangt, werden Glasflächen deckend und ohne Unschärfe (klare Kontur bei hohem Kontrast).",
+    "Mobile Sheets: Das Schließen berücksichtigt Richtung und Schwung der Geste; Loslassen in Aufwärtsbewegung schließt das Sheet nicht mehr.",
+    "Bot-Schaufenster: keine Neigung mehr, die der Maus folgt; der Titelverlauf läuft einmal durch und das letzte Icon schwebt nicht mehr in Schleife.",
+    "Discord-Start: Theme-Farben statt fest eingestelltem Grau und Indigo (die Eigenfarbe jedes Moduls bleibt).",
+    "3D-Neigung der Karten für neue Konten standardmäßig aus (Einstellung weiterhin unter Darstellung).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_50_8_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_50_8_en);
+CHANGELOG_BY_LANG.es.unshift(v1_50_8_es);
+CHANGELOG_BY_LANG.de.unshift(v1_50_8_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

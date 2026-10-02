@@ -196,7 +196,7 @@ export default function TabList({
               )}
             >
               {active && (
-                <motion.div layoutId={`${listId}-pill`} transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[var(--panel-radius)] bg-[var(--text-primary)]/[0.12]" />
+                <motion.div layoutId={`${listId}-pill`} transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[var(--panel-radius)] bg-[var(--text-primary)]/[0.12]" />
               )}
               <span className="relative z-10 flex items-center gap-2">
                 {tab.icon}

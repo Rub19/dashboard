@@ -215,7 +215,7 @@ export default function SoundscapeMixer() {
                 : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/40 hover:text-[var(--text-primary)]"
             )}
           >
-            {activeTab === tab.id && <motion.span layoutId="soundscapemixer-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
+            {activeTab === tab.id && <motion.span layoutId="soundscapemixer-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm" />}
             {tab.label}
           </button>
         ))}

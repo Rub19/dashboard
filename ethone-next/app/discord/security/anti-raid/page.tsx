@@ -1198,7 +1198,7 @@ export default function AntiRaidDashboardPage() {
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              {activeTab === "overview" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              {activeTab === "overview" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
               <span className="relative">👥 Join Raid</span>
             </button>
 
@@ -1211,7 +1211,7 @@ export default function AntiRaidDashboardPage() {
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              {activeTab === "message" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              {activeTab === "message" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
               <span className="relative">💬 Message Spam</span>
             </button>
 
@@ -1224,7 +1224,7 @@ export default function AntiRaidDashboardPage() {
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              {activeTab === "mention" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              {activeTab === "mention" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
               <span className="relative">🔔 Mention Raid</span>
             </button>
 
@@ -1237,7 +1237,7 @@ export default function AntiRaidDashboardPage() {
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              {activeTab === "bots" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              {activeTab === "bots" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
               <span className="relative">🤖 Bot Raid</span>
             </button>
 
@@ -1250,7 +1250,7 @@ export default function AntiRaidDashboardPage() {
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              {activeTab === "nuke" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              {activeTab === "nuke" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
               <span className="relative">💥 Anti-Nuke</span>
             </button>
 
@@ -1263,7 +1263,7 @@ export default function AntiRaidDashboardPage() {
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              {activeTab === "accountAge" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              {activeTab === "accountAge" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
               <span className="relative">🔐 Account Age</span>
             </button>
 
@@ -1276,7 +1276,7 @@ export default function AntiRaidDashboardPage() {
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              {activeTab === "whitelist" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              {activeTab === "whitelist" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
               <span className="relative">🛡️ Whitelist</span>
             </button>
 
@@ -1289,7 +1289,7 @@ export default function AntiRaidDashboardPage() {
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/70"
               )}
             >
-              {activeTab === "incidents" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
+              {activeTab === "incidents" && <motion.span layoutId="antiraid-tab" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 rounded-xl bg-[var(--accent-primary)] shadow-sm" />}
               <span className="relative">📜 Incidents & Dossiers ({incidents.length})</span>
             </button>
           </div>

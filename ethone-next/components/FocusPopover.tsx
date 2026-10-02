@@ -99,7 +99,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
             initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 350, damping: 28 }}
+            transition={{ type: "spring", stiffness: 350, damping: 38 }}
             style={{ transformOrigin: "bottom center" }}
             className="fixed bottom-[calc(7rem+env(safe-area-inset-bottom))] left-1/2 z-[90] w-72 -translate-x-1/2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl outline-none backdrop-blur-[var(--panel-blur)]"
             role="dialog"

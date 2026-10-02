@@ -22,7 +22,7 @@ const motionTransition = {
   spatial: {
     type: "spring" as const,
     stiffness: 400,
-    damping: 30,
+    damping: 36,
     mass: 0.8,
   },
 };

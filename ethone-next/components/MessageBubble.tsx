@@ -100,7 +100,7 @@ const BUBBLE_CONTENT_REVEAL = {
 const BUBBLE_POP = {
   type: "spring",
   stiffness: 520,
-  damping: 27,
+  damping: 33,
   mass: 0.52,
 } as const;
 

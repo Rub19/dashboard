@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.50.8 — 2026-10-02
+
+**Revue façon Apple : ressorts, transparence, gestes**
+
+- Animations : les pastilles d'onglets, interrupteurs, panneaux et menus (107 ressorts) arrivent pile en place, sans dépasser ni rebondir, à la même vitesse. Le rebond reste réservé aux éléments qu'on lance du doigt.
+- Accessibilité : si le système demande moins de transparence ou plus de contraste, les surfaces en verre deviennent pleines et sans flou (contour net en contraste élevé).
+- Feuilles mobiles : la fermeture tient compte du sens et de l'élan du geste ; relâcher en remontant ne ferme plus la feuille.
+- Vitrine du bot : plus d'inclinaison qui suit la souris ; le dégradé du titre balaie une seule fois et l'icône finale ne flotte plus en boucle.
+- Accueil Discord : couleurs du thème à la place du gris et de l'indigo figés (les couleurs propres à chaque module sont conservées).
+- Inclinaison 3D des cartes désactivée par défaut pour les nouveaux comptes (réglage toujours disponible dans Apparence).
+
 ## v1.50.7 — 2026-10-02
 
 **Nouvel écran de démarrage**

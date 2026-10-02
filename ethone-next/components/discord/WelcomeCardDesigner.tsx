@@ -75,7 +75,7 @@ function Segmented<T extends string>({ id, value, options, onChange, render }: {
             value === o.id ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
         >
-          {value === o.id && <motion.span layoutId={id} transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)]" />}
+          {value === o.id && <motion.span layoutId={id} transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)]" />}
           {render ? render(o) : o.label}
         </button>
       ))}
@@ -230,7 +230,7 @@ export default function WelcomeCardDesigner({
                   img.template === t.id ? "border-transparent" : "border-[var(--panel-border)] hover:border-[var(--input-border-hover)]"
                 )}
               >
-                {img.template === t.id && <motion.span layoutId="card-template" transition={{ type: "spring", stiffness: 420, damping: 34 }} className="absolute inset-0 -z-10 rounded-[inherit] border border-[var(--accent-primary)] bg-[var(--accent-primary)]/10" />}
+                {img.template === t.id && <motion.span layoutId="card-template" transition={{ type: "spring", stiffness: 420, damping: 41 }} className="absolute inset-0 -z-10 rounded-[inherit] border border-[var(--accent-primary)] bg-[var(--accent-primary)]/10" />}
                 <span className="block text-sm font-semibold text-[var(--text-primary)]">{t.label}</span>
                 <span className="block text-[11px] text-[var(--text-muted)]">{t.hint}</span>
               </button>

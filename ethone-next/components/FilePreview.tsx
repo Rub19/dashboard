@@ -268,7 +268,7 @@ export default function FilePreview({
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={reduce ? { duration: 0.15 } : { type: "spring", stiffness: 320, damping: 30 }}
+            transition={reduce ? { duration: 0.15 } : { type: "spring", stiffness: 320, damping: 36 }}
             className="fixed right-0 top-0 z-[var(--z-modal)] flex h-full w-full flex-col border-l border-[var(--panel-border)]/[0.15] bg-[var(--panel-bg)]/[0.95] shadow-2xl shadow-black/40 backdrop-blur-3xl sm:w-[500px]"
             role="dialog"
             aria-modal="true"

@@ -55,7 +55,7 @@ export default function ChangelogModal({
             transition={
               reduce
                 ? { duration: 0.15 }
-                : { type: "spring", duration: 0.55, bounce: 0.12 }
+                : { type: "spring", duration: 0.55, bounce: 0 }
             }
             onClick={(e) => e.stopPropagation()}
             ref={trapRef}

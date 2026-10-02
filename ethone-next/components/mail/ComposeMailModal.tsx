@@ -248,7 +248,7 @@ export default function ComposeMailModal({
           initial={{ opacity: 0, y: 40, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 40, scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 350, damping: 28 }}
+          transition={{ type: "spring", stiffness: 350, damping: 38 }}
           className={cn(
             "pointer-events-auto flex flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)] shadow-2xl transition-all duration-200",
             isFullscreen

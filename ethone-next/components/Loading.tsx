@@ -79,7 +79,7 @@ export default function Loading({ message = "Initialisation", progress }: { mess
           <motion.span
             initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.55, type: "spring", bounce: 0.25, duration: 0.45 }}
+            transition={{ delay: 0.55, type: "spring", bounce: 0, duration: 0.45 }}
             className="rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-[var(--text-muted)]"
           >
             OS

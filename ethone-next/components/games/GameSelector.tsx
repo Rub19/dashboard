@@ -39,7 +39,7 @@ export default function GameSelector({ games }: { games: GameOption[] }) {
             {game.id === selected?.id && (
               <motion.span
                 layoutId="game-tab"
-                transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                transition={{ type: "spring", stiffness: 450, damping: 43 }}
                 className="absolute -inset-px -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-sm"
               />
             )}

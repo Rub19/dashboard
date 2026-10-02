@@ -229,7 +229,7 @@ function Dock() {
             initial={{ y: 50, opacity: 0, scale: 0.94 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 50, opacity: 0, scale: 0.94 }}
-            transition={{ type: "spring", stiffness: 350, damping: 28 }}
+            transition={{ type: "spring", stiffness: 350, damping: 38 }}
             data-chrome="dock"
             className="v8-floating-dock fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] inset-x-0 z-[var(--z-dock)] hidden md:flex pointer-events-none justify-center bg-transparent p-0 m-0 border-none shadow-none outline-none"
           >

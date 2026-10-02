@@ -122,7 +122,7 @@ export default function FileNavigationSidebar({
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/40"
               )}
             >
-              {active && <motion.span layoutId="files-nav" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute -inset-px -z-10 rounded-[inherit] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 shadow-xs" />}
+              {active && <motion.span layoutId="files-nav" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute -inset-px -z-10 rounded-[inherit] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 shadow-xs" />}
               <div className="flex items-center gap-2.5 truncate">
                 <IconComp className={cn("h-4 w-4 shrink-0", active ? "text-[var(--accent-primary)]" : "opacity-70")} />
                 <span className="truncate">{sec.label}</span>
@@ -163,7 +163,7 @@ export default function FileNavigationSidebar({
                       : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]/30"
                   )}
                 >
-                  {active && <motion.span layoutId="files-cat" transition={{ type: "spring", stiffness: 450, damping: 35 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-xs" />}
+                  {active && <motion.span layoutId="files-cat" transition={{ type: "spring", stiffness: 450, damping: 43 }} className="absolute inset-0 -z-10 rounded-[inherit] bg-[var(--accent-primary)] shadow-xs" />}
                   <span>{cat.label}</span>
                 </button>
               );

@@ -198,7 +198,7 @@ export default function ModuleNavigator({
               className={cn(
                 "relative h-5 w-9 shrink-0 rounded-full outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
                 isPending ? "cursor-wait opacity-60" : "cursor-pointer",
-                isOn ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/15"
+                isOn ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/15"
               )}
             >
               <motion.span

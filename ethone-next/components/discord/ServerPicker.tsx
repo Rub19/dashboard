@@ -250,7 +250,7 @@ export default function ServerPicker({
                   onClick={onToggleManageable}
                   className={cn(
                     "relative h-6 w-11 shrink-0 cursor-pointer rounded-full outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
-                    onlyManageable ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/15"
+                    onlyManageable ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/15"
                   )}
                 >
                   <motion.span

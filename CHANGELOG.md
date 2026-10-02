@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.50.9 — 2026-10-02
+
+**Interrupteurs cohérents**
+
+- Interrupteurs (serveurs gérables, modules, anti-raid, anti-spam, escalade) : couleur d'accent du thème comme partout ailleurs, le vert reste réservé aux pastilles d'état.
+
 ## v1.50.8 — 2026-10-02
 
 **Revue façon Apple : ressorts, transparence, gestes**

@@ -41990,6 +41990,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_50_8_en);
 CHANGELOG_BY_LANG.es.unshift(v1_50_8_es);
 CHANGELOG_BY_LANG.de.unshift(v1_50_8_de);
 
+const v1_50_9_fr: ChangelogEntry = {
+  version: "v1.50.9",
+  date: "2026-10-02",
+  title: "Interrupteurs cohérents",
+  items: [
+    "Interrupteurs (serveurs gérables, modules, anti-raid, anti-spam, escalade) : couleur d'accent du thème comme partout ailleurs, le vert reste réservé aux pastilles d'état.",
+  ],
+};
+
+const v1_50_9_en: ChangelogEntry = {
+  version: "v1.50.9",
+  date: "2026-10-02",
+  title: "Consistent switches",
+  items: [
+    "Switches (manageable servers, modules, anti-raid, anti-spam, escalation): theme accent colour like everywhere else; green stays reserved for status dots.",
+  ],
+};
+
+const v1_50_9_es: ChangelogEntry = {
+  version: "v1.50.9",
+  date: "2026-10-02",
+  title: "Interruptores coherentes",
+  items: [
+    "Interruptores (servidores gestionables, módulos, anti-raid, anti-spam, escalado): color de acento del tema como en el resto; el verde queda para los puntos de estado.",
+  ],
+};
+
+const v1_50_9_de: ChangelogEntry = {
+  version: "v1.50.9",
+  date: "2026-10-02",
+  title: "Einheitliche Schalter",
+  items: [
+    "Schalter (verwaltbare Server, Module, Anti-Raid, Anti-Spam, Eskalation): Akzentfarbe des Themes wie überall; Grün bleibt den Statuspunkten vorbehalten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_50_9_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_50_9_en);
+CHANGELOG_BY_LANG.es.unshift(v1_50_9_es);
+CHANGELOG_BY_LANG.de.unshift(v1_50_9_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

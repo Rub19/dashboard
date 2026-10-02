@@ -1314,7 +1314,7 @@ export default function ModerationCenterPage() {
                     aria-label="Sanction automatique après avertissements"
                     disabled={!escalation}
                     onClick={() => escalation && saveEscalation({ enabled: !escalation.enabled })}
-                    className={`relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors disabled:opacity-40 ${escalation?.enabled ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/15"}`}
+                    className={`relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors disabled:opacity-40 ${escalation?.enabled ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/15"}`}
                   >
                     <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${escalation?.enabled ? "translate-x-5" : "translate-x-0"}`} />
                   </button>

@@ -181,7 +181,7 @@ export default function ConfigurationGroup({
                           title={m.enabled ? "Désactiver ce module" : "Activer ce module"}
                           className={cn(
                             "w-9 h-5 rounded-full transition-colors relative p-0.5 shrink-0 disabled:opacity-50",
-                            m.enabled ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/15"
+                            m.enabled ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/15"
                           )}
                         >
                           <span

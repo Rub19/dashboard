@@ -1497,7 +1497,7 @@ export default function DiscordDashboardPage() {
                                 className={cn(
                                   "relative h-6 w-11 shrink-0 rounded-full outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
                                   panelPending ? "cursor-wait opacity-60" : "cursor-pointer",
-                                  panelOn ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/15"
+                                  panelOn ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/15"
                                 )}
                               >
                                 <motion.span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow" initial={false} animate={{ x: panelOn ? 20 : 0 }} transition={{ type: "spring", stiffness: 450, damping: 43 }} />
@@ -1602,7 +1602,7 @@ export default function DiscordDashboardPage() {
                           }}
                           className={cn(
                             "relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors",
-                            guildSettings.antiRaidEnabled ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/15"
+                            guildSettings.antiRaidEnabled ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/15"
                           )}
                         >
                           <span className={cn("absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform", guildSettings.antiRaidEnabled ? "translate-x-5" : "translate-x-0")} />
@@ -1629,7 +1629,7 @@ export default function DiscordDashboardPage() {
                           }}
                           className={cn(
                             "relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors",
-                            guildSettings.antiSpamEnabled ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/15"
+                            guildSettings.antiSpamEnabled ? "bg-[var(--accent-primary)]" : "bg-[var(--text-primary)]/15"
                           )}
                         >
                           <span className={cn("absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform", guildSettings.antiSpamEnabled ? "translate-x-5" : "translate-x-0")} />

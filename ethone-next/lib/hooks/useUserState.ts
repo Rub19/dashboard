@@ -4,8 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { getUserState, setUserState, invalidateUserStateCache } from "@/lib/user-state";
 import { supabase } from "@/lib/supabase";
 
+// Valeur témoin : getUserState la renvoie quand la clé n'existe pas encore sur le serveur.
+const ABSENT = Symbol("absent");
+
 export function useUserState<T>(key: string, initial: T) {
   const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
+  // Vrai une fois la session connue : avant, la copie « invité » (souvent ancienne) était lue puis écrite sur le compte.
+  const [authReady, setAuthReady] = useState(false);
+  const initialRef = useRef(initial);
+  initialRef.current = initial;
+  const initialKey = JSON.stringify(initial);
   const [value, setValue] = useState<T>(initial);
   const [loaded, setLoaded] = useState(false);
   // Horodatage de la dernière écriture locale : les échos de nos propres écritures (et les frappes en cours) ne doivent pas être réappliqués.
@@ -17,9 +25,11 @@ export function useUserState<T>(key: string, initial: T) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setCurrentUserId(data?.session?.user?.id);
+      setAuthReady(true);
     });
     const { data: authSub } = supabase.auth.onAuthStateChange((_event, session) => {
       setCurrentUserId(session?.user?.id);
+      setAuthReady(true);
     });
     return () => {
       authSub?.subscription?.unsubscribe();
@@ -29,22 +39,43 @@ export function useUserState<T>(key: string, initial: T) {
   const storageKey = currentUserId ? `ethone:state:${currentUserId}:${key}` : `ethone:state:guest:${key}`;
 
   useEffect(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem(storageKey) : null;
-    if (saved) {
+    if (!authReady) return;
+    let cancelled = false;
+    setLoaded(false);
+    const fallback = initialRef.current;
+    const raw = typeof window !== "undefined" ? localStorage.getItem(storageKey) : null;
+    let local: T = fallback;
+    if (raw) {
       try {
-        setValue(JSON.parse(saved));
+        local = JSON.parse(raw);
       } catch {
-        setValue(saved as unknown as T);
+        local = raw as unknown as T;
       }
-    } else {
-      setValue(initial);
     }
-    getUserState<T>(key, initial).then((remote) => {
-      persisted.current = JSON.stringify(remote);
-      if (remote !== initial) setValue(remote);
+    setValue(local);
+    // Invité : tout reste local.
+    if (!currentUserId) {
+      persisted.current = null;
+      setLoaded(true);
+      return;
+    }
+    getUserState<T | typeof ABSENT>(key, ABSENT).then((remote) => {
+      if (cancelled) return;
+      if (remote === ABSENT) {
+        // Rien sur le serveur pour cette clé : la copie locale y sera envoyée une fois (si elle diffère du défaut).
+        persisted.current = JSON.stringify(fallback);
+      } else {
+        // Le serveur fait foi : la copie locale n'écrase plus jamais la valeur du compte.
+        persisted.current = JSON.stringify(remote);
+        setValue(remote as T);
+      }
       setLoaded(true);
     });
-  }, [key, initial, storageKey]);
+    return () => {
+      cancelled = true;
+    };
+    // `initial` littéral = nouvel objet à chaque rendu : on suit son contenu (initialKey), pas sa référence.
+  }, [key, initialKey, storageKey, authReady, currentUserId]);
 
   // Synchronisation temps réel : la ligne `ethone_user_state` (une par compte) change quand un autre appareil enregistre.
   useEffect(() => {
@@ -75,11 +106,11 @@ export function useUserState<T>(key: string, initial: T) {
     if (!loaded) return;
     const json = JSON.stringify(value);
     if (typeof window !== "undefined") localStorage.setItem(storageKey, json);
-    if (json === persisted.current) return;
+    if (!currentUserId || json === persisted.current) return;
     persisted.current = json;
     lastLocalWrite.current = Date.now();
     setUserState(key, value).catch(() => {});
-  }, [value, loaded, key, storageKey]);
+  }, [value, loaded, key, storageKey, currentUserId]);
 
   return [value, setValue] as const;
 }

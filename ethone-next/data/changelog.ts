@@ -42288,6 +42288,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_3_de);
 
+const v1_52_4_fr: ChangelogEntry = {
+  version: "v1.52.4",
+  date: "2026-10-02",
+  title: "Tes réglages synchronisés ne sont plus écrasés",
+  items: [
+    "Correctif : au démarrage, une ancienne copie locale de certains réglages pouvait être renvoyée sur ton compte et écraser la vraie valeur. Désormais la valeur du compte fait foi ; une copie locale n'est envoyée que si le compte n'a encore rien pour ce réglage.",
+    "Hors connexion / non connecté : les réglages restent sur l'appareil, rien n'est envoyé.",
+  ],
+};
+
+const v1_52_4_en: ChangelogEntry = {
+  version: "v1.52.4",
+  date: "2026-10-02",
+  title: "Your synced settings are no longer overwritten",
+  items: [
+    "Fix: at startup, an old local copy of some settings could be sent back to your account and overwrite the real value. The account value now wins; a local copy is only sent when the account has nothing yet for that setting.",
+    "Signed out: settings stay on the device, nothing is sent.",
+  ],
+};
+
+const v1_52_4_es: ChangelogEntry = {
+  version: "v1.52.4",
+  date: "2026-10-02",
+  title: "Tus ajustes sincronizados ya no se sobrescriben",
+  items: [
+    "Corrección: al iniciar, una copia local antigua de algunos ajustes podía reenviarse a tu cuenta y sobrescribir el valor real. Ahora manda el valor de la cuenta; una copia local solo se envía si la cuenta aún no tiene nada para ese ajuste.",
+    "Sin sesión: los ajustes se quedan en el dispositivo, no se envía nada.",
+  ],
+};
+
+const v1_52_4_de: ChangelogEntry = {
+  version: "v1.52.4",
+  date: "2026-10-02",
+  title: "Deine synchronisierten Einstellungen werden nicht mehr überschrieben",
+  items: [
+    "Fehlerbehebung: Beim Start konnte eine alte lokale Kopie mancher Einstellungen an dein Konto zurückgeschickt werden und den echten Wert überschreiben. Jetzt gilt der Wert des Kontos; eine lokale Kopie wird nur gesendet, wenn das Konto für diese Einstellung noch nichts hat.",
+    "Nicht angemeldet: Einstellungen bleiben auf dem Gerät, nichts wird gesendet.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.4 — 2026-10-02
+
+**Tes réglages synchronisés ne sont plus écrasés**
+
+- Correctif : au démarrage, une ancienne copie locale de certains réglages pouvait être renvoyée sur ton compte et écraser la vraie valeur. Désormais la valeur du compte fait foi ; une copie locale n'est envoyée que si le compte n'a encore rien pour ce réglage.
+- Hors connexion / non connecté : les réglages restent sur l'appareil, rien n'est envoyé.
+
 ## v1.52.3 — 2026-10-02
 
 **Plus de blocage au démarrage après une mise à jour**

@@ -727,7 +727,11 @@ export async function mailReceiveHandler(message, env, context) {
   });
 
   const now = new Date().toISOString();
-  const fromName = message.headers.get("from")?.replace(/<[^>]+>/, "").trim() || from;
+  // Nom décodé par postal-mime (guillemets retirés, accents « =?UTF-8?…?= » décodés) ; sinon l'en-tête brut nettoyé.
+  const fromName =
+    parsed?.from?.name ||
+    message.headers.get("from")?.replace(/<[^>]+>/, "").trim().replace(/^"(.*)"$/, "$1") ||
+    from;
   const attachments = attachmentSummaries(parsed?.attachments);
 
   const authResults = parseAuthResults(message.headers);

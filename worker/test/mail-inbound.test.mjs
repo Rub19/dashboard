@@ -5,7 +5,7 @@ import { attachmentSummaries } from "../src/routes/mail.js";
 
 // E-mail entrant tel que Cloudflare le fournit : seul le flux brut (message.raw) est disponible.
 const RAW = [
-  "From: Alice <alice@example.com>",
+  "From: \"Alice Martin\" <alice@example.com>",
   "To: support@ethone.dev",
   "Subject: Question",
   "MIME-Version: 1.0",
@@ -35,6 +35,7 @@ const RAW = [
 test("le corps d'un e-mail entrant est décodé depuis le flux brut (avant : toujours vide)", async () => {
   const stream = new Response(RAW).body;
   const parsed = await PostalMime.parse(stream);
+  assert.equal(parsed.from.name, "Alice Martin"); // sans les guillemets de l'en-tête
   assert.match(parsed.text, /une question sur ETHONE/);
   assert.match(parsed.html, /<b>ETHONE<\/b>/);
   const [att] = attachmentSummaries(parsed.attachments);

@@ -201,10 +201,21 @@ async function loadAsync(): Promise<Notification[]> {
 // Dernière liste écrite sur le serveur : pas de réécriture identique (ex. juste après le chargement).
 let lastPersistedJson: string | null = null;
 
+/** Forme comparable d'une liste : éléments triés par id, clés triées (la fusion retrie et reconstruit les objets). */
+export function notificationsFingerprint(items: Notification[]): string {
+  const sortKeys = (value: unknown): unknown =>
+    Array.isArray(value)
+      ? value.map(sortKeys)
+      : value && typeof value === "object"
+        ? Object.fromEntries(Object.keys(value as object).sort().map((k) => [k, sortKeys((value as Record<string, unknown>)[k])]))
+        : value;
+  return JSON.stringify([...items].sort((a, b) => String(a.id).localeCompare(String(b.id))).map(sortKeys));
+}
+
 async function saveAsync(items: Notification[]) {
   save(items);
   const kept = items.slice(-MAX_ITEMS);
-  const json = JSON.stringify(kept);
+  const json = notificationsFingerprint(kept);
   if (json === lastPersistedJson) return;
   lastPersistedJson = json;
   try {
@@ -427,7 +438,7 @@ export function useNotifications() {
       loadAsync().then((remote) => {
         if (remote && remote.length > 0) {
           const cleaned = remote.filter((n) => !n.demo);
-          lastPersistedJson = JSON.stringify(cleaned.slice(-MAX_ITEMS));
+          lastPersistedJson = notificationsFingerprint(cleaned.slice(-MAX_ITEMS));
           const merged = mergeLists(getGlobalItems(), cleaned);
           setGlobalItems(merged, true);
         }

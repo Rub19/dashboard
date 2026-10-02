@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.5 — 2026-10-02
+
+**Notifications : plus de réécriture à chaque chargement**
+
+- Notifications : la liste n'est plus renvoyée au serveur à chaque chargement quand rien n'a changé (la fusion la rangeait autrement, ce qui la faisait paraître différente).
+
 ## v1.52.4 — 2026-10-02
 
 **Tes réglages synchronisés ne sont plus écrasés**

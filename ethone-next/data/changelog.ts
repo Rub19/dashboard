@@ -42333,6 +42333,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_4_de);
 
+const v1_52_5_fr: ChangelogEntry = {
+  version: "v1.52.5",
+  date: "2026-10-02",
+  title: "Notifications : plus de réécriture à chaque chargement",
+  items: [
+    "Notifications : la liste n'est plus renvoyée au serveur à chaque chargement quand rien n'a changé (la fusion la rangeait autrement, ce qui la faisait paraître différente).",
+  ],
+};
+
+const v1_52_5_en: ChangelogEntry = {
+  version: "v1.52.5",
+  date: "2026-10-02",
+  title: "Notifications: no more rewrite on every load",
+  items: [
+    "Notifications: the list is no longer sent back to the server on every load when nothing changed (merging reordered it, which made it look different).",
+  ],
+};
+
+const v1_52_5_es: ChangelogEntry = {
+  version: "v1.52.5",
+  date: "2026-10-02",
+  title: "Notificaciones: ya no se reescriben en cada carga",
+  items: [
+    "Notificaciones: la lista ya no se reenvía al servidor en cada carga cuando nada ha cambiado (la fusión la reordenaba y parecía distinta).",
+  ],
+};
+
+const v1_52_5_de: ChangelogEntry = {
+  version: "v1.52.5",
+  date: "2026-10-02",
+  title: "Benachrichtigungen: kein Neuschreiben bei jedem Laden",
+  items: [
+    "Benachrichtigungen: Die Liste wird nicht mehr bei jedem Laden an den Server gesendet, wenn sich nichts geändert hat (das Zusammenführen sortierte sie um, sodass sie anders wirkte).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_5_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_5_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_5_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_5_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

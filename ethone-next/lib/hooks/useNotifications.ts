@@ -280,10 +280,16 @@ let globalMuted: Set<NotificationCategory> = new Set();
 const subscribers = new Set<(items: Notification[]) => void>();
 const mutedSubscribers = new Set<(muted: Set<NotificationCategory>) => void>();
 
+/** Anciennes notifications de mail sans identifiant serveur : recréées à chaque chargement, on les retire
+ * (le pont les rajoute une fois, avec un identifiant stable, si le mail est toujours non lu). */
+export function dropLegacyMailCopies(items: Notification[]): Notification[] {
+  return items.filter((n) => !(n.source === "ETHONE Mail" && !String(n.id).startsWith("mail-")));
+}
+
 function getGlobalItems(): Notification[] {
   if (!globalLoaded && isClient()) {
     const local = load();
-    globalItems = mergeLists([], local).filter((n) => !n.demo);
+    globalItems = dropLegacyMailCopies(mergeLists([], local).filter((n) => !n.demo));
     globalMuted = loadMuted();
     globalLoaded = true;
   }
@@ -336,6 +342,8 @@ if (isClient()) {
 }
 
 export type NotificationInput = Partial<Omit<Notification, "id">> & {
+  /** Identifiant stable (ex. « mail-<id serveur> ») : une notification déjà présente est fusionnée, pas dupliquée. */
+  id?: string;
   title: string;
   message: string;
   category: NotificationCategory;
@@ -437,7 +445,7 @@ export function useNotifications() {
       globalRemoteLoaded = true;
       loadAsync().then((remote) => {
         if (remote && remote.length > 0) {
-          const cleaned = remote.filter((n) => !n.demo);
+          const cleaned = dropLegacyMailCopies(remote.filter((n) => !n.demo));
           lastPersistedJson = notificationsFingerprint(cleaned.slice(-MAX_ITEMS));
           const merged = mergeLists(getGlobalItems(), cleaned);
           setGlobalItems(merged, true);

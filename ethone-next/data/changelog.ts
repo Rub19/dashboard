@@ -42374,6 +42374,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_5_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_5_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_5_de);
 
+const v1_52_6_fr: ChangelogEntry = {
+  version: "v1.52.6",
+  date: "2026-10-02",
+  title: "Plus de « Nouveau mail » en double",
+  items: [
+    "Notifications : un e-mail non lu ne crée plus une notification « Nouveau mail » à chaque chargement de page (une seule par e-mail) ; les doublons déjà accumulés sont retirés.",
+    "Notifications de mail : affichent maintenant le vrai titre et l'expéditeur, et l'heure de réception réelle.",
+  ],
+};
+
+const v1_52_6_en: ChangelogEntry = {
+  version: "v1.52.6",
+  date: "2026-10-02",
+  title: "No more duplicate “New mail”",
+  items: [
+    "Notifications: an unread e-mail no longer creates a “New mail” notification on every page load (one per e-mail); duplicates already piled up are removed.",
+    "Mail notifications: now show the real title and sender, and the actual received time.",
+  ],
+};
+
+const v1_52_6_es: ChangelogEntry = {
+  version: "v1.52.6",
+  date: "2026-10-02",
+  title: "Se acabó el «Nuevo correo» duplicado",
+  items: [
+    "Notificaciones: un correo sin leer ya no crea una notificación «Nuevo correo» en cada carga de página (una por correo); se eliminan los duplicados acumulados.",
+    "Notificaciones de correo: ahora muestran el título y el remitente reales, y la hora real de recepción.",
+  ],
+};
+
+const v1_52_6_de: ChangelogEntry = {
+  version: "v1.52.6",
+  date: "2026-10-02",
+  title: "Keine doppelten „Neue Mail“ mehr",
+  items: [
+    "Benachrichtigungen: Eine ungelesene E-Mail erzeugt nicht mehr bei jedem Seitenaufruf eine „Neue Mail“-Benachrichtigung (eine pro E-Mail); bereits angesammelte Duplikate werden entfernt.",
+    "Mail-Benachrichtigungen: zeigen jetzt den echten Titel und Absender sowie die tatsächliche Empfangszeit.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_6_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_6_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_6_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_6_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

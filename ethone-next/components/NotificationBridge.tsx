@@ -106,12 +106,18 @@ export default function NotificationBridge() {
         for (const item of list) {
           if (!item || typeof item !== "object") continue;
           const raw = item as Record<string, unknown>;
-          const subject = typeof raw.subject === "string" && raw.subject ? raw.subject : i18n("newMail", "Nouveau mail");
-          const from =
-            typeof raw.from === "string" ? raw.from : typeof raw.sender === "string" ? raw.sender : "";
+          const text = (v: unknown) => (typeof v === "string" && v ? v : "");
+          const subject = text(raw.title) || text(raw.subject) || i18n("newMail", "Nouveau mail");
+          const from = text(raw.body) || text(raw.from) || text(raw.sender);
           const important = raw.important === true;
+          // Identifiant et date du serveur : la même notification de mail n'est plus recréée à chaque chargement
+          // (avant : une copie de plus par visite tant que le mail restait non lu).
+          const serverId = text(raw.id) || text(raw.message_id);
+          const at = Date.parse(text(raw.created_at));
 
           add({
+            ...(serverId ? { id: `mail-${serverId}` } : {}),
+            ...(Number.isFinite(at) ? { timestamp: at, createdAt: new Date(at).toISOString() } : {}),
             title: subject,
             message: from,
             category: "mail",

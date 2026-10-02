@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.6 — 2026-10-02
+
+**Plus de « Nouveau mail » en double**
+
+- Notifications : un e-mail non lu ne crée plus une notification « Nouveau mail » à chaque chargement de page (une seule par e-mail) ; les doublons déjà accumulés sont retirés.
+- Notifications de mail : affichent maintenant le vrai titre et l'expéditeur, et l'heure de réception réelle.
+
 ## v1.52.5 — 2026-10-02
 
 **Notifications : plus de réécriture à chaque chargement**

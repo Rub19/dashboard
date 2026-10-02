@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import BrandMark from "@/components/BrandMark";
-import { ArrowRight, Check, Copy, Download, FileArchive, Keyboard, Layers, Lock, NotebookPen, Quote, ShieldCheck } from "@/components/icons/ph";
+import { ArrowRight, Download, Keyboard, Layers, Lock, NotebookPen, Quote, ShieldCheck } from "@/components/icons/ph";
+import InstallTutorial from "@/components/extension/InstallTutorial";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { pageStagger, revealUp, staggerItem } from "@/lib/motion-variants";
 
@@ -15,12 +16,6 @@ const FEATURES = [
   { icon: Quote, title: "Le passage qui compte", body: "Sélectionne du texte, clic droit : « Enregistrer dans ETHONE » ou « Ajouter comme tâche », avec la source." },
   { icon: Keyboard, title: "Note rapide, partout", body: "Tape une idée dans la popup, ou « eth » puis ton texte dans la barre d'adresse. « eth notes » ouvre directement la page." },
   { icon: Layers, title: "Ton espace à portée", body: "Accueil, notes, tâches, Brain, calendrier et bot en un clic, ou avec les touches 1 à 6 dans la popup." },
-];
-
-const STEPS = [
-  { icon: FileArchive, title: "Décompresse le zip", body: "Tu obtiens un dossier « ethone-extension »." },
-  { icon: Keyboard, title: "Ouvre les extensions", body: "Colle l'adresse ci-dessous dans Chrome, puis active le « Mode développeur » en haut à droite.", copy: "chrome://extensions" },
-  { icon: Check, title: "Charge le dossier", body: "« Charger l'extension non empaquetée » → choisis le dossier « ethone-extension ». Épingle ETHONE dans la barre." },
 ];
 
 const PRIVACY = [
@@ -36,7 +31,6 @@ function formatSize(bytes: number) {
 export default function ExtensionLanding() {
   const { reduced } = useMotionPref();
   const [meta, setMeta] = useState<{ version: string; size: number } | null>(null);
-  const [copied, setCopied] = useState(false);
   const initial = reduced ? false : "initial";
 
   useEffect(() => {
@@ -45,13 +39,6 @@ export default function ExtensionLanding() {
       .then((d) => d && typeof d.version === "string" && setMeta(d))
       .catch(() => {});
   }, []);
-
-  function copy(text: string) {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1600);
-    }).catch(() => {});
-  }
 
   return (
     <div className="h-full w-full overflow-y-auto overflow-x-clip bg-[var(--bg-main)] text-[var(--text-primary)] os-scroll">
@@ -85,6 +72,8 @@ export default function ExtensionLanding() {
               <a
                 href={ZIP}
                 download
+                // Le téléchargement part, et la page descend au tutoriel d'installation.
+                onClick={() => setTimeout(() => document.getElementById("installer")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }), 150)}
                 className="btn-sheen group relative inline-flex h-12 items-center gap-2.5 rounded-[var(--inset-radius)] bg-[var(--accent-primary)] px-5 text-sm font-semibold text-[var(--accent-contrast)] outline-none transition-[filter,transform] duration-200 hover:brightness-110 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 active:scale-[0.97]"
               >
                 <Download className="h-5 w-5 transition-transform duration-300 group-hover:translate-y-0.5" />
@@ -161,35 +150,11 @@ export default function ExtensionLanding() {
           ))}
         </motion.section>
 
-        <section className="mt-24 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-          <div className="space-y-5">
-            <h2 className="text-2xl font-semibold tracking-tight">Installer en 3 étapes</h2>
-            <motion.ol variants={pageStagger} initial={initial} whileInView="animate" viewport={{ once: true, margin: "-60px" }} className="relative space-y-3">
-              {STEPS.map(({ icon: Icon, title, body, copy: text }, i) => (
-                <motion.li key={title} variants={staggerItem} className="flex gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card)] p-4">
-                  <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[var(--panel-border)] text-[var(--accent-primary)]">
-                    <Icon className="h-4 w-4" />
-                    <span className="absolute -right-1 -top-1 grid h-4 w-4 place-items-center rounded-full bg-[var(--accent-primary)] text-[10px] font-bold text-[var(--accent-contrast)]">{i + 1}</span>
-                  </span>
-                  <div className="min-w-0 space-y-1.5">
-                    <h3 className="text-sm font-semibold">{title}</h3>
-                    <p className="text-sm text-[var(--text-muted)]">{body}</p>
-                    {text && (
-                      <button
-                        type="button"
-                        onClick={() => copy(text)}
-                        className="inline-flex h-8 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 font-mono text-xs transition-colors hover:border-[var(--accent-primary)]/40"
-                      >
-                        {text}
-                        {copied ? <Check className="h-3.5 w-3.5 text-[var(--success)]" /> : <Copy className="h-3.5 w-3.5 text-[var(--text-muted)]" />}
-                      </button>
-                    )}
-                  </div>
-                </motion.li>
-              ))}
-            </motion.ol>
-          </div>
+        <section className="mt-24">
+          <InstallTutorial zip={ZIP} size={meta ? formatSize(meta.size) : null} version={meta?.version ?? null} />
+        </section>
 
+        <section className="mt-16 max-w-2xl">
           <div className="space-y-5">
             <h2 className="text-2xl font-semibold tracking-tight">Ce que l&apos;extension ne fait pas</h2>
             <motion.ul variants={pageStagger} initial={initial} whileInView="animate" viewport={{ once: true, margin: "-60px" }} className="space-y-3">

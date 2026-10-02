@@ -41668,6 +41668,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_50_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_50_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_50_2_de);
 
+const v1_50_3_fr: ChangelogEntry = {
+  version: "v1.50.3",
+  date: "2026-10-02",
+  title: "Tutoriel d'installation de l'extension",
+  items: [
+    "Page Extension : tutoriel pas à pas pour installer l'extension en « non empaquetée » (télécharger, décompresser, mode développeur, charger le dossier, épingler), avec une illustration animée par étape.",
+    "Choix du navigateur (Chrome, Edge, Brave, Opera, détecté automatiquement) : adresse à copier et libellés exacts de chaque navigateur.",
+    "Sections « Mettre à jour » et « Si ça coince » (manifeste introuvable, avertissement du mode développeur, extension disparue…).",
+    "Le bouton Télécharger fait aussi défiler jusqu'au tutoriel.",
+    "Correctif : le zip de l'extension n'est plus servi depuis le cache, on télécharge toujours la dernière version.",
+  ],
+};
+
+const v1_50_3_en: ChangelogEntry = {
+  version: "v1.50.3",
+  date: "2026-10-02",
+  title: "Extension installation tutorial",
+  items: [
+    "Extension page: step-by-step tutorial to install the extension unpacked (download, unzip, developer mode, load the folder, pin), with an animated illustration for each step.",
+    "Browser picker (Chrome, Edge, Brave, Opera, auto-detected): address to copy and each browser's exact labels.",
+    "“Updating” and “Troubleshooting” sections (missing manifest, developer-mode warning, extension gone…).",
+    "The Download button also scrolls down to the tutorial.",
+    "Fix: the extension zip is no longer served from cache, you always get the latest version.",
+  ],
+};
+
+const v1_50_3_es: ChangelogEntry = {
+  version: "v1.50.3",
+  date: "2026-10-02",
+  title: "Tutorial de instalación de la extensión",
+  items: [
+    "Página Extensión: tutorial paso a paso para instalar la extensión sin empaquetar (descargar, descomprimir, modo desarrollador, cargar la carpeta, fijar), con una ilustración animada por paso.",
+    "Selector de navegador (Chrome, Edge, Brave, Opera, detectado automáticamente): dirección para copiar y textos exactos de cada navegador.",
+    "Secciones «Actualizar» y «Si algo falla» (manifiesto no encontrado, aviso del modo desarrollador, extensión desaparecida…).",
+    "El botón Descargar también baja hasta el tutorial.",
+    "Corrección: el zip de la extensión ya no se sirve desde la caché, siempre se descarga la última versión.",
+  ],
+};
+
+const v1_50_3_de: ChangelogEntry = {
+  version: "v1.50.3",
+  date: "2026-10-02",
+  title: "Installationsanleitung für die Erweiterung",
+  items: [
+    "Seite Erweiterung: Schritt-für-Schritt-Anleitung zur Installation als entpackte Erweiterung (herunterladen, entpacken, Entwicklermodus, Ordner laden, anheften), mit animierter Illustration pro Schritt.",
+    "Browserauswahl (Chrome, Edge, Brave, Opera, automatisch erkannt): Adresse zum Kopieren und die genauen Bezeichnungen jedes Browsers.",
+    "Abschnitte „Aktualisieren“ und „Wenn es hakt“ (fehlendes Manifest, Entwicklermodus-Warnung, verschwundene Erweiterung…).",
+    "Der Download-Button scrollt außerdem zur Anleitung.",
+    "Fehlerbehebung: Das Erweiterungs-Zip wird nicht mehr aus dem Cache geliefert, du lädst immer die neueste Version.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_50_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_50_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_50_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_50_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

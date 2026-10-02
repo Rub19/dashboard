@@ -1,4 +1,4 @@
-const CACHE_NAME = "ethone-next-v420";
+const CACHE_NAME = "ethone-next-v421";
 const PRECACHE = ["/", "/login/", "/dashboard/", "/offline.html"];
 const STATIC_EXTENSIONS = [".js", ".css", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".woff", ".woff2", ".ico"];
 
@@ -302,6 +302,8 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(fetch(event.request, { cache: "no-store" }));
     return;
   }
+  // Zip et fiche de l'extension : toujours la version publiée (le cache servait un ancien zip aux visiteurs déjà venus).
+  if (new URL(event.request.url).pathname.startsWith("/downloads/")) return;
 
   const requestUrl = new URL(event.request.url);
   if (requestUrl.protocol !== "http:" && requestUrl.protocol !== "https:") return;

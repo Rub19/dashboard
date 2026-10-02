@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.50.3 — 2026-10-02
+
+**Tutoriel d'installation de l'extension**
+
+- Page Extension : tutoriel pas à pas pour installer l'extension en « non empaquetée » (télécharger, décompresser, mode développeur, charger le dossier, épingler), avec une illustration animée par étape.
+- Choix du navigateur (Chrome, Edge, Brave, Opera, détecté automatiquement) : adresse à copier et libellés exacts de chaque navigateur.
+- Sections « Mettre à jour » et « Si ça coince » (manifeste introuvable, avertissement du mode développeur, extension disparue…).
+- Le bouton Télécharger fait aussi défiler jusqu'au tutoriel.
+- Correctif : le zip de l'extension n'est plus servi depuis le cache, on télécharge toujours la dernière version.
+
 ## v1.50.2 — 2026-10-02
 
 **Extension prête pour le Chrome Web Store**

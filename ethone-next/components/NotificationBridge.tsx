@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useDynamicIslandQueue } from "@/lib/hooks/useDynamicIslandQueue";
 import { useToast } from "@/components/ToastProvider";
@@ -84,10 +84,21 @@ export default function NotificationBridge() {
     };
   }, [register, focusDigest, info, settings.islandShowNotifications]);
 
+  // Lecture des mails non lus : une fois par utilisateur connecté. Avant, l'effet dépendait aussi de `user` (objet
+  // recréé à chaque rafraîchissement de session) et de `i18n` : il se relançait souvent et, dans l'ancienne version,
+  // recréait une notification « Nouveau mail » à chaque fois.
+  const addRef = useRef(add);
+  addRef.current = add;
+  const i18nRef = useRef(i18n);
+  i18nRef.current = i18n;
+  const userId = user?.id ?? null;
+
   useEffect(() => {
     // No signed-in user (e.g. the login page): the mail endpoint would 401.
     // Skip the request entirely rather than logging a console error.
-    if (!user) return;
+    if (!userId) return;
+    const add = addRef.current;
+    const i18n = i18nRef.current;
     let mounted = true;
 
     async function load() {
@@ -140,7 +151,7 @@ export default function NotificationBridge() {
     return () => {
       mounted = false;
     };
-  }, [user, add, i18n]);
+  }, [userId]);
 
   return null;
 }

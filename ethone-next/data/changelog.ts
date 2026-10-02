@@ -42419,6 +42419,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_6_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_6_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_6_de);
 
+const v1_52_7_fr: ChangelogEntry = {
+  version: "v1.52.7",
+  date: "2026-10-02",
+  title: "Notifications de mail lues une seule fois",
+  items: [
+    "Les mails non lus ne sont plus relus à chaque rafraîchissement de session ou changement d'affichage : une seule lecture par connexion.",
+  ],
+};
+
+const v1_52_7_en: ChangelogEntry = {
+  version: "v1.52.7",
+  date: "2026-10-02",
+  title: "Mail notifications fetched once",
+  items: [
+    "Unread mails are no longer fetched again on every session refresh or display change: one fetch per sign-in.",
+  ],
+};
+
+const v1_52_7_es: ChangelogEntry = {
+  version: "v1.52.7",
+  date: "2026-10-02",
+  title: "Notificaciones de correo leídas una sola vez",
+  items: [
+    "Los correos sin leer ya no se vuelven a consultar en cada renovación de sesión o cambio de visualización: una sola consulta por sesión.",
+  ],
+};
+
+const v1_52_7_de: ChangelogEntry = {
+  version: "v1.52.7",
+  date: "2026-10-02",
+  title: "Mail-Benachrichtigungen nur einmal abgerufen",
+  items: [
+    "Ungelesene Mails werden nicht mehr bei jeder Sitzungsaktualisierung oder Anzeigeänderung neu abgerufen: ein Abruf pro Anmeldung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_7_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_7_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_7_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_7_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

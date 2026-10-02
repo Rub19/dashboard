@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.7 — 2026-10-02
+
+**Notifications de mail lues une seule fois**
+
+- Les mails non lus ne sont plus relus à chaque rafraîchissement de session ou changement d'affichage : une seule lecture par connexion.
+
 ## v1.52.6 — 2026-10-02
 
 **Plus de « Nouveau mail » en double**

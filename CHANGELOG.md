@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.50.6 — 2026-10-02
+
+**Motion design : événements, sondages, Bouclier Owner et dernières pages**
+
+- Détail d'un événement : chargement en squelette, bannière qui se pose en douceur, contenu en cascade, jauge de places qui se remplit.
+- Statistiques d'un événement et détail d'un sondage : graphiques et barres qui se remplissent, entrée en cascade.
+- Bouclier Owner : filtres (Tous, Sanctions, Protégés, Exclus) avec pastille qui glisse ; « Protégés » redevient lisible ; couleurs du thème.
+- Navigateur, Admin, Partage, Boost, Plugin et page « fonction indisponible » : entrée en cascade, retour au clic, couleurs du thème.
+
 ## v1.50.5 — 2026-10-02
 
 **Compteur de sessions réparé**

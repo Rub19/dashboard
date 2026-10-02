@@ -95,34 +95,34 @@ export default function BoostClient(_props: BoostClientProps) {
   ];
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] p-4 pb-32 text-white sm:p-8">
-      <header className="mb-6 border-b border-[var(--panel-border)] pb-6">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] p-4 pb-32 text-[var(--text-primary)] sm:p-8">
+      <header className="rise-in mb-6 border-b border-[var(--panel-border)] pb-6">
         <h1 className="text-xl font-bold tracking-tight">Performance de l&apos;appareil</h1>
-        <p className="mt-1 max-w-2xl text-xs text-zinc-400">
+        <p className="mt-1 max-w-2xl text-xs text-[var(--text-muted)]">
           Mesures réelles fournies par votre navigateur. Une page web ne peut pas libérer la mémoire du système ni accélérer le processeur graphique : seules des mesures et un nettoyage du cache de l&apos;application sont proposés.
         </p>
       </header>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="stagger-children grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => (
           <div key={c.label} className="rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-4">
-            <p className="text-[11px] text-zinc-500">{c.label}</p>
+            <p className="text-[11px] text-[var(--text-muted)]">{c.label}</p>
             <p className="mt-1 text-xl font-semibold">{c.value}</p>
-            <p className="mt-1 text-[11px] text-zinc-500">{c.hint}</p>
+            <p className="mt-1 text-[11px] text-[var(--text-muted)]">{c.hint}</p>
           </div>
         ))}
       </div>
 
-      <section className="mt-6 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] p-5">
+      <section className="rise-in mt-6 rounded-2xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-5" style={{ animationDelay: "0.2s" }}>
         <h2 className="text-sm font-semibold">Cache de l&apos;application</h2>
-        <p className="mt-1 text-xs text-zinc-400">
+        <p className="mt-1 text-xs text-[var(--text-muted)]">
           Supprime les fichiers gardés en cache par ETHONE (service worker et caches du navigateur) puis recharge la page. Utile après une mise à jour qui ne s&apos;affiche pas.
         </p>
         <button
           type="button"
           onClick={clearCaches}
           disabled={clearing}
-          className="mt-4 cursor-pointer rounded-lg border border-white/10 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-white/5 disabled:opacity-50"
+          className="mt-4 cursor-pointer rounded-lg border border-[var(--text-primary)]/10 px-4 py-2 text-xs font-semibold text-[var(--text-primary)] transition-[color,background-color,border-color,transform] hover:bg-[var(--text-primary)]/5 disabled:opacity-50 active:scale-[0.97]"
         >
           {clearing ? "Nettoyage…" : "Vider le cache"}
         </button>

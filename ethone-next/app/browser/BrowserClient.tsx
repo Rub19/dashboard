@@ -51,15 +51,15 @@ const PRESET_PAGES: Record<
     description: "Environnement de test interactif avec inspection d'éléments et simulation sandbox.",
     category: "Simulation",
     content: (
-      <div className="space-y-6">
-        <div className="rounded-[var(--panel-radius)] border border-blue-500/20 bg-blue-500/5 p-6">
+      <div className="stagger-children space-y-6">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/5 p-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/20 text-blue-400">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">ETHONE OS Web Sandbox — Mode Démo</h2>
-              <p className="text-xs text-zinc-400">
+              <h2 className="text-base font-bold text-[var(--text-primary)]">ETHONE OS Web Sandbox — Mode Démo</h2>
+              <p className="text-xs text-[var(--text-muted)]">
                 Moteur de navigation sécurisé avec isolation mémoire et conformité CSP stricte.
               </p>
             </div>
@@ -72,17 +72,17 @@ const PRESET_PAGES: Record<
               <ShieldCheck className="h-4 w-4" />
               <span>Sandbox Isolation</span>
             </div>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[var(--text-muted)]">
               Les scripts tiers sont isolés dans un contexte web-worker sandboxé sans accès au stockage de session hôte.
             </p>
           </div>
 
           <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
-            <div className="flex items-center gap-2 text-xs font-bold text-indigo-400 mb-2">
+            <div className="flex items-center gap-2 text-xs font-bold text-[var(--accent-primary)] mb-2">
               <Zap className="h-4 w-4" />
               <span>Moteur Nitro Render</span>
             </div>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[var(--text-muted)]">
               Pipeline de composition GPU accéléré avec pré-rendu spéculatif des routes internes.
             </p>
           </div>
@@ -92,22 +92,22 @@ const PRESET_PAGES: Record<
               <Lock className="h-4 w-4" />
               <span>Strict CSP Enforced</span>
             </div>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[var(--text-muted)]">
               Blocage automatique de toute requête non chiffrée ou hors whitelist de sécurité cloud.
             </p>
           </div>
         </div>
 
-        <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-4 font-mono text-xs text-zinc-300">
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-[var(--panel-border)] text-zinc-400">
+        <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-4 font-mono text-xs text-[var(--text-primary)]/85">
+          <div className="flex items-center justify-between pb-2 mb-2 border-b border-[var(--panel-border)] text-[var(--text-muted)]">
             <span>En-têtes de Réponse HTTP Réseau</span>
             <span className="text-[10px] text-emerald-400">200 OK (Cloudflare Edge)</span>
           </div>
-          <div className="space-y-1 text-zinc-400">
-            <p><span className="text-blue-400">content-security-policy:</span> default-src &apos;self&apos;; connect-src &apos;self&apos; https: wss:;</p>
-            <p><span className="text-blue-400">x-frame-options:</span> SAMEORIGIN</p>
-            <p><span className="text-blue-400">x-content-type-options:</span> nosniff</p>
-            <p><span className="text-blue-400">strict-transport-security:</span> max-age=31536000; includeSubDomains</p>
+          <div className="space-y-1 text-[var(--text-muted)]">
+            <p><span className="text-[var(--accent-primary)]">content-security-policy:</span> default-src &apos;self&apos;; connect-src &apos;self&apos; https: wss:;</p>
+            <p><span className="text-[var(--accent-primary)]">x-frame-options:</span> SAMEORIGIN</p>
+            <p><span className="text-[var(--accent-primary)]">x-content-type-options:</span> nosniff</p>
+            <p><span className="text-[var(--accent-primary)]">strict-transport-security:</span> max-age=31536000; includeSubDomains</p>
           </div>
         </div>
       </div>
@@ -119,15 +119,15 @@ const PRESET_PAGES: Record<
     description: "Environnement de validation automatisé pour le monitoring des erreurs et routes.",
     category: "Diagnostic",
     content: (
-      <div className="space-y-6">
+      <div className="stagger-children space-y-6">
         <div className="rounded-[var(--panel-radius)] border border-emerald-500/20 bg-emerald-500/5 p-6">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400">
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Rapport Diagnostic Session test-123</h2>
-              <p className="text-xs text-zinc-400">
+              <h2 className="text-base font-bold text-[var(--text-primary)]">Rapport Diagnostic Session test-123</h2>
+              <p className="text-xs text-[var(--text-muted)]">
                 Toutes les assertions de routes statiques et d&apos;absence de fuite CSP sont validées.
               </p>
             </div>
@@ -146,8 +146,8 @@ const PRESET_PAGES: Record<
               className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 text-xs"
             >
               <div>
-                <span className="font-semibold text-white">{item.label}</span>
-                <p className="text-[11px] text-zinc-400">{item.detail}</p>
+                <span className="font-semibold text-[var(--text-primary)]">{item.label}</span>
+                <p className="text-[11px] text-[var(--text-muted)]">{item.detail}</p>
               </div>
               <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400">
                 {item.status}
@@ -164,12 +164,12 @@ const PRESET_PAGES: Record<
     description: "Index de recherche web intégré avec filtrage strict des traqueurs.",
     category: "Recherche",
     content: (
-      <div className="space-y-6 max-w-2xl mx-auto py-8 text-center">
-        <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-gradient-to-tr from-blue-500 via-red-500 to-amber-500 text-white shadow-xl mb-4">
+      <div className="stagger-children space-y-6 max-w-2xl mx-auto py-8 text-center">
+        <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-gradient-to-tr from-[var(--accent-primary)] via-red-500 to-amber-500 text-white shadow-xl mb-4">
           <Globe className="h-8 w-8" />
         </div>
-        <h2 className="text-2xl font-bold tracking-tight text-white">ETHONE Web Search</h2>
-        <p className="text-xs text-zinc-400 max-w-md mx-auto">
+        <h2 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">ETHONE Web Search</h2>
+        <p className="text-xs text-[var(--text-muted)] max-w-md mx-auto">
           Moteur de recherche unifié avec indexation temps-réel du dashboard, des bots et des modules cloud.
         </p>
 
@@ -178,24 +178,24 @@ const PRESET_PAGES: Record<
             type="text"
             readOnly
             value="ETHONE OS Discord Bot and Performance suite"
-            className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/5 py-3.5 pl-12 pr-4 text-xs text-white placeholder-zinc-500 focus:outline-none"
+            className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 py-3.5 pl-12 pr-4 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none"
           />
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
         </div>
 
         <div className="text-left space-y-3 pt-6 border-t border-[var(--panel-border)]">
           <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5 hover:border-[var(--input-border-hover)] transition-all">
-            <span className="text-[10px] text-blue-400">https://ethone.dev/boost</span>
-            <h3 className="text-xs font-bold text-white mt-0.5">Performance & Gaming Boost Hub — ETHONE OS</h3>
-            <p className="text-[11px] text-zinc-400 mt-1">
+            <span className="text-[10px] text-[var(--accent-primary)]">https://ethone.dev/boost</span>
+            <h3 className="text-xs font-bold text-[var(--text-primary)] mt-0.5">Performance & Gaming Boost Hub — ETHONE OS</h3>
+            <p className="text-[11px] text-[var(--text-muted)] mt-1">
               Optimisation système, nettoyage RAM/CPU, mode Turbo et gestion des perks Discord Boost.
             </p>
           </div>
 
           <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5 hover:border-[var(--input-border-hover)] transition-all">
             <span className="text-[10px] text-emerald-400">https://ethone.dev/discord</span>
-            <h3 className="text-xs font-bold text-white mt-0.5">Discord Bot Management Suite — ETHONE</h3>
-            <p className="text-[11px] text-zinc-400 mt-1">
+            <h3 className="text-xs font-bold text-[var(--text-primary)] mt-0.5">Discord Bot Management Suite — ETHONE</h3>
+            <p className="text-[11px] text-[var(--text-muted)] mt-1">
               Gestion des tickets, salons vocaux éphémères, logs d&apos;audit, musique et bienvenue.
             </p>
           </div>
@@ -209,15 +209,15 @@ const PRESET_PAGES: Record<
     description: "Spécifications de l&apos;architecture, variables d&apos;environnement et guides d&apos;intégration.",
     category: "Documentation",
     content: (
-      <div className="space-y-6">
-        <div className="rounded-[var(--panel-radius)] border border-purple-500/20 bg-purple-500/5 p-6">
+      <div className="stagger-children space-y-6">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/5 p-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/20 text-purple-400">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]">
               <FileText className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Documentation Développeur & Référence API</h2>
-              <p className="text-xs text-zinc-400">
+              <h2 className="text-base font-bold text-[var(--text-primary)]">Documentation Développeur & Référence API</h2>
+              <p className="text-xs text-[var(--text-muted)]">
                 Spécifications techniques du dashboard ETHONE OS et des connecteurs Discord.
               </p>
             </div>
@@ -226,30 +226,30 @@ const PRESET_PAGES: Record<
 
         <div className="space-y-4">
           <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
-            <h3 className="text-xs font-bold text-white mb-2">Variables d&apos;Environnement Clés</h3>
+            <h3 className="text-xs font-bold text-[var(--text-primary)] mb-2">Variables d&apos;Environnement Clés</h3>
             <div className="space-y-2 text-xs font-mono">
-              <div className="rounded-lg bg-black/40 p-2 text-zinc-300">
+              <div className="rounded-lg bg-black/40 p-2 text-[var(--text-primary)]/85">
                 <span className="text-orange-400">NEXT_PUBLIC_DISCORD_BOT_API</span>
-                <span className="text-zinc-500"> = </span>
+                <span className="text-[var(--text-muted)]"> = </span>
                 <span className="text-emerald-400">&quot;https://api.ethone.dev&quot;</span>
-                <p className="text-[10px] font-sans text-zinc-400 mt-1">
+                <p className="text-[10px] font-sans text-[var(--text-muted)] mt-1">
                   Point d&apos;entrée pour l&apos;API Discord Bot. Si non défini, le dashboard bascule en mode mock démo sécurisé.
                 </p>
               </div>
-              <div className="rounded-lg bg-black/40 p-2 text-zinc-300">
+              <div className="rounded-lg bg-black/40 p-2 text-[var(--text-primary)]/85">
                 <span className="text-orange-400">NEXT_PUBLIC_SITE_URL</span>
-                <span className="text-zinc-500"> = </span>
+                <span className="text-[var(--text-muted)]"> = </span>
                 <span className="text-emerald-400">&quot;https://ethone.dev&quot;</span>
               </div>
             </div>
           </div>
 
           <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
-            <h3 className="text-xs font-bold text-white mb-2">Règles de Navigation Statique & SPA</h3>
-            <p className="text-xs text-zinc-400">
-              Le projet utilise <code className="text-blue-400 bg-white/5 px-1 py-0.5 rounded">output: &quot;export&quot;</code> avec Next.js.
-              Toutes les routes paramétrées utilisent <code className="text-blue-400 bg-white/5 px-1 py-0.5 rounded">generateStaticParams()</code>
-              et le fichier <code className="text-blue-400 bg-white/5 px-1 py-0.5 rounded">public/_redirects</code> assure le fallback Cloudflare Pages.
+            <h3 className="text-xs font-bold text-[var(--text-primary)] mb-2">Règles de Navigation Statique & SPA</h3>
+            <p className="text-xs text-[var(--text-muted)]">
+              Le projet utilise <code className="text-[var(--accent-primary)] bg-[var(--text-primary)]/5 px-1 py-0.5 rounded">output: &quot;export&quot;</code> avec Next.js.
+              Toutes les routes paramétrées utilisent <code className="text-[var(--accent-primary)] bg-[var(--text-primary)]/5 px-1 py-0.5 rounded">generateStaticParams()</code>
+              et le fichier <code className="text-[var(--accent-primary)] bg-[var(--text-primary)]/5 px-1 py-0.5 rounded">public/_redirects</code> assure le fallback Cloudflare Pages.
             </p>
           </div>
         </div>
@@ -308,21 +308,21 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
   const currentPreset = PRESET_PAGES[activeTabId] || PRESET_PAGES.demo;
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white p-4 sm:p-8 pb-32">
+    <div className="stagger-children h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] p-4 sm:p-8 pb-32">
       {/* Top Banner */}
       <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-6">
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 shadow-sm">
-            <Globe className="h-6 w-6 text-white" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent-primary)] shadow-sm">
+            <Globe className="h-6 w-6 text-[var(--accent-contrast)]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-white">ETHONE Web Browser & Test Lab</h1>
-              <span className="rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-blue-400">
+              <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">ETHONE Web Browser & Test Lab</h1>
+              <span className="rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2.5 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
                 {initialId ? `Session : ${initialId}` : "Moteur Sécurisé"}
               </span>
             </div>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[var(--text-muted)]">
               Navigateur isolé pour la validation des routes, audit CSP et simulation sandbox.
             </p>
           </div>
@@ -330,12 +330,12 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
 
         {/* Viewport switcher */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 p-1">
+          <div className="flex items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/5 p-1">
             <button
               onClick={() => setViewportMode("desktop")}
               className={cn(
                 "flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
-                viewportMode === "desktop" ? "bg-white/10 text-white" : "text-zinc-400 hover:text-white"
+                viewportMode === "desktop" ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
               title="Affichage Bureau"
             >
@@ -346,7 +346,7 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
               onClick={() => setViewportMode("tablet")}
               className={cn(
                 "flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
-                viewportMode === "tablet" ? "bg-white/10 text-white" : "text-zinc-400 hover:text-white"
+                viewportMode === "tablet" ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
               title="Affichage Tablette"
             >
@@ -357,7 +357,7 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
               onClick={() => setViewportMode("mobile")}
               className={cn(
                 "flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
-                viewportMode === "mobile" ? "bg-white/10 text-white" : "text-zinc-400 hover:text-white"
+                viewportMode === "mobile" ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
               title="Affichage Mobile"
             >
@@ -386,21 +386,21 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
               className={cn(
                 "flex items-center gap-3 rounded-[var(--inset-radius)] border p-3 transition-all",
                 isSelected
-                  ? "border-blue-500/50 bg-blue-500/10 text-white shadow-sm"
-                  : "border-[var(--panel-border)] bg-white/[0.02] text-zinc-400 hover:border-[var(--input-border-hover)] hover:text-white"
+                  ? "border-[var(--accent-primary)]/50 bg-[var(--accent-primary)]/10 text-[var(--text-primary)] shadow-sm"
+                  : "border-[var(--panel-border)] bg-white/[0.02] text-[var(--text-muted)] hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)]"
               )}
             >
               <div
                 className={cn(
                   "flex h-8 w-8 items-center justify-center rounded-lg",
-                  isSelected ? "bg-blue-500/20 text-blue-400" : "bg-white/5 text-zinc-400"
+                  isSelected ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]" : "bg-[var(--text-primary)]/5 text-[var(--text-muted)]"
                 )}
               >
                 <Icon className="h-4 w-4" />
               </div>
               <div className="truncate">
-                <p className="text-xs font-bold truncate text-white">{item.title}</p>
-                <p className="text-[10px] text-zinc-500 truncate">{item.desc}</p>
+                <p className="text-xs font-bold truncate text-[var(--text-primary)]">{item.title}</p>
+                <p className="text-[10px] text-[var(--text-muted)] truncate">{item.desc}</p>
               </div>
             </Link>
           );
@@ -410,14 +410,14 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
       {/* Main Browser Window Frame */}
       <div
         className={cn(
-          "mx-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 shadow-2xl overflow-hidden transition-all duration-300",
+          "mx-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card)] shadow-2xl overflow-hidden transition-all duration-300",
           viewportMode === "desktop" && "w-full",
           viewportMode === "tablet" && "max-w-2xl",
           viewportMode === "mobile" && "max-w-sm"
         )}
       >
         {/* Browser Chrome Header (Tabs Bar) */}
-        <div className="flex items-center gap-2 border-b border-[var(--panel-border)] bg-zinc-900/80 px-4 pt-2.5 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-2 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-4 pt-2.5 overflow-x-auto no-scrollbar">
           {/* Window control dots */}
           <div className="flex items-center gap-1.5 mr-2">
             <div className="h-3 w-3 rounded-full bg-red-500/80" />
@@ -426,7 +426,7 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
           </div>
 
           {/* Tabs */}
-          <div className="flex items-center gap-1 flex-1 min-w-0">
+          <div className="stagger-children flex items-center gap-1 flex-1 min-w-0">
             {tabs.map((tab) => {
               const isActive = activeTabId === tab.id;
               return (
@@ -436,11 +436,11 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
                   className={cn(
                     "group flex items-center gap-2 rounded-t-xl px-3 py-1.5 text-xs transition-all max-w-[180px] truncate cursor-pointer",
                     isActive
-                      ? "bg-zinc-950 text-white border-t border-x border-[var(--panel-border)] font-semibold"
-                      : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200"
+                      ? "bg-[var(--bg-card)] text-[var(--text-primary)] border-t border-x border-[var(--panel-border)] font-semibold"
+                      : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)]"
                   )}
                 >
-                  <Globe className={cn("h-3 w-3 flex-shrink-0", isActive ? "text-blue-400" : "text-zinc-500")} />
+                  <Globe className={cn("h-3 w-3 flex-shrink-0", isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
                   <span className="truncate text-[11px]">{tab.title}</span>
                 </button>
               );
@@ -449,44 +449,44 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
         </div>
 
         {/* Browser Navigation Bar (URL Bar) */}
-        <div className="flex items-center gap-2 border-b border-[var(--panel-border)] bg-zinc-900/40 p-2.5">
-          <div className="flex items-center gap-1 text-zinc-400">
+        <div className="flex items-center gap-2 border-b border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5">
+          <div className="flex items-center gap-1 text-[var(--text-muted)]">
             <button
               onClick={() => handleSelectTab("demo")}
-              className="p-1.5 rounded-lg hover:bg-white/5 hover:text-white transition-all cursor-pointer"
+              className="p-1.5 rounded-lg hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)] transition-all cursor-pointer active:scale-[0.97]"
               title="Retour"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => handleSelectTab("test-123")}
-              className="p-1.5 rounded-lg hover:bg-white/5 hover:text-white transition-all cursor-pointer"
+              className="p-1.5 rounded-lg hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)] transition-all cursor-pointer active:scale-[0.97]"
               title="Suivant"
             >
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={handleRefresh}
-              className="p-1.5 rounded-lg hover:bg-white/5 hover:text-white transition-all cursor-pointer"
+              className="p-1.5 rounded-lg hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)] transition-all cursor-pointer active:scale-[0.97]"
               title="Recharger"
             >
-              <RotateCcw className={cn("h-3.5 w-3.5", refreshing && "animate-spin text-blue-400")} />
+              <RotateCcw className={cn("h-3.5 w-3.5", refreshing && "animate-spin text-[var(--accent-primary)]")} />
             </button>
           </div>
 
           {/* URL Input */}
-          <div className="flex-1 flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 py-1.5 text-xs text-zinc-300">
+          <div className="flex-1 flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--bg-card)]/80 px-3 py-1.5 text-xs text-[var(--text-primary)]/85">
             <Lock className="h-3 w-3 text-emerald-400 flex-shrink-0" />
             <span className="text-emerald-400 font-mono text-[11px]">https://</span>
             <input
               type="text"
               value={urlInput.replace(/^https?:\/\//, "")}
               onChange={(e) => setUrlInput("https://" + e.target.value.replace(/^https?:\/\//, ""))}
-              className="flex-1 bg-transparent font-mono text-[11px] text-white focus:outline-none"
+              className="flex-1 bg-transparent font-mono text-[11px] text-[var(--text-primary)] focus:outline-none"
             />
             <button
               onClick={handleCopyUrl}
-              className="text-zinc-500 hover:text-white transition-colors cursor-pointer"
+              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-[color,background-color,border-color,transform] cursor-pointer active:scale-[0.97]"
               title="Copier l'URL"
             >
               {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
@@ -495,7 +495,7 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
 
           <button
             onClick={() => window.open(urlInput, "_blank")}
-            className="p-1.5 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-all cursor-pointer"
+            className="p-1.5 rounded-lg hover:bg-[var(--text-primary)]/5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer active:scale-[0.97]"
             title="Ouvrir dans un nouvel onglet"
           >
             <ExternalLink className="h-3.5 w-3.5" />
@@ -503,28 +503,28 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
         </div>
 
         {/* Bookmarks Bar */}
-        <div className="flex items-center gap-4 border-b border-[var(--panel-border)] bg-zinc-950/40 px-4 py-1.5 text-[10px] text-zinc-400 overflow-x-auto no-scrollbar">
-          <Link href="/boost" className="flex items-center gap-1 hover:text-white transition-colors">
+        <div className="flex items-center gap-4 border-b border-[var(--panel-border)] bg-[var(--bg-card)]/40 px-4 py-1.5 text-[10px] text-[var(--text-muted)] overflow-x-auto no-scrollbar">
+          <Link href="/boost" className="flex items-center gap-1 hover:text-[var(--text-primary)] transition-[color,background-color,border-color,transform] active:scale-[0.97]">
             <Zap className="h-3 w-3 text-orange-400" />
             <span>ETHONE Boost Hub</span>
           </Link>
-          <Link href="/discord" className="flex items-center gap-1 hover:text-white transition-colors">
-            <Sparkles className="h-3 w-3 text-indigo-400" />
+          <Link href="/discord" className="flex items-center gap-1 hover:text-[var(--text-primary)] transition-[color,background-color,border-color,transform] active:scale-[0.97]">
+            <Sparkles className="h-3 w-3 text-[var(--accent-primary)]" />
             <span>Discord Center</span>
           </Link>
-          <Link href="/settings" className="flex items-center gap-1 hover:text-white transition-colors">
+          <Link href="/settings" className="flex items-center gap-1 hover:text-[var(--text-primary)] transition-[color,background-color,border-color,transform] active:scale-[0.97]">
             <Layers className="h-3 w-3 text-teal-400" />
             <span>Paramètres</span>
           </Link>
-          <span className="text-zinc-600">|</span>
-          <span className="text-zinc-500 flex items-center gap-1">
+          <span className="text-[var(--text-muted)]/70">|</span>
+          <span className="text-[var(--text-muted)] flex items-center gap-1">
             <ShieldCheck className="h-3 w-3 text-emerald-400" />
             <span>SSL Certifié (Cloudflare ECC)</span>
           </span>
         </div>
 
         {/* Viewport Content */}
-        <div className="p-6 bg-zinc-950 min-h-[460px]">
+        <div className="p-6 bg-[var(--bg-card)] min-h-[460px]">
           {currentPreset.content}
         </div>
       </div>

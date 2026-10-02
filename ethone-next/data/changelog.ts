@@ -41823,6 +41823,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_50_5_en);
 CHANGELOG_BY_LANG.es.unshift(v1_50_5_es);
 CHANGELOG_BY_LANG.de.unshift(v1_50_5_de);
 
+const v1_50_6_fr: ChangelogEntry = {
+  version: "v1.50.6",
+  date: "2026-10-02",
+  title: "Motion design : événements, sondages, Bouclier Owner et dernières pages",
+  items: [
+    "Détail d'un événement : chargement en squelette, bannière qui se pose en douceur, contenu en cascade, jauge de places qui se remplit.",
+    "Statistiques d'un événement et détail d'un sondage : graphiques et barres qui se remplissent, entrée en cascade.",
+    "Bouclier Owner : filtres (Tous, Sanctions, Protégés, Exclus) avec pastille qui glisse ; « Protégés » redevient lisible ; couleurs du thème.",
+    "Navigateur, Admin, Partage, Boost, Plugin et page « fonction indisponible » : entrée en cascade, retour au clic, couleurs du thème.",
+  ],
+};
+
+const v1_50_6_en: ChangelogEntry = {
+  version: "v1.50.6",
+  date: "2026-10-02",
+  title: "Motion design: events, polls, Owner Shield and last pages",
+  items: [
+    "Event details: skeleton loading, banner that settles in, cascading content, seat gauge that fills up.",
+    "Event statistics and poll details: charts and bars that fill up, cascading entrance.",
+    "Owner Shield: filters (All, Sanctions, Protected, Excluded) with a sliding pill; “Protected” is readable again; theme colours.",
+    "Browser, Admin, Share, Boost, Plugin and “feature unavailable” page: cascading entrance, press feedback, theme colours.",
+  ],
+};
+
+const v1_50_6_es: ChangelogEntry = {
+  version: "v1.50.6",
+  date: "2026-10-02",
+  title: "Motion design: eventos, encuestas, Escudo Owner y últimas páginas",
+  items: [
+    "Detalle de un evento: carga con esqueleto, banner que se asienta suavemente, contenido en cascada, indicador de plazas que se llena.",
+    "Estadísticas de un evento y detalle de una encuesta: gráficos y barras que se llenan, entrada en cascada.",
+    "Escudo Owner: filtros (Todos, Sanciones, Protegidos, Excluidos) con pastilla deslizante; «Protegidos» vuelve a ser legible; colores del tema.",
+    "Navegador, Admin, Compartir, Boost, Plugin y página «función no disponible»: entrada en cascada, respuesta al pulsar, colores del tema.",
+  ],
+};
+
+const v1_50_6_de: ChangelogEntry = {
+  version: "v1.50.6",
+  date: "2026-10-02",
+  title: "Motion Design: Events, Umfragen, Owner-Schild und letzte Seiten",
+  items: [
+    "Event-Details: Skelett beim Laden, Banner, das sanft einschwebt, gestaffelter Inhalt, Platzanzeige, die sich füllt.",
+    "Event-Statistiken und Umfrage-Details: Diagramme und Balken, die sich füllen, gestaffelter Einstieg.",
+    "Owner-Schild: Filter (Alle, Sanktionen, Geschützt, Ausgeschlossen) mit gleitender Markierung; „Geschützt“ ist wieder lesbar; Theme-Farben.",
+    "Browser, Admin, Teilen, Boost, Plugin und Seite „Funktion nicht verfügbar“: gestaffelter Einstieg, Klick-Feedback, Theme-Farben.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_50_6_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_50_6_en);
+CHANGELOG_BY_LANG.es.unshift(v1_50_6_es);
+CHANGELOG_BY_LANG.de.unshift(v1_50_6_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

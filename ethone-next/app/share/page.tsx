@@ -78,10 +78,10 @@ function ShareContent() {
 
   return (
     <div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto os-scroll">
-      <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg space-y-4">
+      <div className="stagger-children w-full max-w-sm sm:max-w-md lg:max-w-lg space-y-4">
         <FlatCard>
           <h1 className="mb-4 flex flex-wrap items-center gap-2 break-words text-xl font-bold">
-            <Icon name="share-2" className="h-6 w-6 text-violet-400" />
+            <Icon name="share-2" className="h-6 w-6 text-[var(--accent-primary)]" />
             {i18n("sharedFile")}
           </h1>
 
@@ -115,7 +115,7 @@ function ShareContent() {
           {data && (
             <div className="space-y-4">
               <div className="flex min-w-0 items-center gap-3">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-violet-500/10 text-violet-400">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                   <Icon name="file-text" className="h-6 w-6" />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -169,7 +169,7 @@ function ShareContent() {
               <button
                 type="button"
                 onClick={copyLink}
-                className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
+                className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)] transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.97]"
               >
                 <Icon name="copy" className="h-4 w-4" /> {i18n("copyLink")}
               </button>

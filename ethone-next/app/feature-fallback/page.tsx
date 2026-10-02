@@ -25,7 +25,7 @@ function FeatureFallbackContent() {
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
       <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("featureFallbackTitle")}</h1>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
+      <div className="stagger-children min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       <FlatCard>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
           <Icon name="alert-triangle" className="mt-1 h-5 w-5 text-[var(--warning)]" />

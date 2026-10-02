@@ -293,20 +293,31 @@ export default function EventDetailClient() {
   const startDate = new Date(event.startDate);
 
   if (loadState === "loading") {
-    return <div className="flex min-h-[50vh] items-center justify-center text-sm text-[var(--text-muted)]">Chargement de l&apos;événement…</div>;
+    return (
+      <div className="pb-8" aria-busy="true" aria-label="Chargement de l'événement">
+        <div className="skeleton-shimmer h-72 w-full sm:h-96" />
+        <div className="relative mx-auto -mt-24 max-w-6xl space-y-4 px-4 sm:px-6 lg:px-8">
+          <div className="skeleton-shimmer h-10 w-2/3 rounded-lg" />
+          <div className="grid gap-4 lg:grid-cols-3">
+            <div className="skeleton-shimmer h-64 rounded-[var(--panel-radius)] lg:col-span-2" />
+            <div className="skeleton-shimmer h-64 rounded-[var(--panel-radius)]" />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (loadState === "missing") {
     return (
       <div className="flex min-h-[50vh] items-center justify-center p-6 text-center">
-        <div className="max-w-md">
+        <div className="rise-in max-w-md">
           <h1 className="text-xl font-bold text-[var(--text-primary)]">Événement introuvable</h1>
           <p className="mt-2 text-sm text-[var(--text-muted)]">
             Cet événement n&apos;existe pas, a été supprimé, ou le bot n&apos;est pas joignable sur ce serveur.
           </p>
           <Link
             href={`/discord/events${guildParam ? `?guildId=${guildParam}` : ""}`}
-            className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
+            className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer active:scale-[0.97]"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Retour aux événements
@@ -327,7 +338,7 @@ export default function EventDetailClient() {
           <img
             src={event.imageUrl}
             alt={event.title}
-            className="w-full h-full object-cover opacity-60 filter brightness-90"
+            className="event-hero-img w-full h-full object-cover opacity-60 filter brightness-90"
           />
         ) : (
           <div className="w-full h-full bg-[var(--surface-raised)]" />
@@ -335,12 +346,12 @@ export default function EventDetailClient() {
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-main)] via-[var(--bg-main)]/60 to-transparent" />
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-36">
+      <div className="stagger-children relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-36">
         {/* Top bar back */}
         <div className="flex items-center justify-between mb-4">
           <Link
             href="/discord/events"
-            className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
+            className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer active:scale-[0.97]"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Retour à la liste
@@ -350,7 +361,7 @@ export default function EventDetailClient() {
           <div className="flex items-center gap-2">
             <Link
               href={`/discord/events/${eventId}/participants`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-surface)]/80 hover:bg-[var(--bg-surface)] border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-surface)]/80 hover:bg-[var(--bg-surface)] border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-[color,background-color,border-color,transform] active:scale-[0.97]"
             >
               <Users className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
               Participants ({event.stats.goingCount})
@@ -358,7 +369,7 @@ export default function EventDetailClient() {
 
             <Link
               href={`/discord/events/${eventId}/analytics`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-surface)]/80 hover:bg-[var(--bg-surface)] border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-surface)]/80 hover:bg-[var(--bg-surface)] border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-[color,background-color,border-color,transform] active:scale-[0.97]"
             >
               <BarChart2 className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
               Analytics
@@ -366,7 +377,7 @@ export default function EventDetailClient() {
 
             <Link
               href={`/discord/events/${eventId}/settings`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-surface)]/80 hover:bg-[var(--bg-surface)] border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-surface)]/80 hover:bg-[var(--bg-surface)] border border-[var(--panel-border)] text-xs font-semibold text-[var(--text-muted)] transition-[color,background-color,border-color,transform] active:scale-[0.97]"
             >
               <Settings className="w-3.5 h-3.5 text-[var(--text-muted)]" />
               Paramètres
@@ -491,7 +502,7 @@ export default function EventDetailClient() {
 
               <button
                 onClick={handleCopyLink}
-                className="p-2.5 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)] border border-[var(--panel-border)] transition-colors"
+                className="p-2.5 rounded-xl bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-raised)] text-[var(--text-muted)] border border-[var(--panel-border)] transition-[color,background-color,border-color,transform] active:scale-[0.97]"
                 title="Partager"
               >
                 {copied ? <Check className="w-4 h-4 text-[var(--success)]" /> : <Share2 className="w-4 h-4" />}
@@ -552,8 +563,8 @@ export default function EventDetailClient() {
               {!event.capacity.unlimited && (
                 <div className="w-full h-2 rounded-full bg-[var(--surface-raised)]/80 overflow-hidden mb-3">
                   <div
-                    className="h-full bg-[var(--accent-primary)] rounded-full transition-all duration-500"
-                    style={{ width: `${fillRate}%` }}
+                    className="bar-grow h-full bg-[var(--accent-primary)] rounded-full transition-all duration-500"
+                    style={{ width: `${fillRate}%`, animationDelay: "0.35s" }}
                   />
                 </div>
               )}

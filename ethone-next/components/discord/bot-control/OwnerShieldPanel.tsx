@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { motion } from "framer-motion";
 import {
   Shield,
   ShieldAlert,
@@ -415,7 +416,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
   const isMasterActive = config.enabled;
 
   return (
-    <div className="space-y-6">
+    <div className="stagger-children space-y-6">
       {/* BANNER PRINCIPAL & CONTRÔLES MAÎTRES */}
       <Card
         variant="default"
@@ -934,42 +935,30 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
             </div>
 
             <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[var(--surface-raised)]/60 border border-[var(--panel-border)] text-xs">
-              <button
-                onClick={() => setStatusFilter("all")}
-                className={cn(
-                  "px-2 py-1 rounded text-[11px] font-semibold transition-all cursor-pointer",
-                  statusFilter === "all" ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)] shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                )}
-              >
-                Tous ({guilds.length})
-              </button>
-              <button
-                onClick={() => setStatusFilter("sanctioned")}
-                className={cn(
-                  "px-2 py-1 rounded text-[11px] font-semibold transition-all cursor-pointer",
-                  statusFilter === "sanctioned" ? "bg-rose-900/60 text-rose-300 shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                )}
-              >
-                Sanctions
-              </button>
-              <button
-                onClick={() => setStatusFilter("protected")}
-                className={cn(
-                  "px-2 py-1 rounded text-[11px] font-semibold transition-all cursor-pointer",
-                  statusFilter === "protected" ? "bg-[var(--success)]/60 text-[var(--success)] shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                )}
-              >
-                Protégés
-              </button>
-              <button
-                onClick={() => setStatusFilter("ignored")}
-                className={cn(
-                  "px-2 py-1 rounded text-[11px] font-semibold transition-all cursor-pointer",
-                  statusFilter === "ignored" ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)]/85 shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                )}
-              >
-                Exclus
-              </button>
+              {(
+                [
+                  ["all", `Tous (${guilds.length})`, "bg-[var(--text-primary)]/10", "text-[var(--text-primary)]"],
+                  ["sanctioned", "Sanctions", "bg-[var(--danger)]/15", "text-[var(--danger)]"],
+                  ["protected", "Protégés", "bg-[var(--success)]/15", "text-[var(--success)]"],
+                  ["ignored", "Exclus", "bg-[var(--text-primary)]/10", "text-[var(--text-primary)]"],
+                ] as const
+              ).map(([id, label, pill, text]) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setStatusFilter(id)}
+                  aria-pressed={statusFilter === id}
+                  className={cn(
+                    "relative isolate px-2 py-1 rounded text-[11px] font-semibold transition-[color,transform] duration-150 cursor-pointer active:scale-[0.97]",
+                    statusFilter === id ? text : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  )}
+                >
+                  {statusFilter === id && (
+                    <motion.span layoutId="shield-status-filter" transition={{ type: "spring", bounce: 0, duration: 0.35 }} className={cn("absolute inset-0 -z-10 rounded-[inherit] shadow-sm", pill)} />
+                  )}
+                  {label}
+                </button>
+              ))}
             </div>
           </div>
         </div>

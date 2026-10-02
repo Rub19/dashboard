@@ -127,12 +127,12 @@ export default function EventAnalyticsClient() {
 
   return (
     <div className="pb-8 text-[var(--text-primary)]">
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div className="stagger-children relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Navigation */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)] mb-8">
           <div>
             <div className="flex items-center gap-2 mb-1.5 text-xs text-[var(--text-muted)] font-semibold uppercase tracking-wider">
-              <Link href={`/discord/events/${eventId}`} className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer">
+              <Link href={`/discord/events/${eventId}`} className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer active:scale-[0.97]">
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Retour à l'événement
               </Link>
@@ -150,7 +150,7 @@ export default function EventAnalyticsClient() {
             type="button"
             onClick={loadAnalytics}
             disabled={loading}
-            className="flex items-center gap-1.5 self-start rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-50"
+            className="flex items-center gap-1.5 self-start rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 disabled:opacity-50 transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.97]"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
             Actualiser
@@ -216,7 +216,7 @@ export default function EventAnalyticsClient() {
             {stats.registrationTimeline.length === 0 ? (
               <p className="text-xs text-[var(--text-muted)] py-12 text-center">Pas encore assez d'inscriptions pour afficher une tendance.</p>
             ) : (
-              <div className="h-48 flex items-end justify-between gap-4 pt-6 px-2">
+              <div className="stagger-children h-48 flex items-end justify-between gap-4 pt-6 px-2">
                 {stats.registrationTimeline.map((item, i) => {
                   const heightPercent = Math.round((item.count / timelineMax) * 100);
                   return (
@@ -224,8 +224,8 @@ export default function EventAnalyticsClient() {
                       <span className="text-xs font-bold text-[var(--text-primary)]">{item.count}</span>
                       <div className="w-full bg-[var(--surface-raised)]/50 rounded-t-lg h-36 flex items-end p-1">
                         <div
-                          className="w-full bg-[var(--accent-primary)]/80 rounded-t-md transition-all duration-500"
-                          style={{ height: `${heightPercent}%` }}
+                          className="bar-grow-y w-full bg-[var(--accent-primary)]/80 rounded-t-md transition-all duration-500"
+                          style={{ height: `${heightPercent}%`, animationDelay: `${0.2 + Math.min(i, 20) * 0.03}s` }}
                         />
                       </div>
                       <span className="text-xs text-[var(--text-muted)] font-medium">{item.day}</span>
@@ -254,7 +254,7 @@ export default function EventAnalyticsClient() {
                     <span className="text-[var(--text-primary)] font-bold">{stats.goingCount}</span>
                   </div>
                   <div className="w-full h-2 rounded-full bg-[var(--surface-raised)]/50 overflow-hidden">
-                    <div className="h-full bg-[var(--accent-primary)] rounded-full" style={{ width: `${pct(stats.goingCount)}%` }} />
+                    <div className="bar-grow h-full bg-[var(--accent-primary)] rounded-full" style={{ width: `${pct(stats.goingCount)}%` }} />
                   </div>
                 </div>
 
@@ -267,7 +267,7 @@ export default function EventAnalyticsClient() {
                     <span className="text-[var(--text-primary)] font-bold">{stats.maybeCount}</span>
                   </div>
                   <div className="w-full h-2 rounded-full bg-[var(--surface-raised)]/50 overflow-hidden">
-                    <div className="h-full bg-amber-500 rounded-full" style={{ width: `${pct(stats.maybeCount)}%` }} />
+                    <div className="bar-grow h-full bg-[var(--warning)] rounded-full" style={{ width: `${pct(stats.maybeCount)}%`, animationDelay: "0.3s" }} />
                   </div>
                 </div>
 
@@ -280,7 +280,7 @@ export default function EventAnalyticsClient() {
                     <span className="text-[var(--text-primary)] font-bold">{stats.waitlistCount}</span>
                   </div>
                   <div className="w-full h-2 rounded-full bg-[var(--surface-raised)]/50 overflow-hidden">
-                    <div className="h-full bg-[var(--accent-primary)] rounded-full" style={{ width: `${pct(stats.waitlistCount)}%` }} />
+                    <div className="bar-grow h-full bg-[var(--accent-primary)] rounded-full" style={{ width: `${pct(stats.waitlistCount)}%`, animationDelay: "0.4s" }} />
                   </div>
                 </div>
               </div>

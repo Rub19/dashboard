@@ -1709,6 +1709,17 @@ select[data-haptic-state="released"],
   .discord-route > * > *, .hub-module-panel > :first-child, .hub-module-panel > * + * > *, .rise-in { animation: none; }
 }
 
+/* Barres de progression / graphiques qui se remplissent jusqu'à leur valeur (délai via animation-delay en ligne). */
+@keyframes bar-grow-x { from { transform: scaleX(0); } }
+@keyframes bar-grow-y { from { transform: scaleY(0); } }
+.bar-grow { transform-origin: left center; animation: bar-grow-x 0.8s var(--ease-snap) 0.2s backwards; }
+.bar-grow-y { transform-origin: center bottom; animation: bar-grow-y 0.7s var(--ease-snap) 0.2s backwards; }
+/* Image de bannière qui se pose (léger zoom arrière + fondu). */
+@keyframes hero-settle { from { opacity: 0; transform: scale(1.08); } }
+.event-hero-img { animation: hero-settle 0.9s var(--ease-snap) backwards; }
+@media (prefers-reduced-motion: reduce) { .bar-grow, .bar-grow-y, .event-hero-img { animation: none; } }
+[data-reduced-motion="true"] .bar-grow, [data-reduced-motion="true"] .bar-grow-y, [data-reduced-motion="true"] .event-hero-img { animation: none !important; }
+
 /* Keep autofilled auth fields in the theme instead of the browser's tint. */
 .auth-input:-webkit-autofill,
 .auth-input:-webkit-autofill:hover,

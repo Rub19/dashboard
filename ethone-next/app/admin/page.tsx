@@ -200,7 +200,7 @@ export default function AdminPage() {
 
   if (!isAdmin) {
     return (
-      <div className="flex h-full min-h-0 flex-col items-center justify-center gap-4 p-6 text-center">
+      <div className="rise-in flex h-full min-h-0 flex-col items-center justify-center gap-4 p-6 text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]">
           <Lock className="h-7 w-7 text-[var(--muted)]" />
         </div>
@@ -212,7 +212,7 @@ export default function AdminPage() {
 
   return (
     <div className="h-full min-h-0 overflow-y-auto p-4 sm:p-6">
-      <div className="mx-auto max-w-6xl space-y-5">
+      <div className="stagger-children mx-auto max-w-6xl space-y-5">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="flex items-center gap-2 text-xl font-bold text-[var(--foreground)]">
@@ -227,7 +227,7 @@ export default function AdminPage() {
             type="button"
             onClick={load}
             disabled={loading}
-            className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--foreground)] transition-colors hover:bg-[var(--text-primary)]/[0.06] disabled:opacity-50"
+            className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--foreground)] transition-[color,background-color,border-color,transform] hover:bg-[var(--text-primary)]/[0.06] disabled:opacity-50 active:scale-[0.97]"
             aria-label={i18n("refresh", "Actualiser")}
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
@@ -244,10 +244,10 @@ export default function AdminPage() {
         )}
 
         {loading && !stats && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="stagger-children grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className={cn(adminCardClass, "h-28")}>
-                <div className="h-full animate-pulse rounded-xl bg-[var(--panel-bg)]" />
+                <div className="skeleton-shimmer h-full rounded-xl" />
               </div>
             ))}
           </div>
@@ -260,7 +260,7 @@ export default function AdminPage() {
                 label={i18n("users", "Utilisateurs")}
                 value={stats.users}
                 icon={<Users className="h-5 w-5" />}
-                tone="text-purple-400"
+                tone="text-[var(--accent-primary)]"
               />
               <StatCard
                 label={i18n("items", "Contenus")}
@@ -369,7 +369,7 @@ export default function AdminPage() {
                   type="button"
                   onClick={handleGameOverrideClear}
                   disabled={gameOverrideLoading}
-                  className="flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2.5 text-xs font-medium text-rose-400 transition-colors hover:bg-rose-500/10 disabled:opacity-50"
+                  className="flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2.5 text-xs font-medium text-rose-400 transition-[color,background-color,border-color,transform] hover:bg-rose-500/10 disabled:opacity-50 active:scale-[0.97]"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   {i18n("gameOverrideClear", "Retirer")}
@@ -388,7 +388,7 @@ export default function AdminPage() {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={gameOverrideLoading}
-              className="flex h-10 w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--text-primary)]/[0.06] disabled:opacity-50"
+              className="flex h-10 w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] text-sm font-medium text-[var(--foreground)] transition-[color,background-color,border-color,transform] hover:bg-[var(--text-primary)]/[0.06] disabled:opacity-50 active:scale-[0.97]"
             >
               <Upload className={cn("h-4 w-4", gameOverrideLoading && "animate-pulse")} />
               {gameOverrideLoading

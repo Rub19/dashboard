@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.50.1 — 2026-10-02
+
+**Un seul designer de carte /rank**
+
+- Niveaux : l'ancien onglet « Rank Card Designer » (aperçu local jamais enregistré) est retiré ; le bouton mène au vrai designer dans Paramètres → Personnalisation.
+- Réglages du bot (interrupteurs, champs, sections) : couleurs du thème au lieu du blanc et du bleu Discord figés, lisibles aussi en thème clair.
+
 ## v1.50.0 — 2026-10-02
 
 **Cartes du bot personnalisables partout**

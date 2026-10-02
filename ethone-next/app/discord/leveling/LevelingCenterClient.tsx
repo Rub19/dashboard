@@ -18,7 +18,6 @@ import {
   Lock,
   X,
   Edit2,
-  Eye,
   ArrowLeft,
   Bot,
 } from "@/components/icons/ph";
@@ -153,7 +152,7 @@ export default function LevelingCenterClient() {
   const isRealGuild = Boolean(BOT_API_URL) && Boolean(currentGuildId);
 
   const [activeTab, setActiveTab] = useState<
-    "settings" | "leaderboard" | "card_designer" | "rewards" | "boosts" | "blacklist"
+    "settings" | "leaderboard" | "rewards" | "boosts" | "blacklist"
   >("settings");
 
   const [isDemo, setIsDemo] = useState(true);
@@ -375,8 +374,6 @@ export default function LevelingCenterClient() {
   // embed (see discord-bot/src/modules/leveling/commands/rank.ts), there is
   // no server-side rank card image renderer to save this design to, so no
   // "saved" claim is made here.
-  const [cardAccentColor, setCardAccentColor] = useState("#D946EF");
-  const [cardBgTheme, setCardBgTheme] = useState<"dark" | "cyber" | "sunset" | "neon">("cyber");
 
   return (
     <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)]">
@@ -422,7 +419,11 @@ export default function LevelingCenterClient() {
               />
             )}
             <button
-              onClick={() => setActiveTab("card_designer")}
+              onClick={() => {
+                // Le vrai designer (enregistré côté bot, aperçu généré par le bot) est dans Paramètres → Personnalisation.
+                setActiveTab("settings");
+                window.setTimeout(() => document.getElementById("rank-card")?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
+              }}
               className="px-3.5 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 transition-colors cursor-pointer"
             >
               <Palette className="w-4 h-4 text-[var(--accent-primary)]" />
@@ -496,7 +497,6 @@ export default function LevelingCenterClient() {
           {[
             { id: "settings", label: "Paramètres", icon: Zap },
             { id: "leaderboard", label: "Classement & Leaderboard", icon: Trophy },
-            { id: "card_designer", label: "Rank Card Designer", icon: Palette },
             { id: "rewards", label: "Rôles Récompenses", icon: Award },
             { id: "boosts", label: "Boosts & Réglages XP", icon: Zap },
             { id: "blacklist", label: "Salons & Rôles Exclus", icon: Lock },
@@ -622,110 +622,6 @@ export default function LevelingCenterClient() {
                   ))}
                 </div>
               )}
-            </div>
-          </div>
-        )}
-
-        {/* TAB 2: Rank Card Designer (local preview only, not persisted) */}
-        {activeTab === "card_designer" && (
-          <div className="stagger-children grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-6 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-6 space-y-5">
-              <div className="flex items-center gap-2">
-                <Palette className="w-5 h-5 text-[var(--accent-primary)]" />
-                <h3 className="text-base font-bold text-[var(--text-primary)]">Aperçu visuel de carte de rang</h3>
-              </div>
-              <p className="text-xs text-amber-400/90 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3">
-                Aperçu local uniquement — la commande /rank répond avec un embed Discord standard,
-                il n'existe pas (encore) de rendu d'image de carte personnalisée côté bot à sauvegarder.
-              </p>
-
-              <div className="space-y-4 text-xs">
-                <div>
-                  <label className="block font-semibold text-[var(--text-muted)] mb-1.5">Thème d'Arrière-Plan</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {[
-                      { id: "cyber", label: "Cyberpunk", bg: " bg-[var(--surface-raised)]/40" },
-                      { id: "dark", label: "Onyx Minimal", bg: "bg-[var(--surface-raised)]/40" },
-                      { id: "sunset", label: "Sunset Glow", bg: " bg-[var(--surface-raised)]/40" },
-                      { id: "neon", label: "Neon Emerald", bg: " bg-[var(--surface-raised)]/40" },
-                    ].map((th) => (
-                      <button
-                        key={th.id}
-                        type="button"
-                        onClick={() => setCardBgTheme(th.id as any)}
-                        className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
-                          cardBgTheme === th.id
-                            ? "border-[var(--accent-primary)]/30 shadow-sm bg-[var(--surface-raised)]/40"
-                            : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                        }`}
-                      >
-                        <div className={`h-4 w-full rounded mb-1.5 ${th.bg}`} />
-                        <span className="font-semibold text-xs">{th.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-[var(--text-muted)] mb-1.5">Couleur d'Accent</label>
-                  <div className="flex items-center gap-2">
-                    {["#D946EF", "#6366F1", "#06B6D4", "#10B981", "#F59E0B", "#EF4444"].map((col) => (
-                      <button
-                        key={col}
-                        type="button"
-                        onClick={() => setCardAccentColor(col)}
-                        style={{ backgroundColor: col }}
-                        className={`w-8 h-8 rounded-full transition-transform cursor-pointer ${
-                          cardAccentColor === col ? "ring-2 ring-[var(--panel-border)] scale-110" : "opacity-80 hover:opacity-100"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="lg:col-span-6 space-y-3">
-              <span className="text-xs font-bold text-[var(--text-muted)] flex items-center gap-1.5">
-                <Eye className="w-4 h-4 text-[var(--accent-primary)]" />
-                Rendu indicatif (concept, pas le vrai /rank)
-              </span>
-
-              <div
-                className={`w-full rounded-2xl p-6 border border-[var(--panel-border)] relative overflow-hidden font-sans ${
-                  cardBgTheme === "cyber"
-                    ? " bg-[var(--surface-raised)]/40"
-                    : cardBgTheme === "sunset"
-                    ? " bg-[var(--surface-raised)]/40"
-                    : cardBgTheme === "neon"
-                    ? " bg-[var(--surface-raised)]/40"
-                    : "bg-[var(--surface-raised)]/40"
-                }`}
-              >
-                <div className="relative z-10 space-y-5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="text-lg font-extrabold text-[var(--text-primary)]">
-                        {overview.topUser?.username || "Membre"}
-                      </h4>
-                    </div>
-                    <div className="text-right">
-                      <span
-                        className="text-2xl font-black font-mono"
-                        style={{ color: cardAccentColor }}
-                      >
-                        Lvl {overview.topUser?.level ?? 0}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="h-3 w-full bg-[var(--surface-raised)]/40 rounded-full overflow-hidden border border-[var(--panel-border)] p-0.5">
-                    <div
-                      className="h-full rounded-full transition-all duration-300"
-                      style={{ width: "60%", backgroundColor: cardAccentColor, boxShadow: `0 0 12px ${cardAccentColor}` }}
-                    />
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         )}

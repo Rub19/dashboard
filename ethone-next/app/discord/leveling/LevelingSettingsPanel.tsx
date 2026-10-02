@@ -289,7 +289,7 @@ export default function LevelingSettingsPanel({ guildId, config: rawConfig, savi
         </div>
       </Section>
 
-      <Section title="Personnalisation" text="Couleurs des annonces et apparence de la carte /rank (aussi réglable sur Discord avec /xp carte).">
+      <Section id="rank-card" title="Personnalisation" text="Couleurs des annonces et apparence de la carte /rank (aussi réglable sur Discord avec /xp carte).">
         <ColorField label="Couleur du système de niveaux" value={draft.accentColor} fallback="#f59e0b" onChange={(v) => set({ accentColor: v })} />
         <ColorField label="Fond de la carte /rank" value={draft.rankCard.backgroundColor} fallback={RANK_CARD_DEFAULTS.backgroundColor} onChange={(v) => setCard({ backgroundColor: v })} />
         <ColorField label="Texte de la carte" value={draft.rankCard.textColor} fallback={RANK_CARD_DEFAULTS.textColor} onChange={(v) => setCard({ textColor: v })} />

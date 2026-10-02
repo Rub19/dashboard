@@ -41578,6 +41578,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_50_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_50_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_50_0_de);
 
+const v1_50_1_fr: ChangelogEntry = {
+  version: "v1.50.1",
+  date: "2026-10-02",
+  title: "Un seul designer de carte /rank",
+  items: [
+    "Niveaux : l'ancien onglet « Rank Card Designer » (aperçu local jamais enregistré) est retiré ; le bouton mène au vrai designer dans Paramètres → Personnalisation.",
+    "Réglages du bot (interrupteurs, champs, sections) : couleurs du thème au lieu du blanc et du bleu Discord figés, lisibles aussi en thème clair.",
+  ],
+};
+
+const v1_50_1_en: ChangelogEntry = {
+  version: "v1.50.1",
+  date: "2026-10-02",
+  title: "A single /rank card designer",
+  items: [
+    "Levels: the old “Rank Card Designer” tab (local preview, never saved) is removed; its button now opens the real designer in Settings → Customization.",
+    "Bot settings (switches, fields, sections): theme colours instead of hardcoded white and Discord blue, readable in light themes too.",
+  ],
+};
+
+const v1_50_1_es: ChangelogEntry = {
+  version: "v1.50.1",
+  date: "2026-10-02",
+  title: "Un único diseñador de tarjeta /rank",
+  items: [
+    "Niveles: se elimina la antigua pestaña «Rank Card Designer» (vista previa local, nunca guardada); su botón lleva al diseñador real en Parámetros → Personalización.",
+    "Ajustes del bot (interruptores, campos, secciones): colores del tema en lugar del blanco y el azul de Discord fijos, legibles también en temas claros.",
+  ],
+};
+
+const v1_50_1_de: ChangelogEntry = {
+  version: "v1.50.1",
+  date: "2026-10-02",
+  title: "Ein einziger /rank-Karten-Designer",
+  items: [
+    "Level: Der alte Tab „Rank Card Designer“ (lokale Vorschau, nie gespeichert) wurde entfernt; sein Button öffnet den echten Designer unter Einstellungen → Anpassung.",
+    "Bot-Einstellungen (Schalter, Felder, Abschnitte): Theme-Farben statt fest eingestelltem Weiß und Discord-Blau, auch in hellen Themes lesbar.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_50_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_50_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_50_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_50_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

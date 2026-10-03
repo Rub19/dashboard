@@ -134,7 +134,7 @@ export default function DailyReportModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
           transition={{ type: "spring", stiffness: 400, damping: 40 }}
-          className="relative w-full max-w-lg overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0d1017]/95 p-5 sm:p-6 shadow-2xl backdrop-blur-2xl"
+          className="relative w-full max-w-lg overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/95 p-5 sm:p-6 shadow-2xl backdrop-blur-2xl"
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-4">

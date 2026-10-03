@@ -97,10 +97,10 @@ export default function FileAddModal({
       title={i18n("add", "Ajouter un élément")}
       size="md"
       hideFooter
-      className="!bg-[#0e0e13] border border-[var(--panel-border)] shadow-2xl"
+      className="!bg-[var(--bg-surface)] border border-[var(--panel-border)] shadow-2xl"
       contentClassName="p-0"
     >
-      <div className="p-5 bg-[#0e0e13]">
+      <div className="p-5 bg-[var(--bg-surface)]">
         {/* Modern Tab Selector Grid */}
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {actions.map((a) => (

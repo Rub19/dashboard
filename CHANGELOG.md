@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.13 — 2026-10-03
+
+**Thème clair : panneaux restés sombres**
+
+- Le panneau de détail d'une connexion, le guide de configuration, l'historique des versions, l'ajout de fichier, le choix du modèle IA, le dock mobile et le rapport quotidien du tracker suivent maintenant le thème (ils restaient noirs en thème clair).
+
 ## v1.52.12 — 2026-10-03
 
 **Chargements soignés, bot arrêté proprement**

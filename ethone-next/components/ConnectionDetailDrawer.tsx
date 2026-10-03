@@ -283,10 +283,10 @@ export default function ConnectionDetailDrawer({
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 320, damping: 36 }}
             onClick={(e) => e.stopPropagation()}
-            className="fixed right-0 top-0 bottom-0 h-full w-full max-w-xl border-l border-[var(--panel-border)] bg-[#090d14] shadow-2xl backdrop-blur-2xl flex flex-col z-[100000] overflow-hidden"
+            className="fixed right-0 top-0 bottom-0 h-full w-full max-w-xl border-l border-[var(--panel-border)] bg-[var(--bg-surface)] shadow-2xl backdrop-blur-2xl flex flex-col z-[100000] overflow-hidden"
           >
             {/* Header: Safe top padding to clear topbar */}
-            <div className="flex shrink-0 items-center justify-between border-b border-[var(--panel-border)] px-6 py-5 bg-black/60 pt-[calc(1.25rem+env(safe-area-inset-top))]">
+            <div className="flex shrink-0 items-center justify-between border-b border-[var(--panel-border)] px-6 py-5 bg-[var(--bg-main)]/60 pt-[calc(1.25rem+env(safe-area-inset-top))]">
               <div className="flex items-center gap-3.5 min-w-0">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface-raised)] border border-[var(--panel-border)] shadow-md">
                   <ServiceIcon id={integration.id} icon={integration.icon} className="h-6 w-6" colored />
@@ -728,7 +728,7 @@ export default function ConnectionDetailDrawer({
             </div>
 
             {/* Bottom Actions Bar: Fully visible above dock with safe bottom spacing */}
-            <div className="border-t border-[var(--panel-border)] px-6 py-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] bg-[#070a10]/95 backdrop-blur-xl flex items-center justify-between gap-3 shrink-0 shadow-2xl">
+            <div className="border-t border-[var(--panel-border)] px-6 py-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] bg-[var(--bg-surface)]/95 backdrop-blur-xl flex items-center justify-between gap-3 shrink-0 shadow-2xl">
               <button
                 type="button"
                 onClick={onTest}

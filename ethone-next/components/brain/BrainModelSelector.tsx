@@ -149,7 +149,7 @@ export default function BrainModelSelector({
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-full mb-2 left-0 z-50 w-80 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d12] p-1.5 shadow-2xl backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-150 select-none">
+        <div className="absolute bottom-full mb-2 left-0 z-50 w-80 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-1.5 shadow-2xl backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-150 select-none">
           <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--panel-border)]/50">
             <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
               Modèles IA 100% Gratuits
@@ -179,7 +179,7 @@ export default function BrainModelSelector({
                   )}
                 >
                   <div className="flex items-center justify-between gap-1">
-                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-white transition-colors">
+                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
                       {model.name}
                     </span>
                     {model.badge && (

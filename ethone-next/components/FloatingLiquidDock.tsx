@@ -186,7 +186,7 @@ export default function FloatingLiquidDock() {
         data-chrome="dock"
         aria-label="Navigation principale mobile"
         className={cn(
-          "fixed bottom-3 left-1/2 z-[var(--z-dock)] flex h-[62px] w-[94%] max-w-[420px] -translate-x-1/2 flex-row items-center justify-around rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[#0a0c12]/90 px-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.06)] backdrop-blur-2xl md:hidden transition-all duration-200 select-none pb-[env(safe-area-inset-bottom)]",
+          "fixed bottom-3 left-1/2 z-[var(--z-dock)] flex h-[62px] w-[94%] max-w-[420px] -translate-x-1/2 flex-row items-center justify-around rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--bg-surface)]/90 px-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.06)] backdrop-blur-2xl md:hidden transition-all duration-200 select-none pb-[env(safe-area-inset-bottom)]",
           isMenuOpen
             ? "opacity-0 pointer-events-none translate-y-8"
             : "opacity-100 translate-y-0"
@@ -280,7 +280,7 @@ export default function FloatingLiquidDock() {
               dragConstraints={{ top: 0, bottom: 0 }}
               dragElastic={{ top: 0.05, bottom: 0.6 }}
               onDragEnd={handleSheetDragEnd}
-              className="fixed bottom-0 inset-x-0 z-[101] flex max-h-[88dvh] flex-col rounded-t-[28px] border-t border-[var(--panel-border)] bg-[#0b0d14] shadow-2xl md:hidden overflow-hidden pb-[calc(env(safe-area-inset-bottom)+1rem)]"
+              className="fixed bottom-0 inset-x-0 z-[101] flex max-h-[88dvh] flex-col rounded-t-[28px] border-t border-[var(--panel-border)] bg-[var(--bg-surface)] shadow-2xl md:hidden overflow-hidden pb-[calc(env(safe-area-inset-bottom)+1rem)]"
               role="dialog"
               aria-modal="true"
               aria-label="Menu des applications ETHONE"
@@ -318,7 +318,7 @@ export default function FloatingLiquidDock() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Rechercher une application, un outil..."
-                    className="w-full rounded-[var(--inset-radius)] border border-zinc-800 bg-black/60 pl-9 pr-4 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-[var(--accent-primary)] focus:outline-none"
+                    className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--input-bg)] pl-9 pr-4 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
                   />
                   {searchQuery && (
                     <button

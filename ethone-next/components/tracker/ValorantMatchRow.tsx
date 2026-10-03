@@ -79,7 +79,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
           ? { duration: 0 }
           : { duration: 0.2, delay: Math.min(index * 0.03, 0.3), ease: EASE_OUT }
       }
-      className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--input-border-hover)] hover:bg-[#0f141e]/95 shadow-sm"
+      className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--input-border-hover)] hover:bg-[var(--bg-surface)] shadow-sm"
     >
       {/* Main Row (Matching Screenshot 4 Pixel-Perfect) */}
       <div
@@ -246,7 +246,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="border-t border-[var(--panel-border)] bg-[#080b11]/95 p-4 sm:p-5 overflow-hidden space-y-5"
+            className="border-t border-[var(--panel-border)] bg-[var(--bg-main)]/60 p-4 sm:p-5 overflow-hidden space-y-5"
           >
             {/* Header: Map & Teams Rounds & Mode Details */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--panel-border)] pb-4">

@@ -42685,6 +42685,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_12_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_12_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_12_de);
 
+const v1_52_13_fr: ChangelogEntry = {
+  version: "v1.52.13",
+  date: "2026-10-03",
+  title: "Thème clair : panneaux restés sombres",
+  items: [
+    "Le panneau de détail d'une connexion, le guide de configuration, l'historique des versions, l'ajout de fichier, le choix du modèle IA, le dock mobile et le rapport quotidien du tracker suivent maintenant le thème (ils restaient noirs en thème clair).",
+  ],
+};
+
+const v1_52_13_en: ChangelogEntry = {
+  version: "v1.52.13",
+  date: "2026-10-03",
+  title: "Light theme: panels that stayed dark",
+  items: [
+    "The connection detail panel, setup guide, changelog, file upload, AI model picker, mobile dock and tracker daily report now follow the theme (they stayed black in light theme).",
+  ],
+};
+
+const v1_52_13_es: ChangelogEntry = {
+  version: "v1.52.13",
+  date: "2026-10-03",
+  title: "Tema claro: paneles que seguían oscuros",
+  items: [
+    "El panel de detalle de una conexión, la guía de configuración, el historial de versiones, la subida de archivos, el selector de modelo IA, el dock móvil y el informe diario del tracker ahora siguen el tema (seguían negros en tema claro).",
+  ],
+};
+
+const v1_52_13_de: ChangelogEntry = {
+  version: "v1.52.13",
+  date: "2026-10-03",
+  title: "Helles Design: dunkel gebliebene Bereiche",
+  items: [
+    "Verbindungsdetails, Einrichtungsanleitung, Änderungsprotokoll, Datei-Upload, KI-Modellauswahl, mobiles Dock und der Tagesbericht des Trackers folgen jetzt dem Design (sie blieben im hellen Design schwarz).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_13_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_13_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_13_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_13_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

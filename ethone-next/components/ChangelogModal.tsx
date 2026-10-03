@@ -59,7 +59,7 @@ export default function ChangelogModal({
             }
             onClick={(e) => e.stopPropagation()}
             ref={trapRef}
-            className="relative flex w-full max-w-2xl sm:max-w-3xl max-h-[80vh] flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0C0C0E]/95 shadow-2xl shadow-black/80 backdrop-blur-2xl"
+            className="relative flex w-full max-w-2xl sm:max-w-3xl max-h-[80vh] flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/95 shadow-2xl shadow-black/80 backdrop-blur-2xl"
             role="dialog"
             aria-modal="true"
             aria-labelledby="changelog-modal-title"

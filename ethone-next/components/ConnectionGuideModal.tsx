@@ -223,7 +223,7 @@ export default function ConnectionGuideModal({
               exit={{ scale: 0.95, opacity: 0, y: 16 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-xl max-h-[85vh] flex flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#090d14] shadow-2xl backdrop-blur-2xl z-[1000000]"
+              className="relative w-full max-w-xl max-h-[85vh] flex flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] shadow-2xl backdrop-blur-2xl z-[1000000]"
             >
               {/* Header */}
               <div className="flex shrink-0 items-center justify-between border-b border-[var(--panel-border)] p-4 sm:p-5 bg-black/40">

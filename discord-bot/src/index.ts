@@ -49,6 +49,26 @@ registerEvents(client);
 // Démarrage du serveur web Dashboard
 startWebServer(client);
 
+// ==========================================
+// Arrêt propre (redémarrage PM2, mise en ligne)
+// ==========================================
+// Les tampons XP / stats / analytics vident leurs données (écritures synchrones) sur ce même signal ; mais écouter
+// SIGINT empêche Node de s'arrêter seul : sans cette fonction, PM2 finissait par tuer le bot (SIGKILL) sans fermer
+// la connexion Discord.
+let shuttingDown = false;
+function shutdown(signal: NodeJS.Signals): void {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  logger.info(`Arrêt demandé (${signal}) : sauvegarde des données puis déconnexion de Discord.`);
+  setTimeout(() => process.exit(0), 3000).unref(); // filet de sécurité
+  void client
+    .destroy()
+    .catch(() => undefined)
+    .finally(() => process.exit(0)); // déclenche aussi les sauvegardes 'exit'
+}
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+
 // Démarrage et connexion Discord
 logger.info('Connexion à Discord en cours...');
 client.login(config.token).catch((err) => {

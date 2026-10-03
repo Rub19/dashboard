@@ -10,7 +10,13 @@ export function AiProviderPanel() {
   const { status, quota, loading, error } = useAiStatus();
 
   if (loading) {
-    return <p className="text-sm text-[var(--text-muted)]">Chargement des providers IA...</p>;
+    return (
+      <div role="status" aria-busy="true" aria-label="Chargement des fournisseurs IA…" className="skeleton-delay space-y-2">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="skeleton-shimmer h-12 rounded-[var(--inset-radius)]" />
+        ))}
+      </div>
+    );
   }
 
   if (error) {

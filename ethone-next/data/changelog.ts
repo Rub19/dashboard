@@ -42636,6 +42636,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_11_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_11_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_11_de);
 
+const v1_52_12_fr: ChangelogEntry = {
+  version: "v1.52.12",
+  date: "2026-10-03",
+  title: "Chargements soignés, bot arrêté proprement",
+  items: [
+    "Messagerie : un aperçu de la page (dossiers, liste, lecture) remplace la roue plein écran pendant le chargement.",
+    "Fournisseurs IA, Partage, Dépôt et Bouclier Owner : squelettes de chargement au lieu d'un texte ou d'une roue.",
+    "Bot : à chaque redémarrage, il sauvegarde ses données (XP, statistiques) puis se déconnecte proprement de Discord, au lieu d'être coupé de force.",
+  ],
+};
+
+const v1_52_12_en: ChangelogEntry = {
+  version: "v1.52.12",
+  date: "2026-10-03",
+  title: "Polished loading, clean bot shutdown",
+  items: [
+    "Mail: a preview of the page (folders, list, reader) replaces the full-screen spinner while loading.",
+    "AI providers, Share, Drop and Owner Shield: loading skeletons instead of text or a spinner.",
+    "Bot: on every restart it saves its data (XP, statistics) then disconnects cleanly from Discord, instead of being force-killed.",
+  ],
+};
+
+const v1_52_12_es: ChangelogEntry = {
+  version: "v1.52.12",
+  date: "2026-10-03",
+  title: "Cargas cuidadas, bot que se apaga limpiamente",
+  items: [
+    "Correo: una vista previa de la página (carpetas, lista, lectura) sustituye a la rueda a pantalla completa durante la carga.",
+    "Proveedores de IA, Compartir, Depósito y Escudo Owner: esqueletos de carga en lugar de un texto o una rueda.",
+    "Bot: en cada reinicio guarda sus datos (XP, estadísticas) y luego se desconecta limpiamente de Discord, en lugar de cortarse a la fuerza.",
+  ],
+};
+
+const v1_52_12_de: ChangelogEntry = {
+  version: "v1.52.12",
+  date: "2026-10-03",
+  title: "Saubere Ladezustände, sauberer Bot-Stopp",
+  items: [
+    "Mail: Eine Vorschau der Seite (Ordner, Liste, Lesebereich) ersetzt beim Laden den Vollbild-Spinner.",
+    "KI-Anbieter, Teilen, Ablage und Owner-Schild: Lade-Skelette statt Text oder Spinner.",
+    "Bot: Bei jedem Neustart speichert er seine Daten (XP, Statistiken) und trennt sich dann sauber von Discord, statt zwangsweise beendet zu werden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_12_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_12_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_12_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_12_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

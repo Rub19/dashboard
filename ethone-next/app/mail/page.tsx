@@ -494,8 +494,20 @@ export default function MailPage() {
 
   if (aliasesLoading) {
     return (
-      <div className="flex h-full min-h-0 w-full items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--panel-border)] border-t-[var(--accent-primary)]" />
+      <div role="status" aria-busy="true" aria-label="Chargement de la messagerie…" className="skeleton-delay flex h-full min-h-0 w-full gap-3 p-3">
+        <div className="hidden w-56 shrink-0 flex-col gap-2 md:flex">
+          <div className="skeleton-shimmer h-10 rounded-[var(--inset-radius)]" />
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div key={i} className="skeleton-shimmer h-8 rounded-[var(--inset-radius)]" />
+          ))}
+        </div>
+        <div className="flex w-full flex-col gap-2 lg:w-96 lg:shrink-0">
+          <div className="skeleton-shimmer h-10 rounded-[var(--inset-radius)]" />
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="skeleton-shimmer h-16 rounded-[var(--inset-radius)]" style={{ opacity: 1 - i * 0.12 }} />
+          ))}
+        </div>
+        <div className="skeleton-shimmer hidden flex-1 rounded-[var(--panel-radius)] lg:block" />
       </div>
     );
   }

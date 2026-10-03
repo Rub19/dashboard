@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.12 — 2026-10-03
+
+**Chargements soignés, bot arrêté proprement**
+
+- Messagerie : un aperçu de la page (dossiers, liste, lecture) remplace la roue plein écran pendant le chargement.
+- Fournisseurs IA, Partage, Dépôt et Bouclier Owner : squelettes de chargement au lieu d'un texte ou d'une roue.
+- Bot : à chaque redémarrage, il sauvegarde ses données (XP, statistiques) puis se déconnecte proprement de Discord, au lieu d'être coupé de force.
+
 ## v1.52.11 — 2026-10-03
 
 **Plus aucune écriture inutile au démarrage**

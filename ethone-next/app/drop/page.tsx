@@ -130,7 +130,12 @@ function DropContent() {
             </div>
           )}
 
-          {loading && <p className="break-words text-sm text-[var(--muted)]">{i18n("loading")}</p>}
+          {loading && (
+            <div role="status" aria-busy="true" aria-label={i18n("loading")} className="skeleton-delay space-y-2">
+              <div className="skeleton-shimmer h-4 w-2/3 rounded" />
+              <div className="skeleton-shimmer h-4 w-1/2 rounded" />
+            </div>
+          )}
           {error && <p className="break-words text-sm text-red-400">{error}</p>}
           {success && <p className="break-words text-sm text-[var(--accent-primary)]">{success}</p>}
 

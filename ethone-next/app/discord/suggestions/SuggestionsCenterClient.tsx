@@ -16,7 +16,6 @@ import {
   Send,
   MessageSquare,
   Crown,
-  Hash,
   RefreshCw,
   Kanban,
   Trash2,

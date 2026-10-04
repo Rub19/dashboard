@@ -169,7 +169,7 @@ export default function IntegrationsSettings() {
       });
     }
     return list;
-  }, [filter, search, configuredMap]);
+  }, [filter, search, configuredMap, health]);
 
   const testOne = useCallback(
     async (id: string) => {

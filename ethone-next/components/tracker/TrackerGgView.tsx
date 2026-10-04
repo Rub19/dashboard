@@ -176,7 +176,7 @@ export default function TrackerGgView() {
         setSyncing(false);
       }
     },
-    [gameId, platform, identifier, cacheKey]
+    [gameId, platform, identifier, cacheKey, game.label]
   );
 
   useEffect(() => {

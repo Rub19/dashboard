@@ -42783,6 +42783,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_14_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_14_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_14_de);
 
+const v1_52_15_fr: ChangelogEntry = {
+  version: "v1.52.15",
+  date: "2026-10-04",
+  title: "Nettoyage du code et corrections",
+  items: [
+    "Réglages › À propos : la dernière version disponible s'actualise correctement.",
+    "Intégrations : le filtre « Erreurs » suit l'état réel des services.",
+    "Musique : la recherche tient compte des serveurs où le bot est réellement installé.",
+    "94 fichiers de code mort retirés (dashboard, bot et worker), sans changement visible.",
+  ],
+};
+
+const v1_52_15_en: ChangelogEntry = {
+  version: "v1.52.15",
+  date: "2026-10-04",
+  title: "Code cleanup and fixes",
+  items: [
+    "Settings › About: the latest available version now refreshes correctly.",
+    "Integrations: the \"Errors\" filter follows the real service status.",
+    "Music: search accounts for the servers where the bot is actually installed.",
+    "94 dead code files removed (dashboard, bot and worker), with no visible change.",
+  ],
+};
+
+const v1_52_15_es: ChangelogEntry = {
+  version: "v1.52.15",
+  date: "2026-10-04",
+  title: "Limpieza de código y correcciones",
+  items: [
+    "Ajustes › Acerca de: la última versión disponible se actualiza correctamente.",
+    "Integraciones: el filtro «Errores» sigue el estado real de los servicios.",
+    "Música: la búsqueda tiene en cuenta los servidores donde el bot está instalado.",
+    "94 archivos de código muerto eliminados (dashboard, bot y worker), sin cambios visibles.",
+  ],
+};
+
+const v1_52_15_de: ChangelogEntry = {
+  version: "v1.52.15",
+  date: "2026-10-04",
+  title: "Code-Bereinigung und Korrekturen",
+  items: [
+    "Einstellungen › Info: die neueste verfügbare Version wird korrekt aktualisiert.",
+    "Integrationen: der Filter „Fehler“ folgt dem echten Dienststatus.",
+    "Musik: die Suche berücksichtigt die Server, auf denen der Bot installiert ist.",
+    "94 Dateien mit totem Code entfernt (Dashboard, Bot und Worker), ohne sichtbare Änderung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_15_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_15_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_15_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_15_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

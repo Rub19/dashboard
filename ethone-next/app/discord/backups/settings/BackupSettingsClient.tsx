@@ -4,7 +4,7 @@ import { confirmDialog } from "@/lib/confirmDialog";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, Settings, Clock, Archive, Shield, Lock, Unlock, Save, Zap, Hash, RefreshCw } from "@/components/icons/ph";
+import { ArrowLeft, Settings, Clock, Archive, Shield, Lock, Unlock, Save, Zap, RefreshCw } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn, formatApiError } from "@/lib/utils";

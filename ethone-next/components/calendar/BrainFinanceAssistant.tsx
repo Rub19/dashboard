@@ -7,7 +7,6 @@ import { BILL_BRANDS, detectBrandMeta } from "@/lib/bills-brands";
 import { Icon } from "@/lib/icons";
 import { addBill, type Bill, toISODate } from "@/lib/bills-manager";
 import { useToast } from "@/components/ToastProvider";
-import { cn } from "@/lib/utils";
 import { formatApiError } from "@/lib/format-error";
 
 import { CalendarDate, getLocalTimeZone } from "@internationalized/date";

@@ -6,7 +6,6 @@ import { cloneElement, memo, useMemo, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   CheckCircle2,
-  Settings,
   PanelLeftClose,
   Loader2,
   EyeOff,

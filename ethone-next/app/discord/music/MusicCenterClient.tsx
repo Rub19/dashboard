@@ -388,7 +388,7 @@ export default function MusicCenterClient() {
         if (searchAbort.current === ctrl) setIsSearching(false);
       }
     },
-    [guildId, isReady]
+    [guildId, isReady, botGuildIds]
   );
 
   useEffect(() => {

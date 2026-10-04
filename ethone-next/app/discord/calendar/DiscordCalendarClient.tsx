@@ -17,7 +17,6 @@ import {
   Volume2,
   RefreshCw,
   ArrowLeft,
-  Bot,
 } from "@/components/icons/ph";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";

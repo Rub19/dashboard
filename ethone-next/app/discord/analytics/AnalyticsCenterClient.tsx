@@ -20,7 +20,6 @@ import {
   ShieldCheck,
   X,
   Loader2,
-  WifiOff,
   User as UserIcon,
   Bot,
   AlertTriangle,

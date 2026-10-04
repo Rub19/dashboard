@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchWorker } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import { ChevronDown, Clock, Coins, Info, Percent, RefreshCw, Search, SearchX, ShoppingBag, Sparkles } from "@/components/icons/ph";
+import { ChevronDown, Clock, Coins, Info, Percent, RefreshCw, SearchX, ShoppingBag, Sparkles } from "@/components/icons/ph";
 import Badge from "@/components/ui/Badge";
 import Input from "@/components/ui/Input";
 import AnimatedFilterTabs, { type AnimatedFilterTab } from "@/components/ui/AnimatedFilterTabs";

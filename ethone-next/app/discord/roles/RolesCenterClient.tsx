@@ -12,7 +12,6 @@ import {
   Plus,
   Trash2,
   Send,
-  Hash,
   Tag,
   RefreshCw,
   Copy,
@@ -20,7 +19,6 @@ import {
   Edit3,
   ArrowLeft,
   Bot,
-  AlertTriangle,
   X,
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";

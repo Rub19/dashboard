@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.15 — 2026-10-04
+
+**Nettoyage du code et corrections**
+
+- Réglages › À propos : la dernière version disponible s'actualise correctement.
+- Intégrations : le filtre « Erreurs » suit l'état réel des services.
+- Musique : la recherche tient compte des serveurs où le bot est réellement installé.
+- 94 fichiers de code mort retirés (dashboard, bot et worker), sans changement visible.
+
 ## v1.52.14 — 2026-10-04
 
 **Motion design : dernières pages Discord**

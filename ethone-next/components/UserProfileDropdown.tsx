@@ -96,7 +96,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = changelog[0]?.version || "v1.55.13";
+  const VERSION_LABEL = changelog[0]?.version || "v1.55.14";
 
   const isOwner = Boolean(email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
   // Raccourcis affichés selon la plateforme (⌘ sur Mac, Ctrl ailleurs).

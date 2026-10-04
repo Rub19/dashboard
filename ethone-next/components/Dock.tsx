@@ -246,9 +246,12 @@ function Dock() {
 
   function handleOpenNotifications() {
     hapticLightImpact();
+    setLauncherOpen(false);
+    setControlCenterOpen(false);
+    setFocusOpen(false);
+    setWeatherOpen(false);
     if (typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent("v8:open-notifications"));
-      window.dispatchEvent(new CustomEvent("ethone:open-notifications"));
     }
   }
 

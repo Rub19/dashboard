@@ -372,7 +372,7 @@ function TopBar() {
         <div className="flex items-center gap-1.5">
           <FocusLivePill mobile />
           <CommandBarTrigger />
-          <NotificationCenter />
+          <NotificationCenter mobile />
           <UserProfileDropdown dataTestId="user-profile-trigger-mobile" />
         </div>
       </div>

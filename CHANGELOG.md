@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.14 — 2026-10-05
+
+**Correction du doublon de notifications lors de l'ouverture via le dock**
+
+- Suppression du panneau de notification mobile parasite à gauche sur grand écran
+- Fermeture automatique des autres menus volants du dock lors de l'ouverture des notifications
+
 ## v1.55.13 — 2026-10-05
 
 **Optimisation et fluidification des animations UI & flyouts du Dock**

@@ -33,7 +33,7 @@ const FILTERS = [
   { id: "system", key: "tbFSystem", label: "Système" },
 ] as const;
 
-export default function NotificationCenter() {
+export default function NotificationCenter({ mobile = false }: { mobile?: boolean } = {}) {
   const router = useRouter();
   const i18n = useI18n();
   const { success } = useToast();
@@ -55,10 +55,18 @@ export default function NotificationCenter() {
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    function isTargetScreen() {
+      if (typeof window === "undefined") return false;
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+      return mobile ? isMobile : !isMobile;
+    }
+
     function handleToggleOpen() {
+      if (!isTargetScreen()) return;
       setOpen((v) => !v);
     }
     function handleForceOpen() {
+      if (!isTargetScreen()) return;
       setOpen(true);
     }
     function handleMarkAll() {
@@ -73,7 +81,20 @@ export default function NotificationCenter() {
       window.removeEventListener("ethone:open-notifications", handleForceOpen);
       window.removeEventListener("v8:mark-all-notifications-read", handleMarkAll);
     };
-  }, []);
+  }, [mobile, i18n, markAllRead, success]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const media = window.matchMedia("(max-width: 767px)");
+    function check() {
+      const isMobile = media.matches;
+      if (mobile ? !isMobile : isMobile) {
+        setOpen(false);
+      }
+    }
+    media.addEventListener?.("change", check);
+    return () => media.removeEventListener?.("change", check);
+  }, [mobile]);
 
   useEffect(() => {
     if (open && searchRef.current) {

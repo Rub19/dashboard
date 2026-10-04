@@ -44041,6 +44041,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_13_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_13_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_13_de);
 
+const v1_55_14_fr: ChangelogEntry = {
+  version: "v1.55.14",
+  date: "2026-10-05",
+  title: "Correction du doublon de notifications lors de l'ouverture via le dock",
+  items: [
+    "Suppression du panneau de notification mobile parasite à gauche sur grand écran",
+    "Fermeture automatique des autres menus volants du dock lors de l'ouverture des notifications",
+  ],
+};
+
+const v1_55_14_en: ChangelogEntry = {
+  version: "v1.55.14",
+  date: "2026-10-05",
+  title: "Fix duplicate notification panel opening from dock",
+  items: [
+    "Remove phantom mobile notification panel on the left on desktop displays",
+    "Automatically close other dock flyouts when opening notifications",
+  ],
+};
+
+const v1_55_14_es: ChangelogEntry = {
+  version: "v1.55.14",
+  date: "2026-10-05",
+  title: "Corrección del panel de notificaciones duplicado desde el dock",
+  items: [
+    "Eliminación del panel móvil duplicado a la izquierda en pantallas grandes",
+    "Cierre automático de los otros paneles del dock al abrir notificaciones",
+  ],
+};
+
+const v1_55_14_de: ChangelogEntry = {
+  version: "v1.55.14",
+  date: "2026-10-05",
+  title: "Korrektur doppelter Benachrichtigungszentrale über das Dock",
+  items: [
+    "Entfernung des überflüssigen mobilen Benachrichtigungsfensters auf Desktop-Bildschirmen",
+    "Automatisches Schließen anderer Dock-Flyouts beim Öffnen von Benachrichtigungen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_14_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_14_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_14_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_14_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

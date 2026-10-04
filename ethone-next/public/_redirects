@@ -40,7 +40,6 @@
 /discord/events/:id/settings/ /discord/events/demo/settings/ 200
 /discord/events/:eventId /discord/events/demo/ 200
 /discord/events/:eventId/ /discord/events/demo/ 200
-/settings/* /settings/general/ 200
 /discord/backups/:backupId /discord/backups/backup-1/ 200
 /discord/backups/:backupId/ /discord/backups/backup-1/ 200
 /discord/server/members/:userId /discord/server/members/1234567890/ 200

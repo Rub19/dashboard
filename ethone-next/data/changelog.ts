@@ -43461,6 +43461,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_1_de);
 
+const v1_55_2_fr: ChangelogEntry = {
+  version: "v1.55.2",
+  date: "2026-10-04",
+  title: "Réglages : liens directs vers chaque section",
+  items: [
+    "Les adresses de section des Réglages (Thèmes, Apparence, Sécurité…) ouvrent enfin la bonne section au lieu de Général, y compris depuis la palette de commandes et le clic droit des thèmes.",
+  ],
+};
+
+const v1_55_2_en: ChangelogEntry = {
+  version: "v1.55.2",
+  date: "2026-10-04",
+  title: "Settings: direct links to each section",
+  items: [
+    "Settings section addresses (Themes, Appearance, Security…) now open the right section instead of General, including from the command palette and the theme right-click.",
+  ],
+};
+
+const v1_55_2_es: ChangelogEntry = {
+  version: "v1.55.2",
+  date: "2026-10-04",
+  title: "Ajustes: enlaces directos a cada sección",
+  items: [
+    "Las direcciones de sección de Ajustes (Temas, Apariencia, Seguridad…) abren por fin la sección correcta en lugar de General, también desde la paleta de comandos y el clic derecho de los temas.",
+  ],
+};
+
+const v1_55_2_de: ChangelogEntry = {
+  version: "v1.55.2",
+  date: "2026-10-04",
+  title: "Einstellungen: Direktlinks zu jedem Bereich",
+  items: [
+    "Bereichsadressen der Einstellungen (Designs, Darstellung, Sicherheit…) öffnen jetzt den richtigen Bereich statt Allgemein, auch aus der Befehlspalette und dem Rechtsklick der Designs.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

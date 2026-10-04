@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.2 — 2026-10-04
+
+**Réglages : liens directs vers chaque section**
+
+- Les adresses de section des Réglages (Thèmes, Apparence, Sécurité…) ouvrent enfin la bonne section au lieu de Général, y compris depuis la palette de commandes et le clic droit des thèmes.
+
 ## v1.55.1 — 2026-10-04
 
 **Thèmes : clic droit et thèmes personnalisés**

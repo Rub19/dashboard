@@ -9,7 +9,7 @@ export type ThemeIntent = { action: "font" | "duplicate" | "new"; themeId?: stri
 
 export const THEME_INTENT_KEY = "ethone:theme-intent";
 export const THEME_INTENT_EVENT = "ethone:theme-intent";
-export const THEME_STUDIO_PATH = "/settings/themes";
+export const THEME_STUDIO_PATH = "/settings/themes/";
 
 export function sendThemeIntent(intent: ThemeIntent): void {
   try {

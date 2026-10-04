@@ -89,7 +89,9 @@ async function buildNetflix() {
   const src = path.join(ROOT, "assets/avatar-sources/netflix");
   const seen = new Set();
   const items = [];
-  for (const f of fs.readdirSync(src).sort()) {
+  // Ordre de NETFLIX_KEEP (séries phares d'abord), puis numéro de l'icône.
+  const rank = (f) => Object.keys(NETFLIX_KEEP).indexOf(f.replace(/-\d+\.\w+$/, ""));
+  for (const f of fs.readdirSync(src).sort((a, b) => rank(a) - rank(b) || a.localeCompare(b))) {
     const m = f.match(/^(.*)-(\d+)\.(png|jpg|webp)$/);
     if (!m || !NETFLIX_KEEP[m[1]]) continue;
     const buf = fs.readFileSync(path.join(src, f));

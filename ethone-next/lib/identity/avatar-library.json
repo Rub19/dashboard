@@ -86,976 +86,100 @@
    "source": "Icônes de profil Netflix",
    "items": [
     {
-     "id": "netflix-3below-tales-of-arcadia-01",
-     "name": "3Below 1",
-     "series": "3Below",
-     "url": "/avatars/library/netflix/3below-tales-of-arcadia-01.webp"
+     "id": "netflix-the-classics-01",
+     "name": "Netflix Classics 1",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-01.webp"
     },
     {
-     "id": "netflix-3below-tales-of-arcadia-02",
-     "name": "3Below 2",
-     "series": "3Below",
-     "url": "/avatars/library/netflix/3below-tales-of-arcadia-02.webp"
+     "id": "netflix-the-classics-02",
+     "name": "Netflix Classics 2",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-02.webp"
     },
     {
-     "id": "netflix-3below-tales-of-arcadia-03",
-     "name": "3Below 3",
-     "series": "3Below",
-     "url": "/avatars/library/netflix/3below-tales-of-arcadia-03.webp"
+     "id": "netflix-the-classics-03",
+     "name": "Netflix Classics 3",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-03.webp"
     },
     {
-     "id": "netflix-3below-tales-of-arcadia-04",
-     "name": "3Below 4",
-     "series": "3Below",
-     "url": "/avatars/library/netflix/3below-tales-of-arcadia-04.webp"
+     "id": "netflix-the-classics-04",
+     "name": "Netflix Classics 4",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-04.webp"
     },
     {
-     "id": "netflix-3below-tales-of-arcadia-05",
-     "name": "3Below 5",
-     "series": "3Below",
-     "url": "/avatars/library/netflix/3below-tales-of-arcadia-05.webp"
+     "id": "netflix-the-classics-05",
+     "name": "Netflix Classics 5",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-05.webp"
     },
     {
-     "id": "netflix-3below-tales-of-arcadia-06",
-     "name": "3Below 6",
-     "series": "3Below",
-     "url": "/avatars/library/netflix/3below-tales-of-arcadia-06.webp"
+     "id": "netflix-the-classics-06",
+     "name": "Netflix Classics 6",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-06.webp"
     },
     {
-     "id": "netflix-3below-tales-of-arcadia-07",
-     "name": "3Below 7",
-     "series": "3Below",
-     "url": "/avatars/library/netflix/3below-tales-of-arcadia-07.webp"
+     "id": "netflix-the-classics-07",
+     "name": "Netflix Classics 7",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-07.webp"
     },
     {
-     "id": "netflix-3below-tales-of-arcadia-08",
-     "name": "3Below 8",
-     "series": "3Below",
-     "url": "/avatars/library/netflix/3below-tales-of-arcadia-08.webp"
+     "id": "netflix-the-classics-08",
+     "name": "Netflix Classics 8",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-08.webp"
     },
     {
-     "id": "netflix-3below-tales-of-arcadia-09",
-     "name": "3Below 9",
-     "series": "3Below",
-     "url": "/avatars/library/netflix/3below-tales-of-arcadia-09.webp"
+     "id": "netflix-the-classics-09",
+     "name": "Netflix Classics 9",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-09.webp"
     },
     {
-     "id": "netflix-a-series-of-unfortunate-events-01",
-     "name": "Les Désastreuses Aventures 1",
-     "series": "Les Désastreuses Aventures",
-     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-01.webp"
+     "id": "netflix-the-classics-10",
+     "name": "Netflix Classics 10",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-10.webp"
     },
     {
-     "id": "netflix-a-series-of-unfortunate-events-02",
-     "name": "Les Désastreuses Aventures 2",
-     "series": "Les Désastreuses Aventures",
-     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-02.webp"
+     "id": "netflix-the-classics-11",
+     "name": "Netflix Classics 11",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-11.webp"
     },
     {
-     "id": "netflix-a-series-of-unfortunate-events-03",
-     "name": "Les Désastreuses Aventures 3",
-     "series": "Les Désastreuses Aventures",
-     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-03.webp"
+     "id": "netflix-the-classics-12",
+     "name": "Netflix Classics 12",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-12.webp"
     },
     {
-     "id": "netflix-a-series-of-unfortunate-events-04",
-     "name": "Les Désastreuses Aventures 4",
-     "series": "Les Désastreuses Aventures",
-     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-04.webp"
+     "id": "netflix-the-classics-13",
+     "name": "Netflix Classics 13",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-13.webp"
     },
     {
-     "id": "netflix-a-series-of-unfortunate-events-05",
-     "name": "Les Désastreuses Aventures 5",
-     "series": "Les Désastreuses Aventures",
-     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-05.webp"
+     "id": "netflix-the-classics-14",
+     "name": "Netflix Classics 14",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-14.webp"
     },
     {
-     "id": "netflix-a-series-of-unfortunate-events-06",
-     "name": "Les Désastreuses Aventures 6",
-     "series": "Les Désastreuses Aventures",
-     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-06.webp"
+     "id": "netflix-the-classics-15",
+     "name": "Netflix Classics 15",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-15.webp"
     },
     {
-     "id": "netflix-a-series-of-unfortunate-events-07",
-     "name": "Les Désastreuses Aventures 7",
-     "series": "Les Désastreuses Aventures",
-     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-07.webp"
-    },
-    {
-     "id": "netflix-a-series-of-unfortunate-events-08",
-     "name": "Les Désastreuses Aventures 8",
-     "series": "Les Désastreuses Aventures",
-     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-08.webp"
-    },
-    {
-     "id": "netflix-a-series-of-unfortunate-events-09",
-     "name": "Les Désastreuses Aventures 9",
-     "series": "Les Désastreuses Aventures",
-     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-09.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-01",
-     "name": "Aggretsuko 1",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-01.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-02",
-     "name": "Aggretsuko 2",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-02.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-03",
-     "name": "Aggretsuko 3",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-03.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-04",
-     "name": "Aggretsuko 4",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-04.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-05",
-     "name": "Aggretsuko 5",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-05.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-06",
-     "name": "Aggretsuko 6",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-06.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-07",
-     "name": "Aggretsuko 7",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-07.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-08",
-     "name": "Aggretsuko 8",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-08.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-09",
-     "name": "Aggretsuko 9",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-09.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-10",
-     "name": "Aggretsuko 10",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-10.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-11",
-     "name": "Aggretsuko 11",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-11.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-12",
-     "name": "Aggretsuko 12",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-12.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-13",
-     "name": "Aggretsuko 13",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-13.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-14",
-     "name": "Aggretsuko 14",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-14.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-15",
-     "name": "Aggretsuko 15",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-15.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-16",
-     "name": "Aggretsuko 16",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-16.webp"
-    },
-    {
-     "id": "netflix-aggretsuko-17",
-     "name": "Aggretsuko 17",
-     "series": "Aggretsuko",
-     "url": "/avatars/library/netflix/aggretsuko-17.webp"
-    },
-    {
-     "id": "netflix-big-mouth-01",
-     "name": "Big Mouth 1",
-     "series": "Big Mouth",
-     "url": "/avatars/library/netflix/big-mouth-01.webp"
-    },
-    {
-     "id": "netflix-big-mouth-02",
-     "name": "Big Mouth 2",
-     "series": "Big Mouth",
-     "url": "/avatars/library/netflix/big-mouth-02.webp"
-    },
-    {
-     "id": "netflix-big-mouth-03",
-     "name": "Big Mouth 3",
-     "series": "Big Mouth",
-     "url": "/avatars/library/netflix/big-mouth-03.webp"
-    },
-    {
-     "id": "netflix-big-mouth-04",
-     "name": "Big Mouth 4",
-     "series": "Big Mouth",
-     "url": "/avatars/library/netflix/big-mouth-04.webp"
-    },
-    {
-     "id": "netflix-big-mouth-05",
-     "name": "Big Mouth 5",
-     "series": "Big Mouth",
-     "url": "/avatars/library/netflix/big-mouth-05.webp"
-    },
-    {
-     "id": "netflix-big-mouth-06",
-     "name": "Big Mouth 6",
-     "series": "Big Mouth",
-     "url": "/avatars/library/netflix/big-mouth-06.webp"
-    },
-    {
-     "id": "netflix-big-mouth-07",
-     "name": "Big Mouth 7",
-     "series": "Big Mouth",
-     "url": "/avatars/library/netflix/big-mouth-07.webp"
-    },
-    {
-     "id": "netflix-big-mouth-08",
-     "name": "Big Mouth 8",
-     "series": "Big Mouth",
-     "url": "/avatars/library/netflix/big-mouth-08.webp"
-    },
-    {
-     "id": "netflix-big-mouth-09",
-     "name": "Big Mouth 9",
-     "series": "Big Mouth",
-     "url": "/avatars/library/netflix/big-mouth-09.webp"
-    },
-    {
-     "id": "netflix-black-mirror-01",
-     "name": "Black Mirror 1",
-     "series": "Black Mirror",
-     "url": "/avatars/library/netflix/black-mirror-01.webp"
-    },
-    {
-     "id": "netflix-black-mirror-02",
-     "name": "Black Mirror 2",
-     "series": "Black Mirror",
-     "url": "/avatars/library/netflix/black-mirror-02.webp"
-    },
-    {
-     "id": "netflix-black-mirror-03",
-     "name": "Black Mirror 3",
-     "series": "Black Mirror",
-     "url": "/avatars/library/netflix/black-mirror-03.webp"
-    },
-    {
-     "id": "netflix-black-mirror-04",
-     "name": "Black Mirror 4",
-     "series": "Black Mirror",
-     "url": "/avatars/library/netflix/black-mirror-04.webp"
-    },
-    {
-     "id": "netflix-black-mirror-05",
-     "name": "Black Mirror 5",
-     "series": "Black Mirror",
-     "url": "/avatars/library/netflix/black-mirror-05.webp"
-    },
-    {
-     "id": "netflix-black-mirror-06",
-     "name": "Black Mirror 6",
-     "series": "Black Mirror",
-     "url": "/avatars/library/netflix/black-mirror-06.webp"
-    },
-    {
-     "id": "netflix-black-mirror-07",
-     "name": "Black Mirror 7",
-     "series": "Black Mirror",
-     "url": "/avatars/library/netflix/black-mirror-07.webp"
-    },
-    {
-     "id": "netflix-bojack-horseman-01",
-     "name": "BoJack Horseman 1",
-     "series": "BoJack Horseman",
-     "url": "/avatars/library/netflix/bojack-horseman-01.webp"
-    },
-    {
-     "id": "netflix-bojack-horseman-02",
-     "name": "BoJack Horseman 2",
-     "series": "BoJack Horseman",
-     "url": "/avatars/library/netflix/bojack-horseman-02.webp"
-    },
-    {
-     "id": "netflix-bojack-horseman-03",
-     "name": "BoJack Horseman 3",
-     "series": "BoJack Horseman",
-     "url": "/avatars/library/netflix/bojack-horseman-03.webp"
-    },
-    {
-     "id": "netflix-bojack-horseman-04",
-     "name": "BoJack Horseman 4",
-     "series": "BoJack Horseman",
-     "url": "/avatars/library/netflix/bojack-horseman-04.webp"
-    },
-    {
-     "id": "netflix-bojack-horseman-05",
-     "name": "BoJack Horseman 5",
-     "series": "BoJack Horseman",
-     "url": "/avatars/library/netflix/bojack-horseman-05.webp"
-    },
-    {
-     "id": "netflix-bright-01",
-     "name": "Bright 1",
-     "series": "Bright",
-     "url": "/avatars/library/netflix/bright-01.webp"
-    },
-    {
-     "id": "netflix-bright-02",
-     "name": "Bright 2",
-     "series": "Bright",
-     "url": "/avatars/library/netflix/bright-02.webp"
-    },
-    {
-     "id": "netflix-bright-03",
-     "name": "Bright 3",
-     "series": "Bright",
-     "url": "/avatars/library/netflix/bright-03.webp"
-    },
-    {
-     "id": "netflix-bright-04",
-     "name": "Bright 4",
-     "series": "Bright",
-     "url": "/avatars/library/netflix/bright-04.webp"
-    },
-    {
-     "id": "netflix-carmen-sandiego-01",
-     "name": "Carmen Sandiego 1",
-     "series": "Carmen Sandiego",
-     "url": "/avatars/library/netflix/carmen-sandiego-01.webp"
-    },
-    {
-     "id": "netflix-carmen-sandiego-02",
-     "name": "Carmen Sandiego 2",
-     "series": "Carmen Sandiego",
-     "url": "/avatars/library/netflix/carmen-sandiego-02.webp"
-    },
-    {
-     "id": "netflix-carmen-sandiego-03",
-     "name": "Carmen Sandiego 3",
-     "series": "Carmen Sandiego",
-     "url": "/avatars/library/netflix/carmen-sandiego-03.webp"
-    },
-    {
-     "id": "netflix-carmen-sandiego-04",
-     "name": "Carmen Sandiego 4",
-     "series": "Carmen Sandiego",
-     "url": "/avatars/library/netflix/carmen-sandiego-04.webp"
-    },
-    {
-     "id": "netflix-carmen-sandiego-05",
-     "name": "Carmen Sandiego 5",
-     "series": "Carmen Sandiego",
-     "url": "/avatars/library/netflix/carmen-sandiego-05.webp"
-    },
-    {
-     "id": "netflix-carmen-sandiego-06",
-     "name": "Carmen Sandiego 6",
-     "series": "Carmen Sandiego",
-     "url": "/avatars/library/netflix/carmen-sandiego-06.webp"
-    },
-    {
-     "id": "netflix-carmen-sandiego-07",
-     "name": "Carmen Sandiego 7",
-     "series": "Carmen Sandiego",
-     "url": "/avatars/library/netflix/carmen-sandiego-07.webp"
-    },
-    {
-     "id": "netflix-carmen-sandiego-08",
-     "name": "Carmen Sandiego 8",
-     "series": "Carmen Sandiego",
-     "url": "/avatars/library/netflix/carmen-sandiego-08.webp"
-    },
-    {
-     "id": "netflix-carmen-sandiego-09",
-     "name": "Carmen Sandiego 9",
-     "series": "Carmen Sandiego",
-     "url": "/avatars/library/netflix/carmen-sandiego-09.webp"
-    },
-    {
-     "id": "netflix-carmen-sandiego-10",
-     "name": "Carmen Sandiego 10",
-     "series": "Carmen Sandiego",
-     "url": "/avatars/library/netflix/carmen-sandiego-10.webp"
-    },
-    {
-     "id": "netflix-carmen-sandiego-11",
-     "name": "Carmen Sandiego 11",
-     "series": "Carmen Sandiego",
-     "url": "/avatars/library/netflix/carmen-sandiego-11.webp"
-    },
-    {
-     "id": "netflix-carmen-sandiego-12",
-     "name": "Carmen Sandiego 12",
-     "series": "Carmen Sandiego",
-     "url": "/avatars/library/netflix/carmen-sandiego-12.webp"
-    },
-    {
-     "id": "netflix-carmen-sandiego-13",
-     "name": "Carmen Sandiego 13",
-     "series": "Carmen Sandiego",
-     "url": "/avatars/library/netflix/carmen-sandiego-13.webp"
-    },
-    {
-     "id": "netflix-dear-white-people-01",
-     "name": "Dear White People 1",
-     "series": "Dear White People",
-     "url": "/avatars/library/netflix/dear-white-people-01.webp"
-    },
-    {
-     "id": "netflix-dear-white-people-02",
-     "name": "Dear White People 2",
-     "series": "Dear White People",
-     "url": "/avatars/library/netflix/dear-white-people-02.webp"
-    },
-    {
-     "id": "netflix-dear-white-people-03",
-     "name": "Dear White People 3",
-     "series": "Dear White People",
-     "url": "/avatars/library/netflix/dear-white-people-03.webp"
-    },
-    {
-     "id": "netflix-dear-white-people-04",
-     "name": "Dear White People 4",
-     "series": "Dear White People",
-     "url": "/avatars/library/netflix/dear-white-people-04.webp"
-    },
-    {
-     "id": "netflix-dear-white-people-05",
-     "name": "Dear White People 5",
-     "series": "Dear White People",
-     "url": "/avatars/library/netflix/dear-white-people-05.webp"
-    },
-    {
-     "id": "netflix-dear-white-people-06",
-     "name": "Dear White People 6",
-     "series": "Dear White People",
-     "url": "/avatars/library/netflix/dear-white-people-06.webp"
-    },
-    {
-     "id": "netflix-dear-white-people-07",
-     "name": "Dear White People 7",
-     "series": "Dear White People",
-     "url": "/avatars/library/netflix/dear-white-people-07.webp"
-    },
-    {
-     "id": "netflix-dear-white-people-08",
-     "name": "Dear White People 8",
-     "series": "Dear White People",
-     "url": "/avatars/library/netflix/dear-white-people-08.webp"
-    },
-    {
-     "id": "netflix-defenders-01",
-     "name": "Marvel's The Defenders 1",
-     "series": "Marvel's The Defenders",
-     "url": "/avatars/library/netflix/defenders-01.webp"
-    },
-    {
-     "id": "netflix-defenders-02",
-     "name": "Marvel's The Defenders 2",
-     "series": "Marvel's The Defenders",
-     "url": "/avatars/library/netflix/defenders-02.webp"
-    },
-    {
-     "id": "netflix-defenders-03",
-     "name": "Marvel's The Defenders 3",
-     "series": "Marvel's The Defenders",
-     "url": "/avatars/library/netflix/defenders-03.webp"
-    },
-    {
-     "id": "netflix-defenders-04",
-     "name": "Marvel's The Defenders 4",
-     "series": "Marvel's The Defenders",
-     "url": "/avatars/library/netflix/defenders-04.webp"
-    },
-    {
-     "id": "netflix-house-of-cards-01",
-     "name": "House of Cards 1",
-     "series": "House of Cards",
-     "url": "/avatars/library/netflix/house-of-cards-01.webp"
-    },
-    {
-     "id": "netflix-house-of-cards-02",
-     "name": "House of Cards 2",
-     "series": "House of Cards",
-     "url": "/avatars/library/netflix/house-of-cards-02.webp"
-    },
-    {
-     "id": "netflix-lost-in-space-01",
-     "name": "Lost in Space 1",
-     "series": "Lost in Space",
-     "url": "/avatars/library/netflix/lost-in-space-01.webp"
-    },
-    {
-     "id": "netflix-lost-in-space-02",
-     "name": "Lost in Space 2",
-     "series": "Lost in Space",
-     "url": "/avatars/library/netflix/lost-in-space-02.webp"
-    },
-    {
-     "id": "netflix-lost-in-space-03",
-     "name": "Lost in Space 3",
-     "series": "Lost in Space",
-     "url": "/avatars/library/netflix/lost-in-space-03.webp"
-    },
-    {
-     "id": "netflix-lost-in-space-04",
-     "name": "Lost in Space 4",
-     "series": "Lost in Space",
-     "url": "/avatars/library/netflix/lost-in-space-04.webp"
-    },
-    {
-     "id": "netflix-lost-in-space-05",
-     "name": "Lost in Space 5",
-     "series": "Lost in Space",
-     "url": "/avatars/library/netflix/lost-in-space-05.webp"
-    },
-    {
-     "id": "netflix-lost-in-space-06",
-     "name": "Lost in Space 6",
-     "series": "Lost in Space",
-     "url": "/avatars/library/netflix/lost-in-space-06.webp"
-    },
-    {
-     "id": "netflix-lost-in-space-07",
-     "name": "Lost in Space 7",
-     "series": "Lost in Space",
-     "url": "/avatars/library/netflix/lost-in-space-07.webp"
-    },
-    {
-     "id": "netflix-lost-in-space-08",
-     "name": "Lost in Space 8",
-     "series": "Lost in Space",
-     "url": "/avatars/library/netflix/lost-in-space-08.webp"
-    },
-    {
-     "id": "netflix-lost-in-space-09",
-     "name": "Lost in Space 9",
-     "series": "Lost in Space",
-     "url": "/avatars/library/netflix/lost-in-space-09.webp"
-    },
-    {
-     "id": "netflix-lucifer-01",
-     "name": "Lucifer 1",
-     "series": "Lucifer",
-     "url": "/avatars/library/netflix/lucifer-01.webp"
-    },
-    {
-     "id": "netflix-money-heist-01",
-     "name": "La casa de papel 1",
-     "series": "La casa de papel",
-     "url": "/avatars/library/netflix/money-heist-01.webp"
-    },
-    {
-     "id": "netflix-money-heist-02",
-     "name": "La casa de papel 2",
-     "series": "La casa de papel",
-     "url": "/avatars/library/netflix/money-heist-02.webp"
-    },
-    {
-     "id": "netflix-money-heist-03",
-     "name": "La casa de papel 3",
-     "series": "La casa de papel",
-     "url": "/avatars/library/netflix/money-heist-03.webp"
-    },
-    {
-     "id": "netflix-money-heist-04",
-     "name": "La casa de papel 4",
-     "series": "La casa de papel",
-     "url": "/avatars/library/netflix/money-heist-04.webp"
-    },
-    {
-     "id": "netflix-money-heist-05",
-     "name": "La casa de papel 5",
-     "series": "La casa de papel",
-     "url": "/avatars/library/netflix/money-heist-05.webp"
-    },
-    {
-     "id": "netflix-money-heist-06",
-     "name": "La casa de papel 6",
-     "series": "La casa de papel",
-     "url": "/avatars/library/netflix/money-heist-06.webp"
-    },
-    {
-     "id": "netflix-money-heist-07",
-     "name": "La casa de papel 7",
-     "series": "La casa de papel",
-     "url": "/avatars/library/netflix/money-heist-07.webp"
-    },
-    {
-     "id": "netflix-money-heist-08",
-     "name": "La casa de papel 8",
-     "series": "La casa de papel",
-     "url": "/avatars/library/netflix/money-heist-08.webp"
-    },
-    {
-     "id": "netflix-money-heist-09",
-     "name": "La casa de papel 9",
-     "series": "La casa de papel",
-     "url": "/avatars/library/netflix/money-heist-09.webp"
-    },
-    {
-     "id": "netflix-money-heist-10",
-     "name": "La casa de papel 10",
-     "series": "La casa de papel",
-     "url": "/avatars/library/netflix/money-heist-10.webp"
-    },
-    {
-     "id": "netflix-okja-01",
-     "name": "Okja 1",
-     "series": "Okja",
-     "url": "/avatars/library/netflix/okja-01.webp"
-    },
-    {
-     "id": "netflix-okja-02",
-     "name": "Okja 2",
-     "series": "Okja",
-     "url": "/avatars/library/netflix/okja-02.webp"
-    },
-    {
-     "id": "netflix-okja-03",
-     "name": "Okja 3",
-     "series": "Okja",
-     "url": "/avatars/library/netflix/okja-03.webp"
-    },
-    {
-     "id": "netflix-okja-04",
-     "name": "Okja 4",
-     "series": "Okja",
-     "url": "/avatars/library/netflix/okja-04.webp"
-    },
-    {
-     "id": "netflix-okja-05",
-     "name": "Okja 5",
-     "series": "Okja",
-     "url": "/avatars/library/netflix/okja-05.webp"
-    },
-    {
-     "id": "netflix-okja-06",
-     "name": "Okja 6",
-     "series": "Okja",
-     "url": "/avatars/library/netflix/okja-06.webp"
-    },
-    {
-     "id": "netflix-on-my-block-01",
-     "name": "On My Block 1",
-     "series": "On My Block",
-     "url": "/avatars/library/netflix/on-my-block-01.webp"
-    },
-    {
-     "id": "netflix-on-my-block-02",
-     "name": "On My Block 2",
-     "series": "On My Block",
-     "url": "/avatars/library/netflix/on-my-block-02.webp"
-    },
-    {
-     "id": "netflix-on-my-block-03",
-     "name": "On My Block 3",
-     "series": "On My Block",
-     "url": "/avatars/library/netflix/on-my-block-03.webp"
-    },
-    {
-     "id": "netflix-on-my-block-04",
-     "name": "On My Block 4",
-     "series": "On My Block",
-     "url": "/avatars/library/netflix/on-my-block-04.webp"
-    },
-    {
-     "id": "netflix-on-my-block-05",
-     "name": "On My Block 5",
-     "series": "On My Block",
-     "url": "/avatars/library/netflix/on-my-block-05.webp"
-    },
-    {
-     "id": "netflix-on-my-block-06",
-     "name": "On My Block 6",
-     "series": "On My Block",
-     "url": "/avatars/library/netflix/on-my-block-06.webp"
-    },
-    {
-     "id": "netflix-on-my-block-07",
-     "name": "On My Block 7",
-     "series": "On My Block",
-     "url": "/avatars/library/netflix/on-my-block-07.webp"
-    },
-    {
-     "id": "netflix-one-day-at-a-time-01",
-     "name": "One Day at a Time 1",
-     "series": "One Day at a Time",
-     "url": "/avatars/library/netflix/one-day-at-a-time-01.webp"
-    },
-    {
-     "id": "netflix-one-day-at-a-time-02",
-     "name": "One Day at a Time 2",
-     "series": "One Day at a Time",
-     "url": "/avatars/library/netflix/one-day-at-a-time-02.webp"
-    },
-    {
-     "id": "netflix-one-day-at-a-time-03",
-     "name": "One Day at a Time 3",
-     "series": "One Day at a Time",
-     "url": "/avatars/library/netflix/one-day-at-a-time-03.webp"
-    },
-    {
-     "id": "netflix-one-day-at-a-time-04",
-     "name": "One Day at a Time 4",
-     "series": "One Day at a Time",
-     "url": "/avatars/library/netflix/one-day-at-a-time-04.webp"
-    },
-    {
-     "id": "netflix-one-day-at-a-time-05",
-     "name": "One Day at a Time 5",
-     "series": "One Day at a Time",
-     "url": "/avatars/library/netflix/one-day-at-a-time-05.webp"
-    },
-    {
-     "id": "netflix-one-day-at-a-time-06",
-     "name": "One Day at a Time 6",
-     "series": "One Day at a Time",
-     "url": "/avatars/library/netflix/one-day-at-a-time-06.webp"
-    },
-    {
-     "id": "netflix-orange-is-the-new-black-01",
-     "name": "Orange Is the New Black 1",
-     "series": "Orange Is the New Black",
-     "url": "/avatars/library/netflix/orange-is-the-new-black-01.webp"
-    },
-    {
-     "id": "netflix-orange-is-the-new-black-02",
-     "name": "Orange Is the New Black 2",
-     "series": "Orange Is the New Black",
-     "url": "/avatars/library/netflix/orange-is-the-new-black-02.webp"
-    },
-    {
-     "id": "netflix-orange-is-the-new-black-03",
-     "name": "Orange Is the New Black 3",
-     "series": "Orange Is the New Black",
-     "url": "/avatars/library/netflix/orange-is-the-new-black-03.webp"
-    },
-    {
-     "id": "netflix-orange-is-the-new-black-04",
-     "name": "Orange Is the New Black 4",
-     "series": "Orange Is the New Black",
-     "url": "/avatars/library/netflix/orange-is-the-new-black-04.webp"
-    },
-    {
-     "id": "netflix-orange-is-the-new-black-05",
-     "name": "Orange Is the New Black 5",
-     "series": "Orange Is the New Black",
-     "url": "/avatars/library/netflix/orange-is-the-new-black-05.webp"
-    },
-    {
-     "id": "netflix-orange-is-the-new-black-06",
-     "name": "Orange Is the New Black 6",
-     "series": "Orange Is the New Black",
-     "url": "/avatars/library/netflix/orange-is-the-new-black-06.webp"
-    },
-    {
-     "id": "netflix-orange-is-the-new-black-07",
-     "name": "Orange Is the New Black 7",
-     "series": "Orange Is the New Black",
-     "url": "/avatars/library/netflix/orange-is-the-new-black-07.webp"
-    },
-    {
-     "id": "netflix-orange-is-the-new-black-08",
-     "name": "Orange Is the New Black 8",
-     "series": "Orange Is the New Black",
-     "url": "/avatars/library/netflix/orange-is-the-new-black-08.webp"
-    },
-    {
-     "id": "netflix-orange-is-the-new-black-09",
-     "name": "Orange Is the New Black 9",
-     "series": "Orange Is the New Black",
-     "url": "/avatars/library/netflix/orange-is-the-new-black-09.webp"
-    },
-    {
-     "id": "netflix-orange-is-the-new-black-10",
-     "name": "Orange Is the New Black 10",
-     "series": "Orange Is the New Black",
-     "url": "/avatars/library/netflix/orange-is-the-new-black-10.webp"
-    },
-    {
-     "id": "netflix-our-planet-01",
-     "name": "Our Planet 1",
-     "series": "Our Planet",
-     "url": "/avatars/library/netflix/our-planet-01.webp"
-    },
-    {
-     "id": "netflix-our-planet-02",
-     "name": "Our Planet 2",
-     "series": "Our Planet",
-     "url": "/avatars/library/netflix/our-planet-02.webp"
-    },
-    {
-     "id": "netflix-our-planet-03",
-     "name": "Our Planet 3",
-     "series": "Our Planet",
-     "url": "/avatars/library/netflix/our-planet-03.webp"
-    },
-    {
-     "id": "netflix-our-planet-04",
-     "name": "Our Planet 4",
-     "series": "Our Planet",
-     "url": "/avatars/library/netflix/our-planet-04.webp"
-    },
-    {
-     "id": "netflix-our-planet-05",
-     "name": "Our Planet 5",
-     "series": "Our Planet",
-     "url": "/avatars/library/netflix/our-planet-05.webp"
-    },
-    {
-     "id": "netflix-our-planet-06",
-     "name": "Our Planet 6",
-     "series": "Our Planet",
-     "url": "/avatars/library/netflix/our-planet-06.webp"
-    },
-    {
-     "id": "netflix-our-planet-07",
-     "name": "Our Planet 7",
-     "series": "Our Planet",
-     "url": "/avatars/library/netflix/our-planet-07.webp"
-    },
-    {
-     "id": "netflix-our-planet-08",
-     "name": "Our Planet 8",
-     "series": "Our Planet",
-     "url": "/avatars/library/netflix/our-planet-08.webp"
-    },
-    {
-     "id": "netflix-our-planet-09",
-     "name": "Our Planet 9",
-     "series": "Our Planet",
-     "url": "/avatars/library/netflix/our-planet-09.webp"
-    },
-    {
-     "id": "netflix-our-planet-10",
-     "name": "Our Planet 10",
-     "series": "Our Planet",
-     "url": "/avatars/library/netflix/our-planet-10.webp"
-    },
-    {
-     "id": "netflix-our-planet-11",
-     "name": "Our Planet 11",
-     "series": "Our Planet",
-     "url": "/avatars/library/netflix/our-planet-11.webp"
-    },
-    {
-     "id": "netflix-our-planet-12",
-     "name": "Our Planet 12",
-     "series": "Our Planet",
-     "url": "/avatars/library/netflix/our-planet-12.webp"
-    },
-    {
-     "id": "netflix-our-planet-13",
-     "name": "Our Planet 13",
-     "series": "Our Planet",
-     "url": "/avatars/library/netflix/our-planet-13.webp"
-    },
-    {
-     "id": "netflix-our-planet-14",
-     "name": "Our Planet 14",
-     "series": "Our Planet",
-     "url": "/avatars/library/netflix/our-planet-14.webp"
-    },
-    {
-     "id": "netflix-queer-eye-more-than-a-makeover-01",
-     "name": "Queer Eye 1",
-     "series": "Queer Eye",
-     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-01.webp"
-    },
-    {
-     "id": "netflix-queer-eye-more-than-a-makeover-02",
-     "name": "Queer Eye 2",
-     "series": "Queer Eye",
-     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-02.webp"
-    },
-    {
-     "id": "netflix-queer-eye-more-than-a-makeover-03",
-     "name": "Queer Eye 3",
-     "series": "Queer Eye",
-     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-03.webp"
-    },
-    {
-     "id": "netflix-queer-eye-more-than-a-makeover-04",
-     "name": "Queer Eye 4",
-     "series": "Queer Eye",
-     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-04.webp"
-    },
-    {
-     "id": "netflix-queer-eye-more-than-a-makeover-05",
-     "name": "Queer Eye 5",
-     "series": "Queer Eye",
-     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-05.webp"
-    },
-    {
-     "id": "netflix-she-ra-and-the-princess-of-power-01",
-     "name": "She-Ra 1",
-     "series": "She-Ra",
-     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-01.webp"
-    },
-    {
-     "id": "netflix-she-ra-and-the-princess-of-power-02",
-     "name": "She-Ra 2",
-     "series": "She-Ra",
-     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-02.webp"
-    },
-    {
-     "id": "netflix-she-ra-and-the-princess-of-power-03",
-     "name": "She-Ra 3",
-     "series": "She-Ra",
-     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-03.webp"
-    },
-    {
-     "id": "netflix-she-ra-and-the-princess-of-power-04",
-     "name": "She-Ra 4",
-     "series": "She-Ra",
-     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-04.webp"
-    },
-    {
-     "id": "netflix-she-ra-and-the-princess-of-power-05",
-     "name": "She-Ra 5",
-     "series": "She-Ra",
-     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-05.webp"
-    },
-    {
-     "id": "netflix-she-ra-and-the-princess-of-power-06",
-     "name": "She-Ra 6",
-     "series": "She-Ra",
-     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-06.webp"
-    },
-    {
-     "id": "netflix-she-ra-and-the-princess-of-power-07",
-     "name": "She-Ra 7",
-     "series": "She-Ra",
-     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-07.webp"
+     "id": "netflix-the-classics-16",
+     "name": "Netflix Classics 16",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-16.webp"
     },
     {
      "id": "netflix-stranger-things-01",
@@ -1154,100 +278,190 @@
      "url": "/avatars/library/netflix/stranger-things-16.webp"
     },
     {
-     "id": "netflix-the-classics-01",
-     "name": "Netflix Classics 1",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-01.webp"
+     "id": "netflix-money-heist-01",
+     "name": "La casa de papel 1",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-01.webp"
     },
     {
-     "id": "netflix-the-classics-02",
-     "name": "Netflix Classics 2",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-02.webp"
+     "id": "netflix-money-heist-02",
+     "name": "La casa de papel 2",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-02.webp"
     },
     {
-     "id": "netflix-the-classics-03",
-     "name": "Netflix Classics 3",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-03.webp"
+     "id": "netflix-money-heist-03",
+     "name": "La casa de papel 3",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-03.webp"
     },
     {
-     "id": "netflix-the-classics-04",
-     "name": "Netflix Classics 4",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-04.webp"
+     "id": "netflix-money-heist-04",
+     "name": "La casa de papel 4",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-04.webp"
     },
     {
-     "id": "netflix-the-classics-05",
-     "name": "Netflix Classics 5",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-05.webp"
+     "id": "netflix-money-heist-05",
+     "name": "La casa de papel 5",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-05.webp"
     },
     {
-     "id": "netflix-the-classics-06",
-     "name": "Netflix Classics 6",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-06.webp"
+     "id": "netflix-money-heist-06",
+     "name": "La casa de papel 6",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-06.webp"
     },
     {
-     "id": "netflix-the-classics-07",
-     "name": "Netflix Classics 7",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-07.webp"
+     "id": "netflix-money-heist-07",
+     "name": "La casa de papel 7",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-07.webp"
     },
     {
-     "id": "netflix-the-classics-08",
-     "name": "Netflix Classics 8",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-08.webp"
+     "id": "netflix-money-heist-08",
+     "name": "La casa de papel 8",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-08.webp"
     },
     {
-     "id": "netflix-the-classics-09",
-     "name": "Netflix Classics 9",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-09.webp"
+     "id": "netflix-money-heist-09",
+     "name": "La casa de papel 9",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-09.webp"
     },
     {
-     "id": "netflix-the-classics-10",
-     "name": "Netflix Classics 10",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-10.webp"
+     "id": "netflix-money-heist-10",
+     "name": "La casa de papel 10",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-10.webp"
     },
     {
-     "id": "netflix-the-classics-11",
-     "name": "Netflix Classics 11",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-11.webp"
+     "id": "netflix-black-mirror-01",
+     "name": "Black Mirror 1",
+     "series": "Black Mirror",
+     "url": "/avatars/library/netflix/black-mirror-01.webp"
     },
     {
-     "id": "netflix-the-classics-12",
-     "name": "Netflix Classics 12",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-12.webp"
+     "id": "netflix-black-mirror-02",
+     "name": "Black Mirror 2",
+     "series": "Black Mirror",
+     "url": "/avatars/library/netflix/black-mirror-02.webp"
     },
     {
-     "id": "netflix-the-classics-13",
-     "name": "Netflix Classics 13",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-13.webp"
+     "id": "netflix-black-mirror-03",
+     "name": "Black Mirror 3",
+     "series": "Black Mirror",
+     "url": "/avatars/library/netflix/black-mirror-03.webp"
     },
     {
-     "id": "netflix-the-classics-14",
-     "name": "Netflix Classics 14",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-14.webp"
+     "id": "netflix-black-mirror-04",
+     "name": "Black Mirror 4",
+     "series": "Black Mirror",
+     "url": "/avatars/library/netflix/black-mirror-04.webp"
     },
     {
-     "id": "netflix-the-classics-15",
-     "name": "Netflix Classics 15",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-15.webp"
+     "id": "netflix-black-mirror-05",
+     "name": "Black Mirror 5",
+     "series": "Black Mirror",
+     "url": "/avatars/library/netflix/black-mirror-05.webp"
     },
     {
-     "id": "netflix-the-classics-16",
-     "name": "Netflix Classics 16",
-     "series": "Netflix Classics",
-     "url": "/avatars/library/netflix/the-classics-16.webp"
+     "id": "netflix-black-mirror-06",
+     "name": "Black Mirror 6",
+     "series": "Black Mirror",
+     "url": "/avatars/library/netflix/black-mirror-06.webp"
+    },
+    {
+     "id": "netflix-black-mirror-07",
+     "name": "Black Mirror 7",
+     "series": "Black Mirror",
+     "url": "/avatars/library/netflix/black-mirror-07.webp"
+    },
+    {
+     "id": "netflix-bojack-horseman-01",
+     "name": "BoJack Horseman 1",
+     "series": "BoJack Horseman",
+     "url": "/avatars/library/netflix/bojack-horseman-01.webp"
+    },
+    {
+     "id": "netflix-bojack-horseman-02",
+     "name": "BoJack Horseman 2",
+     "series": "BoJack Horseman",
+     "url": "/avatars/library/netflix/bojack-horseman-02.webp"
+    },
+    {
+     "id": "netflix-bojack-horseman-03",
+     "name": "BoJack Horseman 3",
+     "series": "BoJack Horseman",
+     "url": "/avatars/library/netflix/bojack-horseman-03.webp"
+    },
+    {
+     "id": "netflix-bojack-horseman-04",
+     "name": "BoJack Horseman 4",
+     "series": "BoJack Horseman",
+     "url": "/avatars/library/netflix/bojack-horseman-04.webp"
+    },
+    {
+     "id": "netflix-bojack-horseman-05",
+     "name": "BoJack Horseman 5",
+     "series": "BoJack Horseman",
+     "url": "/avatars/library/netflix/bojack-horseman-05.webp"
+    },
+    {
+     "id": "netflix-big-mouth-01",
+     "name": "Big Mouth 1",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-01.webp"
+    },
+    {
+     "id": "netflix-big-mouth-02",
+     "name": "Big Mouth 2",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-02.webp"
+    },
+    {
+     "id": "netflix-big-mouth-03",
+     "name": "Big Mouth 3",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-03.webp"
+    },
+    {
+     "id": "netflix-big-mouth-04",
+     "name": "Big Mouth 4",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-04.webp"
+    },
+    {
+     "id": "netflix-big-mouth-05",
+     "name": "Big Mouth 5",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-05.webp"
+    },
+    {
+     "id": "netflix-big-mouth-06",
+     "name": "Big Mouth 6",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-06.webp"
+    },
+    {
+     "id": "netflix-big-mouth-07",
+     "name": "Big Mouth 7",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-07.webp"
+    },
+    {
+     "id": "netflix-big-mouth-08",
+     "name": "Big Mouth 8",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-08.webp"
+    },
+    {
+     "id": "netflix-big-mouth-09",
+     "name": "Big Mouth 9",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-09.webp"
     },
     {
      "id": "netflix-the-dark-crystal-age-of-resistance-01",
@@ -1376,88 +590,46 @@
      "url": "/avatars/library/netflix/the-dragon-prince-12.webp"
     },
     {
-     "id": "netflix-troll-hunters-tales-of-arcadia-01",
-     "name": "Chasseurs de Trolls 1",
-     "series": "Chasseurs de Trolls",
-     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-01.webp"
+     "id": "netflix-she-ra-and-the-princess-of-power-01",
+     "name": "She-Ra 1",
+     "series": "She-Ra",
+     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-01.webp"
     },
     {
-     "id": "netflix-troll-hunters-tales-of-arcadia-02",
-     "name": "Chasseurs de Trolls 2",
-     "series": "Chasseurs de Trolls",
-     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-02.webp"
+     "id": "netflix-she-ra-and-the-princess-of-power-02",
+     "name": "She-Ra 2",
+     "series": "She-Ra",
+     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-02.webp"
     },
     {
-     "id": "netflix-troll-hunters-tales-of-arcadia-03",
-     "name": "Chasseurs de Trolls 3",
-     "series": "Chasseurs de Trolls",
-     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-03.webp"
+     "id": "netflix-she-ra-and-the-princess-of-power-03",
+     "name": "She-Ra 3",
+     "series": "She-Ra",
+     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-03.webp"
     },
     {
-     "id": "netflix-troll-hunters-tales-of-arcadia-04",
-     "name": "Chasseurs de Trolls 4",
-     "series": "Chasseurs de Trolls",
-     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-04.webp"
+     "id": "netflix-she-ra-and-the-princess-of-power-04",
+     "name": "She-Ra 4",
+     "series": "She-Ra",
+     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-04.webp"
     },
     {
-     "id": "netflix-troll-hunters-tales-of-arcadia-05",
-     "name": "Chasseurs de Trolls 5",
-     "series": "Chasseurs de Trolls",
-     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-05.webp"
+     "id": "netflix-she-ra-and-the-princess-of-power-05",
+     "name": "She-Ra 5",
+     "series": "She-Ra",
+     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-05.webp"
     },
     {
-     "id": "netflix-troll-hunters-tales-of-arcadia-06",
-     "name": "Chasseurs de Trolls 6",
-     "series": "Chasseurs de Trolls",
-     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-06.webp"
+     "id": "netflix-she-ra-and-the-princess-of-power-06",
+     "name": "She-Ra 6",
+     "series": "She-Ra",
+     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-06.webp"
     },
     {
-     "id": "netflix-troll-hunters-tales-of-arcadia-07",
-     "name": "Chasseurs de Trolls 7",
-     "series": "Chasseurs de Trolls",
-     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-07.webp"
-    },
-    {
-     "id": "netflix-troll-hunters-tales-of-arcadia-08",
-     "name": "Chasseurs de Trolls 8",
-     "series": "Chasseurs de Trolls",
-     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-08.webp"
-    },
-    {
-     "id": "netflix-unbreakable-kimmy-schmidt-01",
-     "name": "Unbreakable Kimmy Schmidt 1",
-     "series": "Unbreakable Kimmy Schmidt",
-     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-01.webp"
-    },
-    {
-     "id": "netflix-unbreakable-kimmy-schmidt-02",
-     "name": "Unbreakable Kimmy Schmidt 2",
-     "series": "Unbreakable Kimmy Schmidt",
-     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-02.webp"
-    },
-    {
-     "id": "netflix-unbreakable-kimmy-schmidt-03",
-     "name": "Unbreakable Kimmy Schmidt 3",
-     "series": "Unbreakable Kimmy Schmidt",
-     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-03.webp"
-    },
-    {
-     "id": "netflix-unbreakable-kimmy-schmidt-04",
-     "name": "Unbreakable Kimmy Schmidt 4",
-     "series": "Unbreakable Kimmy Schmidt",
-     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-04.webp"
-    },
-    {
-     "id": "netflix-unbreakable-kimmy-schmidt-05",
-     "name": "Unbreakable Kimmy Schmidt 5",
-     "series": "Unbreakable Kimmy Schmidt",
-     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-05.webp"
-    },
-    {
-     "id": "netflix-unbreakable-kimmy-schmidt-06",
-     "name": "Unbreakable Kimmy Schmidt 6",
-     "series": "Unbreakable Kimmy Schmidt",
-     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-06.webp"
+     "id": "netflix-she-ra-and-the-princess-of-power-07",
+     "name": "She-Ra 7",
+     "series": "She-Ra",
+     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-07.webp"
     },
     {
      "id": "netflix-voltron-legendary-defender-01",
@@ -1512,6 +684,834 @@
      "name": "Voltron 9",
      "series": "Voltron",
      "url": "/avatars/library/netflix/voltron-legendary-defender-09.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-01",
+     "name": "Lost in Space 1",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-01.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-02",
+     "name": "Lost in Space 2",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-02.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-03",
+     "name": "Lost in Space 3",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-03.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-04",
+     "name": "Lost in Space 4",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-04.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-05",
+     "name": "Lost in Space 5",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-05.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-06",
+     "name": "Lost in Space 6",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-06.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-07",
+     "name": "Lost in Space 7",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-07.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-08",
+     "name": "Lost in Space 8",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-08.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-09",
+     "name": "Lost in Space 9",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-09.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-01",
+     "name": "Orange Is the New Black 1",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-01.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-02",
+     "name": "Orange Is the New Black 2",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-02.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-03",
+     "name": "Orange Is the New Black 3",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-03.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-04",
+     "name": "Orange Is the New Black 4",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-04.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-05",
+     "name": "Orange Is the New Black 5",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-05.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-06",
+     "name": "Orange Is the New Black 6",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-06.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-07",
+     "name": "Orange Is the New Black 7",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-07.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-08",
+     "name": "Orange Is the New Black 8",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-08.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-09",
+     "name": "Orange Is the New Black 9",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-09.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-10",
+     "name": "Orange Is the New Black 10",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-10.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-01",
+     "name": "Aggretsuko 1",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-01.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-02",
+     "name": "Aggretsuko 2",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-02.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-03",
+     "name": "Aggretsuko 3",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-03.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-04",
+     "name": "Aggretsuko 4",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-04.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-05",
+     "name": "Aggretsuko 5",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-05.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-06",
+     "name": "Aggretsuko 6",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-06.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-07",
+     "name": "Aggretsuko 7",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-07.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-08",
+     "name": "Aggretsuko 8",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-08.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-09",
+     "name": "Aggretsuko 9",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-09.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-10",
+     "name": "Aggretsuko 10",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-10.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-11",
+     "name": "Aggretsuko 11",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-11.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-12",
+     "name": "Aggretsuko 12",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-12.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-13",
+     "name": "Aggretsuko 13",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-13.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-14",
+     "name": "Aggretsuko 14",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-14.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-15",
+     "name": "Aggretsuko 15",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-15.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-16",
+     "name": "Aggretsuko 16",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-16.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-17",
+     "name": "Aggretsuko 17",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-17.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-01",
+     "name": "Carmen Sandiego 1",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-01.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-02",
+     "name": "Carmen Sandiego 2",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-02.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-03",
+     "name": "Carmen Sandiego 3",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-03.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-04",
+     "name": "Carmen Sandiego 4",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-04.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-05",
+     "name": "Carmen Sandiego 5",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-05.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-06",
+     "name": "Carmen Sandiego 6",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-06.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-07",
+     "name": "Carmen Sandiego 7",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-07.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-08",
+     "name": "Carmen Sandiego 8",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-08.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-09",
+     "name": "Carmen Sandiego 9",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-09.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-10",
+     "name": "Carmen Sandiego 10",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-10.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-11",
+     "name": "Carmen Sandiego 11",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-11.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-12",
+     "name": "Carmen Sandiego 12",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-12.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-13",
+     "name": "Carmen Sandiego 13",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-13.webp"
+    },
+    {
+     "id": "netflix-defenders-01",
+     "name": "Marvel's The Defenders 1",
+     "series": "Marvel's The Defenders",
+     "url": "/avatars/library/netflix/defenders-01.webp"
+    },
+    {
+     "id": "netflix-defenders-02",
+     "name": "Marvel's The Defenders 2",
+     "series": "Marvel's The Defenders",
+     "url": "/avatars/library/netflix/defenders-02.webp"
+    },
+    {
+     "id": "netflix-defenders-03",
+     "name": "Marvel's The Defenders 3",
+     "series": "Marvel's The Defenders",
+     "url": "/avatars/library/netflix/defenders-03.webp"
+    },
+    {
+     "id": "netflix-defenders-04",
+     "name": "Marvel's The Defenders 4",
+     "series": "Marvel's The Defenders",
+     "url": "/avatars/library/netflix/defenders-04.webp"
+    },
+    {
+     "id": "netflix-bright-01",
+     "name": "Bright 1",
+     "series": "Bright",
+     "url": "/avatars/library/netflix/bright-01.webp"
+    },
+    {
+     "id": "netflix-bright-02",
+     "name": "Bright 2",
+     "series": "Bright",
+     "url": "/avatars/library/netflix/bright-02.webp"
+    },
+    {
+     "id": "netflix-bright-03",
+     "name": "Bright 3",
+     "series": "Bright",
+     "url": "/avatars/library/netflix/bright-03.webp"
+    },
+    {
+     "id": "netflix-bright-04",
+     "name": "Bright 4",
+     "series": "Bright",
+     "url": "/avatars/library/netflix/bright-04.webp"
+    },
+    {
+     "id": "netflix-house-of-cards-01",
+     "name": "House of Cards 1",
+     "series": "House of Cards",
+     "url": "/avatars/library/netflix/house-of-cards-01.webp"
+    },
+    {
+     "id": "netflix-house-of-cards-02",
+     "name": "House of Cards 2",
+     "series": "House of Cards",
+     "url": "/avatars/library/netflix/house-of-cards-02.webp"
+    },
+    {
+     "id": "netflix-lucifer-01",
+     "name": "Lucifer 1",
+     "series": "Lucifer",
+     "url": "/avatars/library/netflix/lucifer-01.webp"
+    },
+    {
+     "id": "netflix-okja-01",
+     "name": "Okja 1",
+     "series": "Okja",
+     "url": "/avatars/library/netflix/okja-01.webp"
+    },
+    {
+     "id": "netflix-okja-02",
+     "name": "Okja 2",
+     "series": "Okja",
+     "url": "/avatars/library/netflix/okja-02.webp"
+    },
+    {
+     "id": "netflix-okja-03",
+     "name": "Okja 3",
+     "series": "Okja",
+     "url": "/avatars/library/netflix/okja-03.webp"
+    },
+    {
+     "id": "netflix-okja-04",
+     "name": "Okja 4",
+     "series": "Okja",
+     "url": "/avatars/library/netflix/okja-04.webp"
+    },
+    {
+     "id": "netflix-okja-05",
+     "name": "Okja 5",
+     "series": "Okja",
+     "url": "/avatars/library/netflix/okja-05.webp"
+    },
+    {
+     "id": "netflix-okja-06",
+     "name": "Okja 6",
+     "series": "Okja",
+     "url": "/avatars/library/netflix/okja-06.webp"
+    },
+    {
+     "id": "netflix-our-planet-01",
+     "name": "Our Planet 1",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-01.webp"
+    },
+    {
+     "id": "netflix-our-planet-02",
+     "name": "Our Planet 2",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-02.webp"
+    },
+    {
+     "id": "netflix-our-planet-03",
+     "name": "Our Planet 3",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-03.webp"
+    },
+    {
+     "id": "netflix-our-planet-04",
+     "name": "Our Planet 4",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-04.webp"
+    },
+    {
+     "id": "netflix-our-planet-05",
+     "name": "Our Planet 5",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-05.webp"
+    },
+    {
+     "id": "netflix-our-planet-06",
+     "name": "Our Planet 6",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-06.webp"
+    },
+    {
+     "id": "netflix-our-planet-07",
+     "name": "Our Planet 7",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-07.webp"
+    },
+    {
+     "id": "netflix-our-planet-08",
+     "name": "Our Planet 8",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-08.webp"
+    },
+    {
+     "id": "netflix-our-planet-09",
+     "name": "Our Planet 9",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-09.webp"
+    },
+    {
+     "id": "netflix-our-planet-10",
+     "name": "Our Planet 10",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-10.webp"
+    },
+    {
+     "id": "netflix-our-planet-11",
+     "name": "Our Planet 11",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-11.webp"
+    },
+    {
+     "id": "netflix-our-planet-12",
+     "name": "Our Planet 12",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-12.webp"
+    },
+    {
+     "id": "netflix-our-planet-13",
+     "name": "Our Planet 13",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-13.webp"
+    },
+    {
+     "id": "netflix-our-planet-14",
+     "name": "Our Planet 14",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-14.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-01",
+     "name": "Dear White People 1",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-01.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-02",
+     "name": "Dear White People 2",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-02.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-03",
+     "name": "Dear White People 3",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-03.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-04",
+     "name": "Dear White People 4",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-04.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-05",
+     "name": "Dear White People 5",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-05.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-06",
+     "name": "Dear White People 6",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-06.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-07",
+     "name": "Dear White People 7",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-07.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-08",
+     "name": "Dear White People 8",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-08.webp"
+    },
+    {
+     "id": "netflix-on-my-block-01",
+     "name": "On My Block 1",
+     "series": "On My Block",
+     "url": "/avatars/library/netflix/on-my-block-01.webp"
+    },
+    {
+     "id": "netflix-on-my-block-02",
+     "name": "On My Block 2",
+     "series": "On My Block",
+     "url": "/avatars/library/netflix/on-my-block-02.webp"
+    },
+    {
+     "id": "netflix-on-my-block-03",
+     "name": "On My Block 3",
+     "series": "On My Block",
+     "url": "/avatars/library/netflix/on-my-block-03.webp"
+    },
+    {
+     "id": "netflix-on-my-block-04",
+     "name": "On My Block 4",
+     "series": "On My Block",
+     "url": "/avatars/library/netflix/on-my-block-04.webp"
+    },
+    {
+     "id": "netflix-on-my-block-05",
+     "name": "On My Block 5",
+     "series": "On My Block",
+     "url": "/avatars/library/netflix/on-my-block-05.webp"
+    },
+    {
+     "id": "netflix-on-my-block-06",
+     "name": "On My Block 6",
+     "series": "On My Block",
+     "url": "/avatars/library/netflix/on-my-block-06.webp"
+    },
+    {
+     "id": "netflix-on-my-block-07",
+     "name": "On My Block 7",
+     "series": "On My Block",
+     "url": "/avatars/library/netflix/on-my-block-07.webp"
+    },
+    {
+     "id": "netflix-unbreakable-kimmy-schmidt-01",
+     "name": "Unbreakable Kimmy Schmidt 1",
+     "series": "Unbreakable Kimmy Schmidt",
+     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-01.webp"
+    },
+    {
+     "id": "netflix-unbreakable-kimmy-schmidt-02",
+     "name": "Unbreakable Kimmy Schmidt 2",
+     "series": "Unbreakable Kimmy Schmidt",
+     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-02.webp"
+    },
+    {
+     "id": "netflix-unbreakable-kimmy-schmidt-03",
+     "name": "Unbreakable Kimmy Schmidt 3",
+     "series": "Unbreakable Kimmy Schmidt",
+     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-03.webp"
+    },
+    {
+     "id": "netflix-unbreakable-kimmy-schmidt-04",
+     "name": "Unbreakable Kimmy Schmidt 4",
+     "series": "Unbreakable Kimmy Schmidt",
+     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-04.webp"
+    },
+    {
+     "id": "netflix-unbreakable-kimmy-schmidt-05",
+     "name": "Unbreakable Kimmy Schmidt 5",
+     "series": "Unbreakable Kimmy Schmidt",
+     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-05.webp"
+    },
+    {
+     "id": "netflix-unbreakable-kimmy-schmidt-06",
+     "name": "Unbreakable Kimmy Schmidt 6",
+     "series": "Unbreakable Kimmy Schmidt",
+     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-06.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-01",
+     "name": "Les Désastreuses Aventures 1",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-01.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-02",
+     "name": "Les Désastreuses Aventures 2",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-02.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-03",
+     "name": "Les Désastreuses Aventures 3",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-03.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-04",
+     "name": "Les Désastreuses Aventures 4",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-04.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-05",
+     "name": "Les Désastreuses Aventures 5",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-05.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-06",
+     "name": "Les Désastreuses Aventures 6",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-06.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-07",
+     "name": "Les Désastreuses Aventures 7",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-07.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-08",
+     "name": "Les Désastreuses Aventures 8",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-08.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-09",
+     "name": "Les Désastreuses Aventures 9",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-09.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-01",
+     "name": "Chasseurs de Trolls 1",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-01.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-02",
+     "name": "Chasseurs de Trolls 2",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-02.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-03",
+     "name": "Chasseurs de Trolls 3",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-03.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-04",
+     "name": "Chasseurs de Trolls 4",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-04.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-05",
+     "name": "Chasseurs de Trolls 5",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-05.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-06",
+     "name": "Chasseurs de Trolls 6",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-06.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-07",
+     "name": "Chasseurs de Trolls 7",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-07.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-08",
+     "name": "Chasseurs de Trolls 8",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-08.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-01",
+     "name": "3Below 1",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-01.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-02",
+     "name": "3Below 2",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-02.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-03",
+     "name": "3Below 3",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-03.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-04",
+     "name": "3Below 4",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-04.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-05",
+     "name": "3Below 5",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-05.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-06",
+     "name": "3Below 6",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-06.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-07",
+     "name": "3Below 7",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-07.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-08",
+     "name": "3Below 8",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-08.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-09",
+     "name": "3Below 9",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-09.webp"
+    },
+    {
+     "id": "netflix-one-day-at-a-time-01",
+     "name": "One Day at a Time 1",
+     "series": "One Day at a Time",
+     "url": "/avatars/library/netflix/one-day-at-a-time-01.webp"
+    },
+    {
+     "id": "netflix-one-day-at-a-time-02",
+     "name": "One Day at a Time 2",
+     "series": "One Day at a Time",
+     "url": "/avatars/library/netflix/one-day-at-a-time-02.webp"
+    },
+    {
+     "id": "netflix-one-day-at-a-time-03",
+     "name": "One Day at a Time 3",
+     "series": "One Day at a Time",
+     "url": "/avatars/library/netflix/one-day-at-a-time-03.webp"
+    },
+    {
+     "id": "netflix-one-day-at-a-time-04",
+     "name": "One Day at a Time 4",
+     "series": "One Day at a Time",
+     "url": "/avatars/library/netflix/one-day-at-a-time-04.webp"
+    },
+    {
+     "id": "netflix-one-day-at-a-time-05",
+     "name": "One Day at a Time 5",
+     "series": "One Day at a Time",
+     "url": "/avatars/library/netflix/one-day-at-a-time-05.webp"
+    },
+    {
+     "id": "netflix-one-day-at-a-time-06",
+     "name": "One Day at a Time 6",
+     "series": "One Day at a Time",
+     "url": "/avatars/library/netflix/one-day-at-a-time-06.webp"
+    },
+    {
+     "id": "netflix-queer-eye-more-than-a-makeover-01",
+     "name": "Queer Eye 1",
+     "series": "Queer Eye",
+     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-01.webp"
+    },
+    {
+     "id": "netflix-queer-eye-more-than-a-makeover-02",
+     "name": "Queer Eye 2",
+     "series": "Queer Eye",
+     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-02.webp"
+    },
+    {
+     "id": "netflix-queer-eye-more-than-a-makeover-03",
+     "name": "Queer Eye 3",
+     "series": "Queer Eye",
+     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-03.webp"
+    },
+    {
+     "id": "netflix-queer-eye-more-than-a-makeover-04",
+     "name": "Queer Eye 4",
+     "series": "Queer Eye",
+     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-04.webp"
+    },
+    {
+     "id": "netflix-queer-eye-more-than-a-makeover-05",
+     "name": "Queer Eye 5",
+     "series": "Queer Eye",
+     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-05.webp"
     }
    ]
   },

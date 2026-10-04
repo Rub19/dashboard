@@ -21,6 +21,18 @@ type Tab = "all" | "favorites" | "recent" | string;
 const PREVIEW_PER_SECTION = 14;
 const MAX_RECENT = 18;
 
+/** Aperçu varié d'une collection : une vignette par série à tour de rôle, plutôt que les premières d'une seule série. */
+function previewOf(items: LibraryAvatar[], n: number): LibraryAvatar[] {
+  const bySeries = new Map<string, LibraryAvatar[]>();
+  for (const a of items) bySeries.set(a.series, [...(bySeries.get(a.series) ?? []), a]);
+  const queues = [...bySeries.values()];
+  const out: LibraryAvatar[] = [];
+  for (let round = 0; out.length < n && queues.some((q) => q.length > round); round++) {
+    for (const q of queues) if (q[round] && out.length < n) out.push(q[round]);
+  }
+  return out;
+}
+
 /**
  * Bibliothèque d'avatars : choisir une image de la bibliothèque ETHONE ou importer sa propre photo.
  * Sans `onSelect`, le choix est enregistré directement dans le profil du compte (synchronisé sur tous les appareils).
@@ -285,7 +297,7 @@ function LibraryPanel({ onClose, onSelect }: { onClose: () => void; onSelect?: (
                             Tout voir
                           </button>
                         </div>
-                        <Grid items={c.items.slice(0, PREVIEW_PER_SECTION)} choice={choice} favorites={favorites} onPick={(a) => setChoice({ ...a })} onFavorite={toggleFavorite} />
+                        <Grid items={previewOf(c.items, PREVIEW_PER_SECTION)} choice={choice} favorites={favorites} onPick={(a) => setChoice({ ...a })} onFavorite={toggleFavorite} />
                       </section>
                     ))}
                   </div>

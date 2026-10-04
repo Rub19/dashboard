@@ -42950,6 +42950,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_53_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_53_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_53_0_de);
 
+const v1_53_1_fr: ChangelogEntry = {
+  version: "v1.53.1",
+  date: "2026-10-04",
+  title: "Bibliothèque d'avatars : aperçu plus varié",
+  items: [
+    "Les séries Netflix phares apparaissent en premier, et l'aperçu de chaque collection montre une vignette par série.",
+  ],
+};
+
+const v1_53_1_en: ChangelogEntry = {
+  version: "v1.53.1",
+  date: "2026-10-04",
+  title: "Avatar library: more varied preview",
+  items: [
+    "Top Netflix series come first, and each collection preview shows one tile per series.",
+  ],
+};
+
+const v1_53_1_es: ChangelogEntry = {
+  version: "v1.53.1",
+  date: "2026-10-04",
+  title: "Biblioteca de avatares: vista previa más variada",
+  items: [
+    "Las series de Netflix destacadas aparecen primero y la vista previa de cada colección muestra una miniatura por serie.",
+  ],
+};
+
+const v1_53_1_de: ChangelogEntry = {
+  version: "v1.53.1",
+  date: "2026-10-04",
+  title: "Avatar-Bibliothek: abwechslungsreichere Vorschau",
+  items: [
+    "Die wichtigsten Netflix-Serien stehen vorne, und die Vorschau jeder Sammlung zeigt ein Bild pro Serie.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_53_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_53_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_53_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_53_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

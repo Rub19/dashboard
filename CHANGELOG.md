@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.53.1 — 2026-10-04
+
+**Bibliothèque d'avatars : aperçu plus varié**
+
+- Les séries Netflix phares apparaissent en premier, et l'aperçu de chaque collection montre une vignette par série.
+
 ## v1.53.0 — 2026-10-04
 
 **Nouveau profil, nouvelle bibliothèque d'avatars, synchronisation en direct**

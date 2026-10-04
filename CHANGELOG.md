@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.4 — 2026-10-04
+
+**Correction de la connexion OAuth GitHub**
+
+- Rétablissement du Client ID GitHub officiel Ov23li7gnklQJ7ipkgZG.
+- Acceptation du paramètre redirectUri lors de l'échange de token sur le Worker Cloudflare.
+
 ## v1.55.3 — 2026-10-04
 
 **Connexion GitHub officielle et gestion des erreurs OAuth**

@@ -107,7 +107,7 @@ export const INTEGRATIONS_CONFIG: Record<string, IntegrationConfig> = {
     requiresClientSecret: true,
     requiresRedirectUri: true,
     idLabel: "Client ID GitHub",
-    idPlaceholder: "ex: Ov23ctvZAanKy8ZjInhz",
+    idPlaceholder: "ex: Ov23li7gnklQJ7ipkgZG",
     secretLabel: "Client Secret GitHub",
     secretPlaceholder: "ex: 5c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
     callbackPath: "/",

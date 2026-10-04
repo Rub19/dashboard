@@ -25,7 +25,7 @@ function requireField(body, key, pattern) {
 
 export async function todoistOAuthExchangeRoute({ request, env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
-  const body = await readJsonBody(request, 2);
+  const body = await readJsonBody(request, 4);
   const code = requireField(body, "code", CODE_RE);
   const clientId = requireField(body, "clientId", PATTERNS.todoistClientId);
   await exchangeTodoistCode(env, auth.userId, { code, clientId });

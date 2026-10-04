@@ -56,7 +56,7 @@ const GOOGLE_CLIENT_ID = "259857269450-m5kiejkhb1k0lt4h673mi0jsrklmtas3.apps.goo
 
 export const OAUTH_APP_CLIENT_IDS: Record<string, string> = {
   spotify: "6619fbf6315e4e68948dc08532251912",
-  github: "Ov23ctvZAanKy8ZjInhz",
+  github: "Ov23li7gnklQJ7ipkgZG",
   discord: "1545139931154878464",
   "google-calendar": GOOGLE_CLIENT_ID,
   notion: "3aad872b-594c-81d4-84e4-00377bd542e3",

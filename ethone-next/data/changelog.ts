@@ -43547,6 +43547,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_3_de);
 
+const v1_55_4_fr: ChangelogEntry = {
+  version: "v1.55.4",
+  date: "2026-10-04",
+  title: "Correction de la connexion OAuth GitHub",
+  items: [
+    "Rétablissement du Client ID GitHub officiel Ov23li7gnklQJ7ipkgZG.",
+    "Acceptation du paramètre redirectUri lors de l'échange de token sur le Worker Cloudflare.",
+  ],
+};
+
+const v1_55_4_en: ChangelogEntry = {
+  version: "v1.55.4",
+  date: "2026-10-04",
+  title: "Fix GitHub OAuth connection",
+  items: [
+    "Restore official GitHub Client ID Ov23li7gnklQJ7ipkgZG.",
+    "Accept redirectUri parameter in token exchange on Cloudflare Worker.",
+  ],
+};
+
+const v1_55_4_es: ChangelogEntry = {
+  version: "v1.55.4",
+  date: "2026-10-04",
+  title: "Corrección de la conexión OAuth de GitHub",
+  items: [
+    "Restablecimiento del Client ID oficial de GitHub Ov23li7gnklQJ7ipkgZG.",
+    "Aceptación del parámetro redirectUri en el intercambio de tokens en el Worker.",
+  ],
+};
+
+const v1_55_4_de: ChangelogEntry = {
+  version: "v1.55.4",
+  date: "2026-10-04",
+  title: "Behebung der GitHub-OAuth-Verbindung",
+  items: [
+    "Wiederherstellung der offiziellen GitHub-Client-ID Ov23li7gnklQJ7ipkgZG.",
+    "Unterstützung des Parameters redirectUri beim Token-Austausch im Cloudflare Worker.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

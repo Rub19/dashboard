@@ -42,7 +42,7 @@ test("GitHub OAuth exchange stores the returned access token for the authenticat
     env,
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ code: "a".repeat(20), clientId: "c".repeat(20) })
+    body: JSON.stringify({ code: "a".repeat(20), clientId: "c".repeat(20), redirectUri: "https://ethone.dev/" })
   });
   const body = await payload(response);
   assert.equal(response.status, 200);

@@ -46,7 +46,7 @@ function optionalField(body, key, pattern, fallback = "") {
 
 export async function googleDriveOAuthExchangeRoute({ request, env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
-  const body = await readJsonBody(request, 2);
+  const body = await readJsonBody(request, 4);
   const code = requireField(body, "code", CODE_RE);
   const clientId = requireField(body, "clientId", PATTERNS.googleClientId);
   await exchangeGoogleDriveCode(env, auth.userId, { code, clientId });

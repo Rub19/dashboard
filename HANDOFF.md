@@ -6,11 +6,133 @@
 > Lis d'abord ce fichier en entier, puis `AGENTS.md`, puis le haut de `CHANGELOG.md`. `HANDOFF-TUTORIAL.md` et `docs/archive/HANDOFF-2026-09.md` contiennent l'historique et des méthodes détaillées (une partie est datée).
 > Commence par la section « Reste à faire », dans l'ordre.
 
-## Accès (déjà configurés sur ce poste)
-- **Site** : un push sur `main` déploie automatiquement Cloudflare Pages (~1 à 2 min). Vérifier avec `curl -s https://ethone.dev/version.json`.
-- **Bot** : `ssh vps 'cd ~/dashboard && git checkout -- discord-bot/package-lock.json; git pull -q origin main && npm install --prefix discord-bot --silent; pm2 restart ethone-bot'`. Le processus pm2 lance node directement (`--import tsx`, kill-timeout 5000) : arrêt propre en SIGINT. Logs : `ssh vps 'pm2 logs ethone-bot --lines 80 --nostream'`.
-- **Worker** : `cd worker && npm test && npx wrangler deploy`. Journaux en direct : `npx wrangler tail --format pretty`.
-- **Supabase** : MCP Supabase connecté (exécuter du SQL, appliquer des migrations). Toute migration appliquée est AUSSI enregistrée dans `supabase/migrations/AAAAMMJJNNNN_nom.sql`.
+## Machines et accès
+Sur le PC de l'utilisateur (Windows 11, dossier `C:\Claude\dashboard`), tout est déjà configuré : clé SSH, `wrangler` connecté, MCP Supabase. Une IA qui n'a que le lien GitHub n'a AUCUN de ces accès : elle prépare les changements et donne les commandes à lancer.
+
+| Élément | Où | Détails |
+|---|---|---|
+| Site ethone.dev | Cloudflare Pages | Construit et déployé à chaque push sur `main` (~1 à 2 min). |
+| Bot « Etho » | VPS OVH, Ubuntu 24.04, Node 22 | Alias SSH `vps` = `ubuntu@141.94.237.150`. Code dans `~/dashboard` (clone de ce repo), bot dans `~/dashboard/discord-bot`, lancé par pm2 sous le nom `ethone-bot` (node `--import tsx src/index.ts`, pas de build). |
+| API du bot | Caddy sur le VPS | `bot.ethone.dev` → `localhost:3001` (`/etc/caddy/Caddyfile`, HTTPS automatique). |
+| Secrets du bot | `~/dashboard/discord-bot/.env` sur le VPS | Jamais dans git. Noms : `DISCORD_TOKEN CLIENT_ID CLIENT_SECRET DEFAULT_PREFIX DASHBOARD_URL JWT_SECRET PORT DEV_GUILD_ID SHARED_SPACES_BOT_KEY YT_DLP_COOKIES_FILE MUSIC_BACKEND LAVALINK_HOST LAVALINK_PORT LAVALINK_PASSWORD SPOTIFY_CLIENT_ID SPOTIFY_CLIENT_SECRET YT_RESOLVER_URL YT_RESOLVER_TOKEN SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY` (modèle : `.env.example`). |
+| Sauvegardes du bot | `~/backups` sur le VPS | Copies de `discord-bot/data` faites avant les grosses opérations. |
+| Lavalink (musique) | NAS Synology de l'utilisateur, Docker | Alias SSH `nas` (réseau local, port 46, utilisateur `liphil`). Relié au VPS par un tunnel SSH inverse (conteneur `lavalink-tunnel`) sur `127.0.0.1:2333`. L'entrée pm2 `lavalink` du VPS est arrêtée exprès : ne pas la supprimer. YouTube refuse Lavalink partout ; l'audio vient de yt-dlp puis de SoundCloud. |
+| Worker | Cloudflare Workers `raspy-fog-bf5b` | `https://raspy-fog-bf5b.rub19-mailpro.workers.dev`, configuration dans `worker/wrangler.jsonc`. Secrets (via `wrangler secret put`) : `AI_CREDENTIAL_MASTER_KEY CLOUDFLARE_API_TOKEN DISCORD_CLIENT_ID DISCORD_CLIENT_SECRET GITHUB_CLIENT_SECRET GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET GROQ_API_KEY HENRIK_API_KEY LASTFM_API_KEY NOTION_CLIENT_SECRET OAUTH_STATE_SECRET OPENROUTER_API_KEY RESEND_API_KEY RESEND_FROM RIOT_API_KEY SHARED_SPACES_BOT_KEY STEAM_API_KEY SUPABASE_ISSUER SUPABASE_JWT_SECRET SUPABASE_SECRET_KEY SUPABASE_URL TODOIST_CLIENT_SECRET TOTP_ENCRYPTION_KEY TRACKER_API_KEY TURNSTILE_SECRET TWITCH_CLIENT_ID TWITCH_CLIENT_SECRET VAPID_PRIVATE_KEY VAPID_PUBLIC_KEY`. |
+| Base de données | Supabase `bvgifyzhpzkbrwdjrqsg` | Via le MCP Supabase (SQL, migrations, advisors). Toute migration appliquée est AUSSI enregistrée dans `supabase/migrations/AAAAMMJJNNNN_nom.sql`. |
+| CI GitHub Actions | `.github/workflows/` | `build-web`, `bot-ci`, `worker-ci`, `build-ios`, `build-android`. iOS et Android ne compilent que là (impossible sous Windows). |
+
+## Commandes
+
+### Installation (nouveau poste)
+```bash
+git clone https://github.com/Rub19/dashboard.git && cd dashboard
+npm install --prefix ethone-next
+npm install --prefix discord-bot
+npm install --prefix worker
+```
+Fichiers locaux non versionnés à recréer à la main (demander les valeurs à l'utilisateur, ne jamais les coller dans le chat) : `ethone-next/.env.local` (variables `NEXT_PUBLIC_*`, `TEST_EMAIL`/`TEST_PASSWORD` pour Playwright) et `discord-bot/.env` pour lancer le bot en local.
+
+### Site (`ethone-next`)
+```bash
+cd ethone-next
+npm run dev                        # serveur local http://localhost:3000
+npm run build                      # export statique dans dist/ (toujours AVANT tsc)
+npx tsc --noEmit                   # types
+npm run lint                       # 0 erreur attendue, 73 avertissements connus
+npm run test:unit                  # Jest, 296 tests
+npx playwright test                # E2E (nécessite TEST_EMAIL et TEST_PASSWORD)
+npm run audit:a11y                 # audit accessibilité
+npm run audit:responsive           # audit mobile/tablette
+```
+
+### Sortir une version (à chaque lot)
+```bash
+cd ethone-next
+node scripts/release.js 1.55.3 2026-10-05 ../release-notes.json   # JSON {fr|en|es|de: {title, items[]}}
+npm install --package-lock-only
+npm run build && npx tsc --noEmit && npm run lint && npm run test:unit
+cd .. && node scripts/audit-security.mjs && node ./scripts/precommit-upload-check.mjs
+git add -A && git reset -q discord-bot/scripts/etho-avatar-animated.gif .mcp.json
+git -c user.name="Rub19" -c user.email="rub19.mailpro@gmail.com" commit -m "Migration Next.js : v1.55.3 - description"
+git push origin main
+curl -s https://ethone.dev/version.json          # attendre la nouvelle version (~2 min)
+```
+`release.js` met à jour `package.json`, `public/version.json`, `CHANGELOG.md` et `data/changelog.ts`. Supprimer le fichier JSON de notes après usage.
+
+### Générateurs de ressources (site)
+```bash
+cd ethone-next
+node scripts/build-avatar-library.mjs [netflix|anime|valorant|lol|pokemon|ethone]   # avatars WebP + catalogue
+node scripts/build-icon-set.mjs              # icônes des modules (config : scripts/icon-set.config.json)
+node scripts/build-bot-icons.mjs             # icônes statiques du bot (public/bot-icons)
+node scripts/build-bot-animated-icons.mjs    # émojis animés a_*.gif du bot
+```
+Après un changement dans `public/bot-icons`, redémarrer le bot : il synchronise ses émojis d'application au démarrage.
+
+### Bot (`discord-bot`)
+```bash
+cd discord-bot
+npx tsc --noEmit                   # types
+npm test                           # tests (5 échouent seulement sous Windows : assertion libuv ; la CI Linux est verte)
+npm run node:dev                   # lancer en local (nécessite discord-bot/.env)
+npm run music:doctor               # diagnostic musique / Lavalink
+```
+
+### VPS (déployer et surveiller le bot)
+```bash
+# Déployer la dernière version de main
+ssh vps 'cd ~/dashboard && git checkout -- discord-bot/package-lock.json; git pull -q origin main && npm install --prefix discord-bot --silent; pm2 restart ethone-bot'
+
+ssh vps 'pm2 status'                                        # état des processus
+ssh vps 'pm2 logs ethone-bot --lines 80 --nostream'         # derniers journaux
+ssh vps 'pm2 logs ethone-bot --err --lines 80 --nostream'   # erreurs seulement
+curl -sI https://bot.ethone.dev/ | head -1                  # le bot répond-il ? (502 = bot arrêté)
+
+# Sauvegarder les données avant une opération risquée
+ssh vps 'cp -r ~/dashboard/discord-bot/data ~/backups/data-$(date +%Y%m%d-%H%M)'
+
+# Modifier un secret du bot : c'est l'UTILISATEUR qui le fait, pas l'IA
+ssh -t vps 'nano ~/dashboard/discord-bot/.env' && ssh vps 'pm2 restart ethone-bot'
+
+# Caddy (proxy HTTPS de bot.ethone.dev)
+ssh vps 'sudo systemctl status caddy --no-pager'
+ssh vps 'sudo systemctl reload caddy'
+```
+pm2 arrête le bot proprement (SIGINT, délai 5 s). Ne jamais `pm2 delete` l'entrée `lavalink`.
+
+### NAS (Lavalink)
+```bash
+ssh nas 'sudo docker ps'                             # conteneurs lavalink + lavalink-tunnel
+ssh nas 'sudo docker logs --tail 80 lavalink'
+ssh nas 'sudo docker restart lavalink lavalink-tunnel'
+```
+Le NAS n'est joignable que depuis le réseau de l'utilisateur et demande son mot de passe SSH (pas de clé) : c'est lui qui lance ces commandes. Le mot de passe Lavalink est dans `~/lavalink/.password` sur le NAS ; l'utilisateur le recopie lui-même dans le `.env` du VPS.
+
+### Worker (`worker`)
+```bash
+cd worker
+npm test                           # 281 tests
+npm run check                      # syntaxe
+npx wrangler deploy                # déployer
+npx wrangler tail --format pretty  # journaux en direct (ex. connexions OAuth, Data Dragon)
+npx wrangler secret list           # noms des secrets (jamais les valeurs)
+npx wrangler secret put NOM        # l'UTILISATEUR tape la valeur, l'IA ne la voit jamais
+```
+
+### Supabase
+Avec le MCP Supabase : `list_migrations`, `apply_migration`, `execute_sql`, `get_advisors` (security et performance). Sans MCP, avec la CLI Supabase connectée par l'utilisateur :
+```bash
+npx supabase link --project-ref bvgifyzhpzkbrwdjrqsg
+npx supabase db push               # applique supabase/migrations/
+```
+
+### Git
+```bash
+git status --short                 # etho-avatar-animated.gif et .mcp.json apparaissent toujours : normal, ne pas les committer
+git log --oneline -10
+```
+
+## Autres accès
 - **Chrome de l'utilisateur** (extension Claude in Chrome) : il est connecté à ethone.dev. Ne jamais y modifier ses réglages ni cliquer sur une action destructrice ; ouvrir un onglet à soi et le fermer à la fin. Un onglet en arrière-plan ne se rend pas : prendre une capture d'écran avant de lire ou cliquer.
 - L'utilisateur a donné carte blanche pour déployer (« je te laisse tout faire ») : annoncer chaque déploiement dans le rapport. Envoyer un message ou un e-mail en son nom demande sa permission.
 

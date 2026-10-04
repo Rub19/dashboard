@@ -29,7 +29,7 @@
 - Aligner aussi `package-lock.json` (via `npm install --package-lock-only`) et le label `VERSION_LABEL` dans `components/UserProfileDropdown.tsx`.
 - Ajouter une entrée dans `ethone-next/data/changelog.ts` (in-app changelog, pour toutes les langues fr/en/es/de) et dans `CHANGELOG.md` à la racine.
 
-## Prochaines étapes — État au 2026-08-23
+## Archive — État au 2026-08-23 (dépassé : l'état à jour et le « Reste à faire » sont dans `HANDOFF.md`)
 
 **Commit de référence :** `1cd5641c` (`main`, version `v1.8.12`)  
 **Statut CI/CD :** tout vert sur `main` (Cloudflare Pages, Workers, build web, iOS, Android).

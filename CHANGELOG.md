@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.14 — 2026-10-04
+
+**Motion design : dernières pages Discord**
+
+- Comptage, Highlights, Paramètres du bot, réglages de l'Invite Tracker et de la sauvegarde : entrée en cascade, retour au clic et couleurs du thème.
+- Highlights : les mots-clés et salons ignorés apparaissent et disparaissent en douceur.
+- Invite Tracker : la sensibilité se choisit avec une pastille qui glisse, et les interrupteurs sont ceux du reste du site.
+- Paramètres du bot et sauvegarde : la barre d'enregistrement et les options qui s'ouvrent sont animées.
+- Thème clair : les avertissements de Comptage et des Paramètres du bot sont de nouveau lisibles.
+
 ## v1.52.13 — 2026-10-03
 
 **Thème clair : panneaux restés sombres**

@@ -11,6 +11,9 @@ import { cn, formatApiError } from "@/lib/utils";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import Select from "@/components/ui/Select";
+import { Switch } from "@/components/discord/SettingsUI";
+import { AnimatePresence, motion } from "framer-motion";
+import { EASE_SNAP, DURATION_SLOW, DURATION_BASE } from "@/lib/ease";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -151,18 +154,28 @@ export default function BackupSettingsClient() {
 
   return (
     <div className="mx-auto max-w-6xl w-full px-4 py-6 sm:px-6 text-[var(--text-primary)]">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="stagger-children max-w-4xl mx-auto space-y-6">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <Link href={`/discord/backups${guildQuery}`} className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer">
             <ArrowLeft className="h-3.5 w-3.5" /> Retour aux sauvegardes
           </Link>
           <div className="flex items-center gap-2">
-            <button onClick={load} disabled={loading} className="px-3 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 cursor-pointer disabled:opacity-50">
+            <button onClick={load} disabled={loading} aria-label="Recharger les paramètres" title="Recharger" className="px-3 py-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2 cursor-pointer transition-[background-color,transform] duration-150 active:scale-[0.95] disabled:opacity-50">
               <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
             </button>
-            <button onClick={handleSave} disabled={saving || !dirty} className={cn("px-4 py-2 rounded-xl text-[var(--text-primary)] text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50", dirty ? "bg-[var(--accent-primary)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50" : "bg-[var(--surface-raised)]/40")}>
+            <button onClick={handleSave} disabled={saving || !dirty} className={cn("px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50", dirty ? "text-[var(--accent-contrast)] bg-[var(--accent-primary)] hover:brightness-110 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50" : "text-[var(--text-muted)] bg-[var(--surface-raised)]/40")}>
               <Save className="w-4 h-4" />
-              {saving ? "Enregistrement..." : dirty ? "Enregistrer les paramètres" : "À jour"}
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.span
+                  key={saving ? "saving" : dirty ? "dirty" : "clean"}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: DURATION_BASE, ease: EASE_SNAP }}
+                >
+                  {saving ? "Enregistrement..." : dirty ? "Enregistrer les paramètres" : "À jour"}
+                </motion.span>
+              </AnimatePresence>
             </button>
           </div>
         </div>
@@ -187,12 +200,18 @@ export default function BackupSettingsClient() {
                 <p className="text-xs text-[var(--text-muted)]">Le bot capture un snapshot complet à intervalle régulier.</p>
               </div>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" checked={settings.enabled} onChange={(e) => patch({ enabled: e.target.checked })} className="sr-only peer" />
-              <div className="w-11 h-6 bg-[var(--surface-raised)]/40 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--accent-primary)]" />
-            </label>
+            <Switch checked={settings.enabled} onChange={(v) => patch({ enabled: v })} label="Sauvegardes automatiques" />
           </div>
+          <AnimatePresence initial={false}>
           {settings.enabled && (
+            <motion.div
+              key="schedule"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: DURATION_SLOW, ease: EASE_SNAP }}
+              className="overflow-hidden"
+            >
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-[var(--panel-border)]">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-[var(--text-muted)]">Fréquence</label>
@@ -230,7 +249,9 @@ export default function BackupSettingsClient() {
                 />
               </div>
             </div>
+            </motion.div>
           )}
+          </AnimatePresence>
         </div>
 
         {/* Rétention */}
@@ -324,8 +345,15 @@ export default function BackupSettingsClient() {
           </div>
           <div className="divide-y divide-[var(--panel-border)] border border-[var(--panel-border)] rounded-xl overflow-hidden">
             {protectedBackups.length === 0 && <p className="p-4 text-xs text-[var(--text-muted)]">Aucune sauvegarde protégée{isDemo ? " (démo)" : ""}. Protège un snapshot depuis la liste principale.</p>}
+            <AnimatePresence initial={false}>
             {protectedBackups.map((b) => (
-              <div key={b.backupId} className="p-3.5 flex items-center justify-between gap-3 hover:bg-[var(--surface-raised)]/70 transition-colors">
+              <motion.div
+                key={b.backupId}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: DURATION_BASE, ease: EASE_SNAP }}
+                className="overflow-hidden"
+              >
+              <div className="p-3.5 flex items-center justify-between gap-3 hover:bg-[var(--surface-raised)]/70 transition-colors">
                 <div className="space-y-0.5 min-w-0">
                   <div className="flex items-center gap-2">
                     <Link href={`/discord/backups/${b.backupId}${guildQuery}`} className="font-semibold text-sm text-[var(--text-primary)] hover:text-[var(--accent-primary)] truncate">{b.name}</Link>
@@ -333,11 +361,13 @@ export default function BackupSettingsClient() {
                   </div>
                   <span className="text-xs text-[var(--text-muted)] block truncate">{new Date(b.createdAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })} · {(b.sizeBytes / 1024).toFixed(0)} Ko · {b.backupId}</span>
                 </div>
-                <button onClick={() => handleUnprotect(b)} className="px-3 py-1 rounded bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-medium text-[var(--text-muted)] flex items-center gap-1.5 transition-colors cursor-pointer shrink-0">
+                <button onClick={() => handleUnprotect(b)} className="px-3 py-1 rounded bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 text-xs font-medium text-[var(--text-muted)] flex items-center gap-1.5 transition-[background-color,transform] duration-150 active:scale-[0.96] cursor-pointer shrink-0">
                   <Unlock className="w-3.5 h-3.5" /> Retirer
                 </button>
               </div>
+              </motion.div>
             ))}
+            </AnimatePresence>
           </div>
         </div>
       </div>

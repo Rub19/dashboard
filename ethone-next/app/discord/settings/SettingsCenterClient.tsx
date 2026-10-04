@@ -13,6 +13,9 @@ import { Field, Section, ToggleField, inputCls } from "@/components/discord/Sett
 import PageHeader from "@/components/discord/PageHeader";
 import Select from "@/components/ui/Select";
 import { formatApiError, errorReason } from "@/lib/format-error";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
+import { AnimatePresence, motion } from "framer-motion";
+import { EASE_SNAP, DURATION_SLOW } from "@/lib/ease";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -185,27 +188,31 @@ export default function SettingsCenterClient() {
     return (
       <div className="h-full overflow-y-auto px-4 pb-44 pt-6 text-[var(--text-primary)] sm:px-6 lg:px-10">
         {back}
-        <p className="mt-8 text-sm text-[var(--text-muted)]">{state === "offline" ? "Le bot est injoignable ou n'est pas sur ce serveur : impossible de charger les paramètres." : "Chargement…"}</p>
+        {state === "offline" ? (
+          <p className="mt-8 text-sm text-[var(--text-muted)]">Le bot est injoignable ou n&apos;est pas sur ce serveur : impossible de charger les paramètres.</p>
+        ) : (
+          <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement des paramètres…" />
+        )}
       </div>
     );
   }
 
   return (
     <div className="h-full overflow-y-auto bg-[var(--bg-main)] px-4 pb-44 pt-6 text-[var(--text-primary)] sm:px-6 lg:px-10">
-      <div className="mx-auto max-w-4xl space-y-8">
+      <div className="stagger-children mx-auto max-w-4xl space-y-8">
         <PageHeader guildId={guildId} icon="mod-commands" tint="zinc" title="Paramètres" subtitle="Langue, fuseau horaire, contacts d'urgence, aperçu des messages du bot et commandes." />
 
         {issues.length > 0 && (
-          <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4">
-            <p className="text-sm font-bold text-rose-200">{issues.length} problème{issues.length > 1 ? "s" : ""} sérieux détecté{issues.length > 1 ? "s" : ""}</p>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-rose-100/90">
+          <div className="rounded-2xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-4">
+            <p className="text-sm font-bold text-[var(--danger)]">{issues.length} problème{issues.length > 1 ? "s" : ""} sérieux détecté{issues.length > 1 ? "s" : ""}</p>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[var(--text-primary)]/90">
               {issues.map((i) => (
                 <li key={i.id}>
                   <strong>{i.title}</strong> — {i.detail.replace(/\*\*/g, "").replace(/<@&?(\d+)>/g, "$1")}
                 </li>
               ))}
             </ul>
-            <p className="mt-2 text-xs text-rose-200/70">Vos contacts d&apos;urgence sont prévenus automatiquement (au plus une fois par jour pour un même problème).</p>
+            <p className="mt-2 text-xs text-[var(--text-muted)]">Vos contacts d&apos;urgence sont prévenus automatiquement (au plus une fois par jour pour un même problème).</p>
           </div>
         )}
 
@@ -231,7 +238,9 @@ export default function SettingsCenterClient() {
                 options={MODES.map(([k, l]) => ({ id: k, label: l }))}
               />
             </Field>
+            <AnimatePresence initial={false}>
             {draft.emergencyContacts.mode === "custom" && (
+              <motion.div key="custom" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: DURATION_SLOW, ease: EASE_SNAP }} className="overflow-hidden">
               <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                 <Field label="Membres" hint="Identifiant Discord (10 au maximum).">
                   <MemberIdsInput value={draft.emergencyContacts.userIds} onChange={(v) => set({ emergencyContacts: { ...draft.emergencyContacts, userIds: v.slice(0, 10) } })} />
@@ -240,9 +249,11 @@ export default function SettingsCenterClient() {
                   <MultiRolePicker guildId={guildId} value={draft.emergencyContacts.roleIds} onChange={(v) => set({ emergencyContacts: { ...draft.emergencyContacts, roleIds: v.slice(0, 10) } })} />
                 </Field>
               </div>
+              </motion.div>
             )}
+            </AnimatePresence>
             <div>
-              <button type="button" disabled={testing || Boolean(dirty)} onClick={() => void sendTest()} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--text-primary)] transition hover:bg-[var(--surface-raised)]/70 disabled:cursor-not-allowed disabled:opacity-50">
+              <button type="button" disabled={testing || Boolean(dirty)} onClick={() => void sendTest()} className="cursor-pointer rounded-xl border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-raised)]/70 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50">
                 {testing ? "Envoi…" : "Envoyer un message de test"}
               </button>
               <p className="mt-1 text-xs text-[var(--text-muted)]">{dirty ? "Enregistrez d'abord vos modifications pour tester." : "Le test montre ce qui est réellement livré : salon d'alerte et messages privés."}</p>
@@ -268,26 +279,35 @@ export default function SettingsCenterClient() {
         <Section title="Commandes" text="Comment les membres utilisent le bot.">
           <ToggleField label="Commandes slash" text="Autoriser les commandes /" checked={draft.slashCommandsEnabled} onChange={(v) => set({ slashCommandsEnabled: v })} />
           <ToggleField label="Commandes à préfixe" text="Autoriser les commandes écrites avec un préfixe" checked={draft.prefixCommandsEnabled} onChange={(v) => set({ prefixCommandsEnabled: v })} />
-          {!draft.slashCommandsEnabled && !draft.prefixCommandsEnabled && <p className="text-xs text-rose-300 lg:col-span-2">Gardez au moins un type de commande actif, sinon plus personne ne pourrait utiliser le bot.</p>}
+          {!draft.slashCommandsEnabled && !draft.prefixCommandsEnabled && <p className="text-xs text-[var(--danger)] lg:col-span-2">Gardez au moins un type de commande actif, sinon plus personne ne pourrait utiliser le bot.</p>}
           <Field label="Préfixe" hint="1 à 5 caractères, sans espace.">
-            <input value={draft.prefix} maxLength={5} onChange={(e) => set({ prefix: e.target.value })} className={inputCls + (/^\S{1,5}$/.test(draft.prefix) ? "" : " border-rose-500/60")} />
+            <input value={draft.prefix} maxLength={5} onChange={(e) => set({ prefix: e.target.value })} className={inputCls + (/^\S{1,5}$/.test(draft.prefix) ? "" : " border-[var(--danger)]/60")} />
           </Field>
         </Section>
       </div>
 
+      <AnimatePresence>
       {dirty && (
-        <div className="fixed inset-x-0 bottom-24 z-30 mx-auto flex w-[min(92vw,640px)] items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-3 ">
+        <motion.div
+          key="savebar"
+          initial={{ opacity: 0, y: 24, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 16, scale: 0.97, transition: { duration: 0.15 } }}
+          transition={{ type: "spring", stiffness: 380, damping: 39 }}
+          className="fixed inset-x-0 bottom-24 z-30 mx-auto flex w-[min(92vw,640px)] items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-3 shadow-lg"
+        >
           <p className="text-sm text-[var(--text-muted)]">{invalid ? "Corrigez les champs en rouge avant d'enregistrer." : "Vous avez des modifications non enregistrées."}</p>
           <div className="flex gap-2">
-            <button type="button" onClick={() => setDraft(saved)} className="cursor-pointer rounded-xl px-3 py-2 text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+            <button type="button" onClick={() => setDraft(saved)} className="cursor-pointer rounded-xl px-3 py-2 text-sm font-semibold text-[var(--text-muted)] transition-[color,transform] duration-150 hover:text-[var(--text-primary)] active:scale-[0.97]">
               Annuler
             </button>
             <button type="button" disabled={saving || invalid} onClick={() => void save()} className="cursor-pointer rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97] relative outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50">
               {saving ? "Enregistrement…" : "Enregistrer"}
             </button>
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 }

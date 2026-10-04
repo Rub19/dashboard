@@ -42726,6 +42726,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_13_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_13_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_13_de);
 
+const v1_52_14_fr: ChangelogEntry = {
+  version: "v1.52.14",
+  date: "2026-10-04",
+  title: "Motion design : dernières pages Discord",
+  items: [
+    "Comptage, Highlights, Paramètres du bot, réglages de l'Invite Tracker et de la sauvegarde : entrée en cascade, retour au clic et couleurs du thème.",
+    "Highlights : les mots-clés et salons ignorés apparaissent et disparaissent en douceur.",
+    "Invite Tracker : la sensibilité se choisit avec une pastille qui glisse, et les interrupteurs sont ceux du reste du site.",
+    "Paramètres du bot et sauvegarde : la barre d'enregistrement et les options qui s'ouvrent sont animées.",
+    "Thème clair : les avertissements de Comptage et des Paramètres du bot sont de nouveau lisibles.",
+  ],
+};
+
+const v1_52_14_en: ChangelogEntry = {
+  version: "v1.52.14",
+  date: "2026-10-04",
+  title: "Motion design: last Discord pages",
+  items: [
+    "Counting, Highlights, bot Settings, Invite Tracker and backup settings: cascading entrance, press feedback and theme colors.",
+    "Highlights: keywords and ignored channels appear and disappear smoothly.",
+    "Invite Tracker: sensitivity uses a sliding pill, and toggles match the rest of the site.",
+    "Bot Settings and backups: the save bar and expanding options are animated.",
+    "Light theme: Counting and bot Settings warnings are readable again.",
+  ],
+};
+
+const v1_52_14_es: ChangelogEntry = {
+  version: "v1.52.14",
+  date: "2026-10-04",
+  title: "Motion design: últimas páginas de Discord",
+  items: [
+    "Conteo, Highlights, Ajustes del bot, Invite Tracker y copias de seguridad: entrada en cascada, respuesta al pulsar y colores del tema.",
+    "Highlights: las palabras clave y canales ignorados aparecen y desaparecen con suavidad.",
+    "Invite Tracker: la sensibilidad se elige con una píldora que se desliza y los interruptores son los del resto del sitio.",
+    "Ajustes del bot y copias: la barra de guardado y las opciones desplegables están animadas.",
+    "Tema claro: los avisos de Conteo y Ajustes del bot vuelven a ser legibles.",
+  ],
+};
+
+const v1_52_14_de: ChangelogEntry = {
+  version: "v1.52.14",
+  date: "2026-10-04",
+  title: "Motion Design: letzte Discord-Seiten",
+  items: [
+    "Zählen, Highlights, Bot-Einstellungen, Invite Tracker und Backup-Einstellungen: gestaffelter Aufbau, Klick-Feedback und Theme-Farben.",
+    "Highlights: Stichwörter und ignorierte Kanäle erscheinen und verschwinden sanft.",
+    "Invite Tracker: die Empfindlichkeit wird mit einer gleitenden Markierung gewählt, die Schalter entsprechen dem Rest der Seite.",
+    "Bot-Einstellungen und Backups: Speicherleiste und aufklappende Optionen sind animiert.",
+    "Helles Design: Warnungen bei Zählen und Bot-Einstellungen sind wieder lesbar.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_14_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_14_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_14_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_14_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

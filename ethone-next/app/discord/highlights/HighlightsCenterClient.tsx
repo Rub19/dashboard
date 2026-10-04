@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import { formatApiError } from "@/lib/format-error";
+import { AnimatePresence, motion } from "framer-motion";
+import { SPRING_LAYOUT } from "@/lib/ease";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -319,15 +321,16 @@ export default function HighlightsCenterClient() {
           )}
           <button
             onClick={load}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--panel-border)] text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--panel-border)] text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)] active:scale-[0.94]"
             title="Rafraîchir"
+            aria-label="Rafraîchir"
           >
             <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
           </button>
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto os-scroll space-y-4 pb-44 [overscroll-behavior:contain]">
+      <div className="stagger-children flex-1 min-h-0 overflow-y-auto os-scroll space-y-4 pb-44 [overscroll-behavior:contain]">
         {!discordLoading && manageableGuilds.length === 0 && (
           <div className="v8-panel flex flex-col items-center justify-center p-12 text-center">
             <p className="text-sm text-[var(--text-muted)]">Connecte-toi avec Discord pour gérer tes highlights.</p>
@@ -434,8 +437,14 @@ export default function HighlightsCenterClient() {
                 </p>
               ) : (
                 <div className="flex flex-wrap gap-2">
+                  <AnimatePresence mode="popLayout" initial={false}>
                   {keywords.map((k) => (
-                    <span
+                    <motion.span
+                      layout
+                      initial={{ opacity: 0, scale: 0.85 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.85 }}
+                      transition={SPRING_LAYOUT}
                       key={k.keyword}
                       className="inline-flex items-center gap-1.5 rounded-full border border-[var(--panel-border)] bg-[var(--surface-2)] py-1 pl-3 pr-1.5 text-xs text-[var(--text-primary)]"
                     >
@@ -448,8 +457,9 @@ export default function HighlightsCenterClient() {
                       >
                         <X className="h-3 w-3" />
                       </button>
-                    </span>
+                    </motion.span>
                   ))}
+                  </AnimatePresence>
                 </div>
               )}
             </div>
@@ -475,15 +485,21 @@ export default function HighlightsCenterClient() {
                   type="button"
                   onClick={handleMuteChannel}
                   disabled={!muteChannelId}
-                  className="flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--panel-border)] px-3.5 py-1.5 text-xs font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)] disabled:opacity-40 disabled:pointer-events-none"
+                  className="flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--panel-border)] px-3.5 py-1.5 text-xs font-medium text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)] active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none"
                 >
                   Ignorer ce salon
                 </button>
               </div>
               {mutedChannels.length > 0 && (
                 <div className="flex flex-wrap gap-2 pt-1">
+                  <AnimatePresence mode="popLayout" initial={false}>
                   {mutedChannels.map((c) => (
-                    <span
+                    <motion.span
+                      layout
+                      initial={{ opacity: 0, scale: 0.85 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.85 }}
+                      transition={SPRING_LAYOUT}
                       key={c.id}
                       className="inline-flex items-center gap-1.5 rounded-full border border-[var(--panel-border)] bg-[var(--surface-2)] py-1 pl-3 pr-1.5 text-xs text-[var(--text-muted)]"
                     >
@@ -496,8 +512,9 @@ export default function HighlightsCenterClient() {
                       >
                         <X className="h-3 w-3" />
                       </button>
-                    </span>
+                    </motion.span>
                   ))}
+                  </AnimatePresence>
                 </div>
               )}
             </div>

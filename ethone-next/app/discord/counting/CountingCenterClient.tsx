@@ -158,7 +158,7 @@ export default function CountingCenterClient() {
 
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] p-4 pb-44 text-[var(--text-primary)] sm:p-8">
-      <div className="mx-auto w-full max-w-4xl min-w-0 space-y-6">
+      <div className="stagger-children mx-auto w-full max-w-4xl min-w-0 space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link href={`/discord${guildId ? `?guildId=${guildId}` : ""}`} className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] transition hover:text-[var(--text-primary)]">
             <ArrowLeft className="h-4 w-4" />
@@ -167,7 +167,7 @@ export default function CountingCenterClient() {
           <button
             type="button"
             onClick={() => void load()}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] transition hover:bg-[var(--surface-raised)]/70"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-raised)]/70 active:scale-[0.97]"
           >
             <RefreshCw className="h-3.5 w-3.5" />
             Actualiser
@@ -187,7 +187,7 @@ export default function CountingCenterClient() {
         {ready && config && (
           <>
             {!config.enabled && (
-              <div className="rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] p-4 text-xs leading-relaxed text-amber-100/90">
+              <div className="rounded-2xl border border-[var(--warning)]/25 bg-[var(--warning)]/[0.06] p-4 text-xs leading-relaxed text-[var(--text-primary)]/85">
                 Le jeu est <strong>désactivé</strong> (c&apos;est le réglage par défaut). Choisissez un salon ci-dessous puis activez-le, ou lancez <code className="rounded bg-[var(--surface-raised)]/40 px-1">/counting setup</code> sur Discord.
               </div>
             )}
@@ -238,7 +238,7 @@ export default function CountingCenterClient() {
                 type="button"
                 disabled={saving || config.count === 0}
                 onClick={() => void reset()}
-                className="cursor-pointer rounded-xl border border-rose-500/30 px-4 py-2 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-40"
+                className="cursor-pointer rounded-xl border border-[var(--danger)]/30 px-4 py-2 text-xs font-semibold text-[var(--danger)] transition-[background-color,transform] duration-150 hover:bg-[var(--danger)]/10 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Remettre le compteur à zéro
               </button>

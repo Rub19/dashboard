@@ -314,46 +314,44 @@ function WeatherDetailContent({
     <FloatingPortal>
       <AnimatePresence>
         {open && (
-          <div
+          <motion.div
             ref={refs.setFloating}
-            style={floatingStyles}
+            style={{
+              ...floatingStyles,
+              visibility: isPositioned ? "visible" : "hidden",
+              transformOrigin: actualPlacement?.startsWith("top")
+                ? "bottom right"
+                : "top right",
+            }}
+            initial={{
+              opacity: 0,
+              y: actualPlacement?.startsWith("top") ? 14 : -14,
+              scale: 0.94,
+            }}
+            animate={{
+              opacity: isPositioned ? 1 : 0,
+              y: isPositioned ? 0 : actualPlacement?.startsWith("top") ? 14 : -14,
+              scale: isPositioned ? 1 : 0.94,
+            }}
+            exit={{
+              opacity: 0,
+              y: actualPlacement?.startsWith("top") ? 10 : -10,
+              scale: 0.96,
+              transition: { duration: 0.16, ease: "easeOut" },
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 420,
+              damping: 30,
+              mass: 0.75,
+            }}
             className="z-[var(--z-popover)] pointer-events-auto"
             role="dialog"
             aria-modal="false"
             aria-label={i18n("weather")}
             data-weather-placement={actualPlacement}
           >
-            <motion.div
-              initial={{
-                opacity: 0,
-                y: actualPlacement?.startsWith("top") ? 14 : -14,
-                scale: 0.94,
-              }}
-              animate={{
-                opacity: isPositioned ? 1 : 0,
-                y: isPositioned ? 0 : actualPlacement?.startsWith("top") ? 14 : -14,
-                scale: isPositioned ? 1 : 0.94,
-              }}
-              exit={{
-                opacity: 0,
-                y: actualPlacement?.startsWith("top") ? 10 : -10,
-                scale: 0.96,
-                transition: { duration: 0.16, ease: "easeOut" },
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 420,
-                damping: 30,
-                mass: 0.75,
-              }}
-              style={{
-                visibility: isPositioned ? "visible" : "hidden",
-                transformOrigin: actualPlacement?.startsWith("top")
-                  ? "bottom right"
-                  : "top right",
-              }}
-            >
-              <div className="relative w-88 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-3xl border border-white/[0.09] bg-[#0c1017]/92 dark:bg-[#070b13]/96 p-4.5 text-[var(--text-primary)] shadow-[0_30px_70px_-10px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-3xl">
+            <div className="relative w-88 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-3xl border border-white/[0.09] bg-[#0c1017]/92 dark:bg-[#070b13]/96 p-4.5 text-[var(--text-primary)] shadow-[0_30px_70px_-10px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-3xl">
                 {/* Dynamic breathing sky aura */}
                 <motion.div
                   animate={{
@@ -510,7 +508,6 @@ function WeatherDetailContent({
                 </div>
               </div>
             </motion.div>
-          </div>
         )}
       </AnimatePresence>
     </FloatingPortal>

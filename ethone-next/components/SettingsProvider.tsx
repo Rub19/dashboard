@@ -367,7 +367,7 @@ export default function SettingsProvider({
     root.style.setProperty("--v8-breathe-duration", "0s");
     root.style.setProperty("--v8-ambient-transition", settings.uiAnimations === "snappy" ? "100ms" : settings.uiAnimations === "reduced" ? "1ms" : "150ms");
     root.style.setProperty("--v8-accent", accent);
-    if (settings.reducedMotion) {
+    if (settings.reducedMotion || settings.uiAnimations === "reduced") {
       root.setAttribute("data-reduced-motion", "true");
     } else {
       root.removeAttribute("data-reduced-motion");

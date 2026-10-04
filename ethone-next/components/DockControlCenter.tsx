@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { FloatingPortal } from "@floating-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -68,6 +68,7 @@ function AppleToggle({ label, checked, onChange }: ToggleProps) {
       >
         <motion.span
           className="inline-block h-4.5 w-4.5 rounded-full bg-white shadow-sm"
+          initial={false}
           animate={{
             x: checked ? 18 : 0,
           }}
@@ -166,7 +167,10 @@ function AppleVolumeSlider({ label, value, onChange }: AppleVolumeSliderProps) {
         >
           {/* Active filled track */}
           <div
-            className="absolute inset-y-0 left-0 rounded-full bg-[var(--accent-primary)] shadow-[0_0_10px_var(--glow-color)] transition-[width] duration-75"
+            className={cn(
+              "absolute inset-y-0 left-0 rounded-full bg-[var(--accent-primary)] shadow-[0_0_10px_var(--glow-color)]",
+              dragging ? "transition-none" : "transition-[width] duration-75"
+            )}
             style={{ width: `${pct}%` }}
           />
 
@@ -208,7 +212,7 @@ function QuickActionCard({ icon, label, active, onClick }: QuickActionCardProps)
       whileTap={{ scale: 0.95 }}
       transition={{ type: "spring", stiffness: 450, damping: 25 }}
       className={cn(
-        "group relative flex flex-col items-center justify-center gap-2 rounded-2xl border p-3 text-center transition-all cursor-pointer overflow-hidden",
+        "group relative flex flex-col items-center justify-center gap-2 rounded-2xl border p-3 text-center cursor-pointer overflow-hidden transition-colors",
         active
           ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-[0_0_18px_-3px_var(--glow-color)]"
           : "border-white/[0.08] bg-white/[0.03] text-[var(--text-primary)] hover:border-white/[0.16] hover:bg-white/[0.07]"
@@ -296,7 +300,7 @@ export default function DockControlCenter({
             aria-modal="false"
             aria-label={i18n("controlCenter")}
           >
-            <div className="relative max-h-[calc(82vh-2.5rem)] space-y-4 overflow-y-auto no-scrollbar rounded-3xl border border-white/[0.09] bg-[#0c1017]/92 dark:bg-[#080c14]/95 p-4.5 text-[var(--text-primary)] shadow-[0_28px_60px_-10px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-3xl">
+            <div className="relative max-h-[min(82vh-2.5rem,640px)] space-y-3.5 overflow-y-auto no-scrollbar rounded-3xl border border-white/[0.09] bg-[#0c1017]/92 dark:bg-[#080c14]/95 p-4 text-[var(--text-primary)] shadow-[0_28px_60px_-10px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-3xl">
               {/* Dynamic ambient background aura */}
               <div
                 className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-gradient-to-br from-violet-500/20 via-[var(--accent-primary)]/15 to-transparent blur-3xl opacity-70 animate-pulse"
@@ -333,38 +337,43 @@ export default function DockControlCenter({
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] px-0.5">
                   {i18n("controlCenterAnimations")}
                 </p>
-                <div className="relative flex p-1 rounded-2xl bg-white/[0.03] border border-white/[0.07] backdrop-blur-md gap-1">
-                  {UI_ANIMATIONS.map((id) => {
-                    const isSelected = settings.uiAnimations === id;
-                    return (
-                      <button
-                        key={id}
-                        type="button"
-                        onClick={() => {
-                          hapticLightImpact();
-                          update({ uiAnimations: id });
-                        }}
-                        className={cn(
-                          "relative flex-1 py-1.5 px-2 text-[11px] font-semibold text-center rounded-xl transition-colors cursor-pointer select-none z-10",
-                          isSelected
-                            ? "text-white"
-                            : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                        )}
-                      >
-                        {isSelected && (
-                          <motion.div
-                            layoutId="cc-active-pill"
-                            className="absolute inset-0 rounded-xl bg-white/[0.12] border border-white/[0.18] shadow-sm backdrop-blur-sm"
-                            transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                          />
-                        )}
-                        <span className="relative z-10 truncate">
-                          {i18n(`uiAnimations${id.charAt(0).toUpperCase() + id.slice(1)}`)}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+                <LayoutGroup id="cc-animations-group">
+                  <div className="relative flex p-1 rounded-2xl bg-white/[0.03] border border-white/[0.07] backdrop-blur-md gap-1">
+                    {UI_ANIMATIONS.map((id) => {
+                      const isSelected = settings.uiAnimations === id;
+                      return (
+                        <button
+                          key={id}
+                          type="button"
+                          onClick={() => {
+                            hapticLightImpact();
+                            update({
+                              uiAnimations: id,
+                              reducedMotion: id === "reduced",
+                            });
+                          }}
+                          className={cn(
+                            "relative flex-1 py-1.5 px-2 text-[11px] font-semibold text-center rounded-xl transition-colors cursor-pointer select-none z-10",
+                            isSelected
+                              ? "text-white"
+                              : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                          )}
+                        >
+                          {isSelected && (
+                            <motion.div
+                              layoutId="cc-active-pill"
+                              className="absolute inset-0 rounded-xl bg-white/[0.12] border border-white/[0.18] shadow-sm backdrop-blur-sm"
+                              transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                            />
+                          )}
+                          <span className="relative z-10 truncate">
+                            {i18n(`uiAnimations${id.charAt(0).toUpperCase() + id.slice(1)}`)}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </LayoutGroup>
               </section>
 
               {/* Section 2: Bento Quick Actions */}
@@ -442,7 +451,7 @@ export default function DockControlCenter({
                           play("click", pack);
                         }}
                         className={cn(
-                          "group relative flex flex-col items-center gap-1.5 rounded-xl border p-2 text-[10px] font-medium transition-all cursor-pointer",
+                          "group relative flex flex-col items-center gap-1.5 rounded-xl border p-2 text-[10px] font-medium cursor-pointer transition-colors",
                           active
                             ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-[0_0_14px_-2px_var(--glow-color)]"
                             : "border-white/[0.08] bg-white/[0.03] text-[var(--text-primary)] hover:border-white/[0.14] hover:bg-white/[0.06]"

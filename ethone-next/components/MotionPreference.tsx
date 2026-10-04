@@ -8,5 +8,6 @@ import { useSettings } from "@/components/SettingsProvider";
  * composant devait y penser lui-même et beaucoup d'animations (pastilles layoutId…) l'ignoraient. */
 export default function MotionPreference({ children }: { children: React.ReactNode }) {
   const { settings } = useSettings();
-  return <MotionConfig reducedMotion={settings.reducedMotion ? "always" : "user"}>{children}</MotionConfig>;
+  const isReduced = Boolean(settings.reducedMotion) || settings.uiAnimations === "reduced";
+  return <MotionConfig reducedMotion={isReduced ? "always" : "user"}>{children}</MotionConfig>;
 }

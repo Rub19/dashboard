@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-05, version 1.55.12)
+# ETHONE — passation à la prochaine IA (état au 2026-10-05, version 1.55.13)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 
@@ -174,6 +174,7 @@ git log --oneline -10
 - Réglages / Workspaces (v1.55.10) : ajout de l'alias statique `/settings/workspaces` (avec un « s ») généré au build et redirigé de manière transparente vers la section Espace de travail des paramètres, éliminant l'erreur 404.
 - Dock & Volets (v1.55.11) : refonte motion design Apple-grade de l'ensemble des volets du dock (Centre de contrôle, lecteur média, météo, minuteur Focus, lanceur d'apps) avec physique de ressorts Framer Motion, glassmorphism Sonoma, centrage absolu viewport garanti, slider tactile précis avec retour pourcentage, isolation `FloatingPortal` et interrupteurs switch fluides conformes aux maquettes.
 - Brain AI (v1.55.12) : enrichissement en temps réel du contexte Brain avec les tâches en attente (titres et décompte), l'agenda du jour avec les horaires d'événements, et l'interrogation Supabase automatique des habitudes quotidiennes (table `ethone_habits` et complétions) lors de questions sur les routines, séries ou objectifs du jour.
+- Animations UI & Flyouts du Dock (v1.55.13) : correction complète des saccades et bugs d'animations. Suppression du wildcard CSS (* transition-duration) qui perturbait les calculs transform RAF de Framer Motion en mode animations réduites. Ajustement au pixel près des boutons switch Apple (h-5.5 w-10, knob h-4.5 w-4.5 avec translation x: 18, suppression du slide intempestif au montage via initial={false}). Fluidification du slider volume avec suppression des délais CSS au glissement. Correction du cycle d'unmount dans AnimatePresence pour que la météo, le lanceur, le minuteur Focus et le centre de contrôle jouent leur animation de sortie fluide sans coupure visuelle.
 
 ## Reste à faire (par priorité)
 1. **Bot animé, vérification réelle** : regarder dans un vrai salon qu'une réponse du bot affiche bien les émojis animés (29 émojis d'application synchronisés au dernier démarrage) et qu'une arrivée de membre envoie la carte GIF (interrupteur et aperçu GIF intégrés sur le site).

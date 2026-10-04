@@ -97,20 +97,27 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
 
   const popoverRef = useRef<HTMLDivElement | null>(null);
 
-  const updatePosition = useCallback(() => {
-    if (!buttonRef.current) return;
+  const getPosition = useCallback(() => {
+    if (!buttonRef.current) return { left: 0, bottom: 0 };
     const rect = buttonRef.current.getBoundingClientRect();
     const padding = 12;
     const gap = 12;
     const width = 340;
-    const left = Math.min(rect.left, window.innerWidth - width - padding);
+    const center = rect.left + rect.width / 2;
+    const left = Math.min(Math.max(padding, center - width / 2), window.innerWidth - width - padding);
     const bottom = window.innerHeight - rect.top + gap;
-    setPos({ left: Math.max(padding, left), bottom });
+    return { left: Math.round(left), bottom: Math.round(bottom) };
   }, []);
+
+  const updatePosition = useCallback(() => {
+    const next = getPosition();
+    if (next.bottom > 0) setPos(next);
+  }, [getPosition]);
 
   function handleEnter() {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    updatePosition();
+    const next = getPosition();
+    if (next.bottom > 0) setPos(next);
     setOpen(true);
   }
 
@@ -310,7 +317,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
       {/* Flyout Card mounted in FloatingPortal */}
       <FloatingPortal>
         <AnimatePresence>
-          {open && (
+          {open && pos.bottom > 0 && (
             <motion.div
               ref={popoverRef}
               initial={{ opacity: 0, y: 16, scale: 0.95 }}

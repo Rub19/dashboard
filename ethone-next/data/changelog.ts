@@ -43984,6 +43984,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_12_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_12_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_12_de);
 
+const v1_55_13_fr: ChangelogEntry = {
+  version: "v1.55.13",
+  date: "2026-10-05",
+  title: "Optimisation et fluidification des animations UI & flyouts du Dock",
+  items: [
+    "Suppression des conflits CSS interceptant les transitions Framer Motion en mode animations réduites",
+    "Correction des boutons bascules (switches) du Centre de contrôle avec géométrie symétrique et knob initial stabilisé",
+    "Fluidification du curseur de volume sans saccade ni latence lors du glissement",
+    "Ajout des transitions de sortie fluides sur le lanceur d'applications, le Centre de contrôle, le Focus et la météo",
+    "Harmonisation des transitions sur les cartes Bento du Dock sans interférence avec la physique de ressort",
+  ],
+};
+
+const v1_55_13_en: ChangelogEntry = {
+  version: "v1.55.13",
+  date: "2026-10-05",
+  title: "Optimization and smoothing of UI animations & Dock flyouts",
+  items: [
+    "Removed CSS wildcard conflicts intercepting Framer Motion transitions in reduced motion mode",
+    "Fixed Control Center toggle switches with symmetrical geometry and stabilized initial knob state",
+    "Smoothed volume slider dragging eliminating track lag and jitter",
+    "Added smooth exit transitions on App Launcher, Control Center, Focus popover, and Weather flyout",
+    "Harmonized button transitions across Dock Bento cards without spring physics conflicts",
+  ],
+};
+
+const v1_55_13_es: ChangelogEntry = {
+  version: "v1.55.13",
+  date: "2026-10-05",
+  title: "Optimización y fluidez de animaciones UI y flyouts del Dock",
+  items: [
+    "Eliminación de conflictos CSS que afectaban las transiciones de Framer Motion en modo de movimiento reducido",
+    "Corrección de los interruptores del Centro de control con geometría simétrica y posición inicial estable",
+    "Fluidez mejorada del control de volumen sin retrasos al arrastrar",
+    "Transiciones de salida suaves añadidas al lanzador, Centro de control, Focus y ventana flotante del clima",
+    "Armonización de transiciones en tarjetas Bento del Dock sin conflictos de física de resorte",
+  ],
+};
+
+const v1_55_13_de: ChangelogEntry = {
+  version: "v1.55.13",
+  date: "2026-10-05",
+  title: "Optimierung und Glättung von UI-Animationen & Dock-Flyouts",
+  items: [
+    "Beseitigung von CSS-Konflikten, die Framer-Motion-Übergänge im Modus für reduzierte Bewegung gestört haben",
+    "Korrektur der Kontrollzentrum-Kippschalter mit symmetrischer Geometrie und stabilisiertem Anfangszustand",
+    "Ruckelfreies Ziehen des Lautstärkereglers ohne Verzögerung",
+    "Sanfte Ausgangsübergänge für App-Launcher, Kontrollzentrum, Fokus-Popover und Wetter-Flyout",
+    "Harmonisierte Übergänge für Bento-Karten im Dock ohne Konflikte mit der Federphysik",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_13_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_13_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_13_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_13_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

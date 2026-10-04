@@ -12,7 +12,7 @@ import { useSettings } from "@/components/SettingsProvider";
 export function useMotionPref() {
   const osReduced = !!useReducedMotion();
   const { settings } = useSettings();
-  const reduced = osReduced || Boolean(settings.reducedMotion);
+  const reduced = osReduced || Boolean(settings.reducedMotion) || settings.uiAnimations === "reduced";
   return {
     reduced,
     /** Returns `off` when reduced-motion is on, else `on`. */

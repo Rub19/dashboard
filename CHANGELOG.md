@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.13 — 2026-10-05
+
+**Optimisation et fluidification des animations UI & flyouts du Dock**
+
+- Suppression des conflits CSS interceptant les transitions Framer Motion en mode animations réduites
+- Correction des boutons bascules (switches) du Centre de contrôle avec géométrie symétrique et knob initial stabilisé
+- Fluidification du curseur de volume sans saccade ni latence lors du glissement
+- Ajout des transitions de sortie fluides sur le lanceur d'applications, le Centre de contrôle, le Focus et la météo
+- Harmonisation des transitions sur les cartes Bento du Dock sans interférence avec la physique de ressort
+
 ## v1.55.12 — 2026-10-05
 
 **Brain AI : Contexte en direct enrichi (Tâches, Agenda et Habitudes)**

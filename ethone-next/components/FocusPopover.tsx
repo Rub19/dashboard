@@ -196,7 +196,7 @@ export default function FocusPopover({
                           else pause();
                         }}
                         className={cn(
-                          "flex h-9 w-9 items-center justify-center rounded-xl border transition-all cursor-pointer",
+                          "flex h-9 w-9 items-center justify-center rounded-xl border transition-colors cursor-pointer",
                           state.paused
                             ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-[0_0_12px_var(--glow-color)]"
                             : "border-white/[0.08] bg-white/[0.05] text-white hover:bg-white/[0.1]"
@@ -214,7 +214,7 @@ export default function FocusPopover({
                           hapticLightImpact();
                           stop();
                         }}
-                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.05] text-[var(--danger)] transition-all hover:border-red-500/40 hover:bg-red-500/15 cursor-pointer"
+                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.05] text-[var(--danger)] transition-colors hover:border-red-500/40 hover:bg-red-500/15 cursor-pointer"
                         aria-label={i18n("stop")}
                       >
                         <Icon name="square" className="h-4 w-4" />
@@ -228,7 +228,7 @@ export default function FocusPopover({
                           hapticLightImpact();
                           skip();
                         }}
-                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.05] text-[var(--text-muted)] transition-all hover:bg-white/[0.1] hover:text-white cursor-pointer"
+                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.05] text-[var(--text-muted)] transition-colors hover:bg-white/[0.1] hover:text-white cursor-pointer"
                         aria-label={i18n("skip")}
                       >
                         <Icon name="skipForward" className="h-4 w-4" />
@@ -275,7 +275,7 @@ export default function FocusPopover({
                       start(p.id);
                       onClose();
                     }}
-                    className="group relative flex flex-col items-center gap-1 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-2.5 text-center transition-all hover:border-white/[0.16] hover:bg-white/[0.07] cursor-pointer"
+                    className="group relative flex flex-col items-center gap-1 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-2.5 text-center cursor-pointer transition-colors hover:border-white/[0.16] hover:bg-white/[0.07]"
                   >
                     <div
                       className={cn(

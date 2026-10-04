@@ -468,8 +468,24 @@ body {
   --theme-transition: 0.01ms;
 }
 
-[data-reduced-motion="true"] *,
-[data-ui-animations="reduced"] * {
+[data-reduced-motion="true"] button,
+[data-reduced-motion="true"] a,
+[data-reduced-motion="true"] input,
+[data-reduced-motion="true"] select,
+[data-reduced-motion="true"] textarea,
+[data-reduced-motion="true"] [role="button"],
+[data-reduced-motion="true"] [role="tab"],
+[data-reduced-motion="true"] .transition-colors,
+[data-reduced-motion="true"] .transition-all,
+[data-ui-animations="reduced"] button,
+[data-ui-animations="reduced"] a,
+[data-ui-animations="reduced"] input,
+[data-ui-animations="reduced"] select,
+[data-ui-animations="reduced"] textarea,
+[data-ui-animations="reduced"] [role="button"],
+[data-ui-animations="reduced"] [role="tab"],
+[data-ui-animations="reduced"] .transition-colors,
+[data-ui-animations="reduced"] .transition-all {
   animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
@@ -2864,10 +2880,7 @@ html {
   transition-duration: 100ms;
   transition-timing-function: var(--ease-snap);
 }
-[data-ui-animations="reduced"] * {
-  transition-duration: 0.01ms !important;
-  animation-duration: 0.01ms !important;
-}
+
 
 [data-ui-glow="true"] [data-glow] {
   box-shadow: 0 0 24px -8px color-mix(in srgb, var(--accent) 25%, transparent);

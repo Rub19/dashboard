@@ -77,7 +77,7 @@ export default function AmbientSoundControl({ value, onChange, compact }: Ambien
   const i18n = useI18n();
   const { settings } = useSettings();
   const { playAmbient, stopAmbient, ambientSound } = useSound();
-  const reducedMotion = !!settings.reducedMotion;
+  const reducedMotion = Boolean(settings.reducedMotion) || settings.uiAnimations === "reduced";
 
   const current = (value ?? ambientSound) || "none";
 

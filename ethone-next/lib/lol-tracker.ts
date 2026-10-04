@@ -50,6 +50,8 @@ export interface LolPlayer {
     champion?: {
       small?: string;
     };
+    spells?: LolSpellAsset[];
+    rune?: LolRuneAsset;
   };
   stats: LolPlayerStats;
 }

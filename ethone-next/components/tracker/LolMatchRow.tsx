@@ -83,7 +83,10 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
   }, [players]);
 
   // Uniquement ce que l'API a renvoyé : un emplacement manquant reste vide (aucun sort ni objet inventé).
-  const spells = [me?.spells?.[0] ?? null, me?.spells?.[1] ?? null];
+  // Le worker range sorts et rune dans `assets` (anciennes données en cache) ; l'appel direct à Riot au premier niveau.
+  const mySpells = me?.spells?.length ? me.spells : me?.assets?.spells;
+  const spells = [mySpells?.[0] ?? null, mySpells?.[1] ?? null];
+  const rune = me?.rune?.image ? me.rune : me?.assets?.rune;
   const itemSlots = useMemo(() => {
     const real = (me?.items || []).filter((it): it is LolItem => Boolean(it?.image && !LOL_TRINKET_IDS.has(itemIdOf(it))));
     return Array.from({ length: 6 }, (_, i) => real[i] ?? null);
@@ -174,10 +177,10 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
               ))}
             </div>
 
-            {me?.rune?.image && (
-              <div className="h-5 w-5 overflow-hidden rounded-md border border-amber-500/30 bg-black/50 flex items-center justify-center" title={me.rune.name}>
+            {rune?.image && (
+              <div className="h-5 w-5 overflow-hidden rounded-md border border-amber-500/30 bg-black/50 flex items-center justify-center" title={rune.name}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={me.rune.image} alt="" className="h-4 w-4 object-contain" />
+                <img src={rune.image} alt="" className="h-4 w-4 object-contain" />
               </div>
             )}
           </div>
@@ -512,7 +515,8 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                             const pTrs = calculateLolTRS(p);
                             const pDmgPercent = Math.min(100, Math.round((p.stats.damage / maxDamage) * 100));
 
-                            const pSpells = [p.spells?.[0] ?? null, p.spells?.[1] ?? null];
+                            const pSpellList = p.spells?.length ? p.spells : p.assets?.spells;
+                            const pSpells = [pSpellList?.[0] ?? null, pSpellList?.[1] ?? null];
                             const pValid = (p.items || []).filter((it): it is LolItem => Boolean(it?.image && !LOL_TRINKET_IDS.has(itemIdOf(it))));
                             const pItemSlots = Array.from({ length: 6 }, (_, i) => pValid[i] ?? null);
                             const pTrinket = p.items?.find((it) => it?.image && LOL_TRINKET_IDS.has(itemIdOf(it))) ?? null;

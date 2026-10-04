@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.53.4 — 2026-10-04
+
+**Tracker LoL : sorts et rune affichés**
+
+- Les sorts d'invocateur et la rune principale de chaque joueur s'affichent, y compris pour les parties déjà en cache.
+
 ## v1.53.3 — 2026-10-04
 
 **Tracker LoL : vrais objets affichés**

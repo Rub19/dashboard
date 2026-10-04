@@ -526,6 +526,9 @@ function normalizeLolScoreboard(info, mePuuid, ddragonData) {
         spells: Object.freeze(spells),
         rune: rune
       }),
+      // Aussi au premier niveau : c'est là que le tableau de bord les lit (comme pour l'appel direct à Riot).
+      spells: Object.freeze(spells),
+      rune,
       items: Object.freeze(items)
     });
   });

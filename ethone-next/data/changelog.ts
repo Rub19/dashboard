@@ -43093,6 +43093,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_53_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_53_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_53_3_de);
 
+const v1_53_4_fr: ChangelogEntry = {
+  version: "v1.53.4",
+  date: "2026-10-04",
+  title: "Tracker LoL : sorts et rune affichés",
+  items: [
+    "Les sorts d'invocateur et la rune principale de chaque joueur s'affichent, y compris pour les parties déjà en cache.",
+  ],
+};
+
+const v1_53_4_en: ChangelogEntry = {
+  version: "v1.53.4",
+  date: "2026-10-04",
+  title: "LoL tracker: spells and rune shown",
+  items: [
+    "Each player's summoner spells and keystone rune now display, including for already cached matches.",
+  ],
+};
+
+const v1_53_4_es: ChangelogEntry = {
+  version: "v1.53.4",
+  date: "2026-10-04",
+  title: "Tracker de LoL: hechizos y runa",
+  items: [
+    "Los hechizos de invocador y la runa principal de cada jugador se muestran, también en las partidas ya en caché.",
+  ],
+};
+
+const v1_53_4_de: ChangelogEntry = {
+  version: "v1.53.4",
+  date: "2026-10-04",
+  title: "LoL-Tracker: Zauber und Rune",
+  items: [
+    "Beschwörerzauber und Schlüsselrune jedes Spielers werden angezeigt, auch für bereits zwischengespeicherte Matches.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_53_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_53_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_53_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_53_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

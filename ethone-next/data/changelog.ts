@@ -43878,6 +43878,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_10_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_10_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_10_de);
 
+const v1_55_11_fr: ChangelogEntry = {
+  version: "v1.55.11",
+  date: "2026-10-05",
+  title: "Dock : refonte motion design complète Apple-grade, volets bento et fluidité extrême",
+  items: [
+    "Centre de contrôle (DockControlCenter) : nouvelle esthétique macOS Sonoma en verre dépoli avec contrôle segmenté fluide des animations (layoutId), curseur de volume capsule interactif, interrupteurs à ressorts élastiques et cartes d'actions rapides tactiles.",
+    "Lecteur Média (DockMediaFlyout) : barres d'égaliseur audio dansantes sous l'icône du dock, halo ambiant de pochette d'album animé, commandes circulaires tactiles avec micro-rebonds et horodatages précis.",
+    "Météo et Minuteur Focus : halo atmosphérique respirant selon les conditions célestes, icône météo en lévitation, jauges bento d'humidité/vent et cartes de préréglages Focus tactiles.",
+    "Barre du Dock et Launchpad : grossissement magnétique à physique de ressorts, infobulles flottantes au survol, voyants d'activité lumineux sous les applications ouvertes et recherche instantanée dans le lanceur.",
+  ],
+};
+
+const v1_55_11_en: ChangelogEntry = {
+  version: "v1.55.11",
+  date: "2026-10-05",
+  title: "Dock: Complete Apple-grade motion design overhaul, bento flyouts, and ultra-fluid physics",
+  items: [
+    "Control Center (DockControlCenter): new macOS Sonoma frosted glass aesthetic with sliding segmented animation control, tactile capsule volume slider, elastic spring switches, and quick action bento cards.",
+    "Media Flyout (DockMediaFlyout): dynamic dancing audio visualizer bars under dock avatar, breathing album cover ambient glow, tactile spring playback controls, and elapsed/remaining timestamps.",
+    "Weather & Focus Popovers: condition-reactive breathing sky glow, levitating weather icon, animated humidity/wind bento gauges, and tactile Focus timer presets.",
+    "Dock Bar & Launchpad: spring magnification micro-interactions, floating hover tooltips, active indicator glow dots under running items, and real-time instant search in the app launcher.",
+  ],
+};
+
+const v1_55_11_es: ChangelogEntry = {
+  version: "v1.55.11",
+  date: "2026-10-05",
+  title: "Dock: Rediseño completo con motion design grado Apple, paneles bento y máxima fluidez",
+  items: [
+    "Centro de Control (DockControlCenter): estética de vidrio esmerilado macOS Sonoma con selector deslizante de animaciones, deslizador de volumen en cápsula, interruptores elásticos y tarjetas bento táctiles.",
+    "Reproductor de Medios (DockMediaFlyout): barras de ecualizador dinámicas bajo el icono del dock, resplandor ambiental de portada, controles de reproducción con rebote elástico y marcas de tiempo.",
+    "Clima y Temporizador Focus: resplandor atmosférico reactivo al cielo, icono en levitación, medidores bento animados y ajustes preestablecidos táctiles.",
+    "Barra del Dock y Launchpad: magnificación con física de resorte, tooltips flotantes al pasar el cursor, puntos luminosos de estado activo y búsqueda en tiempo real.",
+  ],
+};
+
+const v1_55_11_de: ChangelogEntry = {
+  version: "v1.55.11",
+  date: "2026-10-05",
+  title: "Dock: Komplettes Apple-Grade Motion Design Upgrade, Bento-Flyouts und höchste Fluidität",
+  items: [
+    "Kontrollzentrum (DockControlCenter): macOS Sonoma Milchglas-Ästhetik mit gleitender segmentierter Animationssteuerung, Kapsel-Lautstärkeregler, elastischen Federschaltern und taktilen Bento-Karten.",
+    "Media-Flyout (DockMediaFlyout): tanzende Audio-Visualizer-Balken unter dem Dock-Icon, atmender Album-Cover-Glanz, taktile Wiedergabesteuerung mit Feder-Rebounds und Zeitstempel.",
+    "Wetter & Focus-Popover: zustandsabhängiges atmosphärisches Himmelsleuchten, schwebendes Wettersymbol, animierte Bento-Feuchtigkeits-/Windanzeigen und taktile Fokus-Presets.",
+    "Dock-Leiste & Launchpad: magnetische Vergrößerung mit Federphysik, schwebende Tooltips beim Hovern, leuchtende Aktivitätsanzeigen unter aktiven Apps und Echtzeitsuche im App-Launcher.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_11_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_11_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_11_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_11_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

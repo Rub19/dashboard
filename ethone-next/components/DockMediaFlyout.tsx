@@ -21,6 +21,14 @@ import { sendSpotifyCommand } from "@/lib/spotify-client";
 import MediaProgress from "@/components/MediaProgress";
 import SafeImage from "@/components/SafeImage";
 import ServiceIcon from "@/components/ServiceIcon";
+import { hapticLightImpact } from "@/lib/haptics";
+
+function formatMs(ms: number): string {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+}
 
 export type DockMediaFlyoutProps = {
   nowPlaying: NowPlaying | null;
@@ -92,8 +100,8 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
     if (!buttonRef.current) return;
     const rect = buttonRef.current.getBoundingClientRect();
     const padding = 12;
-    const gap = 8;
-    const width = 320; // w-80
+    const gap = 10;
+    const width = 340; // w-85
     const left = Math.min(rect.left, window.innerWidth - width - padding);
     const bottom = window.innerHeight - rect.top + gap;
     setPos({ left: Math.max(padding, left), bottom });
@@ -130,10 +138,13 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
     async (action: string, extras?: Record<string, unknown>) => {
       setPending(true);
       try {
-        await sendSpotifyCommand(action as "play" | "pause" | "next" | "previous" | "volume" | "seek" | "save" | "unsave", {
-          clientId: effectiveClientId,
-          ...extras,
-        });
+        await sendSpotifyCommand(
+          action as "play" | "pause" | "next" | "previous" | "volume" | "seek" | "save" | "unsave",
+          {
+            clientId: effectiveClientId,
+            ...extras,
+          }
+        );
         success(i18n("ok"));
       } catch (err) {
         showError(err instanceof Error ? err.message : i18n("playbackControlFailed"));
@@ -141,27 +152,31 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
         setPending(false);
       }
     },
-    [effectiveClientId, i18n, showError, success],
+    [effectiveClientId, i18n, showError, success]
   );
 
   async function toggleLike() {
     if (!trackId) return;
+    hapticLightImpact();
     const action = isLiked ? "unsave" : "save";
     await sendSpotifyCommand(action, { trackId });
     setIsLiked((v) => !v);
   }
 
   async function togglePlay() {
+    hapticLightImpact();
     const action = isPlaying ? "pause" : "play";
     await control(action);
     setIsPlaying((v) => !v);
   }
 
   async function skipNext() {
+    hapticLightImpact();
     await control("next");
   }
 
   async function skipPrevious() {
+    hapticLightImpact();
     await control("previous");
   }
 
@@ -176,11 +191,12 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
         });
       }, 120);
     },
-    [nowPlaying?.deviceId, control],
+    [nowPlaying?.deviceId, control]
   );
 
   async function seek(deltaMs: number) {
     if (!duration) return;
+    hapticLightImpact();
     const next = Math.min(duration, Math.max(0, (nowPlaying?.progressMs || 0) + deltaMs));
     await control("seek", { positionMs: next });
     progressRef.current = next;
@@ -193,7 +209,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
       setLocalProgress(next);
       void control("seek", { positionMs: next });
     },
-    [control],
+    [control]
   );
 
   const buttonLabel = hasTrack ? `${title} - ${artist}` : i18n("media");
@@ -204,10 +220,10 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
       if (!buttonRef.current) return;
       const rect = buttonRef.current.getBoundingClientRect();
       const padding = 12;
-      const gap = 8;
-      const width = 320; // w-80
+      const gap = 10;
+      const width = 340;
       const left = Math.min(rect.left, window.innerWidth - width - padding);
-      const bottom = window.innerHeight - rect.top - gap;
+      const bottom = window.innerHeight - rect.top + gap;
       setPos({ left: Math.max(padding, left), bottom });
     };
     update();
@@ -225,194 +241,277 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
     >
-      <button
+      {/* Dock Icon Button */}
+      <motion.button
         ref={buttonRef}
         type="button"
         aria-label={buttonLabel}
+        whileHover={{ scale: 1.15, y: -2 }}
+        whileTap={{ scale: 0.92 }}
+        transition={{ type: "spring", stiffness: 450, damping: 22 }}
         onClick={(e) => {
           e.stopPropagation();
+          hapticLightImpact();
           if (timeoutRef.current) clearTimeout(timeoutRef.current);
           updatePosition();
           setOpen((v) => !v);
         }}
-        className="group/media relative flex h-10 w-10 cursor-pointer flex-col items-center justify-center rounded-xl transition-all duration-200 ease-out hover:bg-white/[0.08] hover:scale-115 active:scale-95"
+        className="group/media relative flex h-10 w-10 cursor-pointer flex-col items-center justify-center rounded-xl transition-all duration-200 ease-out hover:bg-white/[0.08]"
       >
-        <div className={`relative flex items-center justify-center overflow-hidden rounded-lg transition-all ${
-          isPlaying && hasTrack ? "ring-1 ring-[var(--accent-primary)]/70 shadow-[0_0_8px_var(--glow-color)]" : "ring-1 ring-white/10"
-        }`}>
+        <div
+          className={`relative flex items-center justify-center overflow-hidden rounded-lg transition-all ${
+            isPlaying && hasTrack
+              ? "ring-2 ring-[var(--accent-primary)]/80 shadow-[0_0_12px_var(--glow-color)]"
+              : "ring-1 ring-white/10"
+          }`}
+        >
           {hasTrack && coverCandidates.length > 0 ? (
             <SafeImage
               candidates={coverCandidates}
               alt={title}
               size={48}
-              className="h-5.5 w-5.5 rounded-lg object-cover transition-transform group-hover/media:scale-105"
+              className="h-6 w-6 rounded-lg object-cover transition-transform group-hover/media:scale-105"
               iconClassName="h-3.5 w-3.5"
               loading="eager"
               priority
               crossOrigin="anonymous"
             />
           ) : (
-            <div className="flex h-5.5 w-5.5 items-center justify-center rounded-lg bg-black/40">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-black/40">
               <ServiceIcon id="spotify" icon="music" className="h-4 w-4" colored />
             </div>
           )}
         </div>
 
-        {isPlaying && hasTrack && (
-          <span className="absolute -bottom-0.5 flex h-1.5 items-end gap-0.5" aria-hidden="true">
-            <span className="h-1 w-0.5 animate-pulse rounded-full bg-[var(--accent-primary)]" />
-            <span
-              className="h-2 w-0.5 animate-pulse rounded-full bg-[var(--accent-primary)]"
-              style={{ animationDelay: "100ms" }}
-            />
-            <span
-              className="h-1 w-0.5 animate-pulse rounded-full bg-[var(--accent-primary)]"
-              style={{ animationDelay: "200ms" }}
-            />
+        {/* Dynamic Equalizer Bars */}
+        {isPlaying && hasTrack ? (
+          <span className="absolute -bottom-1 flex h-2 items-end gap-0.5" aria-hidden="true">
+            {[0, 1, 2, 3].map((i) => (
+              <motion.span
+                key={i}
+                className="w-0.5 rounded-full bg-[var(--accent-primary)] shadow-[0_0_4px_var(--accent-primary)]"
+                animate={{
+                  height: [2.5, 8 + (i % 2) * 3, 3.5, 9 - (i % 2) * 2, 2.5],
+                }}
+                transition={{
+                  duration: 0.9,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  delay: i * 0.14,
+                  ease: "easeInOut",
+                }}
+              />
+            ))}
           </span>
-        )}
-      </button>
+        ) : null}
+      </motion.button>
 
+      {/* Flyout Card */}
       <AnimatePresence>
         {open && (
           <motion.div
             ref={popoverRef}
-            initial={{ opacity: 0, y: 12, scale: 0.94 }}
+            initial={{ opacity: 0, y: 16, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 420, damping: 30, mass: 0.75 }}
+            exit={{ opacity: 0, y: 12, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 440, damping: 28, mass: 0.75 }}
             onMouseEnter={() => {
               if (timeoutRef.current) clearTimeout(timeoutRef.current);
             }}
             onMouseLeave={handleLeave}
             style={{ position: "fixed", left: pos.left, bottom: pos.bottom }}
-            className="z-[var(--z-popover)] w-80 max-w-[calc(100vw-1.5rem)] rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)]/92 dark:bg-[#090d16]/92 p-4 text-[var(--text-primary)] shadow-[0_24px_50px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.08)] backdrop-blur-2xl pointer-events-auto origin-bottom overflow-hidden"
+            className="z-[var(--z-popover)] w-84 max-w-[calc(100vw-1.5rem)] rounded-3xl border border-white/[0.09] bg-[#0c1017]/92 dark:bg-[#070b13]/95 p-4.5 text-[var(--text-primary)] shadow-[0_30px_70px_-10px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-3xl pointer-events-auto origin-bottom overflow-hidden"
           >
-            {/* Subtle ambient music aura */}
-            <div
-              className="pointer-events-none absolute -right-6 -top-6 h-36 w-36 rounded-full bg-gradient-to-br from-emerald-500/20 via-sky-500/15 to-transparent blur-2xl opacity-60"
+            {/* Dynamic ambient music aura */}
+            <motion.div
+              animate={{
+                scale: isPlaying ? [1, 1.15, 1] : 1,
+                opacity: isPlaying ? [0.6, 0.85, 0.6] : 0.4,
+              }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+              className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-gradient-to-br from-emerald-500/25 via-[var(--accent-primary)]/20 to-sky-500/15 blur-3xl"
               aria-hidden="true"
             />
+
             {!hasTrack ? (
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-md">
-                  <ServiceIcon id="spotify" icon="music" className="h-7 w-7" colored />
+              <div className="relative flex items-center gap-3 py-1">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.03] shadow-md">
+                  <ServiceIcon id="spotify" icon="music" className="h-6 w-6" colored />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h4 className="truncate text-xs font-bold text-[var(--text-primary)]">Spotify</h4>
                   <p className="truncate text-[11px] text-[var(--text-muted)]">
-                    {hasClientId ? i18n("spotifyNoPlayback", "En attente de lecture") : i18n("spotifyNotConfigured", "Non configuré")}
+                    {hasClientId
+                      ? i18n("spotifyNoPlayback", "En attente de lecture")
+                      : i18n("spotifyNotConfigured", "Non configuré")}
                   </p>
                 </div>
-                <button
+                <motion.button
                   type="button"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => router.push("/settings?category=integrations&service=spotify")}
-                  className="shrink-0 rounded-lg bg-[var(--accent-primary)]/10 px-2.5 py-1 text-[11px] font-medium text-[var(--accent-primary)] transition hover:bg-[var(--accent-primary)]/20 cursor-pointer"
+                  className="shrink-0 rounded-xl bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 px-3 py-1.5 text-[11px] font-semibold text-[var(--accent-primary)] transition hover:bg-[var(--accent-primary)]/25 cursor-pointer shadow-sm"
                 >
                   {hasClientId ? i18n("reconnect", "Gérer") : i18n("configure", "Connecter")}
-                </button>
+                </motion.button>
               </div>
             ) : (
-              <div className="flex flex-col gap-3">
+              <div className="relative flex flex-col gap-3.5">
+                {/* Hero track row */}
                 <div className="flex items-center gap-3">
-                  {coverCandidates.length > 0 ? (
-                    <SafeImage
-                      candidates={coverCandidates}
-                      alt={title}
-                      size={96}
-                      className="h-12 w-12 shrink-0 rounded-[var(--inset-radius)] border border-[var(--panel-border)] object-cover shadow-md"
-                      iconClassName="h-6 w-6"
-                      loading="eager"
-                      priority
-                      crossOrigin="anonymous"
-                    />
-                  ) : (
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-md">
-                      <ServiceIcon id="spotify" icon="music" className="h-7 w-7" colored />
-                    </div>
-                  )}
+                  <motion.div
+                    animate={{ scale: isPlaying ? [1, 1.03, 1] : 1 }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    className="relative shrink-0"
+                  >
+                    {coverCandidates.length > 0 ? (
+                      <SafeImage
+                        candidates={coverCandidates}
+                        alt={title}
+                        size={96}
+                        className="h-13 w-13 shrink-0 rounded-2xl border border-white/[0.1] object-cover shadow-[0_8px_20px_rgba(0,0,0,0.5)]"
+                        iconClassName="h-6 w-6"
+                        loading="eager"
+                        priority
+                        crossOrigin="anonymous"
+                      />
+                    ) : (
+                      <div className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl border border-white/[0.1] bg-white/[0.04] shadow-md">
+                        <ServiceIcon id="spotify" icon="music" className="h-6 w-6" colored />
+                      </div>
+                    )}
+                  </motion.div>
+
                   <div className="min-w-0 flex-1">
-                    <h4 className="truncate text-xs font-bold text-[var(--text-primary)]">{title || "Spotify"}</h4>
-                    <p className="truncate text-[11px] text-[var(--text-primary)]">{artist || "Prêt"}</p>
-                    {album && <p className="truncate text-[10px] text-[var(--text-muted)]">{album}</p>}
+                    <h4 className="truncate text-xs font-bold tracking-tight text-[var(--text-primary)]">
+                      {title || "Spotify"}
+                    </h4>
+                    <p className="truncate text-[11px] font-medium text-[var(--text-primary)]/80">
+                      {artist || "Prêt"}
+                    </p>
+                    {album && (
+                      <p className="truncate text-[10px] text-[var(--text-muted)] opacity-75">
+                        {album}
+                      </p>
+                    )}
                   </div>
-                  <button
+
+                  <motion.button
                     type="button"
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.85 }}
                     onClick={toggleLike}
                     disabled={pending || !hasClientId || !trackId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-white/[0.08] hover:text-[var(--text-primary)] disabled:opacity-40 cursor-pointer"
                     aria-label={isLiked ? i18n("unlike") : i18n("like")}
                   >
-                    <Heart
-                      className={`h-4 w-4 transition-colors ${
-                        isLiked ? "fill-[var(--accent-primary)] text-[var(--accent-primary)]" : ""
-                      }`}
-                    />
-                  </button>
+                    <motion.div
+                      animate={{ scale: isLiked ? [1, 1.35, 1] : 1 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 20 }}
+                    >
+                      <Heart
+                        className={`h-4 w-4 transition-colors ${
+                          isLiked
+                            ? "fill-[var(--accent-primary)] text-[var(--accent-primary)]"
+                            : ""
+                        }`}
+                      />
+                    </motion.div>
+                  </motion.button>
                 </div>
 
-                <MediaProgress
-                  value={localProgress}
-                  max={duration}
-                  onChange={handleSeek}
-                  disabled={!hasClientId}
-                  data-testid="dock-progress"
-                />
+                {/* Progress bar and timestamps */}
+                <div className="space-y-1">
+                  <MediaProgress
+                    value={localProgress}
+                    max={duration}
+                    onChange={handleSeek}
+                    disabled={!hasClientId}
+                    data-testid="dock-progress"
+                  />
+                  <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)] tabular-nums px-0.5">
+                    <span>{formatMs(localProgress)}</span>
+                    <span>{duration > 0 ? formatMs(duration) : "--:--"}</span>
+                  </div>
+                </div>
 
-                <div className="flex items-center justify-between border-t border-[var(--text-primary)]/[0.04] px-2 pt-2">
-                  <button
+                {/* Playback controls row */}
+                <div className="flex items-center justify-between border-t border-white/[0.06] px-1 pt-2">
+                  <motion.button
                     type="button"
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={skipPrevious}
                     disabled={pending || !hasClientId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-white/[0.08] hover:text-white disabled:opacity-40 cursor-pointer"
                     aria-label={i18n("previous")}
                   >
-                    <SkipBack className="h-5 w-5" />
-                  </button>
-                  <button
+                    <SkipBack className="h-4.5 w-4.5" />
+                  </motion.button>
+
+                  <motion.button
                     type="button"
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={() => seek(-10000)}
                     disabled={pending || !hasClientId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-white/[0.08] hover:text-white disabled:opacity-40 cursor-pointer"
                     aria-label="-10s"
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
-                  </button>
-                  <button
+                  </motion.button>
+
+                  {/* Prominent Play/Pause Button */}
+                  <motion.button
                     type="button"
+                    whileHover={{ scale: 1.08 }}
+                    whileTap={{ scale: 0.92 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 25 }}
                     onClick={togglePlay}
                     disabled={pending || !hasClientId}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--text-primary)] text-[var(--background)] shadow-md transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
+                    className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-[0_4px_18px_rgba(255,255,255,0.35)] hover:shadow-[0_6px_25px_rgba(255,255,255,0.55)] transition-shadow disabled:opacity-50 cursor-pointer"
                     aria-label={isPlaying ? i18n("pause") : i18n("play")}
                   >
                     {isPlaying ? (
-                      <Pause className="h-4 w-4 fill-current" />
+                      <Pause className="h-4.5 w-4.5 fill-current" />
                     ) : (
-                      <Play className="h-4 w-4 fill-current ml-0.5" />
+                      <Play className="h-4.5 w-4.5 fill-current ml-0.5" />
                     )}
-                  </button>
-                  <button
+                  </motion.button>
+
+                  <motion.button
                     type="button"
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={() => seek(10000)}
                     disabled={pending || !hasClientId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-white/[0.08] hover:text-white disabled:opacity-40 cursor-pointer"
                     aria-label="+10s"
                   >
                     <RotateCw className="h-3.5 w-3.5" />
-                  </button>
-                  <button
+                  </motion.button>
+
+                  <motion.button
                     type="button"
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={skipNext}
                     disabled={pending || !hasClientId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-white/[0.08] hover:text-white disabled:opacity-40 cursor-pointer"
                     aria-label={i18n("next")}
                   >
-                    <SkipForward className="h-5 w-5" />
-                  </button>
+                    <SkipForward className="h-4.5 w-4.5" />
+                  </motion.button>
                 </div>
 
-                <div className="flex items-center justify-center">
-                  <VolumeSlider value={localVolume} onChange={setVolume} data-testid="dock-volume" />
+                {/* Volume slider */}
+                <div className="flex items-center justify-center pt-0.5">
+                  <VolumeSlider
+                    value={localVolume}
+                    onChange={setVolume}
+                    data-testid="dock-volume"
+                  />
                 </div>
               </div>
             )}

@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { ChevronUp, CloudSun } from "@/components/icons/ph";
 import { useWeatherOnly } from "@/lib/hooks/useWeatherOnly";
 import WeatherDetailPopover from "@/components/WeatherDetailPopover";
+import { hapticLightImpact } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 export default function DockWeatherFlyout() {
@@ -20,29 +22,38 @@ export default function DockWeatherFlyout() {
 
   return (
     <>
-      <button
+      <motion.button
         ref={setButtonEl}
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          hapticLightImpact();
+          setOpen((v) => !v);
+        }}
+        whileHover={{ scale: 1.08, y: -2 }}
+        whileTap={{ scale: 0.94 }}
+        transition={{ type: "spring", stiffness: 450, damping: 25 }}
         aria-expanded={open}
         aria-label="Météo"
-        className={
-          "flex h-11 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] " +
-          "px-2 text-sm text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] " +
-          "active:scale-95"
-        }
+        className={cn(
+          "flex h-10 items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold select-none cursor-pointer backdrop-blur-md transition-colors",
+          open
+            ? "border-amber-400/40 bg-amber-400/15 text-amber-200 shadow-[0_0_12px_rgba(251,191,36,0.3)]"
+            : "border-white/[0.08] bg-white/[0.04] text-[var(--text-primary)] hover:border-amber-400/30 hover:bg-white/[0.08]"
+        )}
       >
-        <CloudSun className="h-5 w-5 shrink-0 text-amber-400" />
+        <CloudSun className="h-4.5 w-4.5 shrink-0 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.4)]" />
         {temp !== null && (
-          <span className="hidden font-mono text-[var(--text-primary)] sm:inline">{temp}</span>
+          <span className="font-mono text-xs font-bold text-[var(--text-primary)] tabular-nums">
+            {temp}
+          </span>
         )}
         <ChevronUp
           className={cn(
-            "h-3.5 w-3.5 shrink-0 text-[var(--text-muted)] transition-transform duration-200",
-            open && "rotate-180"
+            "h-3 w-3 shrink-0 text-[var(--text-muted)] transition-transform duration-300",
+            open && "rotate-180 text-amber-300"
           )}
         />
-      </button>
+      </motion.button>
       <WeatherDetailPopover
         open={open}
         onClose={() => setOpen(false)}

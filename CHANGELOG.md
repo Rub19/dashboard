@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.11 — 2026-10-05
+
+**Dock : refonte motion design complète Apple-grade, volets bento et fluidité extrême**
+
+- Centre de contrôle (`DockControlCenter`) : nouvelle esthétique macOS Sonoma en verre dépoli avec contrôle segmenté fluide des animations (`layoutId`), curseur de volume capsule interactif, interrupteurs à ressorts élastiques et cartes d'actions rapides tactiles.
+- Lecteur Média (`DockMediaFlyout`) : barres d'égaliseur audio dansantes sous l'icône du dock, halo ambiant de pochette d'album animé, commandes circulaires tactiles avec micro-rebonds et horodatages précis.
+- Météo et Minuteur Focus : halo atmosphérique respirant selon les conditions célestes, icône météo en lévitation, jauges bento d'humidité/vent et cartes de préréglages Focus tactiles.
+- Barre du Dock et Launchpad : grossissement magnétique à physique de ressorts, infobulles flottantes au survol, voyants d'activité lumineux sous les applications ouvertes et recherche instantanée dans le lanceur.
+
 ## v1.55.10 — 2026-10-05
 
 **Habitudes : refonte complète avec motion design et 3 modes de disposition**

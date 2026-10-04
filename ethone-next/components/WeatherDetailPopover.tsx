@@ -352,39 +352,46 @@ function WeatherDetailContent({
             aria-label={i18n("weather")}
             data-weather-placement={actualPlacement}
           >
-            <div className="relative w-84 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)]/92 dark:bg-[#090d16]/92 p-4 text-[var(--text-primary)] shadow-[0_24px_50px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.08)] backdrop-blur-2xl">
-              {/* Subtle ambient aura behind hero */}
-              <div
-                className={`pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-gradient-to-br ${theme.glow} blur-2xl opacity-60`}
+            <div className="relative w-88 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-3xl border border-white/[0.09] bg-[#0c1017]/92 dark:bg-[#070b13]/96 p-4.5 text-[var(--text-primary)] shadow-[0_30px_70px_-10px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-3xl">
+              {/* Dynamic breathing sky aura */}
+              <motion.div
+                animate={{
+                  scale: [1, 1.12, 1],
+                  opacity: [0.55, 0.75, 0.55],
+                }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                className={`pointer-events-none absolute -right-8 -top-8 h-44 w-44 rounded-full bg-gradient-to-br ${theme.glow} blur-3xl`}
                 aria-hidden="true"
               />
 
               <div className="relative space-y-3.5">
                 {/* Top mini-bar: City & Live Indicator */}
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-2 border-b border-white/[0.06] pb-2.5">
                   <div className="flex items-center gap-1.5 min-w-0">
                     <MapPin className="h-3.5 w-3.5 shrink-0 text-amber-400" />
                     <span
-                      className="truncate text-xs font-semibold text-[var(--text-primary)]"
+                      className="truncate text-xs font-bold text-[var(--text-primary)]"
                       translate="no"
                       title={displayLocation}
                     >
                       {displayLocation}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <div className="flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.2)]">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       <span>{i18n("live") || "En direct"}</span>
                     </div>
-                    <button
+                    <motion.button
                       type="button"
                       onClick={onClose}
+                      whileHover={{ scale: 1.12, rotate: 90 }}
+                      whileTap={{ scale: 0.9 }}
                       aria-label={i18n("close")}
-                      className="rounded-lg p-1 text-[var(--text-muted)] transition-colors hover:bg-white/10 hover:text-[var(--text-primary)]"
+                      className="flex h-6 w-6 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.04] text-[var(--text-muted)] transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
                     >
                       <Icon pack="phosphor" name="close" className="h-3.5 w-3.5" />
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
 
@@ -392,34 +399,41 @@ function WeatherDetailContent({
                 <div className="flex items-center justify-between gap-3 pt-0.5">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-bold tracking-tight text-[var(--text-primary)] tabular-nums">
+                      <span className="text-4xl font-black tracking-tight text-[var(--text-primary)] tabular-nums">
                         {temp !== undefined ? Math.round(temp * 10) / 10 : "—"}
                       </span>
-                      <span className="text-xl font-medium text-[var(--text-muted)]">°C</span>
+                      <span className="text-2xl font-bold text-[var(--text-muted)]">°C</span>
                     </div>
                     <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-[var(--text-muted)]">
                       {condition && (
-                        <span className="capitalize font-medium text-[var(--text-primary)]/90" translate="no">
+                        <span className="capitalize font-semibold text-[var(--text-primary)]" translate="no">
                           {condition}
                         </span>
                       )}
                       {apparentTemp !== undefined && (
-                        <span className="text-[var(--text-muted)]">
+                        <span className="text-[var(--text-muted)] font-medium">
                           • {i18n("apparent") || "Ressenti"} {Math.round(apparentTemp)}°
                         </span>
                       )}
                     </div>
                   </div>
-                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-white/[0.04] shadow-inner backdrop-blur-md">
-                    <WeatherIcon weather={weather} className="h-8 w-8 text-amber-300 drop-shadow" />
-                  </div>
+                  <motion.div
+                    animate={{ y: [-2, 3, -2] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="relative flex h-15 w-15 shrink-0 items-center justify-center rounded-2xl border border-white/[0.1] bg-white/[0.04] shadow-inner backdrop-blur-md"
+                  >
+                    <WeatherIcon weather={weather} className="h-9 w-9 text-amber-300 drop-shadow-[0_4px_12px_rgba(251,191,36,0.35)]" />
+                  </motion.div>
                 </div>
 
                 {/* Quick Stats: Humidity & Wind Bento Cards */}
                 {(humidity !== undefined || wind !== undefined) && (
                   <div className="grid grid-cols-2 gap-2">
                     {humidity !== undefined && (
-                      <div className="group rounded-xl border border-[var(--panel-border)] bg-white/[0.03] p-2.5 transition-colors hover:bg-white/[0.06]">
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        className="group rounded-2xl border border-white/[0.07] bg-white/[0.03] p-2.5 transition-colors hover:border-cyan-400/30 hover:bg-white/[0.06]"
+                      >
                         <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-cyan-400">
                           <Droplets className="h-3.5 w-3.5" />
                           <span>{i18n("humidity")}</span>
@@ -429,14 +443,17 @@ function WeatherDetailContent({
                         </p>
                         <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-white/10">
                           <div
-                            className="h-full rounded-full bg-cyan-400 transition-all duration-500"
+                            className="h-full rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.5)] transition-all duration-500"
                             style={{ width: `${Math.min(100, Math.max(0, humidity))}%` }}
                           />
                         </div>
-                      </div>
+                      </motion.div>
                     )}
                     {wind !== undefined && (
-                      <div className="group rounded-xl border border-[var(--panel-border)] bg-white/[0.03] p-2.5 transition-colors hover:bg-white/[0.06]">
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        className="group rounded-2xl border border-white/[0.07] bg-white/[0.03] p-2.5 transition-colors hover:border-sky-400/30 hover:bg-white/[0.06]"
+                      >
                         <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-sky-400">
                           <Wind className="h-3.5 w-3.5" />
                           <span>{i18n("wind")}</span>
@@ -446,13 +463,13 @@ function WeatherDetailContent({
                         </p>
                         <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-white/10">
                           <div
-                            className="h-full rounded-full bg-sky-400 transition-all duration-500"
+                            className="h-full rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.5)] transition-all duration-500"
                             style={{
                               width: `${Math.min(100, Math.max(0, (wind / 70) * 100))}%`,
                             }}
                           />
                         </div>
-                      </div>
+                      </motion.div>
                     )}
                   </div>
                 )}
@@ -460,11 +477,11 @@ function WeatherDetailContent({
                 {/* 5-Day Forecast Apple Weather Style */}
                 {forecast.length > 0 && (
                   <div className="space-y-1.5">
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] px-0.5">
                       <Calendar className="h-3 w-3" />
                       <span>{i18n("forecast5Days") || i18n("forecast")}</span>
                     </div>
-                    <div className="space-y-0.5 rounded-xl border border-[var(--panel-border)] bg-white/[0.02] p-1">
+                    <div className="space-y-0.5 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-1.5">
                       {forecast.map((day, i) => (
                         <ForecastRow
                           key={i}
@@ -484,10 +501,10 @@ function WeatherDetailContent({
                 <Link
                   href="/weather"
                   onClick={onClose}
-                  className="group flex w-full items-center justify-between rounded-xl border border-[var(--panel-border)] bg-white/[0.05] hover:bg-white/[0.1] hover:border-white/20 px-3.5 py-2.5 text-xs font-semibold text-[var(--text-primary)] shadow-sm transition-all duration-150 active:scale-[0.98]"
+                  className="group flex w-full items-center justify-between rounded-2xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.09] hover:border-white/[0.18] px-3.5 py-2.5 text-xs font-semibold text-[var(--text-primary)] shadow-sm transition-all duration-150 active:scale-[0.98]"
                 >
                   <span>{i18n("weatherSeePage")}</span>
-                  <ArrowRight className="h-4 w-4 text-[var(--text-muted)] transition-transform duration-150 group-hover:translate-x-1 group-hover:text-[var(--text-primary)]" />
+                  <ArrowRight className="h-3.5 w-3.5 text-[var(--text-muted)] transition-transform duration-200 group-hover:translate-x-1 group-hover:text-white" />
                 </Link>
               </div>
             </div>

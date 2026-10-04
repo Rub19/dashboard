@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.54.1 — 2026-10-04
+
+**Brain connaît ta météo et tes parties, connexion GitHub**
+
+- Brain répond avec la météo de ta ville réglée dans ETHONE et tes dernières parties Valorant ou League of Legends (résultat, score, carte, agent ou champion, K/D/A).
+- Connexions : GitHub et les autres services officiels utilisent toujours l'application ETHONE, un ancien identifiant personnalisé resté dans le navigateur ne fait plus échouer la connexion.
+
 ## v1.54.0 — 2026-10-04
 
 **Bannière de profil et historique Valorant complet**

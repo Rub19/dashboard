@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
 import { activityJournal } from "@/lib/activity-journal";
 import { useBrainContext } from "./useBrainContext";
+import { gatherLiveFacts } from "@/lib/brain/live-facts";
 import { useItems } from "./useItems";
 import { useCloudTasks } from "./useCloudTasks";
 import {
@@ -455,12 +456,9 @@ Voici les informations EN DIRECT sur l'utilisateur et son système ETHONE OS :
       liveContextPrompt += `- 🎵 Musique : Aucune musique en cours de lecture détectée sur Spotify ou Discord.\n`;
     }
 
-    if (brainCtx?.context?.weather) {
-      const w = brainCtx.context.weather as Record<string, unknown>;
-      if (w.city || w.temp) {
-        liveContextPrompt += `- 🌤️ Météo : ${w.temp || w.temperature || ""}${w.unit || "°C"} à ${w.city || settings.liveWeatherCity || "localisation"} (${w.condition || w.description || ""}).\n`;
-      }
-    }
+    // Météo et parties du Tracker lues au moment de la question (mêmes sources que les pages d'ETHONE).
+    const liveFacts = await gatherLiveFacts(promptText, settings).catch(() => [] as string[]);
+    if (liveFacts.length) liveContextPrompt += liveFacts.join("\n") + "\n";
 
     if (typeof brainCtx?.context?.openTasks === "number") {
       liveContextPrompt += `- ✅ Tâches ouvertes : ${brainCtx.context.openTasks} tâche(s) en attente.\n`;
@@ -468,6 +466,7 @@ Voici les informations EN DIRECT sur l'utilisateur et son système ETHONE OS :
 
     liveContextPrompt += `\nConsignes clés :
 - Si l'utilisateur te demande ce qu'il écoute (ex: "j'écoute quoi comme musique", "c'est quoi ce son", "qui chante", "des infos sur ma musique"), utilise les données ci-dessus pour lui répondre avec précision, passion et naturel sur le titre, l'artiste, l'album et des anecdotes/recommandations si pertinent !
+- Pour la météo ou ses parties (Valorant, LoL), réponds directement avec les données ci-dessus (résultat, score, carte, agent ou champion, K/D/A…) au lieu de lui demander son compte. S'il manque une info, dis-lui précisément où la régler dans ETHONE.
 - Si l'utilisateur te salue (ex: "cc", "salut", "ça va"), réponds chaleureusement et naturellement comme un vrai assistant.
 - Si l'utilisateur te demande de créer une note ou une tâche, formule le contenu utilement en Markdown soigné.`;
 

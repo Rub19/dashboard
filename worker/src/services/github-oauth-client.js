@@ -22,7 +22,11 @@ export async function exchangeGithubCode(env, userId, { code, clientId }) {
     maxBytes: 8192
   });
   const data = response.data;
-  if (data?.error || !data?.access_token) throw httpError("PROVIDER_REQUEST_REJECTED", 502, { retryable: false });
+  if (data?.error || !data?.access_token) {
+    // Code d'erreur GitHub (bad_verification_code, incorrect_client_credentials, redirect_uri_mismatch…) : jamais de secret.
+    console.warn("[github] échange refusé", safeText(data?.error, 60), safeText(data?.error_description, 200), "client", safeText(clientId, 40));
+    throw httpError("PROVIDER_REQUEST_REJECTED", 502, { retryable: false, detail: { provider: "github", reason: safeText(data?.error, 60) } });
+  }
   await setOAuthToken(env, userId, "github", {
     accessToken: safeText(data.access_token, 4000),
     refreshToken: "",

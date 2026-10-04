@@ -43318,6 +43318,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_54_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_54_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_54_0_de);
 
+const v1_54_1_fr: ChangelogEntry = {
+  version: "v1.54.1",
+  date: "2026-10-04",
+  title: "Brain connaît ta météo et tes parties, connexion GitHub",
+  items: [
+    "Brain répond avec la météo de ta ville réglée dans ETHONE et tes dernières parties Valorant ou League of Legends (résultat, score, carte, agent ou champion, K/D/A).",
+    "Connexions : GitHub et les autres services officiels utilisent toujours l'application ETHONE, un ancien identifiant personnalisé resté dans le navigateur ne fait plus échouer la connexion.",
+  ],
+};
+
+const v1_54_1_en: ChangelogEntry = {
+  version: "v1.54.1",
+  date: "2026-10-04",
+  title: "Brain knows your weather and matches, GitHub connection",
+  items: [
+    "Brain answers with the weather for the city set in ETHONE and your latest Valorant or League of Legends matches (result, score, map, agent or champion, K/D/A).",
+    "Connections: GitHub and other official services always use the ETHONE app, an old custom ID left in the browser no longer breaks the connection.",
+  ],
+};
+
+const v1_54_1_es: ChangelogEntry = {
+  version: "v1.54.1",
+  date: "2026-10-04",
+  title: "Brain conoce tu clima y tus partidas, conexión GitHub",
+  items: [
+    "Brain responde con el clima de la ciudad configurada en ETHONE y tus últimas partidas de Valorant o League of Legends (resultado, marcador, mapa, agente o campeón, K/D/A).",
+    "Conexiones: GitHub y los demás servicios oficiales usan siempre la app de ETHONE, un identificador personalizado antiguo ya no rompe la conexión.",
+  ],
+};
+
+const v1_54_1_de: ChangelogEntry = {
+  version: "v1.54.1",
+  date: "2026-10-04",
+  title: "Brain kennt dein Wetter und deine Matches, GitHub-Verbindung",
+  items: [
+    "Brain antwortet mit dem Wetter der in ETHONE eingestellten Stadt und deinen letzten Valorant- oder League-of-Legends-Matches (Ergebnis, Score, Map, Agent oder Champion, K/D/A).",
+    "Verbindungen: GitHub und andere offizielle Dienste nutzen immer die ETHONE-App, eine alte eigene ID im Browser bricht die Verbindung nicht mehr.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_54_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_54_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_54_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_54_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

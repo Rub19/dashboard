@@ -71,7 +71,10 @@ export default function ConnectionCard({
       setDrawerOpen(true);
       return;
     }
-    const effectiveId = currentId.trim() || OAUTH_APP_CLIENT_IDS[integration.id];
+    // Secret côté serveur (GitHub, Discord, Google, Notion…) : seul l'identifiant de l'app officielle ETHONE fonctionne.
+    // Un ancien identifiant personnalisé resté en local faisait échouer l'échange sans rien enregistrer.
+    const official = integration.id !== "spotify" ? OAUTH_APP_CLIENT_IDS[integration.id] : "";
+    const effectiveId = official || currentId.trim() || OAUTH_APP_CLIENT_IDS[integration.id];
     setConnecting(true);
     try {
       if (integration.id === "spotify") update({ liveSpotifyClientId: effectiveId, liveNowPlayingSource: "spotify" } as never);

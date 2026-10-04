@@ -277,17 +277,22 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
         {open && (
           <motion.div
             ref={popoverRef}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 12, scale: 0.94 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 420, damping: 30, mass: 0.75 }}
             onMouseEnter={() => {
               if (timeoutRef.current) clearTimeout(timeoutRef.current);
             }}
             onMouseLeave={handleLeave}
             style={{ position: "fixed", left: pos.left, bottom: pos.bottom }}
-            className="z-[var(--z-popover)] w-80 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/10 bg-[var(--background)]/95 p-4 shadow-2xl backdrop-blur-2xl pointer-events-auto origin-bottom"
+            className="z-[var(--z-popover)] w-80 max-w-[calc(100vw-1.5rem)] rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)]/92 dark:bg-[#090d16]/92 p-4 text-[var(--text-primary)] shadow-[0_24px_50px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.08)] backdrop-blur-2xl pointer-events-auto origin-bottom overflow-hidden"
           >
+            {/* Subtle ambient music aura */}
+            <div
+              className="pointer-events-none absolute -right-6 -top-6 h-36 w-36 rounded-full bg-gradient-to-br from-emerald-500/20 via-sky-500/15 to-transparent blur-2xl opacity-60"
+              aria-hidden="true"
+            />
             {!hasTrack ? (
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-md">

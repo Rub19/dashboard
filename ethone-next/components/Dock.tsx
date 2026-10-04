@@ -235,23 +235,35 @@ function Dock() {
           >
             {launcherOpen && (
               <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                initial={{ opacity: 0, y: 12, scale: 0.94 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.96 }}
-                transition={{ duration: 0.15 }}
-                className="pointer-events-auto absolute bottom-full left-1/2 z-[var(--z-dock)] mb-4 w-[min(90vw,420px)] -translate-x-1/2"
+                exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 420, damping: 30, mass: 0.75 }}
+                className="pointer-events-auto absolute bottom-full left-1/2 z-[var(--z-dock)] mb-4 w-[min(90vw,440px)] -translate-x-1/2"
               >
-                <FlatCard style={{ boxShadow: "none" }}>
-                  <div className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-md">
+                <div className="relative overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)]/92 dark:bg-[#090d16]/92 p-4 text-[var(--text-primary)] shadow-[0_24px_50px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.08)] backdrop-blur-2xl">
+                  {/* Subtle ambient aura */}
+                  <div
+                    className="pointer-events-none absolute -right-6 -top-6 h-36 w-36 rounded-full bg-gradient-to-br from-violet-500/20 via-[var(--accent-primary)]/15 to-transparent blur-2xl opacity-60"
+                    aria-hidden="true"
+                  />
+                  <div className="relative space-y-3">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-medium text-[var(--text-primary)]">{i18n("dockLauncher")}</h3>
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+                          <LayoutGrid className="h-3.5 w-3.5" />
+                        </div>
+                        <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-primary)]">
+                          {i18n("dockLauncher")}
+                        </h3>
+                      </div>
                       <button
                         type="button"
                         onClick={() => setLauncherOpen(false)}
                         aria-label={i18n("close")}
-                        className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+                        className="rounded-lg p-1 text-[var(--text-muted)] transition-colors hover:bg-white/10 hover:text-[var(--text-primary)]"
                       >
-                        <Icon name="close" className="h-4 w-4" />
+                        <Icon name="close" className="h-3.5 w-3.5" />
                       </button>
                     </div>
                     <div className="grid max-h-[60vh] grid-cols-3 gap-2 overflow-y-auto no-scrollbar sm:grid-cols-4">
@@ -263,15 +275,15 @@ function Dock() {
                             router.push(app.href);
                             setLauncherOpen(false);
                           }}
-                          className="flex flex-col items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/80 p-2 text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/30 hover:bg-[var(--text-primary)]/[0.06]"
+                          className="group relative flex flex-col items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-white/[0.03] p-2.5 text-[var(--text-primary)] transition-all hover:bg-white/[0.08] hover:border-[var(--accent-primary)]/40 hover:shadow-md active:scale-95 cursor-pointer"
                         >
-                          <Icon name={app.icon} className="h-5 w-5" />
-                          <span className="w-full truncate text-center text-[10px] leading-tight">{app.label}</span>
+                          <Icon name={app.icon} className="h-5 w-5 text-zinc-300 transition-transform duration-150 group-hover:scale-110 group-hover:text-white" />
+                          <span className="w-full truncate text-center text-[10px] font-medium leading-tight">{app.label}</span>
                         </button>
                       ))}
                     </div>
                   </div>
-                </FlatCard>
+                </div>
               </motion.div>
             )}
 

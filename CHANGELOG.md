@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.9 — 2026-10-05
+
+**Dock : refonte motion design, Apple glassmorphism et prévisions météo visuelles**
+
+- Refonte complète du popover météo (`WeatherDetailPopover`) : animations fluides avec physique de ressort Apple (`framer-motion`), halo ambiant dynamique selon le ciel et hiérarchie visuelle aérée sans collision de texte.
+- Nouvelles cartes bento pour l'humidité et le vent avec jauges animées, et prévisions sur 5 jours style Apple Weather avec barres de plage thermique en dégradé et curseur de température actuelle.
+- Harmonisation motion design de tous les volets du Dock (`DockControlCenter`, `DockMediaFlyout`, `FocusPopover`, `DockLauncher`) : glassmorphism haute définition, micro-interactions tactiles et boutons d'action fluides.
+
 ## v1.55.8 — 2026-10-05
 
 **Tracker Valorant : adaptation des parties archivées et durée réelle**

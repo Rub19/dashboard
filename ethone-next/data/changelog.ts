@@ -43780,7 +43780,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_8_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_8_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_8_de);
 
+const v1_55_9_fr: ChangelogEntry = {
+  version: "v1.55.9",
+  date: "2026-10-05",
+  title: "Dock : refonte motion design, Apple glassmorphism et prévisions météo visuelles",
+  items: [
+    "Refonte complète du popover météo (WeatherDetailPopover) : animations fluides avec physique de ressort Apple (framer-motion), halo ambiant dynamique selon le ciel et hiérarchie visuelle aérée sans collision de texte.",
+    "Nouvelles cartes bento pour l'humidité et le vent avec jauges animées, et prévisions sur 5 jours style Apple Weather avec barres de plage thermique en dégradé et curseur de température actuelle.",
+    "Harmonisation motion design de tous les volets du Dock (DockControlCenter, DockMediaFlyout, FocusPopover, DockLauncher) : glassmorphism haute définition, micro-interactions tactiles et boutons d'action fluides.",
+  ],
+};
+
+const v1_55_9_en: ChangelogEntry = {
+  version: "v1.55.9",
+  date: "2026-10-05",
+  title: "Dock: Motion design overhaul, Apple glassmorphism, and visual weather forecast",
+  items: [
+    "Complete overhaul of the weather popover (WeatherDetailPopover): fluid spring physics animations (framer-motion), dynamic ambient sky glow, and clean hierarchy without text collisions.",
+    "New bento cards for humidity and wind with animated micro-gauges, and 5-day Apple Weather-style forecast with temperature range gradient bars and current temperature indicator dot.",
+    "Motion design harmonization across all dock flyouts (DockControlCenter, DockMediaFlyout, FocusPopover, DockLauncher): high-definition glassmorphism, tactile micro-interactions, and smooth action buttons.",
+  ],
+};
+
+const v1_55_9_es: ChangelogEntry = {
+  version: "v1.55.9",
+  date: "2026-10-05",
+  title: "Dock: Rediseño de motion design, glassmorphism estilo Apple y previsión meteorológica visual",
+  items: [
+    "Rediseño completo del popover meteorológico (WeatherDetailPopover): animaciones fluidas con física de resorte Apple (framer-motion), resplandor ambiental dinámico y jerarquía visual limpia sin colisiones de texto.",
+    "Nuevas tarjetas bento de humedad y viento con barras animadas y previsiones a 5 días estilo Apple Weather con gradientes térmicos y punto de temperatura actual.",
+    "Armonización de diseño en todos los paneles flotantes del Dock (DockControlCenter, DockMediaFlyout, FocusPopover, DockLauncher): glassmorphism de alta definición y microinteracciones táctiles.",
+  ],
+};
+
+const v1_55_9_de: ChangelogEntry = {
+  version: "v1.55.9",
+  date: "2026-10-05",
+  title: "Dock: Motion-Design-Überarbeitung, Apple-Glassmorphismus und visuelle Wettervorhersage",
+  items: [
+    "Vollständige Überarbeitung des Wetter-Popovers (WeatherDetailPopover): flüssige Federphysik-Animationen (framer-motion), dynamischer atmosphärischer Schein und klare visuelle Hierarchie ohne Textüberlappungen.",
+    "Neue Bento-Karten für Feuchtigkeit und Wind mit animierten Messleisten sowie 5-Tage-Vorhersage im Apple-Weather-Stil mit thermischen Gradientenbalken und aktuellem Temperaturpunkt.",
+    "Einheitliches Motion Design für alle Dock-Flyouts (DockControlCenter, DockMediaFlyout, FocusPopover, DockLauncher): hochauflösender Glassmorphismus und haptische Mikrointeraktionen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_9_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_9_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_9_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_9_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+
 
 
 

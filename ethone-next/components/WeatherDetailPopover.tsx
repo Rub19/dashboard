@@ -1,6 +1,7 @@
 "use client";
- 
 
+import { useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useFloating, offset, flip, shift, autoUpdate, FloatingPortal } from "@floating-ui/react";
 import Link from "next/link";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -8,6 +9,7 @@ import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 import { useLayer } from "@/components/LayerProvider";
+import { MapPin, Droplets, Wind, Calendar, ArrowRight } from "@/components/icons/ph";
 
 type WeatherData = Record<string, unknown>;
 
@@ -67,6 +69,58 @@ function weatherIconFromCode(code?: number, condition?: string, isDay?: boolean)
   return weatherIconFromCondition(condition || "") || "cloud-sun";
 }
 
+function getWeatherTheme(code?: number, isDay?: boolean) {
+  if (isDay === false) {
+    return {
+      glow: "from-indigo-500/25 via-purple-500/15 to-transparent",
+      iconColor: "text-indigo-300",
+      accent: "text-indigo-400",
+    };
+  }
+  if (typeof code === "number") {
+    if (code === 0 || code === 1) {
+      return {
+        glow: "from-amber-500/25 via-orange-500/15 to-transparent",
+        iconColor: "text-amber-400",
+        accent: "text-amber-400",
+      };
+    }
+    if (code >= 2 && code <= 48) {
+      return {
+        glow: "from-sky-500/20 via-blue-500/15 to-transparent",
+        iconColor: "text-sky-300",
+        accent: "text-sky-400",
+      };
+    }
+    if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) {
+      return {
+        glow: "from-blue-600/25 via-cyan-600/15 to-transparent",
+        iconColor: "text-blue-400",
+        accent: "text-blue-400",
+      };
+    }
+    if (code >= 71 && code <= 86) {
+      return {
+        glow: "from-cyan-400/25 via-teal-500/15 to-transparent",
+        iconColor: "text-cyan-300",
+        accent: "text-cyan-400",
+      };
+    }
+    if (code >= 95) {
+      return {
+        glow: "from-purple-600/30 via-amber-500/20 to-transparent",
+        iconColor: "text-amber-300",
+        accent: "text-purple-400",
+      };
+    }
+  }
+  return {
+    glow: "from-amber-500/20 via-sky-500/15 to-transparent",
+    iconColor: "text-amber-400",
+    accent: "text-amber-400",
+  };
+}
+
 function WeatherIcon({
   weather,
   className,
@@ -103,26 +157,77 @@ function dayLabel(isoDate: string | undefined, lang: string): string {
   return new Intl.DateTimeFormat(lang || "fr", {
     weekday: "short",
     day: "numeric",
-    month: "short",
   }).format(date);
 }
 
-function ForecastRow({ day, lang }: { day: WeatherData; lang: string }) {
+function ForecastRow({
+  day,
+  lang,
+  isToday,
+  currentTemp,
+  overallMin,
+  overallMax,
+}: {
+  day: WeatherData;
+  lang: string;
+  isToday?: boolean;
+  currentTemp?: number;
+  overallMin: number;
+  overallMax: number;
+}) {
   const date = asStr(day.date);
   const min = asNum(day.min);
   const max = asNum(day.max);
   const condition = asStr(day.condition);
   const code = asNum(day.weatherCode);
 
+  const range = Math.max(1, overallMax - overallMin);
+  const dayMin = min !== undefined ? min : overallMin;
+  const dayMax = max !== undefined ? max : overallMax;
+  const leftPercent = Math.max(0, Math.min(90, ((dayMin - overallMin) / range) * 100));
+  const spanPercent = Math.max(8, Math.min(100 - leftPercent, ((dayMax - dayMin) / range) * 100));
+
+  const label = isToday
+    ? lang.startsWith("fr")
+      ? "Aujourd'hui"
+      : "Today"
+    : dayLabel(date, lang);
+
   return (
-    <div className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
-      <span className="text-[var(--text-muted)]">{dayLabel(date, lang)}</span>
-      <div className="flex items-center gap-2">
-        <Icon pack="phosphor" name={weatherIconFromCode(code, condition)} className="h-4 w-4" />
-        <span className="font-medium tabular-nums">
-          {min !== undefined ? `${min}°` : "—"} / {max !== undefined ? `${max}°` : "—"}
-        </span>
+    <div className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition-colors hover:bg-white/[0.05]">
+      <span className="w-20 truncate font-medium text-[var(--text-primary)]">
+        {label}
+      </span>
+      <div className="flex w-6 shrink-0 justify-center">
+        <Icon
+          pack="phosphor"
+          name={weatherIconFromCode(code, condition)}
+          className="h-3.5 w-3.5 text-amber-300"
+        />
       </div>
+      <span className="w-7 text-right tabular-nums text-[var(--text-muted)]">
+        {min !== undefined ? `${Math.round(min)}°` : "—"}
+      </span>
+      <div className="relative mx-2 h-1.5 flex-1 min-w-[50px] max-w-[76px] overflow-hidden rounded-full bg-white/10">
+        <div
+          className="absolute h-full rounded-full bg-gradient-to-r from-blue-400 via-emerald-400 to-amber-400 opacity-90 transition-all duration-300"
+          style={{
+            left: `${leftPercent}%`,
+            width: `${spanPercent}%`,
+          }}
+        />
+        {isToday && currentTemp !== undefined && (
+          <div
+            className="absolute top-1/2 h-2.5 w-2.5 -translate-y-1/2 -translate-x-1/2 rounded-full border-2 border-[#090d16] bg-white shadow-sm ring-1 ring-white/40"
+            style={{
+              left: `${Math.max(0, Math.min(100, ((currentTemp - overallMin) / range) * 100))}%`,
+            }}
+          />
+        )}
+      </div>
+      <span className="w-7 text-left font-semibold tabular-nums text-[var(--text-primary)]">
+        {max !== undefined ? `${Math.round(max)}°` : "—"}
+      </span>
     </div>
   );
 }
@@ -145,7 +250,11 @@ function WeatherDetailContent({
     placement,
     strategy: "fixed",
     whileElementsMounted: autoUpdate,
-    middleware: [offset(8), flip({ padding: 8, crossAxis: false }), shift({ padding: 8, crossAxis: false })],
+    middleware: [
+      offset(10),
+      flip({ padding: 10, crossAxis: false }),
+      shift({ padding: 10, crossAxis: false }),
+    ],
     elements: { reference: referenceRef },
   });
 
@@ -165,92 +274,226 @@ function WeatherDetailContent({
   const country = asStr(weather?.country);
   const displayLocation = city ? (country ? `${city}, ${country}` : city) : i18n("missingCity");
   const temp = asNum(weather?.temperature) ?? asNum(weather?.temperatureC);
+  const apparentTemp = asNum(weather?.apparentTemperature);
   const condition = asStr(weather?.description) || asStr(weather?.condition);
   const humidity = asNum(weather?.humidityPercent);
   const wind = asNum(weather?.windSpeedKmh) ?? asNum(weather?.windSpeed);
-  const forecast = (
-    Array.isArray(weather?.forecast)
-      ? (weather.forecast as unknown[]).filter((d): d is WeatherData => typeof d === "object" && d !== null)
-      : []
-  ).slice(0, 5);
+  const code = asNum(weather?.weatherCode);
+  const isDay = asBool(weather?.isDay);
+
+  const forecast = useMemo(
+    () =>
+      (
+        Array.isArray(weather?.forecast)
+          ? (weather.forecast as unknown[]).filter(
+              (d): d is WeatherData => typeof d === "object" && d !== null
+            )
+          : []
+      ).slice(0, 5),
+    [weather?.forecast]
+  );
+
+  const { overallMin, overallMax } = useMemo(() => {
+    let minVal = 999;
+    let maxVal = -999;
+    forecast.forEach((d) => {
+      const mn = asNum(d.min);
+      const mx = asNum(d.max);
+      if (mn !== undefined && mn < minVal) minVal = mn;
+      if (mx !== undefined && mx > maxVal) maxVal = mx;
+    });
+    if (minVal === 999) minVal = temp !== undefined ? temp - 5 : 10;
+    if (maxVal === -999) maxVal = temp !== undefined ? temp + 5 : 20;
+    return { overallMin: minVal, overallMax: maxVal };
+  }, [forecast, temp]);
 
   const lang = settings.language || "fr";
+  const theme = getWeatherTheme(code, isDay);
 
   return (
     <FloatingPortal>
-      {open && (
-        <div
-          ref={refs.setFloating as unknown as React.Ref<HTMLDivElement>}
-          style={{ ...floatingStyles, visibility: isPositioned ? "visible" : "hidden" }}
-          className="v8-panel z-[var(--z-popover)] w-80 max-w-[calc(100vw-1rem)] overflow-hidden p-4"
-          role="dialog"
-          aria-modal="false"
-          aria-label={i18n("weather")}
-          data-weather-placement={actualPlacement}
-        >
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <WeatherIcon weather={weather} className="h-10 w-10 shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold text-[var(--text-primary)]" translate="no">
-                  {displayLocation}
-                </p>
-                {condition && (
-                  <p className="text-sm text-[var(--text-muted)] capitalize" translate="no">
-                    {condition}
-                  </p>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            ref={refs.setFloating as unknown as React.Ref<HTMLDivElement>}
+            initial={{
+              opacity: 0,
+              y: actualPlacement?.startsWith("top") ? 14 : -14,
+              scale: 0.94,
+            }}
+            animate={{
+              opacity: isPositioned ? 1 : 0,
+              y: isPositioned ? 0 : actualPlacement?.startsWith("top") ? 14 : -14,
+              scale: isPositioned ? 1 : 0.94,
+            }}
+            exit={{
+              opacity: 0,
+              y: actualPlacement?.startsWith("top") ? 10 : -10,
+              scale: 0.96,
+              transition: { duration: 0.16, ease: "easeOut" },
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 420,
+              damping: 30,
+              mass: 0.75,
+            }}
+            style={{
+              ...floatingStyles,
+              visibility: isPositioned ? "visible" : "hidden",
+              pointerEvents: isPositioned ? "auto" : "none",
+              transformOrigin: actualPlacement?.startsWith("top")
+                ? "bottom right"
+                : "top right",
+            }}
+            className="z-[var(--z-popover)] pointer-events-auto"
+            role="dialog"
+            aria-modal="false"
+            aria-label={i18n("weather")}
+            data-weather-placement={actualPlacement}
+          >
+            <div className="relative w-84 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)]/92 dark:bg-[#090d16]/92 p-4 text-[var(--text-primary)] shadow-[0_24px_50px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.08)] backdrop-blur-2xl">
+              {/* Subtle ambient aura behind hero */}
+              <div
+                className={`pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-gradient-to-br ${theme.glow} blur-2xl opacity-60`}
+                aria-hidden="true"
+              />
+
+              <div className="relative space-y-3.5">
+                {/* Top mini-bar: City & Live Indicator */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <MapPin className="h-3.5 w-3.5 shrink-0 text-amber-400" />
+                    <span
+                      className="truncate text-xs font-semibold text-[var(--text-primary)]"
+                      translate="no"
+                      title={displayLocation}
+                    >
+                      {displayLocation}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>{i18n("live") || "En direct"}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      aria-label={i18n("close")}
+                      className="rounded-lg p-1 text-[var(--text-muted)] transition-colors hover:bg-white/10 hover:text-[var(--text-primary)]"
+                    >
+                      <Icon pack="phosphor" name="close" className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Hero Section: Temperature & Big Icon */}
+                <div className="flex items-center justify-between gap-3 pt-0.5">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-bold tracking-tight text-[var(--text-primary)] tabular-nums">
+                        {temp !== undefined ? Math.round(temp * 10) / 10 : "—"}
+                      </span>
+                      <span className="text-xl font-medium text-[var(--text-muted)]">°C</span>
+                    </div>
+                    <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-[var(--text-muted)]">
+                      {condition && (
+                        <span className="capitalize font-medium text-[var(--text-primary)]/90" translate="no">
+                          {condition}
+                        </span>
+                      )}
+                      {apparentTemp !== undefined && (
+                        <span className="text-[var(--text-muted)]">
+                          • {i18n("apparent") || "Ressenti"} {Math.round(apparentTemp)}°
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-white/[0.04] shadow-inner backdrop-blur-md">
+                    <WeatherIcon weather={weather} className="h-8 w-8 text-amber-300 drop-shadow" />
+                  </div>
+                </div>
+
+                {/* Quick Stats: Humidity & Wind Bento Cards */}
+                {(humidity !== undefined || wind !== undefined) && (
+                  <div className="grid grid-cols-2 gap-2">
+                    {humidity !== undefined && (
+                      <div className="group rounded-xl border border-[var(--panel-border)] bg-white/[0.03] p-2.5 transition-colors hover:bg-white/[0.06]">
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-cyan-400">
+                          <Droplets className="h-3.5 w-3.5" />
+                          <span>{i18n("humidity")}</span>
+                        </div>
+                        <p className="mt-1 text-base font-bold tabular-nums text-[var(--text-primary)]">
+                          {humidity}%
+                        </p>
+                        <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-white/10">
+                          <div
+                            className="h-full rounded-full bg-cyan-400 transition-all duration-500"
+                            style={{ width: `${Math.min(100, Math.max(0, humidity))}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {wind !== undefined && (
+                      <div className="group rounded-xl border border-[var(--panel-border)] bg-white/[0.03] p-2.5 transition-colors hover:bg-white/[0.06]">
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-sky-400">
+                          <Wind className="h-3.5 w-3.5" />
+                          <span>{i18n("wind")}</span>
+                        </div>
+                        <p className="mt-1 text-base font-bold tabular-nums text-[var(--text-primary)]">
+                          {wind} <span className="text-xs font-normal text-[var(--text-muted)]">km/h</span>
+                        </p>
+                        <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-white/10">
+                          <div
+                            className="h-full rounded-full bg-sky-400 transition-all duration-500"
+                            style={{
+                              width: `${Math.min(100, Math.max(0, (wind / 70) * 100))}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
-              </div>
-              <div className="shrink-0 text-right">
-                <p className="text-3xl font-bold tabular-nums text-[var(--text-primary)]">
-                  {temp !== undefined ? `${temp}°C` : "—"}
-                </p>
+
+                {/* 5-Day Forecast Apple Weather Style */}
+                {forecast.length > 0 && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                      <Calendar className="h-3 w-3" />
+                      <span>{i18n("forecast5Days") || i18n("forecast")}</span>
+                    </div>
+                    <div className="space-y-0.5 rounded-xl border border-[var(--panel-border)] bg-white/[0.02] p-1">
+                      {forecast.map((day, i) => (
+                        <ForecastRow
+                          key={i}
+                          day={day}
+                          lang={lang}
+                          isToday={i === 0}
+                          currentTemp={i === 0 ? temp : undefined}
+                          overallMin={overallMin}
+                          overallMax={overallMax}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Footer CTA: Apple Glass Button */}
+                <Link
+                  href="/weather"
+                  onClick={onClose}
+                  className="group flex w-full items-center justify-between rounded-xl border border-[var(--panel-border)] bg-white/[0.05] hover:bg-white/[0.1] hover:border-white/20 px-3.5 py-2.5 text-xs font-semibold text-[var(--text-primary)] shadow-sm transition-all duration-150 active:scale-[0.98]"
+                >
+                  <span>{i18n("weatherSeePage")}</span>
+                  <ArrowRight className="h-4 w-4 text-[var(--text-muted)] transition-transform duration-150 group-hover:translate-x-1 group-hover:text-[var(--text-primary)]" />
+                </Link>
               </div>
             </div>
-
-            {(humidity !== undefined || wind !== undefined) && (
-              <div className="grid grid-cols-2 gap-2">
-                {humidity !== undefined && (
-                  <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
-                    <Icon pack="phosphor" name="droplets" className="h-4 w-4 text-[var(--text-muted)]" />
-                    <span className="font-medium">{humidity}%</span>
-                    <span className="text-[var(--text-muted)]">{i18n("humidity")}</span>
-                  </div>
-                )}
-                {wind !== undefined && (
-                  <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
-                    <Icon pack="phosphor" name="wind" className="h-4 w-4 text-[var(--text-muted)]" />
-                    <span className="font-medium">{wind} km/h</span>
-                    <span className="text-[var(--text-muted)]">{i18n("wind")}</span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {forecast.length > 0 && (
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                  {i18n("forecast")}
-                </p>
-                <div className="space-y-1.5">
-                  {forecast.map((day, i) => (
-                    <ForecastRow key={i} day={day} lang={lang} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <Link
-              href="/weather"
-              onClick={onClose}
-              className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] transition-opacity hover:opacity-90"
-            >
-              {i18n("weatherSeePage")}
-              <Icon pack="phosphor" name="arrowRight" className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </FloatingPortal>
   );
 }
@@ -266,4 +509,3 @@ export default function WeatherDetailPopover(props: WeatherDetailPopoverProps) {
   }
   return <WeatherDetailContent {...props} weather={props.weather} />;
 }
-

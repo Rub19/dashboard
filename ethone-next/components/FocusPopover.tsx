@@ -96,27 +96,37 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
         {open && (
           <motion.div
             ref={setRefs}
-            initial={{ opacity: 0, y: 16, scale: 0.96 }}
+            initial={{ opacity: 0, y: 16, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 350, damping: 38 }}
+            exit={{ opacity: 0, y: 12, scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 420, damping: 30, mass: 0.75 }}
             style={{ transformOrigin: "bottom center" }}
-            className="fixed bottom-[calc(7rem+env(safe-area-inset-bottom))] left-1/2 z-[90] w-72 -translate-x-1/2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl outline-none backdrop-blur-[var(--panel-blur)]"
+            className="fixed bottom-[calc(7rem+env(safe-area-inset-bottom))] left-1/2 z-[90] w-80 max-w-[calc(100vw-1rem)] -translate-x-1/2 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface)]/92 dark:bg-[#090d16]/92 p-4 text-[var(--text-primary)] shadow-[0_24px_50px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.08)] backdrop-blur-2xl pointer-events-auto outline-none"
             role="dialog"
             aria-modal="false"
             aria-label={i18n("focus")}
           >
-            <div className="mb-3 flex items-center justify-between">
+            {/* Subtle ambient focus aura */}
+            <div
+              className="pointer-events-none absolute -right-6 -top-6 h-36 w-36 rounded-full bg-gradient-to-br from-rose-500/20 via-amber-500/15 to-transparent blur-2xl opacity-60"
+              aria-hidden="true"
+            />
+
+            <div className="relative mb-3 flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold">{phaseLabels[state.phase]}</p>
-                <p className="text-2xl font-bold tabular-nums">{state.format(state.remaining)}</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                  {phaseLabels[state.phase]}
+                </p>
+                <p className="text-3xl font-bold tracking-tight text-[var(--text-primary)] tabular-nums">
+                  {state.format(state.remaining)}
+                </p>
               </div>
-              <div className="flex gap-1">
+              <div className="flex gap-1.5">
                 {state.phase !== "idle" && (
                   <button
                     type="button"
                     onClick={() => (state.paused ? resume() : pause())}
-                    className="rounded-lg bg-[var(--panel-bg)] p-2 transition-colors hover:bg-[var(--accent-primary)]/10"
+                    className="rounded-xl border border-[var(--panel-border)] bg-white/[0.04] p-2 text-[var(--text-primary)] transition-all hover:bg-white/[0.08] active:scale-95 cursor-pointer"
                     aria-label={state.paused ? i18n("resume") : i18n("pause")}
                   >
                     <Icon name={state.paused ? "play" : "pause"} className="h-4 w-4" />
@@ -126,7 +136,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                   <button
                     type="button"
                     onClick={stop}
-                    className="rounded-lg bg-[var(--panel-bg)] p-2 transition-colors hover:bg-[var(--danger)]/10"
+                    className="rounded-xl border border-[var(--panel-border)] bg-white/[0.04] p-2 text-[var(--danger)] transition-all hover:bg-[var(--danger)]/15 active:scale-95 cursor-pointer"
                     aria-label={i18n("stop")}
                   >
                     <Icon name="square" className="h-4 w-4" />
@@ -136,7 +146,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                   <button
                     type="button"
                     onClick={skip}
-                    className="rounded-lg bg-[var(--panel-bg)] p-2 transition-colors hover:bg-[var(--accent-primary)]/10"
+                    className="rounded-xl border border-[var(--panel-border)] bg-white/[0.04] p-2 text-[var(--text-primary)] transition-all hover:bg-white/[0.08] active:scale-95 cursor-pointer"
                     aria-label={i18n("skip")}
                   >
                     <Icon name="skipForward" className="h-4 w-4" />
@@ -146,13 +156,18 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
             </div>
 
             {state.phase !== "idle" && (
-              <div className="mb-4 h-2 w-full overflow-hidden rounded-xl bg-[var(--panel-bg)]">
-                <div className="h-full rounded-xl bg-[var(--accent)] transition-colors duration-150" style={{ width: `${progress}%` }} />
+              <div className="mb-4 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[var(--accent-primary)] to-amber-400 transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
               </div>
             )}
 
-            <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">{i18n("presets")}</p>
-            <div className="grid grid-cols-3 gap-2">
+            <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+              {i18n("presets")}
+            </p>
+            <div className="grid grid-cols-3 gap-1.5">
               {PRESETS.map((p) => (
                 <button
                   key={p.id}
@@ -161,10 +176,10 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                     start(p.id);
                     onClose();
                   }}
-                  className="flex flex-col items-center gap-1 rounded-lg bg-[var(--panel-bg)] p-2 text-center text-xs transition-colors hover:bg-[var(--accent-primary)]/10"
+                  className="flex flex-col items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-white/[0.03] p-2 text-center text-xs transition-all hover:border-[var(--accent-primary)]/40 hover:bg-white/[0.08] active:scale-95 cursor-pointer"
                 >
                   <Icon name={p.icon} className={`h-4 w-4 ${p.color}`} />
-                  <span className="font-medium">{i18n(p.id)}</span>
+                  <span className="font-semibold text-[11px] text-[var(--text-primary)]">{i18n(p.id)}</span>
                   <span className="text-[10px] text-[var(--text-muted)]">{p.minutes} min</span>
                 </button>
               ))}

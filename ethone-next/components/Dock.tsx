@@ -90,11 +90,11 @@ function AppleDockItem({
       <AnimatePresence>
         {hovered && (
           <motion.div
-            initial={{ opacity: 0, y: 4, scale: 0.92 }}
-            animate={{ opacity: 1, y: -8, scale: 1 }}
-            exit={{ opacity: 0, y: 2, scale: 0.94 }}
+            initial={{ opacity: 0, y: 4, x: "-50%", scale: 0.92 }}
+            animate={{ opacity: 1, y: -8, x: "-50%", scale: 1 }}
+            exit={{ opacity: 0, y: 2, x: "-50%", scale: 0.94 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 z-50 whitespace-nowrap rounded-lg border border-white/[0.1] bg-[#0c1017]/95 px-2.5 py-1 text-[11px] font-semibold text-white shadow-xl backdrop-blur-xl select-none"
+            className="pointer-events-none absolute -top-8 left-1/2 z-50 whitespace-nowrap rounded-lg border border-white/[0.1] bg-[#0c1017]/95 px-2.5 py-1 text-[11px] font-semibold text-white shadow-xl backdrop-blur-xl select-none"
           >
             {label}
           </motion.div>
@@ -328,11 +328,11 @@ function Dock() {
             {/* Launchpad Mini Flyout */}
             {launcherOpen && (
               <motion.div
-                initial={{ opacity: 0, y: 16, scale: 0.94 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 12, scale: 0.95 }}
+                initial={{ opacity: 0, y: 16, x: "-50%", scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
+                exit={{ opacity: 0, y: 12, x: "-50%", scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 420, damping: 30, mass: 0.75 }}
-                className="pointer-events-auto absolute bottom-full left-1/2 z-[var(--z-dock)] mb-4 w-[min(92vw,460px)] -translate-x-1/2"
+                className="pointer-events-auto absolute bottom-full left-1/2 z-[var(--z-dock)] mb-4 w-[min(92vw,460px)]"
               >
                 <div className="relative overflow-hidden rounded-3xl border border-white/[0.09] bg-[#0c1017]/92 dark:bg-[#070b13]/96 p-4.5 text-[var(--text-primary)] shadow-[0_30px_70px_-10px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-3xl">
                   {/* Subtle ambient aura */}

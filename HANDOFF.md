@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-05, version 1.55.10)
+# ETHONE — passation à la prochaine IA (état au 2026-10-05, version 1.55.11)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 
@@ -170,6 +170,7 @@ git log --oneline -10
 - Module Émojis du serveur : testé et validé en conditions réelles (création et suppression d'émoji en production sur le serveur de test). Ajout de la fonctionnalité de renommage depuis le dashboard pour tous les émojis existants (route `PATCH /api/guilds/:guildId/server/emojis/:emojiId`, bouton crayon et édition en ligne dans l'interface).
 - Tracker Valorant : adaptation du volet déplié pour les parties archivées (`summaryOnly` / stored-matches) avec résumé individuel détaillé (Combat, Dégâts & Impact, Précision des tirs avec jauge tricolore tête/corps/jambes), suppression du faux badge MVP sur ces parties, et élimination de la durée codée en dur (« 8m 24s ») au profit de la durée réelle issue de l'API Henrik ou du nombre réel de manches.
 - Thèmes : clic droit dans le menu Thèmes (Modifier la police…, Créer un thème à partir de celui-ci) revérifié et validé dans Chrome en production sur le studio sans réécriture parasite ; thèmes perso visibles ; la réécriture `/settings/* → /settings/general/` de `public/_redirects` (qui masquait toutes les sections des Réglages) est supprimée.
+- Dock & Volets (v1.55.11) : refonte motion design Apple-grade de l'ensemble des volets du dock (Centre de contrôle, lecteur média, météo, minuteur Focus, lanceur d'apps) avec physique de ressorts Framer Motion, glassmorphism Sonoma, centrage absolu viewport garanti, slider tactile précis avec retour pourcentage et interrupteurs switch fluides conformes aux maquettes.
 
 ## Reste à faire (par priorité)
 1. **Bot animé, vérification réelle** : regarder dans un vrai salon qu'une réponse du bot affiche bien les émojis animés (29 émojis d'application synchronisés au dernier démarrage) et qu'une arrivée de membre envoie la carte GIF (interrupteur et aperçu GIF intégrés sur le site).

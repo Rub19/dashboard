@@ -13,7 +13,6 @@ import { useSound } from "@/lib/sound";
 import AmbientSoundControl from "@/components/AmbientSoundControl";
 import { hapticLightImpact } from "@/lib/haptics";
 import type { SoundPack } from "@/lib/settings";
-import { Volume2, VolumeX } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 
 const UI_ANIMATIONS = ["smooth", "snappy", "reduced"] as const;
@@ -33,100 +32,68 @@ const PACK_ICONS: Record<string, string> = {
   classic: "disc",
   "apple-inspired": "heart",
   "cyber-pulse": "zap",
-  silent: "volume-x",
+  silent: "helpCircle",
 };
 
 type ToggleProps = {
   label: string;
-  icon?: string;
-  iconColor?: string;
   checked: boolean;
   onChange: (v: boolean) => void;
 };
 
-function AppleToggle({ label, icon, iconColor, checked, onChange }: ToggleProps) {
+function AppleToggle({ label, checked, onChange }: ToggleProps) {
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
       onClick={() => {
         hapticLightImpact();
         onChange(!checked);
       }}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          hapticLightImpact();
-          onChange(!checked);
-        }
-      }}
-      className="group flex items-center justify-between gap-3 py-1 px-1.5 rounded-xl cursor-pointer select-none transition-colors hover:bg-white/[0.04]"
+      className="group flex w-full items-center justify-between gap-3 py-1.5 px-2 rounded-xl cursor-pointer select-none transition-colors hover:bg-white/[0.04] text-left"
     >
-      <div className="flex items-center gap-2.5 min-w-0">
-        {icon && (
-          <div
-            className={cn(
-              "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border transition-colors",
-              checked
-                ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-[0_0_10px_var(--glow-color)]"
-                : "border-white/[0.08] bg-white/[0.04] text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
-            )}
-          >
-            <Icon name={icon} className={cn("h-3.5 w-3.5", iconColor && !checked ? iconColor : "")} />
-          </div>
-        )}
-        <span className="text-xs font-medium text-[var(--text-primary)] truncate">
-          {label}
-        </span>
-      </div>
+      <span className="text-xs font-medium text-[var(--text-primary)] truncate">
+        {label}
+      </span>
 
-      <div
+      <span
         className={cn(
-          "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 transition-all duration-200 ease-out",
+          "relative inline-flex h-5.5 w-10 shrink-0 items-center rounded-full p-0.5 transition-colors duration-200 ease-out",
           checked
-            ? "bg-[var(--accent-primary)] shadow-[0_0_14px_var(--glow-color)]"
-            : "bg-white/[0.14] hover:bg-white/[0.2]"
+            ? "bg-[var(--accent-primary)] shadow-[0_0_12px_var(--glow-color)]"
+            : "bg-white/[0.14] group-hover:bg-white/[0.2]"
         )}
-        aria-pressed={checked}
-        role="switch"
-        aria-label={label}
       >
         <motion.span
-          className="inline-block h-5 w-5 rounded-full bg-white shadow-md"
+          className="inline-block h-4.5 w-4.5 rounded-full bg-white shadow-sm"
           animate={{
-            x: checked ? 20 : 0,
-            scale: [1, 0.94, 1],
+            x: checked ? 18 : 0,
           }}
           transition={{
             type: "spring",
-            stiffness: 500,
-            damping: 30,
-            mass: 0.6,
+            stiffness: 600,
+            damping: 35,
           }}
         />
-      </div>
-    </div>
+      </span>
+    </button>
   );
 }
 
-type CapsuleVolumeProps = {
+type AppleVolumeSliderProps = {
   label: string;
   value: number;
   onChange: (v: number) => void;
 };
 
-function CapsuleVolumeSlider({ label, value, onChange }: CapsuleVolumeProps) {
+function AppleVolumeSlider({ label, value, onChange }: AppleVolumeSliderProps) {
   const [dragging, setDragging] = useState(false);
   const [hovered, setHovered] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
-  const lastNonZeroRef = useRef(value || 75);
 
   const pct = Math.max(0, Math.min(100, value));
-  const isMuted = value === 0;
-
-  useEffect(() => {
-    if (value > 0) lastNonZeroRef.current = value;
-  }, [value]);
 
   const updateFromClientX = useCallback(
     (clientX: number) => {
@@ -161,82 +128,62 @@ function CapsuleVolumeSlider({ label, value, onChange }: CapsuleVolumeProps) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (["ArrowRight", "ArrowUp"].includes(e.key)) {
       e.preventDefault();
+      hapticLightImpact();
       onChange(Math.min(100, value + 5));
     } else if (["ArrowLeft", "ArrowDown"].includes(e.key)) {
       e.preventDefault();
+      hapticLightImpact();
       onChange(Math.max(0, value - 5));
     }
   };
 
-  const toggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    hapticLightImpact();
-    onChange(isMuted ? lastNonZeroRef.current || 75 : 0);
-  };
-
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between text-xs px-0.5">
+    <div className="space-y-2 pt-0.5">
+      <div className="flex items-center justify-between text-xs px-2">
         <span className="font-medium text-[var(--text-primary)]">{label}</span>
         <span className="font-mono text-[var(--text-muted)] text-[11px] tabular-nums">
           {pct}%
         </span>
       </div>
 
-      <div
-        ref={trackRef}
-        role="slider"
-        tabIndex={0}
-        aria-label={label}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={pct}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onKeyDown={handleKeyDown}
-        className={cn(
-          "relative h-9 w-full rounded-2xl bg-black/40 border border-white/[0.08] overflow-hidden select-none cursor-pointer",
-          "shadow-inner backdrop-blur-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
-        )}
-      >
-        {/* Dynamic gradient fill */}
-        <motion.div
-          className="absolute inset-y-0 left-0 bg-gradient-to-r from-[var(--accent-primary)]/80 via-[var(--accent-primary)] to-[var(--accent-primary)] rounded-2xl shadow-[0_0_15px_var(--glow-color)]"
-          style={{ width: `${pct}%` }}
-          transition={{ type: "spring", stiffness: 450, damping: 30 }}
-        />
+      <div className="flex items-center gap-3 px-2">
+        <div
+          ref={trackRef}
+          role="slider"
+          tabIndex={0}
+          aria-label={label}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={pct}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          onKeyDown={handleKeyDown}
+          className="relative h-2 flex-1 rounded-full bg-black/50 border border-white/[0.08] cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
+        >
+          {/* Active filled track */}
+          <div
+            className="absolute inset-y-0 left-0 rounded-full bg-[var(--accent-primary)] shadow-[0_0_10px_var(--glow-color)] transition-[width] duration-75"
+            style={{ width: `${pct}%` }}
+          />
 
-        {/* Ambient track texture */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/[0.06] to-transparent pointer-events-none" />
-
-        {/* Content over slider */}
-        <div className="relative z-10 flex h-full items-center justify-between px-3 pointer-events-none">
-          <button
-            type="button"
-            onClick={toggleMute}
-            className="pointer-events-auto flex h-6 w-6 items-center justify-center rounded-lg text-white/90 hover:text-white transition-transform active:scale-90"
-            aria-label={isMuted ? "Activer le son" : "Couper le son"}
-          >
-            {isMuted ? (
-              <VolumeX className="h-4 w-4 drop-shadow" />
-            ) : (
-              <Volume2 className="h-4 w-4 drop-shadow" />
-            )}
-          </button>
-
-          <span
+          {/* Draggable Knob */}
+          <div
             className={cn(
-              "font-mono text-xs font-bold tabular-nums drop-shadow transition-opacity",
-              pct < 50 ? "text-white/80" : "text-white"
+              "pointer-events-none absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-md transition-transform",
+              "h-4 w-4 border-2 border-[var(--accent-primary)] ring-2 ring-[var(--accent-primary)]/30",
+              dragging || hovered ? "scale-125 shadow-[0_0_12px_var(--glow-color)]" : "scale-100"
             )}
-          >
-            {pct}%
-          </span>
+            style={{ left: `${pct}%` }}
+          />
         </div>
+
+        <span className="font-mono text-xs text-[var(--text-muted)] tabular-nums w-8 text-right">
+          {pct}%
+        </span>
       </div>
     </div>
   );
@@ -245,18 +192,11 @@ function CapsuleVolumeSlider({ label, value, onChange }: CapsuleVolumeProps) {
 type QuickActionCardProps = {
   icon: string;
   label: string;
-  subtitle?: string;
   active?: boolean;
   onClick: () => void;
 };
 
-function QuickActionCard({
-  icon,
-  label,
-  subtitle,
-  active,
-  onClick,
-}: QuickActionCardProps) {
+function QuickActionCard({ icon, label, active, onClick }: QuickActionCardProps) {
   return (
     <motion.button
       type="button"
@@ -268,7 +208,7 @@ function QuickActionCard({
       whileTap={{ scale: 0.95 }}
       transition={{ type: "spring", stiffness: 450, damping: 25 }}
       className={cn(
-        "group relative flex flex-col items-center justify-center gap-1 rounded-2xl border p-2.5 text-center transition-all cursor-pointer overflow-hidden",
+        "group relative flex flex-col items-center justify-center gap-2 rounded-2xl border p-3 text-center transition-all cursor-pointer overflow-hidden",
         active
           ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-[0_0_18px_-3px_var(--glow-color)]"
           : "border-white/[0.08] bg-white/[0.03] text-[var(--text-primary)] hover:border-white/[0.16] hover:bg-white/[0.07]"
@@ -287,11 +227,6 @@ function QuickActionCard({
       <span className="w-full truncate text-[11px] font-semibold leading-tight">
         {label}
       </span>
-      {subtitle && (
-        <span className="w-full truncate text-[9px] font-medium text-[var(--text-muted)] opacity-80">
-          {subtitle}
-        </span>
-      )}
     </motion.button>
   );
 }
@@ -351,17 +286,17 @@ export default function DockControlCenter({
         {open && (
           <motion.div
             ref={setRefs}
-            initial={{ opacity: 0, y: 20, scale: 0.94 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 14, scale: 0.95 }}
+            initial={{ opacity: 0, y: 18, x: "-50%", scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
+            exit={{ opacity: 0, y: 12, x: "-50%", scale: 0.96 }}
             transition={{ type: "spring", stiffness: 440, damping: 28, mass: 0.75 }}
             style={{ transformOrigin: "bottom center" }}
-            className="fixed bottom-[calc(7rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-popover)] w-92 sm:w-96 max-w-[calc(100vw-1.5rem)] -translate-x-1/2 overflow-hidden pointer-events-auto"
+            className="fixed bottom-[calc(7rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-popover)] w-88 sm:w-[380px] max-w-[calc(100vw-1.5rem)] overflow-hidden pointer-events-auto"
             role="dialog"
             aria-modal="false"
             aria-label={i18n("controlCenter")}
           >
-            <div className="relative max-h-[calc(82vh-2.5rem)] space-y-4 overflow-y-auto no-scrollbar rounded-3xl border border-white/[0.09] bg-[#0c1017]/90 dark:bg-[#080c14]/94 p-4.5 text-[var(--text-primary)] shadow-[0_28px_60px_-10px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-3xl">
+            <div className="relative max-h-[calc(82vh-2.5rem)] space-y-4 overflow-y-auto no-scrollbar rounded-3xl border border-white/[0.09] bg-[#0c1017]/92 dark:bg-[#080c14]/95 p-4.5 text-[var(--text-primary)] shadow-[0_28px_60px_-10px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-3xl">
               {/* Dynamic ambient background aura */}
               <div
                 className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-gradient-to-br from-violet-500/20 via-[var(--accent-primary)]/15 to-transparent blur-3xl opacity-70 animate-pulse"
@@ -441,58 +376,45 @@ export default function DockControlCenter({
                   <QuickActionCard
                     icon="moon-star"
                     label={i18n("zenMode")}
-                    subtitle={settings.zenMode ? "Actif" : "Inactif"}
                     active={settings.zenMode}
                     onClick={handleZen}
                   />
                   <QuickActionCard
                     icon="focus"
                     label={i18n("focus")}
-                    subtitle="Lancer"
                     onClick={handleFocus}
                   />
                   <QuickActionCard
                     icon="bell"
                     label={i18n("notifications")}
-                    subtitle="Centre"
                     onClick={handleNotifications}
                   />
                 </div>
               </section>
 
-              {/* Section 3: Interface & Display Switches Bento */}
+              {/* Section 3: Interface & Display Switches */}
               <section className="space-y-0.5 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-2 backdrop-blur-md">
                 <AppleToggle
-                  icon="sparkles"
-                  iconColor="text-pink-400"
                   label={i18n("uiGlow")}
                   checked={settings.uiGlow}
                   onChange={(v) => update({ uiGlow: v })}
                 />
                 <AppleToggle
-                  icon="volume-2"
-                  iconColor="text-cyan-400"
                   label={i18n("uiSoundFeedback")}
                   checked={settings.uiSoundFeedback}
                   onChange={(v) => update({ uiSoundFeedback: v })}
                 />
                 <AppleToggle
-                  icon="search"
-                  iconColor="text-sky-400"
                   label={i18n("spotlight")}
                   checked={settings.spotlightEnabled}
                   onChange={(v) => update({ spotlightEnabled: v })}
                 />
                 <AppleToggle
-                  icon="sun"
-                  iconColor="text-amber-400"
                   label={i18n("ambientEffects")}
                   checked={settings.ambientEffectsEnabled}
                   onChange={(v) => update({ ambientEffectsEnabled: v })}
                 />
                 <AppleToggle
-                  icon="layers"
-                  iconColor="text-indigo-400"
                   label={i18n("interfaceBlur")}
                   checked={settings.interfaceBlurEnabled}
                   onChange={(v) => update({ interfaceBlurEnabled: v })}
@@ -520,7 +442,7 @@ export default function DockControlCenter({
                           play("click", pack);
                         }}
                         className={cn(
-                          "group relative flex flex-col items-center gap-1 rounded-xl border p-2 text-[10px] font-medium transition-all cursor-pointer",
+                          "group relative flex flex-col items-center gap-1.5 rounded-xl border p-2 text-[10px] font-medium transition-all cursor-pointer",
                           active
                             ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-[0_0_14px_-2px_var(--glow-color)]"
                             : "border-white/[0.08] bg-white/[0.03] text-[var(--text-primary)] hover:border-white/[0.14] hover:bg-white/[0.06]"
@@ -539,25 +461,20 @@ export default function DockControlCenter({
                         <span className="truncate w-full text-center font-semibold">
                           {i18n(`soundPack${pack.charAt(0).toUpperCase() + pack.slice(1)}`)}
                         </span>
-                        {active && (
-                          <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] shadow-[0_0_6px_var(--accent-primary)]" />
-                        )}
                       </motion.button>
                     );
                   })}
                 </div>
               </section>
 
-              {/* Section 5: Volume Bento (Master toggle + Capsule Slider) */}
-              <section className="space-y-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-3 backdrop-blur-md">
+              {/* Section 5: Volume Section (Master toggle + Smooth range slider) */}
+              <section className="space-y-2.5 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-2.5 backdrop-blur-md">
                 <AppleToggle
-                  icon="speaker"
-                  iconColor="text-rose-400"
                   label={i18n("masterVolume")}
                   checked={settings.masterVolume}
                   onChange={(v) => update({ masterVolume: v })}
                 />
-                <CapsuleVolumeSlider
+                <AppleVolumeSlider
                   label={i18n("soundVolume")}
                   value={settings.soundVolume}
                   onChange={(v) => update({ soundVolume: v })}

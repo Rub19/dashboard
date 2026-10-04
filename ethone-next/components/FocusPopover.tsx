@@ -108,12 +108,12 @@ export default function FocusPopover({
         {open && (
           <motion.div
             ref={setRefs}
-            initial={{ opacity: 0, y: 18, scale: 0.94 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 12, scale: 0.95 }}
+            initial={{ opacity: 0, y: 18, x: "-50%", scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
+            exit={{ opacity: 0, y: 12, x: "-50%", scale: 0.96 }}
             transition={{ type: "spring", stiffness: 440, damping: 28, mass: 0.75 }}
             style={{ transformOrigin: "bottom center" }}
-            className="fixed bottom-[calc(7rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-popover)] w-88 max-w-[calc(100vw-1.5rem)] -translate-x-1/2 overflow-hidden pointer-events-auto outline-none"
+            className="fixed bottom-[calc(7rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-popover)] w-88 max-w-[calc(100vw-1.5rem)] overflow-hidden pointer-events-auto outline-none"
             role="dialog"
             aria-modal="false"
             aria-label={i18n("focus")}

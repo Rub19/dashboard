@@ -3,13 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { AtSign, Camera, Check, Download, ExternalLink, Loader2, Lock, Palette, Pencil, Smile, User, X } from "@/components/icons/ph";
+import { AtSign, Camera, Check, Download, ExternalLink, Image as ImageIcon, Loader2, Lock, Palette, Pencil, Smile, Trash2, Upload, User, X } from "@/components/icons/ph";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import ProfileAvatar from "@/components/profile/ProfileAvatar";
 import AvatarLibrary from "@/components/profile/AvatarLibrary";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
-import { describeProfileError, saveAccountProfile, useAccountProfile, type AccountProfile, type PresenceStatus } from "@/lib/profile/account-profile";
+import { describeProfileError, saveAccountProfile, uploadProfileImage, useAccountProfile, type AccountProfile, type PresenceStatus } from "@/lib/profile/account-profile";
 import { AVATAR_FRAMES, PRESENCE, PROFILE_BACKGROUNDS, STATUS_EMOJIS, STATUS_SUGGESTIONS, backgroundById } from "@/lib/profile/cosmetics";
 import { EASE_SNAP, SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
@@ -95,6 +95,29 @@ export default function ProfilePage() {
         {/* Carte d'identité */}
         <section className={cn(panel, "relative overflow-hidden")}>
           <div aria-hidden className="absolute inset-0 transition-[background] duration-500" style={bg.style} />
+          <AnimatePresence initial={false}>
+            {profile.bannerUrl && (
+              <motion.div
+                key={profile.bannerUrl}
+                aria-hidden
+                className="absolute inset-0"
+                initial={{ opacity: 0, scale: 1.04 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.45, ease: EASE_SNAP }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={profile.bannerUrl} alt="" className="h-full w-full object-cover" />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, color-mix(in srgb, var(--bg-surface) 90%, transparent) 0%, color-mix(in srgb, var(--bg-surface) 62%, transparent) 50%, color-mix(in srgb, var(--bg-surface) 30%, transparent) 100%)",
+                  }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:gap-7 sm:p-7">
             {loaded ? (
               <button
@@ -492,7 +515,8 @@ function AppearanceTab({
           })}
         </div>
       </Section>
-      <Section title="Fond de la carte" text="Le décor de votre carte de profil, en haut de cette page.">
+      <BannerSection bannerUrl={profile.bannerUrl} onSave={onSave} />
+      <Section title="Fond de la carte" text={profile.bannerUrl ? "Utilisé quand aucune bannière n'est définie." : "Le décor de votre carte de profil, en haut de cette page."}>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3">
           {PROFILE_BACKGROUNDS.map((b) => {
             const active = bgId === b.id;
@@ -563,5 +587,88 @@ function AccountTab({ profile }: { profile: AccountProfile }) {
         </div>
       </Section>
     </div>
+  );
+}
+
+/** Réduit une image fixe à 1800 px de large (WebP) ; les GIF sont gardés tels quels pour rester animés. */
+async function prepareBanner(file: File): Promise<Blob> {
+  if (file.type === "image/gif") return file;
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, 1800 / bitmap.width);
+  const canvas = Object.assign(document.createElement("canvas"), { width: Math.round(bitmap.width * scale), height: Math.round(bitmap.height * scale) });
+  canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Conversion impossible."))), "image/webp", 0.88));
+}
+
+function BannerSection({ bannerUrl, onSave }: { bannerUrl: string; onSave: (p: Partial<AccountProfile>, msg?: string) => Promise<boolean> }) {
+  const { error: toastError } = useToast();
+  const [busy, setBusy] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const onFile = async (file?: File) => {
+    if (!file) return;
+    if (!/^image\/(png|jpe?g|webp|gif)$/.test(file.type)) return toastError("Formats acceptés : PNG, JPG, WebP ou GIF.");
+    setBusy(true);
+    try {
+      const url = await uploadProfileImage(await prepareBanner(file), "banner");
+      await onSave({ bannerUrl: url }, "Bannière mise à jour.");
+    } catch (e) {
+      toastError(e instanceof Error && e.message ? e.message : "Import impossible pour le moment.");
+    } finally {
+      setBusy(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  return (
+    <Section title="Bannière personnalisée" text="Votre propre image en fond de carte. Les GIF restent animés (5 Mo maximum, format conseillé 1500 × 500).">
+      <div className="relative h-32 overflow-hidden rounded-xl border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/40">
+        <AnimatePresence mode="wait" initial={false}>
+          {bannerUrl ? (
+            <motion.img
+              key={bannerUrl}
+              src={bannerUrl}
+              alt=""
+              className="h-full w-full object-cover"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            />
+          ) : (
+            <motion.div key="empty" className="grid h-full place-items-center text-sm text-[var(--text-muted)]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <span className="flex items-center gap-2"><ImageIcon className="h-4 w-4" /> Aucune bannière</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {busy && (
+          <div className="absolute inset-0 grid place-items-center bg-black/40 text-white">
+            <Loader2 className="h-6 w-6 animate-spin" />
+          </div>
+        )}
+      </div>
+      <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(e) => void onFile(e.target.files?.[0])} />
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => fileRef.current?.click()}
+          className="inline-flex h-10 items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)] transition-[filter,transform,opacity] duration-150 hover:brightness-110 active:scale-[0.97] disabled:opacity-50"
+        >
+          <Upload className="h-4 w-4" /> {bannerUrl ? "Remplacer" : "Importer une image"}
+        </button>
+        {bannerUrl && (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void onSave({ bannerUrl: "" }, "Bannière retirée.")}
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3.5 text-sm text-[var(--text-muted)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-raised)] active:scale-[0.97]"
+          >
+            <Trash2 className="h-4 w-4" /> Retirer
+          </button>
+        )}
+      </div>
+    </Section>
   );
 }

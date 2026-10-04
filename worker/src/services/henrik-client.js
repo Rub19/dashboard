@@ -243,3 +243,107 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride, star
     });
   }));
 }
+
+/**
+ * Historique long : parties mémorisées par HenrikDev (`stored-matches`), paginées — contrairement à v3 qui ne
+ * renvoie que les ~25 dernières. Données résumées (pas le tableau des 10 joueurs) : le joueur, le score et la carte.
+ */
+export async function getValorantHistory(env, riotId, mode, apiKeyOverride, page = 1, size = 25) {
+  const apiKey = apiKeyOverride || requireSecret(env, "HENRIK_API_KEY");
+  const [name, tag] = riotId.split("#");
+  const account = await getAccount(env, name, tag, apiKey);
+  if (!account) return [];
+  const region = account.region || "eu";
+
+  const url = new URL(`/valorant/v1/stored-matches/${region}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`, ORIGIN);
+  url.searchParams.set("page", String(page));
+  url.searchParams.set("size", String(size));
+  if (mode && mode !== "all") url.searchParams.set("mode", mode);
+
+  const response = await requestExternal(url, {
+    env,
+    expectedOrigin: ORIGIN,
+    service: "tracker",
+    dedupeKey: `henrik:stored:${region}:${name.toLowerCase()}:${tag.toLowerCase()}:${mode || "all"}:${page}:${size}`,
+    headers: apiKey ? { Authorization: apiKey } : {},
+    retries: 1,
+    maxBytes: 4194304
+  });
+  const agentCatalogue = await loadAgentCatalogue(env);
+
+  return Object.freeze((response.data?.data || []).map((entry) => {
+    const meta = entry.meta || {};
+    const s = entry.stats || {};
+    const team = safeText(s.team);
+    const red = Number(entry.teams?.red);
+    const blue = Number(entry.teams?.blue);
+    const mine = team === "Red" ? red : team === "Blue" ? blue : NaN;
+    const theirs = team === "Red" ? blue : team === "Blue" ? red : NaN;
+    const rounds = (Number.isFinite(red) ? red : 0) + (Number.isFinite(blue) ? blue : 0);
+    const result = !Number.isFinite(mine) || !Number.isFinite(theirs) ? "Draw" : mine > theirs ? "Victory" : mine < theirs ? "Defeat" : "Draw";
+    const shots = s.shots || {};
+    const totalShots = (Number(shots.head) || 0) + (Number(shots.body) || 0) + (Number(shots.leg) || 0);
+    const made = Number(s.damage?.made) || 0;
+    const received = Number(s.damage?.received) || 0;
+    const perRound = (v) => v / Math.max(1, rounds || 1);
+    const agent = safeText(s.character?.name);
+    const agentImage = resolveAgentImage(undefined, agent, agentCatalogue);
+    return Object.freeze({
+      id: safeText(meta.id),
+      scoreboard: Object.freeze({
+        teams: Object.freeze({
+          Red: Object.freeze({ roundsWon: Number.isFinite(red) ? red : null }),
+          Blue: Object.freeze({ roundsWon: Number.isFinite(blue) ? blue : null })
+        }),
+        partyMembers: Object.freeze([]),
+        players: Object.freeze([Object.freeze({
+          team,
+          character: agent,
+          name: safeText(name),
+          tag: safeText(tag),
+          currenttier_patched: "",
+          party_id: "",
+          inParty: false,
+          isMe: true,
+          isPartyMember: false,
+          assets: Object.freeze({ agent: Object.freeze({ small: agentImage }) }),
+          stats: Object.freeze({
+            score: Number(s.score) || 0,
+            kills: Number(s.kills) || 0,
+            deaths: Number(s.deaths) || 0,
+            assists: Number(s.assists) || 0,
+            headshots: Number(shots.head) || 0,
+            bodyshots: Number(shots.body) || 0,
+            legshots: Number(shots.leg) || 0,
+            damageMade: made,
+            damageReceived: received,
+            adr: perRound(made)
+          })
+        })])
+      }),
+      metadata: Object.freeze({
+        modeName: safeText(meta.mode),
+        result,
+        mapName: safeText(meta.map?.name),
+        agentName: agent,
+        agentImageUrl: agentImage,
+        score: Object.freeze({ team: Number.isFinite(mine) ? mine : null, opponent: Number.isFinite(theirs) ? theirs : null, roundsPlayed: rounds || null }),
+        timestamp: safeText(meta.started_at ? new Date(meta.started_at).toISOString() : ""),
+        summaryOnly: true
+      }),
+      segments: Object.freeze([{
+        type: "overview",
+        stats: safeStats({
+          kills: { value: Number(s.kills) || 0, displayValue: String(Number(s.kills) || 0) },
+          deaths: { value: Number(s.deaths) || 0, displayValue: String(Number(s.deaths) || 0) },
+          assists: { value: Number(s.assists) || 0, displayValue: String(Number(s.assists) || 0) },
+          score: { value: Number(s.score) || 0, displayValue: String(Number(s.score) || 0) },
+          scorePerRound: { value: perRound(Number(s.score) || 0), displayValue: String(Math.round(perRound(Number(s.score) || 0))) },
+          headshotsPercentage: { value: totalShots ? ((Number(shots.head) || 0) / totalShots) * 100 : 0, displayValue: String(totalShots ? Math.round(((Number(shots.head) || 0) / totalShots) * 100) : 0) },
+          damageDeltaPerRound: { value: perRound(made - received), displayValue: String(Math.round(perRound(made - received))) },
+          adr: { value: perRound(made), displayValue: String(Math.round(perRound(made))) }
+        })
+      }])
+    });
+  }));
+}

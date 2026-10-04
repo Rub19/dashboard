@@ -5,7 +5,7 @@ import {
   getTrackerProfile,
   getTrackerMatches,
 } from "../services/tracker-client.js";
-import { getValorantProfile, getValorantMatches } from "../services/henrik-client.js";
+import { getValorantProfile, getValorantMatches, getValorantHistory } from "../services/henrik-client.js";
 import { getLolProfile, getLolMatches, getTftMatches } from "../services/riot-client.js";
 import { getLolRotation, getValorantFeaturedStore } from "../services/game-store-client.js";
 import { getUserProviderCredential } from "../services/supabase-client.js";
@@ -101,12 +101,19 @@ export async function trackerLolRoute({ env, url, auth, request }) {
 }
 
 export async function trackerValorantMatchesRoute({ env, url, auth, request }) {
-  assertAllowedQuery(url, ["name", "tag", "mode", "region", "startIndex", "_t", "t", "force"]);
+  assertAllowedQuery(url, ["name", "tag", "mode", "region", "startIndex", "page", "_t", "t", "force"]);
   const name = queryText(url, "name", { pattern: PATTERNS.playerName, max: 32 });
   const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 10 }).replace(/^#/, "");
   const mode = queryText(url, "mode", { max: 32, required: false }) || "all";
   const startIndex = queryInteger(url, "startIndex", { required: false, fallback: 0, min: 0, max: 500 });
+  const page = queryInteger(url, "page", { required: false, fallback: 0, min: 0, max: 200 });
   const riotId = `${name}#${tag}`;
+  // « Charger plus » : historique paginé (stored-matches), page 1 = les plus récentes.
+  if (page > 0) {
+    const history = async () => getValorantHistory(env, riotId, mode, await ownKeyHenrik(env, auth, request), page, 25);
+    const res = await cachedLoad(`tracker:valorant:history:${name.toLowerCase()}:${tag.toLowerCase()}:${mode}:${page}`, 600, history);
+    return routeResult(res.data, { source: "henrikdev", cached: res.cached });
+  }
   const loader = async () => getValorantMatches(env, riotId, mode, await ownKeyHenrik(env, auth, request), startIndex);
   const result = await cachedLoad(`tracker:valorant:matches:${name.toLowerCase()}:${tag.toLowerCase()}:${mode}:${startIndex}`, 600, loader);
   return routeResult(result.data, { source: "henrikdev", cached: result.cached });

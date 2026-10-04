@@ -47,6 +47,13 @@ export default function ValorantTrackerView() {
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [historyEnd, setHistoryEnd] = useState(false);
+  // Nouveau compte ou nouveau mode : l'historique repart de la page 1.
+  useEffect(() => {
+    setHistoryPage(1);
+    setHistoryEnd(false);
+  }, [riotName, riotTag, selectedMode]);
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [activeReportIndex, setActiveReportIndex] = useState<number | null>(null);
@@ -151,64 +158,57 @@ export default function ValorantTrackerView() {
     [riotName, riotTag, selectedMode, cacheKey, success, showError]
   );
 
-  // Experimental: HenrikDev's v3 matches endpoint caps at ~25 matches per
-  // request with no documented way to page further back. `startIndex` here
-  // is an unverified guess — if the endpoint ignores it, the response comes
-  // back as a pure duplicate of what we already have, which is detected
-  // below and surfaced honestly instead of silently doing nothing.
+  // « Charger plus » : historique paginé de HenrikDev (stored-matches, via le worker). Page 1 = les plus récentes ;
+  // chaque clic remonte page par page jusqu'à 25 nouvelles parties (ou la fin de l'historique disponible).
   const loadMoreMatches = useCallback(async () => {
     const cleanName = riotName.trim();
     const cleanTag = riotTag.trim().replace(/^#/, "");
-    if (!cleanName || !cleanTag || loadingMore) return;
+    if (!cleanName || !cleanTag || loadingMore || historyEnd) return;
 
     setLoadingMore(true);
-    let henrikApiKey =
-      typeof window !== "undefined"
-        ? localStorage.getItem("ethone:cred:riot:henrikApiKey") ||
-          localStorage.getItem("ethone:cred:valorant:apiKey") ||
-          localStorage.getItem("ethone:cred:henrik:apiKey") ||
-          localStorage.getItem("HENRIK_API_KEY")
-        : null;
-    if (!henrikApiKey && typeof window !== "undefined") {
-      const generic = localStorage.getItem("ethone:cred:riot:apiKey");
-      if (generic && generic.startsWith("HDEV-")) henrikApiKey = generic;
-    }
-
     try {
-      let newMatches: ValorantMatch[] = [];
-      try {
-        newMatches = await fetchValorantMatchesDirect(cleanName, cleanTag, selectedMode, henrikApiKey, matches.length);
-      } catch {
-        try {
-          const modeParam = selectedMode !== "all" ? `&mode=${encodeURIComponent(selectedMode)}` : "";
-          const res = await fetchWorker(
-            `/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}${modeParam}&startIndex=${matches.length}`
-          );
-          const rawList = (res?.data?.matches || res?.data || res?.matches || res || []) as ValorantMatch[];
-          newMatches = Array.isArray(rawList) ? rawList : [];
-        } catch {
-          newMatches = [];
+      const modeParam = selectedMode !== "all" ? `&mode=${encodeURIComponent(selectedMode)}` : "";
+      const known = new Set(matches.map((m) => m.id));
+      const added: ValorantMatch[] = [];
+      let page = historyPage;
+      let reachedEnd = false;
+      for (let tries = 0; tries < 6 && added.length < 25; tries++) {
+        const res = await fetchWorker(
+          `/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}${modeParam}&page=${page}`
+        );
+        const list = (res?.data?.matches || res?.data || res?.matches || res || []) as ValorantMatch[];
+        page += 1;
+        if (!Array.isArray(list) || list.length === 0) {
+          reachedEnd = true;
+          break;
+        }
+        for (const m of list) {
+          if (m?.id && !known.has(m.id)) {
+            known.add(m.id);
+            added.push(m);
+          }
         }
       }
+      setHistoryPage(page);
+      if (reachedEnd) setHistoryEnd(true);
 
-      const existingIds = new Set(matches.map((m) => m.id));
-      const uniqueNew = newMatches.filter((m) => !existingIds.has(m.id));
-
-      if (uniqueNew.length === 0) {
-        showError("L'API ne permet pas de charger un historique plus ancien pour ce compte (pagination non supportée).");
+      if (added.length === 0) {
+        if (reachedEnd) success("Tout l'historique disponible est déjà chargé.");
+        else showError("Aucune partie plus ancienne trouvée pour le moment.");
         return;
       }
-
-      const merged = [...matches, ...uniqueNew];
+      const merged = [...matches, ...added].sort((x, y) => new Date(y.metadata.timestamp).getTime() - new Date(x.metadata.timestamp).getTime());
       setMatches(merged);
       try {
         localStorage.setItem(cacheKey, JSON.stringify({ matches: merged, timestamp: Date.now() }));
       } catch {}
-      success(`${uniqueNew.length} partie${uniqueNew.length > 1 ? "s" : ""} supplémentaire${uniqueNew.length > 1 ? "s" : ""} chargée${uniqueNew.length > 1 ? "s" : ""}`);
+      success(`${added.length} partie${added.length > 1 ? "s" : ""} plus ancienne${added.length > 1 ? "s" : ""} chargée${added.length > 1 ? "s" : ""}`);
+    } catch {
+      showError("Impossible de charger l'historique pour le moment.");
     } finally {
       setLoadingMore(false);
     }
-  }, [riotName, riotTag, selectedMode, matches, cacheKey, success, showError, loadingMore]);
+  }, [riotName, riotTag, selectedMode, matches, cacheKey, success, showError, loadingMore, historyPage, historyEnd]);
 
   // Load once on mount or when account changes (using cache)
   useEffect(() => {
@@ -601,13 +601,13 @@ export default function ValorantTrackerView() {
             <button
               type="button"
               onClick={loadMoreMatches}
-              disabled={loadingMore}
+              disabled={loadingMore || historyEnd}
               className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/5 px-3.5 py-2 text-xs font-bold text-[var(--text-primary)]/85 hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] active:scale-95 transition-all cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={cn("h-3.5 w-3.5", loadingMore && "animate-spin")} />
-              <span>{loadingMore ? "Chargement..." : "Charger plus de parties"}</span>
+              <span>{loadingMore ? "Chargement..." : historyEnd ? "Tout l'historique est chargé" : "Charger plus de parties"}</span>
             </button>
-            <p className="text-[10px] text-[var(--text-muted)]/60">Expérimental — peut ne rien trouver de plus selon les limites de l'API</p>
+            <p className="text-[10px] text-[var(--text-muted)]/60">{matches.length} parties chargées · les plus anciennes affichent un résumé (sans le tableau des 10 joueurs)</p>
           </div>
         )}
       </div>

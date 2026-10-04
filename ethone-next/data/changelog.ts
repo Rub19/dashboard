@@ -43269,6 +43269,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_53_7_en);
 CHANGELOG_BY_LANG.es.unshift(v1_53_7_es);
 CHANGELOG_BY_LANG.de.unshift(v1_53_7_de);
 
+const v1_54_0_fr: ChangelogEntry = {
+  version: "v1.54.0",
+  date: "2026-10-04",
+  title: "Bannière de profil et historique Valorant complet",
+  items: [
+    "Profil › Apparence : importez votre propre bannière en fond de carte (les GIF restent animés).",
+    "Tracker Valorant : « Charger plus » remonte vraiment l'historique, 25 parties par clic, jusqu'à la plus ancienne disponible.",
+    "Les parties anciennes affichent un résumé (score, agent, carte, stats) sans le tableau des 10 joueurs.",
+  ],
+};
+
+const v1_54_0_en: ChangelogEntry = {
+  version: "v1.54.0",
+  date: "2026-10-04",
+  title: "Profile banner and full Valorant history",
+  items: [
+    "Profile › Appearance: upload your own card banner (GIFs stay animated).",
+    "Valorant tracker: \"Load more\" really goes back through your history, 25 matches per click, up to the oldest available.",
+    "Older matches show a summary (score, agent, map, stats) without the 10-player scoreboard.",
+  ],
+};
+
+const v1_54_0_es: ChangelogEntry = {
+  version: "v1.54.0",
+  date: "2026-10-04",
+  title: "Banner de perfil e historial completo de Valorant",
+  items: [
+    "Perfil › Apariencia: sube tu propio banner de tarjeta (los GIF siguen animados).",
+    "Tracker de Valorant: «Cargar más» recorre de verdad el historial, 25 partidas por clic, hasta la más antigua disponible.",
+    "Las partidas antiguas muestran un resumen (marcador, agente, mapa, estadísticas) sin la tabla de 10 jugadores.",
+  ],
+};
+
+const v1_54_0_de: ChangelogEntry = {
+  version: "v1.54.0",
+  date: "2026-10-04",
+  title: "Profilbanner und vollständiger Valorant-Verlauf",
+  items: [
+    "Profil › Darstellung: eigenes Kartenbanner hochladen (GIFs bleiben animiert).",
+    "Valorant-Tracker: „Mehr laden“ geht wirklich zurück, 25 Matches pro Klick, bis zum ältesten verfügbaren.",
+    "Ältere Matches zeigen eine Zusammenfassung (Ergebnis, Agent, Map, Werte) ohne die 10-Spieler-Tabelle.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_54_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_54_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_54_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_54_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

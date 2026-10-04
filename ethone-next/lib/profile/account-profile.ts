@@ -25,6 +25,7 @@ export type AccountProfile = {
   presence: PresenceStatus;
   statusText: string;
   statusEmoji: string;
+  bannerUrl: string;
 };
 
 type Row = {
@@ -40,6 +41,7 @@ type Row = {
   presence_status: string | null;
   status_text: string | null;
   status_emoji: string | null;
+  banner_url: string | null;
 };
 
 const PRESENCES: PresenceStatus[] = ["online", "busy", "dnd", "away", "invisible"];
@@ -56,6 +58,7 @@ const EMPTY: AccountProfile = {
   presence: "online",
   statusText: "",
   statusEmoji: "",
+  bannerUrl: "",
 };
 
 function fromRow(r: Row): AccountProfile {
@@ -72,6 +75,7 @@ function fromRow(r: Row): AccountProfile {
     presence,
     statusText: r.status_text ?? "",
     statusEmoji: r.status_emoji ?? "",
+    bannerUrl: r.banner_url ?? "",
   };
 }
 
@@ -88,6 +92,7 @@ function toRow(p: Partial<AccountProfile>): Partial<Row> {
   if (p.presence !== undefined) r.presence_status = p.presence;
   if (p.statusText !== undefined) r.status_text = p.statusText.slice(0, 80);
   if (p.statusEmoji !== undefined) r.status_emoji = p.statusEmoji.slice(0, 16);
+  if (p.bannerUrl !== undefined) r.banner_url = p.bannerUrl;
   return r;
 }
 
@@ -98,6 +103,7 @@ export function describeProfileError(err: unknown): string {
   if (e?.code === "23505" || /username_idx|duplicate key/i.test(msg)) return "Ce pseudo est déjà utilisé par un autre compte.";
   if (/username_format/.test(msg)) return "Pseudo : 3 à 32 caractères, lettres minuscules, chiffres, « . », « _ » ou « - ».";
   if (/avatar_url/.test(msg)) return "Cette image ne peut pas être utilisée comme avatar.";
+  if (/banner_url/.test(msg)) return "Cette image ne peut pas être utilisée comme bannière.";
   if (/bio_length/.test(msg)) return "La bio dépasse 300 caractères.";
   if (/display_name_length/.test(msg)) return "Le nom affiché dépasse 80 caractères.";
   return "Impossible d'enregistrer le profil pour le moment.";
@@ -181,17 +187,20 @@ export async function saveAccountProfile(patch: Partial<AccountProfile>, seed?: 
   if (Object.keys(meta).length) void supabase.auth.updateUser({ data: meta }).catch(() => undefined);
 }
 
-/** Envoie une image recadrée (data URL) dans le stockage du compte et renvoie son adresse publique. */
-export async function uploadAvatarImage(dataUrl: string): Promise<string> {
+/** Envoie une image (data URL ou fichier) dans le stockage du compte et renvoie son adresse publique. */
+export async function uploadProfileImage(source: string | Blob, kind: "avatar" | "banner"): Promise<string> {
   const userId = state.userId;
   if (!userId) throw new Error("Connectez-vous pour importer une image.");
-  const blob = await (await fetch(dataUrl)).blob();
-  const ext = blob.type === "image/png" ? "png" : blob.type === "image/jpeg" ? "jpg" : "webp";
-  const path = `${userId}/avatar-${Date.now()}.${ext}`;
+  const blob = typeof source === "string" ? await (await fetch(source)).blob() : source;
+  if (blob.size > 5 * 1024 * 1024) throw new Error("Image trop lourde (5 Mo maximum).");
+  const ext = blob.type === "image/png" ? "png" : blob.type === "image/jpeg" ? "jpg" : blob.type === "image/gif" ? "gif" : "webp";
+  const path = `${userId}/${kind}-${Date.now()}.${ext}`;
   const { error } = await supabase.storage.from("profile-media").upload(path, blob, { contentType: blob.type, upsert: false, cacheControl: "31536000" });
   if (error) throw error;
   return supabase.storage.from("profile-media").getPublicUrl(path).data.publicUrl;
 }
+
+export const uploadAvatarImage = (dataUrl: string) => uploadProfileImage(dataUrl, "avatar");
 
 export function useAccountProfile() {
   useEffect(bindAuth, []);

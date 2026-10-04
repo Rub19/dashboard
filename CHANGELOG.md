@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.54.0 — 2026-10-04
+
+**Bannière de profil et historique Valorant complet**
+
+- Profil › Apparence : importez votre propre bannière en fond de carte (les GIF restent animés).
+- Tracker Valorant : « Charger plus » remonte vraiment l'historique, 25 parties par clic, jusqu'à la plus ancienne disponible.
+- Les parties anciennes affichent un résumé (score, agent, carte, stats) sans le tableau des 10 joueurs.
+
 ## v1.53.7 — 2026-10-04
 
 **Tracker LoL : icônes des runes**

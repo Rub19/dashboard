@@ -1,655 +1,567 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  User,
-  Smile,
-  Sparkles,
-  Shield,
-  Camera,
-  Upload,
-  Check,
-  Save,
-  Loader2,
-} from "@/components/icons/ph";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
+import { AtSign, Camera, Check, Download, ExternalLink, Loader2, Lock, Palette, Pencil, Smile, User, X } from "@/components/icons/ph";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
-import { useProfile } from "@/lib/hooks/useProfile";
+import ProfileAvatar from "@/components/profile/ProfileAvatar";
+import AvatarLibrary from "@/components/profile/AvatarLibrary";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
-import { useIdentity, PROFILE_FRAMES } from "@/lib/identity";
-import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
-import { usePersonalizationStore } from "@/lib/personalization/personalization-store";
-import ProfileHero2026 from "@/components/profile/ProfileHero2026";
-import AvatarCropperModal from "@/components/profile/AvatarCropperModal";
-import AvatarPickerModal from "@/components/AvatarPickerModal";
-import ProfileStatusPicker from "@/components/profile/ProfileStatusPicker";
-import PersonalizationPanel from "@/components/profile/PersonalizationPanel";
-import ProfileSecurityAndData from "@/components/profile/ProfileSecurityAndData";
+import { describeProfileError, saveAccountProfile, useAccountProfile, type AccountProfile, type PresenceStatus } from "@/lib/profile/account-profile";
+import { AVATAR_FRAMES, PRESENCE, PROFILE_BACKGROUNDS, STATUS_EMOJIS, STATUS_SUGGESTIONS, backgroundById } from "@/lib/profile/cosmetics";
+import { EASE_SNAP, SPRING_PILL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
-import { SPRING_PILL } from "@/lib/ease";
-import { stepEnter } from "@/lib/motion-variants";
-import { useMotionPref } from "@/lib/hooks/useMotionPref";
 
-type ProfileTab = "identity" | "status" | "personalization" | "security";
+type Tab = "profile" | "status" | "appearance" | "account";
+const TABS: Array<{ id: Tab; label: string; icon: typeof User }> = [
+  { id: "profile", label: "Profil", icon: User },
+  { id: "status", label: "Statut", icon: Smile },
+  { id: "appearance", label: "Apparence", icon: Palette },
+  { id: "account", label: "Compte", icon: Lock },
+];
+
+const USERNAME_RE = /^[a-z0-9][a-z0-9._-]{2,31}$/;
+
+/** Pseudo valide dérivé du compte, utilisé seulement à la toute première création du profil. */
+function seedUsername(raw: string, userId: string) {
+  const s = raw.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9._-]/g, "").replace(/^[._-]+/, "").slice(0, 32);
+  return USERNAME_RE.test(s) ? s : `user-${userId.slice(0, 8)}`;
+}
+
+const panel = "rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]";
+const inputCls =
+  "h-11 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--input-bg)] px-3.5 text-sm text-[var(--text-primary)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)]/70";
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const identity = useUserIdentity();
+  const { profile, loaded, signedIn } = useAccountProfile();
   const { success, error: toastError } = useToast();
-  const { profile, save: saveCoreProfile } = useProfile();
-  const { identity, save: saveIdentity } = useIdentity();
-  const userIdentity = useUserIdentity();
+  const [tab, setTab] = useState<Tab>("profile");
+  const [libraryOpen, setLibraryOpen] = useState(false);
 
-  const [activeWorkspace, setActiveWorkspace] = useLocalStorage<string>(
-    "ethone-active-workspace",
-    "personal"
-  );
-
-  const {
-    preferences,
-    inferredPreferences,
-    setPresenceStatus,
-    setCustomStatus,
-    toggleInterest,
-    setDensity,
-    togglePrivacySetting,
-    toggleAutoStatus,
-    exportPersonalData,
-    resetPersonalization,
-  } = usePersonalizationStore();
-
-  const [activeTab, setActiveTab] = useState<ProfileTab>("identity");
-  const [saving, setSaving] = useState(false);
-  const { reduced } = useMotionPref();
-
-  // Modals state
-  const [isAvatarPickerOpen, setIsAvatarPickerOpen] = useState(false);
-  const [isStatusPickerOpen, setIsStatusPickerOpen] = useState(false);
-  const [cropperState, setCropperState] = useState<{
-    isOpen: boolean;
-    imageSrc: string | null;
-  }>({
-    isOpen: false,
-    imageSrc: null,
-  });
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  // Track user edits so background/async updates don't clobber active typing
-  const userEditedRef = useRef<Record<string, boolean>>({});
-
-  // Form state initialized immediately with local storage to avoid blank flickers
-  const [form, setForm] = useState(() => {
-    if (typeof window === "undefined") {
-      return { displayName: "", username: "", bio: "", avatarFrameId: "" };
-    }
-    const localName =
-      (user?.id ? localStorage.getItem(`ethone_user_name:${user.id}`) : null) ||
-      localStorage.getItem("ethone_user_name:local") ||
-      localStorage.getItem("ethone:user_name") ||
-      localStorage.getItem("ethone:user:name") ||
-      "";
-    const localUsername =
-      (user?.id ? localStorage.getItem(`ethone_user_username:${user.id}`) : null) ||
-      localStorage.getItem("ethone_user_username:local") ||
-      localStorage.getItem("ethone:user:username") ||
-      "";
-    const localBio =
-      (user?.id ? localStorage.getItem(`ethone_user_bio:${user.id}`) : null) ||
-      localStorage.getItem("ethone_user_bio:local") ||
-      localStorage.getItem("ethone:user:bio") ||
-      "";
-    const localFrame =
-      (user?.id ? localStorage.getItem(`ethone_user_frame:${user.id}`) : null) ||
-      localStorage.getItem("ethone_user_frame:local") ||
-      localStorage.getItem("ethone:user:frame") ||
-      "";
-
-    return {
-      displayName: localName,
-      username: localUsername,
-      bio: localBio,
-      avatarFrameId: localFrame,
-    };
-  });
-
-  // Sync only fields that the user hasn't explicitly edited
+  // « Mis à jour depuis un autre appareil » : le profil change sans qu'on vienne d'enregistrer ici.
+  const lastLocalSave = useRef(0);
+  const [remotePulse, setRemotePulse] = useState(false);
+  const profileJson = JSON.stringify(profile);
+  const prevJson = useRef(profileJson);
   useEffect(() => {
-    setForm((prev) => {
-      const nextDisplayName = !userEditedRef.current.displayName
-        ? (identity?.display_name || profile?.display_name || (userIdentity.displayName && userIdentity.displayName !== "Compte" && userIdentity.displayName !== "Personnel" ? userIdentity.displayName : "") || prev.displayName || "")
-        : prev.displayName;
-      const nextUsername = !userEditedRef.current.username
-        ? (identity?.username || profile?.username || prev.username || "")
-        : prev.username;
-      const nextBio = !userEditedRef.current.bio
-        ? (identity?.bio || prev.bio || "")
-        : prev.bio;
-      const nextFrame = !userEditedRef.current.avatarFrameId
-        ? (identity?.avatar_frame_id || prev.avatarFrameId || "")
-        : prev.avatarFrameId;
-
-      if (
-        nextDisplayName === prev.displayName &&
-        nextUsername === prev.username &&
-        nextBio === prev.bio &&
-        nextFrame === prev.avatarFrameId
-      ) {
-        return prev;
-      }
-
-      return {
-        displayName: nextDisplayName,
-        username: nextUsername,
-        bio: nextBio,
-        avatarFrameId: nextFrame,
-      };
-    });
-  }, [identity, profile, userIdentity.displayName]);
-
-  // Handle file select for avatar
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      toastError("Veuillez sélectionner un fichier image valide (PNG, JPEG, WebP).");
-      return;
+    if (loaded && prevJson.current !== profileJson && Date.now() - lastLocalSave.current > 2500) {
+      setRemotePulse(true);
+      const t = setTimeout(() => setRemotePulse(false), 3200);
+      prevJson.current = profileJson;
+      return () => clearTimeout(t);
     }
+    prevJson.current = profileJson;
+  }, [profileJson, loaded]);
 
-    if (file.size > 8 * 1024 * 1024) {
-      toastError("L'image est trop volumineuse (maximum 8 Mo).");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      setCropperState({
-        isOpen: true,
-        imageSrc: reader.result as string,
+  const save = async (patch: Partial<AccountProfile>, okMessage?: string) => {
+    lastLocalSave.current = Date.now();
+    try {
+      await saveAccountProfile(patch, {
+        displayName: identity.displayName,
+        username: seedUsername(identity.username, user?.id ?? ""),
+        avatarUrl: identity.avatarUrl && !/^data:/.test(identity.avatarUrl) ? identity.avatarUrl : "",
       });
-    };
-    reader.readAsDataURL(file);
-
-    // Reset input
-    e.target.value = "";
-  };
-
-  // Helper to persist avatar across all local and remote stores
-  const persistAvatar = async (avatarUrl: string) => {
-    const effectiveId = user?.id || "local";
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(`ethone_custom_avatar:${effectiveId}`, avatarUrl);
-        localStorage.setItem(`ethone:custom:avatar:${effectiveId}`, avatarUrl);
-        localStorage.setItem(`ethone_user_avatar:${effectiveId}`, avatarUrl);
-        localStorage.setItem("ethone_custom_avatar:local", avatarUrl);
-        localStorage.setItem("ethone_custom_avatar", avatarUrl);
-        localStorage.setItem("ethone_user_avatar", avatarUrl);
-      } catch {}
-    }
-
-    try {
-      await saveCoreProfile({ avatar_url: avatarUrl });
+      if (okMessage) success(okMessage);
+      return true;
     } catch (e) {
-      console.warn("saveCoreProfile avatar error:", e);
-    }
-
-    try {
-      await saveIdentity({ avatar_url: avatarUrl });
-    } catch (e) {
-      console.warn("saveIdentity avatar error:", e);
-    }
-
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(
-        new CustomEvent("ethone:identity:update", {
-          detail: { avatar_url: avatarUrl },
-        })
-      );
-      window.dispatchEvent(new Event("storage"));
+      toastError(describeProfileError(e));
+      return false;
     }
   };
 
-  // When crop is finished
-  const handleCropComplete = async (croppedDataUrl: string) => {
-    await persistAvatar(croppedDataUrl);
-    success("Nouvel avatar recadré et appliqué avec succès !");
-  };
+  if (!signedIn && loaded) {
+    return (
+      <div className="grid h-full place-items-center p-6 text-center">
+        <div className="max-w-sm space-y-3">
+          <h1 className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">Votre profil</h1>
+          <p className="text-sm text-[var(--text-muted)]">Connectez-vous pour choisir un avatar, un statut et retrouver votre profil sur tous vos appareils.</p>
+          <Link href="/login" className="inline-flex h-10 items-center rounded-xl bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)]">
+            Se connecter
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-  // When picking from AvatarPickerModal catalog
-  const handleAvatarCatalogSelect = async (avatarUrl: string) => {
-    await persistAvatar(avatarUrl);
-    setIsAvatarPickerOpen(false);
-    success("Avatar sélectionné appliqué avec succès !");
-  };
+  const bg = backgroundById(profile.backgroundId);
 
-  // Submit Identity Form
-  const handleSaveIdentity = async () => {
+  return (
+    <div className="h-full min-h-0 overflow-y-auto os-scroll [overscroll-behavior:contain]">
+      <div className="stagger-children mx-auto w-full max-w-5xl space-y-5 px-4 pb-40 pt-5 sm:px-6 sm:pt-8">
+        {/* Carte d'identité */}
+        <section className={cn(panel, "relative overflow-hidden")}>
+          <div aria-hidden className="absolute inset-0 transition-[background] duration-500" style={bg.style} />
+          <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:gap-7 sm:p-7">
+            {loaded ? (
+              <button
+                type="button"
+                onClick={() => setLibraryOpen(true)}
+                aria-label="Changer d'avatar"
+                className="group relative w-fit rounded-full outline-none transition-transform duration-150 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--bg-surface)]"
+              >
+                <ProfileAvatar src={identity.avatarUrl} initials={identity.initials} frameId={profile.frameId} presence={profile.presence} size={112} />
+                <span className="absolute inset-0 grid place-items-center rounded-full bg-black/45 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+                  <Camera className="h-6 w-6" />
+                </span>
+              </button>
+            ) : (
+              <div className="skeleton-shimmer h-28 w-28 rounded-full" />
+            )}
+
+            <div className="min-w-0 flex-1 space-y-2">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <h1 className="truncate text-[28px] font-semibold leading-tight tracking-[-0.02em] text-[var(--text-primary)] sm:text-[32px]">{identity.displayName}</h1>
+                <PresenceChip presence={profile.presence} />
+              </div>
+              <p className="text-sm text-[var(--text-muted)]">@{identity.username}</p>
+              <AnimatePresence initial={false}>
+                {(profile.statusText || profile.statusEmoji) && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2, ease: EASE_SNAP }}
+                    className="inline-flex max-w-full items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--bg-surface)]/70 px-3 py-1 text-sm text-[var(--text-primary)] backdrop-blur"
+                  >
+                    {profile.statusEmoji && <span aria-hidden>{profile.statusEmoji}</span>}
+                    <span className="truncate">{profile.statusText}</span>
+                  </motion.p>
+                )}
+              </AnimatePresence>
+              <p className={cn("max-w-2xl text-sm leading-relaxed", profile.bio ? "text-[var(--text-primary)]/85" : "text-[var(--text-muted)]")}>
+                {profile.bio || "Pas encore de bio. Ajoutez-en une dans l'onglet Profil."}
+              </p>
+            </div>
+
+            <div className="flex shrink-0 flex-row gap-2 sm:flex-col sm:items-end">
+              <SyncPill pulse={remotePulse} ready={loaded} />
+              <button
+                type="button"
+                onClick={() => setLibraryOpen(true)}
+                className="inline-flex h-10 items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)] shadow-sm transition-[filter,transform] duration-150 hover:brightness-110 active:scale-[0.97]"
+              >
+                <Pencil className="h-4 w-4" /> Changer d&apos;avatar
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Onglets */}
+        <div role="tablist" aria-label="Sections du profil" className={cn(panel, "flex gap-1 overflow-x-auto p-1 no-scrollbar")}>
+          {TABS.map((t) => {
+            const active = tab === t.id;
+            const Icon = t.icon;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setTab(t.id)}
+                className={cn(
+                  "relative flex flex-1 items-center justify-center gap-2 rounded-[calc(var(--panel-radius)-4px)] px-3 py-2.5 text-sm font-medium transition-colors duration-150",
+                  active ? "text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
+                )}
+              >
+                {active && <motion.span layoutId="profile-tab-pill" transition={SPRING_PILL} className="absolute inset-0 rounded-[calc(var(--panel-radius)-4px)] bg-[var(--accent-primary)]" />}
+                <Icon className="relative h-4 w-4" />
+                <span className="relative">{t.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2, ease: EASE_SNAP }}>
+            {!loaded ? (
+              <div className={cn(panel, "space-y-3 p-6")} role="status" aria-busy="true" aria-label="Chargement du profil…">
+                <div className="skeleton-shimmer h-5 w-40 rounded" />
+                <div className="skeleton-shimmer h-11 rounded-xl" />
+                <div className="skeleton-shimmer h-11 rounded-xl" />
+                <div className="skeleton-shimmer h-24 rounded-xl" />
+              </div>
+            ) : tab === "profile" ? (
+              <ProfileTab profile={profile} fallbackName={identity.displayName} fallbackUsername={identity.username} onSave={save} />
+            ) : tab === "status" ? (
+              <StatusTab profile={profile} onSave={save} />
+            ) : tab === "appearance" ? (
+              <AppearanceTab profile={profile} avatarUrl={identity.avatarUrl} initials={identity.initials} onSave={save} />
+            ) : (
+              <AccountTab profile={profile} />
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <AvatarLibrary isOpen={libraryOpen} onClose={() => setLibraryOpen(false)} />
+    </div>
+  );
+}
+
+function PresenceChip({ presence }: { presence: PresenceStatus }) {
+  const p = PRESENCE[presence];
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--panel-border)] bg-[var(--bg-surface)]/70 px-2.5 py-0.5 text-xs font-medium text-[var(--text-primary)] backdrop-blur">
+      <span className="h-2 w-2 rounded-full transition-colors duration-300" style={{ background: p.color }} />
+      {p.label}
+    </span>
+  );
+}
+
+function SyncPill({ pulse, ready }: { pulse: boolean; ready: boolean }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex h-10 items-center gap-2 rounded-xl border px-3 text-xs font-medium transition-colors duration-300",
+        pulse ? "border-[var(--success)]/50 bg-[var(--success)]/12 text-[var(--text-primary)]" : "border-[var(--panel-border)] bg-[var(--bg-surface)]/70 text-[var(--text-muted)]",
+      )}
+      aria-live="polite"
+    >
+      <span className={cn("h-2 w-2 rounded-full", ready ? "bg-[var(--success)]" : "bg-[var(--text-muted)]")} />
+      {pulse ? "Mis à jour depuis un autre appareil" : ready ? "Synchronisé sur vos appareils" : "Connexion…"}
+    </span>
+  );
+}
+
+function Section({ title, text, children, className }: { title: string; text?: string; children: React.ReactNode; className?: string }) {
+  return (
+    <section className={cn(panel, "space-y-4 p-5 sm:p-6", className)}>
+      <div>
+        <h2 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">{title}</h2>
+        {text && <p className="mt-0.5 text-sm text-[var(--text-muted)]">{text}</p>}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+// ───────────────────────────── Profil : nom, pseudo, bio
+function ProfileTab({
+  profile,
+  fallbackName,
+  fallbackUsername,
+  onSave,
+}: {
+  profile: AccountProfile;
+  fallbackName: string;
+  fallbackUsername: string;
+  onSave: (p: Partial<AccountProfile>, msg?: string) => Promise<boolean>;
+}) {
+  const initial = useMemo(
+    () => ({ displayName: profile.displayName || fallbackName, username: profile.username || fallbackUsername, bio: profile.bio }),
+    [profile.displayName, profile.username, profile.bio, fallbackName, fallbackUsername],
+  );
+  const [draft, setDraft] = useState(initial);
+  const [saving, setSaving] = useState(false);
+  // Un changement venu d'un autre appareil remplace le brouillon tant qu'on n'a rien modifié ici.
+  const touched = useRef(false);
+  useEffect(() => {
+    if (!touched.current) setDraft(initial);
+  }, [initial]);
+
+  const set = (p: Partial<typeof draft>) => {
+    touched.current = true;
+    setDraft((d) => ({ ...d, ...p }));
+  };
+  const username = draft.username.trim().toLowerCase();
+  const usernameError = username && !USERNAME_RE.test(username) ? "3 à 32 caractères : lettres minuscules, chiffres, « . », « _ » ou « - »." : "";
+  const dirty = draft.displayName !== initial.displayName || draft.username !== initial.username || draft.bio !== initial.bio;
+  const invalid = !draft.displayName.trim() || !username || Boolean(usernameError);
+
+  const submit = async () => {
     setSaving(true);
-    try {
-      const effectiveId = user?.id || "local";
-      const currentAvatar =
-        userIdentity.avatarUrl ||
-        profile?.avatar_url ||
-        identity?.avatar_url ||
-        (typeof window !== "undefined"
-          ? (user?.id ? localStorage.getItem(`ethone_custom_avatar:${user.id}`) : null) ||
-            localStorage.getItem("ethone_custom_avatar:local") ||
-            localStorage.getItem("ethone_custom_avatar") ||
-            ""
-          : "");
-
-      // 1. Immediate LocalStorage writes for all keys
-      if (typeof window !== "undefined") {
-        try {
-          if (form.displayName) {
-            localStorage.setItem(`ethone_user_name:${effectiveId}`, form.displayName);
-            localStorage.setItem("ethone:user_name", form.displayName);
-            localStorage.setItem("ethone_user_name:local", form.displayName);
-          }
-          if (form.username) {
-            localStorage.setItem(`ethone_user_username:${effectiveId}`, form.username);
-            localStorage.setItem("ethone:user:username", form.username);
-            localStorage.setItem("ethone_user_username:local", form.username);
-          }
-          if (form.bio !== undefined) {
-            localStorage.setItem(`ethone_user_bio:${effectiveId}`, form.bio);
-            localStorage.setItem("ethone:user:bio", form.bio);
-            localStorage.setItem("ethone_user_bio:local", form.bio);
-          }
-          if (form.avatarFrameId !== undefined) {
-            localStorage.setItem(`ethone_user_frame:${effectiveId}`, form.avatarFrameId);
-            localStorage.setItem("ethone:user:frame", form.avatarFrameId);
-            localStorage.setItem("ethone_user_frame:local", form.avatarFrameId);
-          }
-          if (currentAvatar) {
-            localStorage.setItem(`ethone_custom_avatar:${effectiveId}`, currentAvatar);
-            localStorage.setItem(`ethone:custom:avatar:${effectiveId}`, currentAvatar);
-            localStorage.setItem(`ethone_user_avatar:${effectiveId}`, currentAvatar);
-            localStorage.setItem("ethone_custom_avatar:local", currentAvatar);
-            localStorage.setItem("ethone_custom_avatar", currentAvatar);
-          }
-        } catch {}
-      }
-
-      // 2. Persist to core profile (Cloudflare Worker, Supabase Auth user_metadata, Supabase profiles table)
-      await saveCoreProfile({
-        display_name: form.displayName,
-        username: form.username,
-        ...(currentAvatar ? { avatar_url: currentAvatar } : {}),
-      });
-
-      // 3. Persist to identity (Supabase ethone_public_profiles via UPSERT)
-      await saveIdentity({
-        display_name: form.displayName,
-        username: form.username,
-        bio: form.bio,
-        avatar_frame_id: form.avatarFrameId,
-        ...(currentAvatar ? { avatar_url: currentAvatar } : {}),
-      });
-
-      // 4. Mark user edits as saved
-      userEditedRef.current = {};
-
-      // 5. Broadcast across window and storage events
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("ethone:identity:update", {
-            detail: {
-              display_name: form.displayName,
-              username: form.username,
-              bio: form.bio,
-              avatar_frame_id: form.avatarFrameId,
-              avatar_url: currentAvatar,
-            },
-          })
-        );
-        window.dispatchEvent(new Event("storage"));
-      }
-
-      success("Modifications du profil enregistrées !");
-    } catch (err: any) {
-      toastError(`Erreur lors de la sauvegarde : ${err?.message || "Inconnue"}`);
-    } finally {
-      setSaving(false);
-    }
+    const ok = await onSave({ displayName: draft.displayName.trim(), username, bio: draft.bio.trim() }, "Profil enregistré.");
+    setSaving(false);
+    if (ok) touched.current = false;
   };
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden p-3 sm:p-6 space-y-5">
-      {/* Hidden File Input for Avatar Upload */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/png,image/jpeg,image/webp"
-        onChange={handleFileSelect}
-        className="hidden"
-      />
-
-      {/* Header */}
-      <div className="shrink-0 flex items-center justify-between border-b border-[var(--panel-border)]/60 pb-3">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
-            <span>Centre d'Identité & Personnalisation</span>
-            <span className="rounded-full bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 px-2.5 py-0.5 text-[11px] font-bold text-[var(--accent-primary)]">
-              Personal OS 2.0
+    <>
+      <Section title="Identité" text="Visible par les personnes avec qui vous partagez un espace ou un fichier.">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="space-y-1.5">
+            <span className="text-xs font-medium text-[var(--text-muted)]">Nom affiché</span>
+            <input value={draft.displayName} maxLength={80} onChange={(e) => set({ displayName: e.target.value })} className={inputCls} placeholder="Votre nom" />
+          </label>
+          <label className="space-y-1.5">
+            <span className="text-xs font-medium text-[var(--text-muted)]">Pseudo</span>
+            <span className={cn(inputCls, "flex items-center gap-1.5", usernameError && "border-[var(--danger)]/60")}>
+              <AtSign className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
+              <input
+                value={draft.username}
+                maxLength={32}
+                onChange={(e) => set({ username: e.target.value.toLowerCase().replace(/\s+/g, "") })}
+                className="h-full w-full bg-transparent outline-none"
+                placeholder="pseudo"
+                aria-invalid={Boolean(usernameError)}
+              />
             </span>
-          </h1>
-          <p className="text-xs text-[var(--text-muted)]">
-            Gérez votre identité numérique, vos avatars, vos préférences et la personnalisation cognitive Brain.
-          </p>
+            {usernameError && <span className="block text-xs text-[var(--danger)]">{usernameError}</span>}
+          </label>
         </div>
-      </div>
+        <label className="block space-y-1.5">
+          <span className="flex items-center justify-between text-xs font-medium text-[var(--text-muted)]">
+            Bio <span className="tabular-nums">{draft.bio.length}/300</span>
+          </span>
+          <textarea
+            value={draft.bio}
+            maxLength={300}
+            rows={4}
+            onChange={(e) => set({ bio: e.target.value })}
+            placeholder="Quelques mots sur vous, ce que vous faites, ce que vous aimez…"
+            className={cn(inputCls, "h-auto resize-none py-3 leading-relaxed")}
+          />
+        </label>
+      </Section>
 
-      {/* Hero Profile 2026 */}
-      <div className="shrink-0">
-        <ProfileHero2026
-          presenceStatus={preferences.presenceStatus}
-          customStatus={preferences.customStatus}
-          activeWorkspace={activeWorkspace}
-          previewDisplayName={form.displayName}
-          previewUsername={form.username}
-          previewBio={form.bio}
-          previewAvatarFrameId={form.avatarFrameId}
-          onOpenAvatarPicker={() => setIsAvatarPickerOpen(true)}
-          onOpenStatusPicker={() => setIsStatusPickerOpen(true)}
-          onSwitchWorkspace={(ws) => setActiveWorkspace(ws)}
-        />
-      </div>
+      <AnimatePresence>
+        {dirty && (
+          <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.97, transition: { duration: 0.15 } }}
+            transition={{ type: "spring", stiffness: 380, damping: 39 }}
+            className="fixed inset-x-0 bottom-24 z-30 mx-auto flex w-[min(92vw,560px)] items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-3 pl-4 shadow-lg"
+          >
+            <p className="text-sm text-[var(--text-muted)]">{invalid ? "Corrigez les champs avant d'enregistrer." : "Modifications non enregistrées"}</p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  touched.current = false;
+                  setDraft(initial);
+                }}
+                className="rounded-xl px-3 py-2 text-sm font-medium text-[var(--text-muted)] transition-[color,transform] duration-150 hover:text-[var(--text-primary)] active:scale-[0.97]"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                disabled={invalid || saving}
+                onClick={() => void submit()}
+                className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] transition-[filter,transform,opacity] duration-150 hover:brightness-110 active:scale-[0.97] disabled:opacity-40"
+              >
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />} Enregistrer
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
 
-      {/* Navigation Tabs Bar */}
-      <div className="shrink-0 flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
-        {[
-          { id: "identity" as const, label: "Identité & Profil", icon: User },
-          { id: "status" as const, label: "Statut & Présence", icon: Smile },
-          { id: "personalization" as const, label: "Moteur de Personnalisation", icon: Sparkles },
-          { id: "security" as const, label: "Sécurité & Données", icon: Shield },
-        ].map((tab) => {
-          const TabIcon = tab.icon;
-          const isActive = activeTab === tab.id;
+// ───────────────────────────── Statut : présence + statut personnalisé
+function StatusTab({ profile, onSave }: { profile: AccountProfile; onSave: (p: Partial<AccountProfile>, msg?: string) => Promise<boolean> }) {
+  const [emoji, setEmoji] = useState(profile.statusEmoji);
+  const [text, setText] = useState(profile.statusText);
+  useEffect(() => {
+    setEmoji(profile.statusEmoji);
+    setText(profile.statusText);
+  }, [profile.statusEmoji, profile.statusText]);
+  const dirty = emoji !== profile.statusEmoji || text.trim() !== profile.statusText;
 
-          return (
+  return (
+    <div className="space-y-5">
+      <Section title="Présence" text="Indiquée par la pastille sur votre avatar.">
+        <div className="grid gap-2 sm:grid-cols-5" role="radiogroup" aria-label="Présence">
+          {(Object.keys(PRESENCE) as PresenceStatus[]).map((p) => {
+            const active = profile.presence === p;
+            return (
+              <button
+                key={p}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => !active && void onSave({ presence: p })}
+                className="relative rounded-xl border border-[var(--panel-border)] p-3 text-left transition-[background-color,transform] duration-150 hover:bg-[var(--surface-raised)] active:scale-[0.97]"
+              >
+                {active && <motion.span layoutId="presence-ring" transition={SPRING_PILL} className="absolute inset-0 rounded-xl border-2 border-[var(--accent-primary)] bg-[var(--accent-primary)]/8" />}
+                <span className="relative flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]">
+                  <span className="h-2.5 w-2.5 rounded-full" style={{ background: PRESENCE[p].color }} />
+                  {PRESENCE[p].label}
+                </span>
+                <span className="relative mt-1 block text-xs text-[var(--text-muted)]">{PRESENCE[p].hint}</span>
+              </button>
+            );
+          })}
+        </div>
+      </Section>
+
+      <Section title="Statut personnalisé" text="Un emoji et une courte phrase affichés sous votre nom.">
+        <div className="flex flex-wrap gap-1.5">
+          {STATUS_EMOJIS.map((e) => (
             <button
-              key={tab.id}
+              key={e}
               type="button"
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => setEmoji(emoji === e ? "" : e)}
+              aria-pressed={emoji === e}
               className={cn(
-                "relative shrink-0 flex items-center gap-1.5 rounded-xl border px-4 py-2 font-semibold transition-colors touch-manipulation cursor-pointer",
-                isActive
-                  ? "border-transparent text-[var(--accent-contrast)]"
-                  : "border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                "grid h-10 w-10 place-items-center rounded-xl border text-lg transition-[background-color,border-color,transform] duration-150 active:scale-90",
+                emoji === e ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/12" : "border-[var(--panel-border)] hover:bg-[var(--surface-raised)]",
               )}
             >
-              {isActive && (
-                <motion.span
-                  layoutId="activeProfileTab"
-                  transition={SPRING_PILL}
-                  className="absolute inset-0 z-0 rounded-xl bg-[var(--accent-primary)] shadow-[0_0_12px_var(--glow-color)]"
-                />
-              )}
-              <TabIcon className="relative z-10 h-3.5 w-3.5" />
-              <span className="relative z-10">{tab.label}</span>
+              {e}
             </button>
-          );
-        })}
-      </div>
-
-      {/* Main Tab Content */}
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pr-1 pb-6">
-      <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={activeTab}
-        variants={stepEnter}
-        initial={reduced ? "animate" : "initial"}
-        animate="animate"
-        exit="exit"
-        className="space-y-6"
-      >
-        {/* Tab 1: Identity & Profile */}
-        {activeTab === "identity" && (
-          <div className="space-y-5">
-            {/* Avatar Quick Management */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4 shadow-[var(--panel-shadow)] transition-[border-color,box-shadow] duration-200 [transition-timing-function:var(--ease-snap)] hover:border-[var(--accent-primary)]/25 hover:shadow-[var(--panel-shadow),var(--shadow-glow)]">
-              <div>
-                <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <Camera className="h-4 w-4 text-[var(--accent-primary)]" />
-                  <span>Gestion de l'Avatar & Cadres</span>
-                </h3>
-                <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                  Importez votre photo, recadrez-la au millimètre ou choisissez un avatar parmi nos collections vérifiées.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 rounded-2xl bg-[var(--accent-primary)] px-4 py-2.5 text-xs font-bold text-[var(--accent-contrast)] shadow-[0_0_12px_var(--glow-color)] transition-[transform,box-shadow,filter] duration-150 [transition-timing-function:var(--ease-snap)] hover:brightness-110 hover:shadow-[0_0_20px_var(--glow-color)] active:scale-95 cursor-pointer"
-                >
-                  <Upload className="h-4 w-4" />
-                  <span>Importer & Recadrer une image</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setIsAvatarPickerOpen(true)}
-                  className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] transition-colors cursor-pointer"
-                >
-                  <Sparkles className="h-4 w-4 text-amber-400" />
-                  <span>Ouvrir la bibliothèque d'avatars</span>
-                </button>
-              </div>
-
-              {/* Avatar Frames Selector */}
-              <div className="pt-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-2">
-                  Cadre d'avatar actif
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
-                  {PROFILE_FRAMES.map((frame) => (
-                    <button
-                      key={frame.id}
-                      type="button"
-                      onClick={() => {
-                        userEditedRef.current.avatarFrameId = true;
-                        setForm((prev) => ({ ...prev, avatarFrameId: frame.id }));
-                      }}
-                      className={cn(
-                        "rounded-[var(--panel-radius)] border p-2.5 text-center transition-all cursor-pointer",
-                        form.avatarFrameId === frame.id
-                          ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 shadow-xs font-bold text-[var(--text-primary)]"
-                          : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                      )}
-                    >
-                      <span className="text-xs block truncate">{frame.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Profile Identity Form */}
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4 shadow-[var(--panel-shadow)] transition-[border-color,box-shadow] duration-200 [transition-timing-function:var(--ease-snap)] hover:border-[var(--accent-primary)]/25 hover:shadow-[var(--panel-shadow),var(--shadow-glow)]">
-              <div>
-                <h3 className="text-base font-bold text-[var(--text-primary)]">
-                  Coordonnées publiques & Biographie
-                </h3>
-                <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                  Ces informations définissent votre carte d'identité dans l'écosystème ETHONE.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-[var(--text-primary)]">
-                    Nom d'affichage
-                  </label>
-                  <input
-                    type="text"
-                    value={form.displayName}
-                    onChange={(e) => {
-                      userEditedRef.current.displayName = true;
-                      setForm((prev) => ({ ...prev, displayName: e.target.value }));
-                    }}
-                    placeholder="Votre nom ou pseudonyme"
-                    className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-[var(--text-primary)]">
-                    Nom d'utilisateur unique (@handle)
-                  </label>
-                  <input
-                    type="text"
-                    value={form.username}
-                    onChange={(e) => {
-                      userEditedRef.current.username = true;
-                      setForm((prev) => ({
-                        ...prev,
-                        username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""),
-                      }));
-                    }}
-                    placeholder="nom_utilisateur"
-                    className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[var(--text-primary)]">
-                  Biographie
-                </label>
-                <textarea
-                  value={form.bio}
-                  onChange={(e) => {
-                    userEditedRef.current.bio = true;
-                    setForm((prev) => ({ ...prev, bio: e.target.value }));
-                  }}
-                  placeholder="Décrivez votre activité ou votre philosophie de travail..."
-                  rows={3}
-                  className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none resize-none leading-relaxed"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end">
-                <button
-                  type="button"
-                  onClick={handleSaveIdentity}
-                  disabled={saving}
-                  className="flex items-center gap-2 rounded-2xl bg-[var(--accent-primary)] px-6 py-2.5 text-xs font-bold text-[var(--accent-contrast)] shadow-[0_0_12px_var(--glow-color)] transition-[transform,box-shadow,filter] duration-150 [transition-timing-function:var(--ease-snap)] hover:brightness-110 hover:shadow-[0_0_20px_var(--glow-color)] active:scale-95 disabled:opacity-60 cursor-pointer"
-                >
-                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                  <span>Enregistrer les modifications</span>
-                </button>
-              </div>
-            </div>
+          ))}
+        </div>
+        <form
+          className="flex flex-col gap-2 sm:flex-row"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void onSave({ statusEmoji: emoji, statusText: text.trim() }, "Statut mis à jour.");
+          }}
+        >
+          <input value={text} maxLength={80} onChange={(e) => setText(e.target.value)} placeholder="Que faites-vous en ce moment ?" className={inputCls} />
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              disabled={!dirty}
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)] transition-[filter,transform,opacity] duration-150 hover:brightness-110 active:scale-[0.97] disabled:opacity-40"
+            >
+              <Check className="h-4 w-4" /> Publier
+            </button>
+            {(profile.statusText || profile.statusEmoji) && (
+              <button
+                type="button"
+                onClick={() => void onSave({ statusEmoji: "", statusText: "" }, "Statut effacé.")}
+                className="inline-flex h-11 items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3.5 text-sm text-[var(--text-muted)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-raised)] active:scale-[0.97]"
+              >
+                <X className="h-4 w-4" /> Effacer
+              </button>
+            )}
           </div>
-        )}
+        </form>
+        <div className="flex flex-wrap gap-1.5">
+          {STATUS_SUGGESTIONS.map((s) => (
+            <button
+              key={s.text}
+              type="button"
+              onClick={() => {
+                setEmoji(s.emoji);
+                setText(s.text);
+              }}
+              className="rounded-full border border-[var(--panel-border)] px-3 py-1 text-xs text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] active:scale-[0.96]"
+            >
+              {s.emoji} {s.text}
+            </button>
+          ))}
+        </div>
+      </Section>
+    </div>
+  );
+}
 
-        {/* Tab 2: Status & Presence */}
-        {activeTab === "status" && (
-          <div className="space-y-4">
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4 shadow-[var(--panel-shadow)] transition-[border-color,box-shadow] duration-200 [transition-timing-function:var(--ease-snap)] hover:border-[var(--accent-primary)]/25 hover:shadow-[var(--panel-shadow),var(--shadow-glow)]">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
-                    <Smile className="h-4 w-4 text-[var(--accent-primary)]" />
-                    <span>Statut de présence en direct</span>
-                  </h3>
-                  <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                    Modifiez votre présence visible pour les collaborateurs ou vos intégrations.
-                  </p>
-                </div>
+// ───────────────────────────── Apparence : cadre d'avatar et fond de la carte
+function AppearanceTab({
+  profile,
+  avatarUrl,
+  initials,
+  onSave,
+}: {
+  profile: AccountProfile;
+  avatarUrl?: string;
+  initials: string;
+  onSave: (p: Partial<AccountProfile>) => Promise<boolean>;
+}) {
+  const frameId = AVATAR_FRAMES.some((f) => f.id === profile.frameId) ? profile.frameId : "none";
+  const bgId = backgroundById(profile.backgroundId).id;
+  return (
+    <div className="space-y-5">
+      <Section title="Cadre d'avatar" text="S'applique partout où votre avatar apparaît.">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3">
+          {AVATAR_FRAMES.map((f) => {
+            const active = frameId === f.id;
+            return (
+              <button
+                key={f.id}
+                type="button"
+                aria-pressed={active}
+                onClick={() => !active && void onSave({ frameId: f.id })}
+                className="relative flex flex-col items-center gap-2 rounded-xl border border-[var(--panel-border)] p-3 transition-[background-color,transform] duration-150 hover:bg-[var(--surface-raised)] active:scale-[0.97]"
+              >
+                {active && <motion.span layoutId="frame-ring" transition={SPRING_PILL} className="absolute inset-0 rounded-xl border-2 border-[var(--accent-primary)]" />}
+                <ProfileAvatar src={avatarUrl} initials={initials} frameId={f.id} size={56} />
+                <span className="relative text-xs font-medium text-[var(--text-primary)]">{f.name}</span>
+              </button>
+            );
+          })}
+        </div>
+      </Section>
+      <Section title="Fond de la carte" text="Le décor de votre carte de profil, en haut de cette page.">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3">
+          {PROFILE_BACKGROUNDS.map((b) => {
+            const active = bgId === b.id;
+            return (
+              <button
+                key={b.id || "theme"}
+                type="button"
+                aria-pressed={active}
+                onClick={() => !active && void onSave({ backgroundId: b.id })}
+                className="relative overflow-hidden rounded-xl border border-[var(--panel-border)] text-left transition-transform duration-150 active:scale-[0.97]"
+              >
+                <span className="block h-16 bg-[var(--bg-surface)]" style={b.style} />
+                <span className="block px-3 py-2 text-xs font-medium text-[var(--text-primary)]">{b.name}</span>
+                {active && <motion.span layoutId="bg-ring" transition={SPRING_PILL} className="absolute inset-0 rounded-xl border-2 border-[var(--accent-primary)]" />}
+              </button>
+            );
+          })}
+        </div>
+      </Section>
+    </div>
+  );
+}
 
-                <button
-                  type="button"
-                  onClick={() => setIsStatusPickerOpen(true)}
-                  className="rounded-2xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] shadow-[0_0_12px_var(--glow-color)] transition-[box-shadow,filter] duration-150 [transition-timing-function:var(--ease-snap)] hover:brightness-110 hover:shadow-[0_0_20px_var(--glow-color)] cursor-pointer"
-                >
-                  Ouvrir le sélecteur complet
-                </button>
-              </div>
+// ───────────────────────────── Compte : informations réelles du compte et raccourcis
+function AccountTab({ profile }: { profile: AccountProfile }) {
+  const { user } = useAuth();
+  const provider = String(user?.app_metadata?.provider || "email");
+  const providerLabel: Record<string, string> = { email: "E-mail et mot de passe", google: "Google", discord: "Discord", github: "GitHub" };
+  const since = user?.created_at ? new Date(user.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "—";
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
-                {[
-                  { id: "online", label: "En ligne", color: "bg-emerald-500" },
-                  { id: "focus", label: "Focus", color: "bg-[var(--accent-primary)]" },
-                  { id: "gaming", label: "En jeu", color: "bg-rose-500" },
-                  { id: "dnd", label: "Ne pas déranger", color: "bg-red-500" },
-                ].map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => setPresenceStatus(s.id as any)}
-                    className={cn(
-                      "flex items-center gap-2 rounded-[var(--panel-radius)] border p-3 text-xs font-bold transition-all cursor-pointer",
-                      preferences.presenceStatus === s.id
-                        ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--text-primary)] shadow-xs"
-                        : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                    )}
-                  >
-                    <span className={cn("h-2.5 w-2.5 rounded-full", s.color)} />
-                    <span>{s.label}</span>
-                    {preferences.presenceStatus === s.id && (
-                      <Check className="ml-auto h-3.5 w-3.5 text-[var(--accent-primary)]" />
-                    )}
-                  </button>
-                ))}
-              </div>
+  const exportProfile = () => {
+    const data = { exportedAt: new Date().toISOString(), email: user?.email, createdAt: user?.created_at, profile };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
+    const a = Object.assign(document.createElement("a"), { href: url, download: `ethone-profil-${profile.username || "export"}.json` });
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const rows: Array<[string, React.ReactNode]> = [
+    ["E-mail", <span key="e" className="flex items-center gap-2">{user?.email}{user?.email_confirmed_at && <span className="rounded-full bg-[var(--success)]/15 px-2 py-0.5 text-[11px] font-medium text-[var(--success)]">vérifié</span>}</span>],
+    ["Connexion", providerLabel[provider] ?? provider],
+    ["Membre depuis", since],
+  ];
+
+  return (
+    <div className="space-y-5">
+      <Section title="Compte">
+        <dl className="divide-y divide-[var(--panel-border)]">
+          {rows.map(([k, v]) => (
+            <div key={k} className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
+              <dt className="text-[var(--text-muted)]">{k}</dt>
+              <dd className="text-[var(--text-primary)]">{v}</dd>
             </div>
-          </div>
-        )}
-
-        {/* Tab 3: Personalization Panel */}
-        {activeTab === "personalization" && (
-          <PersonalizationPanel
-            preferences={preferences}
-            inferredPreferences={inferredPreferences}
-            onToggleInterest={toggleInterest}
-            onSetDensity={setDensity}
-            onTogglePrivacy={togglePrivacySetting}
-          />
-        )}
-
-        {/* Tab 4: Security & Data */}
-        {activeTab === "security" && (
-          <ProfileSecurityAndData
-            onExportData={exportPersonalData}
-            onResetPersonalization={resetPersonalization}
-          />
-        )}
-      </motion.div>
-      </AnimatePresence>
-      </div>
-
-      {/* Interactive Avatar Cropper Modal */}
-      <AvatarCropperModal
-        imageSrc={cropperState.imageSrc}
-        isOpen={cropperState.isOpen}
-        onClose={() => setCropperState({ isOpen: false, imageSrc: null })}
-        onCropComplete={handleCropComplete}
-      />
-
-      {/* Avatar Catalog Picker Modal */}
-      <AvatarPickerModal
-        isOpen={isAvatarPickerOpen}
-        onClose={() => setIsAvatarPickerOpen(false)}
-        onSelect={handleAvatarCatalogSelect}
-      />
-
-      {/* Profile Presence & Custom Status Picker */}
-      <ProfileStatusPicker
-        isOpen={isStatusPickerOpen}
-        onClose={() => setIsStatusPickerOpen(false)}
-        currentStatus={preferences.presenceStatus}
-        currentCustomStatus={preferences.customStatus}
-        autoStatusEnabled={preferences.autoStatus}
-        onSelectStatus={setPresenceStatus}
-        onSaveCustomStatus={setCustomStatus}
-        onToggleAutoStatus={toggleAutoStatus}
-      />
+          ))}
+        </dl>
+      </Section>
+      <Section title="Raccourcis">
+        <div className="grid gap-2 sm:grid-cols-3">
+          <Link href="/settings/security" className="flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] p-3.5 text-sm text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-raised)] active:scale-[0.98]">
+            Sécurité, passkeys et appareils <ExternalLink className="h-4 w-4 text-[var(--text-muted)]" />
+          </Link>
+          <Link href="/connections" className="flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] p-3.5 text-sm text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-raised)] active:scale-[0.98]">
+            Connexions et intégrations <ExternalLink className="h-4 w-4 text-[var(--text-muted)]" />
+          </Link>
+          <button type="button" onClick={exportProfile} className="flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] p-3.5 text-left text-sm text-[var(--text-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--surface-raised)] active:scale-[0.98]">
+            Exporter mon profil (JSON) <Download className="h-4 w-4 text-[var(--text-muted)]" />
+          </button>
+        </div>
+      </Section>
     </div>
   );
 }

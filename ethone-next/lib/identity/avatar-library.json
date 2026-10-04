@@ -1,0 +1,3227 @@
+{
+ "size": 256,
+ "collections": [
+  {
+   "id": "ethone",
+   "label": "ETHONE Originals",
+   "source": "ETHONE",
+   "items": [
+    {
+     "id": "ethone-ethone-quantum",
+     "name": "ETHONE Quantum",
+     "series": "ETHONE",
+     "url": "/avatars/library/ethone/ethone-quantum.webp"
+    },
+    {
+     "id": "ethone-ethone-solid",
+     "name": "ETHONE Solid",
+     "series": "ETHONE",
+     "url": "/avatars/library/ethone/ethone-solid.webp"
+    },
+    {
+     "id": "ethone-ethone-classic",
+     "name": "ETHONE Classic",
+     "series": "ETHONE",
+     "url": "/avatars/library/ethone/ethone-classic.webp"
+    },
+    {
+     "id": "ethone-dyno-rose",
+     "name": "ETHONE Dyno Rose",
+     "series": "ETHONE",
+     "url": "/avatars/library/ethone/dyno-rose.webp"
+    },
+    {
+     "id": "ethone-obsidian",
+     "name": "ETHONE Obsidian",
+     "series": "ETHONE",
+     "url": "/avatars/library/ethone/obsidian.webp"
+    },
+    {
+     "id": "ethone-aurora",
+     "name": "ETHONE Aurora",
+     "series": "ETHONE",
+     "url": "/avatars/library/ethone/aurora.webp"
+    },
+    {
+     "id": "ethone-arctic",
+     "name": "ETHONE Arctic",
+     "series": "ETHONE",
+     "url": "/avatars/library/ethone/arctic.webp"
+    },
+    {
+     "id": "ethone-cyber-neon",
+     "name": "ETHONE Cyber Neon",
+     "series": "ETHONE",
+     "url": "/avatars/library/ethone/cyber-neon.webp"
+    },
+    {
+     "id": "ethone-sunset",
+     "name": "ETHONE Sunset",
+     "series": "ETHONE",
+     "url": "/avatars/library/ethone/sunset.webp"
+    },
+    {
+     "id": "ethone-emerald",
+     "name": "ETHONE Emerald",
+     "series": "ETHONE",
+     "url": "/avatars/library/ethone/emerald.webp"
+    },
+    {
+     "id": "ethone-royal",
+     "name": "ETHONE Royal",
+     "series": "ETHONE",
+     "url": "/avatars/library/ethone/royal.webp"
+    },
+    {
+     "id": "ethone-mono",
+     "name": "ETHONE Mono",
+     "series": "ETHONE",
+     "url": "/avatars/library/ethone/mono.webp"
+    }
+   ]
+  },
+  {
+   "id": "netflix",
+   "label": "Netflix",
+   "source": "Icônes de profil Netflix",
+   "items": [
+    {
+     "id": "netflix-3below-tales-of-arcadia-01",
+     "name": "3Below 1",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-01.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-02",
+     "name": "3Below 2",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-02.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-03",
+     "name": "3Below 3",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-03.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-04",
+     "name": "3Below 4",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-04.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-05",
+     "name": "3Below 5",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-05.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-06",
+     "name": "3Below 6",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-06.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-07",
+     "name": "3Below 7",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-07.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-08",
+     "name": "3Below 8",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-08.webp"
+    },
+    {
+     "id": "netflix-3below-tales-of-arcadia-09",
+     "name": "3Below 9",
+     "series": "3Below",
+     "url": "/avatars/library/netflix/3below-tales-of-arcadia-09.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-01",
+     "name": "Les Désastreuses Aventures 1",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-01.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-02",
+     "name": "Les Désastreuses Aventures 2",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-02.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-03",
+     "name": "Les Désastreuses Aventures 3",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-03.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-04",
+     "name": "Les Désastreuses Aventures 4",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-04.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-05",
+     "name": "Les Désastreuses Aventures 5",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-05.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-06",
+     "name": "Les Désastreuses Aventures 6",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-06.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-07",
+     "name": "Les Désastreuses Aventures 7",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-07.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-08",
+     "name": "Les Désastreuses Aventures 8",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-08.webp"
+    },
+    {
+     "id": "netflix-a-series-of-unfortunate-events-09",
+     "name": "Les Désastreuses Aventures 9",
+     "series": "Les Désastreuses Aventures",
+     "url": "/avatars/library/netflix/a-series-of-unfortunate-events-09.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-01",
+     "name": "Aggretsuko 1",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-01.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-02",
+     "name": "Aggretsuko 2",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-02.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-03",
+     "name": "Aggretsuko 3",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-03.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-04",
+     "name": "Aggretsuko 4",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-04.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-05",
+     "name": "Aggretsuko 5",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-05.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-06",
+     "name": "Aggretsuko 6",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-06.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-07",
+     "name": "Aggretsuko 7",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-07.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-08",
+     "name": "Aggretsuko 8",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-08.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-09",
+     "name": "Aggretsuko 9",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-09.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-10",
+     "name": "Aggretsuko 10",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-10.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-11",
+     "name": "Aggretsuko 11",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-11.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-12",
+     "name": "Aggretsuko 12",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-12.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-13",
+     "name": "Aggretsuko 13",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-13.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-14",
+     "name": "Aggretsuko 14",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-14.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-15",
+     "name": "Aggretsuko 15",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-15.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-16",
+     "name": "Aggretsuko 16",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-16.webp"
+    },
+    {
+     "id": "netflix-aggretsuko-17",
+     "name": "Aggretsuko 17",
+     "series": "Aggretsuko",
+     "url": "/avatars/library/netflix/aggretsuko-17.webp"
+    },
+    {
+     "id": "netflix-big-mouth-01",
+     "name": "Big Mouth 1",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-01.webp"
+    },
+    {
+     "id": "netflix-big-mouth-02",
+     "name": "Big Mouth 2",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-02.webp"
+    },
+    {
+     "id": "netflix-big-mouth-03",
+     "name": "Big Mouth 3",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-03.webp"
+    },
+    {
+     "id": "netflix-big-mouth-04",
+     "name": "Big Mouth 4",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-04.webp"
+    },
+    {
+     "id": "netflix-big-mouth-05",
+     "name": "Big Mouth 5",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-05.webp"
+    },
+    {
+     "id": "netflix-big-mouth-06",
+     "name": "Big Mouth 6",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-06.webp"
+    },
+    {
+     "id": "netflix-big-mouth-07",
+     "name": "Big Mouth 7",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-07.webp"
+    },
+    {
+     "id": "netflix-big-mouth-08",
+     "name": "Big Mouth 8",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-08.webp"
+    },
+    {
+     "id": "netflix-big-mouth-09",
+     "name": "Big Mouth 9",
+     "series": "Big Mouth",
+     "url": "/avatars/library/netflix/big-mouth-09.webp"
+    },
+    {
+     "id": "netflix-black-mirror-01",
+     "name": "Black Mirror 1",
+     "series": "Black Mirror",
+     "url": "/avatars/library/netflix/black-mirror-01.webp"
+    },
+    {
+     "id": "netflix-black-mirror-02",
+     "name": "Black Mirror 2",
+     "series": "Black Mirror",
+     "url": "/avatars/library/netflix/black-mirror-02.webp"
+    },
+    {
+     "id": "netflix-black-mirror-03",
+     "name": "Black Mirror 3",
+     "series": "Black Mirror",
+     "url": "/avatars/library/netflix/black-mirror-03.webp"
+    },
+    {
+     "id": "netflix-black-mirror-04",
+     "name": "Black Mirror 4",
+     "series": "Black Mirror",
+     "url": "/avatars/library/netflix/black-mirror-04.webp"
+    },
+    {
+     "id": "netflix-black-mirror-05",
+     "name": "Black Mirror 5",
+     "series": "Black Mirror",
+     "url": "/avatars/library/netflix/black-mirror-05.webp"
+    },
+    {
+     "id": "netflix-black-mirror-06",
+     "name": "Black Mirror 6",
+     "series": "Black Mirror",
+     "url": "/avatars/library/netflix/black-mirror-06.webp"
+    },
+    {
+     "id": "netflix-black-mirror-07",
+     "name": "Black Mirror 7",
+     "series": "Black Mirror",
+     "url": "/avatars/library/netflix/black-mirror-07.webp"
+    },
+    {
+     "id": "netflix-bojack-horseman-01",
+     "name": "BoJack Horseman 1",
+     "series": "BoJack Horseman",
+     "url": "/avatars/library/netflix/bojack-horseman-01.webp"
+    },
+    {
+     "id": "netflix-bojack-horseman-02",
+     "name": "BoJack Horseman 2",
+     "series": "BoJack Horseman",
+     "url": "/avatars/library/netflix/bojack-horseman-02.webp"
+    },
+    {
+     "id": "netflix-bojack-horseman-03",
+     "name": "BoJack Horseman 3",
+     "series": "BoJack Horseman",
+     "url": "/avatars/library/netflix/bojack-horseman-03.webp"
+    },
+    {
+     "id": "netflix-bojack-horseman-04",
+     "name": "BoJack Horseman 4",
+     "series": "BoJack Horseman",
+     "url": "/avatars/library/netflix/bojack-horseman-04.webp"
+    },
+    {
+     "id": "netflix-bojack-horseman-05",
+     "name": "BoJack Horseman 5",
+     "series": "BoJack Horseman",
+     "url": "/avatars/library/netflix/bojack-horseman-05.webp"
+    },
+    {
+     "id": "netflix-bright-01",
+     "name": "Bright 1",
+     "series": "Bright",
+     "url": "/avatars/library/netflix/bright-01.webp"
+    },
+    {
+     "id": "netflix-bright-02",
+     "name": "Bright 2",
+     "series": "Bright",
+     "url": "/avatars/library/netflix/bright-02.webp"
+    },
+    {
+     "id": "netflix-bright-03",
+     "name": "Bright 3",
+     "series": "Bright",
+     "url": "/avatars/library/netflix/bright-03.webp"
+    },
+    {
+     "id": "netflix-bright-04",
+     "name": "Bright 4",
+     "series": "Bright",
+     "url": "/avatars/library/netflix/bright-04.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-01",
+     "name": "Carmen Sandiego 1",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-01.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-02",
+     "name": "Carmen Sandiego 2",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-02.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-03",
+     "name": "Carmen Sandiego 3",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-03.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-04",
+     "name": "Carmen Sandiego 4",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-04.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-05",
+     "name": "Carmen Sandiego 5",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-05.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-06",
+     "name": "Carmen Sandiego 6",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-06.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-07",
+     "name": "Carmen Sandiego 7",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-07.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-08",
+     "name": "Carmen Sandiego 8",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-08.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-09",
+     "name": "Carmen Sandiego 9",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-09.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-10",
+     "name": "Carmen Sandiego 10",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-10.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-11",
+     "name": "Carmen Sandiego 11",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-11.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-12",
+     "name": "Carmen Sandiego 12",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-12.webp"
+    },
+    {
+     "id": "netflix-carmen-sandiego-13",
+     "name": "Carmen Sandiego 13",
+     "series": "Carmen Sandiego",
+     "url": "/avatars/library/netflix/carmen-sandiego-13.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-01",
+     "name": "Dear White People 1",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-01.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-02",
+     "name": "Dear White People 2",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-02.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-03",
+     "name": "Dear White People 3",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-03.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-04",
+     "name": "Dear White People 4",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-04.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-05",
+     "name": "Dear White People 5",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-05.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-06",
+     "name": "Dear White People 6",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-06.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-07",
+     "name": "Dear White People 7",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-07.webp"
+    },
+    {
+     "id": "netflix-dear-white-people-08",
+     "name": "Dear White People 8",
+     "series": "Dear White People",
+     "url": "/avatars/library/netflix/dear-white-people-08.webp"
+    },
+    {
+     "id": "netflix-defenders-01",
+     "name": "Marvel's The Defenders 1",
+     "series": "Marvel's The Defenders",
+     "url": "/avatars/library/netflix/defenders-01.webp"
+    },
+    {
+     "id": "netflix-defenders-02",
+     "name": "Marvel's The Defenders 2",
+     "series": "Marvel's The Defenders",
+     "url": "/avatars/library/netflix/defenders-02.webp"
+    },
+    {
+     "id": "netflix-defenders-03",
+     "name": "Marvel's The Defenders 3",
+     "series": "Marvel's The Defenders",
+     "url": "/avatars/library/netflix/defenders-03.webp"
+    },
+    {
+     "id": "netflix-defenders-04",
+     "name": "Marvel's The Defenders 4",
+     "series": "Marvel's The Defenders",
+     "url": "/avatars/library/netflix/defenders-04.webp"
+    },
+    {
+     "id": "netflix-house-of-cards-01",
+     "name": "House of Cards 1",
+     "series": "House of Cards",
+     "url": "/avatars/library/netflix/house-of-cards-01.webp"
+    },
+    {
+     "id": "netflix-house-of-cards-02",
+     "name": "House of Cards 2",
+     "series": "House of Cards",
+     "url": "/avatars/library/netflix/house-of-cards-02.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-01",
+     "name": "Lost in Space 1",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-01.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-02",
+     "name": "Lost in Space 2",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-02.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-03",
+     "name": "Lost in Space 3",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-03.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-04",
+     "name": "Lost in Space 4",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-04.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-05",
+     "name": "Lost in Space 5",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-05.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-06",
+     "name": "Lost in Space 6",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-06.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-07",
+     "name": "Lost in Space 7",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-07.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-08",
+     "name": "Lost in Space 8",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-08.webp"
+    },
+    {
+     "id": "netflix-lost-in-space-09",
+     "name": "Lost in Space 9",
+     "series": "Lost in Space",
+     "url": "/avatars/library/netflix/lost-in-space-09.webp"
+    },
+    {
+     "id": "netflix-lucifer-01",
+     "name": "Lucifer 1",
+     "series": "Lucifer",
+     "url": "/avatars/library/netflix/lucifer-01.webp"
+    },
+    {
+     "id": "netflix-money-heist-01",
+     "name": "La casa de papel 1",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-01.webp"
+    },
+    {
+     "id": "netflix-money-heist-02",
+     "name": "La casa de papel 2",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-02.webp"
+    },
+    {
+     "id": "netflix-money-heist-03",
+     "name": "La casa de papel 3",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-03.webp"
+    },
+    {
+     "id": "netflix-money-heist-04",
+     "name": "La casa de papel 4",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-04.webp"
+    },
+    {
+     "id": "netflix-money-heist-05",
+     "name": "La casa de papel 5",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-05.webp"
+    },
+    {
+     "id": "netflix-money-heist-06",
+     "name": "La casa de papel 6",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-06.webp"
+    },
+    {
+     "id": "netflix-money-heist-07",
+     "name": "La casa de papel 7",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-07.webp"
+    },
+    {
+     "id": "netflix-money-heist-08",
+     "name": "La casa de papel 8",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-08.webp"
+    },
+    {
+     "id": "netflix-money-heist-09",
+     "name": "La casa de papel 9",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-09.webp"
+    },
+    {
+     "id": "netflix-money-heist-10",
+     "name": "La casa de papel 10",
+     "series": "La casa de papel",
+     "url": "/avatars/library/netflix/money-heist-10.webp"
+    },
+    {
+     "id": "netflix-okja-01",
+     "name": "Okja 1",
+     "series": "Okja",
+     "url": "/avatars/library/netflix/okja-01.webp"
+    },
+    {
+     "id": "netflix-okja-02",
+     "name": "Okja 2",
+     "series": "Okja",
+     "url": "/avatars/library/netflix/okja-02.webp"
+    },
+    {
+     "id": "netflix-okja-03",
+     "name": "Okja 3",
+     "series": "Okja",
+     "url": "/avatars/library/netflix/okja-03.webp"
+    },
+    {
+     "id": "netflix-okja-04",
+     "name": "Okja 4",
+     "series": "Okja",
+     "url": "/avatars/library/netflix/okja-04.webp"
+    },
+    {
+     "id": "netflix-okja-05",
+     "name": "Okja 5",
+     "series": "Okja",
+     "url": "/avatars/library/netflix/okja-05.webp"
+    },
+    {
+     "id": "netflix-okja-06",
+     "name": "Okja 6",
+     "series": "Okja",
+     "url": "/avatars/library/netflix/okja-06.webp"
+    },
+    {
+     "id": "netflix-on-my-block-01",
+     "name": "On My Block 1",
+     "series": "On My Block",
+     "url": "/avatars/library/netflix/on-my-block-01.webp"
+    },
+    {
+     "id": "netflix-on-my-block-02",
+     "name": "On My Block 2",
+     "series": "On My Block",
+     "url": "/avatars/library/netflix/on-my-block-02.webp"
+    },
+    {
+     "id": "netflix-on-my-block-03",
+     "name": "On My Block 3",
+     "series": "On My Block",
+     "url": "/avatars/library/netflix/on-my-block-03.webp"
+    },
+    {
+     "id": "netflix-on-my-block-04",
+     "name": "On My Block 4",
+     "series": "On My Block",
+     "url": "/avatars/library/netflix/on-my-block-04.webp"
+    },
+    {
+     "id": "netflix-on-my-block-05",
+     "name": "On My Block 5",
+     "series": "On My Block",
+     "url": "/avatars/library/netflix/on-my-block-05.webp"
+    },
+    {
+     "id": "netflix-on-my-block-06",
+     "name": "On My Block 6",
+     "series": "On My Block",
+     "url": "/avatars/library/netflix/on-my-block-06.webp"
+    },
+    {
+     "id": "netflix-on-my-block-07",
+     "name": "On My Block 7",
+     "series": "On My Block",
+     "url": "/avatars/library/netflix/on-my-block-07.webp"
+    },
+    {
+     "id": "netflix-one-day-at-a-time-01",
+     "name": "One Day at a Time 1",
+     "series": "One Day at a Time",
+     "url": "/avatars/library/netflix/one-day-at-a-time-01.webp"
+    },
+    {
+     "id": "netflix-one-day-at-a-time-02",
+     "name": "One Day at a Time 2",
+     "series": "One Day at a Time",
+     "url": "/avatars/library/netflix/one-day-at-a-time-02.webp"
+    },
+    {
+     "id": "netflix-one-day-at-a-time-03",
+     "name": "One Day at a Time 3",
+     "series": "One Day at a Time",
+     "url": "/avatars/library/netflix/one-day-at-a-time-03.webp"
+    },
+    {
+     "id": "netflix-one-day-at-a-time-04",
+     "name": "One Day at a Time 4",
+     "series": "One Day at a Time",
+     "url": "/avatars/library/netflix/one-day-at-a-time-04.webp"
+    },
+    {
+     "id": "netflix-one-day-at-a-time-05",
+     "name": "One Day at a Time 5",
+     "series": "One Day at a Time",
+     "url": "/avatars/library/netflix/one-day-at-a-time-05.webp"
+    },
+    {
+     "id": "netflix-one-day-at-a-time-06",
+     "name": "One Day at a Time 6",
+     "series": "One Day at a Time",
+     "url": "/avatars/library/netflix/one-day-at-a-time-06.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-01",
+     "name": "Orange Is the New Black 1",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-01.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-02",
+     "name": "Orange Is the New Black 2",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-02.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-03",
+     "name": "Orange Is the New Black 3",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-03.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-04",
+     "name": "Orange Is the New Black 4",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-04.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-05",
+     "name": "Orange Is the New Black 5",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-05.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-06",
+     "name": "Orange Is the New Black 6",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-06.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-07",
+     "name": "Orange Is the New Black 7",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-07.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-08",
+     "name": "Orange Is the New Black 8",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-08.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-09",
+     "name": "Orange Is the New Black 9",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-09.webp"
+    },
+    {
+     "id": "netflix-orange-is-the-new-black-10",
+     "name": "Orange Is the New Black 10",
+     "series": "Orange Is the New Black",
+     "url": "/avatars/library/netflix/orange-is-the-new-black-10.webp"
+    },
+    {
+     "id": "netflix-our-planet-01",
+     "name": "Our Planet 1",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-01.webp"
+    },
+    {
+     "id": "netflix-our-planet-02",
+     "name": "Our Planet 2",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-02.webp"
+    },
+    {
+     "id": "netflix-our-planet-03",
+     "name": "Our Planet 3",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-03.webp"
+    },
+    {
+     "id": "netflix-our-planet-04",
+     "name": "Our Planet 4",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-04.webp"
+    },
+    {
+     "id": "netflix-our-planet-05",
+     "name": "Our Planet 5",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-05.webp"
+    },
+    {
+     "id": "netflix-our-planet-06",
+     "name": "Our Planet 6",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-06.webp"
+    },
+    {
+     "id": "netflix-our-planet-07",
+     "name": "Our Planet 7",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-07.webp"
+    },
+    {
+     "id": "netflix-our-planet-08",
+     "name": "Our Planet 8",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-08.webp"
+    },
+    {
+     "id": "netflix-our-planet-09",
+     "name": "Our Planet 9",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-09.webp"
+    },
+    {
+     "id": "netflix-our-planet-10",
+     "name": "Our Planet 10",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-10.webp"
+    },
+    {
+     "id": "netflix-our-planet-11",
+     "name": "Our Planet 11",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-11.webp"
+    },
+    {
+     "id": "netflix-our-planet-12",
+     "name": "Our Planet 12",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-12.webp"
+    },
+    {
+     "id": "netflix-our-planet-13",
+     "name": "Our Planet 13",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-13.webp"
+    },
+    {
+     "id": "netflix-our-planet-14",
+     "name": "Our Planet 14",
+     "series": "Our Planet",
+     "url": "/avatars/library/netflix/our-planet-14.webp"
+    },
+    {
+     "id": "netflix-queer-eye-more-than-a-makeover-01",
+     "name": "Queer Eye 1",
+     "series": "Queer Eye",
+     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-01.webp"
+    },
+    {
+     "id": "netflix-queer-eye-more-than-a-makeover-02",
+     "name": "Queer Eye 2",
+     "series": "Queer Eye",
+     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-02.webp"
+    },
+    {
+     "id": "netflix-queer-eye-more-than-a-makeover-03",
+     "name": "Queer Eye 3",
+     "series": "Queer Eye",
+     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-03.webp"
+    },
+    {
+     "id": "netflix-queer-eye-more-than-a-makeover-04",
+     "name": "Queer Eye 4",
+     "series": "Queer Eye",
+     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-04.webp"
+    },
+    {
+     "id": "netflix-queer-eye-more-than-a-makeover-05",
+     "name": "Queer Eye 5",
+     "series": "Queer Eye",
+     "url": "/avatars/library/netflix/queer-eye-more-than-a-makeover-05.webp"
+    },
+    {
+     "id": "netflix-she-ra-and-the-princess-of-power-01",
+     "name": "She-Ra 1",
+     "series": "She-Ra",
+     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-01.webp"
+    },
+    {
+     "id": "netflix-she-ra-and-the-princess-of-power-02",
+     "name": "She-Ra 2",
+     "series": "She-Ra",
+     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-02.webp"
+    },
+    {
+     "id": "netflix-she-ra-and-the-princess-of-power-03",
+     "name": "She-Ra 3",
+     "series": "She-Ra",
+     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-03.webp"
+    },
+    {
+     "id": "netflix-she-ra-and-the-princess-of-power-04",
+     "name": "She-Ra 4",
+     "series": "She-Ra",
+     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-04.webp"
+    },
+    {
+     "id": "netflix-she-ra-and-the-princess-of-power-05",
+     "name": "She-Ra 5",
+     "series": "She-Ra",
+     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-05.webp"
+    },
+    {
+     "id": "netflix-she-ra-and-the-princess-of-power-06",
+     "name": "She-Ra 6",
+     "series": "She-Ra",
+     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-06.webp"
+    },
+    {
+     "id": "netflix-she-ra-and-the-princess-of-power-07",
+     "name": "She-Ra 7",
+     "series": "She-Ra",
+     "url": "/avatars/library/netflix/she-ra-and-the-princess-of-power-07.webp"
+    },
+    {
+     "id": "netflix-stranger-things-01",
+     "name": "Stranger Things 1",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-01.webp"
+    },
+    {
+     "id": "netflix-stranger-things-02",
+     "name": "Stranger Things 2",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-02.webp"
+    },
+    {
+     "id": "netflix-stranger-things-03",
+     "name": "Stranger Things 3",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-03.webp"
+    },
+    {
+     "id": "netflix-stranger-things-04",
+     "name": "Stranger Things 4",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-04.webp"
+    },
+    {
+     "id": "netflix-stranger-things-05",
+     "name": "Stranger Things 5",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-05.webp"
+    },
+    {
+     "id": "netflix-stranger-things-06",
+     "name": "Stranger Things 6",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-06.webp"
+    },
+    {
+     "id": "netflix-stranger-things-07",
+     "name": "Stranger Things 7",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-07.webp"
+    },
+    {
+     "id": "netflix-stranger-things-08",
+     "name": "Stranger Things 8",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-08.webp"
+    },
+    {
+     "id": "netflix-stranger-things-09",
+     "name": "Stranger Things 9",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-09.webp"
+    },
+    {
+     "id": "netflix-stranger-things-10",
+     "name": "Stranger Things 10",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-10.webp"
+    },
+    {
+     "id": "netflix-stranger-things-11",
+     "name": "Stranger Things 11",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-11.webp"
+    },
+    {
+     "id": "netflix-stranger-things-12",
+     "name": "Stranger Things 12",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-12.webp"
+    },
+    {
+     "id": "netflix-stranger-things-13",
+     "name": "Stranger Things 13",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-13.webp"
+    },
+    {
+     "id": "netflix-stranger-things-14",
+     "name": "Stranger Things 14",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-14.webp"
+    },
+    {
+     "id": "netflix-stranger-things-15",
+     "name": "Stranger Things 15",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-15.webp"
+    },
+    {
+     "id": "netflix-stranger-things-16",
+     "name": "Stranger Things 16",
+     "series": "Stranger Things",
+     "url": "/avatars/library/netflix/stranger-things-16.webp"
+    },
+    {
+     "id": "netflix-the-classics-01",
+     "name": "Netflix Classics 1",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-01.webp"
+    },
+    {
+     "id": "netflix-the-classics-02",
+     "name": "Netflix Classics 2",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-02.webp"
+    },
+    {
+     "id": "netflix-the-classics-03",
+     "name": "Netflix Classics 3",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-03.webp"
+    },
+    {
+     "id": "netflix-the-classics-04",
+     "name": "Netflix Classics 4",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-04.webp"
+    },
+    {
+     "id": "netflix-the-classics-05",
+     "name": "Netflix Classics 5",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-05.webp"
+    },
+    {
+     "id": "netflix-the-classics-06",
+     "name": "Netflix Classics 6",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-06.webp"
+    },
+    {
+     "id": "netflix-the-classics-07",
+     "name": "Netflix Classics 7",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-07.webp"
+    },
+    {
+     "id": "netflix-the-classics-08",
+     "name": "Netflix Classics 8",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-08.webp"
+    },
+    {
+     "id": "netflix-the-classics-09",
+     "name": "Netflix Classics 9",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-09.webp"
+    },
+    {
+     "id": "netflix-the-classics-10",
+     "name": "Netflix Classics 10",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-10.webp"
+    },
+    {
+     "id": "netflix-the-classics-11",
+     "name": "Netflix Classics 11",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-11.webp"
+    },
+    {
+     "id": "netflix-the-classics-12",
+     "name": "Netflix Classics 12",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-12.webp"
+    },
+    {
+     "id": "netflix-the-classics-13",
+     "name": "Netflix Classics 13",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-13.webp"
+    },
+    {
+     "id": "netflix-the-classics-14",
+     "name": "Netflix Classics 14",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-14.webp"
+    },
+    {
+     "id": "netflix-the-classics-15",
+     "name": "Netflix Classics 15",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-15.webp"
+    },
+    {
+     "id": "netflix-the-classics-16",
+     "name": "Netflix Classics 16",
+     "series": "Netflix Classics",
+     "url": "/avatars/library/netflix/the-classics-16.webp"
+    },
+    {
+     "id": "netflix-the-dark-crystal-age-of-resistance-01",
+     "name": "The Dark Crystal 1",
+     "series": "The Dark Crystal",
+     "url": "/avatars/library/netflix/the-dark-crystal-age-of-resistance-01.webp"
+    },
+    {
+     "id": "netflix-the-dark-crystal-age-of-resistance-02",
+     "name": "The Dark Crystal 2",
+     "series": "The Dark Crystal",
+     "url": "/avatars/library/netflix/the-dark-crystal-age-of-resistance-02.webp"
+    },
+    {
+     "id": "netflix-the-dark-crystal-age-of-resistance-03",
+     "name": "The Dark Crystal 3",
+     "series": "The Dark Crystal",
+     "url": "/avatars/library/netflix/the-dark-crystal-age-of-resistance-03.webp"
+    },
+    {
+     "id": "netflix-the-dark-crystal-age-of-resistance-04",
+     "name": "The Dark Crystal 4",
+     "series": "The Dark Crystal",
+     "url": "/avatars/library/netflix/the-dark-crystal-age-of-resistance-04.webp"
+    },
+    {
+     "id": "netflix-the-dark-crystal-age-of-resistance-05",
+     "name": "The Dark Crystal 5",
+     "series": "The Dark Crystal",
+     "url": "/avatars/library/netflix/the-dark-crystal-age-of-resistance-05.webp"
+    },
+    {
+     "id": "netflix-the-dark-crystal-age-of-resistance-06",
+     "name": "The Dark Crystal 6",
+     "series": "The Dark Crystal",
+     "url": "/avatars/library/netflix/the-dark-crystal-age-of-resistance-06.webp"
+    },
+    {
+     "id": "netflix-the-dark-crystal-age-of-resistance-07",
+     "name": "The Dark Crystal 7",
+     "series": "The Dark Crystal",
+     "url": "/avatars/library/netflix/the-dark-crystal-age-of-resistance-07.webp"
+    },
+    {
+     "id": "netflix-the-dark-crystal-age-of-resistance-08",
+     "name": "The Dark Crystal 8",
+     "series": "The Dark Crystal",
+     "url": "/avatars/library/netflix/the-dark-crystal-age-of-resistance-08.webp"
+    },
+    {
+     "id": "netflix-the-dark-crystal-age-of-resistance-09",
+     "name": "The Dark Crystal 9",
+     "series": "The Dark Crystal",
+     "url": "/avatars/library/netflix/the-dark-crystal-age-of-resistance-09.webp"
+    },
+    {
+     "id": "netflix-the-dragon-prince-01",
+     "name": "The Dragon Prince 1",
+     "series": "The Dragon Prince",
+     "url": "/avatars/library/netflix/the-dragon-prince-01.webp"
+    },
+    {
+     "id": "netflix-the-dragon-prince-02",
+     "name": "The Dragon Prince 2",
+     "series": "The Dragon Prince",
+     "url": "/avatars/library/netflix/the-dragon-prince-02.webp"
+    },
+    {
+     "id": "netflix-the-dragon-prince-03",
+     "name": "The Dragon Prince 3",
+     "series": "The Dragon Prince",
+     "url": "/avatars/library/netflix/the-dragon-prince-03.webp"
+    },
+    {
+     "id": "netflix-the-dragon-prince-04",
+     "name": "The Dragon Prince 4",
+     "series": "The Dragon Prince",
+     "url": "/avatars/library/netflix/the-dragon-prince-04.webp"
+    },
+    {
+     "id": "netflix-the-dragon-prince-05",
+     "name": "The Dragon Prince 5",
+     "series": "The Dragon Prince",
+     "url": "/avatars/library/netflix/the-dragon-prince-05.webp"
+    },
+    {
+     "id": "netflix-the-dragon-prince-06",
+     "name": "The Dragon Prince 6",
+     "series": "The Dragon Prince",
+     "url": "/avatars/library/netflix/the-dragon-prince-06.webp"
+    },
+    {
+     "id": "netflix-the-dragon-prince-07",
+     "name": "The Dragon Prince 7",
+     "series": "The Dragon Prince",
+     "url": "/avatars/library/netflix/the-dragon-prince-07.webp"
+    },
+    {
+     "id": "netflix-the-dragon-prince-08",
+     "name": "The Dragon Prince 8",
+     "series": "The Dragon Prince",
+     "url": "/avatars/library/netflix/the-dragon-prince-08.webp"
+    },
+    {
+     "id": "netflix-the-dragon-prince-09",
+     "name": "The Dragon Prince 9",
+     "series": "The Dragon Prince",
+     "url": "/avatars/library/netflix/the-dragon-prince-09.webp"
+    },
+    {
+     "id": "netflix-the-dragon-prince-10",
+     "name": "The Dragon Prince 10",
+     "series": "The Dragon Prince",
+     "url": "/avatars/library/netflix/the-dragon-prince-10.webp"
+    },
+    {
+     "id": "netflix-the-dragon-prince-11",
+     "name": "The Dragon Prince 11",
+     "series": "The Dragon Prince",
+     "url": "/avatars/library/netflix/the-dragon-prince-11.webp"
+    },
+    {
+     "id": "netflix-the-dragon-prince-12",
+     "name": "The Dragon Prince 12",
+     "series": "The Dragon Prince",
+     "url": "/avatars/library/netflix/the-dragon-prince-12.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-01",
+     "name": "Chasseurs de Trolls 1",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-01.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-02",
+     "name": "Chasseurs de Trolls 2",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-02.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-03",
+     "name": "Chasseurs de Trolls 3",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-03.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-04",
+     "name": "Chasseurs de Trolls 4",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-04.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-05",
+     "name": "Chasseurs de Trolls 5",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-05.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-06",
+     "name": "Chasseurs de Trolls 6",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-06.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-07",
+     "name": "Chasseurs de Trolls 7",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-07.webp"
+    },
+    {
+     "id": "netflix-troll-hunters-tales-of-arcadia-08",
+     "name": "Chasseurs de Trolls 8",
+     "series": "Chasseurs de Trolls",
+     "url": "/avatars/library/netflix/troll-hunters-tales-of-arcadia-08.webp"
+    },
+    {
+     "id": "netflix-unbreakable-kimmy-schmidt-01",
+     "name": "Unbreakable Kimmy Schmidt 1",
+     "series": "Unbreakable Kimmy Schmidt",
+     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-01.webp"
+    },
+    {
+     "id": "netflix-unbreakable-kimmy-schmidt-02",
+     "name": "Unbreakable Kimmy Schmidt 2",
+     "series": "Unbreakable Kimmy Schmidt",
+     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-02.webp"
+    },
+    {
+     "id": "netflix-unbreakable-kimmy-schmidt-03",
+     "name": "Unbreakable Kimmy Schmidt 3",
+     "series": "Unbreakable Kimmy Schmidt",
+     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-03.webp"
+    },
+    {
+     "id": "netflix-unbreakable-kimmy-schmidt-04",
+     "name": "Unbreakable Kimmy Schmidt 4",
+     "series": "Unbreakable Kimmy Schmidt",
+     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-04.webp"
+    },
+    {
+     "id": "netflix-unbreakable-kimmy-schmidt-05",
+     "name": "Unbreakable Kimmy Schmidt 5",
+     "series": "Unbreakable Kimmy Schmidt",
+     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-05.webp"
+    },
+    {
+     "id": "netflix-unbreakable-kimmy-schmidt-06",
+     "name": "Unbreakable Kimmy Schmidt 6",
+     "series": "Unbreakable Kimmy Schmidt",
+     "url": "/avatars/library/netflix/unbreakable-kimmy-schmidt-06.webp"
+    },
+    {
+     "id": "netflix-voltron-legendary-defender-01",
+     "name": "Voltron 1",
+     "series": "Voltron",
+     "url": "/avatars/library/netflix/voltron-legendary-defender-01.webp"
+    },
+    {
+     "id": "netflix-voltron-legendary-defender-02",
+     "name": "Voltron 2",
+     "series": "Voltron",
+     "url": "/avatars/library/netflix/voltron-legendary-defender-02.webp"
+    },
+    {
+     "id": "netflix-voltron-legendary-defender-03",
+     "name": "Voltron 3",
+     "series": "Voltron",
+     "url": "/avatars/library/netflix/voltron-legendary-defender-03.webp"
+    },
+    {
+     "id": "netflix-voltron-legendary-defender-04",
+     "name": "Voltron 4",
+     "series": "Voltron",
+     "url": "/avatars/library/netflix/voltron-legendary-defender-04.webp"
+    },
+    {
+     "id": "netflix-voltron-legendary-defender-05",
+     "name": "Voltron 5",
+     "series": "Voltron",
+     "url": "/avatars/library/netflix/voltron-legendary-defender-05.webp"
+    },
+    {
+     "id": "netflix-voltron-legendary-defender-06",
+     "name": "Voltron 6",
+     "series": "Voltron",
+     "url": "/avatars/library/netflix/voltron-legendary-defender-06.webp"
+    },
+    {
+     "id": "netflix-voltron-legendary-defender-07",
+     "name": "Voltron 7",
+     "series": "Voltron",
+     "url": "/avatars/library/netflix/voltron-legendary-defender-07.webp"
+    },
+    {
+     "id": "netflix-voltron-legendary-defender-08",
+     "name": "Voltron 8",
+     "series": "Voltron",
+     "url": "/avatars/library/netflix/voltron-legendary-defender-08.webp"
+    },
+    {
+     "id": "netflix-voltron-legendary-defender-09",
+     "name": "Voltron 9",
+     "series": "Voltron",
+     "url": "/avatars/library/netflix/voltron-legendary-defender-09.webp"
+    }
+   ]
+  },
+  {
+   "id": "anime",
+   "label": "Anime",
+   "source": "Portraits officiels via AniList",
+   "items": [
+    {
+     "id": "anime-jujutsu-kaisen-satoru-gojou",
+     "name": "Satoru Gojou",
+     "series": "JUJUTSU KAISEN",
+     "url": "/avatars/library/anime/jujutsu-kaisen-satoru-gojou.webp"
+    },
+    {
+     "id": "anime-jujutsu-kaisen-yuuji-itadori",
+     "name": "Yuuji Itadori",
+     "series": "JUJUTSU KAISEN",
+     "url": "/avatars/library/anime/jujutsu-kaisen-yuuji-itadori.webp"
+    },
+    {
+     "id": "anime-jujutsu-kaisen-megumi-fushiguro",
+     "name": "Megumi Fushiguro",
+     "series": "JUJUTSU KAISEN",
+     "url": "/avatars/library/anime/jujutsu-kaisen-megumi-fushiguro.webp"
+    },
+    {
+     "id": "anime-jujutsu-kaisen-kento-nanami",
+     "name": "Kento Nanami",
+     "series": "JUJUTSU KAISEN",
+     "url": "/avatars/library/anime/jujutsu-kaisen-kento-nanami.webp"
+    },
+    {
+     "id": "anime-jujutsu-kaisen-nobara-kugisaki",
+     "name": "Nobara Kugisaki",
+     "series": "JUJUTSU KAISEN",
+     "url": "/avatars/library/anime/jujutsu-kaisen-nobara-kugisaki.webp"
+    },
+    {
+     "id": "anime-one-piece-luffy-monkey",
+     "name": "Luffy Monkey",
+     "series": "ONE PIECE",
+     "url": "/avatars/library/anime/one-piece-luffy-monkey.webp"
+    },
+    {
+     "id": "anime-one-piece-zoro-roronoa",
+     "name": "Zoro Roronoa",
+     "series": "ONE PIECE",
+     "url": "/avatars/library/anime/one-piece-zoro-roronoa.webp"
+    },
+    {
+     "id": "anime-one-piece-sanji",
+     "name": "Sanji",
+     "series": "ONE PIECE",
+     "url": "/avatars/library/anime/one-piece-sanji.webp"
+    },
+    {
+     "id": "anime-one-piece-robin-nico",
+     "name": "Robin Nico",
+     "series": "ONE PIECE",
+     "url": "/avatars/library/anime/one-piece-robin-nico.webp"
+    },
+    {
+     "id": "anime-one-piece-law-trafalgar",
+     "name": "Law Trafalgar",
+     "series": "ONE PIECE",
+     "url": "/avatars/library/anime/one-piece-law-trafalgar.webp"
+    },
+    {
+     "id": "anime-demon-slayer-kimetsu-no-yaiba-tanjirou-kamado",
+     "name": "Tanjirou Kamado",
+     "series": "Demon Slayer: Kimetsu no Yaiba",
+     "url": "/avatars/library/anime/demon-slayer-kimetsu-no-yaiba-tanjirou-kamado.webp"
+    },
+    {
+     "id": "anime-demon-slayer-kimetsu-no-yaiba-inosuke-hashibira",
+     "name": "Inosuke Hashibira",
+     "series": "Demon Slayer: Kimetsu no Yaiba",
+     "url": "/avatars/library/anime/demon-slayer-kimetsu-no-yaiba-inosuke-hashibira.webp"
+    },
+    {
+     "id": "anime-demon-slayer-kimetsu-no-yaiba-nezuko-kamado",
+     "name": "Nezuko Kamado",
+     "series": "Demon Slayer: Kimetsu no Yaiba",
+     "url": "/avatars/library/anime/demon-slayer-kimetsu-no-yaiba-nezuko-kamado.webp"
+    },
+    {
+     "id": "anime-demon-slayer-kimetsu-no-yaiba-zenitsu-agatsuma",
+     "name": "Zenitsu Agatsuma",
+     "series": "Demon Slayer: Kimetsu no Yaiba",
+     "url": "/avatars/library/anime/demon-slayer-kimetsu-no-yaiba-zenitsu-agatsuma.webp"
+    },
+    {
+     "id": "anime-demon-slayer-kimetsu-no-yaiba-giyuu-tomioka",
+     "name": "Giyuu Tomioka",
+     "series": "Demon Slayer: Kimetsu no Yaiba",
+     "url": "/avatars/library/anime/demon-slayer-kimetsu-no-yaiba-giyuu-tomioka.webp"
+    },
+    {
+     "id": "anime-chainsaw-man-makima",
+     "name": "Makima",
+     "series": "Chainsaw Man",
+     "url": "/avatars/library/anime/chainsaw-man-makima.webp"
+    },
+    {
+     "id": "anime-chainsaw-man-denji",
+     "name": "Denji",
+     "series": "Chainsaw Man",
+     "url": "/avatars/library/anime/chainsaw-man-denji.webp"
+    },
+    {
+     "id": "anime-chainsaw-man-power",
+     "name": "Power",
+     "series": "Chainsaw Man",
+     "url": "/avatars/library/anime/chainsaw-man-power.webp"
+    },
+    {
+     "id": "anime-chainsaw-man-aki-hayakawa",
+     "name": "Aki Hayakawa",
+     "series": "Chainsaw Man",
+     "url": "/avatars/library/anime/chainsaw-man-aki-hayakawa.webp"
+    },
+    {
+     "id": "anime-chainsaw-man-reze",
+     "name": "Reze",
+     "series": "Chainsaw Man",
+     "url": "/avatars/library/anime/chainsaw-man-reze.webp"
+    },
+    {
+     "id": "anime-solo-leveling-jin-u-seong",
+     "name": "Jin-U Seong",
+     "series": "Solo Leveling",
+     "url": "/avatars/library/anime/solo-leveling-jin-u-seong.webp"
+    },
+    {
+     "id": "anime-solo-leveling-hae-in-cha",
+     "name": "Hae-In Cha",
+     "series": "Solo Leveling",
+     "url": "/avatars/library/anime/solo-leveling-hae-in-cha.webp"
+    },
+    {
+     "id": "anime-solo-leveling-narrator",
+     "name": "Narrator",
+     "series": "Solo Leveling",
+     "url": "/avatars/library/anime/solo-leveling-narrator.webp"
+    },
+    {
+     "id": "anime-solo-leveling-igris",
+     "name": "Igris",
+     "series": "Solo Leveling",
+     "url": "/avatars/library/anime/solo-leveling-igris.webp"
+    },
+    {
+     "id": "anime-solo-leveling-ju-hui-lee",
+     "name": "Ju-Hui Lee",
+     "series": "Solo Leveling",
+     "url": "/avatars/library/anime/solo-leveling-ju-hui-lee.webp"
+    },
+    {
+     "id": "anime-naruto-shippuden-itachi-uchiha",
+     "name": "Itachi Uchiha",
+     "series": "Naruto: Shippuden",
+     "url": "/avatars/library/anime/naruto-shippuden-itachi-uchiha.webp"
+    },
+    {
+     "id": "anime-naruto-shippuden-kakashi-hatake",
+     "name": "Kakashi Hatake",
+     "series": "Naruto: Shippuden",
+     "url": "/avatars/library/anime/naruto-shippuden-kakashi-hatake.webp"
+    },
+    {
+     "id": "anime-naruto-shippuden-naruto-uzumaki",
+     "name": "Naruto Uzumaki",
+     "series": "Naruto: Shippuden",
+     "url": "/avatars/library/anime/naruto-shippuden-naruto-uzumaki.webp"
+    },
+    {
+     "id": "anime-naruto-shippuden-sasuke-uchiha",
+     "name": "Sasuke Uchiha",
+     "series": "Naruto: Shippuden",
+     "url": "/avatars/library/anime/naruto-shippuden-sasuke-uchiha.webp"
+    },
+    {
+     "id": "anime-naruto-shippuden-shikamaru-nara",
+     "name": "Shikamaru Nara",
+     "series": "Naruto: Shippuden",
+     "url": "/avatars/library/anime/naruto-shippuden-shikamaru-nara.webp"
+    },
+    {
+     "id": "anime-attack-on-titan-levi",
+     "name": "Levi",
+     "series": "Attack on Titan",
+     "url": "/avatars/library/anime/attack-on-titan-levi.webp"
+    },
+    {
+     "id": "anime-attack-on-titan-eren-yeager",
+     "name": "Eren Yeager",
+     "series": "Attack on Titan",
+     "url": "/avatars/library/anime/attack-on-titan-eren-yeager.webp"
+    },
+    {
+     "id": "anime-attack-on-titan-mikasa-ackerman",
+     "name": "Mikasa Ackerman",
+     "series": "Attack on Titan",
+     "url": "/avatars/library/anime/attack-on-titan-mikasa-ackerman.webp"
+    },
+    {
+     "id": "anime-attack-on-titan-armin-arlert",
+     "name": "Armin Arlert",
+     "series": "Attack on Titan",
+     "url": "/avatars/library/anime/attack-on-titan-armin-arlert.webp"
+    },
+    {
+     "id": "anime-attack-on-titan-hange-zoe",
+     "name": "Hange Zoe",
+     "series": "Attack on Titan",
+     "url": "/avatars/library/anime/attack-on-titan-hange-zoe.webp"
+    },
+    {
+     "id": "anime-spy-x-family-yor-forger",
+     "name": "Yor Forger",
+     "series": "SPY x FAMILY",
+     "url": "/avatars/library/anime/spy-x-family-yor-forger.webp"
+    },
+    {
+     "id": "anime-spy-x-family-anya-forger",
+     "name": "Anya Forger",
+     "series": "SPY x FAMILY",
+     "url": "/avatars/library/anime/spy-x-family-anya-forger.webp"
+    },
+    {
+     "id": "anime-spy-x-family-loid-forger",
+     "name": "Loid Forger",
+     "series": "SPY x FAMILY",
+     "url": "/avatars/library/anime/spy-x-family-loid-forger.webp"
+    },
+    {
+     "id": "anime-spy-x-family-bond",
+     "name": "Bond",
+     "series": "SPY x FAMILY",
+     "url": "/avatars/library/anime/spy-x-family-bond.webp"
+    },
+    {
+     "id": "anime-frieren-beyond-journey-s-end-frieren",
+     "name": "Frieren",
+     "series": "Frieren: Beyond Journey’s End",
+     "url": "/avatars/library/anime/frieren-beyond-journey-s-end-frieren.webp"
+    },
+    {
+     "id": "anime-frieren-beyond-journey-s-end-fern",
+     "name": "Fern",
+     "series": "Frieren: Beyond Journey’s End",
+     "url": "/avatars/library/anime/frieren-beyond-journey-s-end-fern.webp"
+    },
+    {
+     "id": "anime-frieren-beyond-journey-s-end-stark",
+     "name": "Stark",
+     "series": "Frieren: Beyond Journey’s End",
+     "url": "/avatars/library/anime/frieren-beyond-journey-s-end-stark.webp"
+    },
+    {
+     "id": "anime-frieren-beyond-journey-s-end-himmel",
+     "name": "Himmel",
+     "series": "Frieren: Beyond Journey’s End",
+     "url": "/avatars/library/anime/frieren-beyond-journey-s-end-himmel.webp"
+    },
+    {
+     "id": "anime-frieren-beyond-journey-s-end-ubel",
+     "name": "Übel",
+     "series": "Frieren: Beyond Journey’s End",
+     "url": "/avatars/library/anime/frieren-beyond-journey-s-end-ubel.webp"
+    },
+    {
+     "id": "anime-dragon-ball-z-gokuu-son",
+     "name": "Gokuu Son",
+     "series": "Dragon Ball Z",
+     "url": "/avatars/library/anime/dragon-ball-z-gokuu-son.webp"
+    },
+    {
+     "id": "anime-dragon-ball-z-vegeta",
+     "name": "Vegeta",
+     "series": "Dragon Ball Z",
+     "url": "/avatars/library/anime/dragon-ball-z-vegeta.webp"
+    },
+    {
+     "id": "anime-dragon-ball-z-trunks",
+     "name": "Trunks",
+     "series": "Dragon Ball Z",
+     "url": "/avatars/library/anime/dragon-ball-z-trunks.webp"
+    },
+    {
+     "id": "anime-dragon-ball-z-gohan-son",
+     "name": "Gohan Son",
+     "series": "Dragon Ball Z",
+     "url": "/avatars/library/anime/dragon-ball-z-gohan-son.webp"
+    },
+    {
+     "id": "anime-dragon-ball-z-piccolo",
+     "name": "Piccolo",
+     "series": "Dragon Ball Z",
+     "url": "/avatars/library/anime/dragon-ball-z-piccolo.webp"
+    },
+    {
+     "id": "anime-my-hero-academia-shouto-todoroki",
+     "name": "Shouto Todoroki",
+     "series": "My Hero Academia",
+     "url": "/avatars/library/anime/my-hero-academia-shouto-todoroki.webp"
+    },
+    {
+     "id": "anime-my-hero-academia-katsuki-bakugou",
+     "name": "Katsuki Bakugou",
+     "series": "My Hero Academia",
+     "url": "/avatars/library/anime/my-hero-academia-katsuki-bakugou.webp"
+    },
+    {
+     "id": "anime-my-hero-academia-izuku-midoriya",
+     "name": "Izuku Midoriya",
+     "series": "My Hero Academia",
+     "url": "/avatars/library/anime/my-hero-academia-izuku-midoriya.webp"
+    },
+    {
+     "id": "anime-my-hero-academia-shouta-aizawa",
+     "name": "Shouta Aizawa",
+     "series": "My Hero Academia",
+     "url": "/avatars/library/anime/my-hero-academia-shouta-aizawa.webp"
+    },
+    {
+     "id": "anime-my-hero-academia-toshinori-yagi",
+     "name": "Toshinori Yagi",
+     "series": "My Hero Academia",
+     "url": "/avatars/library/anime/my-hero-academia-toshinori-yagi.webp"
+    },
+    {
+     "id": "anime-hunter-x-hunter-2011-killua-zoldyck",
+     "name": "Killua Zoldyck",
+     "series": "Hunter x Hunter (2011)",
+     "url": "/avatars/library/anime/hunter-x-hunter-2011-killua-zoldyck.webp"
+    },
+    {
+     "id": "anime-hunter-x-hunter-2011-kurapika",
+     "name": "Kurapika",
+     "series": "Hunter x Hunter (2011)",
+     "url": "/avatars/library/anime/hunter-x-hunter-2011-kurapika.webp"
+    },
+    {
+     "id": "anime-hunter-x-hunter-2011-gon-freecss",
+     "name": "Gon Freecss",
+     "series": "Hunter x Hunter (2011)",
+     "url": "/avatars/library/anime/hunter-x-hunter-2011-gon-freecss.webp"
+    },
+    {
+     "id": "anime-hunter-x-hunter-2011-hisoka-morow",
+     "name": "Hisoka Morow",
+     "series": "Hunter x Hunter (2011)",
+     "url": "/avatars/library/anime/hunter-x-hunter-2011-hisoka-morow.webp"
+    },
+    {
+     "id": "anime-hunter-x-hunter-2011-chrollo-lucilfer",
+     "name": "Chrollo Lucilfer",
+     "series": "Hunter x Hunter (2011)",
+     "url": "/avatars/library/anime/hunter-x-hunter-2011-chrollo-lucilfer.webp"
+    },
+    {
+     "id": "anime-bleach-thousand-year-blood-war-ichigo-kurosaki",
+     "name": "Ichigo Kurosaki",
+     "series": "BLEACH: Thousand-Year Blood War",
+     "url": "/avatars/library/anime/bleach-thousand-year-blood-war-ichigo-kurosaki.webp"
+    },
+    {
+     "id": "anime-bleach-thousand-year-blood-war-kisuke-urahara",
+     "name": "Kisuke Urahara",
+     "series": "BLEACH: Thousand-Year Blood War",
+     "url": "/avatars/library/anime/bleach-thousand-year-blood-war-kisuke-urahara.webp"
+    },
+    {
+     "id": "anime-bleach-thousand-year-blood-war-rukia-kuchiki",
+     "name": "Rukia Kuchiki",
+     "series": "BLEACH: Thousand-Year Blood War",
+     "url": "/avatars/library/anime/bleach-thousand-year-blood-war-rukia-kuchiki.webp"
+    },
+    {
+     "id": "anime-bleach-thousand-year-blood-war-sousuke-aizen",
+     "name": "Sousuke Aizen",
+     "series": "BLEACH: Thousand-Year Blood War",
+     "url": "/avatars/library/anime/bleach-thousand-year-blood-war-sousuke-aizen.webp"
+    },
+    {
+     "id": "anime-bleach-thousand-year-blood-war-kenpachi-zaraki",
+     "name": "Kenpachi Zaraki",
+     "series": "BLEACH: Thousand-Year Blood War",
+     "url": "/avatars/library/anime/bleach-thousand-year-blood-war-kenpachi-zaraki.webp"
+    },
+    {
+     "id": "anime-death-note-l-lawliet",
+     "name": "L Lawliet",
+     "series": "Death Note",
+     "url": "/avatars/library/anime/death-note-l-lawliet.webp"
+    },
+    {
+     "id": "anime-death-note-light-yagami",
+     "name": "Light Yagami",
+     "series": "Death Note",
+     "url": "/avatars/library/anime/death-note-light-yagami.webp"
+    },
+    {
+     "id": "anime-death-note-ryuk",
+     "name": "Ryuk",
+     "series": "Death Note",
+     "url": "/avatars/library/anime/death-note-ryuk.webp"
+    },
+    {
+     "id": "anime-death-note-misa-amane",
+     "name": "Misa Amane",
+     "series": "Death Note",
+     "url": "/avatars/library/anime/death-note-misa-amane.webp"
+    },
+    {
+     "id": "anime-death-note-mihael-keehl",
+     "name": "Mihael Keehl",
+     "series": "Death Note",
+     "url": "/avatars/library/anime/death-note-mihael-keehl.webp"
+    },
+    {
+     "id": "anime-tokyo-ghoul-ken-kaneki",
+     "name": "Ken Kaneki",
+     "series": "Tokyo Ghoul",
+     "url": "/avatars/library/anime/tokyo-ghoul-ken-kaneki.webp"
+    },
+    {
+     "id": "anime-tokyo-ghoul-touka-kirishima",
+     "name": "Touka Kirishima",
+     "series": "Tokyo Ghoul",
+     "url": "/avatars/library/anime/tokyo-ghoul-touka-kirishima.webp"
+    },
+    {
+     "id": "anime-tokyo-ghoul-juuzou-suzuya",
+     "name": "Juuzou Suzuya",
+     "series": "Tokyo Ghoul",
+     "url": "/avatars/library/anime/tokyo-ghoul-juuzou-suzuya.webp"
+    },
+    {
+     "id": "anime-tokyo-ghoul-hideyoshi-nagachika",
+     "name": "Hideyoshi Nagachika",
+     "series": "Tokyo Ghoul",
+     "url": "/avatars/library/anime/tokyo-ghoul-hideyoshi-nagachika.webp"
+    },
+    {
+     "id": "anime-tokyo-ghoul-kishou-arima",
+     "name": "Kishou Arima",
+     "series": "Tokyo Ghoul",
+     "url": "/avatars/library/anime/tokyo-ghoul-kishou-arima.webp"
+    },
+    {
+     "id": "anime-dan-da-dan-momo-ayase",
+     "name": "Momo Ayase",
+     "series": "DAN DA DAN",
+     "url": "/avatars/library/anime/dan-da-dan-momo-ayase.webp"
+    },
+    {
+     "id": "anime-dan-da-dan-aira-shiratori",
+     "name": "Aira Shiratori",
+     "series": "DAN DA DAN",
+     "url": "/avatars/library/anime/dan-da-dan-aira-shiratori.webp"
+    },
+    {
+     "id": "anime-dan-da-dan-ken-takakura",
+     "name": "Ken Takakura",
+     "series": "DAN DA DAN",
+     "url": "/avatars/library/anime/dan-da-dan-ken-takakura.webp"
+    },
+    {
+     "id": "anime-dan-da-dan-seiko-ayase",
+     "name": "Seiko Ayase",
+     "series": "DAN DA DAN",
+     "url": "/avatars/library/anime/dan-da-dan-seiko-ayase.webp"
+    },
+    {
+     "id": "anime-dan-da-dan-jin-enjouji",
+     "name": "Jin Enjouji",
+     "series": "DAN DA DAN",
+     "url": "/avatars/library/anime/dan-da-dan-jin-enjouji.webp"
+    },
+    {
+     "id": "anime-blue-lock-meguru-bachira",
+     "name": "Meguru Bachira",
+     "series": "BLUE LOCK",
+     "url": "/avatars/library/anime/blue-lock-meguru-bachira.webp"
+    },
+    {
+     "id": "anime-blue-lock-seishirou-nagi",
+     "name": "Seishirou Nagi",
+     "series": "BLUE LOCK",
+     "url": "/avatars/library/anime/blue-lock-seishirou-nagi.webp"
+    },
+    {
+     "id": "anime-blue-lock-yoichi-isagi",
+     "name": "Yoichi Isagi",
+     "series": "BLUE LOCK",
+     "url": "/avatars/library/anime/blue-lock-yoichi-isagi.webp"
+    },
+    {
+     "id": "anime-blue-lock-hyouma-chigiri",
+     "name": "Hyouma Chigiri",
+     "series": "BLUE LOCK",
+     "url": "/avatars/library/anime/blue-lock-hyouma-chigiri.webp"
+    },
+    {
+     "id": "anime-blue-lock-rin-itoshi",
+     "name": "Rin Itoshi",
+     "series": "BLUE LOCK",
+     "url": "/avatars/library/anime/blue-lock-rin-itoshi.webp"
+    },
+    {
+     "id": "anime-haikyu-shouyou-hinata",
+     "name": "Shouyou Hinata",
+     "series": "HAIKYU!!",
+     "url": "/avatars/library/anime/haikyu-shouyou-hinata.webp"
+    },
+    {
+     "id": "anime-haikyu-tobio-kageyama",
+     "name": "Tobio Kageyama",
+     "series": "HAIKYU!!",
+     "url": "/avatars/library/anime/haikyu-tobio-kageyama.webp"
+    },
+    {
+     "id": "anime-haikyu-yuu-nishinoya",
+     "name": "Yuu Nishinoya",
+     "series": "HAIKYU!!",
+     "url": "/avatars/library/anime/haikyu-yuu-nishinoya.webp"
+    },
+    {
+     "id": "anime-haikyu-kenma-kozume",
+     "name": "Kenma Kozume",
+     "series": "HAIKYU!!",
+     "url": "/avatars/library/anime/haikyu-kenma-kozume.webp"
+    },
+    {
+     "id": "anime-haikyu-tooru-oikawa",
+     "name": "Tooru Oikawa",
+     "series": "HAIKYU!!",
+     "url": "/avatars/library/anime/haikyu-tooru-oikawa.webp"
+    },
+    {
+     "id": "anime-one-punch-man-saitama",
+     "name": "Saitama",
+     "series": "One-Punch Man",
+     "url": "/avatars/library/anime/one-punch-man-saitama.webp"
+    },
+    {
+     "id": "anime-one-punch-man-tatsumaki",
+     "name": "Tatsumaki",
+     "series": "One-Punch Man",
+     "url": "/avatars/library/anime/one-punch-man-tatsumaki.webp"
+    },
+    {
+     "id": "anime-one-punch-man-garou",
+     "name": "Garou",
+     "series": "One-Punch Man",
+     "url": "/avatars/library/anime/one-punch-man-garou.webp"
+    },
+    {
+     "id": "anime-one-punch-man-genos",
+     "name": "Genos",
+     "series": "One-Punch Man",
+     "url": "/avatars/library/anime/one-punch-man-genos.webp"
+    },
+    {
+     "id": "anime-one-punch-man-fubuki",
+     "name": "Fubuki",
+     "series": "One-Punch Man",
+     "url": "/avatars/library/anime/one-punch-man-fubuki.webp"
+    },
+    {
+     "id": "anime-kaiju-no-8-soushirou-hoshina",
+     "name": "Soushirou Hoshina",
+     "series": "Kaiju No. 8",
+     "url": "/avatars/library/anime/kaiju-no-8-soushirou-hoshina.webp"
+    },
+    {
+     "id": "anime-kaiju-no-8-mina-ashiro",
+     "name": "Mina Ashiro",
+     "series": "Kaiju No. 8",
+     "url": "/avatars/library/anime/kaiju-no-8-mina-ashiro.webp"
+    },
+    {
+     "id": "anime-kaiju-no-8-kafka-hibino",
+     "name": "Kafka Hibino",
+     "series": "Kaiju No. 8",
+     "url": "/avatars/library/anime/kaiju-no-8-kafka-hibino.webp"
+    },
+    {
+     "id": "anime-kaiju-no-8-reno-ichikawa",
+     "name": "Reno Ichikawa",
+     "series": "Kaiju No. 8",
+     "url": "/avatars/library/anime/kaiju-no-8-reno-ichikawa.webp"
+    },
+    {
+     "id": "anime-kaiju-no-8-kikoru-shinomiya",
+     "name": "Kikoru Shinomiya",
+     "series": "Kaiju No. 8",
+     "url": "/avatars/library/anime/kaiju-no-8-kikoru-shinomiya.webp"
+    },
+    {
+     "id": "anime-sakamoto-days-yoichi-nagumo",
+     "name": "Yoichi Nagumo",
+     "series": "SAKAMOTO DAYS",
+     "url": "/avatars/library/anime/sakamoto-days-yoichi-nagumo.webp"
+    },
+    {
+     "id": "anime-sakamoto-days-tarou-sakamoto",
+     "name": "Tarou Sakamoto",
+     "series": "SAKAMOTO DAYS",
+     "url": "/avatars/library/anime/sakamoto-days-tarou-sakamoto.webp"
+    },
+    {
+     "id": "anime-sakamoto-days-osaragi",
+     "name": "Osaragi",
+     "series": "SAKAMOTO DAYS",
+     "url": "/avatars/library/anime/sakamoto-days-osaragi.webp"
+    },
+    {
+     "id": "anime-sakamoto-days-shin-asakura",
+     "name": "Shin Asakura",
+     "series": "SAKAMOTO DAYS",
+     "url": "/avatars/library/anime/sakamoto-days-shin-asakura.webp"
+    },
+    {
+     "id": "anime-oshi-no-ko-kana-arima",
+     "name": "Kana Arima",
+     "series": "OSHI NO KO",
+     "url": "/avatars/library/anime/oshi-no-ko-kana-arima.webp"
+    },
+    {
+     "id": "anime-oshi-no-ko-ai-hoshino",
+     "name": "Ai Hoshino",
+     "series": "OSHI NO KO",
+     "url": "/avatars/library/anime/oshi-no-ko-ai-hoshino.webp"
+    },
+    {
+     "id": "anime-oshi-no-ko-akane-kurokawa",
+     "name": "Akane Kurokawa",
+     "series": "OSHI NO KO",
+     "url": "/avatars/library/anime/oshi-no-ko-akane-kurokawa.webp"
+    },
+    {
+     "id": "anime-oshi-no-ko-aquamarine-hoshino",
+     "name": "Aquamarine Hoshino",
+     "series": "OSHI NO KO",
+     "url": "/avatars/library/anime/oshi-no-ko-aquamarine-hoshino.webp"
+    },
+    {
+     "id": "anime-oshi-no-ko-ruby-hoshino",
+     "name": "Ruby Hoshino",
+     "series": "OSHI NO KO",
+     "url": "/avatars/library/anime/oshi-no-ko-ruby-hoshino.webp"
+    },
+    {
+     "id": "anime-mob-psycho-100-arataka-reigen",
+     "name": "Arataka Reigen",
+     "series": "Mob Psycho 100",
+     "url": "/avatars/library/anime/mob-psycho-100-arataka-reigen.webp"
+    },
+    {
+     "id": "anime-mob-psycho-100-shigeo-kageyama",
+     "name": "Shigeo Kageyama",
+     "series": "Mob Psycho 100",
+     "url": "/avatars/library/anime/mob-psycho-100-shigeo-kageyama.webp"
+    },
+    {
+     "id": "anime-mob-psycho-100-ekubo",
+     "name": "Ekubo",
+     "series": "Mob Psycho 100",
+     "url": "/avatars/library/anime/mob-psycho-100-ekubo.webp"
+    },
+    {
+     "id": "anime-mob-psycho-100-teruki-hanazawa",
+     "name": "Teruki Hanazawa",
+     "series": "Mob Psycho 100",
+     "url": "/avatars/library/anime/mob-psycho-100-teruki-hanazawa.webp"
+    },
+    {
+     "id": "anime-fullmetal-alchemist-brotherhood-edward-elric",
+     "name": "Edward Elric",
+     "series": "Fullmetal Alchemist: Brotherhood",
+     "url": "/avatars/library/anime/fullmetal-alchemist-brotherhood-edward-elric.webp"
+    },
+    {
+     "id": "anime-fullmetal-alchemist-brotherhood-roy-mustang",
+     "name": "Roy Mustang",
+     "series": "Fullmetal Alchemist: Brotherhood",
+     "url": "/avatars/library/anime/fullmetal-alchemist-brotherhood-roy-mustang.webp"
+    },
+    {
+     "id": "anime-fullmetal-alchemist-brotherhood-alphonse-elric",
+     "name": "Alphonse Elric",
+     "series": "Fullmetal Alchemist: Brotherhood",
+     "url": "/avatars/library/anime/fullmetal-alchemist-brotherhood-alphonse-elric.webp"
+    },
+    {
+     "id": "anime-fullmetal-alchemist-brotherhood-winry-rockbell",
+     "name": "Winry Rockbell",
+     "series": "Fullmetal Alchemist: Brotherhood",
+     "url": "/avatars/library/anime/fullmetal-alchemist-brotherhood-winry-rockbell.webp"
+    },
+    {
+     "id": "anime-fullmetal-alchemist-brotherhood-riza-hawkeye",
+     "name": "Riza Hawkeye",
+     "series": "Fullmetal Alchemist: Brotherhood",
+     "url": "/avatars/library/anime/fullmetal-alchemist-brotherhood-riza-hawkeye.webp"
+    },
+    {
+     "id": "anime-cyberpunk-edgerunners-lucy",
+     "name": "Lucy",
+     "series": "Cyberpunk: Edgerunners",
+     "url": "/avatars/library/anime/cyberpunk-edgerunners-lucy.webp"
+    },
+    {
+     "id": "anime-cyberpunk-edgerunners-rebecca",
+     "name": "Rebecca",
+     "series": "Cyberpunk: Edgerunners",
+     "url": "/avatars/library/anime/cyberpunk-edgerunners-rebecca.webp"
+    },
+    {
+     "id": "anime-cyberpunk-edgerunners-david-martinez",
+     "name": "David Martinez",
+     "series": "Cyberpunk: Edgerunners",
+     "url": "/avatars/library/anime/cyberpunk-edgerunners-david-martinez.webp"
+    },
+    {
+     "id": "anime-cyberpunk-edgerunners-maine",
+     "name": "Maine",
+     "series": "Cyberpunk: Edgerunners",
+     "url": "/avatars/library/anime/cyberpunk-edgerunners-maine.webp"
+    },
+    {
+     "id": "anime-cyberpunk-edgerunners-kiwi",
+     "name": "Kiwi",
+     "series": "Cyberpunk: Edgerunners",
+     "url": "/avatars/library/anime/cyberpunk-edgerunners-kiwi.webp"
+    },
+    {
+     "id": "anime-code-geass-lelouch-of-the-rebellion-lelouch-lamperouge",
+     "name": "Lelouch Lamperouge",
+     "series": "Code Geass: Lelouch of the Rebellion",
+     "url": "/avatars/library/anime/code-geass-lelouch-of-the-rebellion-lelouch-lamperouge.webp"
+    },
+    {
+     "id": "anime-code-geass-lelouch-of-the-rebellion-c-c",
+     "name": "C.C.",
+     "series": "Code Geass: Lelouch of the Rebellion",
+     "url": "/avatars/library/anime/code-geass-lelouch-of-the-rebellion-c-c.webp"
+    },
+    {
+     "id": "anime-code-geass-lelouch-of-the-rebellion-shirley-fenette",
+     "name": "Shirley Fenette",
+     "series": "Code Geass: Lelouch of the Rebellion",
+     "url": "/avatars/library/anime/code-geass-lelouch-of-the-rebellion-shirley-fenette.webp"
+    },
+    {
+     "id": "anime-code-geass-lelouch-of-the-rebellion-kallen-stadtfeld",
+     "name": "Kallen Stadtfeld",
+     "series": "Code Geass: Lelouch of the Rebellion",
+     "url": "/avatars/library/anime/code-geass-lelouch-of-the-rebellion-kallen-stadtfeld.webp"
+    },
+    {
+     "id": "anime-code-geass-lelouch-of-the-rebellion-suzaku-kururugi",
+     "name": "Suzaku Kururugi",
+     "series": "Code Geass: Lelouch of the Rebellion",
+     "url": "/avatars/library/anime/code-geass-lelouch-of-the-rebellion-suzaku-kururugi.webp"
+    },
+    {
+     "id": "anime-steins-gate-kurisu-makise",
+     "name": "Kurisu Makise",
+     "series": "Steins;Gate",
+     "url": "/avatars/library/anime/steins-gate-kurisu-makise.webp"
+    },
+    {
+     "id": "anime-steins-gate-rintarou-okabe",
+     "name": "Rintarou Okabe",
+     "series": "Steins;Gate",
+     "url": "/avatars/library/anime/steins-gate-rintarou-okabe.webp"
+    },
+    {
+     "id": "anime-steins-gate-mayuri-shiina",
+     "name": "Mayuri Shiina",
+     "series": "Steins;Gate",
+     "url": "/avatars/library/anime/steins-gate-mayuri-shiina.webp"
+    },
+    {
+     "id": "anime-steins-gate-suzuha-amane",
+     "name": "Suzuha Amane",
+     "series": "Steins;Gate",
+     "url": "/avatars/library/anime/steins-gate-suzuha-amane.webp"
+    },
+    {
+     "id": "anime-steins-gate-luka-urushibara",
+     "name": "Luka Urushibara",
+     "series": "Steins;Gate",
+     "url": "/avatars/library/anime/steins-gate-luka-urushibara.webp"
+    },
+    {
+     "id": "anime-vinland-saga-thorfinn-karlsefni",
+     "name": "Thorfinn Karlsefni",
+     "series": "Vinland Saga",
+     "url": "/avatars/library/anime/vinland-saga-thorfinn-karlsefni.webp"
+    },
+    {
+     "id": "anime-vinland-saga-askeladd",
+     "name": "Askeladd",
+     "series": "Vinland Saga",
+     "url": "/avatars/library/anime/vinland-saga-askeladd.webp"
+    },
+    {
+     "id": "anime-vinland-saga-thorkell",
+     "name": "Thorkell",
+     "series": "Vinland Saga",
+     "url": "/avatars/library/anime/vinland-saga-thorkell.webp"
+    },
+    {
+     "id": "anime-vinland-saga-canute-svenson",
+     "name": "Canute Svenson",
+     "series": "Vinland Saga",
+     "url": "/avatars/library/anime/vinland-saga-canute-svenson.webp"
+    },
+    {
+     "id": "anime-vinland-saga-thors-snorresson",
+     "name": "Thors Snorresson",
+     "series": "Vinland Saga",
+     "url": "/avatars/library/anime/vinland-saga-thors-snorresson.webp"
+    },
+    {
+     "id": "anime-bocchi-the-rock-hitori-gotou",
+     "name": "Hitori Gotou",
+     "series": "BOCCHI THE ROCK!",
+     "url": "/avatars/library/anime/bocchi-the-rock-hitori-gotou.webp"
+    },
+    {
+     "id": "anime-bocchi-the-rock-nijika-ijichi",
+     "name": "Nijika Ijichi",
+     "series": "BOCCHI THE ROCK!",
+     "url": "/avatars/library/anime/bocchi-the-rock-nijika-ijichi.webp"
+    },
+    {
+     "id": "anime-bocchi-the-rock-ryou-yamada",
+     "name": "Ryou Yamada",
+     "series": "BOCCHI THE ROCK!",
+     "url": "/avatars/library/anime/bocchi-the-rock-ryou-yamada.webp"
+    },
+    {
+     "id": "anime-bocchi-the-rock-ikuyo-kita",
+     "name": "Ikuyo Kita",
+     "series": "BOCCHI THE ROCK!",
+     "url": "/avatars/library/anime/bocchi-the-rock-ikuyo-kita.webp"
+    },
+    {
+     "id": "anime-bocchi-the-rock-kikuri-hiroi",
+     "name": "Kikuri Hiroi",
+     "series": "BOCCHI THE ROCK!",
+     "url": "/avatars/library/anime/bocchi-the-rock-kikuri-hiroi.webp"
+    },
+    {
+     "id": "anime-re-zero-starting-life-in-another-world-emilia",
+     "name": "Emilia",
+     "series": "Re:ZERO -Starting Life in Another World-",
+     "url": "/avatars/library/anime/re-zero-starting-life-in-another-world-emilia.webp"
+    },
+    {
+     "id": "anime-re-zero-starting-life-in-another-world-rem",
+     "name": "Rem",
+     "series": "Re:ZERO -Starting Life in Another World-",
+     "url": "/avatars/library/anime/re-zero-starting-life-in-another-world-rem.webp"
+    },
+    {
+     "id": "anime-re-zero-starting-life-in-another-world-subaru-natsuki",
+     "name": "Subaru Natsuki",
+     "series": "Re:ZERO -Starting Life in Another World-",
+     "url": "/avatars/library/anime/re-zero-starting-life-in-another-world-subaru-natsuki.webp"
+    },
+    {
+     "id": "anime-re-zero-starting-life-in-another-world-beatrice",
+     "name": "Beatrice",
+     "series": "Re:ZERO -Starting Life in Another World-",
+     "url": "/avatars/library/anime/re-zero-starting-life-in-another-world-beatrice.webp"
+    },
+    {
+     "id": "anime-re-zero-starting-life-in-another-world-ram",
+     "name": "Ram",
+     "series": "Re:ZERO -Starting Life in Another World-",
+     "url": "/avatars/library/anime/re-zero-starting-life-in-another-world-ram.webp"
+    },
+    {
+     "id": "anime-neon-genesis-evangelion-asuka-langley-souryuu",
+     "name": "Asuka Langley Souryuu",
+     "series": "Neon Genesis Evangelion",
+     "url": "/avatars/library/anime/neon-genesis-evangelion-asuka-langley-souryuu.webp"
+    },
+    {
+     "id": "anime-neon-genesis-evangelion-rei-ayanami",
+     "name": "Rei Ayanami",
+     "series": "Neon Genesis Evangelion",
+     "url": "/avatars/library/anime/neon-genesis-evangelion-rei-ayanami.webp"
+    },
+    {
+     "id": "anime-neon-genesis-evangelion-shinji-ikari",
+     "name": "Shinji Ikari",
+     "series": "Neon Genesis Evangelion",
+     "url": "/avatars/library/anime/neon-genesis-evangelion-shinji-ikari.webp"
+    },
+    {
+     "id": "anime-neon-genesis-evangelion-misato-katsuragi",
+     "name": "Misato Katsuragi",
+     "series": "Neon Genesis Evangelion",
+     "url": "/avatars/library/anime/neon-genesis-evangelion-misato-katsuragi.webp"
+    },
+    {
+     "id": "anime-neon-genesis-evangelion-kaworu-nagisa",
+     "name": "Kaworu Nagisa",
+     "series": "Neon Genesis Evangelion",
+     "url": "/avatars/library/anime/neon-genesis-evangelion-kaworu-nagisa.webp"
+    },
+    {
+     "id": "anime-jojo-s-bizarre-adventure-tv-joseph-joestar",
+     "name": "Joseph Joestar",
+     "series": "JoJo's Bizarre Adventure (TV)",
+     "url": "/avatars/library/anime/jojo-s-bizarre-adventure-tv-joseph-joestar.webp"
+    },
+    {
+     "id": "anime-jojo-s-bizarre-adventure-tv-joutarou-kuujou",
+     "name": "Joutarou Kuujou",
+     "series": "JoJo's Bizarre Adventure (TV)",
+     "url": "/avatars/library/anime/jojo-s-bizarre-adventure-tv-joutarou-kuujou.webp"
+    },
+    {
+     "id": "anime-jojo-s-bizarre-adventure-tv-dio-brando",
+     "name": "Dio Brando",
+     "series": "JoJo's Bizarre Adventure (TV)",
+     "url": "/avatars/library/anime/jojo-s-bizarre-adventure-tv-dio-brando.webp"
+    },
+    {
+     "id": "anime-jojo-s-bizarre-adventure-tv-jonathan-joestar",
+     "name": "Jonathan Joestar",
+     "series": "JoJo's Bizarre Adventure (TV)",
+     "url": "/avatars/library/anime/jojo-s-bizarre-adventure-tv-jonathan-joestar.webp"
+    },
+    {
+     "id": "anime-jojo-s-bizarre-adventure-tv-caesar-zeppeli",
+     "name": "Caesar Zeppeli",
+     "series": "JoJo's Bizarre Adventure (TV)",
+     "url": "/avatars/library/anime/jojo-s-bizarre-adventure-tv-caesar-zeppeli.webp"
+    },
+    {
+     "id": "anime-black-clover-yami-sukehiro",
+     "name": "Yami Sukehiro",
+     "series": "Black Clover",
+     "url": "/avatars/library/anime/black-clover-yami-sukehiro.webp"
+    },
+    {
+     "id": "anime-black-clover-asta",
+     "name": "Asta",
+     "series": "Black Clover",
+     "url": "/avatars/library/anime/black-clover-asta.webp"
+    },
+    {
+     "id": "anime-black-clover-noelle-silva",
+     "name": "Noelle Silva",
+     "series": "Black Clover",
+     "url": "/avatars/library/anime/black-clover-noelle-silva.webp"
+    },
+    {
+     "id": "anime-black-clover-yuno",
+     "name": "Yuno",
+     "series": "Black Clover",
+     "url": "/avatars/library/anime/black-clover-yuno.webp"
+    },
+    {
+     "id": "anime-black-clover-mereoleona-vermillion",
+     "name": "Mereoleona Vermillion",
+     "series": "Black Clover",
+     "url": "/avatars/library/anime/black-clover-mereoleona-vermillion.webp"
+    },
+    {
+     "id": "anime-the-apothecary-diaries-maomao",
+     "name": "Maomao",
+     "series": "The Apothecary Diaries",
+     "url": "/avatars/library/anime/the-apothecary-diaries-maomao.webp"
+    },
+    {
+     "id": "anime-the-apothecary-diaries-jinshi",
+     "name": "Jinshi",
+     "series": "The Apothecary Diaries",
+     "url": "/avatars/library/anime/the-apothecary-diaries-jinshi.webp"
+    },
+    {
+     "id": "anime-the-apothecary-diaries-rouran",
+     "name": "Rouran",
+     "series": "The Apothecary Diaries",
+     "url": "/avatars/library/anime/the-apothecary-diaries-rouran.webp"
+    },
+    {
+     "id": "anime-the-apothecary-diaries-gyokuyou",
+     "name": "Gyokuyou",
+     "series": "The Apothecary Diaries",
+     "url": "/avatars/library/anime/the-apothecary-diaries-gyokuyou.webp"
+    },
+    {
+     "id": "anime-tengoku-daimakyo-kiruko",
+     "name": "Kiruko",
+     "series": "Tengoku Daimakyo",
+     "url": "/avatars/library/anime/tengoku-daimakyo-kiruko.webp"
+    },
+    {
+     "id": "anime-tengoku-daimakyo-maru",
+     "name": "Maru",
+     "series": "Tengoku Daimakyo",
+     "url": "/avatars/library/anime/tengoku-daimakyo-maru.webp"
+    },
+    {
+     "id": "anime-tengoku-daimakyo-mimihime",
+     "name": "Mimihime",
+     "series": "Tengoku Daimakyo",
+     "url": "/avatars/library/anime/tengoku-daimakyo-mimihime.webp"
+    },
+    {
+     "id": "anime-tengoku-daimakyo-shiro",
+     "name": "Shiro",
+     "series": "Tengoku Daimakyo",
+     "url": "/avatars/library/anime/tengoku-daimakyo-shiro.webp"
+    },
+    {
+     "id": "anime-tengoku-daimakyo-robin-inazaki",
+     "name": "Robin Inazaki",
+     "series": "Tengoku Daimakyo",
+     "url": "/avatars/library/anime/tengoku-daimakyo-robin-inazaki.webp"
+    }
+   ]
+  },
+  {
+   "id": "valorant",
+   "label": "Valorant",
+   "source": "valorant-api.com",
+   "items": [
+    {
+     "id": "valorant-astra",
+     "name": "Astra",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/astra.webp"
+    },
+    {
+     "id": "valorant-breach",
+     "name": "Breach",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/breach.webp"
+    },
+    {
+     "id": "valorant-brimstone",
+     "name": "Brimstone",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/brimstone.webp"
+    },
+    {
+     "id": "valorant-chamber",
+     "name": "Chamber",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/chamber.webp"
+    },
+    {
+     "id": "valorant-clove",
+     "name": "Clove",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/clove.webp"
+    },
+    {
+     "id": "valorant-cypher",
+     "name": "Cypher",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/cypher.webp"
+    },
+    {
+     "id": "valorant-deadlock",
+     "name": "Deadlock",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/deadlock.webp"
+    },
+    {
+     "id": "valorant-fade",
+     "name": "Fade",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/fade.webp"
+    },
+    {
+     "id": "valorant-gekko",
+     "name": "Gekko",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/gekko.webp"
+    },
+    {
+     "id": "valorant-harbor",
+     "name": "Harbor",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/harbor.webp"
+    },
+    {
+     "id": "valorant-iso",
+     "name": "Iso",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/iso.webp"
+    },
+    {
+     "id": "valorant-jett",
+     "name": "Jett",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/jett.webp"
+    },
+    {
+     "id": "valorant-kay-o",
+     "name": "KAY/O",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/kay-o.webp"
+    },
+    {
+     "id": "valorant-killjoy",
+     "name": "Killjoy",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/killjoy.webp"
+    },
+    {
+     "id": "valorant-miks",
+     "name": "Miks",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/miks.webp"
+    },
+    {
+     "id": "valorant-neon",
+     "name": "Neon",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/neon.webp"
+    },
+    {
+     "id": "valorant-omen",
+     "name": "Omen",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/omen.webp"
+    },
+    {
+     "id": "valorant-phoenix",
+     "name": "Phoenix",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/phoenix.webp"
+    },
+    {
+     "id": "valorant-raze",
+     "name": "Raze",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/raze.webp"
+    },
+    {
+     "id": "valorant-reyna",
+     "name": "Reyna",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/reyna.webp"
+    },
+    {
+     "id": "valorant-sage",
+     "name": "Sage",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/sage.webp"
+    },
+    {
+     "id": "valorant-skye",
+     "name": "Skye",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/skye.webp"
+    },
+    {
+     "id": "valorant-sova",
+     "name": "Sova",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/sova.webp"
+    },
+    {
+     "id": "valorant-tejo",
+     "name": "Tejo",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/tejo.webp"
+    },
+    {
+     "id": "valorant-veto",
+     "name": "Veto",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/veto.webp"
+    },
+    {
+     "id": "valorant-viper",
+     "name": "Viper",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/viper.webp"
+    },
+    {
+     "id": "valorant-vyse",
+     "name": "Vyse",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/vyse.webp"
+    },
+    {
+     "id": "valorant-waylay",
+     "name": "Waylay",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/waylay.webp"
+    },
+    {
+     "id": "valorant-yoru",
+     "name": "Yoru",
+     "series": "Valorant",
+     "url": "/avatars/library/valorant/yoru.webp"
+    }
+   ]
+  },
+  {
+   "id": "lol",
+   "label": "League of Legends",
+   "source": "Riot Data Dragon",
+   "items": [
+    {
+     "id": "lol-ahri",
+     "name": "Ahri",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/ahri.webp"
+    },
+    {
+     "id": "lol-jinx",
+     "name": "Jinx",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/jinx.webp"
+    },
+    {
+     "id": "lol-yasuo",
+     "name": "Yasuo",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/yasuo.webp"
+    },
+    {
+     "id": "lol-yone",
+     "name": "Yone",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/yone.webp"
+    },
+    {
+     "id": "lol-lux",
+     "name": "Lux",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/lux.webp"
+    },
+    {
+     "id": "lol-ezreal",
+     "name": "Ezreal",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/ezreal.webp"
+    },
+    {
+     "id": "lol-thresh",
+     "name": "Thresh",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/thresh.webp"
+    },
+    {
+     "id": "lol-leesin",
+     "name": "Lee Sin",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/leesin.webp"
+    },
+    {
+     "id": "lol-kaisa",
+     "name": "Kai'Sa",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/kaisa.webp"
+    },
+    {
+     "id": "lol-akali",
+     "name": "Akali",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/akali.webp"
+    },
+    {
+     "id": "lol-zed",
+     "name": "Zed",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/zed.webp"
+    },
+    {
+     "id": "lol-vi",
+     "name": "Vi",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/vi.webp"
+    },
+    {
+     "id": "lol-caitlyn",
+     "name": "Caitlyn",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/caitlyn.webp"
+    },
+    {
+     "id": "lol-ekko",
+     "name": "Ekko",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/ekko.webp"
+    },
+    {
+     "id": "lol-viego",
+     "name": "Viego",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/viego.webp"
+    },
+    {
+     "id": "lol-seraphine",
+     "name": "Séraphine",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/seraphine.webp"
+    },
+    {
+     "id": "lol-missfortune",
+     "name": "Miss Fortune",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/missfortune.webp"
+    },
+    {
+     "id": "lol-katarina",
+     "name": "Katarina",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/katarina.webp"
+    },
+    {
+     "id": "lol-darius",
+     "name": "Darius",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/darius.webp"
+    },
+    {
+     "id": "lol-garen",
+     "name": "Garen",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/garen.webp"
+    },
+    {
+     "id": "lol-teemo",
+     "name": "Teemo",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/teemo.webp"
+    },
+    {
+     "id": "lol-sett",
+     "name": "Sett",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/sett.webp"
+    },
+    {
+     "id": "lol-pyke",
+     "name": "Pyke",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/pyke.webp"
+    },
+    {
+     "id": "lol-senna",
+     "name": "Senna",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/senna.webp"
+    },
+    {
+     "id": "lol-lucian",
+     "name": "Lucian",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/lucian.webp"
+    },
+    {
+     "id": "lol-riven",
+     "name": "Riven",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/riven.webp"
+    },
+    {
+     "id": "lol-irelia",
+     "name": "Irelia",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/irelia.webp"
+    },
+    {
+     "id": "lol-aatrox",
+     "name": "Aatrox",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/aatrox.webp"
+    },
+    {
+     "id": "lol-sylas",
+     "name": "Sylas",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/sylas.webp"
+    },
+    {
+     "id": "lol-morgana",
+     "name": "Morgana",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/morgana.webp"
+    },
+    {
+     "id": "lol-leona",
+     "name": "Leona",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/leona.webp"
+    },
+    {
+     "id": "lol-aphelios",
+     "name": "Aphelios",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/aphelios.webp"
+    },
+    {
+     "id": "lol-samira",
+     "name": "Samira",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/samira.webp"
+    },
+    {
+     "id": "lol-gwen",
+     "name": "Gwen",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/gwen.webp"
+    },
+    {
+     "id": "lol-briar",
+     "name": "Briar",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/briar.webp"
+    },
+    {
+     "id": "lol-hwei",
+     "name": "Hwei",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/hwei.webp"
+    },
+    {
+     "id": "lol-smolder",
+     "name": "Smolder",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/smolder.webp"
+    },
+    {
+     "id": "lol-ambessa",
+     "name": "Ambessa",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/ambessa.webp"
+    },
+    {
+     "id": "lol-mel",
+     "name": "Mel",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/mel.webp"
+    },
+    {
+     "id": "lol-jhin",
+     "name": "Jhin",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/jhin.webp"
+    },
+    {
+     "id": "lol-kayn",
+     "name": "Kayn",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/kayn.webp"
+    },
+    {
+     "id": "lol-evelynn",
+     "name": "Evelynn",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/evelynn.webp"
+    },
+    {
+     "id": "lol-nami",
+     "name": "Nami",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/nami.webp"
+    },
+    {
+     "id": "lol-sona",
+     "name": "Sona",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/sona.webp"
+    },
+    {
+     "id": "lol-lulu",
+     "name": "Lulu",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/lulu.webp"
+    },
+    {
+     "id": "lol-vex",
+     "name": "Vex",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/vex.webp"
+    },
+    {
+     "id": "lol-zoe",
+     "name": "Zoé",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/zoe.webp"
+    },
+    {
+     "id": "lol-neeko",
+     "name": "Neeko",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/neeko.webp"
+    },
+    {
+     "id": "lol-draven",
+     "name": "Draven",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/draven.webp"
+    },
+    {
+     "id": "lol-warwick",
+     "name": "Warwick",
+     "series": "League of Legends",
+     "url": "/avatars/library/lol/warwick.webp"
+    }
+   ]
+  },
+  {
+   "id": "pokemon",
+   "label": "Pokémon",
+   "source": "PokeAPI (artwork officiel)",
+   "items": [
+    {
+     "id": "pokemon-pikachu",
+     "name": "Pikachu",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/pikachu.webp"
+    },
+    {
+     "id": "pokemon-dracaufeu",
+     "name": "Dracaufeu",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/dracaufeu.webp"
+    },
+    {
+     "id": "pokemon-mewtwo",
+     "name": "Mewtwo",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/mewtwo.webp"
+    },
+    {
+     "id": "pokemon-ectoplasma",
+     "name": "Ectoplasma",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/ectoplasma.webp"
+    },
+    {
+     "id": "pokemon-lucario",
+     "name": "Lucario",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/lucario.webp"
+    },
+    {
+     "id": "pokemon-noctali",
+     "name": "Noctali",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/noctali.webp"
+    },
+    {
+     "id": "pokemon-evoli",
+     "name": "Évoli",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/evoli.webp"
+    },
+    {
+     "id": "pokemon-amphinobi",
+     "name": "Amphinobi",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/amphinobi.webp"
+    },
+    {
+     "id": "pokemon-rayquaza",
+     "name": "Rayquaza",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/rayquaza.webp"
+    },
+    {
+     "id": "pokemon-gardevoir",
+     "name": "Gardevoir",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/gardevoir.webp"
+    },
+    {
+     "id": "pokemon-ronflex",
+     "name": "Ronflex",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/ronflex.webp"
+    },
+    {
+     "id": "pokemon-mew",
+     "name": "Mew",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/mew.webp"
+    },
+    {
+     "id": "pokemon-lugia",
+     "name": "Lugia",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/lugia.webp"
+    },
+    {
+     "id": "pokemon-ho-oh",
+     "name": "Ho-Oh",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/ho-oh.webp"
+    },
+    {
+     "id": "pokemon-carchacrok",
+     "name": "Carchacrok",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/carchacrok.webp"
+    },
+    {
+     "id": "pokemon-nymphali",
+     "name": "Nymphali",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/nymphali.webp"
+    },
+    {
+     "id": "pokemon-mentali",
+     "name": "Mentali",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/mentali.webp"
+    },
+    {
+     "id": "pokemon-givrali",
+     "name": "Givrali",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/givrali.webp"
+    },
+    {
+     "id": "pokemon-phyllali",
+     "name": "Phyllali",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/phyllali.webp"
+    },
+    {
+     "id": "pokemon-voltali",
+     "name": "Voltali",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/voltali.webp"
+    },
+    {
+     "id": "pokemon-aquali",
+     "name": "Aquali",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/aquali.webp"
+    },
+    {
+     "id": "pokemon-pyroli",
+     "name": "Pyroli",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/pyroli.webp"
+    },
+    {
+     "id": "pokemon-darkrai",
+     "name": "Darkrai",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/darkrai.webp"
+    },
+    {
+     "id": "pokemon-carapuce",
+     "name": "Carapuce",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/carapuce.webp"
+    },
+    {
+     "id": "pokemon-bulbizarre",
+     "name": "Bulbizarre",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/bulbizarre.webp"
+    },
+    {
+     "id": "pokemon-salameche",
+     "name": "Salamèche",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/salameche.webp"
+    },
+    {
+     "id": "pokemon-mimiqui",
+     "name": "Mimiqui",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/mimiqui.webp"
+    },
+    {
+     "id": "pokemon-lanssorien",
+     "name": "Lanssorien",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/lanssorien.webp"
+    },
+    {
+     "id": "pokemon-dracolosse",
+     "name": "Dracolosse",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/dracolosse.webp"
+    },
+    {
+     "id": "pokemon-brasegali",
+     "name": "Braségali",
+     "series": "Pokémon",
+     "url": "/avatars/library/pokemon/brasegali.webp"
+    }
+   ]
+  }
+ ]
+}

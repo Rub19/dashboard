@@ -24,6 +24,7 @@ import UIProvider from "@/components/UIProvider";
 import NotificationBridge from "@/components/NotificationBridge";
 import BootProvider from "@/components/BootProvider";
 import PublicProfileProvider from "@/components/PublicProfileProvider";
+import RawKeySync from "@/components/RawKeySync";
 import { UploadQueueProvider } from "@/lib/upload-queue";
 import { CHUNK_RECOVERY_SCRIPT } from "@/lib/chunk-recovery";
 
@@ -192,6 +193,7 @@ export default function RootLayout({
                           <OfflineIndicator />
                           <ServiceWorker />
                           <NotificationBridge />
+                          <RawKeySync />
                           <VersionUpdateToast />
                           <OAuthHandler />
                           <UploadQueueProvider>

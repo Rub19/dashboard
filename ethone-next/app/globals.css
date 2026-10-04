@@ -1696,6 +1696,10 @@ select[data-haptic-state="released"],
   to { opacity: 1; transform: none; }
 }
 .pop-in { animation: pop-in 0.18s var(--ease-snap) backwards; transform-origin: top; }
+/* Vignettes de la bibliothèque d'avatars : apparition en cascade (délai posé en ligne, plafonné). */
+@keyframes avatar-tile-in { from { opacity: 0; transform: translateY(6px) scale(0.94); } }
+.avatar-tile-in { animation: avatar-tile-in 0.32s var(--ease-snap) backwards; }
+@media (prefers-reduced-motion: reduce) { .avatar-tile-in { animation: none; } }
 @media (prefers-reduced-motion: reduce) { .pop-in { animation: none; } }
 
 /* Generic: direct children rise in sequence. */

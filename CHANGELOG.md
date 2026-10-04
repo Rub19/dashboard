@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.53.0 — 2026-10-04
+
+**Nouveau profil, nouvelle bibliothèque d'avatars, synchronisation en direct**
+
+- Page Profil refaite de zéro : carte d'identité animée, onglets Profil, Statut, Apparence et Compte, statut personnalisé (emoji + texte), cadres d'avatar et fonds de carte.
+- Bibliothèque d'avatars refaite : 530 avatars nets et hébergés sur ETHONE (Netflix, Anime, Valorant, League of Legends, Pokémon, ETHONE Originals), recherche, filtres par série, favoris et récents.
+- Le profil (avatar, nom, pseudo, bio, statut, cadre, fond) est synchronisé en direct sur tous vos appareils.
+- Aussi synchronisés : espace actif, widgets épinglés et favoris, réglages des widgets, verrouillage de l'accueil, favoris du Marketplace, préréglages et historique Focus.
+- Corrigé : choisir un avatar de la bibliothèque n'était jamais enregistré sur le compte.
+- Retiré : réglages de personnalisation et « préférences inférées » qui n'avaient aucun effet.
+
 ## v1.52.16 — 2026-10-04
 
 **Vrais écrans de chargement sur 8 pages Discord**

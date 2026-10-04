@@ -42889,6 +42889,67 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_16_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_16_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_16_de);
 
+const v1_53_0_fr: ChangelogEntry = {
+  version: "v1.53.0",
+  date: "2026-10-04",
+  title: "Nouveau profil, nouvelle bibliothèque d'avatars, synchronisation en direct",
+  items: [
+    "Page Profil refaite de zéro : carte d'identité animée, onglets Profil, Statut, Apparence et Compte, statut personnalisé (emoji + texte), cadres d'avatar et fonds de carte.",
+    "Bibliothèque d'avatars refaite : 530 avatars nets et hébergés sur ETHONE (Netflix, Anime, Valorant, League of Legends, Pokémon, ETHONE Originals), recherche, filtres par série, favoris et récents.",
+    "Le profil (avatar, nom, pseudo, bio, statut, cadre, fond) est synchronisé en direct sur tous vos appareils.",
+    "Aussi synchronisés : espace actif, widgets épinglés et favoris, réglages des widgets, verrouillage de l'accueil, favoris du Marketplace, préréglages et historique Focus.",
+    "Corrigé : choisir un avatar de la bibliothèque n'était jamais enregistré sur le compte.",
+    "Retiré : réglages de personnalisation et « préférences inférées » qui n'avaient aucun effet.",
+  ],
+};
+
+const v1_53_0_en: ChangelogEntry = {
+  version: "v1.53.0",
+  date: "2026-10-04",
+  title: "New profile, new avatar library, live sync",
+  items: [
+    "Profile page rebuilt from scratch: animated identity card, Profile, Status, Appearance and Account tabs, custom status (emoji + text), avatar frames and card backgrounds.",
+    "Avatar library rebuilt: 530 sharp avatars hosted on ETHONE (Netflix, Anime, Valorant, League of Legends, Pokémon, ETHONE Originals), search, series filters, favorites and recents.",
+    "Your profile (avatar, name, username, bio, status, frame, background) syncs live across all your devices.",
+    "Also synced: active workspace, pinned and favorite widgets, widget settings, home lock, Marketplace favorites, presets and Focus history.",
+    "Fixed: picking a library avatar was never saved to the account.",
+    "Removed: personalization settings and \"inferred preferences\" that had no effect.",
+  ],
+};
+
+const v1_53_0_es: ChangelogEntry = {
+  version: "v1.53.0",
+  date: "2026-10-04",
+  title: "Nuevo perfil, nueva biblioteca de avatares, sincronización en directo",
+  items: [
+    "Página de perfil rehecha desde cero: tarjeta de identidad animada, pestañas Perfil, Estado, Apariencia y Cuenta, estado personalizado (emoji + texto), marcos de avatar y fondos.",
+    "Biblioteca de avatares rehecha: 530 avatares nítidos alojados en ETHONE (Netflix, Anime, Valorant, League of Legends, Pokémon, ETHONE Originals), búsqueda, filtros por serie, favoritos y recientes.",
+    "Tu perfil (avatar, nombre, usuario, bio, estado, marco, fondo) se sincroniza en directo en todos tus dispositivos.",
+    "También sincronizados: espacio activo, widgets fijados y favoritos, ajustes de widgets, bloqueo de inicio, favoritos del Marketplace, preajustes e historial Focus.",
+    "Corregido: elegir un avatar de la biblioteca nunca se guardaba en la cuenta.",
+    "Eliminado: ajustes de personalización y «preferencias inferidas» que no tenían efecto.",
+  ],
+};
+
+const v1_53_0_de: ChangelogEntry = {
+  version: "v1.53.0",
+  date: "2026-10-04",
+  title: "Neues Profil, neue Avatar-Bibliothek, Live-Synchronisierung",
+  items: [
+    "Profilseite komplett neu: animierte Identitätskarte, Tabs Profil, Status, Darstellung und Konto, eigener Status (Emoji + Text), Avatar-Rahmen und Kartenhintergründe.",
+    "Avatar-Bibliothek neu: 530 scharfe, auf ETHONE gehostete Avatare (Netflix, Anime, Valorant, League of Legends, Pokémon, ETHONE Originals), Suche, Serienfilter, Favoriten und zuletzt verwendet.",
+    "Dein Profil (Avatar, Name, Benutzername, Bio, Status, Rahmen, Hintergrund) wird live auf allen Geräten synchronisiert.",
+    "Ebenfalls synchronisiert: aktiver Arbeitsbereich, angeheftete und favorisierte Widgets, Widget-Einstellungen, Startseiten-Sperre, Marketplace-Favoriten, Presets und Focus-Verlauf.",
+    "Behoben: ein Avatar aus der Bibliothek wurde nie im Konto gespeichert.",
+    "Entfernt: Personalisierungsoptionen und „abgeleitete Vorlieben“ ohne Wirkung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_53_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_53_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_53_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_53_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

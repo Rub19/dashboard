@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { Icon } from "@/lib/icons";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import Button from "@/components/ui/Button";
-import AvatarPickerModal from "@/components/AvatarPickerModal";
+import AvatarLibrary from "@/components/profile/AvatarLibrary";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 
 function maskId(id: string) {
@@ -208,7 +208,7 @@ export default function UserProfileCard({
       </div>
 
       {/* Avatar Picker Gallery Modal */}
-      <AvatarPickerModal
+      <AvatarLibrary
         isOpen={isAvatarPickerOpen}
         onClose={() => setIsAvatarPickerOpen(false)}
       />

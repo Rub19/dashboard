@@ -8,6 +8,7 @@ jest.mock("@/lib/supabase", () => ({
       onAuthStateChange: () => ({ data: { subscription: { unsubscribe() {} } } }),
     },
     channel: () => ({ on() { return this; }, subscribe() {}, unsubscribe() {} }),
+    removeChannel: () => Promise.resolve(),
   },
 }));
 

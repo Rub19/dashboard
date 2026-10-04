@@ -18,7 +18,7 @@ import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import ChangelogModal from "@/components/ChangelogModal";
 
 // Lazy: only loaded once the user opens the avatar picker
-const AvatarPickerModal = dynamic(() => import("@/components/AvatarPickerModal"), {
+const AvatarLibrary = dynamic(() => import("@/components/profile/AvatarLibrary"), {
   ssr: false,
 });
 import {
@@ -371,7 +371,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
         versionLabel={VERSION_LABEL}
       />
 
-      <AvatarPickerModal
+      <AvatarLibrary
         isOpen={isAvatarPickerOpen}
         onClose={() => setIsAvatarPickerOpen(false)}
       />

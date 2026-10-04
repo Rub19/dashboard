@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useAuth } from "@/components/AuthProvider";
-import { useProfile } from "@/lib/hooks/useProfile";
-import { useIdentity } from "@/lib/identity";
+import { useAccountProfile } from "@/lib/profile/account-profile";
 
 export type UserIdentity = {
   displayName: string;
@@ -17,380 +16,55 @@ export type UserIdentity = {
   verified?: boolean;
 };
 
-/**
- * Returns true if an avatar URL is an external OAuth avatar (Google or Discord)
- * that should NOT be used for the core ETHONE profile picture.
- */
+/** Les avatars Google / Discord du fournisseur de connexion ne servent pas de photo de profil ETHONE. */
 function isExternalOAuthAvatar(url?: string | null): boolean {
   if (!url || typeof url !== "string") return true;
-  const lower = url.toLowerCase();
-  return (
-    lower.includes("googleusercontent.com") ||
-    lower.includes("google.com") ||
-    lower.includes("discordapp.com") ||
-    lower.includes("cdn.discordapp.com") ||
-    lower.includes("discord.com") ||
-    lower.includes("discordapp.net")
-  );
+  return /googleusercontent\.com|google\.com|discordapp\.(com|net)|discord\.com/i.test(url);
 }
 
-const GENERIC_DISPLAY_NAMES = new Set([
-  "invité",
-  "guest",
-  "personnel",
-  "personal",
-  "compte",
-  "utilisateur",
-  "user",
-  "default",
-  "profil",
-  "profil principal",
-]);
+const GENERIC_DISPLAY_NAMES = new Set(["invité", "guest", "personnel", "personal", "compte", "utilisateur", "user", "default", "profil", "profil principal"]);
 
-function isGenericDisplayName(name?: unknown): boolean {
-  if (!name || typeof name !== "string") return true;
-  const trimmed = name.trim();
-  if (!trimmed) return true;
-  return GENERIC_DISPLAY_NAMES.has(trimmed.toLowerCase());
-}
-
-function firstNonGeneric(...names: Array<unknown>): string | undefined {
+function firstNonGeneric(...names: unknown[]): string | undefined {
   for (const name of names) {
-    if (!isGenericDisplayName(name)) return (name as string).trim();
+    if (typeof name === "string" && name.trim() && !GENERIC_DISPLAY_NAMES.has(name.trim().toLowerCase())) return name.trim();
   }
 }
 
-export function resolveStoredDisplayName(userId?: string | null): string {
-  if (typeof window === "undefined") return "";
-  const effectiveId = userId || "local";
-
-  // 1. Try parsed identity objects (authoritative full identity)
-  const identityKeys = [
-    `ethone:identity:${effectiveId}`,
-    "ethone:identity:current",
-    "ethone:identity:local",
-  ];
-  for (const k of identityKeys) {
-    try {
-      const raw = localStorage.getItem(k);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === "object") {
-          const dn = parsed.display_name || parsed.displayName;
-          if (dn && !isGenericDisplayName(dn)) return String(dn).trim();
-          const un = parsed.username;
-          if (un && !isGenericDisplayName(un)) return String(un).trim();
-        }
-      }
-    } catch {}
-  }
-
-  // 2. Try direct individual keys
-  const directKeys = [
-    userId ? `ethone_user_name:${userId}` : null,
-    userId ? `ethone_user_username:${userId}` : null,
-    "ethone_user_name:local",
-    "ethone_user_username:local",
-    "ethone:user_name",
-    "ethone:user:name",
-    "ethone:user:username",
-    "ethone_user_name:guest",
-    "ethone_active_profile_name",
-  ];
-  for (const k of directKeys) {
-    if (!k) continue;
-    try {
-      const val = localStorage.getItem(k);
-      if (val && !isGenericDisplayName(val)) return val.trim();
-    } catch {}
-  }
-
-  // 3. Try ethone_local_profiles
-  try {
-    const rawProfiles = localStorage.getItem("ethone_local_profiles");
-    if (rawProfiles) {
-      const parsed = JSON.parse(rawProfiles);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        const activeId = localStorage.getItem("ethone_active_profile_id");
-        const profile = (parsed as Array<{ id?: string; display_name?: string; displayName?: string; name?: string }>).find((p) => p.id === activeId) || parsed[0];
-        const name = profile?.display_name || profile?.displayName || profile?.name;
-        if (name && !isGenericDisplayName(name)) return String(name).trim();
-      }
-    }
-  } catch {}
-
-  return "";
-}
-
-export function resolveStoredUsername(userId?: string | null): string {
-  if (typeof window === "undefined") return "";
-  const effectiveId = userId || "local";
-
-  const identityKeys = [
-    `ethone:identity:${effectiveId}`,
-    "ethone:identity:current",
-    "ethone:identity:local",
-  ];
-  for (const k of identityKeys) {
-    try {
-      const raw = localStorage.getItem(k);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === "object") {
-          const un = parsed.username;
-          if (un && !isGenericDisplayName(un)) return String(un).trim().replace(/^@+/, "");
-        }
-      }
-    } catch {}
-  }
-
-  const directKeys = [
-    userId ? `ethone_user_username:${userId}` : null,
-    "ethone_user_username:local",
-    "ethone:user:username",
-    "ethone:user_username",
-  ];
-  for (const k of directKeys) {
-    if (!k) continue;
-    try {
-      const val = localStorage.getItem(k);
-      if (val && !isGenericDisplayName(val)) return val.trim().replace(/^@+/, "");
-    } catch {}
-  }
-
-  return "";
-}
-
-export function resolveStoredAvatar(userId?: string | null): string {
-  if (typeof window === "undefined") return "";
-  const effectiveId = userId || "local";
-
-  // 1. Try parsed identity objects
-  const identityKeys = [
-    `ethone:identity:${effectiveId}`,
-    "ethone:identity:current",
-    "ethone:identity:local",
-  ];
-  for (const k of identityKeys) {
-    try {
-      const raw = localStorage.getItem(k);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === "object") {
-          const av = parsed.avatar_url || parsed.avatarUrl;
-          if (av && !isExternalOAuthAvatar(av)) return String(av).trim();
-        }
-      }
-    } catch {}
-  }
-
-  // 2. Try direct individual keys
-  const directKeys = [
-    userId ? `ethone_custom_avatar:${userId}` : null,
-    userId ? `ethone:custom:avatar:${userId}` : null,
-    userId ? `ethone_user_avatar:${userId}` : null,
-    "ethone_custom_avatar:local",
-    "ethone:custom:avatar:local",
-    "ethone_user_avatar:local",
-    "ethone_custom_avatar",
-    "ethone:custom:avatar",
-    "ethone_user_avatar",
-  ];
-  for (const k of directKeys) {
-    if (!k) continue;
-    try {
-      const val = localStorage.getItem(k);
-      if (val && !isExternalOAuthAvatar(val)) return val.trim();
-    } catch {}
-  }
-
-  return "";
-}
-
+/**
+ * Identité affichée partout (barre latérale, menu, tableau de bord…). Elle vient du profil du compte, synchronisé en
+ * direct entre appareils (lib/profile/account-profile) ; les métadonnées du compte servent seulement tant que le profil
+ * n'a jamais été enregistré.
+ */
 export function useUserIdentity(): UserIdentity {
   const { user } = useAuth();
-  const { profile: publicProfile } = useProfile();
-  const { identity } = useIdentity();
+  const { profile } = useAccountProfile();
+  const meta = (user?.user_metadata || {}) as Record<string, unknown>;
+  const emailName = user?.email ? user.email.split("@")[0] : "";
 
-  const userId = user?.id;
-  const effectiveUserId = userId || "local";
-
-  const [cachedName, setCachedName] = useState<string>(() => resolveStoredDisplayName(userId));
-  const [cachedUsername, setCachedUsername] = useState<string>(() => resolveStoredUsername(userId));
-  const [cachedAvatar, setCachedAvatar] = useState<string>(() => resolveStoredAvatar(userId));
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const updateFromStorage = (e?: Event) => {
-      try {
-        if (e && (e as CustomEvent).detail) {
-          const d = (e as CustomEvent).detail;
-          const detailName = d.display_name || d.displayName;
-          if (detailName && !isGenericDisplayName(detailName)) {
-            setCachedName(String(detailName).trim());
-          }
-          const detailUsername = d.username;
-          if (detailUsername && !isGenericDisplayName(detailUsername)) {
-            setCachedUsername(String(detailUsername).trim().replace(/^@+/, ""));
-          }
-          const detailAvatar = d.avatar_url || d.avatarUrl;
-          if (detailAvatar && !isExternalOAuthAvatar(detailAvatar)) {
-            setCachedAvatar(String(detailAvatar).trim());
-          }
-        }
-
-        const name = resolveStoredDisplayName(userId);
-        if (name) setCachedName(name);
-
-        const un = resolveStoredUsername(userId);
-        if (un) setCachedUsername(un);
-
-        const avatar = resolveStoredAvatar(userId);
-        if (avatar) setCachedAvatar(avatar);
-      } catch {}
-    };
-
-    updateFromStorage();
-    window.addEventListener("ethone:identity:update", updateFromStorage);
-    window.addEventListener("storage", updateFromStorage);
-
-    return () => {
-      window.removeEventListener("ethone:identity:update", updateFromStorage);
-      window.removeEventListener("storage", updateFromStorage);
-    };
-  }, [userId, user?.email]);
-
-  const meta = useMemo(() => (user?.user_metadata || {}) as Record<string, unknown>, [user?.user_metadata]);
-
-  const customFromMeta = firstNonGeneric(
-    meta.custom_display_name,
-    meta.display_name,
-    meta.username,
-    meta.full_name,
-    meta.name
+  const displayName =
+    firstNonGeneric(profile.displayName, meta.custom_display_name, meta.display_name, meta.full_name, meta.name, profile.username, meta.username) ||
+    emailName ||
+    "Personnel";
+  const username = (firstNonGeneric(profile.username, meta.username, meta.user_name, meta.preferred_username) || emailName || "utilisateur").replace(/^@+/, "");
+  const avatarUrl = [profile.avatarUrl, meta.custom_avatar_url, meta.avatar_url].find(
+    (u): u is string => typeof u === "string" && !isExternalOAuthAvatar(u),
   );
 
-  // Resolution of display name strictly isolated per user / profile, prioritizing real Supabase/profile data
-  const displayName = useMemo(() => {
-    const identityName = identity?.display_name && !isGenericDisplayName(identity.display_name)
-      ? identity.display_name.trim()
-      : "";
-    const publicProfName = publicProfile?.display_name && !isGenericDisplayName(publicProfile.display_name)
-      ? publicProfile.display_name.trim()
-      : "";
-    const metaName = (customFromMeta as string) && !isGenericDisplayName(customFromMeta)
-      ? (customFromMeta as string).trim()
-      : "";
-    const directSaved = cachedName && !isGenericDisplayName(cachedName) ? cachedName.trim() : "";
-    const identityUsername = identity?.username && !isGenericDisplayName(identity.username)
-      ? identity.username.trim()
-      : "";
-    const publicProfUsername = publicProfile?.username && !isGenericDisplayName(publicProfile.username)
-      ? publicProfile.username.trim()
-      : "";
-    const emailName = user?.email ? user.email.split("@")[0] : "";
-
-    const candidate =
-      identityName ||
-      publicProfName ||
-      metaName ||
-      directSaved ||
-      identityUsername ||
-      publicProfUsername ||
-      emailName ||
-      "Personnel";
-
-    return candidate;
-  }, [identity?.display_name, identity?.username, publicProfile?.display_name, publicProfile?.username, customFromMeta, cachedName, user?.email]);
-
-  // Resolution of username
-  const username = useMemo(() => {
-    const identityUsername = identity?.username && !isGenericDisplayName(identity.username)
-      ? identity.username.trim()
-      : "";
-    const publicProfUsername = publicProfile?.username && !isGenericDisplayName(publicProfile.username)
-      ? publicProfile.username.trim()
-      : "";
-    const metaUsername = meta.username && !isGenericDisplayName(meta.username)
-      ? String(meta.username).trim()
-      : "";
-    const directSavedUser = cachedUsername && !isGenericDisplayName(cachedUsername)
-      ? cachedUsername.trim()
-      : "";
-    const emailName = user?.email ? user.email.split("@")[0] : "";
-
-    const candidate =
-      identityUsername ||
-      publicProfUsername ||
-      metaUsername ||
-      directSavedUser ||
-      emailName ||
-      "utilisateur";
-
-    return candidate.replace(/^@+/, "");
-  }, [identity?.username, publicProfile?.username, meta.username, cachedUsername, user?.email]);
-
-  // Resolution of avatar URL: custom user uploaded avatar on ETHONE only (strictly excluding Google & Discord avatars!)
-  const candidateAvatars = [
-    identity?.avatar_url,
-    publicProfile?.avatar_url,
-    typeof meta.custom_avatar_url === "string" ? meta.custom_avatar_url : undefined,
-    cachedAvatar,
-    typeof meta.avatar_url === "string" ? meta.avatar_url : undefined,
-  ];
-
-  const avatarUrl = candidateAvatars.find((url) => url && !isExternalOAuthAvatar(url)) || undefined;
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      try {
-        if (displayName && !isGenericDisplayName(displayName)) {
-          localStorage.setItem(`ethone_user_name:${effectiveUserId}`, displayName);
-          localStorage.setItem(`ethone:user_name`, displayName);
-        }
-        if (username && !isGenericDisplayName(username)) {
-          localStorage.setItem(`ethone_user_username:${effectiveUserId}`, username);
-          localStorage.setItem(`ethone:user:username`, username);
-        }
-        if (avatarUrl && !isExternalOAuthAvatar(avatarUrl)) {
-          localStorage.setItem(`ethone_custom_avatar:${effectiveUserId}`, avatarUrl);
-          localStorage.setItem(`ethone_user_avatar:${effectiveUserId}`, avatarUrl);
-          localStorage.setItem(`ethone_custom_avatar`, avatarUrl);
-          localStorage.setItem(`ethone_user_avatar`, avatarUrl);
-        }
-      } catch {
-        // ignore
-      }
-    }
-  }, [effectiveUserId, displayName, username, avatarUrl]);
-
-  const email = user?.email || "";
-
   const initials = useMemo(() => {
-    if (!displayName || displayName === "Invité" || displayName === "Personnel") {
-      if (username && username !== "utilisateur") {
-        return username.slice(0, 2).toUpperCase();
-      }
-      return "P";
-    }
     const parts = displayName.trim().split(/\s+/);
-    if (parts.length >= 2 && parts[0] && parts[1]) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
-    }
+    if (parts.length >= 2 && parts[0] && parts[1]) return (parts[0][0] + parts[1][0]).toUpperCase();
     return displayName.slice(0, 2).toUpperCase() || "P";
-  }, [displayName, username]);
+  }, [displayName]);
 
   return {
     displayName,
     username,
     avatarUrl,
-    email,
+    email: user?.email || "",
     initials,
     isGuest: !user,
-    bio: identity?.bio || "",
-    status: identity?.presence_status || "online",
-    verified: Boolean(identity?.badge_ids?.includes("verified")),
+    bio: profile.bio,
+    status: profile.presence,
+    verified: Boolean(user?.email_confirmed_at),
   };
 }
-

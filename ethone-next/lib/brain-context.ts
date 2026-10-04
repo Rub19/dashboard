@@ -36,7 +36,9 @@ export type BrainContext = {
   weather?: { condition?: string; temp?: number; city?: string };
   liveRecords?: Array<{ id: string; source: string; label: string; title: string; status: string }>;
   openTasks?: number;
+  openTaskTitles?: string[];
   todayEvents?: number;
+  todayEventTitles?: string[];
   focusMinutes?: number;
   focusActive?: boolean;
   focusPreset?: string;
@@ -75,13 +77,13 @@ const CORE_KEYS: (keyof BrainContext)[] = [
 ];
 
 const ROUTE_EXTRA_KEYS: Record<string, (keyof BrainContext)[]> = {
-  home: ["nowPlaying", "weather", "liveRecords", "openTasks", "todayEvents", "focusMinutes", "unread"],
-  brain: ["nowPlaying", "weather", "liveRecords", "openTasks", "todayEvents", "focusMinutes", "unread"],
-  tasks: ["openTasks", "todayEvents", "focusMinutes", "unread", "liveRecords"],
-  calendar: ["todayEvents", "weather", "liveRecords"],
+  home: ["nowPlaying", "weather", "liveRecords", "openTasks", "openTaskTitles", "todayEvents", "todayEventTitles", "focusMinutes", "unread"],
+  brain: ["nowPlaying", "weather", "liveRecords", "openTasks", "openTaskTitles", "todayEvents", "todayEventTitles", "focusMinutes", "unread"],
+  tasks: ["openTasks", "openTaskTitles", "todayEvents", "todayEventTitles", "focusMinutes", "unread", "liveRecords"],
+  calendar: ["todayEvents", "todayEventTitles", "weather", "liveRecords"],
   weather: ["weather", "liveRecords"],
   files: ["liveRecords"],
-  notes: ["openTasks", "unread", "liveRecords"],
+  notes: ["openTasks", "openTaskTitles", "unread", "liveRecords"],
   settings: ["language", "theme", "densityMode", "accentColor", "lowData", "performanceMode", "liveRecords"],
 };
 

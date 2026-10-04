@@ -1,6 +1,7 @@
 import type { Settings } from "@/lib/settings";
 import { fetchWeatherSafe } from "@/lib/weather-service";
 import { fetchWorker } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
 
 /**
  * Faits en direct donnés à Brain au moment de la question, à partir des mêmes sources que les pages d'ETHONE
@@ -90,5 +91,33 @@ export async function gatherLiveFacts(question: string, settings: Settings): Pro
       facts.push(lines.length ? `- ⚔️ Parties League of Legends récentes de ${name}#${tag} :\n${lines.join("\n")}` : `- ⚔️ Aucune partie LoL trouvée pour ${name}#${tag}.`);
     }
   }
+
+  const wantsHabits = /habitude|routine|streak|série|objectif du jour/.test(q);
+  if (wantsHabits) {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+      const userId = sessionData?.session?.user?.id;
+      if (userId) {
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const [habitsRes, completionsRes] = await Promise.all([
+          supabase.from("ethone_habits").select("id, name, emoji, target_per_week").eq("user_id", userId).eq("archived", false),
+          supabase.from("ethone_habit_completions").select("habit_id").eq("user_id", userId).eq("completed_on", todayStr),
+        ]);
+        const habits = (habitsRes.data as Array<{ id: string; name: string; emoji: string | null }>) || [];
+        const completedIds = new Set(((completionsRes.data as Array<{ habit_id: string }>) || []).map((c) => c.habit_id));
+        if (habits.length) {
+          const done = habits.filter((h) => completedIds.has(h.id));
+          const pending = habits.filter((h) => !completedIds.has(h.id));
+          const summary = `- 🎯 Habitudes du jour (${done.length}/${habits.length} faites) :\n` +
+            (done.length ? `  • Complétées : ${done.map((h) => `${h.emoji || ""} ${h.name}`.trim()).join(", ")}\n` : "") +
+            (pending.length ? `  • Restantes : ${pending.map((h) => `${h.emoji || ""} ${h.name}`.trim()).join(", ")}` : "  • Toutes vos habitudes du jour sont accomplies ! 🎉");
+          facts.push(summary.trim());
+        } else {
+          facts.push("- 🎯 Aucune habitude enregistrée dans ETHONE (page Habitudes).");
+        }
+      }
+    } catch {}
+  }
+
   return facts;
 }

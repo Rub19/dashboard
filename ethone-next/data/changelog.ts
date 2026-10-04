@@ -43931,6 +43931,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_11_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_11_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_11_de);
 
+const v1_55_12_fr: ChangelogEntry = {
+  version: "v1.55.12",
+  date: "2026-10-05",
+  title: "Brain AI : Contexte en direct enrichi (Tâches, Agenda et Habitudes)",
+  items: [
+    "Brain prend désormais en compte en temps réel les tâches ouvertes de l'utilisateur (titres des tâches en attente et nombre total) pour répondre avec précision sur ce qu'il lui reste à faire.",
+    "Intégration de l'agenda du jour avec les horaires précis des événements planifiés dans le contexte en direct de l'assistant IA.",
+    "Interrogation automatique des habitudes quotidiennes (table Supabase ethone_habits et complétions du jour) lorsque l'utilisateur pose une question sur ses routines, séries ou objectifs du jour.",
+    "Mise à jour automatique des instructions de Brain pour citer fidèlement ces données sans aucune hallucination.",
+  ],
+};
+
+const v1_55_12_en: ChangelogEntry = {
+  version: "v1.55.12",
+  date: "2026-10-05",
+  title: "Brain AI: Enriched Live Context (Tasks, Calendar and Habits)",
+  items: [
+    "Brain now takes into account real-time open tasks (pending task titles and total count) to provide precise answers on what remains to be done.",
+    "Integration of today's calendar events with their exact start times directly in the AI assistant's live context.",
+    "Automatic querying of daily habits (Supabase ethone_habits table and completions) when asking about routines, streaks, or today's goals.",
+    "Direct guidance for Brain to accurately reference live tasks, habits, and schedule without hallucinations.",
+  ],
+};
+
+const v1_55_12_es: ChangelogEntry = {
+  version: "v1.55.12",
+  date: "2026-10-05",
+  title: "Brain AI: Contexto en vivo enriquecido (Tareas, Calendario y Hábitos)",
+  items: [
+    "Brain ahora toma en cuenta las tareas pendientes en tiempo real (títulos y recuento total) para responder con exactitud sobre lo que queda por hacer.",
+    "Integración de la agenda del día con las horas exactas de los eventos planificados en el contexto en vivo del asistente.",
+    "Consulta automática de los hábitos diarios (tabla Supabase ethone_habits y registros del día) ante preguntas sobre rutinas, rachas u objetivos diarios.",
+    "Instrucciones directas para que Brain cite estas fuentes reales sin inventar información.",
+  ],
+};
+
+const v1_55_12_de: ChangelogEntry = {
+  version: "v1.55.12",
+  date: "2026-10-05",
+  title: "Brain AI: Angereichertes Live-Kontext (Aufgaben, Kalender und Gewohnheiten)",
+  items: [
+    "Brain berücksichtigt nun ausstehende Aufgaben in Echtzeit (Titel und Gesamtanzahl), um präzise Antworten auf offene To-dos zu geben.",
+    "Integration des Tageskalenders mit genauen Uhrzeiten geplanter Termine im Live-Kontext des KI-Assistenten.",
+    "Automatische Abfrage täglicher Gewohnheiten (Supabase ethone_habits und heutige Abschlüsse) bei Fragen zu Routinen, Streaks oder Tageszielen.",
+    "Klare Anweisungen für Brain, reale Aufgaben, Gewohnheiten und Termine ohne Halluzinationen direkt zu zitieren.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_12_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_12_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_12_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_12_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

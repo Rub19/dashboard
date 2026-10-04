@@ -19,19 +19,6 @@ import { useItems } from "./useItems";
 import { useNotifications } from "./useNotifications";
 import { useWorker } from "./useWorker";
 
-function countTodayEvents(events: { startAt?: string }[]) {
-  const now = new Date();
-  return events.filter((e) => {
-    const start = e.startAt ? new Date(e.startAt) : null;
-    return (
-      start &&
-      start.getDate() === now.getDate() &&
-      start.getMonth() === now.getMonth() &&
-      start.getFullYear() === now.getFullYear()
-    );
-  }).length;
-}
-
 export function useBrainContext() {
   const pathname = usePathname();
   const route = pathname || "home";
@@ -52,15 +39,36 @@ export function useBrainContext() {
   }, [route]);
 
   const context = useMemo<BrainContext>(() => {
-    const openTasks = tasks.filter((t) => !t.done).length;
-    const todayEvents = countTodayEvents(events);
+    const pendingTasks = tasks.filter((t) => !t.done);
+    const openTasks = pendingTasks.length;
+    const openTaskTitles = pendingTasks.slice(0, 6).map((t) => t.title);
+
+    const now = new Date();
+    const todayEventsList = events.filter((e) => {
+      const start = e.startAt ? new Date(e.startAt) : null;
+      return (
+        start &&
+        start.getDate() === now.getDate() &&
+        start.getMonth() === now.getMonth() &&
+        start.getFullYear() === now.getFullYear()
+      );
+    });
+    const todayEvents = todayEventsList.length;
+    const todayEventTitles = todayEventsList.slice(0, 6).map((e) => {
+      const start = e.startAt ? new Date(e.startAt) : null;
+      const timeStr = start ? start.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "";
+      return timeStr ? `${e.title} (à ${timeStr})` : e.title;
+    });
+
     const focusMinutes = Math.round((state.total - state.remaining) / 60);
     const liveData = { nowPlaying, weather: weatherPayload?.data ?? null, records: [] };
     const base = buildSystemContext(settings, liveData, route);
     const full: BrainContext = {
       ...base,
       openTasks,
+      openTaskTitles,
       todayEvents,
+      todayEventTitles,
       focusMinutes,
       unread: unreadCount || 0,
     };

@@ -460,12 +460,21 @@ Voici les informations EN DIRECT sur l'utilisateur et son système ETHONE OS :
     const liveFacts = await gatherLiveFacts(promptText, settings).catch(() => [] as string[]);
     if (liveFacts.length) liveContextPrompt += liveFacts.join("\n") + "\n";
 
-    if (typeof brainCtx?.context?.openTasks === "number") {
+    if (Array.isArray(brainCtx?.context?.openTaskTitles) && brainCtx.context.openTaskTitles.length > 0) {
+      liveContextPrompt += `- ✅ Tâches en attente (${brainCtx.context.openTasks || brainCtx.context.openTaskTitles.length}) :\n${brainCtx.context.openTaskTitles.map((t) => `  • ${t}`).join("\n")}\n`;
+    } else if (typeof brainCtx?.context?.openTasks === "number") {
       liveContextPrompt += `- ✅ Tâches ouvertes : ${brainCtx.context.openTasks} tâche(s) en attente.\n`;
+    }
+
+    if (Array.isArray(brainCtx?.context?.todayEventTitles) && brainCtx.context.todayEventTitles.length > 0) {
+      liveContextPrompt += `- 📅 Événements prévus aujourd'hui (${brainCtx.context.todayEvents || brainCtx.context.todayEventTitles.length}) :\n${brainCtx.context.todayEventTitles.map((e) => `  • ${e}`).join("\n")}\n`;
+    } else if (typeof brainCtx?.context?.todayEvents === "number" && brainCtx.context.todayEvents > 0) {
+      liveContextPrompt += `- 📅 Événements prévus aujourd'hui : ${brainCtx.context.todayEvents} événement(s).\n`;
     }
 
     liveContextPrompt += `\nConsignes clés :
 - Si l'utilisateur te demande ce qu'il écoute (ex: "j'écoute quoi comme musique", "c'est quoi ce son", "qui chante", "des infos sur ma musique"), utilise les données ci-dessus pour lui répondre avec précision, passion et naturel sur le titre, l'artiste, l'album et des anecdotes/recommandations si pertinent !
+- Pour ses tâches, ses habitudes ou son agenda de la journée, utilise directement les éléments ci-dessus pour lui répondre précisément sans inventer.
 - Pour la météo ou ses parties (Valorant, LoL), réponds directement avec les données ci-dessus (résultat, score, carte, agent ou champion, K/D/A…) au lieu de lui demander son compte. S'il manque une info, dis-lui précisément où la régler dans ETHONE.
 - Si l'utilisateur te salue (ex: "cc", "salut", "ça va"), réponds chaleureusement et naturellement comme un vrai assistant.
 - Si l'utilisateur te demande de créer une note ou une tâche, formule le contenu utilement en Markdown soigné.`;

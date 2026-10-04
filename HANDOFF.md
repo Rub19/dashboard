@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-05, version 1.55.11)
+# ETHONE — passation à la prochaine IA (état au 2026-10-05, version 1.55.12)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 
@@ -38,8 +38,8 @@ cd ethone-next
 npm run dev                        # serveur local http://localhost:3000
 npm run build                      # export statique dans dist/ (toujours AVANT tsc)
 npx tsc --noEmit                   # types
-npm run lint                       # 0 erreur attendue, 73 avertissements connus
-npm run test:unit                  # Jest, 296 tests
+npm run lint                       # 0 erreur attendue, 75 avertissements connus
+npm run test:unit                  # Jest, 298 tests
 npx playwright test                # E2E (nécessite TEST_EMAIL et TEST_PASSWORD)
 npm run audit:a11y                 # audit accessibilité
 npm run audit:responsive           # audit mobile/tablette
@@ -156,7 +156,7 @@ git log --oneline -10
 - **Thèmes** : menu de la barre du haut `components/ThemePicker.tsx` (clic droit : appliquer, police, dupliquer en thème perso, supprimer) ; le studio `components/settings/ThemeStudio.tsx` lit l'intention via `lib/theme-intent.ts`.
 - Musique : Lavalink 4 en Docker sur le NAS (tunnels SSH), YouTube bloqué côté Lavalink, chemin réel yt-dlp puis SoundCloud. L'entrée pm2 `lavalink` arrêtée sur le VPS est normale.
 
-## Fait pendant la session du 2026-10-03/04 (v1.52.12 → v1.55.7)
+## Fait pendant la session du 2026-10-03/05 (v1.52.12 → v1.55.11)
 - Thème clair : panneaux restés noirs corrigés (connexions, guide, changelog, dock mobile, tracker…), revue de toutes les pages principales.
 - Supabase : règles d'accès optimisées, 22 index de clés étrangères, index en double supprimé ; Realtime sur `ethone_public_profiles` ; colonnes `status_text`, `status_emoji`, `banner_url` ; GIF autorisés dans `profile-media`.
 - Code : 94 fichiers morts supprimés (site, bot, worker), ~120 variables mortes retirées, imports nettoyés, 4 dépendances de hooks corrigées.
@@ -170,14 +170,16 @@ git log --oneline -10
 - Module Émojis du serveur : testé et validé en conditions réelles (création et suppression d'émoji en production sur le serveur de test). Ajout de la fonctionnalité de renommage depuis le dashboard pour tous les émojis existants (route `PATCH /api/guilds/:guildId/server/emojis/:emojiId`, bouton crayon et édition en ligne dans l'interface).
 - Tracker Valorant : adaptation du volet déplié pour les parties archivées (`summaryOnly` / stored-matches) avec résumé individuel détaillé (Combat, Dégâts & Impact, Précision des tirs avec jauge tricolore tête/corps/jambes), suppression du faux badge MVP sur ces parties, et élimination de la durée codée en dur (« 8m 24s ») au profit de la durée réelle issue de l'API Henrik ou du nombre réel de manches.
 - Thèmes : clic droit dans le menu Thèmes (Modifier la police…, Créer un thème à partir de celui-ci) revérifié et validé dans Chrome en production sur le studio sans réécriture parasite ; thèmes perso visibles ; la réécriture `/settings/* → /settings/general/` de `public/_redirects` (qui masquait toutes les sections des Réglages) est supprimée.
-- Dock & Volets (v1.55.11) : refonte motion design Apple-grade de l'ensemble des volets du dock (Centre de contrôle, lecteur média, météo, minuteur Focus, lanceur d'apps) avec physique de ressorts Framer Motion, glassmorphism Sonoma, centrage absolu viewport garanti, slider tactile précis avec retour pourcentage et interrupteurs switch fluides conformes aux maquettes.
+- Habitudes (v1.55.10) : refonte complète de la page `/habits` avec motion design et 3 modes de disposition (Grille Bento avec validation directe des 7 jours, Vue Semaine en matrice calendaire, Liste Compacte). Anneau radial SVG de complétion quotidienne, séries, régularité hebdomadaire, suggestions d'habitudes en 1 clic.
+- Réglages / Workspaces (v1.55.10) : ajout de l'alias statique `/settings/workspaces` (avec un « s ») généré au build et redirigé de manière transparente vers la section Espace de travail des paramètres, éliminant l'erreur 404.
+- Dock & Volets (v1.55.11) : refonte motion design Apple-grade de l'ensemble des volets du dock (Centre de contrôle, lecteur média, météo, minuteur Focus, lanceur d'apps) avec physique de ressorts Framer Motion, glassmorphism Sonoma, centrage absolu viewport garanti, slider tactile précis avec retour pourcentage, isolation `FloatingPortal` et interrupteurs switch fluides conformes aux maquettes.
+- Brain AI (v1.55.12) : enrichissement en temps réel du contexte Brain avec les tâches en attente (titres et décompte), l'agenda du jour avec les horaires d'événements, et l'interrogation Supabase automatique des habitudes quotidiennes (table `ethone_habits` et complétions) lors de questions sur les routines, séries ou objectifs du jour.
 
 ## Reste à faire (par priorité)
 1. **Bot animé, vérification réelle** : regarder dans un vrai salon qu'une réponse du bot affiche bien les émojis animés (29 émojis d'application synchronisés au dernier démarrage) et qu'une arrivée de membre envoie la carte GIF (interrupteur et aperçu GIF intégrés sur le site).
 2. **Synchronisation** : faire tester par l'utilisateur sur deux appareils (changer le statut sur l'un, il doit apparaître sur l'autre sans recharger). `RawKeySync` compare toutes les 3 s et ne force pas le rafraîchissement des écrans Focus : brancher un écouteur dans ces modules si l'utilisateur veut du vrai direct.
 3. **Worker et Data Dragon** : depuis Cloudflare, les requêtes vers `ddragon.leagueoflegends.com` échouent (`UPSTREAM_UNAVAILABLE`, visible avec `wrangler tail`). Le site contourne en reconstruisant les icônes ; chercher la cause (blocage de l'egress Cloudflare ? délai ?) si on veut les noms d'objets côté worker.
-6. **Brain** : on pourrait ajouter les événements du jour, les tâches ouvertes et le morceau en cours avec leur titre dans `live-facts.ts`.
-7. **Supabase** : 3 avertissements « multiple permissive policies » (`ethone_shared_spaces`, `ethone_shared_space_members`) à fusionner prudemment. La protection des mots de passe divulgués apparaissait encore désactivée après que l'utilisateur l'a activée (peut demander l'offre Pro).
-8. **Qualité** : 73 avertissements de lint (56 `<img>` sans intérêt en export statique, le reste des dépendances de hooks volontaires). 5 tests du bot échouent uniquement sous Windows (assertion libuv à la fermeture) ; la CI Linux est verte.
-9. **Autre appareil de l'utilisateur** : un ancien client recréait des notifications « Nouveau mail » en double ; le déclencheur SQL `ethone_strip_legacy_mail_notifications` les nettoie, mais il faut que l'utilisateur ouvre ETHONE sur cet appareil pour qu'il se mette à jour.
-10. **Application iOS** (`ios/`) : non touchée pendant cette session, vérifier la parité avec les nouveautés (profil, avatars, émojis).
+4. **Supabase** : 3 avertissements « multiple permissive policies » (`ethone_shared_spaces`, `ethone_shared_space_members`) à fusionner prudemment. La protection des mots de passe divulgués apparaissait encore désactivée après que l'utilisateur l'a activée (peut demander l'offre Pro).
+5. **Qualité** : 75 avertissements de lint (56 `<img>` sans intérêt en export statique, le reste des dépendances de hooks volontaires). 5 tests du bot échouent uniquement sous Windows (assertion libuv à la fermeture) ; la CI Linux est verte.
+6. **Autre appareil de l'utilisateur** : un ancien client recréait des notifications « Nouveau mail » en double ; le déclencheur SQL `ethone_strip_legacy_mail_notifications` les nettoie, mais il faut que l'utilisateur ouvre ETHONE sur cet appareil pour qu'il se mette à jour.
+7. **Application iOS** (`ios/`) : non touchée pendant cette session, vérifier la parité avec les nouveautés (profil, avatars, émojis).

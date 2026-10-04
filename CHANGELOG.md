@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.12 — 2026-10-05
+
+**Brain AI : Contexte en direct enrichi (Tâches, Agenda et Habitudes)**
+
+- Brain prend désormais en compte en temps réel les tâches ouvertes de l'utilisateur (titres des tâches en attente et nombre total) pour répondre avec précision sur ce qu'il lui reste à faire.
+- Intégration de l'agenda du jour avec les horaires précis des événements planifiés dans le contexte en direct de l'assistant IA.
+- Interrogation automatique des habitudes quotidiennes (table Supabase ethone_habits et complétions du jour) lorsque l'utilisateur pose une question sur ses routines, séries ou objectifs du jour.
+- Mise à jour automatique des instructions de Brain pour citer fidèlement ces données sans aucune hallucination.
+
 ## v1.55.11 — 2026-10-05
 
 **Dock : refonte motion design complète Apple-grade, volets bento et fluidité extrême**

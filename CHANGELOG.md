@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.3 — 2026-10-04
+
+**Connexion GitHub officielle et gestion des erreurs OAuth**
+
+- Connexion GitHub : alignement du Client ID officiel avec l'application Ethone Login pour permettre la synchronisation du compte.
+- Authentification OAuth : affichage explicite du détail d'erreur (error_description) lors d'un échec de redirection.
+
 ## v1.55.2 — 2026-10-04
 
 **Réglages : liens directs vers chaque section**

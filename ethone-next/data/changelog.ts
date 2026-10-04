@@ -43502,6 +43502,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_2_de);
 
+const v1_55_3_fr: ChangelogEntry = {
+  version: "v1.55.3",
+  date: "2026-10-04",
+  title: "Connexion GitHub officielle et gestion des erreurs OAuth",
+  items: [
+    "Connexion GitHub : alignement du Client ID officiel avec l'application Ethone Login pour permettre la synchronisation du compte.",
+    "Authentification OAuth : affichage explicite du détail d'erreur (error_description) lors d'un échec de redirection.",
+  ],
+};
+
+const v1_55_3_en: ChangelogEntry = {
+  version: "v1.55.3",
+  date: "2026-10-04",
+  title: "Official GitHub connection and OAuth error reporting",
+  items: [
+    "GitHub connection: aligned official Client ID with the Ethone Login app to enable account sync.",
+    "OAuth authentication: display detailed error descriptions when a redirect fails.",
+  ],
+};
+
+const v1_55_3_es: ChangelogEntry = {
+  version: "v1.55.3",
+  date: "2026-10-04",
+  title: "Conexión oficial de GitHub e informes de errores de OAuth",
+  items: [
+    "Conexión de GitHub: alineación del Client ID oficial con la aplicación Ethone Login para permitir la sincronización.",
+    "Autenticación OAuth: visualización detallada de las descripciones de error cuando falla una redirección.",
+  ],
+};
+
+const v1_55_3_de: ChangelogEntry = {
+  version: "v1.55.3",
+  date: "2026-10-04",
+  title: "Offizielle GitHub-Verbindung und OAuth-Fehlerberichte",
+  items: [
+    "GitHub-Verbindung: Angleichung der offiziellen Client-ID an die Ethone Login App zur Aktivierung der Kontosynchronisierung.",
+    "OAuth-Authentifizierung: Detaillierte Fehlerbeschreibungen anzeigen, wenn eine Weiterleitung fehlschlägt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

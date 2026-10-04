@@ -18,10 +18,12 @@ export default function OAuthHandler() {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const rawState = params.get("state");
-    const errorParam = params.get("error") || params.get("error_description");
-    if (errorParam) {
+    const error = params.get("error");
+    const errorDesc = params.get("error_description");
+    if (error || errorDesc) {
       handled.current = true;
-      setStatus(`Connexion refusée : ${errorParam}`);
+      const detail = error && errorDesc ? `${error} (${errorDesc})` : (error || errorDesc);
+      setStatus(`Connexion refusée : ${detail}`);
       const url = new URL(window.location.href);
       url.search = "";
       window.history.replaceState({}, "", url);

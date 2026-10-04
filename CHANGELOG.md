@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.1 — 2026-10-04
+
+**Thèmes : clic droit et thèmes personnalisés**
+
+- Menu Thèmes de la barre du haut : clic droit sur un thème pour l'appliquer, changer sa police, créer un thème à partir de lui ou supprimer un thème perso.
+- Vos thèmes personnalisés apparaissent dans ce menu, avec une tuile « Nouveau thème » qui ouvre le créateur.
+
 ## v1.55.0 — 2026-10-04
 
 **Bot animé et module Émojis**

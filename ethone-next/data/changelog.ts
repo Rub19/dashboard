@@ -43416,6 +43416,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_0_de);
 
+const v1_55_1_fr: ChangelogEntry = {
+  version: "v1.55.1",
+  date: "2026-10-04",
+  title: "Thèmes : clic droit et thèmes personnalisés",
+  items: [
+    "Menu Thèmes de la barre du haut : clic droit sur un thème pour l'appliquer, changer sa police, créer un thème à partir de lui ou supprimer un thème perso.",
+    "Vos thèmes personnalisés apparaissent dans ce menu, avec une tuile « Nouveau thème » qui ouvre le créateur.",
+  ],
+};
+
+const v1_55_1_en: ChangelogEntry = {
+  version: "v1.55.1",
+  date: "2026-10-04",
+  title: "Themes: right-click and custom themes",
+  items: [
+    "Top bar Themes menu: right-click a theme to apply it, change its font, create a theme from it or delete a custom theme.",
+    "Your custom themes show in this menu, with a \"New theme\" tile that opens the builder.",
+  ],
+};
+
+const v1_55_1_es: ChangelogEntry = {
+  version: "v1.55.1",
+  date: "2026-10-04",
+  title: "Temas: clic derecho y temas personalizados",
+  items: [
+    "Menú Temas de la barra superior: clic derecho en un tema para aplicarlo, cambiar su fuente, crear un tema a partir de él o eliminar un tema personalizado.",
+    "Tus temas personalizados aparecen en este menú, con una casilla «Nuevo tema» que abre el creador.",
+  ],
+};
+
+const v1_55_1_de: ChangelogEntry = {
+  version: "v1.55.1",
+  date: "2026-10-04",
+  title: "Designs: Rechtsklick und eigene Designs",
+  items: [
+    "Design-Menü der oberen Leiste: Rechtsklick auf ein Design, um es anzuwenden, die Schrift zu ändern, ein Design davon abzuleiten oder ein eigenes Design zu löschen.",
+    "Eigene Designs erscheinen in diesem Menü, mit einer Kachel „Neues Design“, die den Editor öffnet.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

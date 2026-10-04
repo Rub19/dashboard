@@ -137,7 +137,7 @@ function ThemeToggle() {
         </button>
       </Tooltip>
 
-      {open && <ThemePicker activeId={resolved} activeLabel={themeLabel} onPick={pick} />}
+      {open && <ThemePicker activeId={resolved} activeLabel={themeLabel} onPick={pick} onClose={() => setOpen(false)} />}
     </div>
   );
 }

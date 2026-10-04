@@ -31,6 +31,7 @@ import {
 import { transitionTheme } from "@/lib/theme-transition";
 import { cn } from "@/lib/utils";
 import Button from "@/components/ui/Button";
+import { THEME_INTENT_EVENT, takeThemeIntent, type ThemeIntent } from "@/lib/theme-intent";
 
 interface ThemeStudioProps {
   className?: string;
@@ -86,6 +87,39 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
 
   // Import / Export State
   const [importJson, setImportJson] = useState("");
+
+  // Ouverture depuis le clic droit du menu « Thèmes » de la barre du haut : police d'un thème ou nouveau thème basé dessus.
+  const customThemesRef = useRef(settings.customThemes);
+  customThemesRef.current = settings.customThemes;
+  useEffect(() => {
+    const apply = (intent: ThemeIntent | null) => {
+      if (!intent) return;
+      const def = intent.themeId
+        ? PRESET_THEMES[intent.themeId as PremiumThemeId] || customThemesRef.current?.find((t) => t.id === intent.themeId)
+        : undefined;
+      if (intent.action === "font" && def) {
+        setActiveTab("preset");
+        setSelectedCategory("all");
+        setFontEditorFor(def.id);
+        setTimeout(() => document.querySelector(`[data-theme-card="${def.id}"]`)?.scrollIntoView({ block: "center", behavior: "smooth" }), 120);
+        return;
+      }
+      setActiveTab("builder");
+      if (intent.action === "duplicate" && def) {
+        setCustomName(`${def.label} perso`);
+        setCustomDescription(`Basé sur ${def.label}`);
+        setCustomColorScheme(def.colorScheme);
+        setCustomBgMain(def.bgMain);
+        setCustomBgSurface(def.bgSurface);
+        setCustomBgSidebar(def.bgSidebar);
+        setCustomAccent(def.accentPrimary);
+      }
+    };
+    apply(takeThemeIntent());
+    const onIntent = () => apply(takeThemeIntent());
+    window.addEventListener(THEME_INTENT_EVENT, onIntent);
+    return () => window.removeEventListener(THEME_INTENT_EVENT, onIntent);
+  }, []);
 
   // All available themes (presets + custom)
   const allThemes = useMemo(() => {
@@ -450,6 +484,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
               return (
                 <motion.div
                   key={theme.id}
+                  data-theme-card={theme.id}
                   whileTap={fontEditorFor === theme.id ? undefined : { scale: 0.985 }}
                   onClick={() => fontEditorFor !== theme.id && handleSelectTheme(theme.id, true)}
                   className={cn(

@@ -43183,6 +43183,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_53_5_en);
 CHANGELOG_BY_LANG.es.unshift(v1_53_5_es);
 CHANGELOG_BY_LANG.de.unshift(v1_53_5_de);
 
+const v1_53_6_fr: ChangelogEntry = {
+  version: "v1.53.6",
+  date: "2026-10-04",
+  title: "Tracker LoL : sorts, rune et objets récents",
+  items: [
+    "Les sorts d'invocateur et la rune principale s'affichent : leurs icônes sont retrouvées depuis le navigateur quand le serveur ne peut pas les fournir.",
+    "Les objets s'affichent avec la dernière version de Data Dragon, y compris les plus récents.",
+  ],
+};
+
+const v1_53_6_en: ChangelogEntry = {
+  version: "v1.53.6",
+  date: "2026-10-04",
+  title: "LoL tracker: spells, rune and recent items",
+  items: [
+    "Summoner spells and keystone rune now show: their icons are resolved in the browser when the server cannot provide them.",
+    "Items use the latest Data Dragon version, including the newest ones.",
+  ],
+};
+
+const v1_53_6_es: ChangelogEntry = {
+  version: "v1.53.6",
+  date: "2026-10-04",
+  title: "Tracker de LoL: hechizos, runa y objetos recientes",
+  items: [
+    "Los hechizos de invocador y la runa principal se muestran: sus iconos se obtienen desde el navegador cuando el servidor no puede darlos.",
+    "Los objetos usan la última versión de Data Dragon, incluidos los más recientes.",
+  ],
+};
+
+const v1_53_6_de: ChangelogEntry = {
+  version: "v1.53.6",
+  date: "2026-10-04",
+  title: "LoL-Tracker: Zauber, Rune und neue Items",
+  items: [
+    "Beschwörerzauber und Schlüsselrune werden angezeigt: die Icons werden im Browser ermittelt, wenn der Server sie nicht liefern kann.",
+    "Items nutzen die neueste Data-Dragon-Version, auch die neuesten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_53_6_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_53_6_en);
+CHANGELOG_BY_LANG.es.unshift(v1_53_6_es);
+CHANGELOG_BY_LANG.de.unshift(v1_53_6_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

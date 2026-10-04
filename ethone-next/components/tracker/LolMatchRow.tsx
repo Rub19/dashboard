@@ -15,11 +15,25 @@ import {
   formatLolTimeAgo,
   calculateLolTRS,
   getLolChampionIcon,
+  getLolItemIcon,
+  getLolRune,
+  getLolSpellIcon,
+  LOL_SUMMONER_SPELLS,
   LOL_TRINKET_IDS,
+  type LolRuneAsset,
+  type LolSpellAsset,
 } from "@/lib/lol-tracker";
 
 /** Identifiant d'un objet : fourni par l'appel direct à Riot, sinon lu dans l'adresse de son image (données du worker). */
 const itemIdOf = (it?: LolItem | null) => it?.id ?? (Number(it?.image?.match(/\/item\/(\d+)\.png/)?.[1]) || 0);
+/** Sort affichable : icône fournie, sinon reconstruite depuis son identifiant (le worker ne joint pas toujours Data Dragon). */
+const spellOf = (sp?: LolSpellAsset | null) => {
+  const image = sp?.image || getLolSpellIcon(sp?.id);
+  return image ? { name: sp?.name || (sp?.id ? LOL_SUMMONER_SPELLS[sp.id]?.name : "") || "", image } : null;
+};
+const runeOf = (rune?: LolRuneAsset | null) => (rune?.image ? rune : getLolRune(rune?.id));
+/** Image d'objet à la dernière version de Data Dragon (l'adresse reçue peut viser une version trop ancienne). */
+const itemImg = (it: LolItem) => getLolItemIcon(itemIdOf(it)) || it.image || "";
 import { computePartyMap } from "@/lib/party-helper";
 import { cn } from "@/lib/utils";
 import { EASE_OUT } from "@/lib/ease";
@@ -94,8 +108,8 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
   // Uniquement ce que l'API a renvoyé : un emplacement manquant reste vide (aucun sort ni objet inventé).
   // Le worker range sorts et rune dans `assets` (anciennes données en cache) ; l'appel direct à Riot au premier niveau.
   const mySpells = me?.spells?.length ? me.spells : me?.assets?.spells;
-  const spells = [mySpells?.[0] ?? null, mySpells?.[1] ?? null];
-  const rune = me?.rune?.image ? me.rune : me?.assets?.rune;
+  const spells = [spellOf(mySpells?.[0]), spellOf(mySpells?.[1])];
+  const rune = runeOf(me?.rune?.image || me?.rune?.id ? me.rune : me?.assets?.rune);
   const itemSlots = useMemo(() => {
     const real = (me?.items || []).filter((it): it is LolItem => Boolean(it?.image && !LOL_TRINKET_IDS.has(itemIdOf(it))));
     return Array.from({ length: 6 }, (_, i) => real[i] ?? null);
@@ -204,7 +218,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                 >
                   {item?.image ? (
                     <img
-                      src={item.image}
+                      src={itemImg(item)}
                       alt=""
                       className="h-full w-full object-cover"
                       onError={(e) => {
@@ -222,7 +236,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
             <div className="h-11 w-5 overflow-hidden rounded-md border border-amber-500/40 bg-black/50 flex items-center justify-center">
               {trinket?.image ? (
                 <img
-                  src={trinket.image}
+                  src={itemImg(trinket)}
                   alt=""
                   className="h-5 w-5 object-cover"
                   onError={(e) => {
@@ -525,7 +539,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                             const pDmgPercent = Math.min(100, Math.round((p.stats.damage / maxDamage) * 100));
 
                             const pSpellList = p.spells?.length ? p.spells : p.assets?.spells;
-                            const pSpells = [pSpellList?.[0] ?? null, pSpellList?.[1] ?? null];
+                            const pSpells = [spellOf(pSpellList?.[0]), spellOf(pSpellList?.[1])];
                             const pValid = (p.items || []).filter((it): it is LolItem => Boolean(it?.image && !LOL_TRINKET_IDS.has(itemIdOf(it))));
                             const pItemSlots = Array.from({ length: 6 }, (_, i) => pValid[i] ?? null);
                             const pTrinket = p.items?.find((it) => it?.image && LOL_TRINKET_IDS.has(itemIdOf(it))) ?? null;
@@ -605,14 +619,14 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                                     <div className="grid grid-cols-3 gap-0.5">
                                       {pItemSlots.map((it, iti) => (
                                         <div key={iti} className="h-4 w-4 rounded bg-black/60 border border-[var(--panel-border)] overflow-hidden" title={it?.name}>
-                                          {it?.image && <img src={it.image} alt="" className="h-full w-full object-cover" />}
+                                          {it?.image && <img src={itemImg(it)} alt="" className="h-full w-full object-cover" />}
                                         </div>
                                       ))}
                                     </div>
 
                                     {/* Trinket */}
                                     <div className="h-4 w-4 rounded bg-black/60 border border-amber-500/30 overflow-hidden ml-0.5">
-                                      {pTrinket?.image && <img src={pTrinket.image} alt="" className="h-full w-full object-cover" />}
+                                      {pTrinket?.image && <img src={itemImg(pTrinket)} alt="" className="h-full w-full object-cover" />}
                                     </div>
                                   </div>
                                 </td>

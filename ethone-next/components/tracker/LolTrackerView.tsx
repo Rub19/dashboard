@@ -16,6 +16,7 @@ import {
   type LolMatch,
   groupLolMatchesByDate,
   fetchLolMatchesDirect,
+  ensureDdragonVersion,
   LOL_QUEUES,
 } from "@/lib/lol-tracker";
 import LolMatchRow from "@/components/tracker/LolMatchRow";
@@ -68,6 +69,7 @@ export default function LolTrackerView() {
           if (cachedRaw) {
             const parsed: CacheData = JSON.parse(cachedRaw);
             if (Date.now() - parsed.timestamp < LOL_CACHE_TTL_MS && Array.isArray(parsed.matches)) {
+              await ensureDdragonVersion();
               setMatches(parsed.matches);
               setLastSyncTime(new Date(parsed.timestamp));
               setLoading(false);
@@ -113,6 +115,7 @@ export default function LolTrackerView() {
           }
         }
 
+        await ensureDdragonVersion(); // icônes (sorts, runes, objets récents) à la dernière version
         setMatches(validMatches);
         setLastSyncTime(new Date());
 

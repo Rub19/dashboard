@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.53.6 — 2026-10-04
+
+**Tracker LoL : sorts, rune et objets récents**
+
+- Les sorts d'invocateur et la rune principale s'affichent : leurs icônes sont retrouvées depuis le navigateur quand le serveur ne peut pas les fournir.
+- Les objets s'affichent avec la dernière version de Data Dragon, y compris les plus récents.
+
 ## v1.53.5 — 2026-10-04
 
 **Tracker LoL : vraie durée et parties annulées**

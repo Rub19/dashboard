@@ -7,11 +7,13 @@ export interface LolItemAsset {
 export type LolItem = LolItemAsset;
 
 export interface LolSpellAsset {
+  id?: number;
   name?: string;
   image?: string;
 }
 
 export interface LolRuneAsset {
+  id?: number;
   name?: string;
   image?: string;
 }
@@ -124,14 +126,31 @@ export const LOL_SUMMONER_SPELLS: Record<number, { name: string; icon: string }>
 // depuis (leurs images renvoyaient une erreur). Récupérée une fois, au premier chargement du tracker.
 let ddragonVersion = "16.19.1";
 let versionPromise: Promise<void> | null = null;
+// Runes (identifiant → nom et icône) : chargées avec la version, depuis le navigateur.
+const runeTable = new Map<number, { name: string; icon: string }>();
+type RuneJson = Array<{ id: number; name: string; icon: string; slots?: Array<{ runes?: Array<{ id: number; name: string; icon: string }> }> }>;
 export function ensureDdragonVersion(): Promise<void> {
   versionPromise ??= fetch("https://ddragon.leagueoflegends.com/api/versions.json")
     .then((r) => (r.ok ? r.json() : null))
     .then((v: unknown) => {
       if (Array.isArray(v) && typeof v[0] === "string") ddragonVersion = v[0];
+      return fetch(`https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/data/fr_FR/runesReforged.json`);
+    })
+    .then((r) => (r.ok ? (r.json() as Promise<RuneJson>) : null))
+    .then((paths) => {
+      for (const p of paths ?? []) {
+        runeTable.set(p.id, { name: p.name, icon: p.icon });
+        for (const slot of p.slots ?? []) for (const rune of slot.runes ?? []) runeTable.set(rune.id, { name: rune.name, icon: rune.icon });
+      }
     })
     .catch(() => undefined);
   return versionPromise;
+}
+
+/** Rune principale à partir de son identifiant (le worker ne peut pas toujours fournir l'icône). */
+export function getLolRune(runeId?: number): LolRuneAsset | null {
+  const r = runeId ? runeTable.get(runeId) : undefined;
+  return r ? { id: runeId, name: r.name, image: dd(r.icon) } : null;
 }
 const dd = (p: string) => `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img/${p}`;
 

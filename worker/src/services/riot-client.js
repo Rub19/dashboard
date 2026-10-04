@@ -7,13 +7,17 @@ const DDRAGON_LOL_VERSION = "16.15.1";
 
 let lolDdragonLatestVersion = null;
 let lolDdragonLatestData = null;
+// Après un échec, on réessaie au bout de 5 min au lieu de garder des tables vides jusqu'au redémarrage du worker.
+let lolDdragonRetryAt = 0;
+const DDRAGON_RETRY_MS = 5 * 60 * 1000;
 
 function normalizeChampionMatchName(name) {
   return String(name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
 async function getLolDdragonLatestVersion(env) {
-  if (lolDdragonLatestVersion) return lolDdragonLatestVersion;
+  // Version connue, ou échec récent (on attend la fin de la fenêtre avant de réessayer).
+  if (lolDdragonLatestVersion && (lolDdragonLatestVersion !== DDRAGON_LOL_VERSION || Date.now() < lolDdragonRetryAt)) return lolDdragonLatestVersion;
   try {
     const response = await requestExternal(new URL("https://ddragon.leagueoflegends.com/api/versions.json"), {
       env,
@@ -24,8 +28,10 @@ async function getLolDdragonLatestVersion(env) {
     });
     const versions = Array.isArray(response?.data) ? response.data : [];
     lolDdragonLatestVersion = String(versions[0] || DDRAGON_LOL_VERSION);
-  } catch {
+  } catch (err) {
+    console.warn("[ddragon] versions", err?.code, err?.message, JSON.stringify(err?.detail ?? null).slice(0, 300));
     lolDdragonLatestVersion = DDRAGON_LOL_VERSION;
+    lolDdragonRetryAt = Date.now() + DDRAGON_RETRY_MS;
   }
   return lolDdragonLatestVersion;
 }
@@ -388,13 +394,15 @@ async function fetchDdragonDataForVersion(env, version) {
 }
 
 async function getLolDdragonData(env, gameVersion) {
-  if (lolDdragonLatestData) return lolDdragonLatestData;
+  if (lolDdragonLatestData && (lolDdragonLatestData.summonerMap && Object.keys(lolDdragonLatestData.summonerMap).length || Date.now() < lolDdragonRetryAt)) return lolDdragonLatestData;
   const version = await getLolDdragonLatestVersion(env);
   try {
     const result = await fetchDdragonDataForVersion(env, version);
     lolDdragonLatestData = result;
     return result;
-  } catch {
+  } catch (err) {
+    console.warn("[ddragon] data", version, err?.code, err?.message, JSON.stringify(err?.detail ?? null).slice(0, 300));
+    lolDdragonRetryAt = Date.now() + DDRAGON_RETRY_MS;
     const fallback = emptyDdragonData();
     lolDdragonLatestData = fallback;
     return fallback;
@@ -408,18 +416,19 @@ function lolItemAsset(itemId, ddragonData) {
   return Object.freeze({ id: Number(itemId), image: lolItemImage(itemId, ddragonData), name: "" });
 }
 
+// L'identifiant est toujours renvoyé : si Data Dragon est injoignable depuis le worker, le tableau de bord retrouve l'icône lui-même.
 function lolSummonerSpellAsset(spellId, ddragonData) {
   if (!spellId) return Object.freeze({ image: "", name: "" });
   const fromData = ddragonData?.summonerMap?.[String(spellId)];
-  if (fromData) return Object.freeze({ image: fromData.image, name: fromData.name });
-  return Object.freeze({ image: "", name: "" });
+  if (fromData) return Object.freeze({ id: Number(spellId), image: fromData.image, name: fromData.name });
+  return Object.freeze({ id: Number(spellId), image: "", name: "" });
 }
 
 function lolRuneAsset(runeId, ddragonData) {
   if (!runeId) return Object.freeze({ image: "", name: "" });
   const fromData = ddragonData?.runeMap?.[String(runeId)];
-  if (fromData) return Object.freeze({ image: fromData.image, name: fromData.name });
-  return Object.freeze({ image: "", name: "" });
+  if (fromData) return Object.freeze({ id: Number(runeId), image: fromData.image, name: fromData.name });
+  return Object.freeze({ id: Number(runeId), image: "", name: "" });
 }
 
 function lolKeystoneRuneId(p) {

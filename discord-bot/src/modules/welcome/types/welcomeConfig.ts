@@ -98,6 +98,8 @@ export const WelcomeImageConfigSchema = z.object({
   avatarShape: z.enum(CARD_AVATAR_SHAPES).default('circle').catch('circle'),
   font: z.enum(CARD_FONTS).default('poppins').catch('poppins'),
   showServerName: z.boolean().default(true).catch(true),
+  /** Fond par défaut animé (GIF en boucle). Sans effet avec une image de fond personnalisée. */
+  animated: z.boolean().default(true).catch(true),
 });
 
 export type WelcomeImageConfig = z.infer<typeof WelcomeImageConfigSchema>;

@@ -33,6 +33,7 @@ export const DISCORD_MODULES: DiscordModuleMeta[] = [
   { id: "forms", title: "Forms & Applications", href: "/discord/forms", keywords: ["formulaire", "candidature", "application", "recrutement"], icon: "mod-forms", tint: "text-lime-400" },
   { id: "starboard", title: "Starboard", href: "/discord/starboard", keywords: ["etoiles", "star", "meilleurs messages"], icon: "mod-starboard", tint: "text-yellow-400" },
   { id: "highlights", title: "Highlights", href: "/discord/highlights", keywords: ["mots surveilles", "alerte mot", "highlight"], icon: "mod-highlights", tint: "text-lime-300" },
+  { id: "emojis", title: "Émojis du serveur", href: "/discord/emojis", keywords: ["emoji", "emote", "expression", "gif", "anime", "importer", "upload"], icon: "mod-emojis", tint: "text-yellow-300" },
   { id: "birthdays", title: "Anniversaires", href: "/discord/birthdays", keywords: ["anniversaire", "birthday", "fete"], icon: "mod-birthdays", tint: "text-pink-300" },
   { id: "music", title: "Lecteur Musique", href: "/discord/music", keywords: ["musique", "music", "play", "playlist", "dj", "spotify", "lavalink", "24/7"], icon: "mod-music", tint: "text-green-400" },
   { id: "giveaways", title: "Tirages au sort", href: "/discord/giveaways", keywords: ["giveaway", "concours", "tirage", "cadeau"], icon: "mod-giveaways", tint: "text-pink-400" },

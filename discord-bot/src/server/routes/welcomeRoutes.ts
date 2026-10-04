@@ -275,7 +275,7 @@ export function createWelcomeRouter(discordClient: Client) {
 
     try {
       const buffer = await WelcomeCardGenerator.generateCard(conf, avatarUrl, dummyCtx);
-      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Content-Type', buffer.subarray(0, 3).toString('ascii') === 'GIF' ? 'image/gif' : 'image/png');
       res.send(buffer);
     } catch (err: any) {
       logger.error('Erreur preview card :', err);

@@ -13,6 +13,7 @@ import { WelcomeCardGenerator } from '../images/welcomeCardGenerator.js';
 import { CARD_FONT_LABEL, CARD_SHAPE_LABEL, CARD_TEMPLATES, WelcomeImageConfigSchema, parseHexColor } from '../types/welcomeConfig.js';
 import { VariableContext } from '../types/variables.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
+import { cardFileName } from '../images/animatedCard.js';
 
 const TEMPLATE_LABEL: Record<(typeof CARD_TEMPLATES)[number], string> = {
   default: 'Classique',
@@ -51,7 +52,7 @@ async function cardFor(member: GuildMember, kind: Kind = 'welcome'): Promise<Att
     member.displayAvatarURL({ size: 256, extension: 'png' }),
     previewContext(member)
   );
-  return new AttachmentBuilder(buf, { name: `apercu-${kind === 'welcome' ? 'bienvenue' : 'depart'}.png` });
+  return new AttachmentBuilder(buf, { name: cardFileName(buf, `apercu-${kind === 'welcome' ? 'bienvenue' : 'depart'}`) });
 }
 
 export const welcomeCommand: Command = {

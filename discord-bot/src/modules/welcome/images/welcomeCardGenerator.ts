@@ -7,6 +7,12 @@ import { safeText } from '../../../utils/canvasText.js';
 import { FONT_STACK, registerCardFonts } from '../../../utils/cardFonts.js';
 import { fetchPublicImage } from '../../../utils/publicImageFetch.js';
 import { drawCover, rgba, shapePath } from '../../../utils/cardDraw.js';
+import { renderAnimatedCard } from './animatedCard.js';
+
+// Carte animée : rendu 1000 × 375 (au lieu de 1600 × 600) pour garder un GIF léger.
+const ANIM_SCALE = 1.25;
+// Position de l'avatar de chaque modèle (repère 800 × 300), pour le halo animé.
+const AVATAR_POS = { default: { x: 150, y: 150, r: 80 }, modern: { x: 400, y: 86, r: 56 }, minimal: { x: 92, y: 92, r: 44 }, gaming: { x: 128, y: 142, r: 80 } } as const;
 
 // Repère de dessin 800 x 300, rendu en 2x (1600 x 600) pour rester net dans Discord, y compris en plein écran.
 const W = 800;
@@ -257,14 +263,30 @@ export class WelcomeCardGenerator {
       }
     }
 
-    drawBackground(c, cfg, bg);
-
     const texts: Texts = {
       title: safeText(VariableParser.parse(cfg.titleText, ctx), 'BIENVENUE'),
       name: safeText(VariableParser.parse(cfg.subtitleText, ctx), safeText(ctx.displayName, 'Nouveau membre')),
       tag: safeText(VariableParser.parse(cfg.tagText, ctx)),
       server: cfg.showServerName ? safeText(ctx.guildName) : '',
     };
+    // Fond par défaut animé : premier plan dessiné une fois sur un calque transparent, fond recalculé à chaque image.
+    if (cfg.animated && !bg) {
+      const fg = createCanvas(W * ANIM_SCALE, H * ANIM_SCALE);
+      const fc = fg.getContext('2d');
+      fc.scale(ANIM_SCALE, ANIM_SCALE);
+      LAYOUTS[cfg.template](fc, cfg, texts, avatar, family);
+      return renderAnimatedCard({
+        width: W,
+        height: H,
+        scale: ANIM_SCALE,
+        backgroundColor: cfg.backgroundColor,
+        accentColor: cfg.accentColor,
+        avatar: AVATAR_POS[cfg.template],
+        foreground: fg,
+      });
+    }
+
+    drawBackground(c, cfg, bg);
     LAYOUTS[cfg.template](c, cfg, texts, avatar, family);
 
     return canvas.toBuffer('image/png');

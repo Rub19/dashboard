@@ -43363,6 +43363,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_54_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_54_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_54_1_de);
 
+const v1_55_0_fr: ChangelogEntry = {
+  version: "v1.55.0",
+  date: "2026-10-04",
+  title: "Bot animé et module Émojis",
+  items: [
+    "Bot : les ✅ ❌ ⚠️ ℹ️ ⏳ ✨ de ses réponses et de ses boutons deviennent des émojis animés ; logo animé dans /help.",
+    "Bot : les cartes de bienvenue et de départ par défaut sont animées (lueurs, particules, halo autour de l'avatar).",
+    "Nouveau module Émojis du serveur : glissez vos images ou GIF, prévisualisez-les comme dans Discord et ajoutez-les au serveur en un clic ; quotas, recherche, copie du code et suppression.",
+    "Brain écrit maintenant les statistiques en toutes lettres (éliminations, morts, assistances).",
+  ],
+};
+
+const v1_55_0_en: ChangelogEntry = {
+  version: "v1.55.0",
+  date: "2026-10-04",
+  title: "Animated bot and Emojis module",
+  items: [
+    "Bot: the ✅ ❌ ⚠️ ℹ️ ⏳ ✨ in its replies and buttons become animated emojis; animated logo in /help.",
+    "Bot: default welcome and goodbye cards are animated (glows, particles, halo around the avatar).",
+    "New Server emojis module: drop images or GIFs, preview them as in Discord and add them to the server in one click; quotas, search, code copy and deletion.",
+    "Brain now spells out stats (kills, deaths, assists).",
+  ],
+};
+
+const v1_55_0_es: ChangelogEntry = {
+  version: "v1.55.0",
+  date: "2026-10-04",
+  title: "Bot animado y módulo de Emojis",
+  items: [
+    "Bot: los ✅ ❌ ⚠️ ℹ️ ⏳ ✨ de sus respuestas y botones se vuelven emojis animados; logo animado en /help.",
+    "Bot: las tarjetas de bienvenida y despedida por defecto están animadas (brillos, partículas, halo alrededor del avatar).",
+    "Nuevo módulo Emojis del servidor: arrastra imágenes o GIF, previsualízalos como en Discord y añádelos al servidor en un clic; cuotas, búsqueda, copia del código y eliminación.",
+    "Brain ahora escribe las estadísticas completas (asesinatos, muertes, asistencias).",
+  ],
+};
+
+const v1_55_0_de: ChangelogEntry = {
+  version: "v1.55.0",
+  date: "2026-10-04",
+  title: "Animierter Bot und Emojis-Modul",
+  items: [
+    "Bot: die ✅ ❌ ⚠️ ℹ️ ⏳ ✨ in Antworten und Buttons werden zu animierten Emojis; animiertes Logo in /help.",
+    "Bot: die Standard-Willkommens- und Abschiedskarten sind animiert (Leuchten, Partikel, Halo um den Avatar).",
+    "Neues Modul Server-Emojis: Bilder oder GIFs ablegen, wie in Discord ansehen und mit einem Klick hinzufügen; Kontingente, Suche, Code kopieren und Löschen.",
+    "Brain schreibt Statistiken jetzt aus (Kills, Tode, Assists).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

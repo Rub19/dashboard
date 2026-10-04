@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.0 — 2026-10-04
+
+**Bot animé et module Émojis**
+
+- Bot : les ✅ ❌ ⚠️ ℹ️ ⏳ ✨ de ses réponses et de ses boutons deviennent des émojis animés ; logo animé dans /help.
+- Bot : les cartes de bienvenue et de départ par défaut sont animées (lueurs, particules, halo autour de l'avatar).
+- Nouveau module Émojis du serveur : glissez vos images ou GIF, prévisualisez-les comme dans Discord et ajoutez-les au serveur en un clic ; quotas, recherche, copie du code et suppression.
+- Brain écrit maintenant les statistiques en toutes lettres (éliminations, morts, assistances).
+
 ## v1.54.1 — 2026-10-04
 
 **Brain connaît ta météo et tes parties, connexion GitHub**

@@ -8,6 +8,7 @@ import { Client, GatewayIntentBits, Partials } from 'discord.js';
 import { registerEvents } from './handlers/eventHandler.js';
 import { startWebServer } from './server/index.js';
 import { logger } from './utils/logger.js';
+import { installAnimatedEmojis } from './services/animatedEmojis.js';
 
 // ==========================================
 // Gestion globale des exceptions (Résilience VPS)
@@ -42,6 +43,9 @@ const client = new Client({
     Partials.User,
   ],
 });
+
+// Émojis animés (✅ ❌ ⚠️…) dans toutes les réponses du bot.
+installAnimatedEmojis(client);
 
 // Enregistrement des événements
 registerEvents(client);

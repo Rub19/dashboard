@@ -200,7 +200,7 @@ export class HelpPanel {
       parts.push(
         sectionWithThumbnail(
           [
-            `## 📚 ${guildConfig.botName} — ${t.help_home_heading}`,
+            `## ${icon('a_logo', '📚')} ${guildConfig.botName} — ${t.help_home_heading}`,
             formatString(t.help_home_counts, { commands: commands.length, modules: HELP_CATEGORIES.length }),
             formatString(t.help_home_hint, { prefix }),
           ],

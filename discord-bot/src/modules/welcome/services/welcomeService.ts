@@ -29,6 +29,7 @@ import { guildConfigService } from '../../../services/guildConfigService.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
+import { cardFileName } from '../images/animatedCard.js';
 
 class WelcomeService {
   public getConfig(guildId: string): FullWelcomeConfig {
@@ -236,7 +237,7 @@ class WelcomeService {
           files: card ? [card] : [],
           embeds: [
             new EmbedBuilder()
-              .setImage(card ? 'attachment://card.png' : null)
+              .setImage(card ? `attachment://${card.name}` : null)
               .setColor(0x10b981)
               .setTitle(`🧪 Test Welcome MP • ${guild.name}`)
               .setDescription(
@@ -274,7 +275,7 @@ class WelcomeService {
   private async dmCard(imageConfig: WelcomeMessageConfig['image'], avatarUrl: string, ctx: VariableContext): Promise<AttachmentBuilder | null> {
     try {
       const buf = await WelcomeCardGenerator.generateCard({ ...imageConfig, enabled: true }, avatarUrl, ctx);
-      return new AttachmentBuilder(buf, { name: 'card.png' });
+      return new AttachmentBuilder(buf, { name: cardFileName(buf) });
     } catch (err) {
       logger.error('[Welcome] Carte du MP impossible à générer :', err);
       return null;
@@ -326,7 +327,7 @@ class WelcomeService {
           embed.setTimestamp();
         }
 
-        if (card) embed.setImage('attachment://card.png');
+        if (card) embed.setImage(`attachment://${card.name}`);
 
         payload.embeds = [embed];
       }
@@ -371,6 +372,7 @@ class WelcomeService {
   ): Promise<void> {
     const files: AttachmentBuilder[] = [];
     let hasCard = false;
+    let cardName = "card.png";
 
     // Avatar téléchargé une fois et joint au message : une URL d'avatar Discord expire dès que le membre change
     // d'avatar, ce qui cassait l'icône d'auteur et la vignette des anciens messages (« Image failed to load »).
@@ -386,7 +388,8 @@ class WelcomeService {
     if (config.image && config.image.enabled) {
       try {
         const imageBuffer = await WelcomeCardGenerator.generateCard(config.image, avatarUrl, ctx, avatarBuffer);
-        files.push(new AttachmentBuilder(imageBuffer, { name: 'card.png' }));
+        cardName = cardFileName(imageBuffer);
+        files.push(new AttachmentBuilder(imageBuffer, { name: cardName }));
         hasCard = true;
       } catch (err) {
         logger.error('[Welcome] Échec de la génération de la carte image :', err);
@@ -450,7 +453,7 @@ class WelcomeService {
       }
 
       if (hasCard) {
-        embed.setImage('attachment://card.png');
+        embed.setImage(`attachment://${cardName}`);
       }
 
       payload.embeds = [embed];

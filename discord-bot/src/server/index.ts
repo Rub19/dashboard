@@ -108,7 +108,10 @@ export function startWebServer(client: Client): http.Server {
     })
   );
   app.use(cookieParser());
-  app.use(express.json());
+  // Les émojis arrivent en base64 (256 Ko max côté Discord ≈ 350 Ko encodés) : limite relevée pour cette seule route.
+  const jsonDefault = express.json();
+  const jsonEmoji = express.json({ limit: '600kb' });
+  app.use((req, res, next) => (req.method === 'POST' && /\/server\/emojis\/?$/.test(req.path) ? jsonEmoji : jsonDefault)(req, res, next));
 
   // Protection volumétrique globale (Rate limit baseline 120 req/min par IP/User)
   app.use('/api', rateLimit('READ', { customLimit: 120, customWindowMs: 60000 }));

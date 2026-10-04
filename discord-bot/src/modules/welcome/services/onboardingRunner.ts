@@ -29,6 +29,7 @@ import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { noticeEmbed } from '../../../utils/embeds.js';
 import { isSendableTarget, sendToConfiguredChannel } from '../../../utils/channelSend.js';
+import { cardFileName } from '../images/animatedCard.js';
 
 /**
  * Moteur d'Onboarding : présente au membre, étape par étape, le parcours configuré sur le dashboard
@@ -151,8 +152,9 @@ export class OnboardingRunner {
         const image = saved?.enabled ? saved : WelcomeImageConfigSchema.parse({});
         const avatar = member.user.displayAvatarURL({ size: 256, extension: 'png' });
         const buffer = await WelcomeCardGenerator.generateCard(image, avatar, ctx);
-        files.push(new AttachmentBuilder(buffer, { name: 'card.png' }));
-        embed.setImage('attachment://card.png');
+        const name = cardFileName(buffer);
+        files.push(new AttachmentBuilder(buffer, { name }));
+        embed.setImage(`attachment://${name}`);
       } catch (err) {
         logger.warn('[Onboarding] Carte de bienvenue non générée :', err);
         embed.setThumbnail(guild.iconURL() || member.user.displayAvatarURL());

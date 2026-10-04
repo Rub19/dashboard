@@ -91,10 +91,18 @@ export class ServerEmojiService {
     const guild = client.guilds.cache.get(guildId);
     if (!guild) return { success: false, error: 'Serveur introuvable.' };
 
+    // Image envoyée par le tableau de bord en base64 uniquement : le bot ne télécharge aucune URL venue de l'extérieur.
+    const name = String(payload?.name ?? '').trim();
+    if (!/^[A-Za-z0-9_]{2,32}$/.test(name)) return { success: false, error: 'Nom : 2 à 32 caractères, lettres, chiffres ou « _ ».' };
+    const m = String(payload?.imageBase64OrUrl ?? '').match(/^data:image\/(png|jpeg|gif|webp);base64,([A-Za-z0-9+/=]+)$/);
+    if (!m) return { success: false, error: 'Image invalide : PNG, JPG, GIF ou WebP.' };
+    const bytes = Buffer.from(m[2], 'base64');
+    if (bytes.length > 256 * 1024) return { success: false, error: 'Image trop lourde : 256 Ko maximum pour un émoji Discord.' };
+
     try {
       const created = await guild.emojis.create({
-        attachment: payload.imageBase64OrUrl,
-        name: payload.name.trim(),
+        attachment: bytes,
+        name,
         reason: 'Ajouté via ETHONE Emoji Center 2.0',
       });
 
@@ -120,7 +128,16 @@ export class ServerEmojiService {
       };
     } catch (err: any) {
       logger.error('[ServerEmojiService] Erreur création emoji:', err);
-      return { success: false, error: err.message };
+      const code = Number(err?.code);
+      const error =
+        code === 50013
+          ? "Le bot n'a pas la permission « Gérer les expressions » sur ce serveur."
+          : code === 30008
+            ? "Ce serveur a atteint son nombre maximum d'émojis (les boosts en débloquent davantage)."
+            : code === 50035 || code === 50045
+              ? 'Discord a refusé cette image (format ou taille).'
+              : "Impossible d'ajouter cet émoji pour le moment.";
+      return { success: false, error };
     }
   }
 

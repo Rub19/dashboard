@@ -75,7 +75,7 @@ export async function gatherLiveFacts(question: string, settings: Settings): Pro
       const lines = list.slice(0, 5).map((m, i) => {
         const s = m.segments?.[0]?.stats || {};
         const md = m.metadata || {};
-        return `  ${i === 0 ? "• Dernière" : "•"} ${fr(md.result)} ${md.score?.team ?? "?"}-${md.score?.opponent ?? "?"} sur ${md.mapName || "?"} (${md.modeName || "?"}) avec ${md.agentName || "?"} : ${s.kills?.value ?? 0}/${s.deaths?.value ?? 0}/${s.assists?.value ?? 0}, ${Math.round(s.headshotsPercentage?.value ?? 0)} % HS, ${Math.round(s.adr?.value ?? 0)} ADR, ${ago(md.timestamp)}`;
+        return `  ${i === 0 ? "• Dernière" : "•"} ${fr(md.result)} ${md.score?.team ?? "?"}-${md.score?.opponent ?? "?"} sur ${md.mapName || "?"} (${md.modeName || "?"}) avec ${md.agentName || "?"} : ${s.kills?.value ?? 0} éliminations, ${s.deaths?.value ?? 0} morts, ${s.assists?.value ?? 0} assistances, ${Math.round(s.headshotsPercentage?.value ?? 0)} % HS, ${Math.round(s.adr?.value ?? 0)} ADR, ${ago(md.timestamp)}`;
       });
       facts.push(lines.length ? `- 🎯 Parties Valorant récentes de ${name}#${tag} :\n${lines.join("\n")}` : `- 🎯 Aucune partie Valorant trouvée pour ${name}#${tag}.`);
     }
@@ -85,7 +85,7 @@ export async function gatherLiveFacts(question: string, settings: Settings): Pro
         const me = m.scoreboard?.players?.find((p) => p.isMe);
         const s = me?.stats || {};
         const md = m.metadata || {};
-        return `  ${i === 0 ? "• Dernière" : "•"} ${fr(md.result)} en ${md.modeName || "?"} avec ${me?.character || md.championName || "?"} : ${s.kills ?? 0}/${s.deaths ?? 0}/${s.assists ?? 0}, ${s.cs ?? 0} CS${md.gameDuration ? `, ${md.gameDuration}` : ""}, ${ago(md.timestamp)}`;
+        return `  ${i === 0 ? "• Dernière" : "•"} ${fr(md.result)} en ${md.modeName || "?"} avec ${me?.character || md.championName || "?"} : ${s.kills ?? 0} éliminations, ${s.deaths ?? 0} morts, ${s.assists ?? 0} assistances, ${s.cs ?? 0} CS${md.gameDuration ? `, ${md.gameDuration}` : ""}, ${ago(md.timestamp)}`;
       });
       facts.push(lines.length ? `- ⚔️ Parties League of Legends récentes de ${name}#${tag} :\n${lines.join("\n")}` : `- ⚔️ Aucune partie LoL trouvée pour ${name}#${tag}.`);
     }

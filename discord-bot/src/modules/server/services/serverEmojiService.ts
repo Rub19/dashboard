@@ -158,6 +158,7 @@ export class ServerEmojiService {
     try {
       const name = emoji.name;
       await emoji.delete('Supprimé via ETHONE Dashboard');
+      guild.emojis.cache.delete(emojiId);
 
       logService.emit({
         guildId,
@@ -171,6 +172,63 @@ export class ServerEmojiService {
     } catch (err: any) {
       logger.error('[ServerEmojiService] Erreur suppression emoji:', err);
       return { success: false, error: err.message };
+    }
+  }
+
+  /**
+   * Updates/renames an existing emoji.
+   */
+  public static async updateEmoji(
+    client: Client,
+    guildId: string,
+    emojiId: string,
+    payload: { name: string }
+  ): Promise<{ success: boolean; emoji?: ServerEmojiItem; error?: string }> {
+    const guild = client.guilds.cache.get(guildId);
+    if (!guild) return { success: false, error: 'Serveur introuvable.' };
+
+    const emoji = guild.emojis.cache.get(emojiId) || (await guild.emojis.fetch(emojiId).catch(() => null));
+    if (!emoji) return { success: false, error: 'Émoji introuvable.' };
+
+    const name = String(payload?.name ?? '').trim();
+    if (!/^[A-Za-z0-9_]{2,32}$/.test(name)) {
+      return { success: false, error: 'Nom : 2 à 32 caractères, lettres, chiffres ou « _ ».' };
+    }
+
+    try {
+      const oldName = emoji.name;
+      const updated = await emoji.edit({ name, reason: 'Renommé via ETHONE Dashboard' });
+
+      logService.emit({
+        guildId,
+        module: 'SERVER',
+        type: 'EMOJI_UPDATE',
+        actor: { id: 'dashboard_admin', tag: 'ETHONE Dashboard' },
+        reason: `Renommage de l'emoji :${oldName}: en :${updated.name}:`,
+      });
+
+      return {
+        success: true,
+        emoji: {
+          id: updated.id,
+          name: updated.name || name,
+          animated: !!updated.animated,
+          url: updated.imageURL(),
+          managed: updated.managed,
+          roles: Array.from(updated.roles.cache.keys()),
+          createdAt: updated.createdAt.toISOString(),
+        },
+      };
+    } catch (err: any) {
+      logger.error('[ServerEmojiService] Erreur renommage emoji:', err);
+      const code = Number(err?.code);
+      const error =
+        code === 50013
+          ? "Le bot n'a pas la permission « Gérer les expressions » sur ce serveur."
+          : code === 50035
+            ? 'Nom d’émoji invalide pour Discord.'
+            : 'Impossible de renommer cet émoji pour le moment.';
+      return { success: false, error };
     }
   }
 }

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.7 — 2026-10-04
+
+**Module Émojis : renommage d'émojis existants depuis le dashboard**
+
+- Ajout de la route PATCH /api/guilds/:guildId/server/emojis/:emojiId pour renommer les émojis sur Discord.
+- Bouton de renommage (crayon) et édition en ligne (avec validation Entrée/Échap ou clic) sur toutes les cartes d'émojis du serveur.
+- Synchronisation immédiate du cache local et activation de l'intent Discord GuildExpressions.
+
 ## v1.55.6 — 2026-10-04
 
 **Bot Discord : détection publique de la présence sur les serveurs**

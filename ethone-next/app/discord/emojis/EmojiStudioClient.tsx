@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Copy, Loader2, RefreshCw, Search, Trash2, Upload, X } from "@/components/icons/ph";
+import { Check, Copy, Loader2, Pencil, RefreshCw, Search, Trash2, Upload, X } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import PageHeader from "@/components/discord/PageHeader";
 import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
@@ -59,7 +59,11 @@ export default function EmojiStudioClient() {
   const [filter, setFilter] = useState<"all" | "static" | "animated">("all");
   const [query, setQuery] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [renaming, setRenaming] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const editInputRef = useRef<HTMLInputElement>(null);
 
   const base = `${BOT_API_URL}/api/guilds/${guildId}/server/emojis`;
 
@@ -157,6 +161,49 @@ export default function EmojiStudioClient() {
     await navigator.clipboard.writeText(`<${e.animated ? "a" : ""}:${e.name}:${e.id}>`).catch(() => undefined);
     setCopied(e.id);
     setTimeout(() => setCopied((c) => (c === e.id ? null : c)), 1400);
+  };
+
+  const startRename = (e: ServerEmoji) => {
+    setEditingId(e.id);
+    setEditName(e.name);
+    setTimeout(() => editInputRef.current?.select(), 0);
+  };
+
+  const cancelRename = () => {
+    setEditingId(null);
+    setEditName("");
+    setRenaming(false);
+  };
+
+  const submitRename = async (e: ServerEmoji) => {
+    const trimmed = editName.trim();
+    if (!trimmed || trimmed === e.name) {
+      cancelRename();
+      return;
+    }
+    if (!/^[A-Za-z0-9_]{2,32}$/.test(trimmed)) {
+      toastError("Nom : 2 à 32 caractères, lettres, chiffres ou « _ ».");
+      return;
+    }
+    setRenaming(true);
+    try {
+      const res = await fetch(`${base}/${e.id}`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ name: trimmed }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) throw new Error(data?.error || "Impossible de renommer cet émoji.");
+      const newName = data.emoji?.name || trimmed;
+      setEmojis((list) => list.map((x) => (x.id === e.id ? { ...x, name: newName } : x)));
+      success(`:${e.name}: renommé en :${newName}:`);
+      cancelRename();
+    } catch (err) {
+      toastError(err instanceof Error ? err.message : "Erreur lors du renommage.");
+    } finally {
+      setRenaming(false);
+    }
   };
 
   const visible = useMemo(() => {
@@ -371,28 +418,87 @@ export default function EmojiStudioClient() {
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={e.url} alt={e.name} loading="lazy" className="h-12 w-12 object-contain transition-transform duration-200 group-hover:scale-110" />
-                        <p className="w-full truncate text-center text-xs text-[var(--text-primary)]/85" title={`:${e.name}:`}>
-                          :{e.name}:
-                        </p>
+                        {editingId === e.id ? (
+                          <form
+                            onSubmit={(ev) => {
+                              ev.preventDefault();
+                              void submitRename(e);
+                            }}
+                            className="flex w-full items-center gap-1"
+                          >
+                            <input
+                              ref={editInputRef}
+                              value={editName}
+                              onChange={(ev) => setEditName(ev.target.value.replace(/[^A-Za-z0-9_]/g, "_"))}
+                              onKeyDown={(ev) => {
+                                if (ev.key === "Escape") cancelRename();
+                              }}
+                              disabled={renaming}
+                              maxLength={32}
+                              className="w-full min-w-0 rounded-md border border-[var(--accent-primary)] bg-[var(--input-bg)] px-1.5 py-0.5 text-center text-xs font-semibold text-[var(--text-primary)] outline-none"
+                              autoFocus
+                            />
+                            <button
+                              type="submit"
+                              disabled={renaming}
+                              aria-label="Valider le nom"
+                              title="Valider"
+                              className="grid h-6 w-6 shrink-0 place-items-center rounded text-[var(--success)] transition-colors hover:bg-[var(--success)]/15 active:scale-90"
+                            >
+                              {renaming ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={cancelRename}
+                              disabled={renaming}
+                              aria-label="Annuler"
+                              title="Annuler"
+                              className="grid h-6 w-6 shrink-0 place-items-center rounded text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-raised)] active:scale-90"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </form>
+                        ) : (
+                          <p
+                            onDoubleClick={() => !e.managed && startRename(e)}
+                            className="w-full truncate text-center text-xs text-[var(--text-primary)]/85 cursor-default select-none"
+                            title={!e.managed ? `:${e.name}: (double-cliquez pour renommer)` : `:${e.name}:`}
+                          >
+                            :{e.name}:
+                          </p>
+                        )}
                         {e.animated && <span className="absolute left-2 top-2 rounded bg-[var(--accent-primary)]/15 px-1.5 text-[10px] font-semibold text-[var(--accent-primary)]">GIF</span>}
                         <div className="flex gap-1 opacity-70 transition-opacity group-hover:opacity-100">
                           <button
                             type="button"
                             onClick={() => void copyCode(e)}
                             aria-label={`Copier le code de :${e.name}:`}
+                            title="Copier le code Discord"
                             className="grid h-7 w-7 place-items-center rounded-lg text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] active:scale-90"
                           >
                             {copied === e.id ? <Check className="h-3.5 w-3.5 text-[var(--success)]" /> : <Copy className="h-3.5 w-3.5" />}
                           </button>
                           {!e.managed && (
-                            <button
-                              type="button"
-                              onClick={() => void remove(e)}
-                              aria-label={`Supprimer :${e.name}:`}
-                              className="grid h-7 w-7 place-items-center rounded-lg text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--danger)]/12 hover:text-[var(--danger)] active:scale-90"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => startRename(e)}
+                                aria-label={`Renommer :${e.name}:`}
+                                title="Renommer l'émoji"
+                                className="grid h-7 w-7 place-items-center rounded-lg text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] active:scale-90"
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => void remove(e)}
+                                aria-label={`Supprimer :${e.name}:`}
+                                title="Supprimer l'émoji"
+                                className="grid h-7 w-7 place-items-center rounded-lg text-[var(--text-muted)] transition-[background-color,color,transform] duration-150 hover:bg-[var(--danger)]/12 hover:text-[var(--danger)] active:scale-90"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </>
                           )}
                         </div>
                       </motion.div>

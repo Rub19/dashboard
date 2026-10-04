@@ -33,6 +33,7 @@ const client = new Client({
     GatewayIntentBits.GuildModeration, // Requis pour les bans / unbans
     GatewayIntentBits.GuildVoiceStates, // Requis pour les logs d'activité vocale
     GatewayIntentBits.GuildMessageReactions, // Requis pour le Starboard (réactions ⭐)
+    GatewayIntentBits.GuildExpressions, // Requis pour synchronisation en direct des émojis et autocollants
     GatewayIntentBits.DirectMessages,
   ],
   partials: [

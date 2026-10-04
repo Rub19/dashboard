@@ -356,6 +356,22 @@ export function createServerRouter(client: Client): Router {
     }
   });
 
+  // 22b. PATCH /emojis/:emojiId (renommage)
+  router.patch('/emojis/:emojiId', async (req: Request, res: Response) => {
+    try {
+      const guildId = req.params.guildId as string;
+      const emojiId = req.params.emojiId as string;
+      const result = await ServerEmojiService.updateEmoji(client, guildId, emojiId, req.body);
+      if (!result.success) {
+        return res.status(400).json({ error: result.error });
+      }
+      res.json(result);
+    } catch (err: any) {
+      logger.error('Erreur renommage emoji :', err);
+      res.status(500).json({ error: 'Erreur serveur' });
+    }
+  });
+
   // 23. GET /webhooks
   router.get('/webhooks', async (req: Request, res: Response) => {
     try {

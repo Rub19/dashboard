@@ -43682,6 +43682,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_6_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_6_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_6_de);
 
+const v1_55_7_fr: ChangelogEntry = {
+  version: "v1.55.7",
+  date: "2026-10-04",
+  title: "Module Émojis : renommage d'émojis existants depuis le dashboard",
+  items: [
+    "Ajout de la route PATCH /api/guilds/:guildId/server/emojis/:emojiId pour renommer les émojis sur Discord.",
+    "Bouton de renommage (crayon) et édition en ligne (avec validation Entrée/Échap ou clic) sur toutes les cartes d'émojis du serveur.",
+    "Synchronisation immédiate du cache local et activation de l'intent Discord GuildExpressions.",
+  ],
+};
+
+const v1_55_7_en: ChangelogEntry = {
+  version: "v1.55.7",
+  date: "2026-10-04",
+  title: "Emojis module: rename existing emojis from dashboard",
+  items: [
+    "Added PATCH /api/guilds/:guildId/server/emojis/:emojiId route to rename server emojis on Discord.",
+    "Rename button (pencil) and inline edit (with Enter/Escape or click validation) on all server emoji cards.",
+    "Immediate local cache update and GuildExpressions Discord intent enabled.",
+  ],
+};
+
+const v1_55_7_es: ChangelogEntry = {
+  version: "v1.55.7",
+  date: "2026-10-04",
+  title: "Módulo de emojis: renombrar emojis existentes desde el dashboard",
+  items: [
+    "Añadida ruta PATCH /api/guilds/:guildId/server/emojis/:emojiId para renombrar emojis en Discord.",
+    "Botón de renombrar (lápiz) y edición en línea en todas las tarjetas de emojis.",
+    "Sincronización inmediata de caché e intent Discord GuildExpressions activado.",
+  ],
+};
+
+const v1_55_7_de: ChangelogEntry = {
+  version: "v1.55.7",
+  date: "2026-10-04",
+  title: "Emoji-Modul: vorhandene Emojis vom Dashboard aus umbenennen",
+  items: [
+    "Route PATCH /api/guilds/:guildId/server/emojis/:emojiId hinzugefügt, um Server-Emojis auf Discord umzubenennen.",
+    "Umbenennen-Schaltfläche (Stift) und Inline-Bearbeitung auf allen Emoji-Karten.",
+    "Sofortige Aktualisierung des lokalen Caches und Discord-Intent GuildExpressions aktiviert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_7_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_7_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_7_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_7_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

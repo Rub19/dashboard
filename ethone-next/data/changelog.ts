@@ -43731,6 +43731,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_7_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_7_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_7_de);
 
+const v1_55_8_fr: ChangelogEntry = {
+  version: "v1.55.8",
+  date: "2026-10-05",
+  title: "Tracker Valorant : adaptation des parties archivées et durée réelle",
+  items: [
+    "Adaptation complète du volet déplié pour les parties issues de l'historique long (stored-matches) : affichage d'un résumé individuel clair sans faux MVP ni tableau vide de 10 joueurs.",
+    "Trois blocs statistiques dédiés : Combat (K/D/A, ratio, diff +/-), Dégâts & Impact (infligés, reçus, delta DDΔ, ADR) et Précision des tirs avec jauge tricolore (tête, corps, jambes).",
+    "Élimination de la durée codée en dur (8m 24s) au profit de la durée réelle issue de l'API Henrik ou du nombre réel de manches jouées.",
+  ],
+};
+
+const v1_55_8_en: ChangelogEntry = {
+  version: "v1.55.8",
+  date: "2026-10-05",
+  title: "Valorant Tracker: Archived matches view and accurate match duration",
+  items: [
+    "Adapted match detail view for long history matches (stored-matches): displays a dedicated personal breakdown without false MVP tags or empty 10-player tables.",
+    "Three personal statistic cards: Combat (K/D/A, ratio, +/- diff), Damage & Impact (made, received, DDΔ delta, ADR), and Shot Accuracy with a 3-segment progress bar.",
+    "Replaced hardcoded duration (8m 24s) with real API match duration or rounds played count.",
+  ],
+};
+
+const v1_55_8_es: ChangelogEntry = {
+  version: "v1.55.8",
+  date: "2026-10-05",
+  title: "Tracker Valorant: adaptación de partidas archivadas y duración real",
+  items: [
+    "Adaptación del detalle desplegado para partidas históricas (stored-matches): resumen individual claro sin falsos MVP ni tablas vacías de 10 jugadores.",
+    "Tres bloques de estadísticas personales: Combate, Daño e Impacto y Precisión de disparos con barra de distribución.",
+    "Eliminación de la duración fija (8m 24s) a favor de la duración real o número de rondas.",
+  ],
+};
+
+const v1_55_8_de: ChangelogEntry = {
+  version: "v1.55.8",
+  date: "2026-10-05",
+  title: "Valorant Tracker: Angepasste Archiv-Spiele und echte Spieldauer",
+  items: [
+    "Angepasste Detailansicht für archivierte Spiele (stored-matches): klare persönliche Übersicht ohne falsche MVP-Auszeichnung oder leere 10-Spieler-Tabelle.",
+    "Drei persönliche Statistikblöcke: Kampf (K/D/A, Quote, +/-), Schaden & Einfluss sowie Schussgenauigkeit mit Verteilungsbalken.",
+    "Ersetzung der festen Dauer (8m 24s) durch die tatsächliche Spieldauer oder Rundenzahl.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_8_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_8_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_8_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_8_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

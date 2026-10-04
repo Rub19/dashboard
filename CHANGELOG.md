@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.8 — 2026-10-05
+
+**Tracker Valorant : adaptation des parties archivées et durée réelle**
+
+- Adaptation complète du volet déplié pour les parties issues de l'historique long (stored-matches) : affichage d'un résumé individuel clair sans faux MVP ni tableau vide de 10 joueurs.
+- Trois blocs statistiques dédiés : Combat (K/D/A, ratio, diff +/-), Dégâts & Impact (infligés, reçus, delta DDΔ, ADR) et Précision des tirs avec jauge tricolore (tête, corps, jambes).
+- Élimination de la durée codée en dur (8m 24s) au profit de la durée réelle issue de l'API Henrik ou du nombre réel de manches jouées.
+
 ## v1.55.7 — 2026-10-04
 
 **Module Émojis : renommage d'émojis existants depuis le dashboard**

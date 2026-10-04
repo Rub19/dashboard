@@ -82,4 +82,26 @@ describe("parties d'avant et d'après le patch", () => {
     expect(later.avgPerformanceScore).toBe(310);
     expect(later.avgAcs).toBe(0);
   });
+
+  it("gère les parties archivées summaryOnly avec le badge 'Archivé'", () => {
+    const archivedMatch = {
+      ...afterWith,
+      metadata: {
+        ...afterWith.metadata,
+        summaryOnly: true,
+      },
+    };
+    expect(calculateMatchRankBadge(archivedMatch)).toEqual({ label: "Archivé", tone: "default" });
+  });
+
+  it("n'attribue pas MVP à une partie où un seul joueur est présent sans être archivée", () => {
+    const singlePlayerMatch: ValorantMatch = {
+      ...afterWith,
+      scoreboard: {
+        ...afterWith.scoreboard,
+        players: [afterWith.scoreboard!.players[0]],
+      },
+    };
+    expect(calculateMatchRankBadge(singlePlayerMatch)).toEqual({ label: "—", tone: "default" });
+  });
 });

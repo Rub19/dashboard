@@ -6,6 +6,9 @@ import {
   MoreVertical,
   ChevronUp,
   Swords,
+  Info,
+  Flame,
+  Target,
 } from "@/components/icons/ph";
 import {
   type ValorantMatch,
@@ -35,6 +38,8 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
   const partyMap = computePartyMap(players);
 
   const meta = match.metadata;
+  const isSummaryOnly = Boolean(meta.summaryOnly);
+
   const isWin =
     meta.result.toLowerCase() === "victory" ||
     (meta.score.team !== null &&
@@ -63,7 +68,27 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
   const teamAPlayers = players.filter((p) => p.team === "Blue" || p.team === "Team A");
   const teamBPlayers = players.filter((p) => p.team === "Red" || p.team === "Team B");
 
+  const myPlayer = players.find((p) => p.isMe) || players[0];
+  const myStats = myPlayer?.stats;
+  const headshots = myStats?.headshots ?? 0;
+  const bodyshots = myStats?.bodyshots ?? 0;
+  const legshots = myStats?.legshots ?? 0;
+  const totalShotsCount = headshots + bodyshots + legshots;
+  const headPercent = totalShotsCount > 0 ? Math.round((headshots / totalShotsCount) * 100) : hsPercent;
+  const bodyPercent = totalShotsCount > 0 ? Math.round((bodyshots / totalShotsCount) * 100) : Math.max(0, 100 - headPercent);
+  const legPercent = totalShotsCount > 0 ? Math.max(0, 100 - headPercent - bodyPercent) : 0;
+  const damageMadeVal = myStats?.damageMade ?? (typeof match.segments?.[0]?.stats?.adr?.value === "number" && meta.score.roundsPlayed ? Math.round(match.segments[0].stats.adr.value * meta.score.roundsPlayed) : null);
+  const damageReceivedVal = myStats?.damageReceived ?? null;
+  const adrVal = myStats?.adr ?? (match.segments?.[0]?.stats?.adr?.value ? Math.round(match.segments[0].stats.adr.value) : null);
+
+  const matchDurationText = meta.gameLengthSeconds
+    ? `${Math.floor(meta.gameLengthSeconds / 60)}m ${(meta.gameLengthSeconds % 60).toString().padStart(2, "0")}s`
+    : meta.score.roundsPlayed
+    ? `${meta.score.roundsPlayed} manches`
+    : null;
+
   const matchAvgRank = (() => {
+    if (isSummaryOnly) return "Historique archivé";
     const valid = players
       .map((p) => p.currenttier_patched)
       .filter((r): r is string => Boolean(r && r.toLowerCase() !== "unrated" && r.toLowerCase() !== "unranked"));
@@ -231,14 +256,15 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
               setExpanded(!expanded);
             }}
             className="flex h-8 w-8 items-center justify-center rounded-xl text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer"
-            aria-label="Détails du match"
+            aria-label={isSummaryOnly ? "Détails de la partie archivée" : "Détails du match"}
+            title={isSummaryOnly ? "Voir le résumé individuel de la partie archivée" : "Détails du match"}
           >
             {expanded ? <ChevronUp className="h-4 w-4" /> : <MoreVertical className="h-4 w-4" />}
           </button>
         </div>
       </div>
 
-      {/* Expanded Match Details (Redesigned & Stylized for ETHONE OS Matching Screenshot 5) */}
+      {/* Expanded Match Details (Redesigned & Stylized for ETHONE OS) */}
       <AnimatePresence>
         {expanded && (
           <motion.div
@@ -263,43 +289,209 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                     <span className="rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 text-xs font-black">
                       Team A {teamScore} : Team B {opponentScore}
                     </span>
+                    {isSummaryOnly && (
+                      <span className="rounded-md bg-cyan-500/15 text-cyan-400 border border-cyan-500/20 px-2 py-0.5 text-xs font-bold">
+                        Archive
+                      </span>
+                    )}
                   </div>
                   <p className="text-[11px] text-[var(--text-muted)]/80 mt-0.5">
-                    Durée: 8m 24s • Rang Moyen : <strong className="text-cyan-300 font-bold">{matchAvgRank}</strong>
+                    {matchDurationText ? `Durée : ${matchDurationText} • ` : ""}
+                    {isSummaryOnly ? (
+                      <span className="text-[var(--text-muted)]">Données individuelles archivées</span>
+                    ) : (
+                      <>Rang Moyen : <strong className="text-cyan-300 font-bold">{matchAvgRank}</strong></>
+                    )}
                   </p>
                 </div>
               </div>
 
-              {/* Tabs */}
-              <div className="flex items-center gap-1 rounded-[var(--inset-radius)] bg-[var(--text-primary)]/[0.04] p-1 border border-[var(--panel-border)] text-xs">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("scoreboard")}
-                  className={cn(
-                    "rounded-lg px-3 py-1 font-bold transition cursor-pointer",
-                    activeTab === "scoreboard"
-                      ? "bg-[var(--text-primary)]/15 text-[var(--text-primary)] shadow-xs"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                  )}
-                >
-                  Scoreboard
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("performance")}
-                  className={cn(
-                    "rounded-lg px-3 py-1 font-bold transition cursor-pointer",
-                    activeTab === "performance"
-                      ? "bg-[var(--text-primary)]/15 text-[var(--text-primary)] shadow-xs"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                  )}
-                >
-                  Performance
-                </button>
-              </div>
+              {/* Tabs: Masqués en mode archive car seuls vos scores individuels sont conservés */}
+              {!isSummaryOnly && (
+                <div className="flex items-center gap-1 rounded-[var(--inset-radius)] bg-[var(--text-primary)]/[0.04] p-1 border border-[var(--panel-border)] text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("scoreboard")}
+                    className={cn(
+                      "rounded-lg px-3 py-1 font-bold transition cursor-pointer",
+                      activeTab === "scoreboard"
+                        ? "bg-[var(--text-primary)]/15 text-[var(--text-primary)] shadow-xs"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    )}
+                  >
+                    Scoreboard
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("performance")}
+                    className={cn(
+                      "rounded-lg px-3 py-1 font-bold transition cursor-pointer",
+                      activeTab === "performance"
+                        ? "bg-[var(--text-primary)]/15 text-[var(--text-primary)] shadow-xs"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    )}
+                  >
+                    Performance
+                  </button>
+                </div>
+              )}
             </div>
 
-            {activeTab === "scoreboard" ? (
+            {isSummaryOnly ? (
+              /* Dedicated Personal Archive Summary View */
+              <div className="space-y-4">
+                {/* Archive Notice Banner */}
+                <div className="flex items-center gap-2.5 rounded-[var(--inset-radius)] border border-cyan-500/25 bg-cyan-500/[0.06] p-3 text-xs text-cyan-200">
+                  <Info className="h-4 w-4 shrink-0 text-cyan-400" />
+                  <span>
+                    <strong>Historique archivé :</strong> Cette partie provient des archives HenrikDev (stored-matches). Seules les statistiques individuelles de votre joueur sont conservées ; les détails complets des 9 autres joueurs ne sont pas stockés dans l'archive.
+                  </span>
+                </div>
+
+                {/* 3 Overview Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {/* Card 1: Combat Stats */}
+                  <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-3.5 space-y-2.5">
+                    <div className="flex items-center justify-between text-xs font-bold text-[var(--text-muted)]">
+                      <span className="flex items-center gap-1.5 uppercase tracking-wider text-[10px]">
+                        <Swords className="h-3.5 w-3.5 text-rose-400" /> Combat
+                      </span>
+                      <span className="font-mono text-[11px] text-[var(--text-primary)]">{meta.modeName || "Non classé"}</span>
+                    </div>
+                    <div className="flex items-baseline justify-between pt-1">
+                      <div>
+                        <span className="block text-[9px] uppercase font-bold text-[var(--text-muted)]">K / D / A</span>
+                        <span className="font-mono text-base font-black text-[var(--text-primary)]">
+                          {kills} <span className="text-[var(--text-muted)]/50">/</span> {deaths} <span className="text-[var(--text-muted)]/50">/</span> {assists}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="block text-[9px] uppercase font-bold text-[var(--text-muted)]">Ratio K/D</span>
+                        <span className={cn(
+                          "font-mono text-base font-black",
+                          kd >= 2.0 ? "text-cyan-400" : kd >= 1.0 ? "text-emerald-400" : "text-rose-400"
+                        )}>
+                          {kd}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-2 border-t border-[var(--panel-border)] text-xs">
+                      <span className="text-[11px] text-[var(--text-muted)]">Différence +/-</span>
+                      <span className={cn(
+                        "font-mono font-bold",
+                        kills - deaths > 0 ? "text-emerald-400" : kills - deaths < 0 ? "text-rose-400" : "text-[var(--text-muted)]"
+                      )}>
+                        {kills - deaths > 0 ? `+${kills - deaths}` : kills - deaths}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-[11px] text-[var(--text-muted)]">{scoreLabel}</span>
+                      <span className="font-mono font-bold text-[var(--text-primary)]">{scoreText}</span>
+                    </div>
+                  </div>
+
+                  {/* Card 2: Damage & Impact */}
+                  <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-3.5 space-y-2.5">
+                    <div className="flex items-center justify-between text-xs font-bold text-[var(--text-muted)]">
+                      <span className="flex items-center gap-1.5 uppercase tracking-wider text-[10px]">
+                        <Flame className="h-3.5 w-3.5 text-amber-400" /> Dégâts & Impact
+                      </span>
+                      <span className="font-mono text-[11px] text-[var(--text-muted)]">
+                        {meta.score.roundsPlayed ? `${meta.score.roundsPlayed} manches` : "—"}
+                      </span>
+                    </div>
+                    <div className="flex items-baseline justify-between pt-1">
+                      <div>
+                        <span className="block text-[9px] uppercase font-bold text-[var(--text-muted)]">Dégâts infligés</span>
+                        <span className="font-mono text-base font-black text-[var(--text-primary)]">
+                          {damageMadeVal !== null && damageMadeVal !== undefined ? damageMadeVal.toLocaleString("fr-FR") : "—"}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="block text-[9px] uppercase font-bold text-[var(--text-muted)]">Dégâts reçus</span>
+                        <span className="font-mono text-base font-black text-[var(--text-primary)]">
+                          {damageReceivedVal !== null && damageReceivedVal !== undefined ? damageReceivedVal.toLocaleString("fr-FR") : "—"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-2 border-t border-[var(--panel-border)] text-xs">
+                      <span className="text-[11px] text-[var(--text-muted)]">Delta moyen / manche (DDΔ)</span>
+                      <span className={cn(
+                        "font-mono font-bold",
+                        damageDelta >= 0 ? "text-emerald-400" : "text-rose-400"
+                      )}>
+                        {damageDelta >= 0 ? `+${damageDelta}` : damageDelta}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-[11px] text-[var(--text-muted)]">Dégâts / manche (ADR)</span>
+                      <span className="font-mono font-bold text-[var(--text-primary)]">
+                        {adrVal !== null && adrVal !== undefined ? adrVal : "—"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Card 3: Shot Accuracy */}
+                  <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-3.5 space-y-2.5">
+                    <div className="flex items-center justify-between text-xs font-bold text-[var(--text-muted)]">
+                      <span className="flex items-center gap-1.5 uppercase tracking-wider text-[10px]">
+                        <Target className="h-3.5 w-3.5 text-cyan-400" /> Précision des Tirs
+                      </span>
+                      <span className="font-mono text-[11px] text-cyan-300 font-bold">{hsPercent}% Tête</span>
+                    </div>
+
+                    {/* Progress Bar Distribution */}
+                    <div className="pt-1">
+                      <div className="h-2 w-full rounded-full bg-black/40 overflow-hidden flex">
+                        <div
+                          style={{ width: `${headPercent}%` }}
+                          className="h-full bg-cyan-400 transition-all duration-300"
+                          title={`Tête : ${headPercent}%`}
+                        />
+                        <div
+                          style={{ width: `${bodyPercent}%` }}
+                          className="h-full bg-amber-400 transition-all duration-300"
+                          title={`Corps : ${bodyPercent}%`}
+                        />
+                        <div
+                          style={{ width: `${legPercent}%` }}
+                          className="h-full bg-slate-500 transition-all duration-300"
+                          title={`Jambes : ${legPercent}%`}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Breakdown counts */}
+                    <div className="space-y-1 pt-1 text-xs font-mono">
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                          <span className="h-2 w-2 rounded-full bg-cyan-400 inline-block" /> Tête
+                        </span>
+                        <span className="font-bold text-[var(--text-primary)]">
+                          {headshots > 0 ? `${headshots} (${headPercent}%)` : `${headPercent}%`}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                          <span className="h-2 w-2 rounded-full bg-amber-400 inline-block" /> Corps
+                        </span>
+                        <span className="font-bold text-[var(--text-primary)]">
+                          {bodyshots > 0 ? `${bodyshots} (${bodyPercent}%)` : (totalShotsCount > 0 ? `${bodyPercent}%` : "—")}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                          <span className="h-2 w-2 rounded-full bg-slate-500 inline-block" /> Jambes
+                        </span>
+                        <span className="font-bold text-[var(--text-primary)]">
+                          {legshots > 0 ? `${legshots} (${legPercent}%)` : (totalShotsCount > 0 ? `${legPercent}%` : "—")}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : activeTab === "scoreboard" ? (
               /* Scoreboard Table (Separated by Team A and Team B matching Tracker.gg layout) */
               <div className="space-y-4 overflow-x-auto os-scroll">
                 {[

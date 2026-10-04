@@ -47,6 +47,8 @@ export interface ValorantMatch {
       roundsPlayed: number | null;
     };
     timestamp: string;
+    gameLengthSeconds?: number | null;
+    summaryOnly?: boolean;
     /** Système de notation de la partie : « performance » (patch 13.06+, 0-500) ou « acs » (avant). */
     scoring?: ScoringSystem;
     gameVersion?: string;
@@ -226,8 +228,11 @@ export function formatTimeAgo(isoTimestamp?: string): string {
 }
 
 export function calculateMatchRankBadge(match: ValorantMatch): { label: string; tone: "gold" | "silver" | "bronze" | "default" } {
+  if (match.metadata?.summaryOnly) {
+    return { label: "Archivé", tone: "default" };
+  }
   const players = match.scoreboard?.players || [];
-  if (players.length === 0) return { label: "MVP", tone: "gold" };
+  if (players.length <= 1) return { label: "—", tone: "default" };
 
   // Depuis le patch 13.06, le MVP et l'ordre du tableau suivent le score de performance : sans cette valeur pour tous
   // les joueurs, on n'invente pas de classement à partir de l'ancien score.
@@ -612,6 +617,8 @@ export function convertHenrikMatchToValorantMatch(
       timestamp: meta.game_start
         ? new Date(meta.game_start * 1000).toISOString()
         : new Date().toISOString(),
+      gameLengthSeconds: typeof meta.game_length === "number" ? meta.game_length : undefined,
+      summaryOnly: Boolean(meta.summaryOnly),
       scoring,
       gameVersion,
     },

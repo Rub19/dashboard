@@ -225,7 +225,8 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride, star
           opponent: Number.isFinite(opponentRounds) ? opponentRounds : null,
           roundsPlayed: Number.isFinite(roundsPlayed) ? roundsPlayed : null
         }),
-        timestamp: safeText(new Date((meta.game_start || 0) * 1000).toISOString())
+        timestamp: safeText(new Date((meta.game_start || 0) * 1000).toISOString()),
+        gameLengthSeconds: Number.isFinite(Number(meta.game_length)) ? Number(meta.game_length) : null
       }),
       segments: Object.freeze([{
         type: "overview",
@@ -329,6 +330,7 @@ export async function getValorantHistory(env, riotId, mode, apiKeyOverride, page
         agentImageUrl: agentImage,
         score: Object.freeze({ team: Number.isFinite(mine) ? mine : null, opponent: Number.isFinite(theirs) ? theirs : null, roundsPlayed: rounds || null }),
         timestamp: safeText(meta.started_at ? new Date(meta.started_at).toISOString() : ""),
+        gameLengthSeconds: Number.isFinite(Number(meta.game_length)) ? Number(meta.game_length) : null,
         summaryOnly: true
       }),
       segments: Object.freeze([{

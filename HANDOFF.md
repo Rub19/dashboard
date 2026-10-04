@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-04, version 1.55.7)
+# ETHONE — passation à la prochaine IA (état au 2026-10-04, version 1.55.8)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 
@@ -168,13 +168,13 @@ git log --oneline -10
 - Connexions : GitHub corrigé (rétablissement du Client ID officiel Ov23li7gnklQJ7ipkgZG, acceptation de redirectUri dans le Worker Cloudflare, échange OAuth opérationnel, test en direct validé en 775 ms et profil synchronisé).
 - Bot : émojis et boutons animés, logo animé dans `/help`, cartes de bienvenue/départ animées (interrupteur `image.animated` et badge GIF ajoutés au designer d'accueil) ; correction de `/api/guild-presence` (rendu public) pour que les serveurs avec le bot soient bien reconnus et affichés avec « Bot présent ».
 - Module Émojis du serveur : testé et validé en conditions réelles (création et suppression d'émoji en production sur le serveur de test). Ajout de la fonctionnalité de renommage depuis le dashboard pour tous les émojis existants (route `PATCH /api/guilds/:guildId/server/emojis/:emojiId`, bouton crayon et édition en ligne dans l'interface).
+- Tracker Valorant : adaptation du volet déplié pour les parties archivées (`summaryOnly` / stored-matches) avec résumé individuel détaillé (Combat, Dégâts & Impact, Précision des tirs avec jauge tricolore tête/corps/jambes), suppression du faux badge MVP sur ces parties, et élimination de la durée codée en dur (« 8m 24s ») au profit de la durée réelle issue de l'API Henrik ou du nombre réel de manches.
 - Thèmes : clic droit dans le menu Thèmes (Modifier la police…, Créer un thème à partir de celui-ci) revérifié et validé dans Chrome en production sur le studio sans réécriture parasite ; thèmes perso visibles ; la réécriture `/settings/* → /settings/general/` de `public/_redirects` (qui masquait toutes les sections des Réglages) est supprimée.
 
 ## Reste à faire (par priorité)
 1. **Bot animé, vérification réelle** : regarder dans un vrai salon qu'une réponse du bot affiche bien les émojis animés (29 émojis d'application synchronisés au dernier démarrage) et qu'une arrivée de membre envoie la carte GIF (interrupteur et aperçu GIF intégrés sur le site).
 2. **Synchronisation** : faire tester par l'utilisateur sur deux appareils (changer le statut sur l'un, il doit apparaître sur l'autre sans recharger). `RawKeySync` compare toutes les 3 s et ne force pas le rafraîchissement des écrans Focus : brancher un écouteur dans ces modules si l'utilisateur veut du vrai direct.
-3. **Valorant** : les parties anciennes (`metadata.summaryOnly`) n'ont que le joueur ; masquer ou adapter le détail déplié de `ValorantMatchRow` pour elles.
-5. **Worker et Data Dragon** : depuis Cloudflare, les requêtes vers `ddragon.leagueoflegends.com` échouent (`UPSTREAM_UNAVAILABLE`, visible avec `wrangler tail`). Le site contourne en reconstruisant les icônes ; chercher la cause (blocage de l'egress Cloudflare ? délai ?) si on veut les noms d'objets côté worker.
+3. **Worker et Data Dragon** : depuis Cloudflare, les requêtes vers `ddragon.leagueoflegends.com` échouent (`UPSTREAM_UNAVAILABLE`, visible avec `wrangler tail`). Le site contourne en reconstruisant les icônes ; chercher la cause (blocage de l'egress Cloudflare ? délai ?) si on veut les noms d'objets côté worker.
 6. **Brain** : on pourrait ajouter les événements du jour, les tâches ouvertes et le morceau en cours avec leur titre dans `live-facts.ts`.
 7. **Supabase** : 3 avertissements « multiple permissive policies » (`ethone_shared_spaces`, `ethone_shared_space_members`) à fusionner prudemment. La protection des mots de passe divulgués apparaissait encore désactivée après que l'utilisateur l'a activée (peut demander l'offre Pro).
 8. **Qualité** : 73 avertissements de lint (56 `<img>` sans intérêt en export statique, le reste des dépendances de hooks volontaires). 5 tests du bot échouent uniquement sous Windows (assertion libuv à la fermeture) ; la CI Linux est verte.

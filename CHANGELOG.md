@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.5 — 2026-10-04
+
+**Module Accueil : interrupteur carte animée (GIF)**
+
+- Ajout de l'interrupteur 'Carte animée (GIF)' dans le designer de cartes de bienvenue et départ.
+- Badge indicateur de format GIF dans l'aperçu réel généré par le bot.
+
 ## v1.55.4 — 2026-10-04
 
 **Correction de la connexion OAuth GitHub**

@@ -43592,6 +43592,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_4_de);
 
+const v1_55_5_fr: ChangelogEntry = {
+  version: "v1.55.5",
+  date: "2026-10-04",
+  title: "Module Accueil : interrupteur carte animée (GIF)",
+  items: [
+    "Ajout de l'interrupteur 'Carte animée (GIF)' dans le designer de cartes de bienvenue et départ.",
+    "Badge indicateur de format GIF dans l'aperçu réel généré par le bot.",
+  ],
+};
+
+const v1_55_5_en: ChangelogEntry = {
+  version: "v1.55.5",
+  date: "2026-10-04",
+  title: "Welcome module: animated GIF card toggle",
+  items: [
+    "Added 'Animated card (GIF)' switch in the welcome/goodbye card designer.",
+    "GIF indicator badge in the bot live preview.",
+  ],
+};
+
+const v1_55_5_es: ChangelogEntry = {
+  version: "v1.55.5",
+  date: "2026-10-04",
+  title: "Módulo de bienvenida: interruptor de tarjeta animada (GIF)",
+  items: [
+    "Añadido interruptor de tarjeta animada (GIF) en el diseñador de tarjetas de bienvenida y despedida.",
+    "Insignia de formato GIF en la vista previa del bot.",
+  ],
+};
+
+const v1_55_5_de: ChangelogEntry = {
+  version: "v1.55.5",
+  date: "2026-10-04",
+  title: "Willkommensmodul: Schalter für animierte GIF-Karten",
+  items: [
+    "Schalter für animierte Karten (GIF) im Begrüßungs-/Abschiedskarten-Designer hinzugefügt.",
+    "GIF-Format-Badge in der Live-Vorschau des Bots.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_5_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_5_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_5_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_5_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

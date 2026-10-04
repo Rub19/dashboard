@@ -19,6 +19,7 @@ export type CardImageConfig = {
   avatarShape: "circle" | "rounded" | "square";
   font: "poppins" | "bebas" | "serif" | "mono";
   showServerName: boolean;
+  animated: boolean;
 };
 
 // Mêmes défauts que WelcomeImageConfigSchema côté bot.
@@ -36,6 +37,7 @@ export const CARD_DEFAULTS: CardImageConfig = {
   avatarShape: "circle",
   font: "poppins",
   showServerName: true,
+  animated: true,
 };
 
 const TEMPLATES: { id: CardImageConfig["template"]; label: string; hint: string }[] = [
@@ -332,13 +334,36 @@ export default function WelcomeCardDesigner({
           <span className="text-sm text-[var(--text-primary)]">Afficher le nom du serveur</span>
           <input type="checkbox" checked={img.showServerName} onChange={(e) => set({ showServerName: e.target.checked })} className="h-4 w-4 accent-[var(--accent-primary)]" />
         </label>
+
+        <label className={cn("flex items-center justify-between gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-2.5 transition-opacity", Boolean(img.customBackgroundUrl) && "opacity-50")}>
+          <div className="space-y-0.5">
+            <span className="text-sm text-[var(--text-primary)]">Carte animée (GIF)</span>
+            <p className="text-[11px] text-[var(--text-muted)]">
+              {img.customBackgroundUrl
+                ? "Désactivée avec une image de fond personnalisée (carte PNG statique)."
+                : "Animation fluide en boucle (lueurs d'accent, particules et halo respirant)."}
+            </p>
+          </div>
+          <input
+            type="checkbox"
+            checked={img.animated}
+            disabled={Boolean(img.customBackgroundUrl)}
+            onChange={(e) => set({ animated: e.target.checked })}
+            className="h-4 w-4 accent-[var(--accent-primary)] cursor-pointer"
+          />
+        </label>
       </div>
 
       {/* Aperçu réel */}
       <div className="space-y-3 xl:sticky xl:top-4 xl:self-start">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-[var(--text-muted)]">Aperçu réel (généré par le bot)</span>
-          {loading && <RefreshCw className="h-3.5 w-3.5 animate-spin text-[var(--text-muted)]" />}
+          <div className="flex items-center gap-2">
+            {img.enabled && img.animated && !img.customBackgroundUrl && (
+              <span className="rounded bg-[var(--accent-primary)]/15 px-1.5 py-0.5 text-[10px] font-bold uppercase text-[var(--accent-primary)]">GIF animé</span>
+            )}
+            {loading && <RefreshCw className="h-3.5 w-3.5 animate-spin text-[var(--text-muted)]" />}
+          </div>
         </div>
         <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40" style={{ aspectRatio: "8 / 3" }}>
           {preview ? (

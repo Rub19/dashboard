@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-05, version 1.55.14)
+# ETHONE — passation à la prochaine IA (état au 2026-10-05, version 1.55.15)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 

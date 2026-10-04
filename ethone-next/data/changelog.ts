@@ -44086,6 +44086,71 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_14_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_14_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_14_de);
 
+const v1_55_15_fr: ChangelogEntry = {
+  version: "v1.55.15",
+  date: "2026-10-05",
+  title: "Refonte intégrale de Mission Control en Motion Design",
+  items: [
+    "Refonte complète de l'interface Mission Control avec animations Framer Motion haute fluidité (ressorts physiques, halo ambiant dynamique)",
+    "Nouveau sélecteur d'espaces virtuel interactif avec indicateur d'état actif lumineux et micro-interactions",
+    "Cartes de workflows connectées avec badges d'étapes et flèches de progression animées",
+    "Grille Exposé des fenêtres ouvertes avec barre de titre fenêtrée macOS, traffic lights et boutons d'action rapide",
+    "État vide interactif avec icône flottante en lévitation et lanceurs instantanés pour les applications courantes",
+    "Barre de recherche Spotlight unifiée avec onglets de filtrage par catégorie (Tout, Fenêtres, Espaces, Workflows, Apps) sur layout animé",
+    "Colonne latérale avec connecteurs live temps réel, pulsations lumineuses et liste des dashboards réactive",
+  ],
+};
+
+const v1_55_15_en: ChangelogEntry = {
+  version: "v1.55.15",
+  date: "2026-10-05",
+  title: "Complete overhaul of Mission Control in Motion Design",
+  items: [
+    "Complete redesign of the Mission Control interface with high-fluidity Framer Motion animations (spring physics, dynamic ambient glow)",
+    "New interactive virtual spaces switcher with luminous active status indicator and micro-interactions",
+    "Connected workflow cards with step pills and animated progress arrows",
+    "Exposé grid for open windows with macOS window chrome, traffic lights, and quick action buttons",
+    "Interactive empty state with smooth floating icon animation and instant quick-launch buttons for common apps",
+    "Unified Spotlight search bar with category filter tabs (All, Windows, Spaces, Workflows, Apps) with animated sliding pill",
+    "Sidebar with real-time live connectors, glowing pulses, and responsive dashboard launcher",
+  ],
+};
+
+const v1_55_15_es: ChangelogEntry = {
+  version: "v1.55.15",
+  date: "2026-10-05",
+  title: "Rediseño completo de Mission Control con Motion Design",
+  items: [
+    "Rediseño completo de la interfaz de Mission Control con animaciones Framer Motion fluidas y físicas de resorte",
+    "Nuevo selector interactivo de espacios virtuales con indicador activo iluminado",
+    "Tarjetas de flujos conectadas con insignias de pasos y flechas de progreso",
+    "Cuadrícula Exposé para ventanas abiertas con marco estilo macOS y botones rápidos",
+    "Estado vacío interactivo con animación flotante y botones de lanzamiento rápido",
+    "Buscador Spotlight unificado con pestañas de filtrado animadas",
+    "Barra lateral con conectores en vivo y pulsos luminosos",
+  ],
+};
+
+const v1_55_15_de: ChangelogEntry = {
+  version: "v1.55.15",
+  date: "2026-10-05",
+  title: "Komplette Neugestaltung von Mission Control im Motion Design",
+  items: [
+    "Komplette Neugestaltung der Mission Control-Oberfläche mit flüssigen Framer Motion-Animationen und Federphysik",
+    "Neuer interaktiver virtueller Bereichsumschalter mit leuchtender Aktivitätsanzeige",
+    "Verknüpfte Workflow-Karten mit Schritt-Badges und animierten Fortschrittspfeilen",
+    "Exposé-Raster für geöffnete Fenster mit macOS-Fensterleiste und Schnellaktionen",
+    "Interaktiver Leerzustand mit schwebender Animation und Sofortstart-Schaltflächen",
+    "Einheitliche Spotlight-Suchleiste mit animierten Kategorie-Filtertabs",
+    "Seitenleiste mit Live-Konnektoren und Lichtimpulsen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_15_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_15_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_15_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_15_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

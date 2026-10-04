@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.15 — 2026-10-05
+
+**Refonte intégrale de Mission Control en Motion Design**
+
+- Refonte complète de l'interface Mission Control avec animations Framer Motion haute fluidité (ressorts physiques, halo ambiant dynamique)
+- Nouveau sélecteur d'espaces virtuel interactif avec indicateur d'état actif lumineux et micro-interactions
+- Cartes de workflows connectées avec badges d'étapes et flèches de progression animées
+- Grille Exposé des fenêtres ouvertes avec barre de titre fenêtrée macOS, traffic lights et boutons d'action rapide
+- État vide interactif avec icône flottante en lévitation et lanceurs instantanés pour les applications courantes
+- Barre de recherche Spotlight unifiée avec onglets de filtrage par catégorie (Tout, Fenêtres, Espaces, Workflows, Apps) sur layout animé
+- Colonne latérale avec connecteurs live temps réel, pulsations lumineuses et liste des dashboards réactive
+
 ## v1.55.14 — 2026-10-05
 
 **Correction du doublon de notifications lors de l'ouverture via le dock**

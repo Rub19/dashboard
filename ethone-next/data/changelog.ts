@@ -43637,6 +43637,51 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_5_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_5_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_5_de);
 
+const v1_55_6_fr: ChangelogEntry = {
+  version: "v1.55.6",
+  date: "2026-10-04",
+  title: "Bot Discord : détection publique de la présence sur les serveurs",
+  items: [
+    "Correction de l'endpoint /api/guild-presence : accessible publiquement sans exiger de cookie de session Discord séparé sur bot.ethone.dev.",
+    "Les serveurs où le bot est installé affichent désormais correctement 'Bot présent' et sont regroupés en tête de liste dans tout le dashboard.",
+  ],
+};
+
+const v1_55_6_en: ChangelogEntry = {
+  version: "v1.55.6",
+  date: "2026-10-04",
+  title: "Discord bot: public server presence check",
+  items: [
+    "Fixed /api/guild-presence endpoint: publicly accessible without requiring a separate Discord session cookie on bot.ethone.dev.",
+    "Servers where the bot is installed now properly display 'Bot présent' and are sorted first across the entire dashboard.",
+  ],
+};
+
+const v1_55_6_es: ChangelogEntry = {
+  version: "v1.55.6",
+  date: "2026-10-04",
+  title: "Bot de Discord: detección pública de presencia en servidores",
+  items: [
+    "Corrección del endpoint /api/guild-presence: accesible públicamente sin requerir una cookie de sesión de Discord separada.",
+    "Los servidores donde el bot está instalado ahora muestran correctamente 'Bot présent' y se agrupan al principio.",
+  ],
+};
+
+const v1_55_6_de: ChangelogEntry = {
+  version: "v1.55.6",
+  date: "2026-10-04",
+  title: "Discord-Bot: öffentliche Prüfung der Server-Präsenz",
+  items: [
+    "Korrektur des Endpunkts /api/guild-presence: öffentlich zugänglich ohne separates Discord-Sitzungs-Cookie.",
+    "Server, auf denen der Bot installiert ist, zeigen jetzt korrekt „Bot présent“ an und werden ganz oben gelistet.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_6_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_6_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_6_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_6_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

@@ -19,10 +19,10 @@ const dump = process.env.DUMP_DIR;
 
 const png = (b: Buffer) => [b.readUInt32BE(16), b.readUInt32BE(20)];
 const variants: [string, Record<string, unknown>][] = [
-  ...CARD_TEMPLATES.map((t) => [t, { template: t }] as [string, Record<string, unknown>]),
-  ['gaming-bebas-rounded', { template: 'gaming', font: 'bebas', avatarShape: 'rounded', accentColor: '#8B5CF6' }],
-  ['default-serif-square-light', { template: 'default', font: 'serif', avatarShape: 'square', backgroundColor: '#F4F1EC', textColor: '#1B1B1F', accentColor: '#C1234F' }],
-  ['minimal-mono-long-name', { template: 'minimal', font: 'mono', subtitleText: 'Un pseudo vraiment beaucoup trop long pour la carte' }],
+  ...CARD_TEMPLATES.map((t) => [t, { template: t, animated: false }] as [string, Record<string, unknown>]),
+  ['gaming-bebas-rounded', { template: 'gaming', font: 'bebas', avatarShape: 'rounded', accentColor: '#8B5CF6', animated: false }],
+  ['default-serif-square-light', { template: 'default', font: 'serif', avatarShape: 'square', backgroundColor: '#F4F1EC', textColor: '#1B1B1F', accentColor: '#C1234F', animated: false }],
+  ['minimal-mono-long-name', { template: 'minimal', font: 'mono', subtitleText: 'Un pseudo vraiment beaucoup trop long pour la carte', animated: false }],
 ];
 for (const [name, cfg] of variants) {
   const buf = await WelcomeCardGenerator.generateCard(cfg, '', ctx, avatar);
@@ -32,7 +32,7 @@ for (const [name, cfg] of variants) {
 console.log(`  ✅ ${variants.length} variantes rendues en 1600x600`);
 
 // Avatar injoignable : la carte se génère quand même (initiale).
-const noAvatar = await WelcomeCardGenerator.generateCard({ template: 'default' }, '', ctx, null);
+const noAvatar = await WelcomeCardGenerator.generateCard({ template: 'default', animated: false }, '', ctx, null);
 assert.deepEqual(png(noAvatar), [1600, 600]);
 console.log('  ✅ avatar absent : initiale, pas d’erreur');
 

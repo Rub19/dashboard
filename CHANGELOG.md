@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.6 — 2026-10-04
+
+**Bot Discord : détection publique de la présence sur les serveurs**
+
+- Correction de l'endpoint /api/guild-presence : accessible publiquement sans exiger de cookie de session Discord séparé sur bot.ethone.dev.
+- Les serveurs où le bot est installé affichent désormais correctement 'Bot présent' et sont regroupés en tête de liste dans tout le dashboard.
+
 ## v1.55.5 — 2026-10-04
 
 **Module Accueil : interrupteur carte animée (GIF)**

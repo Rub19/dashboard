@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-04, version 1.55.5)
+# ETHONE — passation à la prochaine IA (état au 2026-10-04, version 1.55.6)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 
@@ -156,7 +156,7 @@ git log --oneline -10
 - **Thèmes** : menu de la barre du haut `components/ThemePicker.tsx` (clic droit : appliquer, police, dupliquer en thème perso, supprimer) ; le studio `components/settings/ThemeStudio.tsx` lit l'intention via `lib/theme-intent.ts`.
 - Musique : Lavalink 4 en Docker sur le NAS (tunnels SSH), YouTube bloqué côté Lavalink, chemin réel yt-dlp puis SoundCloud. L'entrée pm2 `lavalink` arrêtée sur le VPS est normale.
 
-## Fait pendant la session du 2026-10-03/04 (v1.52.12 → v1.55.5)
+## Fait pendant la session du 2026-10-03/04 (v1.52.12 → v1.55.6)
 - Thème clair : panneaux restés noirs corrigés (connexions, guide, changelog, dock mobile, tracker…), revue de toutes les pages principales.
 - Supabase : règles d'accès optimisées, 22 index de clés étrangères, index en double supprimé ; Realtime sur `ethone_public_profiles` ; colonnes `status_text`, `status_emoji`, `banner_url` ; GIF autorisés dans `profile-media`.
 - Code : 94 fichiers morts supprimés (site, bot, worker), ~120 variables mortes retirées, imports nettoyés, 4 dépendances de hooks corrigées.
@@ -166,7 +166,7 @@ git log --oneline -10
 - Tracker Valorant : historique paginé réel.
 - Brain : météo et parties en direct.
 - Connexions : GitHub corrigé (rétablissement du Client ID officiel Ov23li7gnklQJ7ipkgZG, acceptation de redirectUri dans le Worker Cloudflare, échange OAuth opérationnel, test en direct validé en 775 ms et profil synchronisé).
-- Bot : émojis et boutons animés, logo animé dans `/help`, cartes de bienvenue/départ animées (interrupteur `image.animated` et badge GIF ajoutés au designer d'accueil) ; module Émojis du serveur.
+- Bot : émojis et boutons animés, logo animé dans `/help`, cartes de bienvenue/départ animées (interrupteur `image.animated` et badge GIF ajoutés au designer d'accueil) ; correction de `/api/guild-presence` (rendu public) pour que les serveurs avec le bot soient bien reconnus et affichés avec « Bot présent » ; module Émojis du serveur.
 - Thèmes : clic droit dans le menu Thèmes (Modifier la police…, Créer un thème à partir de celui-ci) revérifié et validé dans Chrome en production sur le studio sans réécriture parasite ; thèmes perso visibles ; la réécriture `/settings/* → /settings/general/` de `public/_redirects` (qui masquait toutes les sections des Réglages) est supprimée.
 
 ## Reste à faire (par priorité)

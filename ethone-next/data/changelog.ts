@@ -43228,6 +43228,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_53_6_en);
 CHANGELOG_BY_LANG.es.unshift(v1_53_6_es);
 CHANGELOG_BY_LANG.de.unshift(v1_53_6_de);
 
+const v1_53_7_fr: ChangelogEntry = {
+  version: "v1.53.7",
+  date: "2026-10-04",
+  title: "Tracker LoL : icônes des runes",
+  items: [
+    "Les icônes des runes principales s'affichent (leur adresse était incorrecte).",
+  ],
+};
+
+const v1_53_7_en: ChangelogEntry = {
+  version: "v1.53.7",
+  date: "2026-10-04",
+  title: "LoL tracker: rune icons",
+  items: [
+    "Keystone rune icons now display (their address was wrong).",
+  ],
+};
+
+const v1_53_7_es: ChangelogEntry = {
+  version: "v1.53.7",
+  date: "2026-10-04",
+  title: "Tracker de LoL: iconos de runas",
+  items: [
+    "Los iconos de las runas principales se muestran (su dirección era incorrecta).",
+  ],
+};
+
+const v1_53_7_de: ChangelogEntry = {
+  version: "v1.53.7",
+  date: "2026-10-04",
+  title: "LoL-Tracker: Runen-Icons",
+  items: [
+    "Die Icons der Schlüsselrunen werden angezeigt (ihre Adresse war falsch).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_53_7_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_53_7_en);
+CHANGELOG_BY_LANG.es.unshift(v1_53_7_es);
+CHANGELOG_BY_LANG.de.unshift(v1_53_7_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

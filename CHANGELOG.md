@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.53.7 — 2026-10-04
+
+**Tracker LoL : icônes des runes**
+
+- Les icônes des runes principales s'affichent (leur adresse était incorrecte).
+
 ## v1.53.6 — 2026-10-04
 
 **Tracker LoL : sorts, rune et objets récents**

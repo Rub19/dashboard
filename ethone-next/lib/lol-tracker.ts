@@ -150,7 +150,8 @@ export function ensureDdragonVersion(): Promise<void> {
 /** Rune principale à partir de son identifiant (le worker ne peut pas toujours fournir l'icône). */
 export function getLolRune(runeId?: number): LolRuneAsset | null {
   const r = runeId ? runeTable.get(runeId) : undefined;
-  return r ? { id: runeId, name: r.name, image: dd(r.icon) } : null;
+  // Les icônes de runes ne sont servies que sans numéro de version.
+  return r ? { id: runeId, name: r.name, image: `https://ddragon.leagueoflegends.com/cdn/img/${r.icon}` } : null;
 }
 const dd = (p: string) => `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img/${p}`;
 

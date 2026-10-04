@@ -361,7 +361,7 @@ async function fetchDdragonDataForVersion(env, version) {
     if (path?.icon && path?.id != null) {
       runeMap[String(path.id)] = {
         name: safeText(path.name, 32),
-        image: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${version}/img/${path.icon}`, ["leagueoflegends.com"])
+        image: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/img/${path.icon}`, ["leagueoflegends.com"])
       };
     }
     for (const slot of path?.slots || []) {
@@ -369,7 +369,7 @@ async function fetchDdragonDataForVersion(env, version) {
         if (rune?.icon && rune?.id != null) {
           runeMap[String(rune.id)] = {
             name: safeText(rune.name, 32),
-            image: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${version}/img/${rune.icon}`, ["leagueoflegends.com"])
+            image: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`, ["leagueoflegends.com"])
           };
         }
       }

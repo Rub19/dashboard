@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.52.16 — 2026-10-04
+
+**Vrais écrans de chargement sur 8 pages Discord**
+
+- Console du bot, Présence, Gestion du serveur, Vocal, Invitations, Réglages des invitations, Signalements et Profil de modération affichent un aperçu animé pendant le premier chargement, au lieu d'une page vide ou de valeurs par défaut qui changent ensuite.
+- Signalements et Profil de modération n'affichent plus « file vide » ou « aucune sanction » avant d'avoir reçu les données.
+- Gestion du serveur : la fiche d'un membre s'ouvre tout de suite avec un aperçu pendant son chargement.
+- Invitations : les 5 requêtes partent en même temps, et la recherche n'interroge le bot qu'une fois la frappe terminée.
+
 ## v1.52.15 — 2026-10-04
 
 **Nettoyage du code et corrections**

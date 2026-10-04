@@ -53,6 +53,7 @@ import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { formatApiError, errorReason } from "@/lib/format-error";
 import { useDiscordSync } from "@/lib/useDiscordSync";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 export type BotTab =
   | "overview"
@@ -1485,6 +1486,10 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
       {/* CONTENT AREA */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        {loading ? (
+          <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement de la console du bot…" />
+        ) : (
+        <>
         {/* ======================================================== */}
         {/* EXCLUSIVE BOT OWNER EXECUTIVE COMMAND DECK               */}
         {/* ======================================================== */}
@@ -1741,6 +1746,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
           <SecurityGroup activeTab={activeTab} securityAudit={securityAudit} errors={errors} />
         )}
         </div>
+        </>
+        )}
       </div>
     </div>
   );

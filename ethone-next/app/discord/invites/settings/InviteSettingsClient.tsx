@@ -21,6 +21,7 @@ import { formatApiError } from "@/lib/format-error";
 import { motion } from "framer-motion";
 import { SPRING_PILL } from "@/lib/ease";
 import { Switch } from "@/components/discord/SettingsUI";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -237,6 +238,9 @@ export default function InviteSettingsClient() {
         </div>
       )}
 
+      {loading ? (
+        <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement des réglages…" />
+      ) : (
       <div className="stagger-children space-y-6">
         {/* Section 1: Tracking Général */}
         <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6">
@@ -403,6 +407,7 @@ export default function InviteSettingsClient() {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }

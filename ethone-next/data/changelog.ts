@@ -42836,6 +42836,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_52_15_en);
 CHANGELOG_BY_LANG.es.unshift(v1_52_15_es);
 CHANGELOG_BY_LANG.de.unshift(v1_52_15_de);
 
+const v1_52_16_fr: ChangelogEntry = {
+  version: "v1.52.16",
+  date: "2026-10-04",
+  title: "Vrais écrans de chargement sur 8 pages Discord",
+  items: [
+    "Console du bot, Présence, Gestion du serveur, Vocal, Invitations, Réglages des invitations, Signalements et Profil de modération affichent un aperçu animé pendant le premier chargement, au lieu d'une page vide ou de valeurs par défaut qui changent ensuite.",
+    "Signalements et Profil de modération n'affichent plus « file vide » ou « aucune sanction » avant d'avoir reçu les données.",
+    "Gestion du serveur : la fiche d'un membre s'ouvre tout de suite avec un aperçu pendant son chargement.",
+    "Invitations : les 5 requêtes partent en même temps, et la recherche n'interroge le bot qu'une fois la frappe terminée.",
+  ],
+};
+
+const v1_52_16_en: ChangelogEntry = {
+  version: "v1.52.16",
+  date: "2026-10-04",
+  title: "Real loading screens on 8 Discord pages",
+  items: [
+    "Bot console, Presence, Server management, Voice, Invites, Invite settings, Reports and Moderation profile show an animated preview during the first load instead of an empty page or default values that change afterwards.",
+    "Reports and Moderation profile no longer show \"queue empty\" or \"no sanctions\" before the data arrives.",
+    "Server management: a member's card opens immediately with a preview while it loads.",
+    "Invites: the 5 requests run in parallel, and search only queries the bot once typing stops.",
+  ],
+};
+
+const v1_52_16_es: ChangelogEntry = {
+  version: "v1.52.16",
+  date: "2026-10-04",
+  title: "Pantallas de carga reales en 8 páginas de Discord",
+  items: [
+    "Consola del bot, Presencia, Gestión del servidor, Voz, Invitaciones, Ajustes de invitaciones, Reportes y Perfil de moderación muestran una vista previa animada durante la primera carga en lugar de una página vacía o valores por defecto que cambian después.",
+    "Reportes y Perfil de moderación ya no muestran «cola vacía» o «sin sanciones» antes de recibir los datos.",
+    "Gestión del servidor: la ficha de un miembro se abre al instante con una vista previa mientras carga.",
+    "Invitaciones: las 5 peticiones salen a la vez y la búsqueda solo consulta al bot cuando se deja de escribir.",
+  ],
+};
+
+const v1_52_16_de: ChangelogEntry = {
+  version: "v1.52.16",
+  date: "2026-10-04",
+  title: "Echte Ladeanzeigen auf 8 Discord-Seiten",
+  items: [
+    "Bot-Konsole, Präsenz, Serververwaltung, Sprachkanäle, Einladungen, Einladungs-Einstellungen, Meldungen und Moderationsprofil zeigen beim ersten Laden eine animierte Vorschau statt einer leeren Seite oder Standardwerten, die sich danach ändern.",
+    "Meldungen und Moderationsprofil zeigen nicht mehr „Warteschlange leer“ oder „keine Sanktionen“, bevor die Daten da sind.",
+    "Serververwaltung: die Karte eines Mitglieds öffnet sich sofort mit einer Vorschau, während sie lädt.",
+    "Einladungen: die 5 Anfragen laufen parallel, und die Suche fragt den Bot erst nach Ende der Eingabe.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_52_16_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_52_16_en);
+CHANGELOG_BY_LANG.es.unshift(v1_52_16_es);
+CHANGELOG_BY_LANG.de.unshift(v1_52_16_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

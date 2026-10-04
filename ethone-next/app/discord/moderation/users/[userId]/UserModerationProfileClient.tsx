@@ -32,6 +32,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import { formatApiError, errorReason } from "@/lib/format-error";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -381,6 +382,9 @@ export default function UserModerationProfileClient() {
         </div>
       </div>
 
+      {isLoading && !userProfile ? (
+        <ModuleSkeleton compact label="Chargement du profil de modération…" />
+      ) : (
       <div className="max-w-7xl mx-auto px-6 pt-6 space-y-6">
         {/* BANNIÈRE BOT NON INSTALLÉ */}
         {selectedGuild && botGuildIds && !botGuildIds.includes(selectedGuild.id) && (
@@ -1044,6 +1048,7 @@ export default function UserModerationProfileClient() {
           </div>
         )}
       </div>
+      )}
 
       {/* MODALE D'ACTION RAPIDE (WARN / TIMEOUT / KICK / BAN / QUARANTINE) */}
       {activeActionModal && (

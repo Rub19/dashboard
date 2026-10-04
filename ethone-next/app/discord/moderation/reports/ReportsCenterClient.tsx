@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ReportsSetupPanel from "./ReportsSetupPanel";
 import { formatApiError } from "@/lib/format-error";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -378,7 +379,9 @@ export default function ReportsCenterClient() {
         </div>
 
         {/* LISTE DES SIGNALEMENTS */}
-        {filteredReports.length > 0 ? (
+        {isLoading && reports.length === 0 ? (
+          <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement des signalements…" />
+        ) : filteredReports.length > 0 ? (
           <div className="stagger-children grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredReports.map((report) => {
               const stCfg = STATUS_CONFIG[report.status];

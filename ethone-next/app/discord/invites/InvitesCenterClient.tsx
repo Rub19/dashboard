@@ -34,6 +34,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 import RolePicker from "@/components/discord/RolePicker";
 import { formatApiError } from "@/lib/format-error";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -98,6 +99,12 @@ export default function InvitesCenterClient() {
   // Leaderboard filters
   const [period, setPeriod] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  // La recherche n'interroge le bot qu'une fois la frappe terminée (300 ms), pas à chaque lettre.
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
 
   // Reward Builder Modal State
   const [showRewardModal, setShowRewardModal] = useState(false);
@@ -122,55 +129,29 @@ export default function InvitesCenterClient() {
       return;
     }
     setLoading(true);
+    const base = `${API_BASE}/api/guilds/${currentGuildId}/invites`;
+    const getJson = (path: string) =>
+      fetch(base + path, { credentials: "include" })
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null);
     try {
-      // 1. Overview
-      const ovRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/overview`, { credentials: "include" }).catch(() => null);
-      if (ovRes && ovRes.ok) {
-        const ovData = await ovRes.json();
-        setOverview(ovData);
-      } else {
-        setOverview(null);
-      }
-
-      // 2. Leaderboard
-      const lbRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/leaderboard?period=${period}&search=${encodeURIComponent(searchQuery)}`, { credentials: "include" }).catch(() => null);
-      if (lbRes && lbRes.ok) {
-        const lbData = await lbRes.json();
-        setLeaderboard(lbData.leaderboard || []);
-      } else {
-        setLeaderboard([]);
-      }
-
-      // 3. Links
-      const linksRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/links`, { credentials: "include" }).catch(() => null);
-      if (linksRes && linksRes.ok) {
-        const linksData = await linksRes.json();
-        setLinks(linksData.links || []);
-      } else {
-        setLinks([]);
-      }
-
-      // 4. Rewards
-      const rewRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/rewards`, { credentials: "include" }).catch(() => null);
-      if (rewRes && rewRes.ok) {
-        const rewData = await rewRes.json();
-        setRewards(rewData.rewards || []);
-      } else {
-        setRewards([]);
-      }
-
-      // 5. Campaigns
-      const campRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/campaigns`, { credentials: "include" }).catch(() => null);
-      if (campRes && campRes.ok) {
-        const campData = await campRes.json();
-        setCampaigns(campData.campaigns || []);
-      } else {
-        setCampaigns([]);
-      }
+      // Les 5 appels partent en même temps au lieu de s'attendre les uns les autres.
+      const [ovData, lbData, linksData, rewData, campData] = await Promise.all([
+        getJson("/overview"),
+        getJson(`/leaderboard?period=${period}&search=${encodeURIComponent(debouncedSearch)}`),
+        getJson("/links"),
+        getJson("/rewards"),
+        getJson("/campaigns"),
+      ]);
+      setOverview(ovData);
+      setLeaderboard(lbData?.leaderboard || []);
+      setLinks(linksData?.links || []);
+      setRewards(rewData?.rewards || []);
+      setCampaigns(campData?.campaigns || []);
     } finally {
       setLoading(false);
     }
-  }, [currentGuildId, isBotPresent, period, searchQuery]);
+  }, [currentGuildId, isBotPresent, period, debouncedSearch]);
 
   useEffect(() => {
     fetchAllData();
@@ -379,6 +360,10 @@ export default function InvitesCenterClient() {
         </div>
       )}
 
+      {loading && overview === null ? (
+        <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement des invitations…" />
+      ) : (
+      <>
       {/* 8 Overview KPIs Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
         <div className="p-3.5 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">
@@ -894,6 +879,9 @@ export default function InvitesCenterClient() {
             </div>
           </div>
         </div>
+      )}
+
+      </>
       )}
 
       {/* Modal: Create Reward */}

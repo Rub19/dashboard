@@ -35,6 +35,7 @@ import VoiceHubsPanel from "./VoiceHubsPanel";
 import { subscribeGuildLive } from "@/lib/guildLive";
 import { cn } from "@/lib/utils";
 import { formatApiError } from "@/lib/format-error";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 interface VoiceHub {
   id: string;
@@ -387,6 +388,10 @@ export default function VoiceCenterClient() {
         </div>
       )}
 
+      {loading ? (
+        <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement des salons vocaux…" />
+      ) : (
+      <>
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 relative overflow-hidden group hover:border-[var(--accent-primary)]/30 transition-all">
@@ -732,6 +737,9 @@ export default function VoiceCenterClient() {
             </table>
           </div>
         </div>
+      )}
+
+      </>
       )}
 
       {/* Rename Modal */}

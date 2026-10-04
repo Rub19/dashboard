@@ -49,6 +49,7 @@ import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import { formatApiError } from "@/lib/format-error";
 import Select from "@/components/ui/Select";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 // ==========================================
 // Types
@@ -1152,6 +1153,10 @@ export default function ServerManagementClient({
 
       {/* Main Tab Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-44 md:pb-44">
+        {loading ? (
+          <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement du serveur…" />
+        ) : (
+        <>
         {/* ========================================================================= */}
         {/* TAB 1: OVERVIEW */}
         {/* ========================================================================= */}
@@ -1580,6 +1585,21 @@ export default function ServerManagementClient({
             </div>
 
             {/* Member Profile Drawer / Modal */}
+            {loadingMemberProfile && !selectedMember && (
+              <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 flex items-center justify-center p-4" role="status" aria-busy="true" aria-label="Chargement du profil du membre…">
+                <div className="w-full max-w-2xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="skeleton-shimmer h-14 w-14 rounded-2xl" />
+                    <div className="flex-1 space-y-2">
+                      <div className="skeleton-shimmer h-4 w-1/3 rounded" />
+                      <div className="skeleton-shimmer h-3 w-1/4 rounded" />
+                    </div>
+                  </div>
+                  <div className="skeleton-shimmer h-24 rounded-[var(--inset-radius)]" />
+                  <div className="skeleton-shimmer h-16 rounded-[var(--inset-radius)]" />
+                </div>
+              </div>
+            )}
             {selectedMember && (
               <div className="fixed inset-0 z-[var(--z-modal)] bg-black/80 flex items-center justify-center p-4">
                 <div className="w-full max-w-2xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-6 space-y-6 max-h-[90vh] overflow-y-auto ">
@@ -2829,6 +2849,8 @@ export default function ServerManagementClient({
               </div>
             </div>
           </div>
+        )}
+        </>
         )}
       </main>
 

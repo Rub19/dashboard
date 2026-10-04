@@ -45,6 +45,7 @@ import { useToast } from "@/components/ToastProvider";
 import { formatApiError } from "@/lib/format-error";
 import { cn } from "@/lib/utils";
 import Select from "@/components/ui/Select";
+import ModuleSkeleton from "@/components/discord/ModuleSkeleton";
 
 // Même convention que le reste des pages /discord/* (BotControlClient, welcome,
 // moderation, automod...) : NEXT_PUBLIC_DISCORD_BOT_API pointe vers le serveur Express
@@ -643,6 +644,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
+        {loading ? (
+          <ModuleSkeleton compact className="px-0 sm:px-0" label="Chargement de la présence du bot…" />
+        ) : (
+        <>
         {/* TAB 1: OVERVIEW */}
         {activeTab === "overview" && (
           <div className="stagger-children space-y-8">
@@ -1646,6 +1651,8 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               </div>
             </div>
           </div>
+        )}
+        </>
         )}
       </div>
     </div>

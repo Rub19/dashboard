@@ -8,10 +8,33 @@ import WeatherDetailPopover from "@/components/WeatherDetailPopover";
 import { hapticLightImpact } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
-export default function DockWeatherFlyout() {
+export type DockWeatherFlyoutProps = {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+};
+
+export default function DockWeatherFlyout({
+  open: controlledOpen,
+  onOpenChange,
+}: DockWeatherFlyoutProps = {}) {
   const { weather } = useWeatherOnly(300000);
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const [buttonEl, setButtonEl] = useState<HTMLButtonElement | null>(null);
+
+  const isControlled = typeof controlledOpen === "boolean";
+  const open = isControlled ? controlledOpen : uncontrolledOpen;
+
+  const handleToggle = () => {
+    hapticLightImpact();
+    const next = !open;
+    if (onOpenChange) onOpenChange(next);
+    if (!isControlled) setUncontrolledOpen(next);
+  };
+
+  const handleClose = () => {
+    if (onOpenChange) onOpenChange(false);
+    if (!isControlled) setUncontrolledOpen(false);
+  };
 
   const temp =
     typeof weather?.temperature === "number" ? `${Math.round(weather.temperature)}°` : null;
@@ -25,10 +48,7 @@ export default function DockWeatherFlyout() {
       <motion.button
         ref={setButtonEl}
         type="button"
-        onClick={() => {
-          hapticLightImpact();
-          setOpen((v) => !v);
-        }}
+        onClick={handleToggle}
         whileHover={{ scale: 1.08, y: -2 }}
         whileTap={{ scale: 0.94 }}
         transition={{ type: "spring", stiffness: 450, damping: 25 }}
@@ -56,7 +76,7 @@ export default function DockWeatherFlyout() {
       </motion.button>
       <WeatherDetailPopover
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={handleClose}
         referenceRef={buttonEl}
         placement="top-end"
       />

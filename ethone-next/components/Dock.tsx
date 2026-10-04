@@ -151,6 +151,7 @@ function Dock() {
   const [controlCenterEl, setControlCenterEl] = useState<HTMLButtonElement | null>(null);
   const [pomodoroEl, setPomodoroEl] = useState<HTMLButtonElement | null>(null);
   const [focusOpen, setFocusOpen] = useState(false);
+  const [weatherOpen, setWeatherOpen] = useState(false);
 
   // Per-page temporary override to reveal the dock on auto-hide pages
   const [pageOverrideShow, setPageOverrideShow] = useState(false);
@@ -227,6 +228,7 @@ function Dock() {
     if (!pomodoroEl) return;
     setControlCenterOpen(false);
     setLauncherOpen(false);
+    setWeatherOpen(false);
     setFocusOpen(true);
   }
 
@@ -441,7 +443,19 @@ function Dock() {
                 clientId={settings.liveSpotifyClientId || OAUTH_APP_CLIENT_IDS.spotify}
               />
 
-              {settings.dockItems.includes("weather") && <DockWeatherFlyout />}
+              {settings.dockItems.includes("weather") && (
+                <DockWeatherFlyout
+                  open={weatherOpen}
+                  onOpenChange={(v) => {
+                    setWeatherOpen(v);
+                    if (v) {
+                      setLauncherOpen(false);
+                      setControlCenterOpen(false);
+                      setFocusOpen(false);
+                    }
+                  }}
+                />
+              )}
 
               <AppleDockItem
                 icon={LayoutGrid}
@@ -452,6 +466,7 @@ function Dock() {
                   setLauncherOpen((v) => !v);
                   setControlCenterOpen(false);
                   setFocusOpen(false);
+                  setWeatherOpen(false);
                 }}
               />
 
@@ -523,6 +538,7 @@ function Dock() {
                   setControlCenterOpen((v) => !v);
                   setLauncherOpen(false);
                   setFocusOpen(false);
+                  setWeatherOpen(false);
                 }}
               />
 

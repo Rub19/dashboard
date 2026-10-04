@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFloating, offset, flip, shift, autoUpdate, FloatingPortal } from "@floating-ui/react";
 import Link from "next/link";
@@ -258,6 +258,12 @@ function WeatherDetailContent({
     elements: { reference: referenceRef },
   });
 
+  useEffect(() => {
+    if (referenceRef) {
+      refs.setReference(referenceRef);
+    }
+  }, [referenceRef, refs]);
+
   useLayer(open, onClose, {
     boundary: refs.floating,
     anchor: referenceRef,
@@ -310,6 +316,29 @@ function WeatherDetailContent({
   const lang = settings.language || "fr";
   const theme = getWeatherTheme(code, isDay);
 
+  const fallbackPos = useMemo(() => {
+    if (!referenceRef || typeof window === "undefined") return null;
+    const rect = referenceRef.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) return null;
+    const width = 352;
+    const center = rect.left + rect.width / 2;
+    const left = Math.min(Math.max(12, center - width / 2), window.innerWidth - width - 12);
+    if (placement === "top-end") {
+      const bottom = window.innerHeight - rect.top + 10;
+      return { position: "fixed" as const, left, bottom };
+    }
+    const top = rect.bottom + 10;
+    return { position: "fixed" as const, left, top };
+  }, [referenceRef, placement]);
+
+  const hasValidFloating =
+    isPositioned &&
+    Boolean(floatingStyles.left) &&
+    floatingStyles.left !== 0 &&
+    floatingStyles.left !== "0px";
+  const effectiveStyles = hasValidFloating ? floatingStyles : fallbackPos || floatingStyles;
+  const ready = isPositioned || Boolean(fallbackPos);
+
   return (
     <FloatingPortal>
       <AnimatePresence>
@@ -317,25 +346,26 @@ function WeatherDetailContent({
           <motion.div
             ref={refs.setFloating}
             style={{
-              ...floatingStyles,
-              visibility: isPositioned ? "visible" : "hidden",
-              transformOrigin: actualPlacement?.startsWith("top")
-                ? "bottom right"
-                : "top right",
+              ...effectiveStyles,
+              visibility: ready ? "visible" : "hidden",
+              transformOrigin:
+                actualPlacement?.startsWith("top") || placement?.startsWith("top")
+                  ? "bottom center"
+                  : "top center",
             }}
             initial={{
               opacity: 0,
-              y: actualPlacement?.startsWith("top") ? 14 : -14,
+              y: actualPlacement?.startsWith("top") || placement?.startsWith("top") ? 14 : -14,
               scale: 0.94,
             }}
             animate={{
-              opacity: isPositioned ? 1 : 0,
-              y: isPositioned ? 0 : actualPlacement?.startsWith("top") ? 14 : -14,
-              scale: isPositioned ? 1 : 0.94,
+              opacity: ready ? 1 : 0,
+              y: ready ? 0 : actualPlacement?.startsWith("top") || placement?.startsWith("top") ? 14 : -14,
+              scale: ready ? 1 : 0.94,
             }}
             exit={{
               opacity: 0,
-              y: actualPlacement?.startsWith("top") ? 10 : -10,
+              y: actualPlacement?.startsWith("top") || placement?.startsWith("top") ? 10 : -10,
               scale: 0.96,
               transition: { duration: 0.16, ease: "easeOut" },
             }}

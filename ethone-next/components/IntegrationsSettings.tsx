@@ -35,7 +35,6 @@ export default function IntegrationsSettings() {
   const [connected, setConnected] = useState<Record<string, boolean>>({});
   const [clientIds, setClientIds] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
-  const [fetchError, setFetchError] = useState<string | null>(null);
   const [health, setHealth] = useState<Record<string, PingResult>>({});
   const [testingAll, setTestingAll] = useState(false);
   const [search, setSearch] = useState("");
@@ -71,7 +70,6 @@ export default function IntegrationsSettings() {
 
   useEffect(() => {
     setLoading(true);
-    setFetchError(null);
     fetchWorker("/api/connections")
       .then((res) => {
         const rows = Array.isArray(res?.data) ? res.data : [];

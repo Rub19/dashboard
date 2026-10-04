@@ -786,7 +786,7 @@ function renderCity(data: Float32Array, sampleRate: number): void {
   }
 }
 
-function renderLibrary(data: Float32Array, sampleRate: number): void {
+function renderLibrary(data: Float32Array, _sampleRate: number): void {
   renderPinkNoise(data, 0.035);
   const length = data.length;
   for (let i = 0; i < length; i++) {

@@ -289,7 +289,6 @@ export default function HighlightsCenterClient() {
     }
   };
 
-  const mutableChannels = channels.filter((c) => !(config?.ignoredChannelIds ?? []).includes(c.id));
   const mutedChannels = channels.filter((c) => (config?.ignoredChannelIds ?? []).includes(c.id));
 
   return (

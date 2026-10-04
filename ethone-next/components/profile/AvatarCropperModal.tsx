@@ -87,7 +87,6 @@ export default function AvatarCropperModal({
     canvas.width = outputSize;
     canvas.height = outputSize;
 
-    const containerSize = containerRef.current.clientWidth || 280;
 
     // Calculate crop box in natural image coordinates
 

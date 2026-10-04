@@ -133,7 +133,7 @@ export default function TasksPage() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
-  const [selectedCategory, setSelectedCategory] = useState("Tous");
+  const [selectedCategory] = useState("Tous");
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(false);
 

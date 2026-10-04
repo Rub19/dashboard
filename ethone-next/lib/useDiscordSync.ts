@@ -158,7 +158,7 @@ export function useDiscordSync({
         es.addEventListener("PRESENCE_CHANGED", handleIncoming);
         es.addEventListener("DISCORD_EVENT", handleIncoming);
         es.addEventListener("MUTATION_CONFIRMED", handleIncoming);
-        es.addEventListener("HEARTBEAT", (e: MessageEvent) => {
+        es.addEventListener("HEARTBEAT", (_e: MessageEvent) => {
           if (!isMounted) return;
           setConnectionState("connected");
         });

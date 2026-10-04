@@ -81,7 +81,6 @@ export default function NotificationItem({
 }) {
   const { success } = useToast();
   const {
-    markRead,
     archive,
     snooze,
     markImportant,
@@ -92,7 +91,7 @@ export default function NotificationItem({
   } = useNotifications();
 
   const [snoozeExpanded, setSnoozeExpanded] = useState(false);
-  const [expanded, setExpanded] = useState(false);
+  const [expanded] = useState(false);
 
 
   const isCritical = n.priority === "critical";
@@ -105,11 +104,6 @@ export default function NotificationItem({
     success("Notification marquée comme lue");
   }
 
-  function handleArchive(e: React.MouseEvent) {
-    e.stopPropagation();
-    archive(n.id);
-    success("Notification archivée");
-  }
 
   return (
     <motion.div

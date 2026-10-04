@@ -29,7 +29,6 @@ export default function FocusTimer2026({
   onStop,
   onSkipBreak,
   onAdjustTime,
-  size = 320,
   activeTaskTitle,
 }: FocusTimer2026Props) {
   const isBreak = phase === "shortBreak" || phase === "longBreak";

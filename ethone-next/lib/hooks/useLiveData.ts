@@ -83,10 +83,6 @@ function asNum(value: unknown): number | undefined {
   return undefined;
 }
 
-function asStringList(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value.map(asStr).filter((item): item is string => Boolean(item));
-}
 
 // Per-endpoint cache TTL. useLiveData mounts ~6-10 times and each polls on its
 // own 60s interval; without a real TTL those polls miss the 5s cache and each

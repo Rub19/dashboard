@@ -133,7 +133,6 @@ export default function RolePicker({
   className,
   inputClassName,
   disabled = false,
-  required = false,
   allowClear = true,
   filterManageable = false,
   size = "default",

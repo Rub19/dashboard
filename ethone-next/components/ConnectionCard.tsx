@@ -28,10 +28,8 @@ export type SyncEvent = {
 export default function ConnectionCard({
   integration,
   clientId,
-  onClientIdChange,
   credentialConnected,
   oauthConnected,
-  credentials,
   health,
   onTest,
   onDisconnect,

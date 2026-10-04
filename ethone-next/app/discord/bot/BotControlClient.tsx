@@ -996,7 +996,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   }, [officialCommands]);
 
   // Realtime Sync Hook
-  const { connectionState, isSyncing, lastEvent } = useDiscordSync({
+  const { connectionState, isSyncing } = useDiscordSync({
     onEvent: (evt) => {
       setRecentEvents((prev) => [
         {

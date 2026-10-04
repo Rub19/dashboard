@@ -971,7 +971,6 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
           <div className="stagger-children space-y-3">
             {filteredGuilds.map((g) => {
               const st = g.ownerStatus;
-              const perms = g.botHasPermissions;
               const hasActiveSanction = st.isBanned || st.isTimedOut || st.isVoiceMuted || st.hasMuteRole;
               const isActing = actingGuildId === g.guildId;
               const isIgnored = g.isIgnored;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ToastProvider";
 import { useFocus } from "@/components/FocusProvider";
@@ -47,7 +47,6 @@ export default function FocusPage() {
   const [goalInput, setGoalInput] = useState("");
   const [editingGoal, setEditingGoal] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("focus");
-  const prevPhase = useRef(state.phase);
 
   // Phase change effects and completion listener
   useEffect(() => {

@@ -11,7 +11,7 @@ export type LiveThemePreviewProps = {
   className?: string;
 };
 
-export default function LiveThemePreview({ themeId, accentHex, className }: LiveThemePreviewProps) {
+export default function LiveThemePreview({ themeId, className }: LiveThemePreviewProps) {
   const { settings } = useSettings();
 
   const activeThemeId = (themeId || settings.theme) as PremiumThemeId;

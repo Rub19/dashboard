@@ -294,13 +294,10 @@ interface Props {
 export default function ServerManagementClient({
   initialTab = "overview",
   openedMemberId: openedMemberIdProp,
-  openedChannelId: openedChannelIdProp,
 }: Props) {
   // Identifiants lus dans l'adresse réelle : la page statique est générée pour « demo » (voir lib/hooks/usePathSegment.ts)
   const memberFromPath = usePathSegment("members");
-  const channelFromPath = usePathSegment("channels");
   const openedMemberId = openedMemberIdProp ? memberFromPath || undefined : undefined;
-  const openedChannelId = openedChannelIdProp ? channelFromPath || undefined : undefined;
   const searchParams = useSearchParams();
   const { profile: oauthProfile } = useDiscordOAuth();
   const guildId = useResolvedGuildId(searchParams.get("guildId"), oauthProfile?.guilds);
@@ -320,7 +317,6 @@ export default function ServerManagementClient({
     channels: any[];
     roles: any[];
   } | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
 
   // Members state
   const [members, setMembers] = useState<MemberItem[]>([]);
@@ -349,8 +345,8 @@ export default function ServerManagementClient({
   const [newChannelName, setNewChannelName] = useState("");
   const [newChannelCategory, setNewChannelCategory] = useState<string>("");
   const [newChannelTopic, setNewChannelTopic] = useState("");
-  const [newChannelNsfw, setNewChannelNsfw] = useState(false);
-  const [newChannelSlowmode, setNewChannelSlowmode] = useState(0);
+  const [newChannelNsfw] = useState(false);
+  const [newChannelSlowmode] = useState(0);
 
   // Roles state
   const [roles, setRoles] = useState<RoleItem[]>([]);
@@ -599,14 +595,12 @@ export default function ServerManagementClient({
       return;
     }
 
-    setIsSearching(true);
     if (BOT_API_URL) {
       try {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/search?q=${encodeURIComponent(val)}`, { credentials: "include" });
         if (res.ok) {
           const json = await res.json();
           setSearchResults(json);
-          setIsSearching(false);
           return;
         }
       } catch {}
@@ -619,7 +613,6 @@ export default function ServerManagementClient({
     const matchedChannels = allChans.filter((c) => c.name.toLowerCase().includes(q));
     const matchedRoles = roles.filter((r) => r.name.toLowerCase().includes(q));
     setSearchResults({ members: matchedMembers, channels: matchedChannels, roles: matchedRoles });
-    setIsSearching(false);
   };
 
   // Run initial data fetch

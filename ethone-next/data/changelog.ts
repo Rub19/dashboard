@@ -42991,6 +42991,67 @@ CHANGELOG_BY_LANG.en.unshift(v1_53_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_53_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_53_1_de);
 
+const v1_53_2_fr: ChangelogEntry = {
+  version: "v1.53.2",
+  date: "2026-10-04",
+  title: "Nettoyage du code et tracker LoL sans données inventées",
+  items: [
+    "Environ 120 variables et fonctions abandonnées retirées (fenêtres jamais branchées, états jamais affichés) : le code est plus léger, sans changement visible.",
+    "Tracker LoL : les objets, sorts, runes, balises et champions manquants ne sont plus remplacés par des valeurs inventées ; un emplacement vide reste vide.",
+    "Tracker LoL : le badge « +123 / −15 » écrit en dur affiche maintenant Victoire ou Défaite.",
+    "Tracker LoL : dans l'aperçu des équipes, chaque joueur affiche son vrai champion (les joueurs 2 à 10 pouvaient montrer Annie, Olaf, Galio…).",
+    "Tracker LoL : les images suivent la dernière version de Data Dragon, les objets récents s'affichent.",
+    "Tickets : une requête inutile au bot a été retirée.",
+  ],
+};
+
+const v1_53_2_en: ChangelogEntry = {
+  version: "v1.53.2",
+  date: "2026-10-04",
+  title: "Code cleanup and LoL tracker without invented data",
+  items: [
+    "About 120 abandoned variables and functions removed (never-wired dialogs, never-shown states): lighter code, no visible change.",
+    "LoL tracker: missing items, spells, runes, trinkets and champions are no longer replaced with invented values; an empty slot stays empty.",
+    "LoL tracker: the hardcoded \"+123 / −15\" badge now shows Victory or Defeat.",
+    "LoL tracker: in the team preview, each player shows their real champion (players 2 to 10 could show Annie, Olaf, Galio…).",
+    "LoL tracker: images follow the latest Data Dragon version, recent items display.",
+    "Tickets: a useless request to the bot was removed.",
+  ],
+};
+
+const v1_53_2_es: ChangelogEntry = {
+  version: "v1.53.2",
+  date: "2026-10-04",
+  title: "Limpieza de código y tracker de LoL sin datos inventados",
+  items: [
+    "Unas 120 variables y funciones abandonadas eliminadas (ventanas nunca conectadas, estados nunca mostrados): código más ligero, sin cambios visibles.",
+    "Tracker de LoL: los objetos, hechizos, runas, abalorios y campeones que faltan ya no se sustituyen por valores inventados; un hueco vacío queda vacío.",
+    "Tracker de LoL: la insignia fija «+123 / −15» ahora muestra Victoria o Derrota.",
+    "Tracker de LoL: en la vista previa de equipos cada jugador muestra su campeón real (los jugadores 2 a 10 podían mostrar Annie, Olaf, Galio…).",
+    "Tracker de LoL: las imágenes siguen la última versión de Data Dragon, los objetos recientes se muestran.",
+    "Tickets: se eliminó una petición inútil al bot.",
+  ],
+};
+
+const v1_53_2_de: ChangelogEntry = {
+  version: "v1.53.2",
+  date: "2026-10-04",
+  title: "Code-Bereinigung und LoL-Tracker ohne erfundene Daten",
+  items: [
+    "Rund 120 verwaiste Variablen und Funktionen entfernt (nie angebundene Dialoge, nie angezeigte Zustände): schlankerer Code, keine sichtbare Änderung.",
+    "LoL-Tracker: fehlende Items, Zauber, Runen, Schmuckstücke und Champions werden nicht mehr durch erfundene Werte ersetzt; ein leerer Platz bleibt leer.",
+    "LoL-Tracker: das fest codierte Abzeichen „+123 / −15“ zeigt jetzt Sieg oder Niederlage.",
+    "LoL-Tracker: in der Teamvorschau zeigt jeder Spieler seinen echten Champion (Spieler 2 bis 10 konnten Annie, Olaf, Galio… zeigen).",
+    "LoL-Tracker: Bilder folgen der neuesten Data-Dragon-Version, neue Items werden angezeigt.",
+    "Tickets: eine unnötige Anfrage an den Bot wurde entfernt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_53_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_53_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_53_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_53_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

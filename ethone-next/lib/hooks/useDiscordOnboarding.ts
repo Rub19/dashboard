@@ -61,7 +61,6 @@ export function useDiscordOnboarding() {
 
         // 2. Check Supabase user state
         let serverCompleted = false;
-        let serverVersion = 0;
         try {
           const userState = await getUserState<{
             discord_onboarding_completed?: boolean;
@@ -71,7 +70,6 @@ export function useDiscordOnboarding() {
 
           if (userState && typeof userState.discord_onboarding_completed === "boolean") {
             serverCompleted = userState.discord_onboarding_completed;
-            serverVersion = userState.discord_onboarding_version || 0;
           }
         } catch {
           // ignore server fetch error, fallback to localStorage

@@ -1,7 +1,6 @@
 "use client";
 
 import { memo } from "react";
-import { useRouter } from "next/navigation";
 import LiveStats from "@/components/LiveStats";
 import type { WidgetStateType } from "@/components/WidgetState";
 import GamingCard from "@/components/GamingCard";
@@ -42,11 +41,9 @@ const LiveBentoGrid = memo(function LiveBentoGrid({
   updatedAt,
   loading,
   error,
-  state,
   className = "",
   scrollable = true,
 }: LiveBentoGridProps) {
-  const router = useRouter();
   const childHeight = scrollable ? "h-full" : "h-auto min-h-0";
 
   return (

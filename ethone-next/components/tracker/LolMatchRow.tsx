@@ -15,8 +15,7 @@ import {
   formatLolTimeAgo,
   calculateLolTRS,
   getLolChampionIcon,
-  getLolSpellIcon,
-  getChampionDefaultItems,
+  LOL_TRINKET_IDS,
 } from "@/lib/lol-tracker";
 import { computePartyMap } from "@/lib/party-helper";
 import { cn } from "@/lib/utils";
@@ -80,32 +79,13 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
     return Math.max(...players.map((p) => p.stats.damage || 0), 1);
   }, [players]);
 
-  // Ensure 2 Spells (Barrier + Flash default)
-  const defaultSpells = [
-    { name: "Barrier", image: getLolSpellIcon(21, 0) },
-    { name: "Flash", image: getLolSpellIcon(4, 1) },
-  ];
-  const spells = (me?.spells && me.spells.length >= 2) ? me.spells : defaultSpells;
-
-  // Ensure Real Items with complete 6-item build guarantee
-  const defaultItems = useMemo(() => getChampionDefaultItems(me?.character), [me?.character]);
+  // Uniquement ce que l'API a renvoyé : un emplacement manquant reste vide (aucun sort ni objet inventé).
+  const spells = [me?.spells?.[0] ?? null, me?.spells?.[1] ?? null];
   const itemSlots = useMemo(() => {
-    const valid = (me?.items || []).filter((it): it is LolItem => Boolean(it && (it.id ?? 0) > 0 && it.id !== 3340));
-    const filled = [...valid];
-    let idx = 0;
-    while (filled.length < 6) {
-      const cand = defaultItems[idx % defaultItems.length];
-      if (cand && !filled.some((x) => x.id === cand.id)) {
-        filled.push(cand);
-      }
-      idx++;
-      if (idx > 20) {
-        filled.push({ id: 3031, name: "Infinity Edge", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3031.png" });
-      }
-    }
-    return filled.slice(0, 6);
-  }, [me?.items, defaultItems]);
-  const trinket = me?.items?.find((it) => it && (it.id ?? 0) === 3340) || defaultItems[defaultItems.length - 1];
+    const real = (me?.items || []).filter((it): it is LolItem => Boolean(it && it.id && !LOL_TRINKET_IDS.has(it.id)));
+    return Array.from({ length: 6 }, (_, i) => real[i] ?? null);
+  }, [me?.items]);
+  const trinket = me?.items?.find((it) => it && it.id && LOL_TRINKET_IDS.has(it.id)) ?? null;
 
 
   return (
@@ -143,11 +123,11 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
               <span>{formatLolDuration(meta?.duration)}</span>
             </p>
             <h4 className="text-sm font-black text-[var(--text-primary)] tracking-wide mt-0.5">
-              {meta?.modeName || "Ranked Solo"}
+              {meta?.modeName || "Partie"}
             </h4>
             <div className="mt-1 flex items-center gap-1.5">
-              <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 font-mono text-[9px] font-bold text-emerald-400 border border-emerald-500/20">
-                {isWin ? "+123" : "-15"}
+              <span className={cn("rounded px-1.5 py-0.5 text-[9px] font-bold border", isWin ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" : "bg-rose-500/15 text-rose-400 border-rose-500/20")}>
+                {isWin ? "Victoire" : "Défaite"}
               </span>
             </div>
           </div>
@@ -157,13 +137,12 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
             <img
               src={
                 meta?.championImageUrl ||
-                getLolChampionIcon(me?.character || meta?.championName, me?.championId || meta?.championId, index)
+                getLolChampionIcon(me?.character || meta?.championName, me?.championId || meta?.championId)
               }
               alt={me?.character || meta?.championName || "Champion"}
               className="h-full w-full object-cover"
               onError={(e) => {
-                (e.target as HTMLImageElement).src =
-                  getLolChampionIcon(me?.character || meta?.championName, me?.championId || meta?.championId, index);
+                (e.target as HTMLImageElement).style.visibility = "hidden";
               }}
             />
             {me?.level && (
@@ -177,13 +156,13 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
           <div className="flex items-center gap-1">
             {/* Spells Column */}
             <div className="flex flex-col gap-1">
-              {spells.slice(0, 2).map((spell, si) => (
+              {spells.map((spell, si) => (
                 <div
                   key={si}
                   className="h-5 w-5 overflow-hidden rounded-md border border-[var(--panel-border)] bg-black/50"
-                  title={spell.name}
+                  title={spell?.name}
                 >
-                  {spell.image ? (
+                  {spell?.image ? (
                     <img src={spell.image} alt="" className="h-full w-full object-cover" />
                   ) : (
                     <div className="h-full w-full bg-[var(--surface-raised)]" />
@@ -192,23 +171,12 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
               ))}
             </div>
 
-            {/* Runes Column */}
-            <div className="flex flex-col gap-1">
-              <div className="h-5 w-5 overflow-hidden rounded-md border border-amber-500/30 bg-black/50 flex items-center justify-center">
-                <img
-                  src="https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/7201_Precision.png"
-                  alt="Rune"
-                  className="h-4 w-4 object-contain"
-                />
+            {me?.rune?.image && (
+              <div className="h-5 w-5 overflow-hidden rounded-md border border-amber-500/30 bg-black/50 flex items-center justify-center" title={me.rune.name}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={me.rune.image} alt="" className="h-4 w-4 object-contain" />
               </div>
-              <div className="h-5 w-5 overflow-hidden rounded-md border border-[var(--panel-border)] bg-black/50 flex items-center justify-center">
-                <img
-                  src="https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/7200_Domination.png"
-                  alt="Rune"
-                  className="h-4 w-4 object-contain"
-                />
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Items Grid (2x3 + 1 Trinket with Golden Rim) */}
@@ -225,8 +193,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                       alt=""
                       className="h-full w-full object-cover"
                       onError={(e) => {
-                        const fallbackItemIds = [6672, 3031, 3094, 3006, 3072, 3036];
-                        (e.target as HTMLImageElement).src = `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/${fallbackItemIds[ii % 6]}.png`;
+                        (e.target as HTMLImageElement).style.visibility = "hidden";
                       }}
                     />
                   ) : (
@@ -244,16 +211,10 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                   alt=""
                   className="h-5 w-5 object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3340.png";
+                    (e.target as HTMLImageElement).style.visibility = "hidden";
                   }}
                 />
-              ) : (
-                <img
-                  src="https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3340.png"
-                  alt="Trinket"
-                  className="h-4 w-4 object-contain opacity-80"
-                />
-              )}
+              ) : null}
             </div>
           </div>
         </div>
@@ -315,22 +276,25 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
               <span className="h-3.5 w-0.5 rounded-full bg-cyan-400 mr-0.5" />
               {Array.from({ length: 5 }, (_, pi) => {
                 const p = blueTeam[pi];
-                const fallbackChamps = ["Ahri", "LeeSin", "Yasuo", "Jinx", "Thresh"];
-                const champName = p?.character || fallbackChamps[pi];
+                const champName = p?.character || "";
+                const icon = getLolChampionIcon(champName, p?.championId);
                 return (
                   <div
                     key={pi}
                     className="h-4.5 w-4.5 overflow-hidden rounded-md border border-cyan-500/30 bg-black"
-                    title={p ? `${p.name} (${champName})` : champName}
+                    title={p ? `${p.name} (${champName})` : undefined}
                   >
-                    <img
-                      src={getLolChampionIcon(champName, pi)}
-                      alt=""
-                      className="h-full w-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${fallbackChamps[pi]}.png`;
-                      }}
-                    />
+                    {icon && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={icon}
+                        alt=""
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.visibility = "hidden";
+                        }}
+                      />
+                    )}
                   </div>
                 );
               })}
@@ -341,22 +305,25 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
               <span className="h-3.5 w-0.5 rounded-full bg-rose-500 mr-0.5" />
               {Array.from({ length: 5 }, (_, pi) => {
                 const p = redTeam[pi];
-                const fallbackChamps = ["Aatrox", "Viego", "Zed", "KaiSa", "Nautilus"];
-                const champName = p?.character || fallbackChamps[pi];
+                const champName = p?.character || "";
+                const icon = getLolChampionIcon(champName, p?.championId);
                 return (
                   <div
                     key={pi}
                     className="h-4.5 w-4.5 overflow-hidden rounded-md border border-rose-500/30 bg-black"
-                    title={p ? `${p.name} (${champName})` : champName}
+                    title={p ? `${p.name} (${champName})` : undefined}
                   >
-                    <img
-                      src={getLolChampionIcon(champName, pi + 5)}
-                      alt=""
-                      className="h-full w-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${fallbackChamps[pi]}.png`;
-                      }}
-                    />
+                    {icon && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={icon}
+                        alt=""
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.visibility = "hidden";
+                        }}
+                      />
+                    )}
                   </div>
                 );
               })}
@@ -542,28 +509,10 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                             const pTrs = calculateLolTRS(p);
                             const pDmgPercent = Math.min(100, Math.round((p.stats.damage / maxDamage) * 100));
 
-                            const pSpells =
-                              p.spells && p.spells.length >= 2
-                                ? p.spells
-                                : [
-                                    { name: "Barrier", image: getLolSpellIcon(21, 0) },
-                                    { name: "Flash", image: getLolSpellIcon(4, 1) },
-                                  ];
-                            const pDefaultItems = getChampionDefaultItems(p.character);
-                            const pValid = (p.items || []).filter((it): it is LolItem => Boolean(it && (it.id ?? 0) > 0 && it.id !== 3340));
-                            const pItemSlots = [...pValid];
-                            let pIdx = 0;
-                            while (pItemSlots.length < 6) {
-                              const cand = pDefaultItems[pIdx % pDefaultItems.length];
-                              if (cand && !pItemSlots.some((x) => x.id === cand.id)) {
-                                pItemSlots.push(cand);
-                              }
-                              pIdx++;
-                              if (pIdx > 20) {
-                                pItemSlots.push({ id: 3031, name: "Infinity Edge", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3031.png" });
-                              }
-                            }
-                            const pTrinket = p.items?.find((it) => it && (it.id ?? 0) === 3340) || pDefaultItems[pDefaultItems.length - 1];
+                            const pSpells = [p.spells?.[0] ?? null, p.spells?.[1] ?? null];
+                            const pValid = (p.items || []).filter((it): it is LolItem => Boolean(it && it.id && !LOL_TRINKET_IDS.has(it.id)));
+                            const pItemSlots = Array.from({ length: 6 }, (_, i) => pValid[i] ?? null);
+                            const pTrinket = p.items?.find((it) => it && it.id && LOL_TRINKET_IDS.has(it.id)) ?? null;
                             const pParty = partyMap.getParty(p, pi + (gi * 5));
 
                             return (
@@ -629,37 +578,25 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                                   <div className="flex items-center justify-center gap-1">
                                     {/* 2 Spells */}
                                     <div className="flex flex-col gap-0.5">
-                                      {pSpells.slice(0, 2).map((sp, spi) => (
-                                        <div key={spi} className="h-3.5 w-3.5 rounded overflow-hidden bg-black/50 border border-[var(--panel-border)]">
-                                          <img
-                                            src={sp.image}
-                                            alt=""
-                                            className="h-full w-full object-cover"
-                                          />
+                                      {pSpells.map((sp, spi) => (
+                                        <div key={spi} className="h-3.5 w-3.5 rounded overflow-hidden bg-black/50 border border-[var(--panel-border)]" title={sp?.name}>
+                                          {sp?.image && <img src={sp.image} alt="" className="h-full w-full object-cover" />}
                                         </div>
                                       ))}
                                     </div>
 
                                     {/* 6 Items Grid */}
                                     <div className="grid grid-cols-3 gap-0.5">
-                                      {pItemSlots.slice(0, 6).map((it, iti) => (
-                                        <div key={iti} className="h-4 w-4 rounded bg-black/60 border border-[var(--panel-border)] overflow-hidden">
-                                          <img
-                                            src={it.image}
-                                            alt=""
-                                            className="h-full w-full object-cover"
-                                          />
+                                      {pItemSlots.map((it, iti) => (
+                                        <div key={iti} className="h-4 w-4 rounded bg-black/60 border border-[var(--panel-border)] overflow-hidden" title={it?.name}>
+                                          {it?.image && <img src={it.image} alt="" className="h-full w-full object-cover" />}
                                         </div>
                                       ))}
                                     </div>
 
                                     {/* Trinket */}
                                     <div className="h-4 w-4 rounded bg-black/60 border border-amber-500/30 overflow-hidden ml-0.5">
-                                      <img
-                                        src={pTrinket?.image || "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3340.png"}
-                                        alt=""
-                                        className="h-full w-full object-cover"
-                                      />
+                                      {pTrinket?.image && <img src={pTrinket.image} alt="" className="h-full w-full object-cover" />}
                                     </div>
                                   </div>
                                 </td>

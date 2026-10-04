@@ -82,7 +82,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
   const [customBgSurface, setCustomBgSurface] = useState("#0f0f13");
   const [customBgSidebar, setCustomBgSidebar] = useState("#0c0c10");
   const [customAccent, setCustomAccent] = useState("#8b5cf6");
-  const [customGlass, setCustomGlass] = useState<"off" | "low" | "medium" | "high">("medium");
+  const [customGlass] = useState<"off" | "low" | "medium" | "high">("medium");
 
   // Import / Export State
   const [importJson, setImportJson] = useState("");
@@ -120,8 +120,6 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
   // accent than the theme's default can still repick one afterward in the
   // "Couleurs d'accent" tab.
   const handleSelectTheme = (themeId: string, applyImmediate = true) => {
-    const themeDef = PRESET_THEMES[themeId as PremiumThemeId] || settings.customThemes?.find((t) => t.id === themeId);
-    const themeAccent = themeDef?.accentPrimary || settings.customAccent;
     if (applyImmediate) {
       setPreviewThemeId(null);
       transitionTheme(

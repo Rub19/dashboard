@@ -264,7 +264,7 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
   const activeId = initialId && PRESET_PAGES[initialId] ? initialId : "demo";
 
   const [activeTabId, setActiveTabId] = useState<string>(activeId);
-  const [tabs, setTabs] = useState<TabItem[]>([
+  const [tabs] = useState<TabItem[]>([
     { id: "demo", title: "Démo Sandbox", url: PRESET_PAGES.demo.url },
     { id: "test-123", title: "Test 123", url: PRESET_PAGES["test-123"].url },
     { id: "google", title: "Web Search", url: PRESET_PAGES.google.url },

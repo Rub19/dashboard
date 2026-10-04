@@ -52,8 +52,6 @@ export default function TicketDetailClient() {
   const [showLinkCaseModal, setShowLinkCaseModal] = useState(false);
   const [caseIdToLink, setCaseIdToLink] = useState("");
 
-  const [showTransferModal, setShowTransferModal] = useState(false);
-  const [transferTarget, setTransferTarget] = useState("");
 
   // Chargement du ticket
   const fetchTicket = useCallback(async () => {

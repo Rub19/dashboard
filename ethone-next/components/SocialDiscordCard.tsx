@@ -73,7 +73,6 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
   lanyard,
   nowPlaying,
   loading,
-  error,
   className = "",
 }: SocialDiscordCardProps) {
   const router = useRouter();

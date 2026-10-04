@@ -972,34 +972,8 @@ export default function DiscordDashboardPage() {
   }, [selectedGuild, guildSettings.emergencyLockdown, success, showError]);
 
   // Gestion de création d'une nouvelle commande personnalisée
-  const [newCmdName, setNewCmdName] = useState("");
-  const [newCmdResponse, setNewCmdResponse] = useState("");
 
-  const handleAddCommand = () => {
-    if (!newCmdName.trim() || !newCmdResponse.trim()) {
-      showError("Champs incomplets", "Veuillez renseigner le nom et la réponse de la commande.");
-      return;
-    }
-    const cleanName = newCmdName.trim().replace(/^!/, "").toLowerCase();
-    setGuildSettings((prev) => ({
-      ...prev,
-      customCommands: [
-        ...prev.customCommands,
-        { name: cleanName, response: newCmdResponse.trim(), enabled: true },
-      ],
-    }));
-    setNewCmdName("");
-    setNewCmdResponse("");
-    success("Commande ajoutée", `La commande !${cleanName} a été enregistrée.`);
-  };
 
-  const handleDeleteCommand = (index: number) => {
-    setGuildSettings((prev) => ({
-      ...prev,
-      customCommands: prev.customCommands.filter((_, i) => i !== index),
-    }));
-    success("Commande supprimée", "La commande a été retirée du serveur.");
-  };
 
   const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
   const { status: moduleStatus, setModuleEnabled } = useModuleStatus(selectedGuild?.id, !botPresenceKnown || Boolean(selectedGuild && botGuildIds.has(selectedGuild.id)));

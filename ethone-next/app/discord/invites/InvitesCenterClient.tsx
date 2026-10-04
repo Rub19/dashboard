@@ -113,10 +113,6 @@ export default function InvitesCenterClient() {
   const [newRewardRole, setNewRewardRole] = useState("Bronze Supporter");
   const [newRewardXp, setNewRewardXp] = useState(150);
 
-  const currentGuild = useMemo(
-    () => selectedGuild || { id: currentGuildId, name: "Serveur Discord Principal" },
-    [selectedGuild, currentGuildId]
-  );
 
   const fetchAllData = useCallback(async () => {
     if (!API_BASE || !currentGuildId || !isBotPresent) {

@@ -120,8 +120,6 @@ export default function FormResponsesClient() {
 
   // Review interaction state
   const [newNote, setNewNote] = useState("");
-  const [decisionReason, setDecisionReason] = useState("");
-  const [newTag, setNewTag] = useState("");
 
   const filteredResponses = useMemo(() => {
     return responses.filter((r) => {
@@ -211,23 +209,6 @@ export default function FormResponsesClient() {
     success("Note ajoutée", "Commentaire privé enregistré dans l'historique staff.");
   };
 
-  // Add tag
-  const handleAddTag = () => {
-    if (!activeResponse || !newTag.trim()) return;
-    const tagClean = newTag.trim();
-    if (activeResponse.tags.includes(tagClean)) return;
-
-    const updated = responses.map((r) => {
-      if (r.id === activeResponse.id) {
-        return { ...r, tags: [...r.tags, tagClean] };
-      }
-      return r;
-    });
-
-    setResponses(updated);
-    setActiveResponse((prev) => (prev ? { ...prev, tags: [...prev.tags, tagClean] } : null));
-    setNewTag("");
-  };
 
   // Export CSV
   const handleExportCSV = () => {

@@ -160,7 +160,6 @@ export default function EventParticipantsClient() {
   // Delete participant
   const handleRemove = async (userId: string) => {
     const snapshot = participants;
-    const target = participants.find((p) => p.userId === userId);
     setParticipants((prev) => prev.filter((p) => p.userId !== userId));
     if (isDemo || !BOT_API_URL) return;
     try {

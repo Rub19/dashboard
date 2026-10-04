@@ -724,8 +724,6 @@ function fieldKeys(fields: FieldDef[]): { key: string; path?: string }[] {
 
 export default function SettingsContent({
   activeCategory = "general",
-  contentRef,
-  onCategoryChange,
   registerCategoryRef,
 }: {
   activeCategory?: string;

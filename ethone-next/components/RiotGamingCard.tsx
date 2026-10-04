@@ -43,52 +43,16 @@ function asStr(value: unknown): string | undefined {
   return undefined;
 }
 
-function asNum(value: unknown): number {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string") {
-    const n = Number(value);
-    return Number.isFinite(n) ? n : 0;
-  }
-  return 0;
-}
 
-function getLatest(matches?: RiotMatch[] | null) {
-  return (matches || [])[0];
-}
 
 function getMeta(match?: RiotMatch) {
   if (!match) return null;
   return (match.metadata || {}) as Record<string, unknown>;
 }
 
-function getStats(match?: RiotMatch) {
-  if (!match) return null;
-  const segments = (match.segments || []) as Array<Record<string, unknown>>;
-  const overview = segments.find((s) => s.type === "overview");
-  return ((overview?.stats || {}) as Record<string, { value?: unknown; displayValue?: string }>) || null;
-}
 
-function statValue(stats: Record<string, { value?: unknown; displayValue?: string }> | null, key: string): string {
-  return stats?.[key]?.displayValue ?? asStr(stats?.[key]?.value) ?? "0";
-}
 
-function kda(stats: Record<string, { value?: unknown; displayValue?: string }> | null): string {
-  const kills = asNum(stats?.kills?.value ?? stats?.kills?.displayValue);
-  const deaths = asNum(stats?.deaths?.value ?? stats?.deaths?.displayValue);
-  const assists = asNum(stats?.assists?.value ?? stats?.assists?.displayValue);
-  const ratio = (kills + assists) / Math.max(1, deaths);
-  return ratio.toFixed(2);
-}
 
-function winRate(matches?: RiotMatch[] | null, count = 5): string {
-  const list = (matches || []).slice(0, count);
-  if (!list.length) return "64";
-  const wins = list.filter((m) => {
-    const meta = getMeta(m);
-    return (meta?.result as string)?.toLowerCase() === "victory";
-  }).length;
-  return String(Math.round((wins / list.length) * 100));
-}
 
 export function getValorantRankStyle(rank?: string): string {
   if (!rank) return "bg-zinc-700/20 text-zinc-400 border-zinc-600/30";
@@ -127,9 +91,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
   playerName,
   playerTag,
   loading: propLoading,
-  error,
   className = "",
-  compact = false,
   onOpenTracker,
 }: RiotGamingCardProps) {
   const i18n = useI18n();

@@ -241,7 +241,6 @@ export function TicketCenterClient() {
   const [teams, setTeams] = useState<TicketTeamItem[]>([]);
   const [automations, setAutomations] = useState<TicketAutomationItem[]>([]);
   const [config, setConfig] = useState<any>({});
-  const [discordCats, setDiscordCats] = useState<Array<{ id: string; name: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   // Mode forum : choix du mode en attente tant qu'aucun forum n'est sélectionné (le bot refuse un mode forum sans forum).
@@ -253,13 +252,9 @@ export function TicketCenterClient() {
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [priorityFilter, setPriorityFilter] = useState<string>("ALL");
   const [categoryFilter, setCategoryFilter] = useState<string>("");
-  const [periodFilter, setPeriodFilter] = useState<string>("all");
+  const [periodFilter] = useState<string>("all");
 
   // Modals
-  const [showCreateTicketModal, setShowCreateTicketModal] = useState(false);
-  const [newTicketCategory, setNewTicketCategory] = useState("");
-  const [newTicketSubject, setNewTicketSubject] = useState("");
-  const [newTicketDetails, setNewTicketDetails] = useState("");
 
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<TicketCategoryItem | null>(null);
@@ -276,7 +271,6 @@ export function TicketCenterClient() {
   const [ticketToClose, setTicketToClose] = useState<TicketItem | null>(null);
   const [closeReason, setCloseReason] = useState("Résolu via Dashboard");
 
-  const [previewTranscriptHtml, setPreviewTranscriptHtml] = useState<string | null>(null);
 
   // Auto-sélection de la guilde
   useEffect(() => {
@@ -320,7 +314,6 @@ export function TicketCenterClient() {
       setTeams([]);
       setAutomations([]);
       setConfig({});
-      setDiscordCats([]);
       setLoading(false);
       return;
     }
@@ -335,13 +328,12 @@ export function TicketCenterClient() {
       setTeams([]);
       setAutomations([]);
       setConfig({});
-      setDiscordCats([]);
       setLoading(false);
       return;
     }
 
     try {
-      const [ovRes, tRes, cRes, pRes, tmRes, aRes, cfgRes, dcRes] = await Promise.all([
+      const [ovRes, tRes, cRes, pRes, tmRes, aRes, cfgRes] = await Promise.all([
         fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/overview`, { credentials: "include" }).catch(() => null),
         fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/tickets?status=${statusFilter}&priority=${priorityFilter}&categoryId=${categoryFilter}&search=${encodeURIComponent(
             searchQuery
@@ -351,7 +343,6 @@ export function TicketCenterClient() {
         fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/teams`, { credentials: "include" }).catch(() => null),
         fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/automations`, { credentials: "include" }).catch(() => null),
         fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/config`, { credentials: "include" }).catch(() => null),
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/discord-categories`, { credentials: "include" }).catch(() => null),
       ]);
 
       if (ovRes && ovRes.ok) {
@@ -400,10 +391,6 @@ export function TicketCenterClient() {
         setConfig(cfgData.config || {});
       }
 
-      if (dcRes && dcRes.ok) {
-        const dcData = await dcRes.json();
-        setDiscordCats(dcData.categories || []);
-      }
     } catch (err: any) {
       console.warn("Erreur chargement Tickets Center, fallback démo :", err);
       setOverview(emptyOverview());

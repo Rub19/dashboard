@@ -32,7 +32,6 @@ function randomLocal() {
   return `${randAdj}-${randNoun}-${num}`;
 }
 
-type ProviderType = "ethone" | "gmail" | "outlook" | "imap";
 
 type MailOnboardingProps = {
   aliases: MailAlias[];
@@ -52,7 +51,6 @@ export default function MailOnboarding({
 
   const initialView = aliases.length ? "confirm" : "select_provider";
   const [view, setView] = useState<"select_provider" | "create" | "confirm">(initialView);
-  const [selectedProvider, setSelectedProvider] = useState<ProviderType>("ethone");
   const [local, setLocal] = useState("");
   const [displayName, setDisplayName] = useState(primary?.display_name || "");
   const [loading, setLoading] = useState(false);
@@ -137,7 +135,6 @@ export default function MailOnboarding({
         <button
           type="button"
           onClick={() => {
-            setSelectedProvider("ethone");
             setView("create");
           }}
           className="group relative flex flex-col items-start gap-2.5 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 p-4 text-left transition-all hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/15"
@@ -162,7 +159,6 @@ export default function MailOnboarding({
         <button
           type="button"
           onClick={() => {
-            setSelectedProvider("gmail");
             setView("create");
           }}
           className="group relative flex flex-col items-start gap-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
@@ -182,7 +178,6 @@ export default function MailOnboarding({
         <button
           type="button"
           onClick={() => {
-            setSelectedProvider("outlook");
             setView("create");
           }}
           className="group relative flex flex-col items-start gap-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
@@ -202,7 +197,6 @@ export default function MailOnboarding({
         <button
           type="button"
           onClick={() => {
-            setSelectedProvider("imap");
             setView("create");
           }}
           className="group relative flex flex-col items-start gap-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"

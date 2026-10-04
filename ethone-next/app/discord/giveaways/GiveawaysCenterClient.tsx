@@ -1108,7 +1108,6 @@ export default function GiveawaysCenterClient() {
               <div className="stagger-children divide-y divide-[var(--panel-border)]">
                 {pastGiveaways.map((gw) => {
                   const isEnded = gw.status === "ended";
-                  const isCancelled = gw.status === "cancelled";
                   return (
                     <div
                       key={gw.id}

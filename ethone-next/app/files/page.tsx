@@ -89,13 +89,11 @@ export default function FilesPage() {
     setQuery,
     reload,
     renameFile,
-    moveFile,
     trashFile,
     restoreFile,
     deleteFile,
     favoriteFile,
     createFolder,
-    createLink,
     uploadFile,
     syncWithDrive,
   } = useCloudFiles(clientId || undefined);
@@ -107,7 +105,6 @@ export default function FilesPage() {
   const [addTab, setAddTab] = useState<TabId>("upload");
   const [inspectedFile, setInspectedFile] = useState<CloudFile | null>(null);
   const [previewFile, setPreviewFile] = useState<CloudFile | null>(null);
-  const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
   const [form, setForm] = useState<Record<string, string>>({});
   const [sort, setSort] = useState<"name" | "size" | "date" | "type">("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
@@ -275,7 +272,7 @@ export default function FilesPage() {
     return files.filter((f) => !f.trashed && f.isFavorite).slice(0, 6);
   }, [files]);
 
-  const { selected, selectedItems, hasSelection, isAllSelected, toggle, selectAll, clear, isSelected } =
+  const { selectedItems, hasSelection, toggle, clear, isSelected } =
     useSelection<CloudFile>(filteredFiles);
 
   const path = useMemo(() => folderPath(files, parentId), [files, parentId]);
@@ -302,9 +299,6 @@ export default function FilesPage() {
     }
   }
 
-  function handleQuickPreview(file: CloudFile) {
-    setPreviewFile(file);
-  }
 
   async function handleBulkDelete() {
     if (!await confirmDialog(`Voulez-vous supprimer les ${selectedItems.length} fichier(s) sélectionnés ?`)) return;

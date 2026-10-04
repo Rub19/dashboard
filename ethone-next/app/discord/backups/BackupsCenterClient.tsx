@@ -462,7 +462,6 @@ export default function BackupsCenterClient() {
     return true;
   });
 
-  const totalObjects = (b: BackupItem) => b.objectCounts.channels + b.objectCounts.roles + b.objectCounts.categories;
   const healthy = kpis.healthStatus === "HEALTHY";
 
   const TYPE_BADGE: Record<BackupType, string> = {

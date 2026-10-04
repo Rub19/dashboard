@@ -190,7 +190,7 @@ export default function PollCreateClient() {
   ]);
 
   // Eligibility & Weights state
-  const [logicGate, setLogicGate] = useState<"ANY" | "ALL">("ANY");
+  const [logicGate] = useState<"ANY" | "ALL">("ANY");
   const [minAccountAgeDays, setMinAccountAgeDays] = useState(0);
   const [minGuildMembershipDays, setMinGuildMembershipDays] = useState(0);
   const [roleWeights, setRoleWeights] = useState<{ roleId: string; roleName: string; weightMultiplier: number }[]>([]);
@@ -200,8 +200,8 @@ export default function PollCreateClient() {
   const [minParticipantsCount, setMinParticipantsCount] = useState(10);
   const [approvalThreshold, setApprovalThreshold] = useState(50);
   const [anonymity, setAnonymity] = useState<"PUBLIC" | "ANONYMOUS" | "FULLY_ANONYMOUS">("PUBLIC");
-  const [resultsVisibility, setResultsVisibility] = useState<"LIVE" | "AFTER_VOTE" | "AT_END" | "STAFF_ONLY">("LIVE");
-  const [allowVoteChange, setAllowVoteChange] = useState(true);
+  const [resultsVisibility] = useState<"LIVE" | "AFTER_VOTE" | "AT_END" | "STAFF_ONLY">("LIVE");
+  const [allowVoteChange] = useState(true);
 
   // Panel state
   const [panelColor, setPanelColor] = useState("#6366f1");
@@ -820,7 +820,7 @@ export default function PollCreateClient() {
                 {/* Options List */}
                 <div className="space-y-2 mb-4">
                   <span className="text-xs font-semibold text-[var(--text-muted)]">Options disponibles</span>
-                  {q.options.map((opt, optIndex) => (
+                  {q.options.map((opt, _optIndex) => (
                     <div
                       key={opt.id}
                       className="rise-in flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 transition-colors focus-within:border-[var(--accent-primary)]/40"

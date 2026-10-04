@@ -17,7 +17,6 @@ export const TasksKanbanView = memo(function TasksKanbanView({
   tasks,
   onToggle,
   onDelete,
-  onNewTask,
 }: TasksKanbanViewProps) {
   const todoTasks = tasks.filter((t) => !t.done && !["urgent", "high"].includes(t.data?.priority || ""));
   const focusTasks = tasks.filter((t) => !t.done && ["urgent", "high"].includes(t.data?.priority || ""));

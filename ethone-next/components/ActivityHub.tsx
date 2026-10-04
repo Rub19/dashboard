@@ -296,7 +296,6 @@ export default function ActivityHub() {
   const [exportFormat, setExportFormat] = useState<"csv" | "json">("csv");
   const [selectedEvent, setSelectedEvent] = useState<ActivityEntry | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [activeWorkspace, setActiveWorkspace] = useState<string>("all");
   const searchRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();

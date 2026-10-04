@@ -81,7 +81,6 @@ export default function CaseDetailClient() {
   const [isAddingNote, setIsAddingNote] = useState(false);
 
   // New Evidence
-  const [newEvidenceType, setNewEvidenceType] = useState<"IMAGE" | "LINK" | "TEXT">("TEXT");
   const [newEvidenceUrl, setNewEvidenceUrl] = useState("");
   const [newEvidenceContent, setNewEvidenceContent] = useState("");
   const [isAddingEvidence, setIsAddingEvidence] = useState(false);

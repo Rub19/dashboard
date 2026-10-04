@@ -16,14 +16,6 @@ export type ProviderCredential = {
   token?: string;
 };
 
-const ALLOWED = new Set([
-  "steam", "twitch", "lastfm", "henrik", "tracker", "tracker-gg", "tracker.gg",
-  "riot", "riotgames", "valorant", "leagueoflegends", "openai", "anthropic",
-  "gemini", "groq", "plex", "jellyfin", "emby", "bluesky", "linear", "clickup",
-  "jira", "gitlab", "obsidian", "vscode", "fitbit", "discord", "spotify",
-  "youtube", "reddit", "minecraft", "github", "notion", "todoist",
-  "google-calendar", "google-drive", "email", "weather", "rss", "ollama", "lm-studio"
-]);
 
 export function useProviderCredentials() {
   const [connected, setConnected] = useState<Record<string, boolean>>({});

@@ -115,34 +115,31 @@ export const LOL_SUMMONER_SPELLS: Record<number, { name: string; icon: string }>
   32: { name: "Mark", icon: "SummonerSnowball" },
 };
 
-export function getLolSpellIcon(spellId?: number, slotIndex = 0): string {
-  if (!spellId) {
-    return slotIndex === 0
-      ? "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/spell/SummonerBarrier.png"
-      : "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/spell/SummonerFlash.png";
-  }
-  const sp = LOL_SUMMONER_SPELLS[spellId];
-  const name = sp?.icon || (spellId === 14 ? "SummonerDot" : spellId === 21 ? "SummonerBarrier" : "SummonerFlash");
-  return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/spell/${name}.png`;
+// Version Data Dragon suivie automatiquement : une version figée ne contient pas les objets et champions sortis
+// depuis (leurs images renvoyaient une erreur). Récupérée une fois, au premier chargement du tracker.
+let ddragonVersion = "16.19.1";
+let versionPromise: Promise<void> | null = null;
+export function ensureDdragonVersion(): Promise<void> {
+  versionPromise ??= fetch("https://ddragon.leagueoflegends.com/api/versions.json")
+    .then((r) => (r.ok ? r.json() : null))
+    .then((v: unknown) => {
+      if (Array.isArray(v) && typeof v[0] === "string") ddragonVersion = v[0];
+    })
+    .catch(() => undefined);
+  return versionPromise;
+}
+const dd = (p: string) => `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img/${p}`;
+
+/** Balises (emplacement 7) : totem furtif, lentille, longue-vue, épouvantail de Fiddlesticks. */
+export const LOL_TRINKET_IDS = new Set([3340, 3363, 3364, 3330, 3513]);
+
+export function getLolSpellIcon(spellId?: number): string {
+  const sp = spellId ? LOL_SUMMONER_SPELLS[spellId] : undefined;
+  return sp ? dd(`spell/${sp.icon}.png`) : "";
 }
 
 export function getLolItemIcon(itemId?: number): string {
-  if (!itemId || itemId === 0) return "";
-  return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/${itemId}.png`;
-}
-
-export function getChampionDefaultItems(champName?: string): LolItem[] {
-  // Real full build IDs for ADCs / Mid / Top / Support / Jungle
-  const adcItems = [
-    { id: 6672, name: "Kraken Slayer", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/6672.png" },
-    { id: 3031, name: "Infinity Edge", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3031.png" },
-    { id: 3094, name: "Rapid Firecannon", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3094.png" },
-    { id: 3006, name: "Berserker's Greaves", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3006.png" },
-    { id: 3072, name: "Bloodthirster", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3072.png" },
-    { id: 3036, name: "Lord Dominik's Regards", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3036.png" },
-    { id: 3340, name: "Stealth Ward", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3340.png" },
-  ];
-  return adcItems;
+  return itemId ? dd(`item/${itemId}.png`) : "";
 }
 
 export const LOL_CHAMPION_ID_MAP: Record<number, string> = {
@@ -172,75 +169,19 @@ export const LOL_CHAMPION_ID_MAP: Record<number, string> = {
   897: "KSante", 901: "Smolder", 902: "Milio", 910: "Hwei", 950: "Naafiri"
 };
 
-export function getLolChampionIcon(championName?: string, championId?: number, fallbackIndex = 0): string {
-  // If championId is provided and exists in lookup
-  if (championId && LOL_CHAMPION_ID_MAP[championId]) {
-    return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${LOL_CHAMPION_ID_MAP[championId]}.png`;
-  }
-
-  const defaultChamps = ["Yone", "Yuumi", "Jinx", "Yasuo", "LeeSin", "Kaisa", "Thresh", "Zed", "Viego", "Aatrox"];
-  if (!championName || championName === "None" || championName === "null" || championName === "undefined") {
-    return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${defaultChamps[fallbackIndex % defaultChamps.length]}.png`;
-  }
-
+/** Icône du champion, ou chaîne vide si on ne sait pas lequel (jamais un champion pris au hasard). */
+export function getLolChampionIcon(championName?: string, championId?: number): string {
+  if (championId && LOL_CHAMPION_ID_MAP[championId]) return dd(`champion/${LOL_CHAMPION_ID_MAP[championId]}.png`);
+  if (!championName || championName === "None" || championName === "null" || championName === "undefined") return "";
   const nameMap: Record<string, string> = {
-    yunara: "Yone",
-    yone: "Yone",
-    yuumi: "Yuumi",
-    qiyana: "Qiyana",
-    aurora: "Aurora",
-    briar: "Briar",
-    smolder: "Smolder",
-    hwei: "Hwei",
-    naafiri: "Naafiri",
-    milio: "Milio",
-    ksante: "KSante",
-    nilah: "Nilah",
-    belveth: "Belveth",
-    renata: "Renata",
-    renataglasc: "Renata",
-    zeri: "Zeri",
-    vex: "Vex",
-    akshan: "Akshan",
-    gwen: "Gwen",
-    viego: "Viego",
-    rell: "Rell",
-    seraphine: "Seraphine",
-    lillia: "Lillia",
-    sett: "Sett",
-    aphelios: "Aphelios",
-    senna: "Senna",
-    wukong: "MonkeyKing",
-    monkeyking: "MonkeyKing",
-    jarvaniv: "JarvanIV",
-    xinzhao: "XinZhao",
-    tahmkench: "TahmKench",
-    twistedfate: "TwistedFate",
-    masteryi: "MasterYi",
-    missfortune: "MissFortune",
-    aurelionsol: "AurelionSol",
-    drmundo: "DrMundo",
-    kogmaw: "KogMaw",
-    reksai: "RekSai",
-    khazix: "Khazix",
-    velkoz: "Velkoz",
-    chogath: "Chogath",
-    kaisa: "Kaisa",
-    nunu: "Nunu",
-    leblanc: "Leblanc",
+    wukong: "MonkeyKing", monkeyking: "MonkeyKing", jarvaniv: "JarvanIV", xinzhao: "XinZhao", tahmkench: "TahmKench",
+    twistedfate: "TwistedFate", masteryi: "MasterYi", missfortune: "MissFortune", aurelionsol: "AurelionSol", drmundo: "DrMundo",
+    kogmaw: "KogMaw", reksai: "RekSai", khazix: "Khazix", velkoz: "Velkoz", chogath: "Chogath", kaisa: "Kaisa", nunu: "Nunu",
+    leblanc: "Leblanc", renataglasc: "Renata", belveth: "Belveth", ksante: "KSante",
   };
-
-  const lower = championName.toLowerCase().replace(/[^a-z0-9]/g, "");
-  const mapped = nameMap[lower];
-  if (mapped) {
-    return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${mapped}.png`;
-  }
-
   const clean = championName.replace(/[^a-zA-Z0-9]/g, "");
-  if (!clean) {
-    return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${defaultChamps[fallbackIndex % defaultChamps.length]}.png`;
-  }
-  return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${clean}.png`;
+  if (!clean) return "";
+  return dd(`champion/${nameMap[clean.toLowerCase()] ?? clean}.png`);
 }
 
 export function formatLolDuration(seconds?: number): string {
@@ -465,7 +406,8 @@ export async function fetchLolMatchesDirect(
           ? "Arena"
           : info.gameMode || "Classé";
 
-      const championName = me.championName || "Ahri";
+      const championName = me.championName || "";
+      await ensureDdragonVersion();
       const championImg = getLolChampionIcon(championName);
 
       const players: LolPlayer[] = participants.map((p) => {
@@ -473,20 +415,10 @@ export async function fetchLolMatchesDirect(
           p.puuid === puuid ||
           p.riotIdGameName?.toLowerCase() === cleanName.toLowerCase();
 
-        // 2 Summoner Spells
-        const sp1Id = p.summoner1Id || (isMe ? 4 : 4);
-        const sp2Id = p.summoner2Id || (isMe ? 14 : 12);
-
-        const spells = [
-          {
-            name: LOL_SUMMONER_SPELLS[sp1Id]?.name || "Flash",
-            image: getLolSpellIcon(sp1Id),
-          },
-          {
-            name: LOL_SUMMONER_SPELLS[sp2Id]?.name || "Ignite",
-            image: getLolSpellIcon(sp2Id),
-          },
-        ];
+        // Sorts d'invocateur réellement pris (aucun sort par défaut si l'API ne les donne pas).
+        const spells = [p.summoner1Id, p.summoner2Id]
+          .filter((id): id is number => Boolean(id))
+          .map((id) => ({ name: LOL_SUMMONER_SPELLS[id]?.name || "Sort", image: getLolSpellIcon(id) }));
 
         // 6 Items + 1 Trinket
         const itemIds = [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6];
@@ -494,8 +426,8 @@ export async function fetchLolMatchesDirect(
           if (!itemId || itemId === 0) return null;
           return {
             id: itemId,
-            name: `Item ${itemId}`,
-            image: `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/${itemId}.png`,
+            name: `Objet ${itemId}`,
+            image: getLolItemIcon(itemId),
           };
         }).filter(Boolean) as LolItem[];
 

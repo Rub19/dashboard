@@ -27,9 +27,7 @@ export default function DiscordOnboardingModal({
   isOpen,
   currentStep,
   onStepChange,
-  onClose,
   onComplete,
-  prefersReducedMotion = false,
 }: DiscordOnboardingModalProps) {
   const router = useRouter();
   const [showExitConfirm, setShowExitConfirm] = useState(false);

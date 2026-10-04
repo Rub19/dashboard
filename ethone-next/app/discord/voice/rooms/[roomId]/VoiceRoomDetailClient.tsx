@@ -88,7 +88,6 @@ export default function VoiceRoomDetailClient({ roomId: roomIdProp }: { roomId: 
   const [room, setRoom] = useState<TemporaryRoomDetail | null>(null);
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<"members" | "whitelist" | "banlist" | "timeline">("members");
 
   // Modals state

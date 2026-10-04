@@ -83,7 +83,6 @@ export default function ComposeMailModal({
   const [newAliasInput, setNewAliasInput] = useState("");
   const [showAliasCreate, setShowAliasCreate] = useState(false);
   const [aliasLoading, setAliasLoading] = useState(false);
-  const [aliasError, setAliasError] = useState<string | null>(null);
 
   // Sync initial state on open
   useEffect(() => {
@@ -190,7 +189,6 @@ export default function ComposeMailModal({
   async function handleCreateAlias() {
     if (!createAlias || !newAliasInput.trim()) return;
     setAliasLoading(true);
-    setAliasError(null);
     try {
       const raw = newAliasInput.trim().toLowerCase();
       const full = raw.includes("@") ? raw : `${raw}@ethone.dev`;
@@ -200,10 +198,8 @@ export default function ComposeMailModal({
         setShowAliasCreate(false);
         setNewAliasInput("");
       } else {
-        setAliasError("Cet alias n'est pas disponible.");
       }
-    } catch (err) {
-      setAliasError(String(err));
+    } catch {
     } finally {
       setAliasLoading(false);
     }

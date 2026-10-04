@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.53.2 — 2026-10-04
+
+**Nettoyage du code et tracker LoL sans données inventées**
+
+- Environ 120 variables et fonctions abandonnées retirées (fenêtres jamais branchées, états jamais affichés) : le code est plus léger, sans changement visible.
+- Tracker LoL : les objets, sorts, runes, balises et champions manquants ne sont plus remplacés par des valeurs inventées ; un emplacement vide reste vide.
+- Tracker LoL : le badge « +123 / −15 » écrit en dur affiche maintenant Victoire ou Défaite.
+- Tracker LoL : dans l'aperçu des équipes, chaque joueur affiche son vrai champion (les joueurs 2 à 10 pouvaient montrer Annie, Olaf, Galio…).
+- Tracker LoL : les images suivent la dernière version de Data Dragon, les objets récents s'affichent.
+- Tickets : une requête inutile au bot a été retirée.
+
 ## v1.53.1 — 2026-10-04
 
 **Bibliothèque d'avatars : aperçu plus varié**

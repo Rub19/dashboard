@@ -24,8 +24,6 @@ interface BrainStatusBarProps {
 }
 
 export const BrainStatusBar = memo(function BrainStatusBar({
-  model = "Auto (Smart Router)",
-  provider = "Cloudflare & OpenRouter",
   loading = false,
   context,
   className = "",

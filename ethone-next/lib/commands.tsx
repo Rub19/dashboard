@@ -5,11 +5,8 @@ import { EthoneIcon } from "@/components/EthoneIcon";
 import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
-import type { Settings } from "@/lib/settings";
 import { useAuth } from "@/components/AuthProvider";
 import { useWindowManager } from "@/components/WindowManagerProvider";
-import { useProfiles } from "@/lib/hooks/useProfiles";
-import { PRESETS } from "@/lib/presets";
 import { Icon } from "@/lib/icons";
 import { useFocus } from "@/components/FocusProvider";
 import { activityJournal } from "@/lib/activity-journal";
@@ -38,23 +35,13 @@ export type CommandItem = {
   action: () => void;
 };
 
-const LANGUAGES = ["fr", "en", "es", "de"];
-const DOCK_SCALES = [20, 50, 80];
-const AURAS = ["classic", "boreal", "cyberpunk", "eclipse", "emerald", "mineral"];
-const WALLPAPERS: Settings["wallpaper"][] = ["none", "aurora", "nebula", "mesh", "noise", "grain", "mineral"];
-const SESSION_MODES: Settings["sessionMode"][] = ["default", "focus", "intense", "zen", "night"];
 
-function cycle<T>(arr: T[], current: T): T {
-  const index = arr.indexOf(current);
-  return arr[(index + 1) % arr.length];
-}
 
 export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
   const router = useRouter();
   const { settings, update } = useSettings();
   const { signOut } = useAuth();
   const { openWindow } = useWindowManager();
-  const { select, profiles } = useProfiles();
   const { start, stop } = useFocus();
 
   const navigate = useCallback(
@@ -73,57 +60,14 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
     [openWindow, setOpen]
   );
 
-  const activateSpace = useCallback(
-    (workspace: "personal" | "focus" | "studio") => {
-      const p = profiles.find((x) => x.workspace === workspace) || profiles[0];
-      if (p) select(p.id).catch(() => {});
-      else navigate("/profile-selection/");
-    },
-    [profiles, select, navigate]
-  );
 
-  const toggleBrainMemory = useCallback(() => {
-    const allEnabled = Object.values(settings.brainMemoryCategories).every(Boolean);
-    const next = Object.fromEntries(
-      Object.keys(settings.brainMemoryCategories).map((k) => [k, !allEnabled])
-    ) as typeof settings.brainMemoryCategories;
-    update({ brainMemoryCategories: next });
-  }, [settings, update]);
 
-  const cycleDockScale = useCallback(() => {
-    const current = DOCK_SCALES.find((s) => s >= settings.dockRadius) ?? settings.dockRadius;
-    const next = cycle(DOCK_SCALES, current);
-    update({ dockRadius: next });
-  }, [settings.dockRadius, update]);
 
-  const cycleLanguage = useCallback(() => {
-    update({ language: cycle(LANGUAGES, settings.language) });
-  }, [settings, update]);
 
-  const cycleAura = useCallback(() => {
-    update({ aura: cycle(AURAS, settings.aura) });
-  }, [settings.aura, update]);
 
-  const cycleWallpaper = useCallback(() => {
-    update({ wallpaper: cycle(WALLPAPERS, settings.wallpaper) });
-  }, [settings.wallpaper, update]);
 
-  const cycleSessionMode = useCallback(() => {
-    update({ sessionMode: cycle(SESSION_MODES, settings.sessionMode) });
-  }, [settings.sessionMode, update]);
 
-  const setDensity = useCallback(
-    (mode: Settings["densityMode"]) => update({ densityMode: mode }),
-    [update]
-  );
 
-  const applyPreset = useCallback(
-    (id: string) => {
-      const preset = PRESETS.find((p) => p.id === id);
-      if (preset) update({ ...preset.settings });
-    },
-    [update]
-  );
 
   const startFocus = useCallback(
     (preset: string) => {
@@ -139,32 +83,10 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
     setOpen(false);
   }, [stop, setOpen]);
 
-  const toggleBrain = useCallback(() => {
-    update({ brainEnabled: !settings.brainEnabled });
-  }, [settings.brainEnabled, update]);
 
-  const toggleAura = useCallback(() => {
-    update({ ambientEffectsEnabled: !settings.ambientEffectsEnabled });
-  }, [settings.ambientEffectsEnabled, update]);
 
-  const toggleDock = useCallback(() => {
-    update({ dockVisible: !settings.dockVisible });
-  }, [settings.dockVisible, update]);
 
-  const toggleZen = useCallback(() => {
-    update({ zenMode: !settings.zenMode });
-  }, [settings.zenMode, update]);
 
-  const toggleStatusBar = useCallback(() => {
-    const bar =
-      typeof document !== "undefined"
-        ? (document.querySelector("[data-v8-status-bar]") as HTMLElement | null)
-        : null;
-    if (bar) {
-      bar.style.display = bar.style.display === "none" ? "" : "none";
-    }
-    setOpen(false);
-  }, [setOpen]);
 
   const openNotificationCenter = useCallback(() => {
     setOpen(false);

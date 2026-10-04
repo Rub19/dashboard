@@ -294,7 +294,6 @@ const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: 
 
 const SidebarFooter = memo(function SidebarFooter() {
   const i18n = useI18n();
-  const router = useRouter();
   const { setOpen } = useAnimatedSidebar();
   const { collapsed } = useAnimatedSidebarPanel();
   const { settings, update } = useSettings();

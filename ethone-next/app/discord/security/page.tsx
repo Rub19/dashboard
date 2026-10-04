@@ -71,7 +71,6 @@ export default function SecurityHubPage() {
     }
   }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
-  const isBotInstalled = Boolean(selectedGuild && botGuildIds?.includes(selectedGuild.id));
   const queryParam = selectedGuild ? `?guildId=${selectedGuild.id}` : "";
 
   return (

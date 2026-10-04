@@ -55,27 +55,6 @@ function viewLabel(view: IslandView, i18n: (key: string, fallback?: string) => s
   }
 }
 
-const IslandLiveClock = React.memo(function IslandLiveClock() {
-  const [timeStr, setTimeStr] = useState(() => {
-    return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
-  });
-
-  useEffect(() => {
-    const updateTime = () => {
-      const formatted = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
-      setTimeStr((prev) => (prev === formatted ? prev : formatted));
-    };
-    const timer = setInterval(updateTime, 10000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return (
-    <span className="flex items-center gap-1 rounded-full border border-[var(--panel-border)] bg-[var(--surface-2)]/40 px-2.5 py-1 text-[10px] tabular-nums text-[var(--text-muted)]">
-      <Icon name="clock" pack="phosphor" className="h-3 w-3" />
-      {timeStr}
-    </span>
-  );
-});
 
 function SpotifyCompact({
   title,

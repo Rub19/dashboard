@@ -75,7 +75,6 @@ export default function PluginsPage() {
   const {
     installed,
     favorites,
-    saved,
     updatesAvailable,
     isInstalled,
     isFavorite,
@@ -84,7 +83,6 @@ export default function PluginsPage() {
     uninstall,
     toggleFavorite,
     toggleSaved,
-    toggleEnabled,
     updateExtension,
     updateAll,
     rollback,
@@ -531,7 +529,7 @@ export default function PluginsPage() {
         onInstall={async (target, ws) => {
           await install(target, ws);
         }}
-        onUninstall={async (target) => {
+        onUninstall={async (_target) => {
           if (selectedItem) await uninstall(selectedItem);
         }}
         onUpdate={async (id) => {

@@ -96,10 +96,8 @@ export type WidgetContainerProps = {
 
 export default function WidgetContainer({
   id,
-  size = "medium",
   pinned = false,
   favorite = false,
-  onResize,
   onPin,
   onFavorite,
   onConfigure,

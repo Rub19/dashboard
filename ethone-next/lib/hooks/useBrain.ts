@@ -328,7 +328,7 @@ export function useBrain(mailClient?: BrainMailClient) {
     setActiveAttachments([]);
   }, []);
 
-  async function completeBrain(currentMessages: BrainMessage[], promptText: string, attachments: BrainAttachment[]) {
+  async function completeBrain(currentMessages: BrainMessage[], promptText: string, _attachments: BrainAttachment[]) {
     const startTime = Date.now();
     setCurrentStep("thinking");
     
@@ -439,12 +439,6 @@ export function useBrain(mailClient?: BrainMailClient) {
       };
     }
 
-    const baseUrl =
-      preferences.provider.active === "ollama"
-        ? settings.liveOllamaUrl
-        : preferences.provider.active === "lm-studio"
-        ? settings.liveLmStudioUrl
-        : undefined;
 
     let liveContextPrompt = `Tu es Brain, l'assistant et compagnon IA personnel intégré à ETHONE OS.
 Tu t'exprimes en français de façon fluide, vivante, naturelle, agréable, moderne et directe (comme ChatGPT ou Claude).

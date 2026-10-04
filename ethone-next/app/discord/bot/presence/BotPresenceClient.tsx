@@ -113,7 +113,6 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   const [presenceSource, setPresenceSource] = useState("manual");
   const [lastUpdated, setLastUpdated] = useState<string>(new Date().toISOString());
   const [rateLimited, setRateLimited] = useState(false);
-  const [fallbackActive, setFallbackActive] = useState(false);
 
   // Rotation state
   const [rotationConfig, setRotationConfig] = useState({
@@ -158,7 +157,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   const [newRotType, setNewRotType] = useState<DiscordActivityType>("Playing");
   const [newRotText, setNewRotText] = useState("");
   const [newRotUrl, setNewRotUrl] = useState("");
-  const [newRotWeight, setNewRotWeight] = useState(20);
+  const [newRotWeight] = useState(20);
 
   // New identity edit inputs
   const [editUsername, setEditUsername] = useState("");
@@ -217,7 +216,6 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
             }
             setPresenceSource(state.source);
             setLastUpdated(state.updatedAt);
-            setFallbackActive(state.fallbackActive || false);
             setRateLimited(state.rateLimited || false);
           }
           if (s) setStats(s);

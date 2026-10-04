@@ -42,7 +42,6 @@ export default function MailPage() {
     saveDraft,
     setFlags,
     moveMessages,
-    bulkAction,
     aliases,
     aliasesLoading,
     createAlias,

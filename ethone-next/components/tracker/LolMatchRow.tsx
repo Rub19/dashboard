@@ -17,6 +17,9 @@ import {
   getLolChampionIcon,
   LOL_TRINKET_IDS,
 } from "@/lib/lol-tracker";
+
+/** Identifiant d'un objet : fourni par l'appel direct à Riot, sinon lu dans l'adresse de son image (données du worker). */
+const itemIdOf = (it?: LolItem | null) => it?.id ?? (Number(it?.image?.match(/\/item\/(\d+)\.png/)?.[1]) || 0);
 import { computePartyMap } from "@/lib/party-helper";
 import { cn } from "@/lib/utils";
 import { EASE_OUT } from "@/lib/ease";
@@ -82,10 +85,10 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
   // Uniquement ce que l'API a renvoyé : un emplacement manquant reste vide (aucun sort ni objet inventé).
   const spells = [me?.spells?.[0] ?? null, me?.spells?.[1] ?? null];
   const itemSlots = useMemo(() => {
-    const real = (me?.items || []).filter((it): it is LolItem => Boolean(it && it.id && !LOL_TRINKET_IDS.has(it.id)));
+    const real = (me?.items || []).filter((it): it is LolItem => Boolean(it?.image && !LOL_TRINKET_IDS.has(itemIdOf(it))));
     return Array.from({ length: 6 }, (_, i) => real[i] ?? null);
   }, [me?.items]);
-  const trinket = me?.items?.find((it) => it && it.id && LOL_TRINKET_IDS.has(it.id)) ?? null;
+  const trinket = me?.items?.find((it) => it?.image && LOL_TRINKET_IDS.has(itemIdOf(it))) ?? null;
 
 
   return (
@@ -510,9 +513,9 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                             const pDmgPercent = Math.min(100, Math.round((p.stats.damage / maxDamage) * 100));
 
                             const pSpells = [p.spells?.[0] ?? null, p.spells?.[1] ?? null];
-                            const pValid = (p.items || []).filter((it): it is LolItem => Boolean(it && it.id && !LOL_TRINKET_IDS.has(it.id)));
+                            const pValid = (p.items || []).filter((it): it is LolItem => Boolean(it?.image && !LOL_TRINKET_IDS.has(itemIdOf(it))));
                             const pItemSlots = Array.from({ length: 6 }, (_, i) => pValid[i] ?? null);
-                            const pTrinket = p.items?.find((it) => it && it.id && LOL_TRINKET_IDS.has(it.id)) ?? null;
+                            const pTrinket = p.items?.find((it) => it?.image && LOL_TRINKET_IDS.has(itemIdOf(it))) ?? null;
                             const pParty = partyMap.getParty(p, pi + (gi * 5));
 
                             return (

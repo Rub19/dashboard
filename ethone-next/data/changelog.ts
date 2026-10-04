@@ -43052,6 +43052,47 @@ CHANGELOG_BY_LANG.en.unshift(v1_53_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_53_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_53_2_de);
 
+const v1_53_3_fr: ChangelogEntry = {
+  version: "v1.53.3",
+  date: "2026-10-04",
+  title: "Tracker LoL : vrais objets affichés",
+  items: [
+    "Les objets et la balise de chaque joueur s'affichent de nouveau à partir des données réelles de la partie.",
+  ],
+};
+
+const v1_53_3_en: ChangelogEntry = {
+  version: "v1.53.3",
+  date: "2026-10-04",
+  title: "LoL tracker: real items shown",
+  items: [
+    "Each player's items and trinket show again from the real match data.",
+  ],
+};
+
+const v1_53_3_es: ChangelogEntry = {
+  version: "v1.53.3",
+  date: "2026-10-04",
+  title: "Tracker de LoL: objetos reales",
+  items: [
+    "Los objetos y el abalorio de cada jugador vuelven a mostrarse a partir de los datos reales de la partida.",
+  ],
+};
+
+const v1_53_3_de: ChangelogEntry = {
+  version: "v1.53.3",
+  date: "2026-10-04",
+  title: "LoL-Tracker: echte Items",
+  items: [
+    "Items und Schmuckstück jedes Spielers werden wieder aus den echten Matchdaten angezeigt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_53_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_53_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_53_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_53_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

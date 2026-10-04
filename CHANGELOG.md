@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.53.3 — 2026-10-04
+
+**Tracker LoL : vrais objets affichés**
+
+- Les objets et la balise de chaque joueur s'affichent de nouveau à partir des données réelles de la partie.
+
 ## v1.53.2 — 2026-10-04
 
 **Nettoyage du code et tracker LoL sans données inventées**

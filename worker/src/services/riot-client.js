@@ -404,8 +404,8 @@ async function getLolDdragonData(env, gameVersion) {
 function lolItemAsset(itemId, ddragonData) {
   if (!itemId || itemId <= 0) return Object.freeze({ image: "", name: "" });
   const fromData = ddragonData?.itemMap?.[String(itemId)];
-  if (fromData) return Object.freeze({ image: fromData.image, name: fromData.name });
-  return Object.freeze({ image: lolItemImage(itemId, ddragonData), name: "" });
+  if (fromData) return Object.freeze({ id: Number(itemId), image: fromData.image, name: fromData.name });
+  return Object.freeze({ id: Number(itemId), image: lolItemImage(itemId, ddragonData), name: "" });
 }
 
 function lolSummonerSpellAsset(spellId, ddragonData) {

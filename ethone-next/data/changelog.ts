@@ -43134,6 +43134,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_53_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_53_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_53_4_de);
 
+const v1_53_5_fr: ChangelogEntry = {
+  version: "v1.53.5",
+  date: "2026-10-04",
+  title: "Tracker LoL : vraie durée et parties annulées",
+  items: [
+    "La durée réelle de chaque partie s'affiche (au lieu d'un « 25m 00s » par défaut).",
+    "Les parties annulées (remake) sont marquées « Remake » au lieu de Victoire ou Défaite.",
+    "Le détail d'une partie indique la bonne équipe gagnante.",
+  ],
+};
+
+const v1_53_5_en: ChangelogEntry = {
+  version: "v1.53.5",
+  date: "2026-10-04",
+  title: "LoL tracker: real duration and remakes",
+  items: [
+    "Each match shows its real duration (instead of a default \"25m 00s\").",
+    "Remade matches are labelled \"Remake\" instead of Victory or Defeat.",
+    "Match details show the correct winning team.",
+  ],
+};
+
+const v1_53_5_es: ChangelogEntry = {
+  version: "v1.53.5",
+  date: "2026-10-04",
+  title: "Tracker de LoL: duración real y remakes",
+  items: [
+    "Cada partida muestra su duración real (en lugar de «25m 00s» por defecto).",
+    "Las partidas anuladas se marcan «Remake» en lugar de Victoria o Derrota.",
+    "El detalle de la partida indica el equipo ganador correcto.",
+  ],
+};
+
+const v1_53_5_de: ChangelogEntry = {
+  version: "v1.53.5",
+  date: "2026-10-04",
+  title: "LoL-Tracker: echte Dauer und Remakes",
+  items: [
+    "Jedes Match zeigt seine echte Dauer (statt standardmäßig „25m 00s“).",
+    "Abgebrochene Matches heißen „Remake“ statt Sieg oder Niederlage.",
+    "Die Matchdetails zeigen das richtige Siegerteam.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_53_5_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_53_5_en);
+CHANGELOG_BY_LANG.es.unshift(v1_53_5_es);
+CHANGELOG_BY_LANG.de.unshift(v1_53_5_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

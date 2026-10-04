@@ -66,6 +66,8 @@ export interface LolMatch {
     championId?: number;
     championImageUrl?: string;
     duration?: number;
+    /** Libellé « 18m 20s » fourni par le worker. */
+    gameDuration?: string;
     timestamp: string;
   };
   scoreboard?: {
@@ -74,6 +76,7 @@ export interface LolMatch {
       Red?: { kills: number; won: boolean; gold: number; damage: number };
     };
     players: LolPlayer[];
+    duration?: number;
   };
   segments?: Array<{
     type: string;
@@ -187,7 +190,7 @@ export function getLolChampionIcon(championName?: string, championId?: number): 
 }
 
 export function formatLolDuration(seconds?: number): string {
-  if (!seconds || seconds <= 0) return "25m 00s";
+  if (!seconds || seconds <= 0) return "";
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${mins}m ${String(secs).padStart(2, "0")}s`;

@@ -39,6 +39,15 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
 
   const meta = match.metadata;
   const isWin = meta?.result?.toLowerCase() === "victory";
+  // Durée réelle : en secondes (appel direct ou tableau du worker), sinon lue dans le libellé « 18m 20s » du worker.
+  const labelSec = (() => {
+    const m = meta?.gameDuration?.match(/(d+)ms*(d+)s/);
+    return m ? Number(m[1]) * 60 + Number(m[2]) : 0;
+  })();
+  const durationSec = meta?.duration || match.scoreboard?.duration || labelSec;
+  const durationLabel = durationSec ? formatLolDuration(durationSec) : "";
+  // Partie annulée (remake) : arrêtée dans les premières minutes, ni gagnée ni perdue.
+  const isRemake = durationSec > 0 && durationSec < 270;
 
   const players = useMemo(() => match.scoreboard?.players || [], [match.scoreboard?.players]);
   const partyMap = useMemo(() => computePartyMap(players), [players]);
@@ -53,7 +62,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
       ? kills + assists
       : Number(((kills + assists) / deaths).toFixed(2));
 
-  const csMin = me?.stats?.csPerMin ?? (match.segments?.[0]?.stats?.csPerMin?.value ?? 5.2);
+  const csMin = me?.stats?.csPerMin ?? (match.segments?.[0]?.stats?.csPerMin?.value ?? 0);
   const trs = calculateLolTRS(me);
 
   const blueTeam = players.filter((p) => p.team === "Blue");
@@ -126,14 +135,14 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
           <div className="min-w-[105px]">
             <p className="text-[10px] font-medium text-[var(--text-muted)]">
               {formatLolTimeAgo(meta?.timestamp)} <span className="text-[var(--text-muted)]/60">{"//"}</span>{" "}
-              <span>{formatLolDuration(meta?.duration)}</span>
+              <span>{durationLabel}</span>
             </p>
             <h4 className="text-sm font-black text-[var(--text-primary)] tracking-wide mt-0.5">
               {meta?.modeName || "Partie"}
             </h4>
             <div className="mt-1 flex items-center gap-1.5">
-              <span className={cn("rounded px-1.5 py-0.5 text-[9px] font-bold border", isWin ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" : "bg-rose-500/15 text-rose-400 border-rose-500/20")}>
-                {isWin ? "Victoire" : "Défaite"}
+              <span className={cn("rounded px-1.5 py-0.5 text-[9px] font-bold border", isRemake ? "bg-[var(--text-primary)]/8 text-[var(--text-muted)] border-[var(--panel-border)]" : isWin ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" : "bg-rose-500/15 text-rose-400 border-rose-500/20")}>
+                {isRemake ? "Remake" : isWin ? "Victoire" : "Défaite"}
               </span>
             </div>
           </div>
@@ -373,10 +382,10 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                         : "bg-rose-500/20 text-rose-400 border border-rose-500/30"
                     )}
                   >
-                    {isWin ? "Red Side Victory" : "Blue Side Victory"}
+                    {isRemake ? "Partie annulée" : `Victoire équipe ${(isWin ? me?.team : me?.team === "Blue" ? "Red" : "Blue") === "Red" ? "rouge" : "bleue"}`}
                   </span>
                   <span className="font-mono text-xs text-[var(--text-muted)]">
-                    {formatLolDuration(meta?.duration)}
+                    {durationLabel}
                   </span>
                 </div>
                 <p className="text-[11px] text-[var(--text-muted)]/80 mt-1 font-medium">

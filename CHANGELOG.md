@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.53.5 — 2026-10-04
+
+**Tracker LoL : vraie durée et parties annulées**
+
+- La durée réelle de chaque partie s'affiche (au lieu d'un « 25m 00s » par défaut).
+- Les parties annulées (remake) sont marquées « Remake » au lieu de Victoire ou Défaite.
+- Le détail d'une partie indique la bonne équipe gagnante.
+
 ## v1.53.4 — 2026-10-04
 
 **Tracker LoL : sorts et rune affichés**

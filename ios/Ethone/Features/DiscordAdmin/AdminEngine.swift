@@ -325,6 +325,7 @@ struct GenericListView: View {
     @State private var single: JSONValue?
     @State private var loading = true
     @State private var errorMessage: String?
+    @State private var infoMessage: String?
     @State private var pending: (row: JSONValue, action: AdminModuleSpec.RowAction)?
     @State private var promptTarget: (row: JSONValue, action: AdminModuleSpec.RowAction)?
     @State private var promptInput = ""

@@ -325,8 +325,9 @@ struct GenericListView: View {
     @State private var single: JSONValue?
     @State private var loading = true
     @State private var errorMessage: String?
-    @State private var infoMessage: String?
     @State private var pending: (row: JSONValue, action: AdminModuleSpec.RowAction)?
+    @State private var promptTarget: (row: JSONValue, action: AdminModuleSpec.RowAction)?
+    @State private var promptInput = ""
     @State private var query = ""
 
     private var shown: [JSONValue] {
@@ -363,7 +364,14 @@ struct GenericListView: View {
                 .swipeActions(edge: .trailing) {
                     ForEach(Array(list.rowActions.enumerated()), id: \.offset) { _, action in
                         Button(role: action.destructive ? .destructive : nil) {
-                            if action.destructive { pending = (item, action) } else { Task { await run(action, on: item) } }
+                            if action.textPrompt != nil {
+                                promptInput = item["name"]?.stringValue ?? ""
+                                promptTarget = (item, action)
+                            } else if action.destructive {
+                                pending = (item, action)
+                            } else {
+                                Task { await run(action, on: item) }
+                            }
                         } label: { Label(action.title, systemImage: action.symbol) }
                         .tint(action.destructive ? .red : Theme.accent)
                     }
@@ -387,6 +395,20 @@ struct GenericListView: View {
                 pending = nil
             }
         } message: { Text("Cette action s'applique immédiatement.") }
+        .alert(promptTarget?.action.title ?? "Modifier", isPresented: Binding(get: { promptTarget != nil }, set: { if !$0 { promptTarget = nil } })) {
+            TextField("Nom", text: $promptInput)
+            Button("Annuler", role: .cancel) { promptTarget = nil }
+            Button("Enregistrer") {
+                if let target = promptTarget {
+                    var body = target.action.body
+                    body[target.action.textPromptKey] = .string(promptInput.trimmingCharacters(in: .whitespaces))
+                    Task { await run(target.action, on: target.row, customBody: body) }
+                }
+                promptTarget = nil
+            }
+        } message: {
+            if let text = promptTarget?.action.textPrompt { Text(text) }
+        }
     }
 
     private func load() async {
@@ -407,14 +429,18 @@ struct GenericListView: View {
         }
     }
 
-    private func run(_ action: AdminModuleSpec.RowAction, on row: JSONValue) async {
+    private func run(_ action: AdminModuleSpec.RowAction, on row: JSONValue, customBody: [String: JSONValue]? = nil) async {
         guard let id = row[list.idKey]?.displayTextID ?? row["id"]?.displayTextID else {
             errorMessage = "Identifiant de la ligne introuvable."
             return
         }
         let encoded = id.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? id
         do {
-            _ = try await model.discord.call(spec.url(action.path.replacingOccurrences(of: "{id}", with: encoded), guildId: guild.id), method: action.method, body: action.body)
+            _ = try await model.discord.call(
+                spec.url(action.path.replacingOccurrences(of: "{id}", with: encoded), guildId: guild.id),
+                method: action.method,
+                body: customBody ?? action.body
+            )
             infoMessage = "« \(action.title) » effectué."
             errorMessage = nil
             await load()

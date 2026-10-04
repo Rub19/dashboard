@@ -121,3 +121,36 @@ enum DayKey {
         Calendar.current.date(byAdding: .day, value: -n, to: Date()) ?? Date()
     }
 }
+
+/// Avatar issu de la bibliothèque ETHONE hébergée sur le site.
+struct LibraryAvatar: Identifiable, Hashable {
+    let id: String
+    let name: String
+    let category: String
+    let path: String
+
+    var fullURL: URL? {
+        URL(string: "https://ethone.dev" + path)
+    }
+}
+
+enum AvatarCatalog {
+    static let ethoneOriginals: [LibraryAvatar] = [
+        .init(id: "ethone-ethone-quantum", name: "Quantum", category: "ETHONE Originals", path: "/avatars/library/ethone/ethone-quantum.webp"),
+        .init(id: "ethone-ethone-solid", name: "Solid", category: "ETHONE Originals", path: "/avatars/library/ethone/ethone-solid.webp"),
+        .init(id: "ethone-ethone-classic", name: "Classic", category: "ETHONE Originals", path: "/avatars/library/ethone/ethone-classic.webp"),
+        .init(id: "ethone-dyno-rose", name: "Dyno Rose", category: "ETHONE Originals", path: "/avatars/library/ethone/dyno-rose.webp"),
+        .init(id: "ethone-obsidian", name: "Obsidian", category: "ETHONE Originals", path: "/avatars/library/ethone/obsidian.webp"),
+        .init(id: "ethone-aurora", name: "Aurora", category: "ETHONE Originals", path: "/avatars/library/ethone/aurora.webp"),
+        .init(id: "ethone-arctic", name: "Arctic", category: "ETHONE Originals", path: "/avatars/library/ethone/arctic.webp"),
+        .init(id: "ethone-cyber-neon", name: "Cyber Neon", category: "ETHONE Originals", path: "/avatars/library/ethone/cyber-neon.webp"),
+        .init(id: "ethone-sunset", name: "Sunset", category: "ETHONE Originals", path: "/avatars/library/ethone/sunset.webp"),
+    ]
+
+    static let popularPicks: [LibraryAvatar] = [
+        .init(id: "lol-jinx", name: "Jinx", category: "League of Legends", path: "/avatars/library/lol/jinx.webp"),
+        .init(id: "valorant-jett", name: "Jett", category: "Valorant", path: "/avatars/library/valorant/jett.webp"),
+        .init(id: "valorant-reyna", name: "Reyna", category: "Valorant", path: "/avatars/library/valorant/reyna.webp"),
+        .init(id: "anime-gojou", name: "Satoru Gojou", category: "Anime", path: "/avatars/library/anime/jujutsu-kaisen-satoru-gojou.webp"),
+    ]
+}

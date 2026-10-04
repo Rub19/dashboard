@@ -75,19 +75,56 @@ extension View {
     }
 }
 
-/// Avatar rond (photo Discord/Google ou initiale) avec pastille de présence.
+/// Avatar rond (photo Discord/Google, bibliothèque ou initiale) avec pastille de présence.
 struct AvatarView: View {
     let url: URL?
     let name: String
     var size: CGFloat = 44
     var status: PresenceStatus? = nil
 
+    init(url: URL?, name: String, size: CGFloat = 44, status: PresenceStatus? = nil) {
+        self.url = url
+        self.name = name
+        self.size = size
+        self.status = status
+    }
+
+    init(urlString: String?, name: String, size: CGFloat = 44, status: PresenceStatus? = nil) {
+        if let trimmed = urlString?.trimmingCharacters(in: .whitespacesAndNewlines), !trimmed.isEmpty {
+            if trimmed.hasPrefix("http://") || trimmed.hasPrefix("https://") {
+                self.url = URL(string: trimmed)
+            } else {
+                let clean = trimmed.hasPrefix("/") ? trimmed : "/" + trimmed
+                self.url = URL(string: "https://ethone.dev" + clean)
+            }
+        } else {
+            self.url = nil
+        }
+        self.name = name
+        self.size = size
+        self.status = status
+    }
+
+    private var resolvedURL: URL? {
+        guard let url else { return nil }
+        if let scheme = url.scheme, !scheme.isEmpty, url.host != nil {
+            return url
+        }
+        let raw = url.absoluteString
+        let clean = raw.hasPrefix("/") ? raw : "/" + raw
+        return URL(string: "https://ethone.dev" + clean)
+    }
+
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             Group {
-                if let url {
-                    AsyncImage(url: url) { phase in
-                        if let image = phase.image { image.resizable().scaledToFill() } else { initial }
+                if let resolvedURL {
+                    AsyncImage(url: resolvedURL) { phase in
+                        if let image = phase.image {
+                            image.resizable().scaledToFill()
+                        } else {
+                            initial
+                        }
                     }
                 } else {
                     initial
@@ -108,7 +145,9 @@ struct AvatarView: View {
     private var initial: some View {
         ZStack {
             Circle().fill(Color(hex: Theme.readableTint(Theme.currentAccentHex)).gradient)
-            Text(String(name.prefix(1)).uppercased()).font(.system(size: size * 0.42, weight: .bold)).foregroundStyle(.white)
+            Text(String(name.prefix(1)).uppercased())
+                .font(.system(size: size * 0.42, weight: .bold))
+                .foregroundStyle(.white)
         }
     }
 }

@@ -44151,6 +44151,63 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_15_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_15_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_15_de);
 
+const v1_55_16_fr: ChangelogEntry = {
+  version: "v1.55.16",
+  date: "2026-10-05",
+  title: "Application iOS : Bibliothèque d'avatars, statut de présence et renommage d'émojis",
+  items: [
+    "Profil iOS : intégration de la bibliothèque d'avatars ETHONE Originals (Quantum, Solid, Obsidian, Aurora, Sunset…) et populaires avec aperçu dynamique.",
+    "Profil iOS : sélecteur de présence (en ligne, focus, occupé, absent, invisible), message et émoji de statut personnalisés avec sélecteur rapide, bio.",
+    "Résolution d'avatars : AvatarView résout automatiquement les chemins relatifs de la bibliothèque (/avatars/...) vers le domaine officiel.",
+    "Discord iOS : renommage d'émojis du serveur directement depuis l'application avec saisie textuelle native (PATCH /emojis/{id}).",
+    "Worker API : support unifié des avatars de bibliothèque, du statut de présence et des métadonnées de profil dans /api/profile.",
+  ],
+};
+
+const v1_55_16_en: ChangelogEntry = {
+  version: "v1.55.16",
+  date: "2026-10-05",
+  title: "iOS App: Avatar library, presence status and emoji renaming",
+  items: [
+    "iOS Profile: integration of the ETHONE Originals avatar library (Quantum, Solid, Obsidian, Aurora, Sunset…) and popular gaming avatars with live preview.",
+    "iOS Profile: presence status picker (online, focus, busy, away, invisible), custom status message and emoji with quick picks, bio support.",
+    "Avatar resolution: AvatarView automatically resolves library relative paths (/avatars/...) to the official domain.",
+    "Discord iOS: server emoji renaming directly from the iOS app with a native text prompt (PATCH /emojis/{id}).",
+    "Worker API: unified support for library avatars, presence status and profile metadata in /api/profile.",
+  ],
+};
+
+const v1_55_16_es: ChangelogEntry = {
+  version: "v1.55.16",
+  date: "2026-10-05",
+  title: "App iOS: Biblioteca de avatares, estado de presencia y cambio de nombre de emojis",
+  items: [
+    "Perfil iOS: integración de la biblioteca de avatares ETHONE Originals (Quantum, Solid, Obsidian, Aurora, Sunset…) y populares con vista previa.",
+    "Perfil iOS: selector de presencia (en línea, focus, ocupado, ausente, invisible), mensaje y emoji de estado con atajos rápidos, biografía.",
+    "Resolución de avatares: AvatarView resuelve automáticamente las rutas relativas (/avatars/...) hacia el dominio oficial.",
+    "Discord iOS: renombrado de emojis del servidor directamente desde la app con diálogo de entrada nativo (PATCH /emojis/{id}).",
+    "Worker API: soporte unificado de avatares de biblioteca, estado de presencia y metadatos de perfil en /api/profile.",
+  ],
+};
+
+const v1_55_16_de: ChangelogEntry = {
+  version: "v1.55.16",
+  date: "2026-10-05",
+  title: "iOS-App: Avatar-Bibliothek, Anwesenheitsstatus und Emoji-Umbenennung",
+  items: [
+    "iOS-Profil: Integration der ETHONE Originals Avatar-Bibliothek (Quantum, Solid, Obsidian, Aurora, Sunset…) und beliebter Gaming-Avatare.",
+    "iOS-Profil: Anwesenheitsstatus-Wahl (online, focus, beschäftigt, abwesend, unsichtbar), benutzerdefinierte Statusnachricht und Emoji mit Schnellzugriff, Bio.",
+    "Avatar-Auflösung: AvatarView löst relative Pfade (/avatars/...) automatisch über die offizielle Domain auf.",
+    "Discord iOS: Umbenennen von Server-Emojis direkt aus der iOS-App mit nativem Texteingabedialog (PATCH /emojis/{id}).",
+    "Worker API: Einheitliche Unterstützung für Bibliotheks-Avatare, Anwesenheitsstatus und Profilmetadaten in /api/profile.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_16_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_16_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_16_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_16_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

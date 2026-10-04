@@ -22,6 +22,8 @@ struct AdminModuleSpec: Identifiable {
         var destructive = false
         var symbol = "bolt.fill"
         var body: [String: JSONValue] = [:]
+        var textPrompt: String? = nil
+        var textPromptKey: String = "name"
     }
 
     struct ListSpec {
@@ -195,7 +197,10 @@ enum AdminCatalog {
                 .init(title: "Santé", path: "/health"),
                 .init(title: "Salons", path: "/channels", key: "channels", rowActions: [.init(title: "Supprimer", path: "/channels/{id}", method: "DELETE", destructive: true, symbol: "trash")]),
                 .init(title: "Rôles", path: "/roles", key: "roles", rowActions: [.init(title: "Supprimer", path: "/roles/{id}", method: "DELETE", destructive: true, symbol: "trash")]),
-                .init(title: "Émojis", path: "/emojis", rowActions: [.init(title: "Supprimer", path: "/emojis/{id}", method: "DELETE", destructive: true, symbol: "trash")]),
+                .init(title: "Émojis", path: "/emojis", rowActions: [
+                    .init(title: "Renommer", path: "/emojis/{id}", method: "PATCH", symbol: "pencil", textPrompt: "Nouveau nom de l'émoji (2 à 32 caractères) :", textPromptKey: "name"),
+                    .init(title: "Supprimer", path: "/emojis/{id}", method: "DELETE", destructive: true, symbol: "trash"),
+                ]),
                 .init(title: "Webhooks", path: "/webhooks", rowActions: [.init(title: "Supprimer", path: "/webhooks/{id}", method: "DELETE", destructive: true, symbol: "trash")]),
                 .init(title: "Audit Discord", path: "/audit"),
               ]),

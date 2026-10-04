@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.16 — 2026-10-05
+
+**Application iOS : Bibliothèque d'avatars, statut de présence et renommage d'émojis**
+
+- Profil iOS : intégration de la bibliothèque d'avatars ETHONE Originals (Quantum, Solid, Obsidian, Aurora, Sunset…) et populaires avec aperçu dynamique.
+- Profil iOS : sélecteur de présence (en ligne, focus, occupé, absent, invisible), message et émoji de statut personnalisés avec sélecteur rapide, bio.
+- Résolution d'avatars : AvatarView résout automatiquement les chemins relatifs de la bibliothèque (/avatars/...) vers le domaine officiel.
+- Discord iOS : renommage d'émojis du serveur directement depuis l'application avec saisie textuelle native (PATCH /emojis/{id}).
+- Worker API : support unifié des avatars de bibliothèque, du statut de présence et des métadonnées de profil dans /api/profile.
+
 ## v1.55.15 — 2026-10-05
 
 **Refonte intégrale de Mission Control en Motion Design**

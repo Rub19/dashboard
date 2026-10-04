@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-04, version 1.55.3)
+# ETHONE — passation à la prochaine IA (état au 2026-10-04, version 1.55.4)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 
@@ -165,20 +165,19 @@ git log --oneline -10
 - Tracker LoL : plus aucune donnée inventée (objets, sorts, runes, champions, LP, durée « 25m 00s »), remakes marqués, bonne équipe gagnante, version Data Dragon automatique.
 - Tracker Valorant : historique paginé réel.
 - Brain : météo et parties en direct.
-- Connexions : GitHub et services officiels utilisent toujours l'app ETHONE ; le worker journalise le code d'erreur GitHub.
+- Connexions : GitHub corrigé (rétablissement du Client ID officiel Ov23li7gnklQJ7ipkgZG, acceptation de redirectUri dans le Worker Cloudflare, échange OAuth opérationnel, test en direct validé en 775 ms et profil synchronisé).
 - Bot : émojis et boutons animés, logo animé dans `/help`, cartes de bienvenue/départ animées ; module Émojis du serveur.
 - Thèmes : clic droit dans le menu Thèmes, thèmes perso visibles ; la réécriture `/settings/* → /settings/general/` de `public/_redirects` (qui masquait toutes les sections des Réglages) est supprimée.
 
 ## Reste à faire (par priorité)
-1. **Connexion GitHub** : l'utilisateur s'est « connecté » mais aucune ligne `github` n'existe dans `user_oauth_tokens`. Le client force maintenant l'app officielle (`Ov23li7gnklQJ7ipkgZG`). Lui demander de réessayer pendant que `npx wrangler tail` tourne : la ligne `[github] échange refusé <code>` donne la cause (`incorrect_client_credentials` = le secret `GITHUB_CLIENT_SECRET` ne correspond pas à cette app ; `redirect_uri_mismatch` = l'URL de rappel de l'app GitHub doit être `https://ethone.dev/`). Vérifier ensuite la page Connexions.
-2. **Thèmes, clic droit** : revérifier dans Chrome « Modifier la police… » et « Créer un thème à partir de celui-ci » maintenant que `/settings/themes/` s'ouvre bien sur le studio (le test précédent était faussé par la réécriture supprimée en 1.55.2). Ne pas enregistrer de thème sans accord.
-3. **Bot animé, vérification réelle** : regarder dans un vrai salon qu'une réponse du bot affiche bien les émojis animés (29 émojis d'application synchronisés au dernier démarrage) et qu'une arrivée de membre envoie la carte GIF. Ajouter dans le module Accueil du site un interrupteur « Carte animée » (champ `image.animated`) et afficher l'aperçu GIF (la route d'aperçu renvoie déjà `image/gif`).
-4. **Module Émojis** : jamais testé avec un vrai envoi. Tester l'ajout puis la suppression d'un émoji sur le serveur de test (permission « Gérer les expressions » requise), et vérifier les messages d'erreur (quota, permission).
-5. **Synchronisation** : faire tester par l'utilisateur sur deux appareils (changer le statut sur l'un, il doit apparaître sur l'autre sans recharger). `RawKeySync` compare toutes les 3 s et ne force pas le rafraîchissement des écrans Focus : brancher un écouteur dans ces modules si l'utilisateur veut du vrai direct.
-6. **Valorant** : les parties anciennes (`metadata.summaryOnly`) n'ont que le joueur ; masquer ou adapter le détail déplié de `ValorantMatchRow` pour elles.
-7. **Worker et Data Dragon** : depuis Cloudflare, les requêtes vers `ddragon.leagueoflegends.com` échouent (`UPSTREAM_UNAVAILABLE`, visible avec `wrangler tail`). Le site contourne en reconstruisant les icônes ; chercher la cause (blocage de l'egress Cloudflare ? délai ?) si on veut les noms d'objets côté worker.
-8. **Brain** : on pourrait ajouter les événements du jour, les tâches ouvertes et le morceau en cours avec leur titre dans `live-facts.ts`.
-9. **Supabase** : 3 avertissements « multiple permissive policies » (`ethone_shared_spaces`, `ethone_shared_space_members`) à fusionner prudemment. La protection des mots de passe divulgués apparaissait encore désactivée après que l'utilisateur l'a activée (peut demander l'offre Pro).
-10. **Qualité** : 73 avertissements de lint (56 `<img>` sans intérêt en export statique, le reste des dépendances de hooks volontaires). 5 tests du bot échouent uniquement sous Windows (assertion libuv à la fermeture) ; la CI Linux est verte.
-11. **Autre appareil de l'utilisateur** : un ancien client recréait des notifications « Nouveau mail » en double ; le déclencheur SQL `ethone_strip_legacy_mail_notifications` les nettoie, mais il faut que l'utilisateur ouvre ETHONE sur cet appareil pour qu'il se mette à jour.
-12. **Application iOS** (`ios/`) : non touchée pendant cette session, vérifier la parité avec les nouveautés (profil, avatars, émojis).
+1. **Thèmes, clic droit** : revérifier dans Chrome « Modifier la police… » et « Créer un thème à partir de celui-ci » maintenant que `/settings/themes/` s'ouvre bien sur le studio (le test précédent était faussé par la réécriture supprimée en 1.55.2). Ne pas enregistrer de thème sans accord.
+2. **Bot animé, vérification réelle** : regarder dans un vrai salon qu'une réponse du bot affiche bien les émojis animés (29 émojis d'application synchronisés au dernier démarrage) et qu'une arrivée de membre envoie la carte GIF. Ajouter dans le module Accueil du site un interrupteur « Carte animée » (champ `image.animated`) et afficher l'aperçu GIF (la route d'aperçu renvoie déjà `image/gif`).
+3. **Module Émojis** : jamais testé avec un vrai envoi. Tester l'ajout puis la suppression d'un émoji sur le serveur de test (permission « Gérer les expressions » requise), et vérifier les messages d'erreur (quota, permission).
+4. **Synchronisation** : faire tester par l'utilisateur sur deux appareils (changer le statut sur l'un, il doit apparaître sur l'autre sans recharger). `RawKeySync` compare toutes les 3 s et ne force pas le rafraîchissement des écrans Focus : brancher un écouteur dans ces modules si l'utilisateur veut du vrai direct.
+5. **Valorant** : les parties anciennes (`metadata.summaryOnly`) n'ont que le joueur ; masquer ou adapter le détail déplié de `ValorantMatchRow` pour elles.
+6. **Worker et Data Dragon** : depuis Cloudflare, les requêtes vers `ddragon.leagueoflegends.com` échouent (`UPSTREAM_UNAVAILABLE`, visible avec `wrangler tail`). Le site contourne en reconstruisant les icônes ; chercher la cause (blocage de l'egress Cloudflare ? délai ?) si on veut les noms d'objets côté worker.
+7. **Brain** : on pourrait ajouter les événements du jour, les tâches ouvertes et le morceau en cours avec leur titre dans `live-facts.ts`.
+8. **Supabase** : 3 avertissements « multiple permissive policies » (`ethone_shared_spaces`, `ethone_shared_space_members`) à fusionner prudemment. La protection des mots de passe divulgués apparaissait encore désactivée après que l'utilisateur l'a activée (peut demander l'offre Pro).
+9. **Qualité** : 73 avertissements de lint (56 `<img>` sans intérêt en export statique, le reste des dépendances de hooks volontaires). 5 tests du bot échouent uniquement sous Windows (assertion libuv à la fermeture) ; la CI Linux est verte.
+10. **Autre appareil de l'utilisateur** : un ancien client recréait des notifications « Nouveau mail » en double ; le déclencheur SQL `ethone_strip_legacy_mail_notifications` les nettoie, mais il faut que l'utilisateur ouvre ETHONE sur cet appareil pour qu'il se mette à jour.
+11. **Application iOS** (`ios/`) : non touchée pendant cette session, vérifier la parité avec les nouveautés (profil, avatars, émojis).

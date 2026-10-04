@@ -51,7 +51,7 @@ export const CATEGORY_SECTIONS: Record<string, string[]> = {
   notifications: ["notifications", "dnd"],
   "dynamic-island": ["dynamic-island"],
   dock: ["dock"],
-  workspace: ["workspace"],
+  workspace: ["workspace", "workspaces"],
   language: ["language"],
   connections: ["integrations"],
   privacy: ["privacy"],

@@ -13,6 +13,7 @@ const SETTINGS_SECTIONS = [
   "dynamic-island",
   "dock",
   "workspace",
+  "workspaces",
   "language",
   "connections",
   "integrations",

@@ -271,19 +271,23 @@ export function useHabits() {
   // Inserts today's completion if missing, deletes it if present — this is
   // the "toggle" for a single day, backed by the (habit_id, completed_on)
   // unique constraint so there's never a duplicate row for the same day.
-  const toggleToday = useCallback(
-    async (habitId: string) => {
+  const toggleDate = useCallback(
+    async (habitId: string, dateStr?: string) => {
       const userId = await withUserId();
       if (!userId) throw new Error("Session expirée : reconnectez-vous.");
 
-      const today = todayKey();
-      const existing = completions.find((c) => c.habit_id === habitId && c.completed_on === today);
+      const target = dateStr || todayKey();
+      const existing = completions.find((c) => c.habit_id === habitId && c.completed_on === target);
       const previous = [...completions];
 
       if (existing) {
         setCompletions((prev) => prev.filter((c) => c.id !== existing.id));
         try {
-          const { error: deleteError } = await supabase.from("ethone_habit_completions").delete().eq("id", existing.id).eq("user_id", userId);
+          const { error: deleteError } = await supabase
+            .from("ethone_habit_completions")
+            .delete()
+            .eq("id", existing.id)
+            .eq("user_id", userId);
           if (deleteError) throw deleteError;
         } catch (err) {
           setCompletions(previous);
@@ -294,12 +298,12 @@ export function useHabits() {
         return;
       }
 
-      const optimisticId = `pending-${habitId}-${today}`;
-      setCompletions((prev) => [...prev, { id: optimisticId, habit_id: habitId, completed_on: today }]);
+      const optimisticId = `pending-${habitId}-${target}`;
+      setCompletions((prev) => [...prev, { id: optimisticId, habit_id: habitId, completed_on: target }]);
       try {
         const { data, error: insertError } = await supabase
           .from("ethone_habit_completions")
-          .insert({ habit_id: habitId, user_id: userId, completed_on: today })
+          .insert({ habit_id: habitId, user_id: userId, completed_on: target })
           .select("id, habit_id, completed_on")
           .single();
         if (insertError) throw insertError;
@@ -314,8 +318,15 @@ export function useHabits() {
     [completions, withUserId],
   );
 
+  const toggleToday = useCallback((habitId: string) => toggleDate(habitId), [toggleDate]);
+
   const isDoneToday = useCallback(
     (habitId: string) => completions.some((c) => c.habit_id === habitId && c.completed_on === todayKey()),
+    [completions],
+  );
+
+  const isDoneOnDate = useCallback(
+    (habitId: string, dateStr: string) => completions.some((c) => c.habit_id === habitId && c.completed_on === dateStr),
     [completions],
   );
 
@@ -348,5 +359,21 @@ export function useHabits() {
     useSyncStore.getState().setStatus("habits", status);
   }, [status]);
 
-  return { items, completions, loading, error, status, create, update, remove, toggleToday, isDoneToday, getStreak, getHistory, reload: load };
+  return {
+    items,
+    completions,
+    loading,
+    error,
+    status,
+    create,
+    update,
+    remove,
+    toggleToday,
+    toggleDate,
+    isDoneToday,
+    isDoneOnDate,
+    getStreak,
+    getHistory,
+    reload: load,
+  };
 }

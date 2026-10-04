@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.10 — 2026-10-05
+
+**Habitudes : refonte complète avec motion design et 3 modes de disposition**
+
+- Nouveaux layouts interchangeables : Grille Bento (cartes avec anneaux de complétion et micro-actions), Vue Semaine (matrice calendaire interactive) et Liste Compacte.
+- Jauge radiale animée de progression quotidienne, indicateurs de séries et suivi hebdomadaire interactif (validation directe de n'importe quel jour de la semaine).
+- Prise en charge de l'alias `/settings/workspaces` pour ouvrir directement la section Espace de travail sans 404.
+
 ## v1.55.9 — 2026-10-05
 
 **Dock : refonte motion design, Apple glassmorphism et prévisions météo visuelles**

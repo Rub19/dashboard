@@ -43829,7 +43829,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_9_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_9_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_9_de);
 
+const v1_55_10_fr: ChangelogEntry = {
+  version: "v1.55.10",
+  date: "2026-10-05",
+  title: "Habitudes : refonte complète avec motion design et 3 modes de disposition",
+  items: [
+    "Nouveaux layouts interchangeables : Grille Bento (cartes avec anneaux de complétion et micro-actions), Vue Semaine (matrice calendaire interactive) et Liste Compacte.",
+    "Jauge radiale animée de progression quotidienne, indicateurs de séries et suivi hebdomadaire interactif (validation directe de n'importe quel jour de la semaine).",
+    "Prise en charge de l'alias /settings/workspaces pour ouvrir directement la section Espace de travail sans 404.",
+  ],
+};
+
+const v1_55_10_en: ChangelogEntry = {
+  version: "v1.55.10",
+  date: "2026-10-05",
+  title: "Habits: Complete redesign with motion design and 3 layout modes",
+  items: [
+    "New switchable layouts: Bento Grid (cards with completion rings and micro-actions), Week View (interactive calendar matrix), and Compact List.",
+    "Animated radial progress ring, streak indicators, and interactive weekly tracker with single-click day toggling.",
+    "Added /settings/workspaces alias route preventing 404 errors when navigating to workspace settings.",
+  ],
+};
+
+const v1_55_10_es: ChangelogEntry = {
+  version: "v1.55.10",
+  date: "2026-10-05",
+  title: "Hábitos: Rediseño completo con motion design y 3 modos de diseño",
+  items: [
+    "Nuevas vistas intercambiables: Cuadrícula Bento, Vista Semanal interactiva y Lista Compacta.",
+    "Anillo de progreso diario radial animado, indicadores de racha y seguimiento semanal interactivo día por día.",
+    "Soporte para la ruta alias /settings/workspaces evitando errores 404 hacia los ajustes de espacio de trabajo.",
+  ],
+};
+
+const v1_55_10_de: ChangelogEntry = {
+  version: "v1.55.10",
+  date: "2026-10-05",
+  title: "Gewohnheiten: Komplette Neugestaltung mit Motion Design und 3 Layout-Modi",
+  items: [
+    "Neue umschaltbare Layouts: Bento-Gitter, wöchentliche Kalendermatrix und kompakte Liste.",
+    "Animierter radialer Tagesfortschrittsring, Serien-Indikatoren und interaktiver Wochen-Tracker mit Tag-für-Tag-Umschaltung.",
+    "Unterstützung der Alias-Route /settings/workspaces zur Vermeidung von 404-Fehlern.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_10_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_10_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_10_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_10_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+
 
 
 

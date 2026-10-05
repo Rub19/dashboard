@@ -82,7 +82,7 @@ export default function NotificationBridge() {
       window.removeEventListener("v8:stop-focus", handleFocusEnd);
       window.removeEventListener("v8:focus-completed", handleFocusEnd);
     };
-  }, [register, focusDigest, info, settings.islandShowNotifications]);
+  }, [register, focusDigest, info, settings.islandShowNotifications, add]);
 
   // Lecture des mails non lus : une fois par utilisateur connecté. Avant, l'effet dépendait aussi de `user` (objet
   // recréé à chaque rafraîchissement de session) et de `i18n` : il se relançait souvent et, dans l'ancienne version,

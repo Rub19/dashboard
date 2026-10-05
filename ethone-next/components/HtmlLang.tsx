@@ -68,25 +68,6 @@ export default function HtmlLang() {
     } else {
       html.removeAttribute("data-reduced-motion");
     }
-  }, [
-    settings.language,
-    settings.backgroundEffect,
-    settings.densityMode,
-    settings.densityCustom,
-    settings.wallpaper,
-    settings.fontFamily,
-    settings.themeFonts,
-    settings.theme,
-    settings.aura,
-    activeSpace,
-    railExpanded,
-    settings.accentColor,
-    settings.customAccent,
-    settings.reducedMotion,
-    settings.sessionMode,
-    settings.ambientEffectsEnabled,
-    settings.uiAnimations,
-    viewport,
-  ]);
+  }, [settings, activeSpace, railExpanded, viewport]);
   return null;
 }

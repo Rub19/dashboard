@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.19 — 2026-10-05
+
+**Résolution intégrale des hooks React et synchronisation multi-onglets**
+
+- Qualité & Hygiène React : résolution complète de l'ensemble des 75 avertissements de hooks React et navigation dans Next.js (useUserState, CommandPalette, BootProvider, AuthProvider, Mail, etc.) ramenant les avertissements fonctionnels à zéro.
+- Synchronisation multi-onglets : ajout d'un écouteur d'événements natif storage dans useUserState assurant une synchronisation immédiate et sans latence entre fenêtres et onglets ouverts.
+- Client de messagerie Mail : stabilisation du gestionnaire de raccourcis clavier via référence persistante et typage strict des messages groupés.
+- Validation des tests & build : validation de 298/298 tests Jest Next.js, 283/283 tests Cloudflare Worker, audits de sécurité et génération de 277 pages statiques sans aucune erreur.
+
 ## v1.55.18 — 2026-10-05
 
 **Stabilité Data Dragon, déploiement bot Discord et assainissement des hooks React**

@@ -116,8 +116,8 @@ export default function ConnectionDetailDrawer({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [isOpen, onClose]);
 
-  const publicFieldDefs = PUBLIC_FIELDS[integration.id] ?? [];
-  const credFieldDefs = CREDENTIAL_FIELDS[integration.id] ?? [];
+  const publicFieldDefs = useMemo(() => PUBLIC_FIELDS[integration.id] ?? [], [integration.id]);
+  const credFieldDefs = useMemo(() => CREDENTIAL_FIELDS[integration.id] ?? [], [integration.id]);
 
   const [publicValues, setPublicValues] = useState<Record<string, string>>({});
   const [credValues, setCredValues] = useState<Record<string, string>>({});
@@ -147,7 +147,7 @@ export default function ConnectionDetailDrawer({
       }
     });
     setCredValues(initCreds);
-  }, [isOpen, integration.id, settings]);
+  }, [isOpen, integration.id, settings, publicFieldDefs, credFieldDefs]);
 
   const capabilities = useMemo(() => getCapabilities(integration.id), [integration.id]);
   const permissions = useMemo(() => getPermissions(integration.id), [integration.id]);

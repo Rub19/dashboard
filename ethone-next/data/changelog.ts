@@ -44310,9 +44310,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_18_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_18_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_18_de);
 
+const v12855_fr: ChangelogEntry = {
+  version: "v1.55.19",
+  date: "2026-10-05",
+  title: "Résolution intégrale des hooks React et synchronisation multi-onglets",
+  items: [
+    "Résolution complète des 75 avertissements de hooks React et navigation dans Next.js (useUserState, CommandPalette, BootProvider, AuthProvider, Mail, etc.)",
+    "Ajout de la synchronisation instantanée multi-onglets via événements storage dans useUserState",
+    "Stabilisation des raccourcis clavier et typage strict dans le client de messagerie Mail",
+    "Validation de l'ensemble des suites de tests (298/298 Jest Next.js, 283/283 tests Worker, audits de sécurité et build statique 277 pages sans erreur)",
+  ],
+};
+
+const v12855_en: ChangelogEntry = {
+  version: "v1.55.19",
+  date: "2026-10-05",
+  title: "Complete React hooks resolution and cross-tab real-time sync",
+  items: [
+    "Full resolution of all 75 React hook and navigation warnings across Next.js (useUserState, CommandPalette, BootProvider, AuthProvider, Mail, etc.)",
+    "Added instant cross-tab synchronization via native storage events in useUserState",
+    "Stabilized keyboard shortcuts navigation and strict typing in the Mail client",
+    "Full validation of all test suites (298/298 Next.js Jest tests, 283/283 Worker tests, security audits, and flawless 277-page static build)",
+  ],
+};
+
+const v12855_es: ChangelogEntry = {
+  version: "v1.55.19",
+  date: "2026-10-05",
+  title: "Resolución completa de hooks React y sincronización entre pestañas",
+  items: [
+    "Resolución completa de las 75 advertencias de hooks React y navegación en Next.js (useUserState, CommandPalette, BootProvider, AuthProvider, Mail, etc.)",
+    "Sincronización instantánea entre pestañas mediante eventos de almacenamiento nativos en useUserState",
+    "Estabilización de accesos directos por teclado y tipado estricto en el cliente de correo Mail",
+    "Validación total de todas las pruebas (298/298 Jest Next.js, 283/283 Worker, auditoría de seguridad y compilación estática de 277 páginas)",
+  ],
+};
+
+const v12855_de: ChangelogEntry = {
+  version: "v1.55.19",
+  date: "2026-10-05",
+  title: "Vollständige React-Hook-Bereinigung und tabübergreifende Synchronisierung",
+  items: [
+    "Vollständige Behebung aller 75 React-Hook- und Navigationswarnungen in Next.js (useUserState, CommandPalette, BootProvider, AuthProvider, Mail, usw.)",
+    "Sofortige tabübergreifende Synchronisierung über native Storage-Events in useUserState hinzugefügt",
+    "Stabilisierung der Tastenkombinationen und strenge Typisierung im Mail-Client",
+    "Vollständige Validierung aller Testsuiten (298/298 Jest Next.js, 283/283 Worker-Tests, Sicherheitsaudit und fehlerfreier statischer Build mit 277 Seiten)",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12855_fr);
+CHANGELOG_BY_LANG.en.unshift(v12855_en);
+CHANGELOG_BY_LANG.es.unshift(v12855_es);
+CHANGELOG_BY_LANG.de.unshift(v12855_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
-
-
-
-
-

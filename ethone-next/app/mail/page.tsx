@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useMail, type MailMessage } from "@/lib/hooks/useMail";
 import { useToast } from "@/components/ToastProvider";
@@ -432,15 +432,55 @@ export default function MailPage() {
     }
   }
 
+  const activeThreadId = activeThread?.[0]?.thread_id || activeThread?.[0]?.id;
+
+  const keydownDepsRef = useRef({
+    activeThread,
+    activeThreadId,
+    groupedFolderMessages,
+    composeOpen,
+    openCompose,
+    handleArchive,
+    handleTrash,
+    handleToggleStarThread,
+    openThread,
+    closeThread,
+  });
+  keydownDepsRef.current = {
+    activeThread,
+    activeThreadId,
+    groupedFolderMessages,
+    composeOpen,
+    openCompose,
+    handleArchive,
+    handleTrash,
+    handleToggleStarThread,
+    openThread,
+    closeThread,
+  };
+
   // Keyboard Navigation & Shortcuts
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       const target = e.target as HTMLElement;
       const isInput = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
 
+      const {
+        activeThread: currentActiveThread,
+        activeThreadId: currentActiveThreadId,
+        groupedFolderMessages: currentGroupedMessages,
+        composeOpen: isComposeOpen,
+        openCompose: doOpenCompose,
+        handleArchive: doHandleArchive,
+        handleTrash: doHandleTrash,
+        handleToggleStarThread: doToggleStar,
+        openThread: doOpenThread,
+        closeThread: doCloseThread,
+      } = keydownDepsRef.current;
+
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "u") {
         e.preventDefault();
-        openCompose("new");
+        doOpenCompose("new");
         return;
       }
 
@@ -448,48 +488,46 @@ export default function MailPage() {
 
       if (e.key === "c") {
         e.preventDefault();
-        openCompose("new");
-      } else if (e.key === "r" && activeThread) {
+        doOpenCompose("new");
+      } else if (e.key === "r" && currentActiveThread) {
         e.preventDefault();
-        openCompose("reply");
-      } else if (e.key === "e" && activeThread) {
+        doOpenCompose("reply");
+      } else if (e.key === "e" && currentActiveThread) {
         e.preventDefault();
-        handleArchive();
-      } else if ((e.key === "d" || e.key === "#") && activeThread) {
+        doHandleArchive();
+      } else if ((e.key === "d" || e.key === "#") && currentActiveThread) {
         e.preventDefault();
-        handleTrash();
-      } else if (e.key === "s" && activeThread) {
+        doHandleTrash();
+      } else if (e.key === "s" && currentActiveThread) {
         e.preventDefault();
-        handleToggleStarThread();
+        doToggleStar();
       } else if (e.key === "Escape") {
-        if (composeOpen) setComposeOpen(false);
-        else if (activeThread) closeThread();
+        if (isComposeOpen) setComposeOpen(false);
+        else if (currentActiveThread) doCloseThread();
       } else if (e.key === "j" || e.key === "ArrowDown") {
         e.preventDefault();
-        const currentIndex = groupedFolderMessages.findIndex(
-          (t) => (t[0]?.thread_id || t[0]?.id) === activeThreadId
+        const currentIndex = currentGroupedMessages.findIndex(
+          (t: MailMessage[]) => (t[0]?.thread_id || t[0]?.id) === currentActiveThreadId
         );
-        if (currentIndex < groupedFolderMessages.length - 1) {
-          openThread(groupedFolderMessages[currentIndex + 1]);
-        } else if (currentIndex === -1 && groupedFolderMessages.length > 0) {
-          openThread(groupedFolderMessages[0]);
+        if (currentIndex < currentGroupedMessages.length - 1) {
+          doOpenThread(currentGroupedMessages[currentIndex + 1]);
+        } else if (currentIndex === -1 && currentGroupedMessages.length > 0) {
+          doOpenThread(currentGroupedMessages[0]);
         }
       } else if (e.key === "k" || e.key === "ArrowUp") {
         e.preventDefault();
-        const currentIndex = groupedFolderMessages.findIndex(
-          (t) => (t[0]?.thread_id || t[0]?.id) === activeThreadId
+        const currentIndex = currentGroupedMessages.findIndex(
+          (t: MailMessage[]) => (t[0]?.thread_id || t[0]?.id) === currentActiveThreadId
         );
         if (currentIndex > 0) {
-          openThread(groupedFolderMessages[currentIndex - 1]);
+          doOpenThread(currentGroupedMessages[currentIndex - 1]);
         }
       }
     }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeThread, groupedFolderMessages, composeOpen]);
-
-  const activeThreadId = activeThread?.[0]?.thread_id || activeThread?.[0]?.id;
+  }, []);
 
   if (aliasesLoading) {
     return (

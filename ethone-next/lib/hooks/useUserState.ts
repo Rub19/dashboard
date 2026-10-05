@@ -156,6 +156,21 @@ export function useUserState<T>(key: string, initial: T, opts: Options = {}) {
     return () => window.removeEventListener(SAME_TAB_EVENT, onPeer);
   }, [enabled, key, instanceId, currentUserId]);
 
+  // Autre onglet : synchronisation instantanée sans attendre le réseau via l'événement natif storage.
+  useEffect(() => {
+    if (!enabled || typeof window === "undefined") return;
+    const onStorage = (e: StorageEvent) => {
+      if (!e.key || (e.key !== storageKey && e.key !== legacyKey) || !e.newValue) return;
+      fromPeer.current = e.newValue;
+      persisted.current = currentUserId ? e.newValue : persisted.current;
+      try {
+        setValue(JSON.parse(e.newValue));
+      } catch {}
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [enabled, storageKey, legacyKey, currentUserId]);
+
   useEffect(() => {
     if (!enabled || !loaded) return;
     const json = JSON.stringify(value);

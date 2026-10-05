@@ -338,7 +338,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
       cancelAnimationFrame(raf);
       if (timer) clearTimeout(timer);
     };
-  }, [publicRoute, state, authLoading, authError, profileLoaded, shellLoaded]);
+  }, [publicRoute, state, authLoading, authError, profileLoaded, shellLoaded, session]);
 
   if (state === "error") {
     return (

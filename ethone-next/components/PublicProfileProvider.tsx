@@ -136,7 +136,7 @@ export default function PublicProfileProvider({ children }: { children: ReactNod
     } finally {
       setLoading(false);
     }
-  }, [user?.id, user?.email]);
+  }, [user]);
 
   const save = useCallback(async (input: Partial<Profile>) => {
     setError(null);

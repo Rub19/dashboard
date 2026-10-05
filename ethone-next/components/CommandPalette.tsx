@@ -85,6 +85,15 @@ export default function CommandPalette() {
 
   // Search Context
   const searchContext = useMemo(() => {
+    if (!open) {
+      return {
+        route: pathname,
+        pinned: new Set<string>(),
+        recent: new Set<string>(),
+        frequency: {},
+        categoryFilter: activeCategory === "all" ? "" : activeCategory,
+      };
+    }
     const hist = historyRef.current;
     return {
       route: pathname,
@@ -101,8 +110,8 @@ export default function CommandPalette() {
   }, [allCommands, query, searchContext]);
 
   // Grouped commands
-  const pinnedIds = useMemo(() => new Set(historyRef.current.pinned()), [open]);
-  const recentIds = useMemo(() => new Set(historyRef.current.recent()), [open]);
+  const pinnedIds = useMemo(() => (open ? new Set(historyRef.current.pinned()) : new Set<string>()), [open]);
+  const recentIds = useMemo(() => (open ? new Set(historyRef.current.recent()) : new Set<string>()), [open]);
 
   // Handle execution
   const executeCommand = useCallback(

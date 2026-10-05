@@ -725,7 +725,7 @@ export default function DynamicIslandContainer() {
       default:
         return null;
     }
-  }, [selectedView, top, nowPlaying, focus, i18n, syncing, pendingCount, uploadingCount, completedCount, errorCount, netState, batteryInfo]);
+  }, [selectedView, top, nowPlaying, focus, i18n, syncing, pendingCount, uploadingCount, completedCount, errorCount, netState, batteryInfo, brainActive, pomodoroActive, selectView, spotifyActive]);
 
   // Spotify controls
   const spotifyControl = useCallback(

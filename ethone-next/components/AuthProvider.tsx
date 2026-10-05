@@ -384,6 +384,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     // identity, which a same-page state clear alone cannot guarantee.
     if (typeof window !== "undefined") {
       try {
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
         window.location.href = "/login";
       } catch {
         // Navigation API unavailable (e.g. non-browser test environment) —

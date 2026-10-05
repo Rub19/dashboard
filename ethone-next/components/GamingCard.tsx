@@ -103,11 +103,11 @@ const GamingCard = memo(function GamingCard({
 
 
   const { statusText, statusClass, statusDot } = useMemo(() => {
-    if (hasProfile || hasUsername) {
+    if (error) {
       return {
-        statusText: i18n("online", "Prêt"),
-        statusClass: "border-emerald-500/30 bg-emerald-500/15 text-emerald-400",
-        statusDot: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]",
+        statusText: i18n("error", "Erreur"),
+        statusClass: "border-rose-500/30 bg-rose-500/15 text-rose-400",
+        statusDot: "bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.8)]",
       };
     }
     if (loading) {
@@ -115,6 +115,20 @@ const GamingCard = memo(function GamingCard({
         statusText: i18n("loading", "Chargement"),
         statusClass: "border-sky-500/30 bg-sky-500/10 text-sky-300",
         statusDot: "bg-sky-400 animate-pulse",
+      };
+    }
+    if (hasProfile || hasUsername) {
+      return {
+        statusText: i18n("online", "Prêt"),
+        statusClass: "border-emerald-500/30 bg-emerald-500/15 text-emerald-400",
+        statusDot: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]",
+      };
+    }
+    if (!configured) {
+      return {
+        statusText: i18n("not_configured", "Non configuré"),
+        statusClass: "border-amber-500/30 bg-amber-500/10 text-amber-300",
+        statusDot: "bg-amber-400",
       };
     }
     return {

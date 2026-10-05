@@ -179,6 +179,25 @@ export default function IntegrationsSettings() {
     [settings, clientIds, credentials.connected, connected]
   );
 
+  const testAll = useCallback(async () => {
+    setTestingAll(true);
+    try {
+      const results = await Promise.all(
+        INTEGRATIONS.map(async (integration) => ({
+          id: integration.id,
+          result: await pingIntegration(integration, settings, clientIds, credentials.connected, connected),
+        }))
+      );
+      const next: Record<string, PingResult> = {};
+      results.forEach(({ id, result }) => {
+        next[id] = result;
+      });
+      setHealth(next);
+    } finally {
+      setTestingAll(false);
+    }
+  }, [settings, clientIds, credentials.connected, connected]);
+
   useEffect(() => {
     const handleTestAllEvent = () => {
       void testAll();
@@ -215,26 +234,7 @@ export default function IntegrationsSettings() {
       window.removeEventListener("v8:refresh-connections", handleConnectionUpdated);
       window.removeEventListener("storage", handleConnectionUpdated);
     };
-  }, []);
-
-  const testAll = useCallback(async () => {
-    setTestingAll(true);
-    try {
-      const results = await Promise.all(
-        INTEGRATIONS.map(async (integration) => ({
-          id: integration.id,
-          result: await pingIntegration(integration, settings, clientIds, credentials.connected, connected),
-        }))
-      );
-      const next: Record<string, PingResult> = {};
-      results.forEach(({ id, result }) => {
-        next[id] = result;
-      });
-      setHealth(next);
-    } finally {
-      setTestingAll(false);
-    }
-  }, [settings, clientIds, credentials.connected, connected]);
+  }, [testAll]);
 
   const handleClientIdChange = useCallback((id: string, value: string) => {
     setClientIds((prev) => ({ ...prev, [id]: value }));

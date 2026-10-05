@@ -396,7 +396,7 @@ export const VisualizerCanvas = memo(function VisualizerCanvas({
         "pointer-events-auto h-full w-full select-none transition-opacity duration-700",
         className
       )}
-      style={{ touchAction: "none" }}
+      style={{ touchAction: "pan-y" }}
       aria-label={`Visualiseur audio interactif mode ${mode}`}
     />
   );

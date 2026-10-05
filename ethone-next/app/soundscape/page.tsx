@@ -14,6 +14,7 @@ import {
   Minimize2,
   Clock,
   AudioWaveform,
+  ChevronDown,
 } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +28,8 @@ const SLEEP_TIMER_OPTIONS = [
 ];
 
 export default function SoundscapePage() {
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
   const {
     ambientLayers,
     playAmbientLayer,
@@ -216,15 +219,24 @@ export default function SoundscapePage() {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const scrollToContent = useCallback(() => {
+    play("click");
+    scrollContainerRef.current?.scrollTo({
+      top: 360,
+      behavior: "smooth",
+    });
+  }, [play]);
+
   return (
     <div
+      ref={scrollContainerRef}
       className={cn(
-        "relative flex min-h-screen flex-col overflow-x-hidden bg-[var(--surface-base)] text-[var(--text-primary)] transition-all",
-        isFullscreen && "fixed inset-0 z-50 overflow-y-auto"
+        "relative flex h-full min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden os-scroll [overscroll-behavior:contain] bg-[var(--surface-base)] text-[var(--text-primary)] transition-all",
+        isFullscreen && "fixed inset-0 z-50 h-screen w-screen"
       )}
     >
       {/* Visualiseur interactif de fond ou de scène */}
-      <div className="relative h-[340px] sm:h-[420px] w-full overflow-hidden border-b border-white/10 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
+      <div className="relative h-[320px] sm:h-[400px] w-full shrink-0 overflow-hidden border-b border-white/10 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
         <VisualizerCanvas
           mode={visualizerMode}
           isAudioActive={isAnyAudioActive}
@@ -326,11 +338,24 @@ export default function SoundscapePage() {
 
         {/* Badge d'indication minuteur actif */}
         {remainingSeconds !== null && (
-          <div className="absolute bottom-5 left-5 z-20 flex items-center gap-2 rounded-full border border-amber-500/40 bg-black/60 px-3.5 py-1 text-xs font-mono text-amber-300 backdrop-blur-xl">
+          <div className="absolute bottom-4 left-5 z-20 flex items-center gap-2 rounded-full border border-amber-500/40 bg-black/60 px-3.5 py-1 text-xs font-mono text-amber-300 backdrop-blur-xl">
             <Clock className="h-3.5 w-3.5 animate-spin" />
             <span>Extinction dans {formatTimer(remainingSeconds)}</span>
           </div>
         )}
+
+        {/* Bouton subtil de défilement vers le bas */}
+        <div className="absolute bottom-3 inset-x-0 flex justify-center z-20 pointer-events-auto">
+          <button
+            type="button"
+            onClick={scrollToContent}
+            className="flex items-center gap-1.5 rounded-full border border-white/15 bg-black/50 px-3 py-1 text-[11px] font-medium text-white/80 backdrop-blur-xl shadow-lg transition-all hover:bg-white/15 hover:text-white active:scale-95 cursor-pointer"
+            aria-label="Faire défiler vers le mixeur et les fréquences"
+          >
+            <span>Mixeur & Fréquences</span>
+            <ChevronDown className="h-3.5 w-3.5 animate-bounce" />
+          </button>
+        </div>
       </div>
 
       {/* Contenu principal : Grille Bento Apple-grade */}
@@ -338,7 +363,7 @@ export default function SoundscapePage() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6"
+        className="mx-auto flex w-full max-w-7xl shrink-0 flex-col gap-6 px-4 py-8 pb-36 sm:px-6 sm:pb-44"
       >
         {/* Section 1 : Préréglages d'ambiance en 1 clic */}
         <PresetGrid

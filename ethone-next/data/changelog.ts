@@ -44464,9 +44464,58 @@ const v1_55_21_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_21_de);
+const v1_55_22_fr: ChangelogEntry = {
+  version: "v1.55.22",
+  date: "2026-10-05",
+  title: "Studio Soundscape : Défilement fluide & navigation optimisée",
+  items: [
+    "Conteneur de défilement dédié `os-scroll` intégré au module Soundscape (/soundscape), résolvant le blocage de scroll sous le layout ETHONE OS.",
+    "Support tactile complet sur le visualiseur Canvas avec `touchAction: pan-y`, permettant un défilement vertical naturel sur mobile, trackpads et écrans tactiles.",
+    "Bouton d'indication et de saut rapide vers le mixeur et les fréquences en bas du visualiseur.",
+    "Marges de sécurité accrues (pb-44) évitant tout chevauchement avec le dock flottant en bas de page.",
+  ],
+};
+
+const v1_55_22_en: ChangelogEntry = {
+  version: "v1.55.22",
+  date: "2026-10-05",
+  title: "Soundscape Studio: Smooth Scrolling & Enhanced Navigation",
+  items: [
+    "Integrated dedicated `os-scroll` container in Soundscape Studio (/soundscape), fixing scroll locking under the ETHONE OS shell layout.",
+    "Full touch and gesture support over Canvas visualizer using `touchAction: pan-y` for effortless vertical scrolling across touchscreens and trackpads.",
+    "Quick-jump indicator button to smoothly glide down to the mixer deck and binaural controls.",
+    "Expanded bottom padding (pb-44) preventing any UI clash with the bottom floating dock.",
+  ],
+};
+
+const v1_55_22_es: ChangelogEntry = {
+  version: "v1.55.22",
+  date: "2026-10-05",
+  title: "Soundscape Studio: Desplazamiento fluido y navegación optimizada",
+  items: [
+    "Contenedor `os-scroll` dedicado para la página Soundscape, permitiendo desplazarse con total fluidez.",
+    "Soporte táctil en el visualizador Canvas (`touchAction: pan-y`) para no bloquear el scroll vertical.",
+    "Botón de acceso rápido al mezclador y controles binaurales.",
+    "Ajuste de margen inferior para evitar solapamientos con el dock.",
+  ],
+};
+
+const v1_55_22_de: ChangelogEntry = {
+  version: "v1.55.22",
+  date: "2026-10-05",
+  title: "Soundscape Studio: Sanftes Scrollen & verbesserte Navigation",
+  items: [
+    "Dedizierter `os-scroll` Container für Soundscape Studio gegen gesperrtes Scrollen im ETHONE OS Layout.",
+    "Volle Gesten- und Touch-Unterstützung auf dem Canvas-Visualisierer (`touchAction: pan-y`).",
+    "Schnellnavigation zum Mixer und den binauralen Steuerungen.",
+    "Vergrößerter unterer Abstand zur Vermeidung von Überlagerungen mit dem Dock.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+

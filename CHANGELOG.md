@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.22 — 2026-10-05
+
+**Studio Soundscape : Défilement fluide & navigation optimisée**
+
+- Conteneur de défilement dédié `os-scroll` intégré au module Soundscape (/soundscape), résolvant le blocage de défilement sous le layout ETHONE OS.
+- Support tactile complet sur le visualiseur Canvas avec `touchAction: pan-y`, permettant un défilement vertical naturel sur mobile, trackpads et écrans tactiles.
+- Bouton d'indication et de saut rapide vers le mixeur et les fréquences au bas du visualiseur audio interactif.
+- Marges de sécurité accrues (`pb-44`) évitant tout chevauchement avec le dock flottant en bas de page.
+
 ## v1.55.21 — 2026-10-05
 
 **Nouveau module Soundscape Studio & Visualiseur Audio 60 FPS**

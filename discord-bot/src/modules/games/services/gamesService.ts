@@ -65,7 +65,20 @@ class GamesService {
     });
   }
 
-  // --- LOGIQUE ÉCONOMIE INTÉGRÉE ---
+  // --- LOGIQUE ÉCONOMIE INTÉGRÉE (ETHONE COIN) ---
+  public getCurrency(guildId: string): { name: string; symbol: string } {
+    const config = economyStorage.getConfig(guildId);
+    return {
+      name: config.currencyName || 'Ethone Coins',
+      symbol: config.currencySymbol || '🪙',
+    };
+  }
+
+  public fmt(amount: number, guildId: string): string {
+    const { name, symbol } = this.getCurrency(guildId);
+    return `${amount.toLocaleString('fr-FR')} ${symbol} ${name}`;
+  }
+
   public getBalance(guildId: string, userId: string, username: string): number {
     const wallet = economyStorage.getWallet(guildId, userId, { username });
     return wallet.balance;
@@ -136,14 +149,21 @@ class GamesService {
       return { error: "Le Blackjack n'est pas activé sur ce serveur." };
     }
 
+    const { name: currencyName, symbol: currencySymbol } = this.getCurrency(guildId);
+
     if (bet < config.minBet || bet > config.maxBet) {
-      return { error: `La mise doit être comprise entre **${config.minBet}** et **${config.maxBet.toLocaleString()}** pièces.` };
+      return { error: `La mise doit être comprise entre **${config.minBet}** et **${config.maxBet.toLocaleString('fr-FR')}** ${currencySymbol} ${currencyName}.` };
     }
 
-    const deducted = this.deductBalance(guildId, user.id, user.username, bet, `Blackjack: mise de ${bet}`);
+    const currentBal = this.getBalance(guildId, user.id, user.username);
+    const deducted = this.deductBalance(guildId, user.id, user.username, bet, `[Ethone Casino] Blackjack: mise de ${bet} ${currencySymbol}`);
     if (!deducted) {
-      return { error: `Fonds insuffisants ! Vous n'avez pas assez de pièces pour miser **${bet.toLocaleString()}**.` };
+      return { error: `Fonds insuffisants en ${currencyName} ! Votre solde actuel est de **${currentBal.toLocaleString('fr-FR')}** ${currencySymbol}. Vous avez besoin de **${bet.toLocaleString('fr-FR')}** ${currencySymbol}. (Tapez \`/daily\` ou \`/work\` pour en obtenir !)` };
     }
+
+    // Alimentation de la cagnotte Jackpot en Ethone Coins
+    const jackpotContrib = Math.max(1, Math.round((bet * (config.jackpotContributionPercent || 2)) / 100));
+    gamesStorage.addToJackpot(guildId, jackpotContrib);
 
     const deck = this.createDeck();
     const playerCards = [deck.pop()!, deck.pop()!];
@@ -174,11 +194,11 @@ class GamesService {
       if (dHand.isBlackjack) {
         game.status = 'push';
         game.payout = bet;
-        this.addBalance(guildId, user.id, user.username, bet, 'Blackjack: égalité naturelle');
+        this.addBalance(guildId, user.id, user.username, bet, `[Ethone Casino] Blackjack: égalité naturelle (+${bet} ${currencySymbol})`);
       } else {
         game.status = 'blackjack';
         game.payout = Math.round(bet * 2.5);
-        this.addBalance(guildId, user.id, user.username, game.payout, 'Blackjack naturel: gain 3:2');
+        this.addBalance(guildId, user.id, user.username, game.payout, `[Ethone Casino] Blackjack naturel 3:2 (+${game.payout} ${currencySymbol})`);
       }
     }
 
@@ -218,9 +238,12 @@ class GamesService {
 
   private buildBlackjackEmbed(game: BlackjackGame, user: User, isGameOver: boolean): EmbedBuilder {
     const sparkles = getAppEmoji('etho_a_sparkles') || '✨';
+    const { name: currencyName, symbol: currencySymbol } = this.getCurrency(game.guildId);
+    const userWallet = economyStorage.getWallet(game.guildId, game.userId, { username: game.username });
+
     const embed = new EmbedBuilder()
       .setAuthor({
-        name: `Table de Blackjack 21 · ${game.username}`,
+        name: `Table de Blackjack 21 · ${game.username} · Ethone Coin System`,
         iconURL: user.displayAvatarURL(),
       })
       .setTimestamp();
@@ -228,7 +251,7 @@ class GamesService {
     if (!isGameOver) {
       embed.setColor(0x3b82f6);
       embed.setDescription(
-        `Mise en jeu : **${game.bet.toLocaleString()}** pièces\n` +
+        `Mise en jeu : **${game.bet.toLocaleString('fr-FR')}** ${currencySymbol} ${currencyName}\n` +
         `Prenez une décision pour battre le croupier sans dépasser 21 !`
       );
       embed.addFields(
@@ -243,17 +266,20 @@ class GamesService {
           inline: true,
         }
       );
+      embed.setFooter({
+        text: `Solde actuel : ${userWallet.balance.toLocaleString('fr-FR')} ${currencySymbol} ${currencyName} • ETHONE Economy`,
+      });
     } else {
       let title = '';
       if (game.status === 'blackjack') {
         embed.setColor(0xf59e0b);
-        title = `${sparkles} BLACKJACK NATUREL ! (+${(game.payout - game.bet).toLocaleString()} pièces)`;
+        title = `${sparkles} BLACKJACK NATUREL ! (+${(game.payout - game.bet).toLocaleString('fr-FR')} ${currencySymbol})`;
       } else if (game.status === 'player_win' || game.status === 'dealer_bust') {
         embed.setColor(0x10b981);
-        title = `🎉 VICTOIRE ! (+${(game.payout - game.bet).toLocaleString()} pièces)`;
+        title = `🎉 VICTOIRE ! (+${(game.payout - game.bet).toLocaleString('fr-FR')} ${currencySymbol})`;
       } else if (game.status === 'push') {
         embed.setColor(0x64748b);
-        title = `🤝 ÉGALITÉ (Mise de ${game.bet.toLocaleString()} remboursée)`;
+        title = `🤝 ÉGALITÉ (Mise de ${game.bet.toLocaleString('fr-FR')} ${currencySymbol} remboursée)`;
       } else {
         embed.setColor(0xef4444);
         title = game.status === 'player_bust' ? `💥 BUST ! (> 21)` : `💀 DÉFAITE contre le croupier`;
@@ -273,6 +299,9 @@ class GamesService {
           inline: true,
         }
       );
+      embed.setFooter({
+        text: `Solde restant : ${userWallet.balance.toLocaleString('fr-FR')} ${currencySymbol} ${currencyName} • Système Économie Ethone Coin`,
+      });
     }
 
     return embed;
@@ -348,9 +377,10 @@ class GamesService {
     } else if (action === 'stand') {
       await this.resolveDealerAndFinish(interaction, game);
     } else if (action === 'double') {
-      const deducted = this.deductBalance(game.guildId, game.userId, game.username, game.bet, 'Blackjack: doubler la mise');
+      const { name: currencyName, symbol: currencySymbol } = this.getCurrency(game.guildId);
+      const deducted = this.deductBalance(game.guildId, game.userId, game.username, game.bet, `[Ethone Casino] Blackjack: doubler la mise (${game.bet} ${currencySymbol})`);
       if (!deducted) {
-        await interaction.reply({ content: 'Fonds insuffisants pour doubler votre mise !', ephemeral: true });
+        await interaction.reply({ content: `Fonds insuffisants en ${currencyName} pour doubler votre mise !`, ephemeral: true });
         return;
       }
       game.bet *= 2;
@@ -396,18 +426,19 @@ class GamesService {
       game.dealerHand.isBusted = dScore.isBusted;
     }
 
+    const { symbol: currencySymbol } = this.getCurrency(game.guildId);
     if (game.dealerHand.isBusted) {
       game.status = 'dealer_bust';
       game.payout = game.bet * 2;
-      this.addBalance(game.guildId, game.userId, game.username, game.payout, 'Blackjack: Croupier bust');
+      this.addBalance(game.guildId, game.userId, game.username, game.payout, `[Ethone Casino] Blackjack: Croupier bust (+${game.payout} ${currencySymbol})`);
     } else if (game.playerHand.score > game.dealerHand.score) {
       game.status = 'player_win';
       game.payout = game.bet * 2;
-      this.addBalance(game.guildId, game.userId, game.username, game.payout, 'Blackjack: Victoire contre le croupier');
+      this.addBalance(game.guildId, game.userId, game.username, game.payout, `[Ethone Casino] Blackjack: Victoire (+${game.payout} ${currencySymbol})`);
     } else if (game.playerHand.score === game.dealerHand.score) {
       game.status = 'push';
       game.payout = game.bet;
-      this.addBalance(game.guildId, game.userId, game.username, game.bet, 'Blackjack: Égalité (push)');
+      this.addBalance(game.guildId, game.userId, game.username, game.bet, `[Ethone Casino] Blackjack: Égalité push (+${game.payout} ${currencySymbol})`);
     } else {
       game.status = 'dealer_win';
       game.payout = 0;
@@ -447,14 +478,21 @@ class GamesService {
       return { error: "La Roulette Royale n'est pas activée sur ce serveur." };
     }
 
+    const { name: currencyName, symbol: currencySymbol } = this.getCurrency(guildId);
+
     if (bet < config.minBet || bet > config.maxBet) {
-      return { error: `La mise doit être comprise entre **${config.minBet}** et **${config.maxBet.toLocaleString()}** pièces.` };
+      return { error: `La mise doit être comprise entre **${config.minBet}** et **${config.maxBet.toLocaleString('fr-FR')}** ${currencySymbol} ${currencyName}.` };
     }
 
-    const deducted = this.deductBalance(guildId, user.id, user.username, bet, `Roulette: mise de ${bet}`);
+    const currentBal = this.getBalance(guildId, user.id, user.username);
+    const deducted = this.deductBalance(guildId, user.id, user.username, bet, `[Ethone Casino] Roulette: mise sur ${betChoice} (${bet} ${currencySymbol})`);
     if (!deducted) {
-      return { error: `Fonds insuffisants ! Vous n'avez pas assez de pièces pour miser **${bet.toLocaleString()}**.` };
+      return { error: `Fonds insuffisants en ${currencyName} ! Votre solde est de **${currentBal.toLocaleString('fr-FR')}** ${currencySymbol}. Il vous manque **${(bet - currentBal).toLocaleString('fr-FR')}** ${currencySymbol}. (Tapez \`/daily\` pour recharger !)` };
     }
+
+    // Contribution continue à la cagnotte Jackpot en Ethone Coins
+    const jackpotContrib = Math.max(1, Math.round((bet * (config.jackpotContributionPercent || 2)) / 100));
+    gamesStorage.addToJackpot(guildId, jackpotContrib);
 
     // Tirage de la bille (0 à 36)
     const rolledNumber = Math.floor(Math.random() * 37);
@@ -496,7 +534,7 @@ class GamesService {
 
     const payout = won ? bet * multiplier : 0;
     if (won) {
-      this.addBalance(guildId, user.id, user.username, payout, `Roulette: gain x${multiplier}`);
+      this.addBalance(guildId, user.id, user.username, payout, `[Ethone Casino] Roulette: gain x${multiplier} (+${payout} ${currencySymbol})`);
     }
 
     const numberColorStr = isGreen ? '🟢 0 Vert' : isRed ? `🔴 ${rolledNumber} Rouge` : `⚫ ${rolledNumber} Noir`;
@@ -514,18 +552,19 @@ class GamesService {
       detail: `Numéro ${rolledNumber} (${betChoice})`,
     });
 
+    const newBal = this.getBalance(guildId, user.id, user.username);
     const embed = new EmbedBuilder()
-      .setAuthor({ name: `Roulette Royale · ${user.username}`, iconURL: user.displayAvatarURL() })
-      .setTitle(won ? `${sparkles} GAGNÉ ! (+${(payout - bet).toLocaleString()} pièces)` : `💥 PERDU ! (-${bet.toLocaleString()} pièces)`)
+      .setAuthor({ name: `Roulette Royale · ${user.username} · Ethone Coin System`, iconURL: user.displayAvatarURL() })
+      .setTitle(won ? `${sparkles} GAGNÉ ! (+${(payout - bet).toLocaleString('fr-FR')} ${currencySymbol} ${currencyName})` : `💥 PERDU ! (-${bet.toLocaleString('fr-FR')} ${currencySymbol} ${currencyName})`)
       .setColor(won ? (isGreen ? 0x10b981 : isRed ? 0xef4444 : 0x0f172a) : 0x64748b)
       .setDescription(
         `La roue a tourné et la bille s'est arrêtée sur :\n` +
         `### **${numberColorStr}**\n\n` +
         `Votre pari : **${typeof betChoice === 'number' ? `Numéro plein [${betChoice}]` : String(betChoice).toUpperCase()}**\n` +
         `Multiplicateur : **${won ? `x${multiplier}` : 'x0'}**\n` +
-        `Nouveau solde : **${this.getBalance(guildId, user.id, user.username).toLocaleString()}** pièces`
+        `Nouveau solde : **${newBal.toLocaleString('fr-FR')}** ${currencySymbol} ${currencyName}`
       )
-      .setFooter({ text: `Cagnotte progressive Jackpot : ${gamesStorage.getJackpot(guildId).toLocaleString()} pièces` })
+      .setFooter({ text: `Cagnotte Jackpot : ${gamesStorage.getJackpot(guildId).toLocaleString('fr-FR')} ${currencySymbol} • Portefeuille Ethone Coin` })
       .setTimestamp();
 
     return { resultEmbed: embed };
@@ -552,18 +591,20 @@ class GamesService {
       return { error: 'Vous ne pouvez pas défier un bot au duel de dés.' };
     }
 
+    const { name: currencyName, symbol: currencySymbol } = this.getCurrency(guildId);
+
     if (bet < config.minBet || bet > config.maxBet) {
-      return { error: `La mise de duel doit être comprise entre **${config.minBet}** et **${config.maxBet.toLocaleString()}** pièces.` };
+      return { error: `La mise de duel doit être comprise entre **${config.minBet}** et **${config.maxBet.toLocaleString('fr-FR')}** ${currencySymbol} ${currencyName}.` };
     }
 
     const cBalance = this.getBalance(guildId, challenger.id, challenger.username);
     if (cBalance < bet) {
-      return { error: `Vous n'avez pas assez de pièces pour lancer ce duel (**${bet.toLocaleString()}** requis).` };
+      return { error: `Vous n'avez pas assez de ${currencyName} pour lancer ce duel (**${cBalance.toLocaleString('fr-FR')}** ${currencySymbol} disponible, **${bet.toLocaleString('fr-FR')}** requis).` };
     }
 
     const oBalance = this.getBalance(guildId, opponent.id, opponent.username);
     if (oBalance < bet) {
-      return { error: `${opponent.username} n'a pas assez de pièces pour honorer cette mise.` };
+      return { error: `${opponent.username} n'a pas assez de ${currencyName} pour honorer cette mise (**${oBalance.toLocaleString('fr-FR')}** ${currencySymbol} disponible).` };
     }
 
     const duelId = `dice_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
@@ -596,10 +637,10 @@ class GamesService {
       .setColor(0xf97316)
       .setDescription(
         `<@${challenger.id}> défie <@${opponent.id}> en duel de dés !\n\n` +
-        `💰 **Mise en jeu :** ${bet.toLocaleString()} pièces chacun (Pot total : ${(bet * 2).toLocaleString()})\n` +
+        `💰 **Mise en jeu :** ${bet.toLocaleString('fr-FR')} ${currencySymbol} ${currencyName} chacun (Pot total : ${(bet * 2).toLocaleString('fr-FR')} ${currencySymbol})\n` +
         `🎯 **Règle :** Chaque joueur lance 2 dés (2d6). Le plus haut score remporte la mise !`
       )
-      .setFooter({ text: 'Ce défi expire automatiquement dans 2 minutes.' })
+      .setFooter({ text: 'Ce défi expire automatiquement dans 2 minutes • Portefeuille Ethone Coin' })
       .setTimestamp();
 
     if (!this.client) return { error: 'Client Discord indisponible' };
@@ -647,14 +688,16 @@ class GamesService {
         return;
       }
 
-      // Vérifie à nouveau les soldes
-      const cDeduct = this.deductBalance(duel.guildId, duel.challengerId, duel.challengerName, duel.bet, 'Duel de dés: mise');
-      const oDeduct = this.deductBalance(duel.guildId, duel.opponentId, duel.opponentName, duel.bet, 'Duel de dés: mise');
+      const { name: currencyName, symbol: currencySymbol } = this.getCurrency(duel.guildId);
+
+      // Déduction chez les 2 joueurs
+      const cDeduct = this.deductBalance(duel.guildId, duel.challengerId, duel.challengerName, duel.bet, `[Ethone Casino] Duel 2d6 contre ${duel.opponentName} (${duel.bet} ${currencySymbol})`);
+      const oDeduct = this.deductBalance(duel.guildId, duel.opponentId, duel.opponentName, duel.bet, `[Ethone Casino] Duel 2d6 contre ${duel.challengerName} (${duel.bet} ${currencySymbol})`);
 
       if (!cDeduct || !oDeduct) {
-        if (cDeduct) this.addBalance(duel.guildId, duel.challengerId, duel.challengerName, duel.bet, 'Remboursement duel');
-        if (oDeduct) this.addBalance(duel.guildId, duel.opponentId, duel.opponentName, duel.bet, 'Remboursement duel');
-        await interaction.reply({ content: "Un des joueurs n'a plus assez de fonds pour lancer le duel.", ephemeral: true });
+        if (cDeduct) this.addBalance(duel.guildId, duel.challengerId, duel.challengerName, duel.bet, '[Ethone Casino] Remboursement duel');
+        if (oDeduct) this.addBalance(duel.guildId, duel.opponentId, duel.opponentName, duel.bet, '[Ethone Casino] Remboursement duel');
+        await interaction.reply({ content: `Un des joueurs n'a plus assez de ${currencyName} pour lancer le duel.`, ephemeral: true });
         return;
       }
 
@@ -679,17 +722,17 @@ class GamesService {
       let resultText = '';
       if (cTotal > oTotal) {
         duel.winnerId = duel.challengerId;
-        this.addBalance(duel.guildId, duel.challengerId, duel.challengerName, winPayout, 'Victoire duel de dés');
-        resultText = `🏆 <@${duel.challengerId}> remporte le duel et empoche **${winPayout.toLocaleString()}** pièces !`;
+        this.addBalance(duel.guildId, duel.challengerId, duel.challengerName, winPayout, `[Ethone Casino] Victoire duel de dés contre ${duel.opponentName} (+${winPayout} ${currencySymbol})`);
+        resultText = `🏆 <@${duel.challengerId}> remporte le duel et empoche **${winPayout.toLocaleString('fr-FR')}** ${currencySymbol} ${currencyName} !`;
       } else if (oTotal > cTotal) {
         duel.winnerId = duel.opponentId;
-        this.addBalance(duel.guildId, duel.opponentId, duel.opponentName, winPayout, 'Victoire duel de dés');
-        resultText = `🏆 <@${duel.opponentId}> remporte le duel et empoche **${winPayout.toLocaleString()}** pièces !`;
+        this.addBalance(duel.guildId, duel.opponentId, duel.opponentName, winPayout, `[Ethone Casino] Victoire duel de dés contre ${duel.challengerName} (+${winPayout} ${currencySymbol})`);
+        resultText = `🏆 <@${duel.opponentId}> remporte le duel et empoche **${winPayout.toLocaleString('fr-FR')}** ${currencySymbol} ${currencyName} !`;
       } else {
         // Égalité : on rembourse
-        this.addBalance(duel.guildId, duel.challengerId, duel.challengerName, duel.bet, 'Égalité duel dés');
-        this.addBalance(duel.guildId, duel.opponentId, duel.opponentName, duel.bet, 'Égalité duel dés');
-        resultText = `🤝 Égalité parfaite ! Chaque joueur récupère sa mise de **${duel.bet.toLocaleString()}** pièces.`;
+        this.addBalance(duel.guildId, duel.challengerId, duel.challengerName, duel.bet, `[Ethone Casino] Égalité duel de dés (remboursement ${duel.bet} ${currencySymbol})`);
+        this.addBalance(duel.guildId, duel.opponentId, duel.opponentName, duel.bet, `[Ethone Casino] Égalité duel de dés (remboursement ${duel.bet} ${currencySymbol})`);
+        resultText = `🤝 Égalité parfaite ! Chaque joueur récupère sa mise de **${duel.bet.toLocaleString('fr-FR')}** ${currencySymbol}.`;
       }
 
       this.activeDuels.delete(duelId);
@@ -714,7 +757,7 @@ class GamesService {
           `**${duel.opponentName}** a lancé : \`[${oD1}] + [${oD2}] = ${oTotal}\` 🎲\n\n` +
           `### ${resultText}`
         )
-        .setFooter({ text: `5% (${jackpotContribution} pièces) ajoutés au Jackpot du serveur.` })
+        .setFooter({ text: `5% (${jackpotContribution.toLocaleString('fr-FR')} ${currencySymbol}) reversés au Jackpot Ethone Coin.` })
         .setTimestamp();
 
       await interaction.update({
@@ -732,6 +775,7 @@ class GamesService {
       return { ok: false, message: "La Roue de la Fortune n'est pas activée sur ce serveur." };
     }
 
+    const { name: currencyName, symbol: currencySymbol } = this.getCurrency(guildId);
     const key = `${guildId}:${user.id}:spin`;
     const last = this.userCooldowns.get(key) || 0;
     const now = Date.now();
@@ -766,7 +810,7 @@ class GamesService {
       prize = 100;
     }
 
-    this.addBalance(guildId, user.id, user.username, prize, isJackpot ? 'Cagnotte Jackpot Daily Spin !' : 'Gain Daily Spin');
+    this.addBalance(guildId, user.id, user.username, prize, isJackpot ? `[Ethone Casino] Cagnotte Jackpot Daily Spin (+${prize} ${currencySymbol})` : `[Ethone Casino] Gain Daily Spin (+${prize} ${currencySymbol})`);
 
     gamesStorage.recordGame(guildId, {
       guildId,
@@ -777,7 +821,7 @@ class GamesService {
       payout: prize,
       net: prize,
       won: true,
-      detail: isJackpot ? `Jackpot Daily Spin (+${prize})` : `Daily Spin (+${prize})`,
+      detail: isJackpot ? `Jackpot Daily Spin (+${prize} ${currencySymbol})` : `Daily Spin (+${prize} ${currencySymbol})`,
     });
 
     return { ok: true, prize, isJackpot };

@@ -44684,10 +44684,66 @@ const v1_55_25_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_26_fr: ChangelogEntry = {
+  version: "v1.55.26",
+  date: "2026-10-05",
+  title: "Liaison Casino & Mini-Jeux au Système Monétaire Ethone Coin",
+  items: [
+    "Liaison complète de l'arène de jeux (/discord/games) au système monétaire officiel du serveur : devise personnalisée (Ethone Coins 🪙) synchronisée dynamiquement.",
+    "Portefeuille joueur en direct : bascule fluide entre le mode Mises Réelles (déduction/crédit immédiat du solde Discord) et le Mode Démo.",
+    "Grand livre économique unifié : enregistrement de chaque partie (blackjack, roulette, duel de dés) dans l'historique des transactions du serveur.",
+    "Alimentation continue du jackpot : prélèvement de 1% à 5% par mise réelle reversé directement dans la cagnotte progressive commune en Ethone Coins.",
+    "Recharges rapides intégrées : réclamation du bonus quotidien (/daily) et exécution du job (/work) directement depuis le centre de jeux.",
+    "Passerelle croisée et panneau de contrôle dans les paramètres du casino avec redirection directe vers la gestion économique (/discord/economy).",
+  ],
+};
+
+const v1_55_26_en: ChangelogEntry = {
+  version: "v1.55.26",
+  date: "2026-10-05",
+  title: "Casino & Mini-Games Bound to Ethone Coin Monetary System",
+  items: [
+    "Full synchronization between the games arena (/discord/games) and the server's official money system: dynamic custom currency name & symbol (Ethone Coins 🪙).",
+    "Live player wallet: seamless toggle between Real Bets mode (immediate wallet debit/credit) and Demo Mode.",
+    "Unified economy ledger: every bet and payout (blackjack, roulette, dice clashes) is recorded in the server's transaction history.",
+    "Continuous jackpot seeding: 1% to 5% house rake from every real bet is injected directly into the communal progressive jackpot pool in Ethone Coins.",
+    "Instant coin refills: claim daily rewards (/daily) and work jobs (/work) directly inside the games dashboard.",
+    "Cross-navigation and dedicated monetary binding status panel in casino settings pointing to /discord/economy.",
+  ],
+};
+
+const v1_55_26_es: ChangelogEntry = {
+  version: "v1.55.26",
+  date: "2026-10-05",
+  title: "Casino y Mini-Juegos Conectados al Sistema Monetario Ethone Coin",
+  items: [
+    "Sincronización total del casino (/discord/games) con la economía oficial del servidor: moneda personalizada (Ethone Coins 🪙) adaptada dinámicamente.",
+    "Monedero del jugador en tiempo real: alternancia fluida entre modo Apuestas Reales y Modo Demo.",
+    "Libro contable unificado: registro de apuestas y ganancias en el historial de transacciones del servidor.",
+    "Crecimiento continuo del bote progresivo en Ethone Coins con cada apuesta real.",
+    "Recargas rápidas: reclamo de bono diario (/daily) y trabajo (/work) directamente en el panel de juegos.",
+    "Panel de vinculación monetaria en ajustes con enlace directo a /discord/economy.",
+  ],
+};
+
+const v1_55_26_de: ChangelogEntry = {
+  version: "v1.55.26",
+  date: "2026-10-05",
+  title: "Casino & Mini-Spiele an das Ethone Coin Währungssystem angebunden",
+  items: [
+    "Vollständige Anbindung des Spielbereichs (/discord/games) an die offizielle Server-Währung (Ethone Coins 🪙).",
+    "Live-Spieler-Guthaben: Nahtloser Wechsel zwischen Echtgeld-Modus und Demo-Modus.",
+    "Einheitliches Wirtschaftsbuch: Jede Wette und jeder Gewinn wird im Transaktionsprotokoll des Servers erfasst.",
+    "Fortlaufende Jackpot-Speisung in Ethone Coins bei jedem Echtgeldeinsatz.",
+    "Schnellaufladung: Tägliche Belohnung (/daily) und Arbeit (/work) direkt im Spiele-Dashboard abrufbar.",
+    "Währungs-Statusanzeige in den Casino-Einstellungen mit Direktlink zu /discord/economy.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

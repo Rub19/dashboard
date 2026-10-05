@@ -94,22 +94,49 @@ export function createEconomyRouter(discordClient: Client) {
   // 6. Réclamer le bonus quotidien depuis le web
   router.post('/daily', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
-    const userId = req.user?.id;
+    const userId = req.user?.id || req.body?.userId;
     if (!userId) {
-      res.status(401).json({ error: 'Session du bot requise.' });
+      res.status(401).json({ error: 'Session du bot ou identifiant membre requis.' });
       return;
     }
     const guild = discordClient.guilds.cache.get(guildId);
     const member = guild ? await guild.members.fetch(userId).catch(() => null) : null;
     const userRef = {
       id: userId,
-      username: member?.user.username || req.user?.username || 'Utilisateur',
+      username: member?.user.username || req.user?.username || req.body?.username || 'Utilisateur',
       avatarUrl: member?.user.displayAvatarURL() || null,
     };
     const result = economyService.claimDaily(guildId, userRef);
     if (!result.ok) {
       res.status(400).json({
         error: result.reason === 'cooldown' ? 'Bonus déjà réclamé.' : 'L’économie est désactivée sur ce serveur.',
+        reason: result.reason,
+        remainingMs: result.remainingMs,
+      });
+      return;
+    }
+    res.json({ success: true, ...result });
+  });
+
+  // 6b. Effectuer un petit travail (/work) depuis le web pour obtenir des Ethone Coins
+  router.post('/work', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const userId = req.user?.id || req.body?.userId;
+    if (!userId) {
+      res.status(401).json({ error: 'Session du bot ou identifiant membre requis.' });
+      return;
+    }
+    const guild = discordClient.guilds.cache.get(guildId);
+    const member = guild ? await guild.members.fetch(userId).catch(() => null) : null;
+    const userRef = {
+      id: userId,
+      username: member?.user.username || req.user?.username || req.body?.username || 'Utilisateur',
+      avatarUrl: member?.user.displayAvatarURL() || null,
+    };
+    const result = economyService.work(guildId, userRef);
+    if (!result.ok) {
+      res.status(400).json({
+        error: result.reason === 'cooldown' ? 'Vous avez déjà travaillé récemment.' : 'Le travail est désactivé sur ce serveur.',
         reason: result.reason,
         remainingMs: result.remainingMs,
       });

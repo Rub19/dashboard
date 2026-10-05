@@ -105,8 +105,8 @@ const TX_META: Record<TransactionType, { label: string; icon: string }> = {
   rob_fine: { label: "Amende (vol raté)", icon: "🚔" },
   transfer_in: { label: "Reçu", icon: "📥" },
   transfer_out: { label: "Envoyé", icon: "📤" },
-  gamble_win: { label: "Pari gagné", icon: "🪙" },
-  gamble_loss: { label: "Pari perdu", icon: "🎲" },
+  gamble_win: { label: "Gain Casino / Pari", icon: "🎰" },
+  gamble_loss: { label: "Perte Casino / Pari", icon: "🎲" },
   purchase: { label: "Achat boutique", icon: "🛍️" },
   admin: { label: "Ajustement staff", icon: "🛠️" },
 };
@@ -546,6 +546,36 @@ export default function EconomyCenterClient() {
             </button>
           </div>
         )}
+
+        {/* Passerelle Casino & Mini-Jeux Ethone Coin */}
+        <div className="p-6 rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-[var(--surface-raised)]/60 to-purple-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-xl">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-300">
+              <span className="text-2xl">🎰</span>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-[var(--text-primary)]">
+                  Arène Mini-Jeux & Casino Communautaire
+                </h3>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  Connecté aux Ethone Coins
+                </span>
+              </div>
+              <p className="text-xs text-[var(--text-muted)] mt-1">
+                Vos membres peuvent utiliser leurs {config.currencyName} au Blackjack 21, à la Roulette Royale et aux Duels de dés. Une cagnotte progressive s'alimente en temps réel !
+              </p>
+            </div>
+          </div>
+
+          <Link
+            href={`/discord/games?guildId=${currentGuildId}`}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-black text-xs font-bold hover:brightness-110 transition shadow-sm shrink-0"
+          >
+            <span>Ouvrir l'Arène Casino</span>
+            <span className="text-sm">➔</span>
+          </Link>
+        </div>
 
         {/* Leaderboard */}
         <div className="p-6 rounded-2xl bg-[var(--surface-raised)]/40 border border-[var(--panel-border)]">

@@ -17,11 +17,15 @@ import {
   Save,
   Clock,
   ArrowLeft,
+  ArrowRight,
   Bot,
   Volume2,
   VolumeX,
   Eye,
   X,
+  Gift,
+  Briefcase,
+  Wallet as WalletIcon,
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
@@ -33,7 +37,7 @@ import ModulePageTitle from "@/components/discord/ModulePageTitle";
 import { formatApiError } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
-const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
+const _BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export type GameType = "blackjack" | "roulette" | "dice" | "spin";
@@ -388,7 +392,7 @@ export default function GamesCenterClient() {
   const [rouletteOutcome, setRouletteOutcome] = useState<{ won: boolean; payout: number; msg: string } | null>({
     won: true,
     payout: 100,
-    msg: "Victoire ! Le 14 Rouge paie 2:1 (+50 🪙)",
+    msg: "Victoire ! Le 14 Rouge paie 2:1",
   });
 
   // Démo interactive Dés PvP
@@ -398,7 +402,7 @@ export default function GamesCenterClient() {
   const [diceOpponentRoll, setDiceOpponentRoll] = useState<[number, number]>([4, 4]);
   const [diceOutcome, setDiceOutcome] = useState<{ won: boolean; msg: string } | null>({
     won: true,
-    msg: "Victoire écrasante 11 contre 8 ! (+100 🪙)",
+    msg: "Victoire écrasante 11 contre 8 !",
   });
 
   // Aperçu Embed Discord
@@ -412,6 +416,25 @@ export default function GamesCenterClient() {
   const [simRunning, setSimRunning] = useState(false);
   const [simSuccessMsg, setSimSuccessMsg] = useState<string | null>(null);
 
+  // Système Monétaire Ethone Coin intégré
+  const [currencyName, setCurrencyName] = useState("Ethone Coins");
+  const [currencySymbol, setCurrencySymbol] = useState("🪙");
+  const [economyEnabled, setEconomyEnabled] = useState(true);
+  const [userWallet, setUserWallet] = useState<{
+    userId: string;
+    balance: number;
+    rank: number;
+    dailyStreak: number;
+    totalEarned: number;
+    totalSpent: number;
+  } | null>(null);
+  const [demoBalance, setDemoBalance] = useState(2500);
+  const [isRealMode, setIsRealMode] = useState(true);
+  const [claimingDaily, setClaimingDaily] = useState(false);
+  const [workingJob, setWorkingJob] = useState(false);
+
+  const activeBalance = isRealMode && userWallet ? userWallet.balance : demoBalance;
+
   // Synchronisation Discord
   useDiscordSync({
     guildId: selectedGuildId,
@@ -421,6 +444,14 @@ export default function GamesCenterClient() {
           const pool = Number((data as any).jackpotPool);
           if (Number.isFinite(pool)) {
             setOverview((prev) => ({ ...prev, jackpotPool: pool }));
+          }
+        }
+      }
+      if (moduleName === "economy" && data && typeof data === "object") {
+        if ("action" in data && (data as any).action === "balance_updated" && (data as any).userId === profile?.user?.id) {
+          const newBal = Number((data as any).newBalance);
+          if (Number.isFinite(newBal)) {
+            setUserWallet((prev) => prev ? { ...prev, balance: newBal } : null);
           }
         }
       }
@@ -434,35 +465,174 @@ export default function GamesCenterClient() {
     }
   }, [soundEnabled]);
 
-  // Chargement des données du casino
+  const refreshWallet = useCallback(async (guildId: string) => {
+    if (!guildId || !profile?.user?.id) return;
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/wallets/${profile.user.id}`);
+      if (res.ok) {
+        const d = await res.json();
+        if (d.wallet) setUserWallet(d.wallet);
+      }
+    } catch {
+      // ignore
+    }
+  }, [profile?.user?.id]);
+
+  // Chargement des données du casino et de l'économie
   const fetchCasinoData = useCallback(async (guildId: string) => {
     if (!guildId) return;
     setLoading(true);
     try {
-      const [ovRes, cfgRes, questRes] = await Promise.allSettled([
+      const [ovRes, cfgRes, questRes, ecoCfgRes, walletRes] = await Promise.allSettled([
         fetch(`${BOT_API_URL}/api/guilds/${guildId}/games/overview`),
         fetch(`${BOT_API_URL}/api/guilds/${guildId}/games/config`),
         fetch(`${BOT_API_URL}/api/guilds/${guildId}/games/quests`),
+        fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/config`),
+        profile?.user?.id
+          ? fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/wallets/${profile.user.id}`)
+          : Promise.reject(),
       ]);
 
       if (ovRes.status === "fulfilled" && ovRes.value.ok) {
         const ov = await ovRes.value.json();
         setOverview(ov);
+        if (ov.currencyName) setCurrencyName(ov.currencyName);
+        if (ov.currencySymbol) setCurrencySymbol(ov.currencySymbol);
       }
       if (cfgRes.status === "fulfilled" && cfgRes.value.ok) {
         const cfg = await cfgRes.value.json();
         setConfig(cfg);
+        if (cfg.currencyName) setCurrencyName(cfg.currencyName);
+        if (cfg.currencySymbol) setCurrencySymbol(cfg.currencySymbol);
       }
       if (questRes.status === "fulfilled" && questRes.value.ok) {
         const q = await questRes.value.json();
         if (q.quests) setQuests(q.quests);
+      }
+      if (ecoCfgRes.status === "fulfilled" && ecoCfgRes.value.ok) {
+        const eco = await ecoCfgRes.value.json();
+        if (eco.config) {
+          if (eco.config.currencyName) setCurrencyName(eco.config.currencyName);
+          if (eco.config.currencySymbol) setCurrencySymbol(eco.config.currencySymbol);
+          setEconomyEnabled(eco.config.enabled ?? true);
+        }
+      }
+      if (walletRes.status === "fulfilled" && walletRes.value.ok) {
+        const wData = await walletRes.value.json();
+        if (wData.wallet) {
+          setUserWallet(wData.wallet);
+        }
       }
     } catch {
       // Fallback gracieux sur données par défaut
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [profile?.user?.id]);
+
+  const handleClaimDaily = async () => {
+    if (!selectedGuildId) return;
+    setClaimingDaily(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuildId}/economy/daily`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: profile?.user?.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toastError(data.error || "Bonus déjà réclamé");
+        return;
+      }
+      success("Bonus Quotidien Réclamé !", `+${data.amount} ${currencySymbol} ajoutés à votre portefeuille.`);
+      playSound("win");
+      await refreshWallet(selectedGuildId);
+    } catch (e) {
+      toastError("Erreur", formatApiError(e));
+    } finally {
+      setClaimingDaily(false);
+    }
+  };
+
+  const handleQuickWork = async () => {
+    if (!selectedGuildId) return;
+    setWorkingJob(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuildId}/economy/work`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: profile?.user?.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toastError(data.error || "Travail indisponible");
+        return;
+      }
+      success("Petit boulot terminé !", `+${data.amount} ${currencySymbol} gagnés (${data.job}).`);
+      playSound("chip");
+      await refreshWallet(selectedGuildId);
+    } catch (e) {
+      toastError("Erreur", formatApiError(e));
+    } finally {
+      setWorkingJob(false);
+    }
+  };
+
+  const executePlayRound = async (params: {
+    gameType: GameType;
+    bet: number;
+    won: boolean;
+    payout: number;
+    detail: string;
+  }) => {
+    if (isRealMode && userWallet && profile?.user?.id) {
+      if (userWallet.balance < params.bet) {
+        toastError(`Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${params.bet.toLocaleString("fr-FR")} ${currencySymbol} requis).`);
+        return false;
+      }
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuildId}/games/play`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gameType: params.gameType,
+            bet: params.bet,
+            won: params.won,
+            payout: params.payout,
+            detail: params.detail,
+            mode: "real",
+            userId: profile.user.id,
+            username: profile.user.username || "Joueur",
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          toastError(data.message || "Erreur lors de la mise");
+          return false;
+        }
+        if (typeof data.newBalance === "number") {
+          setUserWallet((prev) => prev ? { ...prev, balance: data.newBalance } : null);
+        }
+        if (typeof data.jackpotPool === "number") {
+          setOverview((prev) => ({ ...prev, jackpotPool: data.jackpotPool }));
+        }
+        if (data.record) {
+          setOverview((prev) => ({
+            ...prev,
+            recentGames: [data.record, ...prev.recentGames.slice(0, 19)],
+          }));
+        }
+        return true;
+      } catch (err) {
+        console.error(err);
+        return false;
+      }
+    } else {
+      // Démo
+      setDemoBalance((prev) => Math.max(0, prev - params.bet + params.payout));
+      return true;
+    }
+  };
 
   useEffect(() => {
     if (selectedGuildId) {
@@ -504,15 +674,19 @@ export default function GamesCenterClient() {
       if (!res.ok) throw new Error("Impossible d'alimenter la cagnotte");
       const data = await res.json();
       setOverview((prev) => ({ ...prev, jackpotPool: data.jackpotPool }));
-      success("Cagnotte alimentée !", `+${amount} 🪙 ajoutés à la cagnotte progressive.`);
+      success("Cagnotte alimentée !", `+${amount} ${currencySymbol} ajoutés à la cagnotte progressive.`);
       playSound("win");
     } catch (err) {
       toastError("Erreur", formatApiError(err));
     }
   };
 
-  // Démo Blackjack : Démarrer une nouvelle main
+  // Démo & Jeu Blackjack : Démarrer une nouvelle main
   const startNewBlackjackRound = () => {
+    if (isRealMode && userWallet && userWallet.balance < bjBet) {
+      toastError(`Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${bjBet.toLocaleString("fr-FR")} ${currencySymbol} requis).`);
+      return;
+    }
     playSound("card");
     const p1 = generateRandomCard();
     const p2 = generateRandomCard();
@@ -529,12 +703,19 @@ export default function GamesCenterClient() {
       setBjDealerRevealed(true);
       setBjStatus("blackjack");
       playSound("win");
+      executePlayRound({
+        gameType: "blackjack",
+        bet: bjBet,
+        won: true,
+        payout: Math.round(bjBet * 2.5),
+        detail: "Blackjack Naturel 21 (Gain 3:2)",
+      });
     } else {
       setBjStatus("playing");
     }
   };
 
-  // Démo Blackjack : Tirer (Hit)
+  // Démo & Jeu Blackjack : Tirer (Hit)
   const handleBjHit = () => {
     if (bjStatus !== "playing") return;
     playSound("card");
@@ -545,15 +726,22 @@ export default function GamesCenterClient() {
     if (score > 21) {
       setBjDealerRevealed(true);
       setBjStatus("lost");
+      executePlayRound({
+        gameType: "blackjack",
+        bet: bjBet,
+        won: false,
+        payout: 0,
+        detail: `Bust (${score} vs Croupier)`,
+      });
     }
   };
 
-  // Démo Blackjack : Rester (Stand)
+  // Démo & Jeu Blackjack : Rester (Stand)
   const handleBjStand = () => {
     if (bjStatus !== "playing") return;
     playSound("card");
     setBjDealerRevealed(true);
-    let currentDealerCards = [...bjDealerCards];
+    const currentDealerCards = [...bjDealerCards];
     let dScore = calculateHandScore(currentDealerCards);
 
     while (dScore < 17) {
@@ -567,21 +755,54 @@ export default function GamesCenterClient() {
     if (dScore > 21) {
       setBjStatus("won");
       playSound("win");
+      executePlayRound({
+        gameType: "blackjack",
+        bet: bjBet,
+        won: true,
+        payout: bjBet * 2,
+        detail: `Croupier bust (${dScore})`,
+      });
     } else if (pScore > dScore) {
       setBjStatus("won");
       playSound("win");
+      executePlayRound({
+        gameType: "blackjack",
+        bet: bjBet,
+        won: true,
+        payout: bjBet * 2,
+        detail: `Victoire ${pScore} contre ${dScore}`,
+      });
     } else if (pScore < dScore) {
       setBjStatus("lost");
+      executePlayRound({
+        gameType: "blackjack",
+        bet: bjBet,
+        won: false,
+        payout: 0,
+        detail: `Défaite contre le croupier (${pScore} vs ${dScore})`,
+      });
     } else {
       setBjStatus("push");
+      executePlayRound({
+        gameType: "blackjack",
+        bet: bjBet,
+        won: false,
+        payout: bjBet,
+        detail: `Égalité push (${pScore} partout)`,
+      });
     }
   };
 
-  // Démo Blackjack : Doubler (Double)
+  // Démo & Jeu Blackjack : Doubler (Double)
   const handleBjDouble = () => {
     if (bjStatus !== "playing" || bjPlayerCards.length !== 2) return;
+    if (isRealMode && userWallet && userWallet.balance < bjBet * 2) {
+      toastError(`Fonds insuffisants en ${currencyName} pour doubler la mise (${(bjBet * 2).toLocaleString("fr-FR")} ${currencySymbol} requis).`);
+      return;
+    }
     playSound("chip");
-    setBjBet((prev) => prev * 2);
+    const doubledBet = bjBet * 2;
+    setBjBet(doubledBet);
     playSound("card");
     const nextCard = generateRandomCard();
     const newCards = [...bjPlayerCards, nextCard];
@@ -591,10 +812,17 @@ export default function GamesCenterClient() {
     const pScore = calculateHandScore(newCards);
     if (pScore > 21) {
       setBjStatus("lost");
+      executePlayRound({
+        gameType: "blackjack",
+        bet: doubledBet,
+        won: false,
+        payout: 0,
+        detail: `Bust sur Double (${pScore})`,
+      });
       return;
     }
 
-    let currentDealerCards = [...bjDealerCards];
+    const currentDealerCards = [...bjDealerCards];
     let dScore = calculateHandScore(currentDealerCards);
     while (dScore < 17) {
       const c = generateRandomCard();
@@ -606,16 +834,41 @@ export default function GamesCenterClient() {
     if (dScore > 21 || pScore > dScore) {
       setBjStatus("won");
       playSound("win");
+      executePlayRound({
+        gameType: "blackjack",
+        bet: doubledBet,
+        won: true,
+        payout: doubledBet * 2,
+        detail: `Victoire sur Double (${pScore} vs ${dScore})`,
+      });
     } else if (pScore < dScore) {
       setBjStatus("lost");
+      executePlayRound({
+        gameType: "blackjack",
+        bet: doubledBet,
+        won: false,
+        payout: 0,
+        detail: `Défaite sur Double (${pScore} vs ${dScore})`,
+      });
     } else {
       setBjStatus("push");
+      executePlayRound({
+        gameType: "blackjack",
+        bet: doubledBet,
+        won: false,
+        payout: doubledBet,
+        detail: `Égalité sur Double (${pScore} partout)`,
+      });
     }
   };
 
-  // Démo Roulette : Lancer la bille
+  // Démo & Jeu Roulette : Lancer la bille
   const handleSpinRoulette = () => {
     if (rouletteSpinning) return;
+    if (isRealMode && userWallet && userWallet.balance < rouletteBet) {
+      toastError(`Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${rouletteBet.toLocaleString("fr-FR")} ${currencySymbol} requis).`);
+      return;
+    }
     setRouletteSpinning(true);
     playSound("spin");
     setRouletteOutcome(null);
@@ -623,7 +876,7 @@ export default function GamesCenterClient() {
     setTimeout(() => {
       const num = Math.floor(Math.random() * 37);
       const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
-      let color: "rouge" | "noir" | "vert" = num === 0 ? "vert" : redNumbers.includes(num) ? "rouge" : "noir";
+      const color: "rouge" | "noir" | "vert" = num === 0 ? "vert" : redNumbers.includes(num) ? "rouge" : "noir";
 
       setRouletteResultNumber(num);
       setRouletteResultColor(color);
@@ -653,22 +906,40 @@ export default function GamesCenterClient() {
         setRouletteOutcome({
           won: true,
           payout,
-          msg: `Gagné ! Numéro ${num} (${color.toUpperCase()}) — gain de +${payout - rouletteBet} 🪙`,
+          msg: `Gagné ! Numéro ${num} (${color.toUpperCase()}) — gain de +${payout - rouletteBet} ${currencySymbol}`,
         });
         playSound("win");
+        executePlayRound({
+          gameType: "roulette",
+          bet: rouletteBet,
+          won: true,
+          payout,
+          detail: `Roulette: ${color.toUpperCase()} #${num} (x${multiplier})`,
+        });
       } else {
         setRouletteOutcome({
           won: false,
           payout: 0,
           msg: `Perdu... Le ${num} (${color.toUpperCase()}) est tombé. Retentez votre chance !`,
         });
+        executePlayRound({
+          gameType: "roulette",
+          bet: rouletteBet,
+          won: false,
+          payout: 0,
+          detail: `Roulette: #${num} ${color.toUpperCase()}`,
+        });
       }
     }, 1800);
   };
 
-  // Démo Dés PvP : Duel
+  // Démo & Jeu Dés PvP : Duel
   const handleRollDiceDuel = () => {
     if (diceRolling) return;
+    if (isRealMode && userWallet && userWallet.balance < diceBet) {
+      toastError(`Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${diceBet.toLocaleString("fr-FR")} ${currencySymbol} requis).`);
+      return;
+    }
     setDiceRolling(true);
     playSound("dice");
     setDiceOutcome(null);
@@ -684,12 +955,33 @@ export default function GamesCenterClient() {
       const sum2 = p2[0] + p2[1];
 
       if (sum1 > sum2) {
-        setDiceOutcome({ won: true, msg: `Victoire éclatante ! ${sum1} contre ${sum2} (+${diceBet} 🪙)` });
+        setDiceOutcome({ won: true, msg: `Victoire éclatante ! ${sum1} contre ${sum2} (+${diceBet} ${currencySymbol})` });
         playSound("win");
+        executePlayRound({
+          gameType: "dice",
+          bet: diceBet,
+          won: true,
+          payout: diceBet * 2,
+          detail: `Duel remporté ${sum1} contre ${sum2}`,
+        });
       } else if (sum1 < sum2) {
         setDiceOutcome({ won: false, msg: `Défaite... L'adversaire l'emporte avec ${sum2} contre vos ${sum1}.` });
+        executePlayRound({
+          gameType: "dice",
+          bet: diceBet,
+          won: false,
+          payout: 0,
+          detail: `Duel perdu ${sum1} contre ${sum2}`,
+        });
       } else {
         setDiceOutcome({ won: false, msg: `Égalité parfaite (${sum1} partout) ! Mise remboursée.` });
+        executePlayRound({
+          gameType: "dice",
+          bet: diceBet,
+          won: false,
+          payout: diceBet,
+          detail: `Duel égalité (${sum1} partout)`,
+        });
       }
     }, 1200);
   };
@@ -805,6 +1097,117 @@ export default function GamesCenterClient() {
           </div>
         </div>
 
+        {/* Bannière Portefeuille Ethone Coin & Mode de Jeu */}
+        <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-[var(--surface-raised)]/70 to-yellow-500/10 p-4 sm:p-5 backdrop-blur-xl shadow-lg shadow-amber-500/5">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            {/* Solde Ethone Coin */}
+            <div className="flex items-center gap-3.5">
+              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500/20 to-yellow-500/20 border border-amber-500/40 text-amber-300 shadow-md">
+                <Coins className="h-6 w-6 animate-pulse" />
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+                    Portefeuille Joueur
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    {currencyName} ({currencySymbol})
+                  </span>
+                  {userWallet && userWallet.rank > 0 && (
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/30">
+                      Rang #{userWallet.rank}
+                    </span>
+                  )}
+                  {userWallet && (userWallet.dailyStreak || 0) > 0 && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/30 flex items-center gap-1">
+                      <Flame size={11} className="text-orange-400" />
+                      Série {userWallet.dailyStreak} j
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <span className="text-2xl font-black font-mono tracking-tight text-amber-300 drop-shadow-sm">
+                    {activeBalance.toLocaleString("fr-FR")}
+                  </span>
+                  <span className="text-sm font-bold text-amber-400/90">{currencySymbol}</span>
+                  {isRealMode ? (
+                    <span className="text-xs text-emerald-400 font-medium ml-1 flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                      Mises en argent réel {currencyName}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-amber-400/70 font-medium ml-1">
+                      (Solde démo fictif pour s'entraîner)
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Actions & Switcher de mode */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              {/* Sélecteur Mode Réel / Démo */}
+              <div className="flex items-center rounded-xl bg-[var(--surface-base)]/80 border border-[var(--panel-border)] p-1 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setIsRealMode(true)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer",
+                    isRealMode
+                      ? "bg-amber-500 text-black shadow-sm font-bold"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  )}
+                >
+                  {currencySymbol} Mises Réelles
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsRealMode(false)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer",
+                    !isRealMode
+                      ? "bg-white/20 text-white shadow-sm font-bold"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  )}
+                >
+                  🎮 Mode Démo
+                </button>
+              </div>
+
+              {/* Bonus Quotidien */}
+              <button
+                type="button"
+                onClick={handleClaimDaily}
+                disabled={claimingDaily}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition-all cursor-pointer disabled:opacity-50"
+              >
+                <Gift className={cn("w-3.5 h-3.5", claimingDaily && "animate-bounce")} />
+                {claimingDaily ? "Réclamation..." : "Bonus Quotidien"}
+              </button>
+
+              {/* Boulot rapide */}
+              <button
+                type="button"
+                onClick={handleQuickWork}
+                disabled={workingJob}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40 hover:bg-blue-500/30 transition-all cursor-pointer disabled:opacity-50"
+              >
+                <Briefcase className={cn("w-3.5 h-3.5", workingJob && "animate-spin")} />
+                {workingJob ? "Travail..." : "Petit Boulot /work"}
+              </button>
+
+              {/* Lien vers Module Économie */}
+              <Link
+                href={`/discord/economy?guildId=${selectedGuildId}`}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-[var(--surface-raised)]/60 text-[var(--text-primary)] border border-[var(--panel-border)] hover:border-amber-500/40 transition-all"
+              >
+                <span>Gérer l'Économie</span>
+                <ArrowRight size={13} />
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* 4 Cartes de statistiques clés avec lueur Sonoma */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {/* Cagnotte Jackpot Progressive */}
@@ -826,7 +1229,7 @@ export default function GamesCenterClient() {
               <span className="text-3xl font-extrabold tracking-tight text-white drop-shadow-sm">
                 {overview.jackpotPool.toLocaleString("fr-FR")}
               </span>
-              <span className="text-base font-semibold text-amber-400">🪙</span>
+              <span className="text-base font-semibold text-amber-400">{currencySymbol}</span>
             </div>
             <div className="mt-3 flex items-center justify-between text-xs text-[var(--text-muted)]">
               <span>Alimentée en continu</span>
@@ -835,7 +1238,7 @@ export default function GamesCenterClient() {
                 onClick={() => handleSeedJackpot(1000)}
                 className="text-[11px] font-semibold text-amber-400 underline decoration-amber-400/40 hover:decoration-amber-400 cursor-pointer"
               >
-                +1 000 🪙 (Admin)
+                +1 000 {currencySymbol} (Admin)
               </button>
             </div>
           </motion.div>
@@ -887,11 +1290,11 @@ export default function GamesCenterClient() {
             </div>
             <div className="mt-3 flex items-baseline gap-2">
               <span className="text-2xl font-extrabold tracking-tight text-[var(--text-primary)]">
-                {overview.totalBets.toLocaleString("fr-FR")} 🪙
+                {overview.totalBets.toLocaleString("fr-FR")} {currencySymbol}
               </span>
             </div>
             <p className="mt-3 text-xs text-[var(--text-muted)]">
-              {overview.totalPayouts.toLocaleString("fr-FR")} 🪙 redistribués aux joueurs
+              {overview.totalPayouts.toLocaleString("fr-FR")} {currencySymbol} redistribués aux joueurs
             </p>
           </motion.div>
 
@@ -915,7 +1318,7 @@ export default function GamesCenterClient() {
               <span className="text-2xl font-extrabold tracking-tight text-amber-400">
                 +{overview.biggestWin ? overview.biggestWin.amount.toLocaleString("fr-FR") : "7 200"}
               </span>
-              <span className="text-xs font-medium text-amber-300">🪙</span>
+              <span className="text-xs font-medium text-amber-300">{currencySymbol}</span>
             </div>
             <p className="mt-3 text-xs text-[var(--text-muted)] truncate">
               {overview.biggestWin ? `${overview.biggestWin.username} (${overview.biggestWin.game})` : "Alex_HighRoller"}
@@ -990,7 +1393,7 @@ export default function GamesCenterClient() {
                     <div className="text-center sm:text-right">
                       <span className="text-[10px] uppercase font-bold text-amber-400/80 block">Trésor Actuel</span>
                       <span className="text-3xl font-black text-amber-300 drop-shadow-md">
-                        {overview.jackpotPool.toLocaleString("fr-FR")} 🪙
+                        {overview.jackpotPool.toLocaleString("fr-FR")} {currencySymbol}
                       </span>
                     </div>
                     <button
@@ -998,7 +1401,7 @@ export default function GamesCenterClient() {
                       onClick={() => handleSeedJackpot(500)}
                       className="rounded-xl border border-amber-500/30 bg-amber-500/20 px-4 py-2 text-xs font-bold text-amber-200 hover:bg-amber-500/30 transition-all cursor-pointer"
                     >
-                      +500 🪙 Injecter
+                      +500 {currencySymbol} Injecter
                     </button>
                   </div>
                 </div>
@@ -1040,7 +1443,7 @@ export default function GamesCenterClient() {
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
                             <span className="rounded-lg bg-amber-500/10 border border-amber-500/20 px-2 py-1 text-[11px] font-bold text-amber-300">
-                              +{q.rewardCredits} 🪙
+                              +{q.rewardCredits} {currencySymbol}
                             </span>
                             <span className="rounded-lg bg-indigo-500/10 border border-indigo-500/20 px-2 py-1 text-[11px] font-bold text-indigo-300">
                               +{q.rewardXp} XP
@@ -1104,7 +1507,7 @@ export default function GamesCenterClient() {
                           </div>
                           <div className="text-right">
                             <span className="text-xs font-extrabold text-emerald-400">
-                              +{winner.totalWon.toLocaleString("fr-FR")} 🪙
+                              +{winner.totalWon.toLocaleString("fr-FR")} {currencySymbol}
                             </span>
                             <span className="block text-[10px] text-[var(--text-muted)]">Total net gagné</span>
                           </div>
@@ -1154,7 +1557,7 @@ export default function GamesCenterClient() {
                               {game.gameType}
                             </span>
                           </td>
-                          <td className="py-3 text-[var(--text-muted)]">{game.bet} 🪙</td>
+                          <td className="py-3 text-[var(--text-muted)]">{game.bet} {currencySymbol}</td>
                           <td className="py-3">
                             <span className="text-[var(--text-primary)]">{game.detail}</span>
                           </td>
@@ -1165,7 +1568,7 @@ export default function GamesCenterClient() {
                                 game.won ? "text-emerald-400" : "text-rose-400"
                               )}
                             >
-                              {game.won ? `+${game.net} 🪙` : `${game.net} 🪙`}
+                              {game.won ? `+${game.net} ${currencySymbol}` : `${game.net} ${currencySymbol}`}
                             </span>
                           </td>
                         </tr>
@@ -1205,7 +1608,7 @@ export default function GamesCenterClient() {
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-emerald-300">Mise actuelle :</span>
                     <span className="rounded-lg bg-emerald-950/80 border border-emerald-700/50 px-3 py-1 text-sm font-black text-amber-400">
-                      {bjBet} 🪙
+                      {bjBet} {currencySymbol}
                     </span>
                   </div>
                 </div>
@@ -1265,7 +1668,7 @@ export default function GamesCenterClient() {
                       animate={{ scale: 1 }}
                       className="inline-block rounded-xl bg-amber-500/20 border border-amber-500/50 px-4 py-1.5 text-sm font-black text-amber-300 shadow-lg shadow-amber-500/10"
                     >
-                      🌟 BLACKJACK NATUREL 21 ! Gain de +{Math.round(bjBet * 1.5)} 🪙
+                      🌟 BLACKJACK NATUREL 21 ! Gain de +{Math.round(bjBet * 1.5)} {currencySymbol}
                     </motion.span>
                   )}
                   {bjStatus === "won" && (
@@ -1274,7 +1677,7 @@ export default function GamesCenterClient() {
                       animate={{ scale: 1 }}
                       className="inline-block rounded-xl bg-emerald-500/20 border border-emerald-500/50 px-4 py-1.5 text-sm font-black text-emerald-300"
                     >
-                      🎉 VOUS GAGNEZ ! +{bjBet} 🪙
+                      🎉 VOUS GAGNEZ ! +{bjBet} {currencySymbol}
                     </motion.span>
                   )}
                   {bjStatus === "lost" && (
@@ -1283,7 +1686,7 @@ export default function GamesCenterClient() {
                       animate={{ scale: 1 }}
                       className="inline-block rounded-xl bg-rose-500/20 border border-rose-500/50 px-4 py-1.5 text-sm font-black text-rose-300"
                     >
-                      💥 PERDU ! Le croupier remporte la manche (-{bjBet} 🪙)
+                      💥 PERDU ! Le croupier remporte la manche (-{bjBet} {currencySymbol})
                     </motion.span>
                   )}
                   {bjStatus === "push" && (
@@ -1473,11 +1876,31 @@ export default function GamesCenterClient() {
                       <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
                         Choix de Mise
                       </span>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <span className="text-xs text-[var(--text-muted)]">Mise :</span>
                         <span className="rounded-lg bg-stone-900 border border-stone-800 px-2.5 py-0.5 text-xs font-bold text-amber-400">
-                          {rouletteBet} 🪙
+                          {rouletteBet} {currencySymbol}
                         </span>
+                        <div className="flex items-center gap-1 ml-1">
+                          {[25, 50, 100, 250, 500].map((val) => (
+                            <button
+                              key={val}
+                              type="button"
+                              onClick={() => {
+                                setRouletteBet(val);
+                                playSound("chip");
+                              }}
+                              className={cn(
+                                "h-6 px-1.5 rounded-md text-[10px] font-bold border transition-colors cursor-pointer",
+                                rouletteBet === val
+                                  ? "bg-amber-400 text-stone-950 border-amber-300"
+                                  : "bg-stone-900/80 text-stone-300 border-stone-800 hover:border-amber-400"
+                              )}
+                            >
+                              {val}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
@@ -1548,7 +1971,7 @@ export default function GamesCenterClient() {
                         )}
                       >
                         <span>{rouletteOutcome.msg}</span>
-                        <span className="font-black">{rouletteOutcome.won ? `+${rouletteOutcome.payout} 🪙` : "0 🪙"}</span>
+                        <span className="font-black">{rouletteOutcome.won ? `+${rouletteOutcome.payout} ${currencySymbol}` : `0 ${currencySymbol}`}</span>
                       </motion.div>
                     )}
                   </div>
@@ -1673,7 +2096,7 @@ export default function GamesCenterClient() {
                       onChange={(e) => setDiceBet(parseInt(e.target.value, 10) || 10)}
                       className="w-24 rounded-lg border border-indigo-800 bg-indigo-950 px-2.5 py-1 text-xs font-bold text-amber-300 text-center"
                     />
-                    <span className="text-xs text-amber-400">🪙</span>
+                    <span className="text-xs text-amber-400">{currencySymbol}</span>
                   </div>
 
                   <button
@@ -1789,7 +2212,7 @@ export default function GamesCenterClient() {
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="text-xs font-semibold text-[var(--text-primary)] block mb-1">
-                          Mise Minimale (🪙)
+                          Mise Minimale ({currencySymbol})
                         </label>
                         <input
                           type="number"
@@ -1803,7 +2226,7 @@ export default function GamesCenterClient() {
                       </div>
                       <div>
                         <label className="text-xs font-semibold text-[var(--text-primary)] block mb-1">
-                          Mise Maximale (🪙)
+                          Mise Maximale ({currencySymbol})
                         </label>
                         <input
                           type="number"
@@ -1857,6 +2280,58 @@ export default function GamesCenterClient() {
                         }
                         className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs font-bold text-[var(--text-primary)]"
                       />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Liaison Système Monétaire Ethone Coin */}
+                <div className="lg:col-span-2 rounded-[var(--panel-radius)] border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-[var(--surface-raised)]/40 to-[var(--surface-base)]/40 p-6 backdrop-blur-xl space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                        <WalletIcon size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                          Liaison Système Monétaire Ethone Coin
+                          <span
+                            className={cn(
+                              "px-2 py-0.5 rounded-full text-[10px] font-bold border",
+                              economyEnabled
+                                ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                                : "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                            )}
+                          >
+                            {economyEnabled ? "Connecté & Synchronisé" : "Économie non configurée"}
+                          </span>
+                        </h3>
+                        <p className="text-xs text-[var(--text-muted)]">
+                          Les jeux d&apos;argent du casino sont branchés sur la monnaie officielle configurée sur votre serveur Discord.
+                        </p>
+                      </div>
+                    </div>
+                    <Link
+                      href={`/discord/economy?guildId=${selectedGuildId}`}
+                      className="inline-flex items-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/20 hover:bg-amber-500/30 px-4 py-2 text-xs font-bold text-amber-300 transition-colors shrink-0"
+                    >
+                      <Coins size={14} />
+                      <span>Paramètres Économie</span>
+                      <ArrowRight size={13} />
+                    </Link>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
+                      <span className="text-[11px] text-[var(--text-muted)] block">Nom de la Devise</span>
+                      <span className="text-sm font-bold text-[var(--text-primary)] mt-0.5 block">{currencyName}</span>
+                    </div>
+                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
+                      <span className="text-[11px] text-[var(--text-muted)] block">Symbole Monétaire</span>
+                      <span className="text-sm font-black text-amber-400 mt-0.5 block">{currencySymbol}</span>
+                    </div>
+                    <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
+                      <span className="text-[11px] text-[var(--text-muted)] block">Traçabilité Comptable</span>
+                      <span className="text-xs font-semibold text-emerald-400 mt-0.5 block">Grand livre & /daily /work reliés</span>
                     </div>
                   </div>
                 </div>
@@ -1969,12 +2444,12 @@ export default function GamesCenterClient() {
               <div className="grid grid-cols-2 gap-3 pt-1 border-t border-stone-800 text-[11px]">
                 <div>
                   <span className="text-stone-400 font-semibold block">Mise initiale</span>
-                  <span className="text-white font-bold">250 🪙</span>
+                  <span className="text-white font-bold">250 {currencySymbol}</span>
                 </div>
                 <div>
                   <span className="text-stone-400 font-semibold block">Gain net</span>
                   <span className="text-emerald-400 font-bold">
-                    {previewTab === "jackpot" ? `+${overview.jackpotPool.toLocaleString("fr-FR")} 🪙` : "+500 🪙"}
+                    {previewTab === "jackpot" ? `+${overview.jackpotPool.toLocaleString("fr-FR")} ${currencySymbol}` : `+500 ${currencySymbol}`}
                   </span>
                 </div>
               </div>
@@ -1982,7 +2457,7 @@ export default function GamesCenterClient() {
               {/* Footer Embed */}
               <div className="pt-2 text-[10px] text-stone-400 flex items-center justify-between">
                 <span>{currentGuildName} • Module Casino</span>
-                <span>Solde : 4 820 🪙</span>
+                <span>Solde : 4 820 {currencySymbol}</span>
               </div>
             </div>
 
@@ -2063,7 +2538,7 @@ export default function GamesCenterClient() {
 
                   <div>
                     <label className="text-xs font-semibold text-[var(--text-primary)] block mb-1">
-                      Mise simulée (🪙)
+                      Mise simulée ({currencySymbol})
                     </label>
                     <input
                       type="number"

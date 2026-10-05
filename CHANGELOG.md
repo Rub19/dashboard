@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.26 — 2026-10-05
+
+**Liaison Casino & Mini-Jeux au Système Monétaire Ethone Coin**
+
+- Liaison complète de l'arène de jeux (`/discord/games`) au système monétaire officiel du serveur : devise personnalisée (Ethone Coins 🪙) synchronisée dynamiquement.
+- Portefeuille joueur en direct : bascule fluide entre le mode Mises Réelles (déduction/crédit immédiat du solde Discord) et le Mode Démo.
+- Grand livre économique unifié : enregistrement de chaque partie (blackjack, roulette, duel de dés) dans l'historique des transactions du serveur.
+- Alimentation continue du jackpot : prélèvement de 1% à 5% par mise réelle reversé directement dans la cagnotte progressive commune en Ethone Coins.
+- Recharges rapides intégrées : réclamation du bonus quotidien (`/daily`) et exécution du job (`/work`) directement depuis le centre de jeux.
+- Passerelle croisée et panneau de contrôle dans les paramètres du casino avec redirection directe vers la gestion économique (`/discord/economy`).
+
 ## v1.55.25 — 2026-10-05
 
 **Nouveau Module Bot : Mini-Jeux & Casino Communautaire (Blackjack, Roulette, Dés PvP & Jackpot)**

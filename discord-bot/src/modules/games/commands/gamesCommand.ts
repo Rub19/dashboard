@@ -15,11 +15,11 @@ export const blackjackCommand: Command = {
   aliases: ['bj', '21'],
   slashData: new SlashCommandBuilder()
     .setName('blackjack')
-    .setDescription('Jouer une partie de Blackjack 21 contre le croupier')
+    .setDescription('Jouer une partie de Blackjack 21 contre le croupier (Ethone Coins)')
     .addIntegerOption((opt) =>
       opt
         .setName('mise')
-        .setDescription('Nombre de pièces à miser sur cette main')
+        .setDescription('Mise en Ethone Coins (ex: 50 🪙)')
         .setRequired(false)
         .setMinValue(1)
     ) as SlashCommandBuilder,
@@ -53,11 +53,11 @@ export const rouletteCommand: Command = {
   aliases: ['roul'],
   slashData: new SlashCommandBuilder()
     .setName('roulette')
-    .setDescription('Placer une mise sur la Roulette Royale')
+    .setDescription('Placer une mise en Ethone Coins sur la Roulette Royale')
     .addIntegerOption((opt) =>
       opt
         .setName('mise')
-        .setDescription('Montant de pièces à miser')
+        .setDescription('Montant en Ethone Coins à miser')
         .setRequired(true)
         .setMinValue(1)
     )
@@ -123,11 +123,11 @@ export const diceCommand: Command = {
   aliases: ['des', 'duel'],
   slashData: new SlashCommandBuilder()
     .setName('dice')
-    .setDescription('Lancer un duel de dés contre un membre')
+    .setDescription('Lancer un duel de dés 2d6 en Ethone Coins contre un membre')
     .addIntegerOption((opt) =>
       opt
         .setName('mise')
-        .setDescription('Nombre de pièces misées par chaque joueur')
+        .setDescription('Mise en Ethone Coins par joueur (ex: 100 🪙)')
         .setRequired(true)
         .setMinValue(1)
     )
@@ -179,12 +179,12 @@ export const casinoCommand: Command = {
     .addSubcommand((sub) =>
       sub
         .setName('jackpot')
-        .setDescription('Afficher la cagnotte progressive actuelle du serveur')
+        .setDescription('Afficher la cagnotte progressive actuelle du serveur en Ethone Coins')
     )
     .addSubcommand((sub) =>
       sub
         .setName('daily')
-        .setDescription('Tourner la roue de la fortune quotidienne pour remporter des pièces')
+        .setDescription('Tourner la roue de la fortune quotidienne pour remporter des Ethone Coins')
     )
     .addSubcommand((sub) =>
       sub
@@ -207,6 +207,7 @@ export const casinoCommand: Command = {
       : ctx.args[0] || 'jackpot';
 
     const sparkles = getAppEmoji('etho_a_sparkles') || '✨';
+    const { name: currencyName, symbol: currencySymbol } = gamesService.getCurrency(ctx.guildId);
 
     if (sub === 'daily') {
       const res = await gamesService.dailySpin(ctx.guildId, ctx.author);
@@ -216,15 +217,15 @@ export const casinoCommand: Command = {
       }
 
       const embed = new EmbedBuilder()
-        .setAuthor({ name: `Roue de la Fortune · ${ctx.author.username}`, iconURL: ctx.author.displayAvatarURL() })
+        .setAuthor({ name: `Roue de la Fortune · ${ctx.author.username} · Ethone Coin`, iconURL: ctx.author.displayAvatarURL() })
         .setTitle(res.isJackpot ? `🎰 JACKPOT HISTORIQUE !` : `🎡 Roue quotidienne tournée !`)
         .setColor(res.isJackpot ? 0xf59e0b : 0x10b981)
         .setDescription(
           `Félicitations <@${ctx.author.id}> !\n\n` +
-          `Vous avez remporté **${res.prize?.toLocaleString()} pièces** !\n` +
-          `Votre nouveau solde : **${gamesService.getBalance(ctx.guildId, ctx.author.id, ctx.author.username).toLocaleString()}** pièces`
+          `Vous avez remporté **${res.prize?.toLocaleString('fr-FR')} ${currencySymbol} ${currencyName}** !\n` +
+          `Votre nouveau solde : **${gamesService.getBalance(ctx.guildId, ctx.author.id, ctx.author.username).toLocaleString('fr-FR')}** ${currencySymbol}`
         )
-        .setFooter({ text: 'Revenez dans 24 heures pour un nouveau tirage gratuit !' })
+        .setFooter({ text: 'Revenez dans 24 heures pour un nouveau tirage gratuit ! • Portefeuille Ethone Coin' })
         .setTimestamp();
 
       await ctx.reply({ embeds: [embed] });
@@ -238,12 +239,13 @@ export const casinoCommand: Command = {
         .setColor(0xf59e0b)
         .setDescription(
           `La cagnotte actuelle s'élève à :\n` +
-          `# 💰 **${jackpot.toLocaleString()} pièces**\n\n` +
+          `# 💰 **${jackpot.toLocaleString('fr-FR')} ${currencySymbol} ${currencyName}**\n\n` +
           `**Comment la décrocher ?**\n` +
           `• Tournez la Roue Quotidienne avec \`/casino daily\` (2% de chance de remporter 20% du pactole) !\n` +
-          `• 2% de chaque mise de Blackjack, Roulette et 5% des duels de dés alimentent en continu cette cagnotte.`
+          `• 2% de chaque mise de Blackjack, Roulette et 5% des duels de dés alimentent en continu cette cagnotte.\n` +
+          `• Gagnez des ${currencyName} gratuitement avec \`/daily\` et \`/work\` !`
         )
-        .setFooter({ text: 'ETHONE Casino Engine · Alimentation continue 24/7' })
+        .setFooter({ text: 'ETHONE Casino Engine · Alimentation continue 24/7 • Système Ethone Coin' })
         .setTimestamp();
 
       await ctx.reply({ embeds: [embed] });
@@ -258,10 +260,11 @@ export const casinoCommand: Command = {
         .setDescription(
           overview.topWinners.length > 0
             ? overview.topWinners
-                .map((w, idx) => `**${idx + 1}.** **${w.username}** — +**${w.totalWon.toLocaleString()}** pièces (*${w.gamesPlayed} parties*)`)
+                .map((w, idx) => `**${idx + 1}.** **${w.username}** — +**${w.totalWon.toLocaleString('fr-FR')}** ${currencySymbol} (*${w.gamesPlayed} parties*)`)
                 .join('\n')
             : 'Aucun gagnant enregistré pour le moment. Soyez le premier en jouant à `/blackjack` ou `/roulette` !'
         )
+        .setFooter({ text: `Module Économie & Casino Ethone Coin` })
         .setTimestamp();
 
       await ctx.reply({ embeds: [embed] });
@@ -274,18 +277,19 @@ export const casinoCommand: Command = {
         .setTitle(`📊 STATISTIQUES DU CASINO`)
         .setColor(0x8b5cf6)
         .addFields(
-          { name: '💰 Cagnotte Jackpot', value: `${overview.jackpotPool.toLocaleString()} pièces`, inline: true },
-          { name: '🎲 Parties jouées', value: `${overview.totalGamesPlayed.toLocaleString()}`, inline: true },
-          { name: '🪙 Total des mises', value: `${overview.totalBets.toLocaleString()} pièces`, inline: true },
-          { name: '💸 Total reversé', value: `${overview.totalPayouts.toLocaleString()} pièces`, inline: true },
+          { name: '💰 Cagnotte Jackpot', value: `${overview.jackpotPool.toLocaleString('fr-FR')} ${currencySymbol}`, inline: true },
+          { name: '🎲 Parties jouées', value: `${overview.totalGamesPlayed.toLocaleString('fr-FR')}`, inline: true },
+          { name: '🪙 Total des mises', value: `${overview.totalBets.toLocaleString('fr-FR')} ${currencySymbol}`, inline: true },
+          { name: '💸 Total reversé', value: `${overview.totalPayouts.toLocaleString('fr-FR')} ${currencySymbol}`, inline: true },
           {
             name: '🌟 Plus gros gain',
             value: overview.biggestWin
-              ? `**${overview.biggestWin.username}** avec +**${overview.biggestWin.amount.toLocaleString()}** pièces (*${overview.biggestWin.game}*)`
+              ? `**${overview.biggestWin.username}** avec +**${overview.biggestWin.amount.toLocaleString('fr-FR')}** ${currencySymbol} (*${overview.biggestWin.game}*)`
               : 'Aucun',
             inline: false,
           }
         )
+        .setFooter({ text: `Système Monétaire Ethone Coin` })
         .setTimestamp();
 
       await ctx.reply({ embeds: [embed] });

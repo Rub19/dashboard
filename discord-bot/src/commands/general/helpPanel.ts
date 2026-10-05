@@ -54,18 +54,18 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
   },
   {
     id: 'leveling',
-    name: 'Niveaux & Économie',
-    emoji: '⭐',
+    name: 'Niveaux & Économie (Ethone Coin)',
+    emoji: '🪙',
     color: 0xf59e0b,
-    description: "XP, cartes de rang, classement et Crédits ETHONE",
-    commandNames: ['rank', 'leaderboard', 'xp', 'economy'],
+    description: "XP, rangs, portefeuille Ethone Coins (/daily, /work, /pay), classement et boutique",
+    commandNames: ['rank', 'leaderboard', 'xp', 'economy', 'daily', 'work', 'pay', 'balance', 'gamble'],
   },
   {
     id: 'community',
     name: 'Communauté & Loisirs',
     emoji: '🎉',
     color: 0xec4899,
-    description: "Giveaways, suggestions, sondages, événements, anniversaires, starboard, streamers, mini-jeux & casino (Blackjack, Roulette, Dés)",
+    description: "Giveaways, suggestions, sondages, événements, anniversaires, starboard, streamers, mini-jeux & casino Ethone Coin (Blackjack 21, Roulette, Dés)",
     commandNames: ['giveaway', 'suggest', 'poll', 'event', 'birthday', 'starboard', 'sticky', 'highlight', 'streamer', 'blackjack', 'roulette', 'dice', 'casino'],
   },
   {

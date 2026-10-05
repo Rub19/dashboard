@@ -1149,6 +1149,12 @@ export default function DiscordDashboardPage() {
         <HubSidebar
           guildName={selectedGuild.name}
           guildIconUrl={selectedGuild.iconUrl}
+          guilds={filteredGuilds}
+          selectedGuildId={selectedGuild.id}
+          botGuildIds={botGuildIds}
+          onSelectGuild={pickGuild}
+          onChangeGuild={changeGuild}
+          botInviteUrl={BOT_INVITE_URL}
           modules={navModules}
           categories={MODULE_CATEGORIES}
           view={view}

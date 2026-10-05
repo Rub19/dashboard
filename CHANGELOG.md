@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.28 — 2026-10-05
+
+**Sélecteur de Changement de Serveur dans la Barre Latérale Discord**
+
+- Transformation de la tuile serveur en haut à gauche de la barre latérale (`/discord`) en un sélecteur interactif avec menu déroulant animé.
+- Bouton rapide « Changer de serveur » (avec raccourci vers la grille complète des serveurs).
+- Liste déroulante instantanée de tous les serveurs Discord de l'utilisateur avec leurs icônes de serveur, pastille de présence du bot et indicateur de sélection active.
+- Barre de recherche instantanée intégrée pour les listes comptant plusieurs serveurs et lien d'invitation directe d'Etho sur un nouveau serveur.
+- Support complet de l'accessibilité : fermeture par touche Échap, clic en dehors et navigation au clavier.
+
 ## v1.55.27 — 2026-10-05
 
 **Harmonisation Visuelle des Modules Streamers et Mini-Jeux / Casino**

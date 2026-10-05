@@ -44790,10 +44790,58 @@ const v1_55_27_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_28_fr: ChangelogEntry = {
+  version: "v1.55.28",
+  date: "2026-10-05",
+  title: "Sélecteur de Changement de Serveur dans la Barre Latérale Discord",
+  items: [
+    "Transformation de la tuile serveur en haut à gauche de la barre latérale (/discord) en sélecteur interactif avec menu déroulant.",
+    "Bouton rapide « Changer de serveur » ouvrant instantanément la grille complète des serveurs.",
+    "Liste déroulante de tous les serveurs de l'utilisateur avec icônes, pastille de présence du bot et indicateur de sélection.",
+    "Barre de filtre rapide par recherche et lien d'invitation directe d'Etho sur un nouveau serveur.",
+  ],
+};
+
+const v1_55_28_en: ChangelogEntry = {
+  version: "v1.55.28",
+  date: "2026-10-05",
+  title: "Interactive Server Switcher in Discord Sidebar",
+  items: [
+    "Turned top-left server tile in the Discord sidebar (/discord) into an interactive switcher dropdown.",
+    "Quick 'Change server' action button opening the full server picker grid immediately.",
+    "Instant dropdown list of user Discord servers with icons, bot presence indicators, and active checkmarks.",
+    "Search filter for large server lists and direct invite link for Etho to new servers.",
+  ],
+};
+
+const v1_55_28_es: ChangelogEntry = {
+  version: "v1.55.28",
+  date: "2026-10-05",
+  title: "Selector Interactivo de Servidor en la Barra Lateral Discord",
+  items: [
+    "Transformación del bloque de servidor en la barra lateral (/discord) en un selector desplegable interactivo.",
+    "Botón directo 'Cambiar de servidor' para acceder a la cuadrícula de servidores.",
+    "Lista rápida de servidores del usuario con iconos, estado del bot e indicador de selección activa.",
+    "Buscador integrado y enlace para invitar a Etho a nuevos servidores.",
+  ],
+};
+
+const v1_55_28_de: ChangelogEntry = {
+  version: "v1.55.28",
+  date: "2026-10-05",
+  title: "Interaktiver Server-Wechsler in der Discord-Seitenleiste",
+  items: [
+    "Interaktives Server-Dropdown direkt auf der Server-Kachel oben links in der Discord-Seitenleiste (/discord).",
+    "Schnellaktion 'Server wechseln' zum direkten Öffnen der vollständigen Server-Übersicht.",
+    "Dropdown-Liste aller Discord-Server des Benutzers mit Icons, Bot-Status und Häkchen für den aktiven Server.",
+    "Integrierte Schnellsuche und Einladungslink für Etho auf neue Server.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

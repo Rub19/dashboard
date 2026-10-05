@@ -1,18 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Home, LayoutGrid, Search, X } from "@/components/icons/ph";
+import { Check, ChevronDown, ExternalLink, Home, LayoutGrid, Plus, Search, Server, X } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
 import { EASE_SNAP, SPRING_PILL } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
 import { fold, type NavigatorCategory, type NavigatorModule } from "@/components/discord/ModuleNavigator";
+import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 
 export type HubView = "home" | "modules" | "module";
 
 interface HubSidebarProps {
   guildName: string;
   guildIconUrl?: string | null;
+  guilds?: DiscordGuild[];
+  selectedGuildId?: string;
+  botGuildIds?: Set<string>;
+  onSelectGuild?: (guild: DiscordGuild) => void;
+  onChangeGuild?: () => void;
+  botInviteUrl?: string;
   modules: NavigatorModule[];
   categories: NavigatorCategory[];
   view: HubView;
@@ -77,11 +84,65 @@ function IconTile({ children, tint, active }: { children: ReactNode; tint?: stri
   );
 }
 
+/** Couleur stable dérivée du nom, pour les serveurs sans icône. */
+function guildTint(name: string): string {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
+  return `hsl(${h} 55% 42%)`;
+}
+
+function guildInitials(name: string): string {
+  const words = name.replace(/[^\p{L}\p{N}\s]/gu, " ").trim().split(/\s+/).filter(Boolean);
+  const letters = words.length > 1 ? words[0][0] + words[1][0] : (words[0] || name).slice(0, 2);
+  return letters.toUpperCase();
+}
+
+function SidebarGuildAvatar({ guild, size = 26 }: { guild: { id: string; name: string; icon?: string | null; iconUrl?: string | null }; size?: number }) {
+  const [failed, setFailed] = useState(false);
+  const src = guild.iconUrl || (guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64` : null);
+  const style = { width: size, height: size };
+  if (src && !failed) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={src} alt="" style={style} className="shrink-0 rounded-[calc(var(--inset-radius)-3px)] object-cover" onError={() => setFailed(true)} />;
+  }
+  return (
+    <span
+      style={{ ...style, background: guildTint(guild.name), fontSize: Math.max(9, Math.round(size * 0.38)) }}
+      className="flex shrink-0 items-center justify-center rounded-[calc(var(--inset-radius)-3px)] font-bold text-white shadow-inner"
+      aria-hidden
+    >
+      {guildInitials(guild.name)}
+    </span>
+  );
+}
+
 /** Barre latérale du hub Discord : serveur, recherche, Accueil, « Tous les modules », modules par catégorie, bilan d'activation. */
-export default function HubSidebar({ guildName, guildIconUrl, modules, categories, view, activeId, status, onHome, onAllModules, onSelect, open, onClose }: HubSidebarProps) {
+export default function HubSidebar({
+  guildName,
+  guildIconUrl,
+  guilds,
+  selectedGuildId,
+  botGuildIds,
+  onSelectGuild,
+  onChangeGuild,
+  botInviteUrl,
+  modules,
+  categories,
+  view,
+  activeId,
+  status,
+  onHome,
+  onAllModules,
+  onSelect,
+  open,
+  onClose,
+}: HubSidebarProps) {
   const { reduced } = useMotionPref();
   const [query, setQuery] = useState("");
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [serverMenuOpen, setServerMenuOpen] = useState(false);
+  const [serverQuery, setServerQuery] = useState("");
+  const serverMenuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const q = fold(query.trim());
   const byId = new Map(modules.map((m) => [m.id, m]));
@@ -93,6 +154,39 @@ export default function HubSidebar({ guildName, guildIconUrl, modules, categorie
     .filter((c) => c.items.length > 0);
   const known = modules.filter((m) => typeof status[m.id] === "boolean");
   const enabled = known.filter((m) => status[m.id]).length;
+
+  // Filtrage des serveurs dans le popover de changement de serveur
+  const filteredGuildList = useMemo(() => {
+    if (!guilds || guilds.length === 0) return [];
+    const sq = serverQuery.trim().toLowerCase();
+    if (!sq) return guilds;
+    return guilds.filter((g) => g.name.toLowerCase().includes(sq));
+  }, [guilds, serverQuery]);
+
+  // Fermeture du menu serveur lors du clic extérieur ou d'Échap
+  useEffect(() => {
+    if (!serverMenuOpen) return;
+    const onMouseDown = (e: MouseEvent) => {
+      if (serverMenuRef.current && !serverMenuRef.current.contains(e.target as Node)) {
+        setServerMenuOpen(false);
+      }
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setServerMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onMouseDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onMouseDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [serverMenuOpen]);
+
+  useEffect(() => {
+    if (serverMenuOpen) setServerQuery("");
+  }, [serverMenuOpen]);
 
   // « / » place le curseur dans la recherche (hors champs de saisie).
   useEffect(() => {
@@ -137,31 +231,189 @@ export default function HubSidebar({ guildName, guildIconUrl, modules, categorie
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Serveur */}
-        <div className="flex items-center gap-3 px-3.5 pb-3 pt-4">
-          <span className="relative shrink-0">
-            <span
-              className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-[var(--inset-radius)] bg-[var(--surface-raised)] bg-cover bg-center text-xs font-bold text-[var(--text-primary)] ring-1 ring-[var(--panel-border)]"
-              style={guildIconUrl ? { backgroundImage: `url(${guildIconUrl})` } : undefined}
-              aria-hidden="true"
+        {/* Serveur & Menu de changement de serveur */}
+        <div ref={serverMenuRef} className="relative px-2.5 pb-2.5 pt-3">
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setServerMenuOpen((v) => !v)}
+              aria-haspopup="menu"
+              aria-expanded={serverMenuOpen}
+              className={cn(
+                "group flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 rounded-[var(--inset-radius)] p-1.5 text-left transition-[background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50",
+                serverMenuOpen
+                  ? "bg-[var(--text-primary)]/[0.08] shadow-[0_0_0_1px_var(--panel-border)]"
+                  : "hover:bg-[var(--text-primary)]/[0.05]"
+              )}
+              title="Changer de serveur Discord"
+              aria-label={`Serveur ${guildName} : ouvrir les options et changer de serveur`}
             >
-              {guildIconUrl ? null : guildName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
-            </span>
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-semibold text-[var(--text-primary)]" title={guildName}>
-              {guildName}
-            </span>
-            <span className="block text-[11px] text-[var(--text-muted)]">Console Etho</span>
-          </span>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Fermer le menu"
-            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[var(--inset-radius)] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.05] hover:text-[var(--text-primary)] lg:hidden"
-          >
-            <X className="h-4 w-4" />
-          </button>
+              <span className="relative shrink-0">
+                <span
+                  className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-[var(--inset-radius)] bg-[var(--surface-raised)] bg-cover bg-center text-xs font-bold text-[var(--text-primary)] ring-1 ring-[var(--panel-border)] transition-transform duration-200 group-hover:scale-[1.03]"
+                  style={guildIconUrl ? { backgroundImage: `url(${guildIconUrl})` } : undefined}
+                  aria-hidden="true"
+                >
+                  {guildIconUrl ? null : guildInitials(guildName)}
+                </span>
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-semibold text-[var(--text-primary)]" title={guildName}>
+                  {guildName}
+                </span>
+                <span className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
+                  <span>Console Etho</span>
+                  <span className="opacity-40">•</span>
+                  <span className="font-medium text-[var(--accent-primary)] group-hover:underline">Changer</span>
+                </span>
+              </span>
+              <ChevronDown
+                className={cn(
+                  "h-4 w-4 shrink-0 text-[var(--text-muted)] transition-transform duration-300 [transition-timing-function:var(--ease-snap)] group-hover:text-[var(--text-primary)]",
+                  serverMenuOpen && "rotate-180"
+                )}
+              />
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Fermer le menu"
+              className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[var(--inset-radius)] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.05] hover:text-[var(--text-primary)] lg:hidden"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Menu déroulant de changement de serveur */}
+          <AnimatePresence>
+            {serverMenuOpen && (
+              <motion.div
+                initial={reduced ? false : { opacity: 0, y: -4, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={reduced ? undefined : { opacity: 0, y: -4, scale: 0.98, transition: { duration: 0.12 } }}
+                transition={{ duration: 0.2, ease: EASE_SNAP }}
+                className="absolute left-2.5 right-2.5 top-[calc(100%-2px)] z-50 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated,#17181d)] p-1.5 shadow-2xl shadow-black/80 backdrop-blur-xl ring-1 ring-white/[0.06]"
+              >
+                {/* Action rapide : ouvrir le sélecteur complet */}
+                {onChangeGuild && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setServerMenuOpen(false);
+                      onChangeGuild();
+                    }}
+                    className="flex w-full cursor-pointer items-center gap-2.5 rounded-[var(--inset-radius)] bg-[var(--text-primary)]/[0.04] px-2.5 py-2 text-left text-xs font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-primary)]/15 hover:text-[var(--accent-primary)]"
+                  >
+                    <Server className="h-3.5 w-3.5 shrink-0 text-[var(--accent-primary)]" />
+                    <span className="min-w-0 flex-1 truncate">Changer de serveur</span>
+                    <span className="rounded bg-[var(--text-primary)]/[0.08] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                      Tous
+                    </span>
+                  </button>
+                )}
+
+                {/* Filtre si plus de 3 serveurs */}
+                {guilds && guilds.length > 3 && (
+                  <div className="mt-1.5 flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-2 py-1.5">
+                    <Search className="h-3 w-3 shrink-0 text-[var(--text-muted)]" />
+                    <input
+                      value={serverQuery}
+                      onChange={(e) => setServerQuery(e.target.value)}
+                      placeholder="Filtrer mes serveurs…"
+                      className="min-w-0 flex-1 bg-transparent text-[11px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
+                      autoFocus
+                    />
+                    {serverQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setServerQuery("")}
+                        className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Liste des serveurs */}
+                {guilds && guilds.length > 0 && (
+                  <div className="mt-1.5">
+                    <div className="flex items-center justify-between px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                      <span>Serveurs</span>
+                      <span className="tabular-nums font-mono opacity-70">{filteredGuildList.length}</span>
+                    </div>
+                    <ul className="max-h-48 overflow-y-auto space-y-0.5 os-scroll pr-0.5">
+                      {filteredGuildList.length === 0 ? (
+                        <li className="px-2.5 py-3 text-center text-[11px] text-[var(--text-muted)]">
+                          Aucun serveur correspondant
+                        </li>
+                      ) : (
+                        filteredGuildList.map((g) => {
+                          const isSelected = g.id === selectedGuildId;
+                          const hasBot = botGuildIds ? botGuildIds.has(g.id) : false;
+                          return (
+                            <li key={g.id}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setServerMenuOpen(false);
+                                  if (onSelectGuild) onSelectGuild(g);
+                                }}
+                                className={cn(
+                                  "group/row relative flex w-full cursor-pointer items-center gap-2 rounded-[var(--inset-radius)] px-2 py-1.5 text-left text-xs transition-colors",
+                                  isSelected
+                                    ? "bg-[var(--text-primary)]/[0.08] font-semibold text-[var(--text-primary)]"
+                                    : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.05] hover:text-[var(--text-primary)]"
+                                )}
+                              >
+                                <SidebarGuildAvatar guild={g} size={24} />
+                                <span className="min-w-0 flex-1">
+                                  <span className="block truncate">{g.name}</span>
+                                  <span
+                                    className={cn(
+                                      "block text-[10px]",
+                                      hasBot ? "text-[var(--success)]" : "text-[var(--text-muted)]/70"
+                                    )}
+                                  >
+                                    {hasBot ? "Bot présent" : "Sans le bot"}
+                                  </span>
+                                </span>
+                                {isSelected ? (
+                                  <Check className="h-3.5 w-3.5 shrink-0 text-[var(--accent-primary)]" />
+                                ) : hasBot ? (
+                                  <span
+                                    className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--success)] shadow-[0_0_0_2px_color-mix(in_srgb,var(--success)_16%,transparent)]"
+                                    title="Bot présent"
+                                  />
+                                ) : null}
+                              </button>
+                            </li>
+                          );
+                        })
+                      )}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Lien inviter le bot */}
+                {botInviteUrl && (
+                  <div className="mt-1 border-t border-[var(--panel-border)] pt-1">
+                    <a
+                      href={botInviteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 rounded-[var(--inset-radius)] px-2.5 py-1.5 text-[11px] text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
+                    >
+                      <Plus className="h-3 w-3 shrink-0 text-[var(--accent-primary)]" />
+                      <span className="min-w-0 flex-1 truncate">Inviter Etho sur un serveur</span>
+                      <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
+                    </a>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Recherche */}

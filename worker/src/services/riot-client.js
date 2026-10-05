@@ -24,7 +24,9 @@ async function getLolDdragonLatestVersion(env) {
       expectedOrigin: "https://ddragon.leagueoflegends.com",
       service: "tracker",
       dedupeKey: "ddragon:versions:latest",
-      retries: 1
+      retries: 1,
+      maxBytes: 1048576,
+      timeoutMs: 10000
     });
     const versions = Array.isArray(response?.data) ? response.data : [];
     lolDdragonLatestVersion = String(versions[0] || DDRAGON_LOL_VERSION);
@@ -311,28 +313,36 @@ async function fetchDdragonDataForVersion(env, version) {
       expectedOrigin: "https://ddragon.leagueoflegends.com",
       service: "tracker",
       dedupeKey: `ddragon:summoner:${version}`,
-      retries: 1
+      retries: 1,
+      maxBytes: 4194304,
+      timeoutMs: 10000
     }),
     requestExternal(new URL(`https://ddragon.leagueoflegends.com/cdn/${version}/data/fr_FR/item.json`), {
       env,
       expectedOrigin: "https://ddragon.leagueoflegends.com",
       service: "tracker",
       dedupeKey: `ddragon:item:${version}`,
-      retries: 1
+      retries: 1,
+      maxBytes: 4194304,
+      timeoutMs: 10000
     }),
     requestExternal(new URL(`https://ddragon.leagueoflegends.com/cdn/${version}/data/fr_FR/runesReforged.json`), {
       env,
       expectedOrigin: "https://ddragon.leagueoflegends.com",
       service: "tracker",
       dedupeKey: `ddragon:runes:${version}`,
-      retries: 1
+      retries: 1,
+      maxBytes: 4194304,
+      timeoutMs: 10000
     }),
     requestExternal(new URL(`https://ddragon.leagueoflegends.com/cdn/${version}/data/fr_FR/champion.json`), {
       env,
       expectedOrigin: "https://ddragon.leagueoflegends.com",
       service: "tracker",
       dedupeKey: `ddragon:champion:${version}`,
-      retries: 1
+      retries: 1,
+      maxBytes: 4194304,
+      timeoutMs: 10000
     })
   ]);
 

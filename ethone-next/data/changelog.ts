@@ -44261,6 +44261,55 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_17_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_17_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_17_de);
 
+const v1_55_18_fr: ChangelogEntry = {
+  version: "v1.55.18",
+  date: "2026-10-05",
+  title: "Stabilité Data Dragon, déploiement bot Discord et assainissement des hooks React",
+  items: [
+    "Bot Discord Etho : synchronisation et redémarrage propre en production sur le VPS (pm2), connexion passerelle et serveurs API opérationnels.",
+    "Worker LoL & Data Dragon : sécurisation des requêtes de catalogue (champions, objets, runes) avec limite de taille étendue à 4 Mo et délai d'attente à 10s.",
+    "Qualité & Performance React : mémoïsation fine des activités Discord et des filtres de modules, navigation légale avec Link Next.js et écoute réactive immédiate des réglages Météo/Lanyard dans useLiveData.",
+  ],
+};
+
+const v1_55_18_en: ChangelogEntry = {
+  version: "v1.55.18",
+  date: "2026-10-05",
+  title: "Data Dragon stability, Discord bot VPS deployment and React hooks hygiene",
+  items: [
+    "Etho Discord Bot: synchronized and cleanly restarted in production on the VPS (pm2), gateway and API server fully operational.",
+    "Worker LoL & Data Dragon: enhanced catalogue requests (champions, items, runes) with expanded 4MB size ceiling and 10s timeout.",
+    "React Quality & Performance: optimized memoization for Discord activities and module filters, Next.js Link navigation in legal pages and reactive useLiveData sync on Weather/Lanyard setting changes.",
+  ],
+};
+
+const v1_55_18_es: ChangelogEntry = {
+  version: "v1.55.18",
+  date: "2026-10-05",
+  title: "Estabilidad de Data Dragon, despliegue del bot Discord y optimización de hooks React",
+  items: [
+    "Bot de Discord Etho: sincronizado y reiniciado limpiamente en producción en el VPS (pm2), pasarela y API operativas.",
+    "Worker LoL y Data Dragon: protección de peticiones de catálogo (campeones, objetos, runas) con límite ampliado a 4 MB y tiempo de espera de 10 s.",
+    "Calidad y rendimiento React: memoización de actividades de Discord y filtros, navegación con Link de Next.js y sincronización reactiva en useLiveData al cambiar ajustes de clima/Lanyard.",
+  ],
+};
+
+const v1_55_18_de: ChangelogEntry = {
+  version: "v1.55.18",
+  date: "2026-10-05",
+  title: "Data Dragon Stabilität, Discord-Bot VPS-Deployment und React-Hooks-Optimierung",
+  items: [
+    "Etho Discord-Bot: Synchronisiert und sauber in der Produktion auf dem VPS neugestartet (pm2), Gateway und API voll einsatzbereit.",
+    "Worker LoL & Data Dragon: Absicherung der Katalogabfragen (Champions, Gegenstände, Runen) mit erweitertem 4-MB-Limit und 10s-Timeout.",
+    "React-Qualität & Performance: Optimierte Memoization für Discord-Aktivitäten und Modulfilter, Next.js Link-Navigation und reaktive useLiveData-Synchronisation bei Änderungen von Wetter-/Lanyard-Einstellungen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_18_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_18_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_18_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_18_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

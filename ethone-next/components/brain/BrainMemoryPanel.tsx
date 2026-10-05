@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Brain,
@@ -53,7 +53,7 @@ export default function BrainMemoryPanel() {
   const [memoryToDelete, setMemoryToDelete] = useState<BrainMemory | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
-  const fetchMemories = async () => {
+  const fetchMemories = useCallback(async () => {
     try {
       setLoading(true);
       const data = await listBrainMemories();
@@ -63,11 +63,11 @@ export default function BrainMemoryPanel() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toastError]);
 
   useEffect(() => {
     fetchMemories();
-  }, []);
+  }, [fetchMemories]);
 
   const filteredMemories = useMemo(() => {
     return memories.filter((m) => {

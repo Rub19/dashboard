@@ -1454,7 +1454,7 @@ export default function SettingsContent({
         ),
       },
     ],
-    [i18n, accountFields, appearanceFields, typographyFields, densityFields, soundFields, notificationsFields, workspaceFields, languageFields, securityFields, makeOptions, latestVersion]
+    [i18n, accountFields, typographyFields, densityFields, notificationsFields, workspaceFields, languageFields, securityFields, makeOptions, latestVersion]
   );
 
   const advancedSections: SectionDef[] = useMemo(

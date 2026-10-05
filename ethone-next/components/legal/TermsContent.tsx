@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/support";
 
@@ -9,9 +10,9 @@ export default function TermsContent() {
   return (
     <div className="h-full w-full overflow-y-auto os-scroll bg-[var(--bg-main)] text-[var(--text-primary)]">
       <div className="mx-auto w-full max-w-3xl px-6 py-16">
-        <a href="/" className="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+        <Link href="/" className="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
           {i18n("legalBackLink", "← Retour à ETHONE")}
-        </a>
+        </Link>
 
         <h1 className="mt-6 text-3xl font-bold text-[var(--text-primary)]">{i18n("termsPageTitle", "Conditions d'utilisation")}</h1>
         <p className="mt-2 text-sm text-[var(--text-muted)]">{i18n("legalUpdatedLine", "Dernière mise à jour : 8 septembre 2026")}</p>

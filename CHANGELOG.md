@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.18 — 2026-10-05
+
+**Stabilité Data Dragon, déploiement bot Discord et assainissement des hooks React**
+
+- Bot Discord Etho : synchronisation et redémarrage propre en production sur le VPS (pm2), connexion passerelle et serveurs API opérationnels.
+- Worker LoL & Data Dragon : sécurisation des requêtes de catalogue (champions, objets, runes) avec limite de taille étendue à 4 Mo et délai d'attente à 10s.
+- Qualité & Performance React : mémoïsation fine des activités Discord et des filtres de modules, navigation légale avec Link Next.js et écoute réactive immédiate des réglages Météo/Lanyard dans useLiveData.
+
 ## v1.55.17 — 2026-10-05
 
 **Tracker Valorant : Rangs réels MMR, score de performance et formatage des stats**

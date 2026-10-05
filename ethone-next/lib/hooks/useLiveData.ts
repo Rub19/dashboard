@@ -617,6 +617,8 @@ export function useLiveData(pollMs = 60000) {
     githubPath,
     todoistPath,
     connected,
+    lanyardUserId,
+    liveWeatherCity,
   ]);
 
   // The ~350-line block below derives ~20 LiveRecord entries from raw

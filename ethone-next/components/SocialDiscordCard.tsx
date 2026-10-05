@@ -243,7 +243,10 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
     return { badgeColor: color, badgeLabel: label, badgeTone: statusTone(status) };
   }, [color, hasAnyConnection, hasLanyard, i18n, label, loading, status]);
 
-  const activities = (effectiveLanyard?.activities || []) as Array<{ name?: string; state?: string; details?: string; largeImage?: string }>;
+  const activities = useMemo(
+    () => (effectiveLanyard?.activities || []) as Array<{ name?: string; state?: string; details?: string; largeImage?: string }>,
+    [effectiveLanyard?.activities]
+  );
   const customStatus = activities.find((activity) => activity.name === "Custom Status")?.state;
   
   const gameActivity = useMemo(() => {

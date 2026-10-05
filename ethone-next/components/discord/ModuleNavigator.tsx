@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ComponentType } from "react";
+import { useEffect, useMemo, useState, useCallback, type ComponentType } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Settings, Star } from "@/components/icons/ph";
@@ -99,7 +99,7 @@ export default function ModuleNavigator({
 
   const byId = useMemo(() => new Map(modules.map((m) => [m.id, m])), [modules]);
   const q = fold(query.trim());
-  const matchesSearch = (m: NavigatorModule) => !q || fold(`${m.title} ${m.description} ${m.id}`).includes(q);
+  const matchesSearch = useCallback((m: NavigatorModule) => !q || fold(`${m.title} ${m.description} ${m.id}`).includes(q), [q]);
   const recommendedSet = useMemo(() => new Set(recommendedIds ?? []), [recommendedIds]);
   const matchesFilter = (m: NavigatorModule) => {
     if (filter === "enabled") return status[m.id] === true;
@@ -111,7 +111,7 @@ export default function ModuleNavigator({
 
   // Compteurs des filtres rapides : calculés après la recherche texte mais avant le filtre actif,
   // pour que chaque onglet affiche combien de résultats il donnerait si on le sélectionnait.
-  const searchMatched = useMemo(() => modules.filter(matchesSearch), [modules, q]);
+  const searchMatched = useMemo(() => modules.filter(matchesSearch), [modules, matchesSearch]);
   const filterTabs: AnimatedFilterTab[] = useMemo(() => {
     const tabs: AnimatedFilterTab[] = [
       { id: "all", label: "Tous", count: searchMatched.length },

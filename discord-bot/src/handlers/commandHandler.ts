@@ -88,6 +88,7 @@ import { tagCommand } from '../modules/tags/commands/tagCommand.js';
 import { serverStatsCommand } from '../modules/serverStats/commands/serverStatsCommand.js';
 import { logsCommand } from '../modules/logs/commands/logsCommand.js';
 import { highlightCommand } from '../modules/highlights/commands/highlightCommand.js';
+import { streamerCommand } from '../modules/streamers/commands/streamerCommand.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -224,6 +225,9 @@ class CommandRegistry {
 
     // Highlights (mots-clés surveillés — DM quand quelqu'un d'autre les mentionne)
     this.register(highlightCommand);
+
+    // Streamers & Live Alerts (Twitch, YouTube, Kick)
+    this.register(streamerCommand);
   }
 
   public register(command: Command) {

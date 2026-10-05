@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.23 — 2026-10-05
+
+**Nouveau Module Bot : Alertes Streamers Twitch, YouTube & Kick (Motion Design)**
+
+- Nouveau module Alertes Streamers (`/discord/streamers`) avec interface Apple Sonoma ultra-fluide et physique Framer Motion.
+- Détection automatique ultra-rapide des diffusions en direct sur Twitch, YouTube et Kick via scheduler 2 minutes et sondes API natives.
+- Système d'embeds Discord animés avec emojis personnalisés pulsants (`<a:a_online>`, `<a:a_sparkles>`), compteur de spectateurs en direct, badge de catégorie/jeu et miniatures HD.
+- Attribution automatique du rôle `@En Live` aux créateurs du serveur dès le début de leur stream, et retrait automatique à la fin de diffusion.
+- Nouvelles commandes slash Discord : `/streamer add`, `/streamer remove`, `/streamer list`, `/streamer check` et `/streamer config` enregistrées dans le gestionnaire et documentées dans `/help`.
+- Intégration complète au hub Discord (`/discord`) et au navigateur de modules avec navigation instantanée et synchronisation temps réel (`useDiscordSync`).
+
 ## v1.55.22 — 2026-10-05
 
 **Studio Soundscape : Défilement fluide & navigation optimisée**

@@ -44512,10 +44512,63 @@ const v1_55_22_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_22_de, v1_55_21_de);
+const v1_55_23_fr: ChangelogEntry = {
+  version: "v1.55.23",
+  date: "2026-10-05",
+  title: "Nouveau Module Bot : Alertes Streamers Twitch, YouTube & Kick (Motion Design)",
+  items: [
+    "Nouveau module Alertes Streamers (/discord/streamers) avec interface Apple Sonoma fluide et animations Framer Motion.",
+    "Détection automatique ultra-rapide des diffusions en direct sur Twitch, YouTube et Kick.",
+    "Système d'embeds animés avec emojis pulsants (<a:a_online>, <a:a_sparkles>), compteurs de viewers et miniatures HD.",
+    "Attribution automatique du rôle @En Live aux créateurs du serveur dès le début de leur stream, et retrait automatique à la fin.",
+    "Nouvelles commandes slash Discord : /streamer add, /streamer remove, /streamer list, /streamer check et /streamer config intégrées à l'aide /help.",
+  ],
+};
+
+const v1_55_23_en: ChangelogEntry = {
+  version: "v1.55.23",
+  date: "2026-10-05",
+  title: "New Bot Module: Streamers Live Alerts for Twitch, YouTube & Kick",
+  items: [
+    "New Streamers Live Alerts module (/discord/streamers) featuring Apple Sonoma motion design and Framer Motion spring physics.",
+    "Ultra-fast automated live broadcast detection across Twitch, YouTube, and Kick.",
+    "Rich Discord embeds with animated pulsing emojis (<a:a_online>, <a:a_sparkles>), live viewer counters, and HD thumbnails.",
+    "Automated @Live role assignment for server creators when they start streaming, revoked when the stream ends.",
+    "New Discord slash commands: /streamer add, /streamer remove, /streamer list, /streamer check, and /streamer config registered in /help.",
+  ],
+};
+
+const v1_55_23_es: ChangelogEntry = {
+  version: "v1.55.23",
+  date: "2026-10-05",
+  title: "Nuevo Módulo Bot: Alertas de Streamers Twitch, YouTube y Kick",
+  items: [
+    "Nuevo módulo de Alertas de Streamers (/discord/streamers) con diseño de movimiento Apple Sonoma y animaciones Framer Motion.",
+    "Detección en tiempo real de emisiones en directo en Twitch, YouTube y Kick.",
+    "Embeds de Discord dinámicos con emojis animados (<a:a_online>, <a:a_sparkles>), contador de espectadores y miniaturas HD.",
+    "Asignación automática del rol @En Directo a los creadores al comenzar y retirado al terminar.",
+    "Nuevos comandos de barra diagonal: /streamer add, /streamer remove, /streamer list, /streamer check y /streamer config añadidos a /help.",
+  ],
+};
+
+const v1_55_23_de: ChangelogEntry = {
+  version: "v1.55.23",
+  date: "2026-10-05",
+  title: "Neues Bot-Modul: Streamer Live-Benachrichtigungen für Twitch, YouTube & Kick",
+  items: [
+    "Neues Streamer-Benachrichtigungsmodul (/discord/streamers) mit Apple Sonoma Motion Design und Framer Motion Physik.",
+    "Ultraschnelle automatische Live-Erkennung für Twitch, YouTube und Kick.",
+    "Dynamische Discord Embeds mit animierten Emojis (<a:a_online>, <a:a_sparkles>), Zuschauerzählern und HD-Vorschaubildern.",
+    "Automatische Zuweisung der @Live-Rolle für Server-Streamer während der Übertragung.",
+    "Neue Discord Slash-Befehle: /streamer add, /streamer remove, /streamer list, /streamer check und /streamer config in /help integriert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+
 

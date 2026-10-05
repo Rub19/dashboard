@@ -19,6 +19,7 @@ import { secureRolesStorage } from '../modules/secureroles/storage/secureRolesSt
 import { reportsStorage } from '../modules/reports/storage/reportsStorage.js';
 import { serverStatsStorage } from '../modules/serverStats/storage/serverStatsStorage.js';
 import { ticketRepository } from '../modules/tickets/storage/ticketRepository.js';
+import { streamerStorage } from '../modules/streamers/storage/streamerStorage.js';
 import { emitConfigUpdated } from './syncConfigEmitter.js';
 import { logger } from '../utils/logger.js';
 
@@ -266,6 +267,17 @@ export const MODULES: ModuleDef[] = [
   },
   { id: 'ai', label: 'Assistant IA', emoji: '✨', description: 'Questions, résumés et images par IA.', commands: ['ask', 'imagine', 'summarize', 'ai-setup'] },
   { id: 'backups', label: 'Sauvegardes', emoji: '💾', description: 'Snapshots et restauration du serveur.', commands: [] },
+  {
+    id: 'streamers',
+    label: 'Alertes Streamers (Twitch, YouTube, Kick)',
+    emoji: '📡',
+    description: 'Notifications automatiques de prise d\'antenne en direct et rôle @En Live.',
+    commands: ['streamer'],
+    own: {
+      get: (g) => streamerStorage.getConfig(g).enabled,
+      set: (g, enabled) => void streamerStorage.updateConfig(g, { enabled }),
+    },
+  },
 ];
 
 const BY_ID = new Map(MODULES.map((m) => [m.id, m]));

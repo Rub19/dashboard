@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.24 — 2026-10-05
+
+**Alertes Streamers : Options de personnalisation avancées, routage & pings dédiés**
+
+- Salons et rôles dédiés par plateforme : routage distinct des alertes Twitch, YouTube et Kick avec attribution de rôles de mention spécifiques ou par créateur.
+- Liaison de compte Discord membre : association directe du compte Discord pour l'attribution instantanée du rôle `@En Live` dès la détection du live, sans dépendre d'un pseudo identique.
+- Modes de mention personnalisables : choix entre le ping du serveur, `@everyone`, `@here`, un rôle personnalisé ou aucun ping (mode silencieux).
+- Filtres de jeu et seuil de viewers : possibilité de restreindre la notification à certains jeux/catégories et d'imposer un nombre minimum de spectateurs.
+- Personnalisation visuelle de l'embed : sélection de couleur d'embed, affichage ou masquage de la miniature, texte personnalisé du bouton d'action et gestion de la fin de diffusion (mise à jour hors-ligne avec couleur grisée, suppression de l'embed ou conservation).
+- Protection anti-spam et reconnexion : cooldown paramétrable évitant le spam d'alertes en cas de déconnexion/reconnexion rapide du streamer.
+- Refonte ergonomique du tiroir de configuration Apple Sonoma avec onglets interactifs et aperçu en temps réel de l'embed Discord.
+
 ## v1.55.23 — 2026-10-05
 
 **Nouveau Module Bot : Alertes Streamers Twitch, YouTube & Kick (Motion Design)**

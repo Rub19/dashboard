@@ -57,6 +57,18 @@ export const streamerCommand: Command = {
             .setDescription('Rôle à mentionner lors de la prise d\'antenne')
             .setRequired(false)
         )
+        .addUserOption((opt) =>
+          opt
+            .setName('membre_discord')
+            .setDescription('Associer un membre Discord du serveur pour le rôle @En Live automatique')
+            .setRequired(false)
+        )
+        .addStringOption((opt) =>
+          opt
+            .setName('jeu_filtre')
+            .setDescription('Alerter uniquement si le streamer diffuse ce jeu (ex: Valorant, GTA V)')
+            .setRequired(false)
+        )
         .addStringOption((opt) =>
           opt
             .setName('message')
@@ -174,6 +186,8 @@ export const streamerCommand: Command = {
       const username = interaction.options.getString('chaine', true).trim();
       const channel = interaction.options.getChannel('salon');
       const role = interaction.options.getRole('role_ping');
+      const discordUser = interaction.options.getUser('membre_discord');
+      const gameFilter = interaction.options.getString('jeu_filtre');
       const message = interaction.options.getString('message');
 
       const existing = streamerStorage.getStreamers(guildId).find(
@@ -202,7 +216,13 @@ export const streamerCommand: Command = {
         username,
         displayName: probe.displayName,
         channelId: channel ? channel.id : null,
+        pingMode: role ? 'role' : 'default',
         pingRoleId: role ? role.id : null,
+        discordUserId: discordUser ? discordUser.id : null,
+        gameFilter: gameFilter ? gameFilter.trim() : null,
+        minViewers: 0,
+        customColor: null,
+        paused: false,
         customMessage: message || null,
         isLive: probe.isLive,
         title: probe.title || null,
@@ -224,6 +244,8 @@ export const streamerCommand: Command = {
           `La chaîne **${added.displayName || added.username}** (${platform.toUpperCase()}) a été ajoutée aux alertes !\n\n` +
             `📍 **Salon d'annonce :** ${added.channelId ? `<#${added.channelId}>` : config.defaultChannelId ? `<#${config.defaultChannelId}> (défaut)` : '*Aucun salon configuré*'}\n` +
             `🔔 **Notification :** ${added.pingRoleId ? `<@&${added.pingRoleId}>` : config.defaultPing}\n` +
+            (added.discordUserId ? `👤 **Membre Discord lié :** <@${added.discordUserId}>\n` : '') +
+            (added.gameFilter ? `🎯 **Filtre de jeu :** \`${added.gameFilter}\`\n` : '') +
             `📡 **Statut actuel :** ${probe.isLive ? `${onlineEmoji} **EN DIRECT** (${probe.viewers} spectateurs)` : '⚫ Hors ligne'}`
         )
         .setThumbnail(probe.avatarUrl || null)

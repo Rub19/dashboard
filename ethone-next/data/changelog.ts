@@ -44564,11 +44564,68 @@ const v1_55_23_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_24_fr: ChangelogEntry = {
+  version: "v1.55.24",
+  date: "2026-10-05",
+  title: "Alertes Streamers : Options de personnalisation avancées, routage & pings dédiés",
+  items: [
+    "Salons et rôles dédiés par plateforme : définissez des salons et rôles de ping spécifiques pour Twitch, YouTube et Kick ou par streamer.",
+    "Liaison directe de membre Discord : liez chaque streamer à son compte Discord sur le serveur pour garantir l'attribution instantanée du rôle @En Live.",
+    "Modes de mention avancés : choisissez entre le ping par défaut, @everyone, @here, un rôle personnalisé ou aucun ping.",
+    "Filtres de jeu et seuil de viewers : filtrez les lives par jeu/catégorie et définissez un nombre minimum de viewers avant d'envoyer l'alerte.",
+    "Personnalisation visuelle et anti-spam : sélecteur de couleur hexadécimale, masquage de miniature, boutons d'action sur-mesure, délai anti-reconnexion et action de fin de live (mise à jour hors-ligne, suppression ou maintien).",
+    "Tiroir de configuration Apple Sonoma refait à neuf avec onglets Dédiés et prévisualisation Discord interactive en temps réel.",
+  ],
+};
+
+const v1_55_24_en: ChangelogEntry = {
+  version: "v1.55.24",
+  date: "2026-10-05",
+  title: "Streamers Alerts: Advanced Customization, Routing & Custom Ping Roles",
+  items: [
+    "Dedicated channels and roles per platform: route Twitch, YouTube, and Kick live alerts to specific channels with customized ping roles.",
+    "Direct Discord member linking: link any streamer to their Discord guild member to guarantee instant @Live role assignment.",
+    "Custom mention modes: choose between default ping, @everyone, @here, a custom role, or silent alerts with no ping.",
+    "Game filters and viewer threshold: filter alerts by game or stream category and enforce a minimum viewer count.",
+    "Visual customization & anti-spam: custom hex embed color, thumbnail toggle, custom button text, reconnect cooldown protection, and offline embed handling.",
+    "Redesigned Apple Sonoma tabbed settings drawer with real-time dynamic Discord embed visualizer.",
+  ],
+};
+
+const v1_55_24_es: ChangelogEntry = {
+  version: "v1.55.24",
+  date: "2026-10-05",
+  title: "Alertas de Streamers: Opciones avanzadas de personalización, canales y menciones",
+  items: [
+    "Canales y roles dedicados por plataforma: enrute alertas de Twitch, YouTube y Kick a canales específicos con roles de mención personalizados.",
+    "Vinculación de miembro de Discord: asocie cada streamer a su usuario en el servidor para asignar automáticamente el rol @En Directo.",
+    "Modos de mención flexibles: elija entre ping por defecto, @everyone, @here, un rol específico o alertas silenciosas.",
+    "Filtros de categoría y espectadores mínimos: filtre transmisiones por juego y establezca un umbral mínimo de espectadores.",
+    "Personalización visual y anti-spam: color hex personalizado, botones configurables, protección anti-reconexión y actualización al terminar el directo.",
+    "Cajón de ajustes Apple Sonoma con pestañas y previsualizador interactivo de embed de Discord en tiempo real.",
+  ],
+};
+
+const v1_55_24_de: ChangelogEntry = {
+  version: "v1.55.24",
+  date: "2026-10-05",
+  title: "Streamer-Alerts: Erweiterte Anpassung, Kanal-Routing & Rollen-Pings",
+  items: [
+    "Dedizierte Kanäle und Rollen pro Plattform: Benachrichtigungen für Twitch, YouTube und Kick separat leiten mit spezifischen Erwähnungsrollen.",
+    "Direkte Discord-Mitgliedsverknüpfung: Verbinden Sie Streamer mit ihrem Server-Profil für garantierte @Live-Rollenvergabe.",
+    "Erweiterte Erwähnungsmodi: Wählen Sie zwischen Standard-Ping, @everyone, @here, einer benutzerdefinierten Rolle oder stummen Meldungen.",
+    "Spielfilter & Mindestzuschauer: Filtern Sie Streams nach Spiel/Kategorie und legen Sie eine Mindestzuschauerzahl fest.",
+    "Visuelle Anpassung & Anti-Spam: Eigene Hex-Farben, konfigurierbare Buttons, Wiederverbindungs-Cooldown und Offline-Aktualisierung.",
+    "Überarbeiteter Apple Sonoma Einstellungs-Drawer mit Registerkarten und interaktiver Live-Vorschau des Discord Embeds.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+
 
 

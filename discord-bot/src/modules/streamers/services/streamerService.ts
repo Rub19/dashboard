@@ -50,7 +50,7 @@ export class StreamerService {
 
   public startScheduler(): void {
     if (this.timer) clearInterval(this.timer);
-    // Vérification automatique toutes les 2 minutes
+    // Vérification périodique automatique toutes les 2 minutes
     this.timer = setInterval(() => {
       void this.checkAllStreamers();
     }, 120_000);
@@ -108,7 +108,6 @@ export class StreamerService {
     }
 
     if (platform === 'twitch') {
-      // Tentative via endpoint de métadonnées ou scrape public rapide
       try {
         const res = await fetch(`https://decapi.me/twitch/uptime/${encodeURIComponent(cleanUser)}`, {
           signal: AbortSignal.timeout(5000),
@@ -221,7 +220,9 @@ export class StreamerService {
     try {
       const activeStreamers = streamerStorage.getAllActiveStreamers();
       for (const streamer of activeStreamers) {
-        await this.checkStreamer(streamer);
+        if (!streamer.paused) {
+          await this.checkStreamer(streamer);
+        }
       }
     } catch (err) {
       logger.error('[Streamers] Erreur générale lors de la vérification des flux :', err);
@@ -231,13 +232,108 @@ export class StreamerService {
   }
 
   /**
+   * Détermine le salon de notification cible selon la hiérarchie :
+   * 1. Salon spécifique au streamer
+   * 2. Salon spécifique à la plateforme (Twitch, YouTube, Kick)
+   * 3. Salon par défaut de la guilde
+   */
+  public resolveTargetChannelId(streamer: StreamerItem, config: StreamerConfig): string | null {
+    if (streamer.channelId) return streamer.channelId;
+    if (streamer.platform === 'twitch' && config.twitchChannelId) return config.twitchChannelId;
+    if (streamer.platform === 'youtube' && config.youtubeChannelId) return config.youtubeChannelId;
+    if (streamer.platform === 'kick' && config.kickChannelId) return config.kickChannelId;
+    return config.defaultChannelId;
+  }
+
+  /**
+   * Détermine le contenu de la mention (ping) selon la hiérarchie :
+   * 1. Mode spécifique au streamer (none, here, everyone, role)
+   * 2. Rôle spécifique à la plateforme
+   * 3. Réglage par défaut du serveur
+   */
+  public resolvePingContent(streamer: StreamerItem, config: StreamerConfig): string {
+    const mode = streamer.pingMode || 'default';
+
+    if (mode === 'none') return '';
+    if (mode === 'here') return '@here';
+    if (mode === 'everyone') return '@everyone';
+    if (mode === 'role') {
+      return streamer.pingRoleId ? `<@&${streamer.pingRoleId}>` : '';
+    }
+
+    // mode === 'default' -> Vérifie d'abord les rôles par plateforme
+    if (streamer.platform === 'twitch' && config.twitchRoleId) {
+      return `<@&${config.twitchRoleId}>`;
+    }
+    if (streamer.platform === 'youtube' && config.youtubeRoleId) {
+      return `<@&${config.youtubeRoleId}>`;
+    }
+    if (streamer.platform === 'kick' && config.kickRoleId) {
+      return `<@&${config.kickRoleId}>`;
+    }
+
+    // Fallback sur la configuration globale
+    if (config.defaultPing === 'everyone') return '@everyone';
+    if (config.defaultPing === 'here') return '@here';
+    if (config.defaultPing === 'role' && config.defaultRoleId) {
+      return `<@&${config.defaultRoleId}>`;
+    }
+
+    return '';
+  }
+
+  /**
    * Vérifie un streamer spécifique et déclenche l'alerte Discord si nécessaire.
    */
   public async checkStreamer(streamer: StreamerItem): Promise<LiveStreamDetails> {
+    if (streamer.paused) {
+      return {
+        platform: streamer.platform,
+        username: streamer.username,
+        displayName: streamer.displayName || streamer.username,
+        isLive: false,
+        streamUrl: streamer.streamUrl || `https://${streamer.platform}.com/${streamer.username}`,
+      };
+    }
+
     const live = await this.fetchLiveStatus(streamer.platform, streamer.username);
     const wasLive = streamer.isLive;
+    const config = streamerStorage.getConfig(streamer.guildId);
 
     if (live.isLive && !wasLive) {
+      // Vérification du filtre de jeu/catégorie si spécifié
+      if (streamer.gameFilter && streamer.gameFilter.trim()) {
+        const filter = streamer.gameFilter.toLowerCase().trim();
+        const currentGame = (live.game || '').toLowerCase();
+        if (!currentGame.includes(filter)) {
+          logger.info(`[Streamers] Live ignoré pour ${streamer.username}: le jeu "${live.game}" ne correspond pas au filtre "${streamer.gameFilter}".`);
+          return live;
+        }
+      }
+
+      // Vérification du seuil minimal de spectateurs
+      if (streamer.minViewers > 0 && (live.viewers || 0) < streamer.minViewers) {
+        logger.info(`[Streamers] Live ignoré pour ${streamer.username}: viewers ${live.viewers} < seuil ${streamer.minViewers}.`);
+        return live;
+      }
+
+      // Vérification du cooldown anti-spam (ex: reconnexion après coupure de live de quelques minutes)
+      if (streamer.lastLiveAt && config.cooldownMinutes > 0) {
+        const diffMs = Date.now() - new Date(streamer.lastLiveAt).getTime();
+        const diffMinutes = diffMs / (1000 * 60);
+        if (diffMinutes < config.cooldownMinutes && streamer.lastAlertMessageId) {
+          logger.info(`[Streamers] Cooldown actif (${Math.round(diffMinutes)}m < ${config.cooldownMinutes}m) pour ${streamer.username}.`);
+          // Ne re-notifie pas, mais met à jour l'état
+          streamerStorage.updateStreamer(streamer.guildId, streamer.id, {
+            isLive: true,
+            title: live.title,
+            game: live.game,
+            viewers: live.viewers,
+          });
+          return live;
+        }
+      }
+
       // Le streamer vient de lancer son live !
       await this.dispatchLiveAlert(streamer, live);
       streamerStorage.updateStreamer(streamer.guildId, streamer.id, {
@@ -281,7 +377,7 @@ export class StreamerService {
     const config = streamerStorage.getConfig(streamer.guildId);
     if (!config.enabled) return null;
 
-    const channelId = streamer.channelId || config.defaultChannelId;
+    const channelId = this.resolveTargetChannelId(streamer, config);
     if (!channelId) return null;
 
     try {
@@ -289,18 +385,7 @@ export class StreamerService {
       if (!channel || !(channel instanceof TextChannel)) return null;
 
       // Construction du message de notification et du ping
-      let pingContent = '';
-      if (streamer.pingRoleId) {
-        if (streamer.pingRoleId === '@everyone') pingContent = '@everyone';
-        else if (streamer.pingRoleId === '@here') pingContent = '@here';
-        else pingContent = `<@&${streamer.pingRoleId}>`;
-      } else if (config.defaultPing === 'everyone') {
-        pingContent = '@everyone';
-      } else if (config.defaultPing === 'here') {
-        pingContent = '@here';
-      } else if (config.defaultPing === 'role' && config.defaultRoleId) {
-        pingContent = `<@&${config.defaultRoleId}>`;
-      }
+      const pingContent = this.resolvePingContent(streamer, config);
 
       const rawTemplate = streamer.customMessage || config.defaultMessage;
       const formattedMessage = rawTemplate
@@ -313,24 +398,39 @@ export class StreamerService {
       const onlineEmoji = getAppEmoji('etho_a_online') || '🔴';
       const sparklesEmoji = getAppEmoji('etho_a_sparkles') || '✨';
 
+      // Couleur de l'embed : personnalisée streamer > globale config > couleur de plateforme
+      let embedColor = PLATFORM_COLORS[streamer.platform];
+      if (streamer.customColor) {
+        const parsed = parseInt(streamer.customColor.replace('#', ''), 16);
+        if (!isNaN(parsed)) embedColor = parsed;
+      } else if (config.embedColor) {
+        const parsed = parseInt(config.embedColor.replace('#', ''), 16);
+        if (!isNaN(parsed)) embedColor = parsed;
+      }
+
       const embed = new EmbedBuilder()
-        .setColor(PLATFORM_COLORS[streamer.platform])
+        .setColor(embedColor)
         .setAuthor({
           name: `${PLATFORM_NAMES[streamer.platform]} · En Direct`,
           iconURL: PLATFORM_ICONS[streamer.platform],
           url: live.streamUrl,
         })
         .setTitle(`${onlineEmoji} ${live.displayName} est en LIVE !`)
-        .setURL(live.streamUrl)
-        .setDescription(
-          `**${live.title || 'Diffusion en direct'}**\n\n` +
-            `🎮 **Catégorie :** \`${live.game || 'Général'}\`\n` +
-            (live.viewers ? `👥 **Spectateurs :** \`${live.viewers.toLocaleString('fr-FR')}\`\n` : '') +
-            `\n${sparklesEmoji} *Cliquez sur le bouton ci-dessous pour rejoindre la diffusion !*`
-        )
-        .setTimestamp();
+        .setURL(live.streamUrl);
 
-      if (live.thumbnailUrl) {
+      // Description conditionnelle
+      let desc = `**${live.title || 'Diffusion en direct'}**\n\n`;
+      if (config.showGame !== false) {
+        desc += `🎮 **Catégorie :** \`${live.game || 'Général'}\`\n`;
+      }
+      if (config.showViewers !== false && live.viewers !== undefined) {
+        desc += `👥 **Spectateurs :** \`${live.viewers.toLocaleString('fr-FR')}\`\n`;
+      }
+      desc += `\n${sparklesEmoji} *Cliquez sur le bouton ci-dessous pour rejoindre la diffusion !*`;
+      embed.setDescription(desc);
+      embed.setTimestamp();
+
+      if (config.showThumbnail !== false && live.thumbnailUrl) {
         embed.setImage(live.thumbnailUrl);
       }
       if (live.avatarUrl) {
@@ -341,9 +441,10 @@ export class StreamerService {
         iconURL: this.client.user?.displayAvatarURL() || undefined,
       });
 
+      const buttonLabel = config.customButtonText || `Regarder sur ${PLATFORM_NAMES[streamer.platform]}`;
       const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
         new ButtonBuilder()
-          .setLabel(`Regarder sur ${PLATFORM_NAMES[streamer.platform]}`)
+          .setLabel(buttonLabel)
           .setStyle(ButtonStyle.Link)
           .setURL(live.streamUrl)
           .setEmoji('📺')
@@ -360,9 +461,9 @@ export class StreamerService {
         lastAlertChannelId: channel.id,
       });
 
-      // Gestion du rôle @En Live automatique
+      // Gestion du rôle @En Live automatique (via discordUserId si lié, sinon nom d'utilisateur)
       if (config.autoLiveRoleEnabled && config.liveRoleId) {
-        await this.assignLiveRole(streamer.guildId, streamer.username, config.liveRoleId, true);
+        await this.assignLiveRole(streamer.guildId, streamer, config.liveRoleId, true);
       }
 
       logger.info(
@@ -376,7 +477,7 @@ export class StreamerService {
   }
 
   /**
-   * Traitement quand le live se termine (nettoyage de message ou retrait de rôle).
+   * Traitement quand le live se termine (nettoyage de message ou mise à jour hors-ligne).
    */
   public async handleStreamEnded(streamer: StreamerItem): Promise<void> {
     if (!this.client) return;
@@ -384,31 +485,60 @@ export class StreamerService {
 
     // Retrait du rôle @En Live
     if (config.autoLiveRoleEnabled && config.liveRoleId) {
-      await this.assignLiveRole(streamer.guildId, streamer.username, config.liveRoleId, false);
+      await this.assignLiveRole(streamer.guildId, streamer, config.liveRoleId, false);
     }
 
-    // Nettoyage éventuel du message
-    if (config.cleanUpFinishedStreams && streamer.lastAlertChannelId && streamer.lastAlertMessageId) {
-      try {
-        const channel = await this.client.channels.fetch(streamer.lastAlertChannelId).catch(() => null);
-        if (channel && channel instanceof TextChannel) {
-          const msg = await channel.messages.fetch(streamer.lastAlertMessageId).catch(() => null);
-          if (msg) {
-            await msg.delete().catch(() => null);
-          }
-        }
-      } catch {
-        // silencieux
+    if (!streamer.lastAlertChannelId || !streamer.lastAlertMessageId) return;
+
+    try {
+      const channel = await this.client.channels.fetch(streamer.lastAlertChannelId).catch(() => null);
+      if (!channel || !(channel instanceof TextChannel)) return;
+
+      const msg = await channel.messages.fetch(streamer.lastAlertMessageId).catch(() => null);
+      if (!msg) return;
+
+      if (config.offlineAction === 'delete' || config.cleanUpFinishedStreams) {
+        await msg.delete().catch(() => null);
+      } else if (config.offlineAction === 'update_offline') {
+        const offlineEmbed = new EmbedBuilder()
+          .setColor(0x475569) // slate gray
+          .setAuthor({
+            name: `${PLATFORM_NAMES[streamer.platform]} · Diffusion terminée`,
+            iconURL: PLATFORM_ICONS[streamer.platform],
+          })
+          .setTitle(`⚫ ${streamer.displayName || streamer.username} a terminé son direct`)
+          .setDescription(
+            `La diffusion sur **${PLATFORM_NAMES[streamer.platform]}** est terminée.\nMerci à toutes et à tous d'avoir suivi le stream !`
+          )
+          .setFooter({ text: 'ETHONE Stream Alerts · Stream hors ligne' })
+          .setTimestamp();
+
+        const replayRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+          new ButtonBuilder()
+            .setLabel(`Voir la chaîne ${PLATFORM_NAMES[streamer.platform]}`)
+            .setStyle(ButtonStyle.Link)
+            .setURL(streamer.streamUrl || `https://${streamer.platform}.com/${streamer.username}`)
+            .setEmoji('🎬')
+        );
+
+        await msg.edit({
+          content: null,
+          embeds: [offlineEmbed],
+          components: [replayRow],
+        }).catch(() => null);
       }
+    } catch {
+      // silencieux
     }
   }
 
   /**
-   * Associe ou retire le rôle en live aux membres de la guilde dont le pseudo correspond.
+   * Associe ou retire le rôle en direct.
+   * Utilise en priorité `discordUserId` s'il est renseigné, sinon cherche par concordance de pseudo.
    */
   private async assignLiveRole(
     guildId: string,
-    streamerUsername: string,
+    streamer: StreamerItem,
     roleId: string,
     add: boolean
   ): Promise<void> {
@@ -417,25 +547,39 @@ export class StreamerService {
       const guild = await this.client.guilds.fetch(guildId).catch(() => null);
       if (!guild) return;
 
-      const members = await guild.members.fetch();
-      const target = members.find(
-        (m) =>
-          m.user.username.toLowerCase() === streamerUsername.toLowerCase() ||
-          m.displayName.toLowerCase() === streamerUsername.toLowerCase()
-      );
-      if (!target) return;
+      let targetMember = null;
+
+      // 1. Liaison directe Discord ID
+      if (streamer.discordUserId) {
+        targetMember = await guild.members.fetch(streamer.discordUserId).catch(() => null);
+      }
+
+      // 2. Fallback par nom d'utilisateur Discord
+      if (!targetMember) {
+        const members = await guild.members.fetch();
+        const streamerName = streamer.username.toLowerCase();
+        targetMember = members.find(
+          (m) =>
+            m.user.username.toLowerCase() === streamerName ||
+            m.displayName.toLowerCase() === streamerName
+        );
+      }
+
+      if (!targetMember) return;
 
       if (add) {
-        if (!target.roles.cache.has(roleId)) {
-          await target.roles.add(roleId).catch(() => null);
+        if (!targetMember.roles.cache.has(roleId)) {
+          await targetMember.roles.add(roleId).catch(() => null);
+          logger.info(`[Streamers] Rôle @En Live attribué à ${targetMember.user.tag} (${targetMember.id})`);
         }
       } else {
-        if (target.roles.cache.has(roleId)) {
-          await target.roles.remove(roleId).catch(() => null);
+        if (targetMember.roles.cache.has(roleId)) {
+          await targetMember.roles.remove(roleId).catch(() => null);
+          logger.info(`[Streamers] Rôle @En Live retiré de ${targetMember.user.tag} (${targetMember.id})`);
         }
       }
-    } catch {
-      // Ignoré
+    } catch (err) {
+      logger.debug(`[Streamers] Erreur gestion rôle en live:`, err);
     }
   }
 }

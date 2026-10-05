@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { streamerStorage } from '../../modules/streamers/storage/streamerStorage.js';
 import { streamerService } from '../../modules/streamers/services/streamerService.js';
-import { StreamPlatformSchema, StreamerConfigSchema, StreamPlatform } from '../../modules/streamers/types/streamer.js';
+import { StreamPlatformSchema, StreamerConfigSchema, StreamerPingModeSchema } from '../../modules/streamers/types/streamer.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { DESTINATION_CHANNEL_TYPES } from '../../utils/channelSend.js';
 
@@ -46,7 +46,18 @@ export function createStreamerRouter(client: Client) {
   // Ajout d'un streamer
   router.post('/', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
-    const { platform, username, channelId, pingRoleId, customMessage } = req.body || {};
+    const {
+      platform,
+      username,
+      channelId,
+      pingMode,
+      pingRoleId,
+      discordUserId,
+      gameFilter,
+      minViewers,
+      customColor,
+      customMessage,
+    } = req.body || {};
 
     const platParse = StreamPlatformSchema.safeParse(platform);
     if (!platParse.success || !username || typeof username !== 'string') {
@@ -68,13 +79,21 @@ export function createStreamerRouter(client: Client) {
     // Sonde en direct
     const probe = await streamerService.fetchLiveStatus(plat, cleanUser);
 
+    const validPingMode = StreamerPingModeSchema.safeParse(pingMode).success ? pingMode : 'default';
+
     const added = streamerStorage.addStreamer({
       guildId,
       platform: plat,
       username: cleanUser,
       displayName: probe.displayName,
       channelId: channelId || null,
+      pingMode: validPingMode,
       pingRoleId: pingRoleId || null,
+      discordUserId: discordUserId || null,
+      gameFilter: gameFilter ? String(gameFilter).trim() : null,
+      minViewers: typeof minViewers === 'number' && minViewers >= 0 ? minViewers : 0,
+      customColor: customColor ? String(customColor).trim() : null,
+      paused: false,
       customMessage: customMessage || null,
       isLive: probe.isLive,
       title: probe.title || null,
@@ -110,11 +129,27 @@ export function createStreamerRouter(client: Client) {
   router.patch('/:id', (req: Request, res: Response): void => {
     const guildId = String(req.params.guildId);
     const id = String(req.params.id);
-    const { channelId, pingRoleId, customMessage } = req.body || {};
+    const {
+      channelId,
+      pingMode,
+      pingRoleId,
+      discordUserId,
+      gameFilter,
+      minViewers,
+      customColor,
+      paused,
+      customMessage,
+    } = req.body || {};
 
     const updated = streamerStorage.updateStreamer(guildId, id, {
       ...(channelId !== undefined ? { channelId: channelId || null } : {}),
+      ...(pingMode !== undefined ? { pingMode } : {}),
       ...(pingRoleId !== undefined ? { pingRoleId: pingRoleId || null } : {}),
+      ...(discordUserId !== undefined ? { discordUserId: discordUserId || null } : {}),
+      ...(gameFilter !== undefined ? { gameFilter: gameFilter ? String(gameFilter).trim() : null } : {}),
+      ...(minViewers !== undefined ? { minViewers: Number(minViewers) || 0 } : {}),
+      ...(customColor !== undefined ? { customColor: customColor ? String(customColor).trim() : null } : {}),
+      ...(paused !== undefined ? { paused: Boolean(paused) } : {}),
       ...(customMessage !== undefined ? { customMessage: customMessage || null } : {}),
     });
 
@@ -137,7 +172,6 @@ export function createStreamerRouter(client: Client) {
     }
 
     const probe = await streamerService.fetchLiveStatus(streamer.platform, streamer.username);
-    // Simule ou envoie une notification de test si demandé
     const messageId = await streamerService.dispatchLiveAlert(streamer, {
       ...probe,
       isLive: true,
@@ -154,11 +188,11 @@ export function createStreamerRouter(client: Client) {
     });
   });
 
-  // Salons + Rôles de destination pour les listes déroulantes du Dashboard
-  router.get('/targets', (req: Request, res: Response): void => {
+  // Salons + Rôles + Membres de destination pour le Dashboard
+  router.get('/targets', async (req: Request, res: Response): Promise<void> => {
     const guild = client.guilds.cache.get(String(req.params.guildId));
     if (!guild) {
-      res.json({ channels: [], roles: [] });
+      res.json({ channels: [], roles: [], members: [] });
       return;
     }
 
@@ -173,7 +207,25 @@ export function createStreamerRouter(client: Client) {
       .map((r) => ({ id: r.id, name: r.name, color: r.hexColor }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    res.json({ channels, roles });
+    let members: Array<{ id: string; name: string; displayName: string; avatarUrl: string | null }> = [];
+    try {
+      const fetched = await guild.members.fetch({ limit: 100 }).catch(() => null);
+      if (fetched) {
+        members = fetched
+          .filter((m) => !m.user.bot)
+          .map((m) => ({
+            id: m.id,
+            name: m.user.username,
+            displayName: m.displayName,
+            avatarUrl: m.user.displayAvatarURL({ size: 64 }),
+          }))
+          .sort((a, b) => a.displayName.localeCompare(b.displayName));
+      }
+    } catch {
+      // Ignoré
+    }
+
+    res.json({ channels, roles, members });
   });
 
   return router;

@@ -149,6 +149,9 @@ class StreamerStorage {
     return {
       enabled: cfg.enabled,
       defaultChannelId: cfg.defaultChannelId,
+      twitchChannelId: cfg.twitchChannelId,
+      youtubeChannelId: cfg.youtubeChannelId,
+      kickChannelId: cfg.kickChannelId,
       liveRoleId: cfg.liveRoleId,
       autoLiveRoleEnabled: cfg.autoLiveRoleEnabled,
       totalStreamers: streamers.length,

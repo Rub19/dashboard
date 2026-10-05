@@ -110,6 +110,35 @@ export async function getValorantProfile(env, riotId, apiKeyOverride) {
   });
 }
 
+export async function getValorantPlayerMmr(env, region = "eu", name, tag, apiKeyOverride) {
+  const apiKey = apiKeyOverride || requireSecret(env, "HENRIK_API_KEY");
+  const cleanRegion = region || "eu";
+  const cleanName = safeText(name).trim();
+  const cleanTag = safeText(tag).trim().replace(/^#/, "");
+  if (!cleanName || !cleanTag) return "Unrated";
+
+  const mmrPath = `/valorant/v2/mmr/${cleanRegion}/${encodeURIComponent(cleanName)}/${encodeURIComponent(cleanTag)}`;
+  const headers = {};
+  if (apiKey) headers["Authorization"] = apiKey;
+
+  try {
+    const mmrResponse = await requestExternal(new URL(mmrPath, ORIGIN), {
+      env,
+      expectedOrigin: ORIGIN,
+      service: "tracker",
+      dedupeKey: `henrik:mmr:${cleanRegion}:${cleanName.toLowerCase()}:${cleanTag.toLowerCase()}`,
+      headers,
+      retries: 1
+    });
+
+    const currentData = mmrResponse?.data?.data?.current_data;
+    const rank = currentData?.currenttierpatched;
+    return rank && rank.toLowerCase() !== "unrated" ? rank : "Unrated";
+  } catch {
+    return "Unrated";
+  }
+}
+
 export async function getValorantMatches(env, riotId, mode, apiKeyOverride, startIndex = 0) {
   const apiKey = apiKeyOverride || requireSecret(env, "HENRIK_API_KEY");
   const [name, tag] = riotId.split("#");
@@ -118,6 +147,14 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride, star
   if (!account) return [];
 
   const region = account.region || "eu";
+
+  let myMmrRank = null;
+  try {
+    const rank = await getValorantPlayerMmr(env, region, name, tag, apiKey);
+    if (rank && rank.toLowerCase() !== "unrated" && rank.toLowerCase() !== "unranked") {
+      myMmrRank = rank;
+    }
+  } catch {}
 
   const matchesUrl = new URL(`/valorant/v3/matches/${region}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`, ORIGIN);
   // 25 is the practical ceiling this endpoint honours per request regardless
@@ -185,34 +222,46 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride, star
           name: safeText(p.name),
           tag: safeText(p.tag)
         }))),
-        players: players.map(p => Object.freeze({
-          team: safeText(p.team),
-          character: safeText(p.character),
-          name: safeText(p.name),
-          tag: safeText(p.tag),
-          currenttier_patched: safeText(p.currenttier_patched),
-          party_id: safeText(p.party_id),
-          inParty: Boolean(safeText(p.party_id)),
-          isMe: Boolean(me && p === me),
-          isPartyMember: Boolean(mePartyId && p !== me && safeText(p.party_id) === mePartyId),
-          assets: Object.freeze({
-            agent: Object.freeze({
-              small: resolveAgentImage(p.assets?.agent?.small, p.character, agentCatalogue)
+        players: players.map(p => {
+          const isMe = Boolean(me && p === me);
+          const rawTier = safeText(p.currenttier_patched);
+          const hasTier = rawTier && rawTier.toLowerCase() !== "unrated" && rawTier.toLowerCase() !== "unranked";
+          const currenttier_patched = hasTier ? rawTier : (isMe && myMmrRank ? myMmrRank : rawTier || "Unrated");
+          const roundCount = Math.max(1, Number(meta.rounds_played) || 1);
+          const damageMade = Number(p.damage_made) || 0;
+          const damageReceived = Number(p.damage_received) || 0;
+          const perfScore = Number(p.stats?.performance_score) || Number(p.performance_score) || undefined;
+
+          return Object.freeze({
+            team: safeText(p.team),
+            character: safeText(p.character),
+            name: safeText(p.name),
+            tag: safeText(p.tag),
+            currenttier_patched,
+            party_id: safeText(p.party_id),
+            inParty: Boolean(safeText(p.party_id)),
+            isMe,
+            isPartyMember: Boolean(mePartyId && p !== me && safeText(p.party_id) === mePartyId),
+            assets: Object.freeze({
+              agent: Object.freeze({
+                small: resolveAgentImage(p.assets?.agent?.small, p.character, agentCatalogue)
+              })
+            }),
+            stats: Object.freeze({
+              score: Number(p.stats?.score) || 0,
+              kills: Number(p.stats?.kills) || 0,
+              deaths: Number(p.stats?.deaths) || 0,
+              assists: Number(p.stats?.assists) || 0,
+              headshots: Number(p.stats?.headshots) || 0,
+              bodyshots: Number(p.stats?.bodyshots) || 0,
+              legshots: Number(p.stats?.legshots) || 0,
+              damageMade,
+              damageReceived,
+              adr: Math.round(damageMade / roundCount) || 0,
+              performanceScore: perfScore
             })
-          }),
-          stats: Object.freeze({
-            score: Number(p.stats?.score) || 0,
-            kills: Number(p.stats?.kills) || 0,
-            deaths: Number(p.stats?.deaths) || 0,
-            assists: Number(p.stats?.assists) || 0,
-            headshots: Number(p.stats?.headshots) || 0,
-            bodyshots: Number(p.stats?.bodyshots) || 0,
-            legshots: Number(p.stats?.legshots) || 0,
-            damageMade: Number(p.damage_made) || 0,
-            damageReceived: Number(p.damage_received) || 0,
-            adr: Number(p.damage_made) / Math.max(1, Number(meta.rounds_played) || 1) || 0
-          })
-        }))
+          });
+        })
       }),
       metadata: Object.freeze({
         modeName: safeText(meta.mode),
@@ -226,7 +275,8 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride, star
           roundsPlayed: Number.isFinite(roundsPlayed) ? roundsPlayed : null
         }),
         timestamp: safeText(new Date((meta.game_start || 0) * 1000).toISOString()),
-        gameLengthSeconds: Number.isFinite(Number(meta.game_length)) ? Number(meta.game_length) : null
+        gameLengthSeconds: Number.isFinite(Number(meta.game_length)) ? Number(meta.game_length) : null,
+        gameVersion: safeText(meta.game_version)
       }),
       segments: Object.freeze([{
         type: "overview",
@@ -235,10 +285,13 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride, star
           deaths: { value: stats.deaths || 0, displayValue: String(stats.deaths || 0) },
           assists: { value: stats.assists || 0, displayValue: String(stats.assists || 0) },
           score: { value: stats.score || 0, displayValue: String(stats.score || 0) },
-          scorePerRound: { value: (stats.score || 0) / Math.max(1, meta.rounds_played || 1), displayValue: String(Math.round((stats.score || 0) / Math.max(1, meta.rounds_played || 1))) },
+          scorePerRound: { value: Math.round((stats.score || 0) / Math.max(1, meta.rounds_played || 1)), displayValue: `${Math.round((stats.score || 0) / Math.max(1, meta.rounds_played || 1))} ACS` },
+          ...(Number.isFinite(Number(me?.stats?.performance_score || me?.performance_score)) ? {
+            performanceScore: { value: Number(me.stats?.performance_score || me.performance_score), displayValue: String(Number(me.stats?.performance_score || me.performance_score)) }
+          } : {}),
           headshotsPercentage: { value: ((stats.headshots || 0) / Math.max(1, (stats.headshots || 0) + (stats.bodyshots || 0) + (stats.legshots || 0))) * 100, displayValue: String(Math.round(((stats.headshots || 0) / Math.max(1, (stats.headshots || 0) + (stats.bodyshots || 0) + (stats.legshots || 0))) * 100)) },
           damageDeltaPerRound: { value: ((me?.damage_made || 0) - (me?.damage_received || 0)) / Math.max(1, meta.rounds_played || 1), displayValue: String(Math.round(((me?.damage_made || 0) - (me?.damage_received || 0)) / Math.max(1, meta.rounds_played || 1))) },
-          adr: { value: (Number(me?.damage_made) || 0) / Math.max(1, meta.rounds_played || 1), displayValue: String(Math.round((Number(me?.damage_made) || 0) / Math.max(1, meta.rounds_played || 1))) }
+          adr: { value: Math.round((Number(me?.damage_made) || 0) / Math.max(1, meta.rounds_played || 1)), displayValue: String(Math.round((Number(me?.damage_made) || 0) / Math.max(1, meta.rounds_played || 1))) }
         })
       }])
     });

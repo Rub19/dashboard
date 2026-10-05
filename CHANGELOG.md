@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.17 — 2026-10-05
+
+**Tracker Valorant : Rangs réels MMR, score de performance et formatage des stats**
+
+- Tracker Valorant : affichage des vrais rangs compétitifs (MMR) pour tous les joueurs au lieu de « Non classé » dans les modes non-classés et Swiftplay via la route Worker /api/stats/valorant-mmr (résolution par lots de 10 joueurs).
+- Scores & Performances : correction des colonnes PERF et TRS qui affichaient « — » en restaurant la détection de version et un repli calculé sur le score de combat moyen (ACS).
+- Formatage des statistiques : dégâts moyens par round (ADR) arrondis à l'entier et calcul exact du pourcentage de tirs à la tête (HS%).
+- Worker API : nouveau service getValorantPlayerMmr avec déduplication, cache edge et enrichissement automatique de la session de jeu.
+
 ## v1.55.16 — 2026-10-05
 
 **Application iOS : Bibliothèque d'avatars, statut de présence et renommage d'émojis**

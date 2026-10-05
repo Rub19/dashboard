@@ -44208,6 +44208,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_16_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_16_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_16_de);
 
+const v1_55_17_fr: ChangelogEntry = {
+  version: "v1.55.17",
+  date: "2026-10-05",
+  title: "Tracker Valorant : Rangs réels MMR, score de performance et formatage des stats",
+  items: [
+    "Tracker Valorant : affichage des vrais rangs compétitifs (MMR) pour tous les joueurs au lieu de « Non classé » dans les modes non-classés et Swiftplay via la route Worker /api/stats/valorant-mmr (résolution par lots de 10 joueurs).",
+    "Scores & Performances : correction des colonnes PERF et TRS qui affichaient « — » en restaurant la détection de version et un repli calculé sur le score de combat moyen (ACS).",
+    "Formatage des statistiques : dégâts moyens par round (ADR) arrondis à l'entier et calcul exact du pourcentage de tirs à la tête (HS%).",
+    "Worker API : nouveau service getValorantPlayerMmr avec déduplication, cache edge et enrichissement automatique de la session de jeu.",
+  ],
+};
+
+const v1_55_17_en: ChangelogEntry = {
+  version: "v1.55.17",
+  date: "2026-10-05",
+  title: "Valorant Tracker: Real MMR ranks resolution, performance score and stats formatting",
+  items: [
+    "Valorant Tracker: display real competitive ranks (MMR) for all players instead of 'Unranked' in non-competitive and Swiftplay modes via the Worker /api/stats/valorant-mmr route (batched resolution up to 10 players).",
+    "Scores & Performance: fixed PERF and TRS columns displaying '—' by properly detecting game versions and providing smooth fallback to Combat Score (ACS).",
+    "Stats formatting: average damage per round (ADR) rounded to whole integer and accurate headshot percentage (HS%) calculation.",
+    "Worker API: added getValorantPlayerMmr service with edge caching, deduplication and automatic game version enrichment.",
+  ],
+};
+
+const v1_55_17_es: ChangelogEntry = {
+  version: "v1.55.17",
+  date: "2026-10-05",
+  title: "Tracker Valorant: Rangos MMR reales, puntuación de rendimiento y formateo de estadísticas",
+  items: [
+    "Tracker Valorant: visualización de rangos competitivos reales (MMR) en lugar de 'Sin clasificar' en modos no clasificatorios y Swiftplay mediante la ruta Worker /api/stats/valorant-mmr (resolución por lotes de 10 jugadores).",
+    "Puntuación y rendimiento: corrección de las columnas PERF y TRS que mostraban '—' con detección de versión y repliegue al Combat Score (ACS).",
+    "Formato de estadísticas: daño medio por ronda (ADR) redondeado y cálculo exacto del porcentaje de disparos a la cabeza (HS%).",
+    "Worker API: nuevo servicio getValorantPlayerMmr con caché perimetral, desduplicación y enriquecimiento de la versión del juego.",
+  ],
+};
+
+const v1_55_17_de: ChangelogEntry = {
+  version: "v1.55.17",
+  date: "2026-10-05",
+  title: "Valorant-Tracker: Echte MMR-Ränge, Leistungsbewertung und Statistikformatierung",
+  items: [
+    "Valorant-Tracker: Anzeige der echten Ranglisten-Ränge (MMR) statt 'Ohne Wertung' in Modi wie Swiftplay über den Worker-Endpunkt /api/stats/valorant-mmr (Batching von bis zu 10 Spielern).",
+    "Scores & Leistung: Behebung der '—' Anzeige in den Spalten PERF und TRS durch Erkennung der Spielversion und Fallback auf den durchschnittlichen Kampf-Score (ACS).",
+    "Statistik-Formatierung: Durchschnittsschaden pro Runde (ADR) gerundet und genaue Berechnung der Kopfschussquote (HS%).",
+    "Worker API: Neuer getValorantPlayerMmr-Dienst mit Edge-Caching, Deduplizierung und Anreicherung der Spielversion.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_17_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_17_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_17_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_17_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

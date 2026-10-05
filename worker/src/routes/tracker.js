@@ -5,7 +5,7 @@ import {
   getTrackerProfile,
   getTrackerMatches,
 } from "../services/tracker-client.js";
-import { getValorantProfile, getValorantMatches, getValorantHistory } from "../services/henrik-client.js";
+import { getValorantProfile, getValorantMatches, getValorantHistory, getValorantPlayerMmr } from "../services/henrik-client.js";
 import { getLolProfile, getLolMatches, getTftMatches } from "../services/riot-client.js";
 import { getLolRotation, getValorantFeaturedStore } from "../services/game-store-client.js";
 import { getUserProviderCredential } from "../services/supabase-client.js";
@@ -117,6 +117,40 @@ export async function trackerValorantMatchesRoute({ env, url, auth, request }) {
   const loader = async () => getValorantMatches(env, riotId, mode, await ownKeyHenrik(env, auth, request), startIndex);
   const result = await cachedLoad(`tracker:valorant:matches:${name.toLowerCase()}:${tag.toLowerCase()}:${mode}:${startIndex}`, 600, loader);
   return routeResult(result.data, { source: "henrikdev", cached: result.cached });
+}
+
+export async function trackerValorantMmrRoute({ env, url, auth, request }) {
+  assertAllowedQuery(url, ["name", "tag", "players", "region", "_t", "t", "force"]);
+  const region = (queryText(url, "region", { max: 8, required: false }) || "eu").toLowerCase();
+  const apiKey = await ownKeyHenrik(env, auth, request);
+  
+  const playersParam = queryText(url, "players", { max: 1000, required: false });
+  if (playersParam) {
+    const list = playersParam.split(",").slice(0, 10).map(s => s.trim()).filter(Boolean);
+    const ranks = {};
+    await Promise.all(
+      list.map(async (entry) => {
+        const delimiter = entry.includes("#") ? "#" : ":";
+        const parts = entry.split(delimiter);
+        if (parts.length < 2) return;
+        const pName = parts[0].trim();
+        const pTag = parts[1].trim().replace(/^#/, "");
+        const key = `${pName.toLowerCase()}#${pTag.toLowerCase()}`;
+        try {
+          const rank = await getValorantPlayerMmr(env, region, pName, pTag, apiKey);
+          ranks[key] = rank || "Unrated";
+        } catch {
+          ranks[key] = "Unrated";
+        }
+      })
+    );
+    return routeResult({ ranks }, { source: "henrikdev", cached: true });
+  }
+
+  const name = queryText(url, "name", { pattern: PATTERNS.playerName, max: 32 });
+  const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 10 }).replace(/^#/, "");
+  const rank = await getValorantPlayerMmr(env, region, name, tag, apiKey);
+  return routeResult({ rank: rank || "Unrated" }, { source: "henrikdev", cached: true });
 }
 
 export async function trackerLolMatchesRoute({ env, url, auth, request }) {

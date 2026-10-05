@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   MoreVertical,
@@ -12,15 +12,19 @@ import {
 } from "@/components/icons/ph";
 import {
   type ValorantMatch,
+  type ValorantPlayer,
   getAgentIcon,
   formatTimeAgo,
   calculateMatchRankBadge,
-  getMatchHighlightBadges, matchScoreValue } from "@/lib/valorant-tracker";
+  getMatchHighlightBadges,
+  matchScoreValue,
+} from "@/lib/valorant-tracker";
 import { getValorantRankStyle } from "@/components/RiotGamingCard";
 import { computePartyMap } from "@/lib/party-helper";
 import { cn } from "@/lib/utils";
 import { EASE_OUT } from "@/lib/ease";
 import { useSettings } from "@/components/SettingsProvider";
+import { fetchWorker } from "@/lib/api";
 
 interface ValorantMatchRowProps {
   match: ValorantMatch;
@@ -34,8 +38,48 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
   const osReducedMotion = useReducedMotion();
   const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
 
-  const players = match.scoreboard?.players || [];
+  const players = useMemo(() => match.scoreboard?.players || [], [match.scoreboard?.players]);
   const partyMap = computePartyMap(players);
+
+  const [extraRanks, setExtraRanks] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!expanded) return;
+    const unrankedPlayers = players.filter((p) => {
+      const key = `${p.name.toLowerCase()}#${p.tag.toLowerCase()}`;
+      if (extraRanks[key]) return false;
+      const r = p.currenttier_patched;
+      return !r || r.toLowerCase() === "unrated" || r.toLowerCase() === "unranked";
+    });
+
+    if (unrankedPlayers.length === 0) return;
+
+    let cancelled = false;
+    const loadRanks = async () => {
+      try {
+        const playersParam = unrankedPlayers.slice(0, 10).map((p) => `${p.name}#${p.tag}`).join(",");
+        const res = await fetchWorker(`/api/stats/valorant-mmr?players=${encodeURIComponent(playersParam)}`);
+        const ranks = (res?.data?.ranks || res?.ranks || {}) as Record<string, string>;
+        if (!cancelled && Object.keys(ranks).length > 0) {
+          setExtraRanks((prev) => ({ ...prev, ...ranks }));
+        }
+      } catch {}
+    };
+
+    loadRanks();
+    return () => {
+      cancelled = true;
+    };
+  }, [expanded, players, extraRanks]);
+
+  const getPlayerRank = (p: ValorantPlayer) => {
+    const key = `${p.name.toLowerCase()}#${p.tag.toLowerCase()}`;
+    const extra = extraRanks[key];
+    if (extra && extra.toLowerCase() !== "unrated" && extra.toLowerCase() !== "unranked") return extra;
+    const raw = p.currenttier_patched;
+    if (raw && raw.toLowerCase() !== "unrated" && raw.toLowerCase() !== "unranked") return raw;
+    return extra || raw || "Unrated";
+  };
 
   const meta = match.metadata;
   const isSummaryOnly = Boolean(meta.summaryOnly);
@@ -52,11 +96,14 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
   const kd = deaths === 0 ? kills : Number((kills / deaths).toFixed(2));
   const hsPercent = Math.round(match.segments?.[0]?.stats?.headshotsPercentage?.value ?? 0);
   const damageDelta = Math.round(match.segments?.[0]?.stats?.damageDeltaPerRound?.value ?? 0);
-  // Depuis le patch 13.06 : score de performance (0-500) fourni par l'API, « — » s'il est absent (jamais recalculé).
+
+  const myPlayer = players.find((p) => p.isMe) || players[0];
+  const myStats = myPlayer?.stats;
+  const myScoreCalc = myStats?.score && meta.score.roundsPlayed ? Math.round(myStats.score / meta.score.roundsPlayed) : null;
   const scoreEntry = matchScoreValue(match);
-  const isPerformance = scoreEntry.system === "performance";
+  const isPerformance = scoreEntry.system === "performance" && scoreEntry.value !== null;
   const scoreLabel = isPerformance ? "PERF" : "ACS";
-  const scoreText = scoreEntry.value === null ? "—" : String(Math.round(scoreEntry.value));
+  const scoreText = scoreEntry.value !== null ? String(Math.round(scoreEntry.value)) : (myScoreCalc !== null ? String(myScoreCalc) : "—");
 
   const rankBadge = calculateMatchRankBadge(match);
   const highlights = getMatchHighlightBadges(match);
@@ -68,8 +115,6 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
   const teamAPlayers = players.filter((p) => p.team === "Blue" || p.team === "Team A");
   const teamBPlayers = players.filter((p) => p.team === "Red" || p.team === "Team B");
 
-  const myPlayer = players.find((p) => p.isMe) || players[0];
-  const myStats = myPlayer?.stats;
   const headshots = myStats?.headshots ?? 0;
   const bodyshots = myStats?.bodyshots ?? 0;
   const legshots = myStats?.legshots ?? 0;
@@ -90,9 +135,9 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
   const matchAvgRank = (() => {
     if (isSummaryOnly) return "Historique archivé";
     const valid = players
-      .map((p) => p.currenttier_patched)
+      .map(getPlayerRank)
       .filter((r): r is string => Boolean(r && r.toLowerCase() !== "unrated" && r.toLowerCase() !== "unranked"));
-    return valid.length > 0 ? (valid[Math.floor(valid.length / 2)] || valid[0]) : "Unranked";
+    return valid.length > 0 ? (valid[Math.floor(valid.length / 2)] || valid[0]) : "Non classé";
   })();
 
   return (
@@ -513,9 +558,9 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                   },
                 ].map((teamGroup, gi) => {
                   const rankedGroup = teamGroup.players
-                    .map((p) => p.currenttier_patched)
+                    .map(getPlayerRank)
                     .filter((r): r is string => Boolean(r && r.toLowerCase() !== "unrated" && r.toLowerCase() !== "unranked"));
-                  const avgRank = rankedGroup.length > 0 ? (rankedGroup[Math.floor(rankedGroup.length / 2)] || rankedGroup[0]) : "Unranked";
+                  const avgRank = rankedGroup.length > 0 ? (rankedGroup[Math.floor(rankedGroup.length / 2)] || rankedGroup[0]) : "Non classé";
 
                   return (
                     <div key={gi} className="space-y-1.5 min-w-[800px]">
@@ -555,6 +600,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                               return b.stats.kills - a.stats.kills;
                             })
                             .map((p, pi) => {
+                            const playerRank = getPlayerRank(p);
                             const pKd =
                               p.stats.deaths === 0
                                 ? p.stats.kills
@@ -562,10 +608,11 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                             const pDiff = p.stats.kills - p.stats.deaths;
                             const pIcon = getAgentIcon(p.character, p.assets?.agent?.small);
                             const pParty = partyMap.getParty(p, pi + (gi * 5));
+                            const pScorePerRound = p.stats.score ? Math.round(p.stats.score / (meta.score.roundsPlayed || 6)) : null;
                             const pAcs = isPerformance
-                              ? p.stats.performanceScore ?? null
-                              : p.stats.score ? Math.round(p.stats.score / (meta.score.roundsPlayed || 6)) : 0;
-                            const pTrs = pAcs === null || isPerformance ? null : Math.max(100, Math.round(pAcs * 2.2 + p.stats.kills * 12));
+                              ? p.stats.performanceScore ?? pScorePerRound
+                              : pScorePerRound ?? 0;
+                            const pTrs = pAcs === null ? null : Math.max(100, Math.min(999, Math.round(pAcs * 2.2 + p.stats.kills * 12)));
                             const pDda = (p.stats.damageMade || 0) - (p.stats.damageReceived || 0);
 
                             // Account level calculation
@@ -654,9 +701,11 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                 <td className="py-2 text-center">
                                   <span className={cn(
                                     "inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold shadow-xs",
-                                    getValorantRankStyle(p.currenttier_patched)
+                                    getValorantRankStyle(playerRank)
                                   )}>
-                                    {p.currenttier_patched || "Ascendant 1"}
+                                    {playerRank && playerRank.toLowerCase() !== "unrated" && playerRank.toLowerCase() !== "unranked"
+                                      ? playerRank
+                                      : "Non classé"}
                                   </span>
                                 </td>
 
@@ -717,12 +766,18 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
 
                                 {/* ADR */}
                                 <td className="py-2 text-center font-mono text-[var(--text-primary)]/85">
-                                  {typeof p.stats.adr === "number" ? p.stats.adr : "—"}
+                                  {typeof p.stats.adr === "number" ? Math.round(p.stats.adr) : "—"}
                                 </td>
 
                                 {/* HS% */}
                                 <td className="py-2 text-center font-mono font-bold text-[var(--text-primary)]">
-                                  {typeof p.stats.headshots === "number" ? `${p.stats.headshots}%` : "—"}
+                                  {(() => {
+                                    const totalShots = (p.stats.headshots || 0) + (p.stats.bodyshots || 0) + (p.stats.legshots || 0);
+                                    if (totalShots > 0) {
+                                      return `${Math.round(((p.stats.headshots || 0) / totalShots) * 100)}%`;
+                                    }
+                                    return typeof p.stats.headshots === "number" && p.stats.headshots > 0 ? `${p.stats.headshots}%` : "—";
+                                  })()}
                                 </td>
                               </tr>
                             );

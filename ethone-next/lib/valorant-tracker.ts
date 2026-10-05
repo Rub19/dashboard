@@ -1,3 +1,5 @@
+import { fetchWorker } from "@/lib/api";
+
 export interface ValorantPlayerStats {
   score: number;
   kills: number;
@@ -420,7 +422,24 @@ export async function fetchPlayerRankWithKey(
     } catch {}
   }
 
-  if (!apiKey) return "Unrated";
+  if (!apiKey) {
+    try {
+      const res = await fetchWorker(
+        `/api/stats/valorant-mmr?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}&region=${encodeURIComponent(affinity)}`
+      );
+      const rank = (res?.data?.rank || res?.rank) as string | undefined;
+      if (rank && rank !== "0" && rank.toLowerCase() !== "unrated" && rank.toLowerCase() !== "unranked") {
+        rankCache.set(cacheKey, rank);
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem(cacheKey, JSON.stringify({ rank, timestamp: Date.now() }));
+          } catch {}
+        }
+        return rank;
+      }
+    } catch {}
+    return "Unrated";
+  }
 
   try {
     const headers: Record<string, string> = { Authorization: apiKey };
@@ -433,7 +452,7 @@ export async function fetchPlayerRankWithKey(
         currentData?.currenttierpatched ||
         (currentData?.currenttier ? getValorantTierName(currentData.currenttier) : "Unrated");
 
-      if (rank && rank !== "0" && rank.toLowerCase() !== "unrated") {
+      if (rank && rank !== "0" && rank.toLowerCase() !== "unrated" && rank.toLowerCase() !== "unranked") {
         rankCache.set(cacheKey, rank);
         if (typeof window !== "undefined") {
           try {
@@ -452,14 +471,16 @@ export async function enrichMatchesWithRealRanks(
   matches: ValorantMatch[],
   apiKey?: string | null
 ): Promise<ValorantMatch[]> {
-  if (!apiKey || matches.length === 0) return matches;
+  if (matches.length === 0) return matches;
 
   // Extract unique players needing ranks
   const uniquePlayers = new Map<string, { name: string; tag: string }>();
   matches.forEach((m) => {
     (m.scoreboard?.players || []).forEach((p) => {
-      if (!p.currenttier_patched || p.currenttier_patched.toLowerCase() === "unrated") {
-        const key = `${p.name.toLowerCase()}#${p.tag.toLowerCase()}`;
+      const key = `${p.name.toLowerCase()}#${p.tag.toLowerCase()}`;
+      const cached = rankCache.get(`ethone-valo-mmr:${key}`);
+      if (cached && cached.toLowerCase() !== "unrated" && cached.toLowerCase() !== "unranked") return;
+      if (!p.currenttier_patched || p.currenttier_patched.toLowerCase() === "unrated" || p.currenttier_patched.toLowerCase() === "unranked") {
         if (!uniquePlayers.has(key)) {
           uniquePlayers.set(key, { name: p.name, tag: p.tag });
         }
@@ -467,29 +488,53 @@ export async function enrichMatchesWithRealRanks(
     });
   });
 
-  if (uniquePlayers.size === 0) return matches;
-
-  // Fetch in concurrent batches of 4
-  const playerList = Array.from(uniquePlayers.values());
-  const batchSize = 4;
-  for (let i = 0; i < playerList.length; i += batchSize) {
-    const batch = playerList.slice(i, i + batchSize);
-    await Promise.all(
-      batch.map(async (p) => {
-        const rank = await fetchPlayerRankWithKey(p.name, p.tag, apiKey);
-        if (rank && rank.toLowerCase() !== "unrated") {
-          rankCache.set(`ethone-valo-mmr:${p.name.toLowerCase()}:${p.tag.toLowerCase()}`, rank);
-        }
-      })
-    );
+  if (uniquePlayers.size > 0) {
+    const playerList = Array.from(uniquePlayers.values());
+    if (!apiKey) {
+      // Use Worker batch MMR route for fast, rate-limited lookups
+      const batchSize = 10;
+      for (let i = 0; i < playerList.length; i += batchSize) {
+        const batch = playerList.slice(i, i + batchSize);
+        const playersParam = batch.map((p) => `${p.name}#${p.tag}`).join(",");
+        try {
+          const res = await fetchWorker(`/api/stats/valorant-mmr?players=${encodeURIComponent(playersParam)}`);
+          const ranks = (res?.data?.ranks || res?.ranks || {}) as Record<string, string>;
+          for (const [k, rank] of Object.entries(ranks)) {
+            if (typeof rank === "string" && rank.toLowerCase() !== "unrated" && rank.toLowerCase() !== "unranked") {
+              const key = `ethone-valo-mmr:${k.toLowerCase()}`;
+              rankCache.set(key, rank);
+              if (typeof window !== "undefined") {
+                try {
+                  localStorage.setItem(key, JSON.stringify({ rank, timestamp: Date.now() }));
+                } catch {}
+              }
+            }
+          }
+        } catch {}
+      }
+    } else {
+      // Fetch in concurrent batches of 4
+      const batchSize = 4;
+      for (let i = 0; i < playerList.length; i += batchSize) {
+        const batch = playerList.slice(i, i + batchSize);
+        await Promise.all(
+          batch.map(async (p) => {
+            const rank = await fetchPlayerRankWithKey(p.name, p.tag, apiKey);
+            if (rank && rank.toLowerCase() !== "unrated" && rank.toLowerCase() !== "unranked") {
+              rankCache.set(`ethone-valo-mmr:${p.name.toLowerCase()}#${p.tag.toLowerCase()}`, rank);
+            }
+          })
+        );
+      }
+    }
   }
 
   // Clone matches with resolved ranks
   return matches.map((m) => {
     if (!m.scoreboard?.players) return m;
     const players = m.scoreboard.players.map((p) => {
-      const cached = rankCache.get(`ethone-valo-mmr:${p.name.toLowerCase()}:${p.tag.toLowerCase()}`);
-      if (cached && cached.toLowerCase() !== "unrated") {
+      const cached = rankCache.get(`ethone-valo-mmr:${p.name.toLowerCase()}#${p.tag.toLowerCase()}`);
+      if (cached && cached.toLowerCase() !== "unrated" && cached.toLowerCase() !== "unranked") {
         return {
           ...p,
           currenttier_patched: cached,

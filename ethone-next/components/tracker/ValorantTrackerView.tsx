@@ -20,6 +20,7 @@ import {
   type ValorantMatch,
   groupMatchesByDate,
   fetchValorantMatchesDirect,
+  enrichMatchesWithRealRanks,
   VALORANT_QUEUES, matchScoreValue, PERFORMANCE_SCORE_MAX } from "@/lib/valorant-tracker";
 import ValorantMatchRow from "@/components/tracker/ValorantMatchRow";
 import ValorantDayHeader from "@/components/tracker/ValorantDayHeader";
@@ -123,6 +124,14 @@ export default function ValorantTrackerView() {
           } catch {
             validMatches = [];
           }
+        }
+
+        if (validMatches.length > 0) {
+          try {
+            const topSlice = validMatches.slice(0, 3);
+            const enrichedTop = await enrichMatchesWithRealRanks(topSlice, henrikApiKey);
+            validMatches = [...enrichedTop, ...validMatches.slice(3)];
+          } catch {}
         }
 
         setMatches(validMatches);

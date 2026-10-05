@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-05, version 1.55.16)
+# ETHONE — passation à la prochaine IA (état au 2026-10-05, version 1.55.17)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 
@@ -111,7 +111,7 @@ Le NAS n'est joignable que depuis le réseau de l'utilisateur et demande son mot
 ### Worker (`worker`)
 ```bash
 cd worker
-npm test                           # 281 tests
+npm test                           # 283 tests
 npm run check                      # syntaxe
 npx wrangler deploy                # déployer
 npx wrangler tail --format pretty  # journaux en direct (ex. connexions OAuth, Data Dragon)
@@ -140,7 +140,7 @@ git log --oneline -10
 - **Commits** : `git -c user.name="Rub19" -c user.email="rub19.mailpro@gmail.com" commit -m "Migration Next.js : vX.Y.Z - description"`, en français, **sans ligne Co-Authored-By d'IA**. Pousser directement sur `main`.
 - **Ne jamais committer** `discord-bot/scripts/etho-avatar-animated.gif` ni `.mcp.json` (toujours `git reset -q` sur ces deux fichiers avant le commit).
 - **À chaque lot** : `cd ethone-next && node scripts/release.js <version> <AAAA-MM-JJ> <fichier.json>` (JSON `{fr|en|es|de: {title, items[]}}` : met à jour `package.json`, `CHANGELOG.md` et `data/changelog.ts`), puis `npm install --package-lock-only`.
-- **Vérifications avant commit** (dans cet ordre) : `npm run build` (AVANT `tsc`, sinon d'anciens types `.next` font échouer `tsc`), `npx tsc --noEmit`, `npm run lint` (0 erreur, 73 avertissements attendus), `npm run test:unit` (296 tests), puis depuis la racine `node scripts/audit-security.mjs` et `node ./scripts/precommit-upload-check.mjs`. Bot : `cd discord-bot && npx tsc --noEmit`. Worker : `npm test` (281 tests).
+- **Vérifications avant commit** (dans cet ordre) : `npm run build` (AVANT `tsc`, sinon d'anciens types `.next` font échouer `tsc`), `npx tsc --noEmit`, `npm run lint` (0 erreur, 75 avertissements attendus), `npm run test:unit` (298 tests), puis depuis la racine `node scripts/audit-security.mjs` et `node ./scripts/precommit-upload-check.mjs`. Bot : `cd discord-bot && npx tsc --noEmit`. Worker : `npm test` (283 tests).
 - **Secrets** : ne jamais accepter, coller, afficher ni utiliser un secret fourni en clair. Donner à l'utilisateur une commande qui le manipule sans l'afficher.
 - **Interface** : appliquer le skill `apple-design` (ressorts critiquement amortis, menus ancrés, retour au clic, réduction des animations respectée, jetons de thème plutôt que couleurs en dur, lisible en thème clair Arctic).
 
@@ -177,6 +177,7 @@ git log --oneline -10
 - Animations UI & Flyouts du Dock (v1.55.13) : correction complète des saccades et bugs d'animations. Suppression du wildcard CSS (* transition-duration) qui perturbait les calculs transform RAF de Framer Motion en mode animations réduites. Ajustement au pixel près des boutons switch Apple (h-5.5 w-10, knob h-4.5 w-4.5 avec translation x: 18, suppression du slide intempestif au montage via initial={false}). Fluidification du slider volume avec suppression des délais CSS au glissement. Correction du cycle d'unmount dans AnimatePresence pour que la météo, le lanceur, le minuteur Focus et le centre de contrôle jouent leur animation de sortie fluide sans coupure visuelle.
 - Mission Control & Dock (v1.55.15) : refonte intégrale de Mission Control en motion design Sonoma (grille Exposé avec mise à l'échelle responsive, onglets de filtrage par catégorie, barre de sélection des espaces virtuels avec indicateurs d'états, lanceurs rapides pour les espaces vides) et correction de la double fenêtre d'alerte lors d'un clic sur la pastille de notification du dock.
 - Application iOS & Parité Mobile (v1.55.16) : parité complète de l'application iOS (SwiftUI) avec le profil web et le serveur Discord : intégration de la bibliothèque d'avatars ETHONE Originals et populaires dans ProfileView avec feuille de sélection visuelle dédiée, résolution automatique dans AvatarView des chemins relatifs /avatars/... vers https://ethone.dev, sélecteur de statut de présence (en ligne, focus, occupé, absent, invisible) avec pastilles de couleur, message et émoji de statut personnalisés avec raccourcis rapides, champ de bio, saisie d'URL d'avatar externe, renommage d'émojis Discord (PATCH /emojis/{id}) avec invite textuelle native dans AdminEngine, et prise en charge unifiée des métadonnées étendues de profil dans la route /api/profile du Worker.
+- Tracker Valorant (v1.55.17) : résolution et affichage des rangs réels (MMR) pour tous les joueurs au lieu de « Non classé » dans les modes non-compétitifs (Swiftplay, etc.) via la nouvelle route Cloudflare Worker `/api/stats/valorant-mmr` avec batching jusqu'à 10 joueurs. Correction des colonnes PERF et TRS qui affichaient « — » en restaurant la détection de version Henrik et un repli calculé sur le score de combat (ACS). Formatage du dégât par round (ADR) arrondi à l'entier et calcul exact du pourcentage de tirs à la tête (HS%).
 
 ## Reste à faire (par priorité)
 1. **Bot animé, vérification réelle** : regarder dans un vrai salon qu'une réponse du bot affiche bien les émojis animés (29 émojis d'application synchronisés au dernier démarrage) et qu'une arrivée de membre envoie la carte GIF (interrupteur et aperçu GIF intégrés sur le site).

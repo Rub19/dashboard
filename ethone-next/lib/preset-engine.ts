@@ -422,7 +422,10 @@ export function loadCustomPresets(): Preset[] {
 export function saveCustomPresets(presets: Preset[]) {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(CUSTOM_PRESETS_KEY, JSON.stringify(presets));
+    const json = JSON.stringify(presets);
+    localStorage.setItem(CUSTOM_PRESETS_KEY, json);
+    window.dispatchEvent(new StorageEvent("storage", { key: CUSTOM_PRESETS_KEY, newValue: json }));
+    window.dispatchEvent(new CustomEvent("ethone:raw-key-changed", { detail: { key: CUSTOM_PRESETS_KEY, value: json } }));
   } catch {
     /* silent */
   }

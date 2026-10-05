@@ -119,6 +119,9 @@ export function getStoredDailyGoal(): number {
 export function saveStoredDailyGoal(minutes: number): void {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(FOCUS_DAILY_GOAL_KEY, String(minutes));
+    const val = String(minutes);
+    localStorage.setItem(FOCUS_DAILY_GOAL_KEY, val);
+    window.dispatchEvent(new StorageEvent("storage", { key: FOCUS_DAILY_GOAL_KEY, newValue: val }));
+    window.dispatchEvent(new CustomEvent("ethone:raw-key-changed", { detail: { key: FOCUS_DAILY_GOAL_KEY, value: val } }));
   } catch {}
 }

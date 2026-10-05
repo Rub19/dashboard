@@ -73,13 +73,20 @@ export default function FocusHistoryView() {
     const handleStorage = (e: StorageEvent) => {
       if (e.key === "ethone-focus-history") loadHistory();
     };
+    const handleRaw = (e: Event) => {
+      const k = (e as CustomEvent<{ key?: string }>)?.detail?.key;
+      if (k === "ethone-focus-history") loadHistory();
+    };
+
     const handleCompleted = () => loadHistory();
 
     window.addEventListener("storage", handleStorage);
     window.addEventListener("v8:focus-session-completed", handleCompleted);
+    window.addEventListener("ethone:raw-key-changed", handleRaw);
     return () => {
       window.removeEventListener("storage", handleStorage);
       window.removeEventListener("v8:focus-session-completed", handleCompleted);
+      window.removeEventListener("ethone:raw-key-changed", handleRaw);
     };
   }, [loadHistory]);
 

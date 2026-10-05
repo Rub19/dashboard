@@ -44363,4 +44363,53 @@ CHANGELOG_BY_LANG.en.unshift(v12855_en);
 CHANGELOG_BY_LANG.es.unshift(v12855_es);
 CHANGELOG_BY_LANG.de.unshift(v12855_de);
 
+const v12856_fr: ChangelogEntry = {
+  version: "v1.55.20",
+  date: "2026-10-05",
+  title: "Synchronisation instantanée du Focus et des Préréglages",
+  items: [
+    "Suppression du délai d'attente (3s) dans RawKeySync au profit d'un déclenchement événementiel instantané (storage, v8:focus-session-completed et ethone:raw-key-changed)",
+    "Rafraîchissement direct des écrans d'historique et d'objectifs Focus lors des sessions terminées et modifications d'objectifs",
+    "Écoute temps réel des changements de préréglages personnalisés dans les paramètres pour affichage multi-onglets immédiat",
+  ],
+};
+
+const v12856_en: ChangelogEntry = {
+  version: "v1.55.20",
+  date: "2026-10-05",
+  title: "Instant Focus and Presets Synchronization",
+  items: [
+    "Removed the 3s polling latency in RawKeySync in favor of immediate event-driven syncing (storage, v8:focus-session-completed, and ethone:raw-key-changed)",
+    "Instant refresh of Focus history and goal progress views upon completed sessions and goal modifications",
+    "Real-time event listening for custom presets in Settings for immediate multi-tab sync",
+  ],
+};
+
+const v12856_es: ChangelogEntry = {
+  version: "v1.55.20",
+  date: "2026-10-05",
+  title: "Sincronización instantánea de Enfoque y Ajustes preestablecidos",
+  items: [
+    "Eliminación de la latencia de 3 segundos en RawKeySync a favor de sincronización instantánea dirigida por eventos",
+    "Actualización directa de las vistas de historial y objetivos de Focus tras sesiones completadas",
+    "Escucha en tiempo real de presets personalizados en los ajustes para sincronización entre pestañas",
+  ],
+};
+
+const v12856_de: ChangelogEntry = {
+  version: "v1.55.20",
+  date: "2026-10-05",
+  title: "Sofortige Synchronisierung von Fokus und Voreinstellungen",
+  items: [
+    "Beseitigung der 3-Sekunden-Verzögerung in RawKeySync zugunsten einer sofortigen ereignisgesteuerten Synchronisierung",
+    "Direkte Aktualisierung der Focus-Verlaufs- und Zielansichten nach abgeschlossenen Sitzungen",
+    "Echtzeit-Aktualisierung benutzerdefinierter Voreinstellungen in den Einstellungen für tabübergreifende Synchronität",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12856_fr);
+CHANGELOG_BY_LANG.en.unshift(v12856_en);
+CHANGELOG_BY_LANG.es.unshift(v12856_es);
+CHANGELOG_BY_LANG.de.unshift(v12856_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.20 — 2026-10-05
+
+**Réactivité instantanée Focus et Préréglages**
+
+- Synchronisation instantanée : suppression du délai de 3 secondes dans RawKeySync au profit d'un déclenchement immédiat sur événements (`storage`, `v8:focus-session-completed` et `ethone:raw-key-changed`).
+- Vues Focus : rafraîchissement direct et sans délai des composants d'historique et d'objectifs Focus lors des sessions complétées ou des changements d'objectifs quotidiens.
+- Préréglages personnalisés : écoute multi-onglets en temps réel pour synchroniser les créations, suppressions et applications de presets dans les réglages.
+
 ## v1.55.19 — 2026-10-05
 
 **Résolution intégrale des hooks React et synchronisation multi-onglets**

@@ -66,12 +66,21 @@ export default function RawKeySync() {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => attach(session?.user?.id ?? null));
     const timer = window.setInterval(push, POLL_MS);
     const onHide = () => document.visibilityState === "hidden" && push();
+    const onTrigger = () => push();
+
     document.addEventListener("visibilitychange", onHide);
+    window.addEventListener("storage", onTrigger);
+    window.addEventListener("v8:focus-session-completed", onTrigger);
+    window.addEventListener("ethone:raw-key-changed", onTrigger);
+
     return () => {
       sub.subscription.unsubscribe();
       unsubscribe?.();
       window.clearInterval(timer);
       document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener("storage", onTrigger);
+      window.removeEventListener("v8:focus-session-completed", onTrigger);
+      window.removeEventListener("ethone:raw-key-changed", onTrigger);
     };
   }, []);
   return null;

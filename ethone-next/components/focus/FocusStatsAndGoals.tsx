@@ -56,11 +56,20 @@ export default function FocusStatsAndGoals({
       }
     };
 
+    const handleRaw = (e: Event) => {
+      const k = (e as CustomEvent<{ key?: string }>)?.detail?.key;
+      if (k === "ethone-focus-history" || k === "ethone_focus_daily_goal_minutes") {
+        refreshStats();
+      }
+    };
+
     window.addEventListener("v8:focus-session-completed", handleCompleted);
     window.addEventListener("storage", handleStorage);
+    window.addEventListener("ethone:raw-key-changed", handleRaw);
     return () => {
       window.removeEventListener("v8:focus-session-completed", handleCompleted);
       window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("ethone:raw-key-changed", handleRaw);
     };
   }, [refreshStats]);
 

@@ -337,6 +337,19 @@ function PresetsPanel() {
     saveCustomPresets(customPresets);
   }, [customPresets]);
 
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "ethone-presets" && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setCustomPresets(parsed);
+        } catch {}
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
   const showMessage = useCallback(
     (text: string) => {
       setMessage(text);

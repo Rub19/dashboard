@@ -44620,10 +44620,74 @@ const v1_55_24_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_25_fr: ChangelogEntry = {
+  version: "v1.55.25",
+  date: "2026-10-05",
+  title: "Nouveau Module Bot : Mini-Jeux & Casino Communautaire (Blackjack, Roulette, Dés PvP & Jackpot)",
+  items: [
+    "Nouveau module Mini-Jeux & Casino (/discord/games) avec interface Apple Sonoma interactive et synthétiseur audio Web Audio sans latence.",
+    "Table de Blackjack 21 VIP : jeu interactif en direct avec calcul de score dynamique, options Tirer (Hit), Rester (Stand) et Doubler (Double), ratio Blackjack naturel 3:2.",
+    "Roulette Royale : roue animée et tapis complet avec paris extérieurs (Rouge/Noir 2x, Pair/Impair 2x) et numéros pleins (36x).",
+    "Arène de Duels de dés PvP : affrontements 2d6 entre membres du serveur avec boutons d'acceptation/refus Discord et cagnotte en jeu.",
+    "Cagnotte Jackpot Progressive : prélèvement paramétrable sur chaque mise avec déclenchement automatique sur 21 naturel ou triple 7.",
+    "Quêtes communautaires hebdomadaires récompensant l'activité avec des crédits d'économie et de l'expérience de leveling.",
+    "Simulateur de live interactif pour les streamers (/discord/streamers) : test 1-clic avec génération d'alertes en direct et attribution de rôle @En Live.",
+    "Nouvelles commandes slash : /blackjack, /roulette, /dice, /casino (jackpot | daily | top | stats) intégrées au /help.",
+  ],
+};
+
+const v1_55_25_en: ChangelogEntry = {
+  version: "v1.55.25",
+  date: "2026-10-05",
+  title: "New Bot Module: Community Mini-Games & Casino (Blackjack, Roulette, Dice PvP & Jackpot)",
+  items: [
+    "Brand new Mini-Games & Casino module (/discord/games) featuring Apple Sonoma motion design and zero-latency Web Audio sound synthesizer.",
+    "VIP Blackjack 21 Table: interactive playable table with dynamic hand scoring, Hit, Stand, Double down actions, and 3:2 natural blackjack payout.",
+    "Roulette Royale: animated spinning wheel and comprehensive betting board with outside bets (Red/Black 2x, Even/Odd 2x) and straight-up numbers (36x).",
+    "PvP Dice Clash Arena: 2d6 member-versus-member clashes with interactive Discord accept/decline buttons.",
+    "Progressive Jackpot Vault: configurable pool contribution from every bet with automatic triggers on natural 21 or 777.",
+    "Weekly community quests rewarding player activity with economy credits and leveling XP.",
+    "Interactive live stream simulator (/discord/streamers): 1-click test alert generation and @Live test role assignment.",
+    "New Discord slash commands: /blackjack, /roulette, /dice, /casino (jackpot | daily | top | stats) registered in /help.",
+  ],
+};
+
+const v1_55_25_es: ChangelogEntry = {
+  version: "v1.55.25",
+  date: "2026-10-05",
+  title: "Nuevo Módulo Bot: Mini-Juegos y Casino Comunitario (Blackjack, Ruleta, Dados PvP y Bote)",
+  items: [
+    "Nuevo módulo de Mini-Juegos y Casino (/discord/games) con diseño fluido Apple Sonoma y efectos sonoros interactivos con Web Audio.",
+    "Mesa de Blackjack 21 VIP: juego interactivo con cálculo de mano en directo, pedir carta, plantarse, doblar y pago 3:2 por blackjack natural.",
+    "Ruleta Royale: ruleta animada con apuestas simples (Rojo/Negro, Par/Impar) y plenos con multiplicador x36.",
+    "Arena de Duelos de Dados PvP: enfrentamientos 2d6 entre usuarios con botones interactivos de Discord.",
+    "Bote Jackpot Progresivo: recaudación automática configurable en cada apuesta con premios automáticos.",
+    "Misiones comunitarias semanales con recompensas en créditos del bot y puntos de experiencia.",
+    "Simulador de directos para creadores (/discord/streamers) con prueba en 1 clic y asignación de rol @En Directo.",
+    "Nuevos comandos slash: /blackjack, /roulette, /dice, /casino (jackpot | daily | top | stats) registrados en /help.",
+  ],
+};
+
+const v1_55_25_de: ChangelogEntry = {
+  version: "v1.55.25",
+  date: "2026-10-05",
+  title: "Neues Bot-Modul: Community Mini-Spiele & Casino (Blackjack, Roulette, Würfel-PvP & Jackpot)",
+  items: [
+    "Brandneues Mini-Games & Casino-Modul (/discord/games) mit Apple Sonoma Motion Design und reaktionsschnellem Web-Audio-Synthesizer.",
+    "VIP Blackjack 21 Tisch: Interaktiver Spieltisch mit dynamischer Punkteberechnung, Hit, Stand, Double und 3:2 Auszahlung.",
+    "Roulette Royale: Animierter Kessel und Einsatzfeld mit einfachen Chancen (Rot/Schwarz, Gerade/Ungerade) und Plein x36.",
+    "PvP Würfel-Duell Arena: 2d6 Duelle zwischen Mitgliedern mit Discord-Schaltflächen.",
+    "Progressiver Jackpot-Tresor: Konfigurierbare Abgabe pro Einsatz mit automatischer Gewinnausschüttung.",
+    "Wöchentliche Community-Quests mit Belohnungen in Bot-Währung und Level-Erfahrungspunkten.",
+    "Interaktiver Stream-Simulator (/discord/streamers) für 1-Klick-Live-Alerts und @Live-Rollen-Test.",
+    "Neue Slash-Commands: /blackjack, /roulette, /dice, /casino (jackpot | daily | top | stats) in /help integriert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -89,6 +89,7 @@ import { serverStatsCommand } from '../modules/serverStats/commands/serverStatsC
 import { logsCommand } from '../modules/logs/commands/logsCommand.js';
 import { highlightCommand } from '../modules/highlights/commands/highlightCommand.js';
 import { streamerCommand } from '../modules/streamers/commands/streamerCommand.js';
+import { blackjackCommand, rouletteCommand, diceCommand, casinoCommand } from '../modules/games/commands/gamesCommand.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -228,6 +229,12 @@ class CommandRegistry {
 
     // Streamers & Live Alerts (Twitch, YouTube, Kick)
     this.register(streamerCommand);
+
+    // Mini-Jeux & Casino Communautaire (Blackjack, Roulette, Dés, Jackpot)
+    this.register(blackjackCommand);
+    this.register(rouletteCommand);
+    this.register(diceCommand);
+    this.register(casinoCommand);
   }
 
   public register(command: Command) {

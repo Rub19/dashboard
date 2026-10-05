@@ -27,8 +27,6 @@ import {
   Clock,
   Flame,
   ShieldCheck,
-  Eye,
-  Sliders,
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { confirmDialog } from "@/lib/confirmDialog";
@@ -367,6 +365,18 @@ export default function StreamersCenterClient() {
   const [formCustomMessage, setFormCustomMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Live Simulator State
+  const [showSimulationModal, setShowSimulationModal] = useState(false);
+  const [simPlatform, setSimPlatform] = useState<StreamPlatform>("twitch");
+  const [simUsername, setSimUsername] = useState("Gotaga");
+  const [simTitle, setSimTitle] = useState("🔴 GRAND TOURNOI ESPORT & MULTI-GAMING AVEC LE CHAT !");
+  const [simGame, setSimGame] = useState("VALORANT");
+  const [simViewers, setSimViewers] = useState<number>(14850);
+  const [simTargetMemberId, setSimTargetMemberId] = useState("");
+  const [simChannelId, setSimChannelId] = useState("");
+  const [simAssignRole, setSimAssignRole] = useState(true);
+  const [isSimulating, setIsSimulating] = useState(false);
+
   const loadData = useCallback(async () => {
     if (!selectedGuild) return;
 
@@ -609,12 +619,14 @@ export default function StreamersCenterClient() {
   };
 
   const handleDeleteStreamer = async (streamer: StreamerItem) => {
-    const ok = await confirmDialog({
-      title: `Supprimer ${streamer.displayName || streamer.username} ?`,
-      message: `Le bot cessera de surveiller ses lives ${streamer.platform.toUpperCase()} et n'enverra plus d'alertes dans Discord.`,
-      confirmLabel: "Supprimer",
-      tone: "danger",
-    });
+    const ok = await confirmDialog(
+      `Le bot cessera de surveiller ses lives ${streamer.platform.toUpperCase()} et n'enverra plus d'alertes dans Discord.`,
+      {
+        title: `Supprimer ${streamer.displayName || streamer.username} ?`,
+        confirmLabel: "Supprimer",
+        tone: "danger",
+      }
+    );
     if (!ok || !selectedGuild) return;
 
     try {
@@ -652,6 +664,47 @@ export default function StreamersCenterClient() {
       showError("Échec du test", formatApiError(err));
     } finally {
       setTestingId(null);
+    }
+  };
+
+  const handleRunSimulation = async () => {
+    if (!selectedGuild) return;
+    setIsSimulating(true);
+    showInfo("Simulation en cours...", "Envoi de l'embed animé et attribution du rôle dans Discord");
+
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/streamers/simulate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          platform: simPlatform,
+          username: simUsername,
+          displayName: simUsername,
+          title: simTitle,
+          game: simGame,
+          viewers: simViewers,
+          targetMemberId: simTargetMemberId || null,
+          channelId: simChannelId || null,
+          assignLiveRole: simAssignRole,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Erreur serveur lors de la simulation");
+      const data = await res.json();
+      if (data.success) {
+        success(
+          "Simulation Discord réussie !",
+          `Embed live posté dans le salon avec succès${data.roleAssigned ? " et rôle @En Live attribué au membre" : ""}.`
+        );
+        setShowSimulationModal(false);
+      } else {
+        showError("Simulation échouée", "Le bot n'a pas pu envoyer le message dans le salon cible.");
+      }
+    } catch (err) {
+      showError("Erreur de simulation", formatApiError(err));
+    } finally {
+      setIsSimulating(false);
     }
   };
 
@@ -751,14 +804,16 @@ export default function StreamersCenterClient() {
         />
 
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <GuildSelector
-            guilds={manageableGuilds}
-            selectedGuild={selectedGuild}
-            onSelect={(guild) => {
-              userSelectedRef.current = true;
-              setSelectedGuild(guild);
-            }}
-          />
+          {manageableGuilds.length > 0 && selectedGuild && (
+            <GuildSelector
+              guilds={manageableGuilds}
+              value={selectedGuild.id}
+              onChange={(guild: DiscordGuild) => {
+                userSelectedRef.current = true;
+                setSelectedGuild(guild);
+              }}
+            />
+          )}
 
           <button
             type="button"
@@ -768,6 +823,15 @@ export default function StreamersCenterClient() {
             title="Rafraîchir les statuts"
           >
             <RefreshCw className={cn("h-4 w-4 transition-transform", loading && "animate-spin text-[var(--accent-primary)]")} />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowSimulationModal(true)}
+            className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-[var(--inset-radius)] border border-pink-500/30 bg-pink-500/10 text-pink-300 hover:bg-pink-500/20 hover:border-pink-500/50 transition-all cursor-pointer shadow-sm"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-pink-400" />
+            <span>Simulateur de Live</span>
           </button>
 
           <button
@@ -2157,6 +2221,204 @@ export default function StreamersCenterClient() {
                   className="px-4 py-2 text-xs font-semibold rounded-lg bg-[var(--accent-primary)] text-white hover:opacity-95 cursor-pointer"
                 >
                   Enregistrer
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Modal de Simulation de Live interactif */}
+        {showSimulationModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              onClick={() => !isSimulating && setShowSimulationModal(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="relative w-full max-w-lg rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-overlay)] p-6 shadow-2xl backdrop-blur-xl space-y-5 max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="grid h-8 w-8 place-items-center rounded-xl bg-pink-500/15 text-pink-400 border border-pink-500/30">
+                    <Sparkles className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-sm text-[var(--text-primary)]">
+                      Studio de Simulation de Live
+                    </h3>
+                    <p className="text-[11px] text-[var(--text-muted)]">
+                      Testez en 1 clic l&apos;embed interactif et le rôle @En Live dans Discord.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowSimulationModal(false)}
+                  disabled={isSimulating}
+                  className="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              {/* Raccourcis de créateurs */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-[var(--text-secondary)]">Préréglages rapides</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { name: "Gotaga", plat: "twitch" as StreamPlatform, game: "VALORANT", viewers: 18500 },
+                    { name: "Kamet0", plat: "twitch" as StreamPlatform, game: "LEAGUE OF LEGENDS", viewers: 24200 },
+                    { name: "Squeezie", plat: "youtube" as StreamPlatform, game: "JUST CHATTING", viewers: 42000 },
+                    { name: "xQc", plat: "kick" as StreamPlatform, game: "SLOTS & GAMING", viewers: 31000 },
+                  ].map((p) => (
+                    <button
+                      key={p.name}
+                      type="button"
+                      onClick={() => {
+                        setSimPlatform(p.plat);
+                        setSimUsername(p.name);
+                        setSimGame(p.game);
+                        setSimViewers(p.viewers);
+                        setSimTitle(`🔴 [TEST] Grand Live spécial sur ${p.plat.toUpperCase()} avec la commu !`);
+                      }}
+                      className="px-2.5 py-1 text-[11px] font-medium rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-pink-500/40 transition-all cursor-pointer"
+                    >
+                      {p.name} ({p.plat})
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Plateforme */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-[var(--text-secondary)]">Plateforme</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["twitch", "youtube", "kick"] as StreamPlatform[]).map((p) => (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => setSimPlatform(p)}
+                      className={cn(
+                        "flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer",
+                        simPlatform === p
+                          ? "border-pink-500 bg-pink-500/15 text-pink-300 shadow-sm"
+                          : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-secondary)]"
+                      )}
+                    >
+                      {(() => {
+                        const cfg = PLATFORM_CONFIG[p];
+                        const Icon = cfg.icon;
+                        return (
+                          <span className="flex items-center gap-1.5">
+                            <Icon className="h-3.5 w-3.5" />
+                            <span>{cfg.name}</span>
+                          </span>
+                        );
+                      })()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Pseudo & Titre */}
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Nom du streamer</label>
+                  <input
+                    type="text"
+                    value={simUsername}
+                    onChange={(e) => setSimUsername(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:border-pink-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Titre du live</label>
+                  <input
+                    type="text"
+                    value={simTitle}
+                    onChange={(e) => setSimTitle(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:border-pink-500"
+                  />
+                </div>
+              </div>
+
+              {/* Jeu et Viewers */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Jeu / Catégorie</label>
+                  <input
+                    type="text"
+                    value={simGame}
+                    onChange={(e) => setSimGame(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:border-pink-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Spectateurs simulés</label>
+                  <input
+                    type="number"
+                    value={simViewers}
+                    onChange={(e) => setSimViewers(parseInt(e.target.value) || 0)}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:border-pink-500"
+                  />
+                </div>
+              </div>
+
+              {/* Membre cible pour rôle @En Live */}
+              <div className="rounded-xl border border-purple-500/25 bg-purple-500/5 p-3 space-y-2">
+                <label className="text-xs font-semibold text-purple-300 flex items-center gap-1.5">
+                  <ShieldCheck className="h-3.5 w-3.5 text-purple-400" />
+                  Tester l&apos;attribution du rôle @En Live
+                </label>
+                <select
+                  value={simTargetMemberId}
+                  onChange={(e) => setSimTargetMemberId(e.target.value)}
+                  className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-purple-500"
+                >
+                  <option value="">— Aucun membre (test d&apos;embed seul) —</option>
+                  {members.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.displayName} (@{m.name})
+                    </option>
+                  ))}
+                </select>
+                <label className="flex items-center gap-2 cursor-pointer pt-1">
+                  <input
+                    type="checkbox"
+                    checked={simAssignRole}
+                    onChange={(e) => setSimAssignRole(e.target.checked)}
+                    className="h-3.5 w-3.5 rounded border-[var(--input-border)] text-purple-500 focus:ring-purple-400"
+                  />
+                  <span className="text-[11px] text-[var(--text-secondary)]">
+                    Attribuer le rôle de live au membre dans Discord
+                  </span>
+                </label>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-2 border-t border-[var(--panel-border)] pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowSimulationModal(false)}
+                  disabled={isSimulating}
+                  className="px-4 py-2 text-xs font-medium rounded-lg border border-[var(--panel-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRunSimulation}
+                  disabled={isSimulating}
+                  className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:opacity-95 shadow-lg shadow-pink-500/25 cursor-pointer disabled:opacity-50"
+                >
+                  <Sparkles className={cn("h-3.5 w-3.5", isSimulating && "animate-spin")} />
+                  <span>{isSimulating ? "Envoi du live..." : "🚀 Déclencher le faux live dans Discord"}</span>
                 </button>
               </div>
             </motion.div>

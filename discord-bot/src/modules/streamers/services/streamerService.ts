@@ -14,6 +14,8 @@ import {
   StreamPlatform,
   StreamerConfig,
   StreamerItem,
+  StreamerItemSchema,
+  StreamerPingMode,
 } from '../types/streamer.js';
 import { logger } from '../../../utils/logger.js';
 import { getAppEmoji } from '../../../services/appEmojis.js';
@@ -581,6 +583,77 @@ export class StreamerService {
     } catch (err) {
       logger.debug(`[Streamers] Erreur gestion rôle en live:`, err);
     }
+  }
+
+  /**
+   * Simule en direct l'envoi d'une alerte Discord pour tester l'embed et le rôle @En Live en 1 clic.
+   */
+  public async simulateLiveAlert(
+    guildId: string,
+    options: {
+      platform?: StreamPlatform;
+      username?: string;
+      displayName?: string;
+      title?: string;
+      game?: string;
+      viewers?: number;
+      targetMemberId?: string;
+      channelId?: string;
+      pingMode?: StreamerPingMode;
+      assignLiveRole?: boolean;
+    }
+  ): Promise<{ messageId: string | null; channelId: string | null; roleAssigned: boolean }> {
+    const platform = options.platform || 'twitch';
+    const username = options.username || 'Gotaga';
+    const displayName = options.displayName || username;
+    const title = options.title || `🔴 [SIMULATION] Live test sur ${PLATFORM_NAMES[platform]} !`;
+    const game = options.game || 'VALORANT';
+    const viewers = options.viewers || 14850;
+
+    const dummyStreamer: StreamerItem = StreamerItemSchema.parse({
+      id: `sim_${Date.now()}`,
+      guildId,
+      platform,
+      username,
+      displayName,
+      channelId: options.channelId || null,
+      pingMode: options.pingMode || 'default',
+      discordUserId: options.targetMemberId || null,
+      isLive: true,
+      title,
+      game,
+      viewers,
+    });
+
+    const details: LiveStreamDetails = {
+      platform,
+      username,
+      displayName,
+      isLive: true,
+      title,
+      game,
+      viewers,
+      streamUrl:
+        platform === 'youtube'
+          ? `https://youtube.com/@${username}/live`
+          : `https://${platform}.com/${username}`,
+    };
+
+    const messageId = await this.dispatchLiveAlert(dummyStreamer, details);
+    const config = streamerStorage.getConfig(guildId);
+    const targetChanId = this.resolveTargetChannelId(dummyStreamer, config);
+
+    let roleAssigned = false;
+    if (options.assignLiveRole && options.targetMemberId && config.liveRoleId) {
+      await this.assignLiveRole(guildId, dummyStreamer, config.liveRoleId, true);
+      roleAssigned = true;
+    }
+
+    return {
+      messageId,
+      channelId: targetChanId,
+      roleAssigned,
+    };
   }
 }
 

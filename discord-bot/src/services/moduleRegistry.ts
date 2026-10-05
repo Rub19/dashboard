@@ -20,6 +20,7 @@ import { reportsStorage } from '../modules/reports/storage/reportsStorage.js';
 import { serverStatsStorage } from '../modules/serverStats/storage/serverStatsStorage.js';
 import { ticketRepository } from '../modules/tickets/storage/ticketRepository.js';
 import { streamerStorage } from '../modules/streamers/storage/streamerStorage.js';
+import { gamesStorage } from '../modules/games/storage/gamesStorage.js';
 import { emitConfigUpdated } from './syncConfigEmitter.js';
 import { logger } from '../utils/logger.js';
 
@@ -276,6 +277,17 @@ export const MODULES: ModuleDef[] = [
     own: {
       get: (g) => streamerStorage.getConfig(g).enabled,
       set: (g, enabled) => void streamerStorage.updateConfig(g, { enabled }),
+    },
+  },
+  {
+    id: 'games',
+    label: 'Mini-Jeux & Casino Communautaire',
+    emoji: '🎰',
+    description: 'Blackjack 21, Roulette Royale, Duels de dés PvP et cagnotte progressive Jackpot.',
+    commands: ['blackjack', 'roulette', 'dice', 'casino'],
+    own: {
+      get: (g) => gamesStorage.getConfig(g).enabled,
+      set: (g, enabled) => void gamesStorage.updateConfig(g, { enabled }),
     },
   },
 ];

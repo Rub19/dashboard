@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.25 — 2026-10-05
+
+**Nouveau Module Bot : Mini-Jeux & Casino Communautaire (Blackjack, Roulette, Dés PvP & Jackpot)**
+
+- Nouveau module Mini-Jeux & Casino (`/discord/games`) avec interface Apple Sonoma fluide et synthétiseur audio Web Audio sans latence.
+- Table de Blackjack 21 VIP : jeu interactif en direct avec calcul de score dynamique, options Tirer (Hit), Rester (Stand) et Doubler (Double), ratio Blackjack naturel 3:2.
+- Roulette Royale : roue animée et tapis de mises complet avec chances simples (Rouge/Noir 2x, Pair/Impair 2x) et numéros pleins (36x).
+- Arène de Duels de dés PvP : affrontements 2d6 entre membres du serveur avec boutons d'acceptation/refus Discord et cagnotte en jeu.
+- Cagnotte Jackpot Progressive : prélèvement paramétrable sur chaque mise avec déclenchement automatique sur 21 naturel ou triple 7.
+- Quêtes communautaires hebdomadaires récompensant l'activité avec des crédits d'économie et de l'expérience de leveling.
+- Simulateur de live interactif pour les streamers (`/discord/streamers`) : test 1-clic avec génération d'alertes en direct et attribution de rôle `@En Live`.
+- Nouvelles commandes slash : `/blackjack`, `/roulette`, `/dice`, `/casino (jackpot | daily | top | stats)` intégrées au `/help`.
+
 ## v1.55.24 — 2026-10-05
 
 **Alertes Streamers : Options de personnalisation avancées, routage & pings dédiés**

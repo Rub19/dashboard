@@ -65,8 +65,8 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     name: 'Communauté & Loisirs',
     emoji: '🎉',
     color: 0xec4899,
-    description: "Giveaways, suggestions, sondages, événements, anniversaires, starboard, alertes streamers (Twitch/YouTube/Kick)",
-    commandNames: ['giveaway', 'suggest', 'poll', 'event', 'birthday', 'starboard', 'sticky', 'highlight', 'streamer'],
+    description: "Giveaways, suggestions, sondages, événements, anniversaires, starboard, streamers, mini-jeux & casino (Blackjack, Roulette, Dés)",
+    commandNames: ['giveaway', 'suggest', 'poll', 'event', 'birthday', 'starboard', 'sticky', 'highlight', 'streamer', 'blackjack', 'roulette', 'dice', 'casino'],
   },
   {
     id: 'voice_music',

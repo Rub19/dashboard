@@ -188,6 +188,41 @@ export function createStreamerRouter(client: Client) {
     });
   });
 
+  // Simulation complète d'alerte en direct avec attribution optionnelle du rôle @En Live
+  router.post('/simulate', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const {
+      platform = 'twitch',
+      username = 'Gotaga',
+      displayName,
+      title,
+      game,
+      viewers,
+      targetMemberId,
+      channelId,
+      pingMode,
+      assignLiveRole = false,
+    } = req.body || {};
+
+    const result = await streamerService.simulateLiveAlert(guildId, {
+      platform,
+      username,
+      displayName,
+      title,
+      game,
+      viewers: Number(viewers) || 14850,
+      targetMemberId,
+      channelId,
+      pingMode,
+      assignLiveRole: Boolean(assignLiveRole),
+    });
+
+    res.json({
+      success: Boolean(result.messageId),
+      ...result,
+    });
+  });
+
   // Salons + Rôles + Membres de destination pour le Dashboard
   router.get('/targets', async (req: Request, res: Response): Promise<void> => {
     const guild = client.guilds.cache.get(String(req.params.guildId));

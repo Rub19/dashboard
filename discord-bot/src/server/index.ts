@@ -61,6 +61,8 @@ import { createCalendarRouter } from './routes/calendar.js';
 import { createServerRouter } from './routes/serverRoutes.js';
 import { createStreamerRouter } from './routes/streamerRoutes.js';
 import { streamerService } from '../modules/streamers/services/streamerService.js';
+import { createGamesRoutes } from './routes/gamesRoutes.js';
+import { gamesService } from '../modules/games/services/gamesService.js';
 import { createBotControlRouter } from './routes/botControlRoutes.js';
 import { createPresenceRouter } from './routes/presenceRoutes.js';
 import { createOwnerShieldRouter } from './routes/ownerShieldRoutes.js';
@@ -413,6 +415,12 @@ export function startWebServer(client: Client): http.Server {
     createGuildAuthMiddleware(client),
     createStreamerRouter(client)
   );
+  app.use(
+    '/api/guilds/:guildId/games',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createGamesRoutes(client)
+  );
   // Présence du bot dans une liste de serveurs : accessible publiquement (lecture seule,
   // renvoie uniquement l'intersection avec les ids demandés, jamais la liste complète).
   // Permet au dashboard d'indiquer « Bot présent » et de trier les serveurs sans exiger
@@ -481,6 +489,9 @@ export function startWebServer(client: Client): http.Server {
 
   // Scheduler des alertes de stream (Twitch, YouTube, Kick)
   streamerService.init(client);
+
+  // Module Mini-Jeux & Casino Communautaire (Blackjack, Roulette, Dés)
+  gamesService.init(client);
 
   // Synchro Supabase de la télémétrie (Centre de contrôle du dashboard, RLS owner only)
   startBotTelemetrySync(client);

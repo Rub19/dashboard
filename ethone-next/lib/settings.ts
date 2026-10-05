@@ -330,7 +330,7 @@ export const DEFAULTS: Settings = {
   sidebarIcons: true,
   sidebarColoredIcons: false,
   sidebarItems: [
-    "notes", "tasks", "habits", "calendar", "files", "mail", "brain", "focus", "weather",
+    "notes", "tasks", "habits", "calendar", "files", "mail", "brain", "focus", "soundscape", "weather",
     "activity", "analytics", "interactions", "connections", "discord", "plugins",
     "games", "matches", "spaces", "flows", "team",
   ],

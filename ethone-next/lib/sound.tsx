@@ -186,6 +186,8 @@ type SoundContextValue = {
   stopAmbientLayer: (type: SoundAmbient) => void;
   /** Live-adjusts one layer's volume without restarting it. */
   setAmbientLayerVolume: (type: SoundAmbient, volumePercent: number) => void;
+  /** Exposes real-time audio AnalyserNode for spectrum and motion visualizers. */
+  getAnalyser: () => AnalyserNode | null;
 };
 
 const SoundContext = createContext<SoundContextValue>({
@@ -201,6 +203,7 @@ const SoundContext = createContext<SoundContextValue>({
   playAmbientLayer: () => {},
   stopAmbientLayer: () => {},
   setAmbientLayerVolume: () => {},
+  getAnalyser: () => null,
 });
 
 export const useSound = () => useContext(SoundContext);
@@ -857,6 +860,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   const { settings, update } = useSettings();
   const audioRef = useRef<AudioContext | null>(null);
   const outputGainRef = useRef<GainNode | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
   // Shared bus every ambient layer connects through. Ducking this one node fades the
   // whole soundscape mix together, however many layers are actually playing.
   const ambientBusRef = useRef<GainNode | null>(null);
@@ -924,6 +928,16 @@ export function SoundProvider({ children }: { children: ReactNode }) {
     output.connect(ctx.destination);
     outputGainRef.current = output;
 
+    try {
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.8;
+      output.connect(analyser);
+      analyserRef.current = analyser;
+    } catch {
+      // Ignorer si échec d'initialisation de l'analyseur
+    }
+
     const bus = ctx.createGain();
     bus.gain.value = 1;
     bus.connect(output);
@@ -931,6 +945,11 @@ export function SoundProvider({ children }: { children: ReactNode }) {
 
     return ctx;
   }, []);
+
+  const getAnalyser = useCallback((): AnalyserNode | null => {
+    ensureContext();
+    return analyserRef.current;
+  }, [ensureContext]);
 
   const syncAmbientLayers = useCallback(() => {
     const next: Partial<Record<SoundAmbient, number>> = {};
@@ -1384,6 +1403,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       playAmbientLayer,
       stopAmbientLayer,
       setAmbientLayerVolume,
+      getAnalyser,
     }),
     [
       play,
@@ -1397,6 +1417,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       playAmbientLayer,
       stopAmbientLayer,
       setAmbientLayerVolume,
+      getAnalyser,
     ]
   );
 

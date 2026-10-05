@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.21 — 2026-10-05
+
+**Nouveau module Soundscape Studio & Visualiseur Audio 60 FPS**
+
+- Nouveau module Studio Soundscape (/soundscape) avec motion design Apple Sonoma et physique fluide Framer Motion.
+- Visualiseur audio haute fidélité 60 FPS sur Canvas avec 4 modes interactifs (Nébuleuse stellaire réactive, Spectre radial bloom, Horizon d'ondes Bézier, Ondes Zen harmoniques) réagissant en temps réel aux fréquences et au curseur.
+- Générateur d'ondes binaurales pures (Delta, Theta, Alpha, Beta, Gamma) et fréquences sacrées Solfeggio (432 Hz, 528 Hz, 639 Hz, 852 Hz) avec séparation stéréo stricte.
+- Mixeur d'ambiances multi-pistes tactile avec curseurs capacitifs, jauges visuelles, presets d'immersion 1-clic et minuteur de mise en veille avec fondu progressif.
+- Intégration directe dans la barre latérale sous Assistants et indexation dans la palette de commandes (Ctrl+K).
+
 ## v1.55.20 — 2026-10-05
 
 **Réactivité instantanée Focus et Préréglages**

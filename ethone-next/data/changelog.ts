@@ -44412,4 +44412,61 @@ CHANGELOG_BY_LANG.en.unshift(v12856_en);
 CHANGELOG_BY_LANG.es.unshift(v12856_es);
 CHANGELOG_BY_LANG.de.unshift(v12856_de);
 
+const v1_55_21_fr: ChangelogEntry = {
+  version: "v1.55.21",
+  date: "2026-10-05",
+  title: "Nouveau module Soundscape Studio & Visualiseur Audio 60 FPS",
+  items: [
+    "Nouveau module Studio Soundscape (/soundscape) avec motion design Apple Sonoma et physique fluide Framer Motion.",
+    "Visualiseur audio haute fidélité 60 FPS sur Canvas avec 4 modes interactifs (Nébuleuse stellaire réactive, Spectre radial bloom, Horizon d'ondes Bézier, Ondes Zen harmoniques) réagissant en temps réel aux fréquences et au curseur.",
+    "Générateur d'ondes binaurales pures (Delta, Theta, Alpha, Beta, Gamma) et fréquences sacrées Solfeggio (432 Hz, 528 Hz, 639 Hz, 852 Hz) avec séparation stéréo stricte.",
+    "Mixeur d'ambiances multi-pistes tactile avec curseurs capacitifs, jauges visuelles, presets d'immersion 1-clic et minuteur de mise en veille avec fondu progressif.",
+    "Intégration directe dans la barre latérale sous Assistants et indexation dans la palette de commandes (Ctrl+K).",
+  ],
+};
+
+const v1_55_21_en: ChangelogEntry = {
+  version: "v1.55.21",
+  date: "2026-10-05",
+  title: "New Soundscape Studio & 60 FPS Audio Visualizer Module",
+  items: [
+    "New Soundscape Studio module (/soundscape) featuring Apple Sonoma motion design and fluid Framer Motion spring physics.",
+    "High-fidelity 60 FPS Canvas audio visualizer with 4 interactive modes (Cosmic Nebula, Radial Bloom Spectrum, Waveform Horizon, Zen Ripples) reacting in real time to audio frequencies and mouse physics.",
+    "Pure binaural beats synthesizer (Delta, Theta, Alpha, Beta, Gamma) and Solfeggio sacred frequencies (432 Hz, 528 Hz, 639 Hz, 852 Hz) with strict stereo channel separation.",
+    "Tactile multi-track soundscape mixer with smooth sliders, 1-click immersion presets, and progressive sleep timer.",
+    "Direct integration into the main sidebar and Command Palette (Ctrl+K) search indexing.",
+  ],
+};
+
+const v1_55_21_es: ChangelogEntry = {
+  version: "v1.55.21",
+  date: "2026-10-05",
+  title: "Nuevo módulo Soundscape Studio y Visualizador de Audio 60 FPS",
+  items: [
+    "Nuevo módulo Soundscape Studio (/soundscape) con motion design Apple Sonoma y física fluida de Framer Motion.",
+    "Visualizador de audio interactivo a 60 FPS con 4 modos dinámicos que reaccionan a las frecuencias en tiempo real.",
+    "Generador de ondas binaurales puras (Delta, Theta, Alpha, Beta, Gamma) y frecuencias Solfeggio con separación estéreo.",
+    "Mezclador multipista táctil con controles deslizantes fluidos, preajustes inmersivos y temporizador de apagado progresivo.",
+    "Integrado en la barra lateral y en la paleta de comandos (Ctrl+K).",
+  ],
+};
+
+const v1_55_21_de: ChangelogEntry = {
+  version: "v1.55.21",
+  date: "2026-10-05",
+  title: "Neues Soundscape Studio & 60 FPS Audio-Visualisierer Modul",
+  items: [
+    "Neues Soundscape Studio-Modul (/soundscape) mit Apple Sonoma Motion Design und Framer Motion Physik.",
+    "Interaktiver 60 FPS Audio-Visualisierer mit 4 dynamischen Modi (Nebel, Spektrum, Horizont, Zen-Wellen).",
+    "Reiner binauraler Frequenzgenerator (Delta, Theta, Alpha, Beta, Gamma) und Solfeggio-Frequenzen mit Stereo-Trennung.",
+    "Taktiler Mehrspur-Soundscape-Mixer mit Schiebereglern, 1-Klick-Presets und Sleep-Timer.",
+    "Direkt in die Seitenleiste und die Befehlspalette (Strg+K) integriert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_21_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

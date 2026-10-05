@@ -2,19 +2,16 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   Radio,
-  Tv,
-  Video,
-  Play,
   Sparkles,
   RefreshCw,
   Plus,
   Trash2,
   Pencil,
   ExternalLink,
-  CheckCircle2,
   AlertTriangle,
   Bot,
   Bell,
@@ -23,10 +20,12 @@ import {
   X,
   SlidersHorizontal,
   Search,
-  Globe,
-  Clock,
+  ArrowLeft,
+  Eye,
+  Sliders,
   Flame,
   ShieldCheck,
+  Play,
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { confirmDialog } from "@/lib/confirmDialog";
@@ -37,7 +36,6 @@ import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
-import ModulePageTitle from "@/components/discord/ModulePageTitle";
 import { formatApiError } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -244,48 +242,36 @@ const PRESET_EMBED_COLORS = [
   { name: "Cyan Fluide", value: "#06B6D4" },
 ];
 
-function Switch({
-  checked,
-  onChange,
+function SwitchRow({
   label,
   hint,
+  checked,
+  onChange,
 }: {
-  checked: boolean;
-  onChange: (v: boolean) => void;
   label: string;
   hint?: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
 }) {
   return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      onClick={() => onChange(!checked)}
-      className="flex w-full items-start justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
-    >
-      <span className="min-w-0">
-        <span className="block text-xs font-semibold text-[var(--text-primary)]">{label}</span>
-        {hint && <span className="mt-0.5 block text-xs leading-snug text-[var(--text-muted)]">{hint}</span>}
-      </span>
-      <span
-        className={cn(
-          "relative inline-flex mt-0.5 h-5 w-9 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200",
-          checked ? "bg-[var(--accent-primary)]" : "bg-[var(--surface-raised)]/80"
-        )}
-      >
-        <span
-          className={cn(
-            "pointer-events-none block h-4 w-4 rounded-full bg-white shadow transition-transform duration-200",
-            checked ? "translate-x-4" : "translate-x-0"
-          )}
-        />
-      </span>
-    </button>
+    <div className="flex items-center justify-between gap-4 py-2.5">
+      <div>
+        <span className="text-xs font-semibold text-[var(--text-primary)] block">{label}</span>
+        {hint && <span className="text-[11px] text-[var(--text-muted)] block mt-0.5">{hint}</span>}
+      </div>
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="w-4 h-4 rounded text-[var(--accent-primary)] focus:ring-[var(--accent-primary)] cursor-pointer"
+      />
+    </div>
   );
 }
 
 export default function StreamersCenterClient() {
   const searchParams = useSearchParams();
+  const rawGuildId = searchParams.get("guildId");
   const { success, error: showError, info: showInfo } = useToast();
   const { profile } = useDiscordOAuth();
 
@@ -304,20 +290,19 @@ export default function StreamersCenterClient() {
 
   const appliedQueryGuild = useRef<string | null>(null);
   const userSelectedRef = useRef(false);
-  const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
   useEffect(() => {
     if (manageableGuilds.length === 0) return;
-    if (queryGuildId && appliedQueryGuild.current !== queryGuildId) {
-      const m = manageableGuilds.find((g) => g.id === queryGuildId);
+    if (rawGuildId && appliedQueryGuild.current !== rawGuildId) {
+      const m = manageableGuilds.find((g) => g.id === rawGuildId);
       if (m) {
-        appliedQueryGuild.current = queryGuildId;
+        appliedQueryGuild.current = rawGuildId;
         setSelectedGuild(m);
         return;
       }
     }
-    if (!userSelectedRef.current && !queryGuildId) {
+    if (!userSelectedRef.current && !rawGuildId) {
       if (!selectedGuild) {
         if (botGuildIds !== null) {
           setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
@@ -329,7 +314,10 @@ export default function StreamersCenterClient() {
         }
       }
     }
-  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
+  }, [manageableGuilds, rawGuildId, selectedGuild, botGuildIds]);
+
+  const currentGuildId = selectedGuild?.id || rawGuildId || "";
+  const isBotPresent = Boolean(currentGuildId && botGuildIds && botGuildIds.includes(currentGuildId));
 
   // State
   const [streamers, setStreamers] = useState<StreamerItem[]>([]);
@@ -342,12 +330,12 @@ export default function StreamersCenterClient() {
   const [savingConfig, setSavingConfig] = useState(false);
   const [offline, setOffline] = useState(false);
 
-  // Filters & Tabs
-  const [activeTab, setActiveTab] = useState<"all" | "live" | "twitch" | "youtube" | "kick">("all");
+  // Tabs & filters
+  const [mainTab, setMainTab] = useState<"streamers" | "settings" | "preview" | "simulator">("streamers");
+  const [platformFilter, setPlatformFilter] = useState<"all" | "live" | "twitch" | "youtube" | "kick">("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [showConfigDrawer, setShowConfigDrawer] = useState(false);
-  const [configTab, setConfigTab] = useState<"channels" | "roles" | "embed" | "rules">("channels");
 
+  // Modals & testing
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingStreamer, setEditingStreamer] = useState<StreamerItem | null>(null);
   const [testingId, setTestingId] = useState<string | null>(null);
@@ -366,7 +354,6 @@ export default function StreamersCenterClient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Live Simulator State
-  const [showSimulationModal, setShowSimulationModal] = useState(false);
   const [simPlatform, setSimPlatform] = useState<StreamPlatform>("twitch");
   const [simUsername, setSimUsername] = useState("Gotaga");
   const [simTitle, setSimTitle] = useState("🔴 GRAND TOURNOI ESPORT & MULTI-GAMING AVEC LE CHAT !");
@@ -501,7 +488,6 @@ export default function StreamersCenterClient() {
         localStorage.setItem(localKey, JSON.stringify(config));
       } catch {}
       success("Configuration enregistrée", "Toutes les options de personnalisation ont été synchronisées.");
-      setShowConfigDrawer(false);
     } catch (err) {
       showError("Erreur d'enregistrement", formatApiError(err));
     } finally {
@@ -612,7 +598,6 @@ export default function StreamersCenterClient() {
         `La surveillance pour ${streamer.displayName || streamer.username} est ${nextPaused ? "suspendue" : "active"}.`
       );
     } catch {
-      // rollback
       setStreamers((prev) => prev.map((s) => (s.id === streamer.id ? { ...s, paused: !nextPaused } : s)));
       showError("Erreur", "Impossible de mettre à jour le statut du streamer.");
     }
@@ -697,7 +682,6 @@ export default function StreamersCenterClient() {
           "Simulation Discord réussie !",
           `Embed live posté dans le salon avec succès${data.roleAssigned ? " et rôle @En Live attribué au membre" : ""}.`
         );
-        setShowSimulationModal(false);
       } else {
         showError("Simulation échouée", "Le bot n'a pas pu envoyer le message dans le salon cible.");
       }
@@ -737,7 +721,6 @@ export default function StreamersCenterClient() {
     if (mode === "role") {
       return `@${roles.find((r) => r.id === streamer.pingRoleId)?.name || "Rôle dédié"}`;
     }
-    // mode === "default"
     if (streamer.platform === "twitch" && config.twitchRoleId) {
       return `@${roles.find((r) => r.id === config.twitchRoleId)?.name || "Rôle Twitch"}`;
     }
@@ -758,10 +741,10 @@ export default function StreamersCenterClient() {
   // Filtered streamers list
   const filteredStreamers = useMemo(() => {
     return streamers.filter((s) => {
-      if (activeTab === "live" && !s.isLive) return false;
-      if (activeTab === "twitch" && s.platform !== "twitch") return false;
-      if (activeTab === "youtube" && s.platform !== "youtube") return false;
-      if (activeTab === "kick" && s.platform !== "kick") return false;
+      if (platformFilter === "live" && !s.isLive) return false;
+      if (platformFilter === "twitch" && s.platform !== "twitch") return false;
+      if (platformFilter === "youtube" && s.platform !== "youtube") return false;
+      if (platformFilter === "kick" && s.platform !== "kick") return false;
 
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
@@ -772,812 +755,966 @@ export default function StreamersCenterClient() {
       }
       return true;
     });
-  }, [streamers, activeTab, searchQuery]);
+  }, [streamers, platformFilter, searchQuery]);
 
   const liveCount = useMemo(() => streamers.filter((s) => s.isLive).length, [streamers]);
   const twitchCount = useMemo(() => streamers.filter((s) => s.platform === "twitch").length, [streamers]);
   const youtubeCount = useMemo(() => streamers.filter((s) => s.platform === "youtube").length, [streamers]);
   const kickCount = useMemo(() => streamers.filter((s) => s.platform === "kick").length, [streamers]);
 
-  // Live embed preview color
-  const livePreviewColor = useMemo(() => {
-    return config.embedColor || "#9146FF";
-  }, [config.embedColor]);
-
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
-      {/* Background ambient motion glow */}
-      <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-96 w-full max-w-5xl bg-gradient-to-b from-purple-600/10 via-rose-600/5 to-transparent blur-3xl opacity-60" />
-
-      {/* Top Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-5">
-        <ModulePageTitle
-          icon={<Radio className="h-5 w-5 text-purple-400" />}
-          title="Alertes Streamers"
-          subtitle="Twitch, YouTube & Kick en direct avec attribution @En Live et embeds ultra-fluides"
-          badge={
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-purple-500/15 text-purple-300 border border-purple-500/30">
-              <span className="h-1.5 w-1.5 rounded-full bg-purple-400 animate-pulse" />
-              Live Engine v2
-            </span>
-          }
-        />
-
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          {manageableGuilds.length > 0 && selectedGuild && (
-            <GuildSelector
-              guilds={manageableGuilds}
-              value={selectedGuild.id}
-              onChange={(guild: DiscordGuild) => {
-                userSelectedRef.current = true;
-                setSelectedGuild(guild);
-              }}
-            />
-          )}
-
-          <button
-            type="button"
-            onClick={loadData}
-            disabled={loading}
-            className="group grid h-9 w-9 place-items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--input-border-hover)] transition-all cursor-pointer"
-            title="Rafraîchir les statuts"
-          >
-            <RefreshCw className={cn("h-4 w-4 transition-transform", loading && "animate-spin text-[var(--accent-primary)]")} />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowSimulationModal(true)}
-            className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-[var(--inset-radius)] border border-pink-500/30 bg-pink-500/10 text-pink-300 hover:bg-pink-500/20 hover:border-pink-500/50 transition-all cursor-pointer shadow-sm"
-          >
-            <Sparkles className="h-3.5 w-3.5 text-pink-400" />
-            <span>Simulateur de Live</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowConfigDrawer(true)}
-            className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--input-border-hover)] transition-all cursor-pointer"
-          >
-            <SlidersHorizontal className="h-3.5 w-3.5 text-purple-400" />
-            <span>Options & Salons</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold rounded-[var(--inset-radius)] bg-[var(--accent-primary)] text-white hover:opacity-95 shadow-lg shadow-[var(--accent-primary)]/20 transition-all cursor-pointer"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span>Ajouter un streamer</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Offline banner if applicable */}
-      {offline && selectedGuild && (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-start gap-2.5 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs text-amber-200"
-        >
-          <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-          <span>Mode hors-ligne : la synchronisation en direct avec le bot Discord est temporairement indisponible. Les réglages sont stockés sur votre appareil.</span>
-        </motion.div>
-      )}
-
-      {/* Bot invite banner if bot not in server */}
-      {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-4 py-3 text-xs text-[var(--text-primary)]"
-        >
-          <div className="flex items-center gap-2.5">
-            <Bot className="h-4 w-4 shrink-0 text-[var(--accent-primary)]" />
-            <span>Le bot ETHONE n&apos;est pas encore présent sur ce serveur. Invitez-le pour activer les alertes stream et l&apos;attribution automatique des rôles.</span>
-          </div>
-          <a
-            href={BOT_INVITE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 px-3 py-1.5 rounded-lg bg-[var(--accent-primary)] text-white font-medium hover:opacity-90 transition-opacity"
-          >
-            Inviter ETHONE
-          </a>
-        </motion.div>
-      )}
-
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-        <motion.div
-          whileHover={{ y: -2 }}
-          transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 backdrop-blur-md p-4 flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between text-xs text-[var(--text-muted)] font-medium">
-            <span>Streamers suivis</span>
-            <Users className="h-4 w-4 text-[var(--text-muted)]" />
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">{streamers.length}</div>
-            <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">Surveillance 24/7</p>
-          </div>
-        </motion.div>
-
-        <motion.div
-          whileHover={{ y: -2 }}
-          transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="rounded-[var(--panel-radius)] border border-rose-500/30 bg-rose-500/5 backdrop-blur-md p-4 flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between text-xs text-rose-300 font-medium">
-            <span className="flex items-center gap-1.5">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500" />
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] pb-44">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
+        {/* Top Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)]">
+          <div>
+            <div className="flex flex-wrap items-center gap-2.5 mb-2">
+              <Link
+                href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
+                className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
+                title="Retour au hub Discord"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                <span>Retour Discord</span>
+              </Link>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] flex items-center gap-3">
+              <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-purple-500/25 bg-purple-500/10 text-purple-400">
+                <Radio className="h-5 w-5" />
               </span>
-              En direct
-            </span>
-            <Flame className="h-4 w-4 text-rose-400" />
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-bold tracking-tight text-rose-200">{liveCount}</div>
-            <p className="mt-0.5 text-[11px] text-rose-300/70">
-              {liveCount > 0 ? "Diffusion active en ce moment" : "Aucun stream actif"}
+              Alertes Streamers — Twitch, YouTube & Kick
+            </h1>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              Surveillance des diffusions en direct, notifications automatiques et rôle @En Live.
+              {offline && <span className="text-amber-400"> (mode local / bot non joignable)</span>}
             </p>
           </div>
-        </motion.div>
 
-        <motion.div
-          whileHover={{ y: -2 }}
-          transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 backdrop-blur-md p-4 flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between text-xs text-[var(--text-muted)] font-medium">
-            <span>Plateformes</span>
-            <Globe className="h-4 w-4 text-[var(--text-muted)]" />
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {manageableGuilds.length > 0 && selectedGuild && (
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild.id}
+                onChange={(g: DiscordGuild) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
+            )}
+            <button
+              type="button"
+              onClick={loadData}
+              disabled={loading}
+              className="flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)] disabled:opacity-50 cursor-pointer transition-colors"
+            >
+              <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
+              Actualiser
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97]"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>Nouveau Streamer</span>
+            </button>
           </div>
-          <div className="mt-3 flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#9146FF]/15 text-[#A970FF] border border-[#9146FF]/30">
-              <TwitchLogo className="h-3 w-3" /> {twitchCount}
-            </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#FF0000]/15 text-[#FF4D4D] border border-[#FF0000]/30">
-              <YouTubeLogo className="h-3 w-3" /> {youtubeCount}
-            </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#53FC18]/15 text-[#53FC18] border border-[#53FC18]/30">
-              <KickLogo className="h-3 w-3" /> {kickCount}
-            </span>
-          </div>
-          <p className="mt-1 text-[11px] text-[var(--text-muted)]">Twitch • YouTube • Kick</p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          whileHover={{ y: -2 }}
-          transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 backdrop-blur-md p-4 flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between text-xs text-[var(--text-muted)] font-medium">
-            <span>Rôle @En Live auto</span>
-            <ShieldCheck className="h-4 w-4 text-purple-400" />
-          </div>
-          <div className="mt-3">
-            <div className="text-sm font-bold tracking-tight text-[var(--text-primary)]">
-              {config.autoLiveRoleEnabled && config.liveRoleId ? (
-                <span className="text-purple-300 flex items-center gap-1">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                  @{roles.find((r) => r.id === config.liveRoleId)?.name || "En Live"}
-                </span>
-              ) : (
-                <span className="text-[var(--text-muted)]">Non configuré</span>
-              )}
+        {/* Bot non installé banner */}
+        {selectedGuild && !isBotPresent && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
+                <Bot className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Bot non installé sur ce serveur</p>
+                <p className="text-xs text-amber-300/80">
+                  Invitez le bot ETHONE sur <strong>{selectedGuild.name}</strong> pour activer les alertes de stream et le rôle @En Live.
+                </p>
+              </div>
             </div>
-            <p className="mt-1 text-[11px] text-[var(--text-muted)]">Attribution instantanée</p>
+            <a
+              href={BOT_INVITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs shadow-sm transition-colors cursor-pointer shrink-0"
+            >
+              Inviter le bot
+            </a>
           </div>
-        </motion.div>
-      </div>
+        )}
 
-      {/* Filter Tabs & Search Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--surface-raised)]/50 border border-[var(--panel-border)] overflow-x-auto">
+        {/* Offline banner */}
+        {offline && selectedGuild && (
+          <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>Mode hors-ligne : la synchronisation en direct avec le bot Discord est temporairement indisponible. Les réglages sont stockés sur votre appareil.</span>
+          </div>
+        )}
+
+        {/* 4 Metric KPI Cards (exact style of older pages) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
+            <span className="text-xs text-[var(--text-muted)] font-medium">Streamers Suivis</span>
+            <p className="text-2xl font-bold text-[var(--text-primary)]">{streamers.length}</p>
+            <span className="text-xs text-[var(--text-muted)]">Surveillance 24/7</span>
+          </div>
+
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
+            <span className="text-xs text-[var(--text-muted)] font-medium">En Direct</span>
+            <p className="text-2xl font-bold text-rose-400">{liveCount}</p>
+            <span className="text-xs text-[var(--text-muted)]">
+              {liveCount > 0 ? `${liveCount} diffusion(s) active(s)` : "Aucun stream en cours"}
+            </span>
+          </div>
+
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
+            <span className="text-xs text-[var(--text-muted)] font-medium">Plateformes</span>
+            <div className="flex items-center gap-1.5 mt-1">
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#9146FF]/15 text-[#A970FF]">
+                <TwitchLogo className="h-2.5 w-2.5" /> {twitchCount}
+              </span>
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FF0000]/15 text-[#FF4D4D]">
+                <YouTubeLogo className="h-2.5 w-2.5" /> {youtubeCount}
+              </span>
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#53FC18]/15 text-[#53FC18]">
+                <KickLogo className="h-2.5 w-2.5" /> {kickCount}
+              </span>
+            </div>
+            <span className="text-xs text-[var(--text-muted)] block mt-0.5">Routage indépendant</span>
+          </div>
+
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
+            <span className="text-xs text-[var(--text-muted)] font-medium">Rôle @En Live</span>
+            <p className="text-sm font-bold text-purple-300 mt-1 truncate">
+              {config.autoLiveRoleEnabled && config.liveRoleId
+                ? `@${roles.find((r) => r.id === config.liveRoleId)?.name || "En Live"}`
+                : "Désactivé"}
+            </p>
+            <span className="text-xs text-[var(--text-muted)]">Attribution instantanée</span>
+          </div>
+        </div>
+
+        {/* Navigation Tabs (style matching Leveling / Welcome) */}
+        <div className="flex border-b border-[var(--panel-border)] gap-2 overflow-x-auto pb-1">
           {[
-            { id: "all", label: `Tous (${streamers.length})` },
-            {
-              id: "live",
-              label: (
-                <span className="flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse" />
-                  {`En direct (${liveCount})`}
-                </span>
-              ),
-            },
-            {
-              id: "twitch",
-              label: (
-                <span className="flex items-center gap-1.5">
-                  <TwitchLogo className="h-3 w-3 text-[#A970FF]" />
-                  {`Twitch (${twitchCount})`}
-                </span>
-              ),
-            },
-            {
-              id: "youtube",
-              label: (
-                <span className="flex items-center gap-1.5">
-                  <YouTubeLogo className="h-3 w-3 text-[#FF4D4D]" />
-                  {`YouTube (${youtubeCount})`}
-                </span>
-              ),
-            },
-            {
-              id: "kick",
-              label: (
-                <span className="flex items-center gap-1.5">
-                  <KickLogo className="h-3 w-3 text-[#53FC18]" />
-                  {`Kick (${kickCount})`}
-                </span>
-              ),
-            },
+            { id: "streamers", label: "Streamers suivis", icon: Users },
+            { id: "settings", label: "Salons & Notifications", icon: SlidersHorizontal },
+            { id: "preview", label: "Aperçu de l'Embed", icon: Eye },
+            { id: "simulator", label: "Simulateur de Live", icon: Sparkles },
           ].map((tab) => {
-            const isSelected = activeTab === tab.id;
+            const Icon = tab.icon;
+            const isActive = mainTab === tab.id;
             return (
               <button
                 key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id as any)}
-                className={cn(
-                  "relative px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer whitespace-nowrap",
-                  isSelected ? "text-[var(--text-primary)] font-semibold" : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
-                )}
+                onClick={() => setMainTab(tab.id as any)}
+                className={`relative px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer outline-none ${
+                  isActive
+                    ? "border-transparent text-[var(--text-primary)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                }`}
               >
-                {isSelected && (
+                {isActive && (
                   <motion.span
-                    layoutId="activeFilterStreamers"
-                    className="absolute inset-0 rounded-lg bg-[var(--surface-raised)] border border-[var(--panel-border)] shadow-sm"
-                    transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                    layoutId="streamers-main-tab"
+                    transition={{ type: "spring", stiffness: 450, damping: 43 }}
+                    className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]"
                   />
                 )}
-                <span className="relative z-10">{tab.label}</span>
+                <Icon className={`w-4 h-4 ${isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]"}`} />
+                {tab.label}
               </button>
             );
           })}
         </div>
 
-        {/* Search Bar */}
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-muted)]" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher streamer, jeu..."
-            className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-primary)] transition-all"
-          />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-            >
-              <X className="h-3 w-3" />
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Streamer Cards Grid */}
-      {filteredStreamers.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="rounded-[var(--panel-radius)] border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/20 p-12 text-center flex flex-col items-center justify-center space-y-3"
-        >
-          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
-            <Radio className="h-6 w-6" />
-          </div>
-          <div className="max-w-sm">
-            <h3 className="text-sm font-semibold text-[var(--text-primary)]">
-              {searchQuery ? "Aucun streamer ne correspond à votre recherche" : "Aucun streamer configuré"}
-            </h3>
-            <p className="mt-1 text-xs text-[var(--text-muted)]">
-              {searchQuery
-                ? "Essayez avec un autre nom, plateforme ou mot-clé."
-                : "Ajoutez vos créateurs favoris sur Twitch, YouTube ou Kick pour recevoir des alertes automatiques et attribuer le rôle @En Live."}
-            </p>
-          </div>
-          {!searchQuery && (
-            <button
-              type="button"
-              onClick={() => setShowAddModal(true)}
-              className="mt-2 flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-[var(--inset-radius)] bg-[var(--accent-primary)] text-white hover:opacity-95 shadow transition-all cursor-pointer"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Ajouter un premier streamer</span>
-            </button>
-          )}
-        </motion.div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <AnimatePresence mode="popLayout">
-            {filteredStreamers.map((streamer, idx) => {
-              const plat = PLATFORM_CONFIG[streamer.platform];
-              const IconComp = plat.icon;
-              const isTesting = testingId === streamer.id;
-
-              return (
-                <motion.div
-                  key={streamer.id}
-                  layout
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.25, delay: idx * 0.04 }}
-                  className={cn(
-                    "group relative flex flex-col justify-between rounded-[var(--panel-radius)] border bg-[var(--surface-raised)]/40 backdrop-blur-xl p-5 transition-all duration-300 hover:shadow-xl hover:border-[var(--input-border-hover)]",
-                    streamer.paused && "opacity-75 bg-[var(--surface-raised)]/20 border-dashed",
-                    streamer.isLive && !streamer.paused
-                      ? "border-rose-500/40 shadow-[0_0_25px_rgba(244,63,94,0.15)] bg-gradient-to-b from-rose-500/5 via-[var(--surface-raised)]/50 to-[var(--surface-raised)]/30"
-                      : "border-[var(--panel-border)]"
-                  )}
-                >
-                  {/* Top Bar: Platform pill + Live Status Badge */}
-                  <div className="flex items-center justify-between gap-2">
-                    <span
-                      className={cn(
-                        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border",
-                        plat.badgeBg,
-                        plat.badgeText,
-                        plat.border
-                      )}
-                    >
-                      <IconComp className="h-3 w-3" />
-                      {plat.name}
-                    </span>
-
-                    <div className="flex items-center gap-1.5">
-                      {streamer.paused ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                          ⏸️ En pause
-                        </span>
-                      ) : streamer.isLive ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
-                          <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500" />
-                          </span>
-                          EN DIRECT
-                          {streamer.viewers !== null && (
-                            <span className="text-[11px] font-normal text-rose-200/80">
-                              • {streamer.viewers.toLocaleString()}
-                            </span>
-                          )}
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium text-[var(--text-muted)] bg-[var(--surface-raised)]/80 border border-[var(--panel-border)]">
-                          <span className="h-1.5 w-1.5 rounded-full bg-zinc-500" />
-                          Hors ligne
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Profile Header */}
-                  <div className="mt-4 flex items-center gap-3.5">
-                    <div className="relative">
-                      {streamer.avatarUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={streamer.avatarUrl}
-                          alt={streamer.displayName}
-                          className={cn(
-                            "h-12 w-12 rounded-2xl object-cover border-2 shadow",
-                            streamer.isLive ? "border-rose-500" : "border-[var(--panel-border)]"
-                          )}
-                        />
-                      ) : (
-                        <div
-                          className={cn(
-                            "h-12 w-12 rounded-2xl grid place-items-center font-bold text-base text-white border-2",
-                            streamer.isLive ? "border-rose-500 bg-rose-600/30" : "border-[var(--panel-border)] bg-zinc-800"
-                          )}
-                        >
-                          {(streamer.displayName || streamer.username).slice(0, 2).toUpperCase()}
-                        </div>
-                      )}
-                      <span
-                        className={cn(
-                          "absolute -bottom-1 -right-1 grid h-5 w-5 place-items-center rounded-lg border border-[var(--panel-border)] p-0.5",
-                          plat.badgeBg,
-                          plat.badgeText
-                        )}
-                      >
-                        <IconComp className="h-3 w-3" />
-                      </span>
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5">
-                        <h4 className="truncate text-sm font-bold text-[var(--text-primary)]">
-                          {streamer.displayName || streamer.username}
-                        </h4>
-                        <a
-                          href={streamer.streamUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-                          title="Voir sur la plateforme"
-                        >
-                          <ExternalLink className="h-3.5 w-3.5" />
-                        </a>
-                      </div>
-                      <p className="truncate text-xs text-[var(--text-muted)]">@{streamer.username}</p>
-                    </div>
-                  </div>
-
-                  {/* Tags & Badges: Linked Discord Member & Game Filter */}
-                  <div className="mt-2.5 flex flex-wrap gap-1.5">
-                    {streamer.discordUserId && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-purple-500/10 text-purple-300 border border-purple-500/20">
-                        <Bot className="h-2.5 w-2.5" />
-                        Lié : {members.find((m) => m.id === streamer.discordUserId)?.displayName || `@${streamer.discordUserId}`}
-                      </span>
-                    )}
-                    {streamer.gameFilter && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-sky-500/10 text-sky-300 border border-sky-500/20">
-                        🎯 Jeu : {streamer.gameFilter}
-                      </span>
-                    )}
-                    {streamer.minViewers > 0 && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-zinc-800 text-zinc-300 border border-zinc-700">
-                        👥 Min {streamer.minViewers}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Stream Details if Live */}
-                  {streamer.isLive ? (
-                    <div className="mt-3.5 rounded-xl border border-rose-500/20 bg-rose-500/5 p-3 space-y-1.5">
-                      <p className="line-clamp-2 text-xs font-medium text-[var(--text-primary)]">
-                        {streamer.title || "Titre de diffusion non communiqué"}
-                      </p>
-                      {streamer.game && (
-                        <div className="flex items-center gap-1.5 text-[11px] text-rose-300 font-semibold">
-                          <span>🎮</span>
-                          <span className="truncate">{streamer.game}</span>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="mt-3.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/20 p-2.5 text-[11px] text-[var(--text-muted)] flex items-center justify-between">
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" /> Dernier live
-                      </span>
-                      <span>
-                        {streamer.lastLiveAt ? new Date(streamer.lastLiveAt).toLocaleDateString("fr-FR") : "Jamais détecté"}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Custom Notification Routing Info */}
-                  <div className="mt-3 flex items-center justify-between text-[11px] text-[var(--text-muted)] border-t border-[var(--panel-border)]/50 pt-2.5">
-                    <span className="truncate max-w-[55%]">
-                      Salon : <span className="font-semibold text-[var(--text-secondary)]">{resolveStreamerChannelLabel(streamer)}</span>
-                    </span>
-                    <span className="truncate max-w-[42%] text-right font-semibold text-[var(--text-secondary)]">
-                      {resolveStreamerPingLabel(streamer)}
-                    </span>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="mt-4 flex items-center justify-between gap-1.5 border-t border-[var(--panel-border)] pt-3">
-                    <button
-                      type="button"
-                      onClick={() => handleTestAlert(streamer)}
-                      disabled={isTesting || streamer.paused}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-[var(--surface-raised)]/80 hover:bg-[var(--surface-raised)] border border-[var(--panel-border)] text-[var(--text-primary)] transition-all cursor-pointer disabled:opacity-40"
-                      title="Envoie un aperçu d'alerte dans Discord"
-                    >
-                      {isTesting ? (
-                        <RefreshCw className="h-3.5 w-3.5 animate-spin text-[var(--accent-primary)]" />
-                      ) : (
-                        <Play className="h-3.5 w-3.5 text-rose-400" />
-                      )}
-                      <span>Tester</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleTogglePause(streamer)}
-                      className={cn(
-                        "grid h-8 w-8 place-items-center rounded-lg border text-xs transition-all cursor-pointer",
-                        streamer.paused
-                          ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
-                          : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                      )}
-                      title={streamer.paused ? "Reprendre la surveillance" : "Mettre en pause"}
-                    >
-                      {streamer.paused ? "▶" : "⏸"}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setEditingStreamer(streamer)}
-                      className="grid h-8 w-8 place-items-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
-                      title="Modifier les options de ce streamer"
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteStreamer(streamer)}
-                      className="grid h-8 w-8 place-items-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-rose-400 transition-all cursor-pointer"
-                      title="Supprimer ce streamer"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </div>
-      )}
-
-      {/* Embed Live Mock / Visualizer */}
-      <div className="mt-8 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 backdrop-blur-xl p-5 sm:p-6 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-purple-400" />
-              Aperçu en direct du rendu Discord (Embed dynamique personnalisé)
-            </h3>
-            <p className="text-xs text-[var(--text-muted)]">
-              Voici exactement comment vos alertes s&apos;affichent sur votre serveur selon vos options de couleur, miniatures et pings.
-            </p>
-          </div>
-          <span className="text-[11px] font-semibold text-purple-300 bg-purple-500/10 px-2.5 py-1 rounded-full border border-purple-500/20">
-            Fidélité pixel Discord 100%
-          </span>
-        </div>
-
-        {/* Mock Discord message */}
-        <div className="rounded-2xl border border-[#2b2d31] bg-[#1e1f22] p-4 text-[#dbdee1] font-sans text-xs space-y-2">
-          {/* Bot author line */}
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-purple-600 grid place-items-center font-bold text-white text-xs">
-              E
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-white">ETHONE</span>
-                <span className="bg-[#5865f2] text-white text-[9px] font-bold px-1 rounded uppercase">BOT</span>
-                <span className="text-[10px] text-[#949ba4]">Aujourd&apos;hui à 19:42</span>
-              </div>
-              <p className="mt-0.5 text-xs text-[#b5bac1]">
-                {config.defaultPing !== "none" && (
-                  <span className="text-[#5865f2] font-medium bg-[#5865f2]/15 px-1 py-0.5 rounded mr-1.5">
-                    {config.defaultPing === "here"
-                      ? "@here"
-                      : config.defaultPing === "everyone"
-                      ? "@everyone"
-                      : config.defaultRoleId
-                      ? `@${roles.find((r) => r.id === config.defaultRoleId)?.name || "Streamers"}`
-                      : "@Notif"}
-                  </span>
-                )}
-                {config.defaultMessage.replace("{streamer}", "Gotaga").replace("{platform}", "Twitch").replace("{url}", "https://twitch.tv/gotaga")}
-              </p>
-            </div>
-          </div>
-
-          {/* Discord Embed card */}
-          <div
-            className="ml-10 rounded-lg border-l-4 bg-[#2b2d31] p-3.5 max-w-lg space-y-2.5 transition-colors"
-            style={{ borderLeftColor: livePreviewColor }}
-          >
-            <div className="flex items-center justify-between text-[11px]">
-              <div className="flex items-center gap-1.5 font-bold text-white">
-                <TwitchLogo className="h-3.5 w-3.5 text-[#A970FF]" />
-                Gotaga est en direct sur Twitch !
-              </div>
-              <span className="bg-red-600 text-white font-black text-[9px] px-1.5 py-0.5 rounded tracking-wider">
-                LIVE
-              </span>
-            </div>
-
-            <div>
-              <a
-                href="https://twitch.tv"
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm font-bold text-[#00a8fc] hover:underline"
-              >
-                🔴 GRAND TOURNOI ESPORT & MULTI-GAMING AVEC LE CHAT !
-              </a>
-              <div className="mt-1 flex items-center gap-3 text-[11px] text-[#949ba4]">
-                {config.showGame !== false && <span>🎮 VALORANT</span>}
-                {config.showViewers !== false && <span>👥 14 850 spectateurs</span>}
-              </div>
-            </div>
-
-            {config.showThumbnail !== false && (
-              <div className="relative aspect-video w-full rounded-md overflow-hidden bg-black/60 border border-[#35373c] flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                <div className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold">
-                  <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-                  EN DIRECT
-                </div>
-                <span className="text-white/40 text-xs font-mono">Miniature HD Stream</span>
-              </div>
-            )}
-
-            <div className="pt-2">
-              <button
-                type="button"
-                className="w-full py-1.5 px-3 rounded bg-[#35373c] hover:bg-[#404249] text-white font-semibold text-xs flex items-center justify-center gap-1.5 border border-[#404249]"
-              >
-                <span>📺</span>
-                <span>{config.customButtonText || "Regarder sur Twitch"}</span>
-              </button>
-            </div>
-
-            <div className="text-[10px] text-[#949ba4] pt-1 border-t border-[#35373c] flex items-center justify-between">
-              <span>ETHONE Stream Engine • Détection instantanée</span>
-              <span>twitch.tv/gotaga</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Configuration Modal with Tabs */}
-      <AnimatePresence>
-        {showConfigDrawer && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowConfigDrawer(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-2xl rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl p-6 space-y-5 max-h-[90vh] overflow-y-auto"
-            >
-              <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
-                <div className="flex items-center gap-2">
-                  <SlidersHorizontal className="h-4 w-4 text-[var(--accent-primary)]" />
-                  <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                    Options & Personnalisation avancée des Streams
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowConfigDrawer(false)}
-                  className="rounded-lg p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              {/* Config Navigation Tabs */}
-              <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--surface-raised)]/50 border border-[var(--panel-border)] text-xs">
+        {/* TAB 1 : STREAMERS SUIVIS */}
+        {mainTab === "streamers" && (
+          <div className="space-y-6">
+            {/* Filter and search bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
                 {[
-                  { id: "channels", label: "Salons & Routage" },
-                  { id: "roles", label: "Pings & Rôles" },
-                  { id: "embed", label: "Apparence de l'Embed" },
-                  { id: "rules", label: "Anti-Spam & Règles" },
-                ].map((t) => (
+                  { id: "all", label: `Tous (${streamers.length})` },
+                  { id: "live", label: `En direct (${liveCount})` },
+                  { id: "twitch", label: `Twitch (${twitchCount})` },
+                  { id: "youtube", label: `YouTube (${youtubeCount})` },
+                  { id: "kick", label: `Kick (${kickCount})` },
+                ].map((f) => (
                   <button
-                    key={t.id}
+                    key={f.id}
                     type="button"
-                    onClick={() => setConfigTab(t.id as any)}
+                    onClick={() => setPlatformFilter(f.id as any)}
                     className={cn(
-                      "flex-1 py-1.5 rounded-lg font-medium transition-all cursor-pointer",
-                      configTab === t.id
-                        ? "bg-[var(--accent-primary)] text-white shadow-sm font-semibold"
-                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                      "px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer whitespace-nowrap",
+                      platformFilter === f.id
+                        ? "bg-[var(--accent-primary)]/15 border-[var(--accent-primary)] text-[var(--text-primary)]"
+                        : "border-[var(--panel-border)] bg-[var(--surface-raised)]/30 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     )}
                   >
-                    {t.label}
+                    {f.label}
                   </button>
                 ))}
               </div>
 
-              {/* Tab: Salons & Routage */}
-              {configTab === "channels" && (
-                <div className="space-y-4 text-xs">
-                  <Switch
-                    checked={config.enabled}
-                    onChange={(v) => setConfig((c) => ({ ...c, enabled: v }))}
-                    label="Module d'alertes actif"
-                    hint="Active la détection périodique automatique et l'envoi d'embeds dans Discord."
+              <div className="relative w-full sm:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-muted)]" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Filtrer streamer, jeu..."
+                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-primary)]"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Streamers cards grid */}
+            {filteredStreamers.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/20 p-12 text-center flex flex-col items-center justify-center space-y-3">
+                <Radio className="h-8 w-8 text-[var(--text-muted)] opacity-60" />
+                <div className="max-w-md">
+                  <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                    {searchQuery ? "Aucun streamer ne correspond à votre recherche" : "Aucun streamer configuré"}
+                  </h3>
+                  <p className="mt-1 text-xs text-[var(--text-muted)]">
+                    {searchQuery
+                      ? "Essayez avec un autre terme de recherche ou changez de filtre."
+                      : "Ajoutez vos créateurs favoris sur Twitch, YouTube ou Kick pour recevoir les notifications automatiques."}
+                  </p>
+                </div>
+                {!searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAddModal(true)}
+                    className="mt-2 flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl bg-[var(--accent-primary)] text-white hover:opacity-95 shadow cursor-pointer"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Ajouter un streamer</span>
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredStreamers.map((streamer) => {
+                  const pConfig = PLATFORM_CONFIG[streamer.platform];
+                  const PlatformIcon = pConfig.icon;
+                  const isTesting = testingId === streamer.id;
+
+                  return (
+                    <div
+                      key={streamer.id}
+                      className={cn(
+                        "rounded-2xl border bg-[var(--surface-raised)]/40 p-4 space-y-3 transition-colors",
+                        streamer.isLive ? "border-rose-500/40 shadow-sm shadow-rose-500/5" : "border-[var(--panel-border)]"
+                      )}
+                    >
+                      {/* Card Header */}
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border", pConfig.badgeBg, pConfig.badgeText, pConfig.border)}>
+                            <PlatformIcon className="h-3 w-3" />
+                            {pConfig.name}
+                          </span>
+                          {streamer.isLive ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                              <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse" />
+                              EN DIRECT
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-[var(--text-muted)]">Hors-ligne</span>
+                          )}
+                        </div>
+
+                        {/* Top action buttons */}
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => handleTogglePause(streamer)}
+                            className={cn(
+                              "p-1.5 rounded-lg border text-xs transition-colors cursor-pointer",
+                              streamer.paused
+                                ? "bg-amber-500/15 border-amber-500/30 text-amber-300"
+                                : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                            )}
+                            title={streamer.paused ? "Reprendre les alertes" : "Mettre en pause"}
+                          >
+                            {streamer.paused ? <Play className="h-3.5 w-3.5" /> : <Bell className="h-3.5 w-3.5" />}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditingStreamer(streamer)}
+                            className="p-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                            title="Modifier les réglages"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleTestAlert(streamer)}
+                            disabled={isTesting}
+                            className="p-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer disabled:opacity-50"
+                            title="Tester l'alerte sur Discord"
+                          >
+                            <Sparkles className={cn("h-3.5 w-3.5", isTesting && "animate-spin text-purple-400")} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteStreamer(streamer)}
+                            className="p-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-rose-400 hover:bg-rose-500/15 transition-colors cursor-pointer"
+                            title="Supprimer ce streamer"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Streamer Info */}
+                      <div className="flex items-start gap-3">
+                        <div className="relative h-10 w-10 rounded-xl overflow-hidden bg-[var(--surface-raised)] border border-[var(--panel-border)] shrink-0 flex items-center justify-center font-bold text-sm text-[var(--text-primary)]">
+                          {streamer.avatarUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={streamer.avatarUrl} alt={streamer.displayName} className="h-full w-full object-cover" />
+                          ) : (
+                            streamer.displayName[0]?.toUpperCase() || streamer.username[0]?.toUpperCase()
+                          )}
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <a
+                            href={streamer.streamUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-bold text-sm text-[var(--text-primary)] hover:underline flex items-center gap-1 truncate"
+                          >
+                            <span>{streamer.displayName || streamer.username}</span>
+                            <ExternalLink className="h-3 w-3 text-[var(--text-muted)] shrink-0" />
+                          </a>
+                          <span className="text-[11px] text-[var(--text-muted)] block truncate">@{streamer.username}</span>
+                        </div>
+                      </div>
+
+                      {/* Live details if online */}
+                      {streamer.isLive && streamer.title && (
+                        <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs space-y-1">
+                          <p className="font-semibold text-rose-200 line-clamp-1">{streamer.title}</p>
+                          <div className="flex items-center justify-between text-[11px] text-rose-300/80">
+                            <span>{streamer.game || "Live"}</span>
+                            <span>{streamer.viewers ? `${streamer.viewers.toLocaleString()} viewers` : ""}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Routing labels */}
+                      <div className="pt-2 border-t border-[var(--panel-border)] text-[11px] text-[var(--text-muted)] space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span>Salon :</span>
+                          <span className="font-medium text-[var(--text-primary)] truncate max-w-[150px]">
+                            {resolveStreamerChannelLabel(streamer)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span>Mention :</span>
+                          <span className="font-medium text-[var(--text-primary)] truncate max-w-[150px]">
+                            {resolveStreamerPingLabel(streamer)}
+                          </span>
+                        </div>
+                        {streamer.discordUserId && (
+                          <div className="flex items-center justify-between">
+                            <span>Membre lié :</span>
+                            <span className="font-medium text-purple-300 truncate max-w-[150px]">
+                              @{members.find((m) => m.id === streamer.discordUserId)?.displayName || streamer.discordUserId}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 2 : SALONS & NOTIFICATIONS (SETTINGS) */}
+        {mainTab === "settings" && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Salons de diffusion */}
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
+                <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Bell className="h-4 w-4 text-[var(--accent-primary)]" />
+                  Salons de Diffusion
+                </h3>
+                <p className="text-xs text-[var(--text-muted)]">
+                  Définissez un salon par défaut et ciblez des salons distincts pour Twitch, YouTube ou Kick.
+                </p>
+
+                <div className="space-y-3 pt-2">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-[var(--text-primary)]">Salon par défaut (Global)</label>
+                    <ChannelPicker
+                      value={config.defaultChannelId ?? ""}
+                      onChange={(id) => setConfig((prev) => ({ ...prev, defaultChannelId: id || null }))}
+                      channels={channels}
+                      emptyLabel="— Sélectionner un salon par défaut —"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-[#A970FF] flex items-center gap-1.5">
+                      <TwitchLogo className="h-3.5 w-3.5" />
+                      Salon dédié Twitch (optionnel)
+                    </label>
+                    <ChannelPicker
+                      value={config.twitchChannelId ?? ""}
+                      onChange={(id) => setConfig((prev) => ({ ...prev, twitchChannelId: id || null }))}
+                      channels={channels}
+                      emptyLabel="— Hériter du salon par défaut —"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-[#FF4D4D] flex items-center gap-1.5">
+                      <YouTubeLogo className="h-3.5 w-3.5" />
+                      Salon dédié YouTube (optionnel)
+                    </label>
+                    <ChannelPicker
+                      value={config.youtubeChannelId ?? ""}
+                      onChange={(id) => setConfig((prev) => ({ ...prev, youtubeChannelId: id || null }))}
+                      channels={channels}
+                      emptyLabel="— Hériter du salon par défaut —"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-[#53FC18] flex items-center gap-1.5">
+                      <KickLogo className="h-3.5 w-3.5" />
+                      Salon dédié Kick (optionnel)
+                    </label>
+                    <ChannelPicker
+                      value={config.kickChannelId ?? ""}
+                      onChange={(id) => setConfig((prev) => ({ ...prev, kickChannelId: id || null }))}
+                      channels={channels}
+                      emptyLabel="— Hériter du salon par défaut —"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Rôle @En Live & Mentions */}
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
+                <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-purple-400" />
+                  Rôle @En Live & Mentions
+                </h3>
+                <p className="text-xs text-[var(--text-muted)]">
+                  Attribuez automatiquement un rôle aux créateurs du serveur et gérez les alertes par mention.
+                </p>
+
+                <div className="space-y-3 pt-2">
+                  <SwitchRow
+                    label="Attribution automatique du rôle @En Live"
+                    hint="Attribué au membre Discord dès le début du stream, et retiré automatiquement à la fin."
+                    checked={config.autoLiveRoleEnabled}
+                    onChange={(v) => setConfig((prev) => ({ ...prev, autoLiveRoleEnabled: v }))}
                   />
 
                   <div className="space-y-1.5">
-                    <label className="font-semibold text-[var(--text-primary)]">Salon d&apos;annonce général par défaut</label>
-                    <ChannelPicker
-                      value={config.defaultChannelId ?? ""}
-                      onChange={(id) => setConfig((c) => ({ ...c, defaultChannelId: id || null }))}
-                      channels={channels}
-                      emptyLabel="— Choisir un salon par défaut —"
+                    <label className="text-xs font-semibold text-[var(--text-primary)]">Rôle @En Live</label>
+                    <RolePicker
+                      value={config.liveRoleId}
+                      onChange={(id) => setConfig((prev) => ({ ...prev, liveRoleId: id || null }))}
+                      roles={roles}
+                      guildId={selectedGuild?.id}
+                      placeholder="Sélectionner le rôle @En Live..."
+                      emptyLabel="— Aucun rôle —"
+                      allowClear
+                      size="sm"
                     />
-                    <p className="text-[11px] text-[var(--text-muted)]">
-                      Utilisé si un streamer n&apos;a pas de salon dédié ou de salon par plateforme.
-                    </p>
                   </div>
 
-                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-3.5 space-y-3">
-                    <h4 className="font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
-                      <Globe className="h-3.5 w-3.5 text-purple-400" />
-                      Salons dédiés par plateforme (Optionnel)
-                    </h4>
-                    <p className="text-[11px] text-[var(--text-muted)]">
-                      Permet d&apos;acheminer automatiquement les alertes dans des salons séparés pour chaque plateforme.
-                    </p>
+                  <div className="space-y-1.5 pt-2">
+                    <label className="text-xs font-semibold text-[var(--text-primary)]">Mention globale par défaut</label>
+                    <select
+                      value={config.defaultPing}
+                      onChange={(e) => setConfig((prev) => ({ ...prev, defaultPing: e.target.value as any }))}
+                      className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
+                    >
+                      <option value="none">Aucune mention (silencieux)</option>
+                      <option value="here">@here (membres connectés)</option>
+                      <option value="everyone">@everyone (tout le serveur)</option>
+                      <option value="role">Rôle spécifique</option>
+                    </select>
+                  </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                      <div className="space-y-1">
-                        <label className="flex items-center gap-1 text-[11px] font-semibold text-[#A970FF]">
-                          <TwitchLogo className="h-3 w-3" /> Salon Twitch
-                        </label>
-                        <ChannelPicker
-                          value={config.twitchChannelId ?? ""}
-                          onChange={(id) => setConfig((c) => ({ ...c, twitchChannelId: id || null }))}
-                          channels={channels}
-                          emptyLabel="— Hériter du général —"
-                        />
-                      </div>
+                  {config.defaultPing === "role" && (
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-[var(--text-primary)]">Rôle global à mentionner</label>
+                      <RolePicker
+                        value={config.defaultRoleId}
+                        onChange={(id) => setConfig((prev) => ({ ...prev, defaultRoleId: id || null }))}
+                        roles={roles}
+                        guildId={selectedGuild?.id}
+                        placeholder="Sélectionner le rôle..."
+                        emptyLabel="— Aucun —"
+                        allowClear
+                        size="sm"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
 
-                      <div className="space-y-1">
-                        <label className="flex items-center gap-1 text-[11px] font-semibold text-[#FF4D4D]">
-                          <YouTubeLogo className="h-3 w-3" /> Salon YouTube
-                        </label>
-                        <ChannelPicker
-                          value={config.youtubeChannelId ?? ""}
-                          onChange={(id) => setConfig((c) => ({ ...c, youtubeChannelId: id || null }))}
-                          channels={channels}
-                          emptyLabel="— Hériter du général —"
-                        />
-                      </div>
+              {/* Personnalisation de l'Embed */}
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
+                <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Sliders className="h-4 w-4 text-amber-400" />
+                  Apparence de l'Embed Discord
+                </h3>
+                <p className="text-xs text-[var(--text-muted)]">
+                  Ajustez les éléments visuels affichés dans la notification de live.
+                </p>
 
-                      <div className="space-y-1">
-                        <label className="flex items-center gap-1 text-[11px] font-semibold text-[#53FC18]">
-                          <KickLogo className="h-3 w-3" /> Salon Kick
-                        </label>
-                        <ChannelPicker
-                          value={config.kickChannelId ?? ""}
-                          onChange={(id) => setConfig((c) => ({ ...c, kickChannelId: id || null }))}
-                          channels={channels}
-                          emptyLabel="— Hériter du général —"
-                        />
-                      </div>
+                <div className="space-y-3 pt-2">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-[var(--text-primary)]">Couleur latérale de l'embed</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {PRESET_EMBED_COLORS.map((c) => (
+                        <button
+                          key={c.name}
+                          type="button"
+                          onClick={() => setConfig((prev) => ({ ...prev, embedColor: c.value || null }))}
+                          className={cn(
+                            "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold transition-all cursor-pointer",
+                            config.embedColor === (c.value || null)
+                              ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--text-primary)] font-bold"
+                              : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
+                          )}
+                        >
+                          <span
+                            className="h-2.5 w-2.5 rounded-full shrink-0"
+                            style={{ backgroundColor: c.value || "var(--accent-primary)" }}
+                          />
+                          <span className="truncate">{c.name}</span>
+                        </button>
+                      ))}
                     </div>
                   </div>
-                </div>
-              )}
 
-              {/* Tab: Pings & Rôles */}
-              {configTab === "roles" && (
-                <div className="space-y-4 text-xs">
+                  <SwitchRow
+                    label="Afficher le nombre de spectateurs"
+                    checked={config.showViewers}
+                    onChange={(v) => setConfig((prev) => ({ ...prev, showViewers: v }))}
+                  />
+
+                  <SwitchRow
+                    label="Afficher le jeu / la catégorie"
+                    checked={config.showGame}
+                    onChange={(v) => setConfig((prev) => ({ ...prev, showGame: v }))}
+                  />
+
+                  <SwitchRow
+                    label="Afficher la miniature du live en grand"
+                    checked={config.showThumbnail}
+                    onChange={(v) => setConfig((prev) => ({ ...prev, showThumbnail: v }))}
+                  />
+
+                  <div className="space-y-1.5 pt-1">
+                    <label className="text-xs font-semibold text-[var(--text-primary)]">Libellé du bouton Discord</label>
+                    <input
+                      type="text"
+                      value={config.customButtonText || ""}
+                      onChange={(e) => setConfig((prev) => ({ ...prev, customButtonText: e.target.value || null }))}
+                      placeholder="Regarder le live"
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-primary)]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Règles & Cooldown */}
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
+                <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Flame className="h-4 w-4 text-rose-400" />
+                  Règles & Cooldown Anti-Spam
+                </h3>
+                <p className="text-xs text-[var(--text-muted)]">
+                  Gérez la fin de diffusion et évitez le multi-ping en cas de brève déconnexion.
+                </p>
+
+                <div className="space-y-3 pt-2">
                   <div className="space-y-1.5">
-                    <label className="font-semibold text-[var(--text-primary)]">Mention globale par défaut</label>
-                    <div className="grid grid-cols-4 gap-2">
+                    <label className="text-xs font-semibold text-[var(--text-primary)]">Action à la fin du live</label>
+                    <select
+                      value={config.offlineAction}
+                      onChange={(e) => setConfig((prev) => ({ ...prev, offlineAction: e.target.value as any }))}
+                      className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
+                    >
+                      <option value="update_offline">Mettre à jour l'embed en « Hors-ligne » (Recommandé)</option>
+                      <option value="delete">Supprimer le message d'alerte automatiquement</option>
+                      <option value="keep">Conserver l'embed tel quel</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-[var(--text-primary)]">Cooldown anti-spam (Minutes)</label>
+                    <input
+                      type="number"
+                      min={5}
+                      max={360}
+                      value={config.cooldownMinutes}
+                      onChange={(e) => setConfig((prev) => ({ ...prev, cooldownMinutes: parseInt(e.target.value, 10) || 30 }))}
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-primary)]"
+                    />
+                    <span className="text-[11px] text-[var(--text-muted)] block mt-0.5">
+                      Délai minimum avant de renvoyer une nouvelle alerte si le streamer relance son live.
+                    </span>
+                  </div>
+
+                  <SwitchRow
+                    label="Interrupteur maître du module Alertes Streamers"
+                    hint="Active ou coupe l'ensemble des vérifications sur ce serveur."
+                    checked={config.enabled}
+                    onChange={(v) => setConfig((prev) => ({ ...prev, enabled: v }))}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Bouton de sauvegarde */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                disabled={savingConfig}
+                onClick={handleSaveConfig}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-bold shadow-md cursor-pointer disabled:opacity-50 btn-sheen"
+              >
+                {savingConfig ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                <span>{savingConfig ? "Enregistrement en cours..." : "Enregistrer la Configuration"}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3 : APERÇU DE L'EMBED */}
+        {mainTab === "preview" && (
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Rendu Fidèle de l'Alerte Discord</h3>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    Ce que vos membres voient dans leur salon textuel lors d'une notification de live.
+                  </p>
+                </div>
+              </div>
+
+              {/* Discord message wrapper */}
+              <div className="rounded-xl border border-stone-800 bg-[#2b2d31] p-5 text-stone-200 max-w-xl shadow-xl font-sans text-xs">
+                {/* Bot header */}
+                <div className="flex items-center gap-2.5 mb-3">
+                  <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-purple-500 to-rose-500 flex items-center justify-center font-bold text-[10px] text-white">
+                    ETH
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold text-white text-xs">ETHONE</span>
+                    <span className="rounded bg-[#5865f2] px-1 py-0.2 text-[9px] font-bold text-white uppercase tracking-wider">
+                      BOT
+                    </span>
+                    <span className="text-[10px] text-stone-400">Aujourd&apos;hui à 20:15</span>
+                  </div>
+                </div>
+
+                <p className="text-[#a9b2ff] text-xs font-semibold mb-2">
+                  @here 🔴 Gotaga est en direct sur Twitch !
+                </p>
+
+                {/* Embed container */}
+                <div
+                  className="rounded-md bg-[#232428] p-4 border-l-4 space-y-3"
+                  style={{ borderLeftColor: config.embedColor || "#9146FF" }}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-white text-sm">
+                      🔴 [FR] TOURNOI ESPORT & MULTI-GAMING AVEC LE CHAT !
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 pt-1 border-t border-stone-800 text-[11px]">
+                    {config.showGame && (
+                      <div>
+                        <span className="text-stone-400 font-semibold block">Jeu / Catégorie</span>
+                        <span className="text-white font-bold">VALORANT</span>
+                      </div>
+                    )}
+                    {config.showViewers && (
+                      <div>
+                        <span className="text-stone-400 font-semibold block">Spectateurs</span>
+                        <span className="text-rose-400 font-bold">14 850 viewers</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {config.showThumbnail && (
+                    <div className="rounded-lg overflow-hidden border border-stone-800 aspect-video bg-stone-900 flex items-center justify-center text-stone-500 font-bold text-xs">
+                      Miniature live Twitch HD (1920x1080)
+                    </div>
+                  )}
+
+                  <div className="pt-2 text-[10px] text-stone-400 flex items-center justify-between">
+                    <span>{selectedGuild?.name || "Serveur Discord"} • Module Streamers</span>
+                    <span>En direct sur Twitch</span>
+                  </div>
+                </div>
+
+                {/* Discord Button */}
+                <div className="mt-3">
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1.5 rounded bg-[#4e5058] px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-[#6d6f78] transition-colors"
+                  >
+                    <span>{config.customButtonText || "Regarder le live"}</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4 : SIMULATEUR DE LIVE */}
+        {mainTab === "simulator" && (
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-6">
+            <div>
+              <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-purple-400" />
+                Studio de Simulation de Live
+              </h3>
+              <p className="text-xs text-[var(--text-muted)] mt-1">
+                Générez un faux événement de début de live pour vérifier immédiatement la transmission des alertes dans vos salons et l'attribution du rôle @En Live.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-[var(--text-primary)] block mb-1">Plateforme</label>
+                <select
+                  value={simPlatform}
+                  onChange={(e) => setSimPlatform(e.target.value as any)}
+                  className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
+                >
+                  <option value="twitch">Twitch</option>
+                  <option value="youtube">YouTube</option>
+                  <option value="kick">Kick</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[var(--text-primary)] block mb-1">Pseudo du Streamer</label>
+                <input
+                  type="text"
+                  value={simUsername}
+                  onChange={(e) => setSimUsername(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="text-xs font-semibold text-[var(--text-primary)] block mb-1">Titre de la Diffusion</label>
+                <input
+                  type="text"
+                  value={simTitle}
+                  onChange={(e) => setSimTitle(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[var(--text-primary)] block mb-1">Jeu / Catégorie</label>
+                <input
+                  type="text"
+                  value={simGame}
+                  onChange={(e) => setSimGame(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[var(--text-primary)] block mb-1">Spectateurs</label>
+                <input
+                  type="number"
+                  value={simViewers}
+                  onChange={(e) => setSimViewers(parseInt(e.target.value, 10) || 0)}
+                  className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[var(--text-primary)] block mb-1">Salon cible (optionnel)</label>
+                <ChannelPicker
+                  value={simChannelId}
+                  onChange={(id) => setSimChannelId(id || "")}
+                  channels={channels}
+                  emptyLabel="— Salon configuré par défaut —"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[var(--text-primary)] block mb-1">Membre cible pour le rôle @En Live (optionnel)</label>
+                <select
+                  value={simTargetMemberId}
+                  onChange={(e) => setSimTargetMemberId(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-primary)]"
+                >
+                  <option value="">— Aucun membre —</option>
+                  {members.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.displayName} (@{m.name})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <SwitchRow
+              label="Attribuer le rôle @En Live lors de la simulation"
+              hint="Vérifie si le bot possède les permissions nécessaires pour gérer ce rôle."
+              checked={simAssignRole}
+              onChange={setSimAssignRole}
+            />
+
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                disabled={isSimulating}
+                onClick={handleRunSimulation}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-rose-600 text-white text-xs font-bold hover:brightness-110 shadow-md transition-all cursor-pointer disabled:opacity-50"
+              >
+                {isSimulating ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
+                <span>{isSimulating ? "Simulation en cours..." : "Lancer le Test de Direct Discord"}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL AJOUT STREAMER */}
+        <AnimatePresence>
+          {showAddModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowAddModal(false)}
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              />
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="relative w-full max-w-lg rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+              >
+                <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
+                  <div className="flex items-center gap-2">
+                    <Plus className="h-4 w-4 text-[var(--accent-primary)]" />
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">Ajouter un nouveau streamer</h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddModal(false)}
+                    className="rounded-lg p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleAddStreamer} className="space-y-4 text-xs">
+                  {/* Platform selector */}
+                  <div className="space-y-1.5">
+                    <label className="font-semibold text-[var(--text-primary)]">Plateforme de diffusion</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(["twitch", "youtube", "kick"] as StreamPlatform[]).map((p) => {
+                        const pc = PLATFORM_CONFIG[p];
+                        const PIcon = pc.icon;
+                        const isSel = formPlatform === p;
+                        return (
+                          <button
+                            key={p}
+                            type="button"
+                            onClick={() => setFormPlatform(p)}
+                            className={cn(
+                              "flex items-center justify-center gap-2 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer",
+                              isSel ? `${pc.badgeBg} ${pc.badgeText} ${pc.border}` : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
+                            )}
+                          >
+                            <PIcon className="h-4 w-4" />
+                            <span>{pc.name}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Username */}
+                  <div className="space-y-1.5">
+                    <label className="font-semibold text-[var(--text-primary)]">Identifiant ou pseudo du créateur</label>
+                    <div className="flex rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] overflow-hidden">
+                      <span className="px-3 py-2 text-[var(--text-muted)] bg-[var(--surface-raised)]/80 text-xs border-r border-[var(--panel-border)] shrink-0">
+                        {PLATFORM_CONFIG[formPlatform].prefix}
+                      </span>
+                      <input
+                        type="text"
+                        required
+                        value={formUsername}
+                        onChange={(e) => setFormUsername(e.target.value)}
+                        placeholder={PLATFORM_CONFIG[formPlatform].placeholder}
+                        className="w-full px-3 py-2 text-xs bg-transparent text-[var(--text-primary)] focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Dedicated channel */}
+                  <div className="space-y-1.5">
+                    <label className="font-semibold text-[var(--text-primary)]">Salon de notification dédié (optionnel)</label>
+                    <ChannelPicker
+                      value={formChannelId}
+                      onChange={(id) => setFormChannelId(id || "")}
+                      channels={channels}
+                      emptyLabel="— Hériter du salon par défaut —"
+                    />
+                  </div>
+
+                  {/* Ping mode */}
+                  <div className="space-y-1.5">
+                    <label className="font-semibold text-[var(--text-primary)]">Mode de mention</label>
+                    <div className="grid grid-cols-5 gap-1.5">
                       {[
+                        { id: "default", label: "Hériter" },
                         { id: "none", label: "Aucune" },
                         { id: "here", label: "@here" },
                         { id: "everyone", label: "@everyone" },
-                        { id: "role", label: "Rôle dédié" },
+                        { id: "role", label: "Rôle" },
                       ].map((m) => (
                         <button
                           key={m.id}
                           type="button"
-                          onClick={() => setConfig((c) => ({ ...c, defaultPing: m.id as any }))}
+                          onClick={() => setFormPingMode(m.id as any)}
                           className={cn(
-                            "py-2 rounded-lg border text-xs font-medium transition-all cursor-pointer",
-                            config.defaultPing === m.id
+                            "py-1.5 rounded-lg border text-[11px] font-medium transition-all cursor-pointer text-center",
+                            formPingMode === m.id
                               ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--text-primary)] font-bold"
                               : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
                           )}
@@ -1588,843 +1725,263 @@ export default function StreamersCenterClient() {
                     </div>
                   </div>
 
-                  {config.defaultPing === "role" && (
+                  {formPingMode === "role" && (
                     <div className="space-y-1.5">
-                      <label className="font-semibold text-[var(--text-primary)]">Rôle à notifier par défaut</label>
+                      <label className="font-semibold text-[var(--text-primary)]">Rôle spécifique à mentionner</label>
                       <RolePicker
-                        value={config.defaultRoleId}
-                        onChange={(id) => setConfig((c) => ({ ...c, defaultRoleId: id || null }))}
+                        value={formPingRoleId}
+                        onChange={(id) => setFormPingRoleId(id || null)}
                         roles={roles}
                         guildId={selectedGuild?.id}
                         placeholder="Sélectionner le rôle à ping..."
-                        emptyLabel="— Aucun rôle —"
+                        emptyLabel="— Aucun —"
                         allowClear
                         size="sm"
                       />
                     </div>
                   )}
 
-                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-3.5 space-y-3">
-                    <h4 className="font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
-                      <Bell className="h-3.5 w-3.5 text-purple-400" />
-                      Rôles de notification par plateforme (Optionnel)
-                    </h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                      <div className="space-y-1">
-                        <label className="flex items-center gap-1 text-[11px] font-semibold text-[#A970FF]">
-                          <TwitchLogo className="h-3 w-3" /> Notif Twitch
-                        </label>
-                        <RolePicker
-                          value={config.twitchRoleId}
-                          onChange={(id) => setConfig((c) => ({ ...c, twitchRoleId: id || null }))}
-                          roles={roles}
-                          guildId={selectedGuild?.id}
-                          placeholder="— Rôle Twitch —"
-                          emptyLabel="— Hériter —"
-                          allowClear
-                          size="sm"
-                        />
-                      </div>
-
-                      <div className="space-y-1">
-                        <label className="flex items-center gap-1 text-[11px] font-semibold text-[#FF4D4D]">
-                          <YouTubeLogo className="h-3 w-3" /> Notif YouTube
-                        </label>
-                        <RolePicker
-                          value={config.youtubeRoleId}
-                          onChange={(id) => setConfig((c) => ({ ...c, youtubeRoleId: id || null }))}
-                          roles={roles}
-                          guildId={selectedGuild?.id}
-                          placeholder="— Rôle YouTube —"
-                          emptyLabel="— Hériter —"
-                          allowClear
-                          size="sm"
-                        />
-                      </div>
-
-                      <div className="space-y-1">
-                        <label className="flex items-center gap-1 text-[11px] font-semibold text-[#53FC18]">
-                          <KickLogo className="h-3 w-3" /> Notif Kick
-                        </label>
-                        <RolePicker
-                          value={config.kickRoleId}
-                          onChange={(id) => setConfig((c) => ({ ...c, kickRoleId: id || null }))}
-                          roles={roles}
-                          guildId={selectedGuild?.id}
-                          placeholder="— Rôle Kick —"
-                          emptyLabel="— Hériter —"
-                          allowClear
-                          size="sm"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-3.5 space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <label className="font-bold text-[var(--text-primary)] flex items-center gap-1.5">
-                        <Sparkles className="h-4 w-4 text-purple-400" />
-                        Rôle automatique @En Live pour les membres
-                      </label>
-                      <span className="text-[10px] font-semibold text-purple-300 bg-purple-500/20 px-2 py-0.5 rounded-full">
-                        Automatisé
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-[var(--text-muted)]">
-                      Attribué automatiquement au membre Discord lorsqu&apos;il lance son live et retiré dès la fin de diffusion.
-                    </p>
-                    <RolePicker
-                      value={config.liveRoleId}
-                      onChange={(id) => setConfig((c) => ({ ...c, liveRoleId: id || null }))}
-                      roles={roles}
-                      guildId={selectedGuild?.id}
-                      placeholder="Choisir le rôle @En Live..."
-                      emptyLabel="— Désactivé —"
-                      allowClear
-                      size="sm"
-                    />
-                    <Switch
-                      checked={config.autoLiveRoleEnabled}
-                      onChange={(v) => setConfig((c) => ({ ...c, autoLiveRoleEnabled: v }))}
-                      label="Activer l'attribution automatique"
-                      hint="Le rôle du bot doit être positionné au-dessus du rôle @En Live dans la hiérarchie Discord."
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Tab: Apparence de l'Embed */}
-              {configTab === "embed" && (
-                <div className="space-y-4 text-xs">
-                  <div className="space-y-1.5">
-                    <label className="font-semibold text-[var(--text-primary)]">Couleur d&apos;accent de l&apos;embed</label>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {PRESET_EMBED_COLORS.map((c) => (
-                        <button
-                          key={c.name}
-                          type="button"
-                          onClick={() => setConfig((prev) => ({ ...prev, embedColor: c.value || null }))}
-                          className={cn(
-                            "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium cursor-pointer transition-all",
-                            config.embedColor === (c.value || null)
-                              ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-white font-bold"
-                              : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
-                          )}
-                        >
-                          {c.value && (
-                            <span className="h-3 w-3 rounded-full border border-black/30" style={{ backgroundColor: c.value }} />
-                          )}
-                          <span>{c.name}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                    <Switch
-                      checked={config.showViewers}
-                      onChange={(v) => setConfig((c) => ({ ...c, showViewers: v }))}
-                      label="Nombre de spectateurs"
-                      hint="Affiche le compteur de viewers en direct."
-                    />
-                    <Switch
-                      checked={config.showGame}
-                      onChange={(v) => setConfig((c) => ({ ...c, showGame: v }))}
-                      label="Catégorie / Jeu"
-                      hint="Affiche la catégorie ou le jeu joué."
-                    />
-                    <Switch
-                      checked={config.showThumbnail}
-                      onChange={(v) => setConfig((c) => ({ ...c, showThumbnail: v }))}
-                      label="Miniature HD"
-                      hint="Affiche la capture d'écran du stream."
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="font-semibold text-[var(--text-primary)]">Texte du bouton Discord</label>
-                    <input
-                      type="text"
-                      value={config.customButtonText || ""}
-                      onChange={(e) => setConfig((c) => ({ ...c, customButtonText: e.target.value || null }))}
-                      placeholder="Regarder le live (par défaut)"
-                      className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="font-semibold text-[var(--text-primary)]">Modèle de notification</label>
-                    <textarea
-                      rows={2}
-                      value={config.defaultMessage}
-                      onChange={(e) => setConfig((c) => ({ ...c, defaultMessage: e.target.value }))}
-                      className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
-                    />
-                    <p className="text-[10px] text-[var(--text-muted)]">
-                      Variables : <code className="bg-white/5 px-1 py-0.5 rounded">{"{streamer}"}</code>,{" "}
-                      <code className="bg-white/5 px-1 py-0.5 rounded">{"{platform}"}</code>,{" "}
-                      <code className="bg-white/5 px-1 py-0.5 rounded">{"{url}"}</code>,{" "}
-                      <code className="bg-white/5 px-1 py-0.5 rounded">{"{game}"}</code>
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab: Anti-Spam & Règles */}
-              {configTab === "rules" && (
-                <div className="space-y-4 text-xs">
-                  <div className="space-y-1.5">
-                    <label className="font-semibold text-[var(--text-primary)]">Action lorsque le live se termine</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { id: "update_offline", label: "Mettre à jour l'embed", hint: "Affiche [TERMINÉ] et coupe les liens" },
-                        { id: "delete", label: "Supprimer le message", hint: "Nettoie le salon automatiquement" },
-                        { id: "keep", label: "Conserver tel quel", hint: "Laisse l'alerte d'origine" },
-                      ].map((act) => (
-                        <button
-                          key={act.id}
-                          type="button"
-                          onClick={() => setConfig((c) => ({ ...c, offlineAction: act.id as any }))}
-                          className={cn(
-                            "flex flex-col text-left p-3 rounded-xl border transition-all cursor-pointer",
-                            config.offlineAction === act.id
-                              ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--text-primary)]"
-                              : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
-                          )}
-                        >
-                          <span className="font-bold text-xs">{act.label}</span>
-                          <span className="text-[10px] text-[var(--text-muted)] mt-0.5">{act.hint}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="font-semibold text-[var(--text-primary)]">
-                      Délai anti-reconnexion (Cooldown : {config.cooldownMinutes} min)
+                  {/* Member link */}
+                  <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-3 space-y-2">
+                    <label className="font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
+                      <Bot className="h-3.5 w-3.5 text-purple-400" />
+                      Lier à un membre Discord (Rôle @En Live)
                     </label>
-                    <input
-                      type="range"
-                      min={0}
-                      max={120}
-                      step={5}
-                      value={config.cooldownMinutes}
-                      onChange={(e) => setConfig((c) => ({ ...c, cooldownMinutes: Number(e.target.value) }))}
-                      className="w-full accent-[var(--accent-primary)]"
-                    />
-                    <p className="text-[11px] text-[var(--text-muted)]">
-                      Évite d&apos;envoyer une seconde alerte si le créateur subit une brève déconnexion internet et relance son stream dans les {config.cooldownMinutes} minutes.
-                    </p>
+                    <select
+                      value={formDiscordUserId}
+                      onChange={(e) => setFormDiscordUserId(e.target.value)}
+                      className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2 text-xs text-[var(--text-primary)] focus:outline-none"
+                    >
+                      <option value="">— Aucun membre lié —</option>
+                      {members.map((m) => (
+                        <option key={m.id} value={m.id}>
+                          {m.displayName} (@{m.name})
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                </div>
-              )}
 
-              <div className="flex items-center justify-end gap-2 border-t border-[var(--panel-border)] pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowConfigDrawer(false)}
-                  className="px-4 py-2 text-xs font-medium rounded-lg border border-[var(--panel-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSaveConfig}
-                  disabled={savingConfig}
-                  className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-[var(--accent-primary)] text-white hover:opacity-95 cursor-pointer disabled:opacity-50"
-                >
-                  {savingConfig && <RefreshCw className="h-3.5 w-3.5 animate-spin" />}
-                  <span>Enregistrer les options</span>
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Add Streamer Modal */}
-      <AnimatePresence>
-        {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowAddModal(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-lg rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto"
-            >
-              <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
-                <div className="flex items-center gap-2">
-                  <Plus className="h-4 w-4 text-[var(--accent-primary)]" />
-                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Ajouter un créateur à surveiller</h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="rounded-lg p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <form onSubmit={handleAddStreamer} className="space-y-4 text-xs">
-                {/* Platform Selector Cards */}
-                <div className="space-y-1.5">
-                  <label className="font-semibold text-[var(--text-primary)]">Plateforme de streaming</label>
-                  <div className="grid grid-cols-3 gap-2.5">
-                    {(["twitch", "youtube", "kick"] as StreamPlatform[]).map((p) => {
-                      const cfg = PLATFORM_CONFIG[p];
-                      const Icon = cfg.icon;
-                      const isSel = formPlatform === p;
-                      return (
-                        <button
-                          key={p}
-                          type="button"
-                          onClick={() => setFormPlatform(p)}
-                          className={cn(
-                            "flex flex-col items-center gap-2 p-3 rounded-xl border text-center transition-all cursor-pointer",
-                            isSel
-                              ? cn(cfg.border, cfg.badgeBg, cfg.badgeText, "font-bold ring-1", cfg.border)
-                              : "border-[var(--panel-border)] bg-[var(--surface-raised)]/30 text-[var(--text-muted)] hover:border-[var(--input-border-hover)]"
-                          )}
-                        >
-                          <Icon className="h-5 w-5" />
-                          <span className="text-xs">{cfg.name}</span>
-                        </button>
-                      );
-                    })}
+                  {/* Filters */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div className="space-y-1">
+                      <label className="font-semibold text-[var(--text-primary)]">Filtre de jeu (optionnel)</label>
+                      <input
+                        type="text"
+                        value={formGameFilter}
+                        onChange={(e) => setFormGameFilter(e.target.value)}
+                        placeholder="ex: GTA V"
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)]"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="font-semibold text-[var(--text-primary)]">Spectateurs min.</label>
+                      <input
+                        type="number"
+                        min={0}
+                        value={formMinViewers}
+                        onChange={(e) => setFormMinViewers(parseInt(e.target.value, 10) || 0)}
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)]"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                {/* Username Input */}
-                <div className="space-y-1.5">
-                  <label className="font-semibold text-[var(--text-primary)]">
-                    Identifiant / Pseudo sur {PLATFORM_CONFIG[formPlatform].name}
-                  </label>
-                  <div className="relative flex items-center rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] overflow-hidden focus-within:border-[var(--accent-primary)]">
-                    <span className="px-3 text-xs text-[var(--text-muted)] select-none border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/50">
-                      {PLATFORM_CONFIG[formPlatform].prefix}
-                    </span>
-                    <input
-                      type="text"
-                      required
-                      value={formUsername}
-                      onChange={(e) => setFormUsername(e.target.value)}
-                      placeholder={PLATFORM_CONFIG[formPlatform].placeholder}
-                      className="w-full px-3 py-2 text-xs text-[var(--text-primary)] bg-transparent focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Optional Custom Channel */}
-                <div className="space-y-1.5">
-                  <label className="font-semibold text-[var(--text-primary)]">
-                    Salon de notification dédié (Optionnel)
-                  </label>
-                  <ChannelPicker
-                    value={formChannelId}
-                    onChange={(id) => setFormChannelId(id || "")}
-                    channels={channels}
-                    emptyLabel="— Hériter du salon configuré —"
-                  />
-                </div>
-
-                {/* Mention Mode & Role */}
-                <div className="space-y-1.5">
-                  <label className="font-semibold text-[var(--text-primary)]">Type de mention</label>
-                  <div className="grid grid-cols-5 gap-1.5">
-                    {[
-                      { id: "default", label: "Hériter" },
-                      { id: "none", label: "Aucune" },
-                      { id: "here", label: "@here" },
-                      { id: "everyone", label: "@everyone" },
-                      { id: "role", label: "Rôle" },
-                    ].map((m) => (
-                      <button
-                        key={m.id}
-                        type="button"
-                        onClick={() => setFormPingMode(m.id as any)}
-                        className={cn(
-                          "py-1.5 rounded-lg border text-[11px] font-medium transition-all cursor-pointer text-center",
-                          formPingMode === m.id
-                            ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--text-primary)] font-bold"
-                            : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
-                        )}
-                      >
-                        {m.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {formPingMode === "role" && (
+                  {/* Custom message */}
                   <div className="space-y-1.5">
-                    <label className="font-semibold text-[var(--text-primary)]">Rôle à notifier</label>
-                    <RolePicker
-                      value={formPingRoleId}
-                      onChange={(id) => setFormPingRoleId(id || null)}
-                      roles={roles}
-                      guildId={selectedGuild?.id}
-                      placeholder="Sélectionner le rôle à ping..."
-                      emptyLabel="— Aucun —"
-                      allowClear
-                      size="sm"
-                    />
-                  </div>
-                )}
-
-                {/* Linked Discord Member for @En Live */}
-                <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-3 space-y-2">
-                  <label className="font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
-                    <Bot className="h-3.5 w-3.5 text-purple-400" />
-                    Lier à un membre Discord (Rôle @En Live garanti)
-                  </label>
-                  <p className="text-[11px] text-[var(--text-muted)]">
-                    Associe ce streamer au compte Discord d&apos;un membre de ce serveur. Le rôle @En Live lui sera donné même si ses pseudos diffèrent.
-                  </p>
-                  <select
-                    value={formDiscordUserId}
-                    onChange={(e) => setFormDiscordUserId(e.target.value)}
-                    className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
-                  >
-                    <option value="">— Aucun membre lié (détection automatique par pseudo) —</option>
-                    {members.map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {m.displayName} (@{m.name})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Content Filters */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  <div className="space-y-1">
-                    <label className="font-semibold text-[var(--text-primary)]">Filtre de jeu (Optionnel)</label>
+                    <label className="font-semibold text-[var(--text-primary)]">Message personnalisé (optionnel)</label>
                     <input
                       type="text"
-                      value={formGameFilter}
-                      onChange={(e) => setFormGameFilter(e.target.value)}
-                      placeholder="ex: Valorant, GTA V"
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
+                      value={formCustomMessage}
+                      onChange={(e) => setFormCustomMessage(e.target.value)}
+                      placeholder="🔴 {streamer} est en direct sur {platform} !"
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)]"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="font-semibold text-[var(--text-primary)]">Spectateurs minimum</label>
-                    <input
-                      type="number"
-                      min={0}
-                      value={formMinViewers}
-                      onChange={(e) => setFormMinViewers(Math.max(0, parseInt(e.target.value) || 0))}
-                      placeholder="0 (toujours alerter)"
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
-                    />
+
+                  <div className="flex justify-end gap-2 pt-2 border-t border-[var(--panel-border)]">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddModal(false)}
+                      className="px-4 py-2 text-xs font-semibold rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting || !formUsername.trim()}
+                      className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-[var(--accent-primary)] text-white hover:opacity-95 cursor-pointer disabled:opacity-50 btn-sheen"
+                    >
+                      {isSubmitting && <RefreshCw className="h-3.5 w-3.5 animate-spin" />}
+                      <span>Ajouter et surveiller</span>
+                    </button>
                   </div>
-                </div>
+                </form>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
-                {/* Custom Message */}
-                <div className="space-y-1.5">
-                  <label className="font-semibold text-[var(--text-primary)]">
-                    Message personnalisé (Optionnel)
-                  </label>
-                  <input
-                    type="text"
-                    value={formCustomMessage}
-                    onChange={(e) => setFormCustomMessage(e.target.value)}
-                    placeholder="Laisse vide pour utiliser le modèle général"
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
-                  />
-                </div>
-
-                <div className="flex items-center justify-end gap-2 border-t border-[var(--panel-border)] pt-4">
+        {/* MODAL MODIFIER STREAMER */}
+        <AnimatePresence>
+          {editingStreamer && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setEditingStreamer(null)}
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              />
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="relative w-full max-w-lg rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+              >
+                <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
+                  <div className="flex items-center gap-2">
+                    <Pencil className="h-4 w-4 text-[var(--accent-primary)]" />
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">
+                      Modifier {editingStreamer.displayName || editingStreamer.username} ({editingStreamer.platform.toUpperCase()})
+                    </h3>
+                  </div>
                   <button
                     type="button"
-                    onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 text-xs font-medium rounded-lg border border-[var(--panel-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                    onClick={() => setEditingStreamer(null)}
+                    className="rounded-lg p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
                   >
-                    Annuler
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting || !formUsername.trim()}
-                    className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-[var(--accent-primary)] text-white hover:opacity-95 cursor-pointer disabled:opacity-50"
-                  >
-                    {isSubmitting && <RefreshCw className="h-3.5 w-3.5 animate-spin" />}
-                    <span>Ajouter et vérifier</span>
+                    <X className="h-4 w-4" />
                   </button>
                 </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
-      {/* Edit Streamer Modal */}
-      <AnimatePresence>
-        {editingStreamer && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setEditingStreamer(null)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-lg rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto"
-            >
-              <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
-                <div className="flex items-center gap-2">
-                  <Pencil className="h-4 w-4 text-[var(--accent-primary)]" />
-                  <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                    Modifier {editingStreamer.displayName || editingStreamer.username} ({editingStreamer.platform.toUpperCase()})
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setEditingStreamer(null)}
-                  className="rounded-lg p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <div className="space-y-4 text-xs">
-                <div className="space-y-1.5">
-                  <label className="font-semibold text-[var(--text-primary)]">Salon de notification dédié</label>
-                  <ChannelPicker
-                    value={editingStreamer.channelId ?? ""}
-                    onChange={(id) => setEditingStreamer({ ...editingStreamer, channelId: id || null })}
-                    channels={channels}
-                    emptyLabel="— Hériter du salon configuré —"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="font-semibold text-[var(--text-primary)]">Mode de mention</label>
-                  <div className="grid grid-cols-5 gap-1.5">
-                    {[
-                      { id: "default", label: "Hériter" },
-                      { id: "none", label: "Aucune" },
-                      { id: "here", label: "@here" },
-                      { id: "everyone", label: "@everyone" },
-                      { id: "role", label: "Rôle" },
-                    ].map((m) => (
-                      <button
-                        key={m.id}
-                        type="button"
-                        onClick={() => setEditingStreamer({ ...editingStreamer, pingMode: m.id as any })}
-                        className={cn(
-                          "py-1.5 rounded-lg border text-[11px] font-medium transition-all cursor-pointer text-center",
-                          editingStreamer.pingMode === m.id
-                            ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--text-primary)] font-bold"
-                            : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
-                        )}
-                      >
-                        {m.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {editingStreamer.pingMode === "role" && (
+                <div className="space-y-4 text-xs">
                   <div className="space-y-1.5">
-                    <label className="font-semibold text-[var(--text-primary)]">Rôle spécifique à notifier</label>
-                    <RolePicker
-                      value={editingStreamer.pingRoleId}
-                      onChange={(id) => setEditingStreamer({ ...editingStreamer, pingRoleId: id || null })}
-                      roles={roles}
-                      guildId={selectedGuild?.id}
-                      placeholder="Sélectionner le rôle à ping..."
-                      emptyLabel="— Aucun —"
-                      allowClear
-                      size="sm"
+                    <label className="font-semibold text-[var(--text-primary)]">Salon de notification dédié</label>
+                    <ChannelPicker
+                      value={editingStreamer.channelId ?? ""}
+                      onChange={(id) => setEditingStreamer({ ...editingStreamer, channelId: id || null })}
+                      channels={channels}
+                      emptyLabel="— Hériter du salon configuré —"
                     />
                   </div>
-                )}
 
-                <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-3 space-y-2">
-                  <label className="font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
-                    <Bot className="h-3.5 w-3.5 text-purple-400" />
-                    Lier à un membre Discord (Rôle @En Live)
-                  </label>
-                  <select
-                    value={editingStreamer.discordUserId || ""}
-                    onChange={(e) => setEditingStreamer({ ...editingStreamer, discordUserId: e.target.value || null })}
-                    className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
-                  >
-                    <option value="">— Aucun membre lié —</option>
-                    {members.map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {m.displayName} (@{m.name})
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                  <div className="space-y-1.5">
+                    <label className="font-semibold text-[var(--text-primary)]">Mode de mention</label>
+                    <div className="grid grid-cols-5 gap-1.5">
+                      {[
+                        { id: "default", label: "Hériter" },
+                        { id: "none", label: "Aucune" },
+                        { id: "here", label: "@here" },
+                        { id: "everyone", label: "@everyone" },
+                        { id: "role", label: "Rôle" },
+                      ].map((m) => (
+                        <button
+                          key={m.id}
+                          type="button"
+                          onClick={() => setEditingStreamer({ ...editingStreamer, pingMode: m.id as any })}
+                          className={cn(
+                            "py-1.5 rounded-lg border text-[11px] font-medium transition-all cursor-pointer text-center",
+                            editingStreamer.pingMode === m.id
+                              ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--text-primary)] font-bold"
+                              : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 text-[var(--text-muted)]"
+                          )}
+                        >
+                          {m.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  <div className="space-y-1">
-                    <label className="font-semibold text-[var(--text-primary)]">Filtre de jeu / catégorie</label>
+                  {editingStreamer.pingMode === "role" && (
+                    <div className="space-y-1.5">
+                      <label className="font-semibold text-[var(--text-primary)]">Rôle spécifique à notifier</label>
+                      <RolePicker
+                        value={editingStreamer.pingRoleId}
+                        onChange={(id) => setEditingStreamer({ ...editingStreamer, pingRoleId: id || null })}
+                        roles={roles}
+                        guildId={selectedGuild?.id}
+                        placeholder="Sélectionner le rôle à ping..."
+                        emptyLabel="— Aucun —"
+                        allowClear
+                        size="sm"
+                      />
+                    </div>
+                  )}
+
+                  <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-3 space-y-2">
+                    <label className="font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
+                      <Bot className="h-3.5 w-3.5 text-purple-400" />
+                      Lier à un membre Discord (Rôle @En Live)
+                    </label>
+                    <select
+                      value={editingStreamer.discordUserId || ""}
+                      onChange={(e) => setEditingStreamer({ ...editingStreamer, discordUserId: e.target.value || null })}
+                      className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2 text-xs text-[var(--text-primary)] focus:outline-none"
+                    >
+                      <option value="">— Aucun membre lié —</option>
+                      {members.map((m) => (
+                        <option key={m.id} value={m.id}>
+                          {m.displayName} (@{m.name})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div className="space-y-1">
+                      <label className="font-semibold text-[var(--text-primary)]">Filtre de jeu / catégorie</label>
+                      <input
+                        type="text"
+                        value={editingStreamer.gameFilter || ""}
+                        onChange={(e) => setEditingStreamer({ ...editingStreamer, gameFilter: e.target.value || null })}
+                        placeholder="ex: Valorant"
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)]"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="font-semibold text-[var(--text-primary)]">Spectateurs minimum</label>
+                      <input
+                        type="number"
+                        min={0}
+                        value={editingStreamer.minViewers || 0}
+                        onChange={(e) => setEditingStreamer({ ...editingStreamer, minViewers: Math.max(0, parseInt(e.target.value, 10) || 0) })}
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="font-semibold text-[var(--text-primary)]">Message d'annonce personnalisé</label>
                     <input
                       type="text"
-                      value={editingStreamer.gameFilter || ""}
-                      onChange={(e) => setEditingStreamer({ ...editingStreamer, gameFilter: e.target.value || null })}
-                      placeholder="ex: Valorant"
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
+                      value={editingStreamer.customMessage || ""}
+                      onChange={(e) => setEditingStreamer({ ...editingStreamer, customMessage: e.target.value || null })}
+                      placeholder="🔴 {streamer} est en direct sur {platform} !"
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)]"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="font-semibold text-[var(--text-primary)]">Spectateurs minimum</label>
-                    <input
-                      type="number"
-                      min={0}
-                      value={editingStreamer.minViewers || 0}
-                      onChange={(e) => setEditingStreamer({ ...editingStreamer, minViewers: Math.max(0, parseInt(e.target.value) || 0) })}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
-                    />
-                  </div>
-                </div>
 
-                <div className="space-y-1.5">
-                  <label className="font-semibold text-[var(--text-primary)]">Message d&apos;annonce personnalisé</label>
-                  <input
-                    type="text"
-                    value={editingStreamer.customMessage || ""}
-                    onChange={(e) =>
-                      setEditingStreamer({ ...editingStreamer, customMessage: e.target.value || null })
-                    }
-                    placeholder="Laisse vide pour utiliser le modèle général"
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end gap-2 border-t border-[var(--panel-border)] pt-4">
-                <button
-                  type="button"
-                  onClick={() => setEditingStreamer(null)}
-                  className="px-4 py-2 text-xs font-medium rounded-lg border border-[var(--panel-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleUpdateStreamer(editingStreamer)}
-                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-[var(--accent-primary)] text-white hover:opacity-95 cursor-pointer"
-                >
-                  Enregistrer
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-
-        {/* Modal de Simulation de Live interactif */}
-        {showSimulationModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-              onClick={() => !isSimulating && setShowSimulationModal(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="relative w-full max-w-lg rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-overlay)] p-6 shadow-2xl backdrop-blur-xl space-y-5 max-h-[90vh] overflow-y-auto"
-            >
-              <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="grid h-8 w-8 place-items-center rounded-xl bg-pink-500/15 text-pink-400 border border-pink-500/30">
-                    <Sparkles className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-sm text-[var(--text-primary)]">
-                      Studio de Simulation de Live
-                    </h3>
-                    <p className="text-[11px] text-[var(--text-muted)]">
-                      Testez en 1 clic l&apos;embed interactif et le rôle @En Live dans Discord.
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowSimulationModal(false)}
-                  disabled={isSimulating}
-                  className="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              {/* Raccourcis de créateurs */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]">Préréglages rapides</label>
-                <div className="flex flex-wrap gap-1.5">
-                  {[
-                    { name: "Gotaga", plat: "twitch" as StreamPlatform, game: "VALORANT", viewers: 18500 },
-                    { name: "Kamet0", plat: "twitch" as StreamPlatform, game: "LEAGUE OF LEGENDS", viewers: 24200 },
-                    { name: "Squeezie", plat: "youtube" as StreamPlatform, game: "JUST CHATTING", viewers: 42000 },
-                    { name: "xQc", plat: "kick" as StreamPlatform, game: "SLOTS & GAMING", viewers: 31000 },
-                  ].map((p) => (
+                  <div className="flex justify-end gap-2 pt-2 border-t border-[var(--panel-border)]">
                     <button
-                      key={p.name}
                       type="button"
-                      onClick={() => {
-                        setSimPlatform(p.plat);
-                        setSimUsername(p.name);
-                        setSimGame(p.game);
-                        setSimViewers(p.viewers);
-                        setSimTitle(`🔴 [TEST] Grand Live spécial sur ${p.plat.toUpperCase()} avec la commu !`);
-                      }}
-                      className="px-2.5 py-1 text-[11px] font-medium rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-pink-500/40 transition-all cursor-pointer"
+                      onClick={() => setEditingStreamer(null)}
+                      className="px-4 py-2 text-xs font-semibold rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
                     >
-                      {p.name} ({p.plat})
+                      Annuler
                     </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Plateforme */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]">Plateforme</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {(["twitch", "youtube", "kick"] as StreamPlatform[]).map((p) => (
                     <button
-                      key={p}
                       type="button"
-                      onClick={() => setSimPlatform(p)}
-                      className={cn(
-                        "flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer",
-                        simPlatform === p
-                          ? "border-pink-500 bg-pink-500/15 text-pink-300 shadow-sm"
-                          : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-secondary)]"
-                      )}
+                      onClick={() => handleUpdateStreamer(editingStreamer)}
+                      className="px-4 py-2 text-xs font-semibold rounded-lg bg-[var(--accent-primary)] text-white hover:opacity-95 cursor-pointer btn-sheen"
                     >
-                      {(() => {
-                        const cfg = PLATFORM_CONFIG[p];
-                        const Icon = cfg.icon;
-                        return (
-                          <span className="flex items-center gap-1.5">
-                            <Icon className="h-3.5 w-3.5" />
-                            <span>{cfg.name}</span>
-                          </span>
-                        );
-                      })()}
+                      Enregistrer
                     </button>
-                  ))}
+                  </div>
                 </div>
-              </div>
-
-              {/* Pseudo & Titre */}
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Nom du streamer</label>
-                  <input
-                    type="text"
-                    value={simUsername}
-                    onChange={(e) => setSimUsername(e.target.value)}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:border-pink-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Titre du live</label>
-                  <input
-                    type="text"
-                    value={simTitle}
-                    onChange={(e) => setSimTitle(e.target.value)}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:border-pink-500"
-                  />
-                </div>
-              </div>
-
-              {/* Jeu et Viewers */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Jeu / Catégorie</label>
-                  <input
-                    type="text"
-                    value={simGame}
-                    onChange={(e) => setSimGame(e.target.value)}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:border-pink-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Spectateurs simulés</label>
-                  <input
-                    type="number"
-                    value={simViewers}
-                    onChange={(e) => setSimViewers(parseInt(e.target.value) || 0)}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:border-pink-500"
-                  />
-                </div>
-              </div>
-
-              {/* Membre cible pour rôle @En Live */}
-              <div className="rounded-xl border border-purple-500/25 bg-purple-500/5 p-3 space-y-2">
-                <label className="text-xs font-semibold text-purple-300 flex items-center gap-1.5">
-                  <ShieldCheck className="h-3.5 w-3.5 text-purple-400" />
-                  Tester l&apos;attribution du rôle @En Live
-                </label>
-                <select
-                  value={simTargetMemberId}
-                  onChange={(e) => setSimTargetMemberId(e.target.value)}
-                  className="w-full rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-purple-500"
-                >
-                  <option value="">— Aucun membre (test d&apos;embed seul) —</option>
-                  {members.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.displayName} (@{m.name})
-                    </option>
-                  ))}
-                </select>
-                <label className="flex items-center gap-2 cursor-pointer pt-1">
-                  <input
-                    type="checkbox"
-                    checked={simAssignRole}
-                    onChange={(e) => setSimAssignRole(e.target.checked)}
-                    className="h-3.5 w-3.5 rounded border-[var(--input-border)] text-purple-500 focus:ring-purple-400"
-                  />
-                  <span className="text-[11px] text-[var(--text-secondary)]">
-                    Attribuer le rôle de live au membre dans Discord
-                  </span>
-                </label>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center justify-end gap-2 border-t border-[var(--panel-border)] pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowSimulationModal(false)}
-                  disabled={isSimulating}
-                  className="px-4 py-2 text-xs font-medium rounded-lg border border-[var(--panel-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="button"
-                  onClick={handleRunSimulation}
-                  disabled={isSimulating}
-                  className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:opacity-95 shadow-lg shadow-pink-500/25 cursor-pointer disabled:opacity-50"
-                >
-                  <Sparkles className={cn("h-3.5 w-3.5", isSimulating && "animate-spin")} />
-                  <span>{isSimulating ? "Envoi du live..." : "🚀 Déclencher le faux live dans Discord"}</span>
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

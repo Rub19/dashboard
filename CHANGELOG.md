@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.27 — 2026-10-05
+
+**Harmonisation Visuelle des Modules Streamers et Mini-Jeux / Casino**
+
+- Refonte complète de l'architecture graphique des modules Alertes Streamers (`/discord/streamers`) et Mini-Jeux (`/discord/games`) pour s'aligner scrupuleusement sur l'interface et l'agencement natifs du dashboard ETHONE.
+- En-têtes unifiés avec fil d'Ariane Retour Discord, badge dynamique `icon-pop`, sélecteur de serveur et boutons d'actions contextuelles (`+ Nouveau Streamer`, `Simulateur Discord`, `Sons ON/OFF`).
+- Bannières d'alerte standardisées (bot non installé avec bouton d'invitation directe, statut de connectivité et mode hors-ligne).
+- 4 cartes de métriques KPI standardisées (`bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4`) et barre d'onglets de navigation horizontale avec indicateur fluide `layoutId`.
+- Intégration d'un onglet « Aperçu Discord » dédié dans le module Casino pour tester les embeds de Blackjack, Roulette, Dés et Jackpot en temps réel.
+
 ## v1.55.26 — 2026-10-05
 
 **Liaison Casino & Mini-Jeux au Système Monétaire Ethone Coin**

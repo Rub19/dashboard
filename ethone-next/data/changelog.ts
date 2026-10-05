@@ -44740,10 +44740,60 @@ const v1_55_26_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_27_fr: ChangelogEntry = {
+  version: "v1.55.27",
+  date: "2026-10-05",
+  title: "Harmonisation Visuelle des Modules Streamers et Mini-Jeux / Casino",
+  items: [
+    "Refonte complète de l'architecture graphique des modules Alertes Streamers (/discord/streamers) et Mini-Jeux (/discord/games) dans le design natif d'ETHONE.",
+    "En-têtes unifiés avec fil d'Ariane Retour Discord, badge dynamique icon-pop, sélecteur de serveur et boutons d'actions contextuelles.",
+    "Bannières d'alerte standardisées (bot non installé avec bouton d'invitation directe, statut de connectivité et mode hors-ligne).",
+    "Cartes d'indicateurs KPI et barres d'onglets horizontales fluides avec animation de transition layoutId.",
+    "Intégration d'un onglet Aperçu Discord dédié dans le module Casino pour tester les embeds de Blackjack, Roulette, Dés et Jackpot en temps réel.",
+  ],
+};
+
+const v1_55_27_en: ChangelogEntry = {
+  version: "v1.55.27",
+  date: "2026-10-05",
+  title: "Visual Alignment for Streamers and Mini-Games / Casino Modules",
+  items: [
+    "Complete overhaul of Streamers Alerts (/discord/streamers) and Mini-Games (/discord/games) to strictly match the authentic ETHONE dashboard design language.",
+    "Standardized header with breadcrumb, icon-pop badges, server selector, and contextual action triggers.",
+    "Uniform server status banners (bot missing invite banner, network status and local offline mode).",
+    "Four standard KPI metric cards and horizontal tab navigation with smooth layoutId animation.",
+    "Dedicated Discord Preview tab added to Casino module for live inspection of Blackjack, Roulette, Dice, and Jackpot embeds.",
+  ],
+};
+
+const v1_55_27_es: ChangelogEntry = {
+  version: "v1.55.27",
+  date: "2026-10-05",
+  title: "Armonización Visual de los Módulos Streamers y Mini-Juegos / Casino",
+  items: [
+    "Rediseño visual completo de los módulos Streamers (/discord/streamers) y Casino (/discord/games) siguiendo la interfaz nativa de ETHONE.",
+    "Encabezados estandarizados con navegación de retorno, selector de servidor y botones de acción rápida.",
+    "Tarjetas de métricas KPI unificadas y barras de pestañas horizontales con animación fluida layoutId.",
+    "Nueva pestaña de vista previa Discord en el módulo de Casino para revisar los embeds en directo.",
+  ],
+};
+
+const v1_55_27_de: ChangelogEntry = {
+  version: "v1.55.27",
+  date: "2026-10-05",
+  title: "Visuelle Harmonisierung der Streamer- und Casino-Module",
+  items: [
+    "Vollständige Überarbeitung der Streamer-Alerts (/discord/streamers) und Casino-Module (/discord/games) im authentischen ETHONE Dashboard-Stil.",
+    "Standardisierte Header mit Zurück-Navigation, Server-Auswahl und Aktionsschaltflächen.",
+    "Vier einheitliche KPI-Karten und horizontale Tab-Leisten mit animierten layoutId-Indikatoren.",
+    "Neuer Discord-Vorschaubereich im Casino-Modul zur Live-Überprüfung von Blackjack, Roulette und Würfel-Embeds.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

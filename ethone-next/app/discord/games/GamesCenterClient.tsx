@@ -26,6 +26,7 @@ import {
   Gift,
   Briefcase,
   Wallet as WalletIcon,
+  AlertTriangle,
 } from "@/components/icons/ph";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
@@ -33,11 +34,10 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
-import ModulePageTitle from "@/components/discord/ModulePageTitle";
 import { formatApiError } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
-const _BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export type GameType = "blackjack" | "roulette" | "dice" | "spin";
@@ -249,33 +249,34 @@ function playProceduralSound(type: "card" | "chip" | "win" | "spin" | "dice") {
       osc.stop(now + 0.05);
     } else if (type === "win") {
       osc.type = "triangle";
-      osc.frequency.setValueAtTime(523.25, now); // C5
-      osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
-      osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
-      osc.frequency.setValueAtTime(1046.5, now + 0.3); // C6
+      osc.frequency.setValueAtTime(523.25, now);
+      osc.frequency.setValueAtTime(659.25, now + 0.1);
+      osc.frequency.setValueAtTime(783.99, now + 0.2);
+      osc.frequency.setValueAtTime(1046.5, now + 0.3);
       gain.gain.setValueAtTime(0.15, now);
       gain.gain.linearRampToValueAtTime(0.001, now + 0.5);
       osc.start(now);
       osc.stop(now + 0.5);
     } else if (type === "spin") {
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(320, now);
-      osc.frequency.linearRampToValueAtTime(640, now + 0.15);
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(660, now + 0.3);
       gain.gain.setValueAtTime(0.05, now);
+      gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
+    } else if (type === "dice") {
+      osc.type = "square";
+      osc.frequency.setValueAtTime(300, now);
+      osc.frequency.setValueAtTime(200, now + 0.05);
+      osc.frequency.setValueAtTime(400, now + 0.1);
+      gain.gain.setValueAtTime(0.07, now);
       gain.gain.linearRampToValueAtTime(0.001, now + 0.15);
       osc.start(now);
       osc.stop(now + 0.15);
-    } else if (type === "dice") {
-      osc.type = "square";
-      osc.frequency.setValueAtTime(220, now);
-      osc.frequency.exponentialRampToValueAtTime(110, now + 0.12);
-      gain.gain.setValueAtTime(0.08, now);
-      gain.gain.linearRampToValueAtTime(0.001, now + 0.12);
-      osc.start(now);
-      osc.stop(now + 0.12);
     }
   } catch {
-    // Web audio non supporté ou bloqué par le navigateur
+    // Audio désactivé silencieusement si bloqué par le navigateur
   }
 }
 
@@ -292,8 +293,6 @@ function calculateHandScore(cards: Card[]): number {
     if (c.value === "A") {
       aces++;
       score += 11;
-    } else if (["K", "Q", "J"].includes(c.value)) {
-      score += 10;
     } else {
       score += c.num;
     }
@@ -357,18 +356,20 @@ export default function GamesCenterClient() {
   }, [manageableGuilds, rawGuildId, selectedGuild, botGuildIds]);
 
   const selectedGuildId = selectedGuild?.id || rawGuildId || "";
+  const isBotPresent = botGuildIds === null ? true : selectedGuild ? botGuildIds.includes(selectedGuild.id) : true;
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [offline, setOffline] = useState(false);
 
   // Données du Casino
   const [config, setConfig] = useState<GamesConfig>(DEFAULT_CONFIG);
   const [overview, setOverview] = useState<GamesOverview>(DEFAULT_OVERVIEW);
   const [quests, setQuests] = useState<ActiveQuest[]>(DEFAULT_QUESTS);
 
-  // Onglet actif : overview | blackjack | roulette | dice | settings
-  const [activeTab, setActiveTab] = useState<"overview" | "blackjack" | "roulette" | "dice" | "settings">("overview");
+  // Onglet actif : overview | blackjack | roulette | dice | settings | preview
+  const [activeTab, setActiveTab] = useState<"overview" | "blackjack" | "roulette" | "dice" | "settings" | "preview">("overview");
 
   // Démo interactive Blackjack
   const [bjBet, setBjBet] = useState(100);
@@ -451,7 +452,7 @@ export default function GamesCenterClient() {
         if ("action" in data && (data as any).action === "balance_updated" && (data as any).userId === profile?.user?.id) {
           const newBal = Number((data as any).newBalance);
           if (Number.isFinite(newBal)) {
-            setUserWallet((prev) => prev ? { ...prev, balance: newBal } : null);
+            setUserWallet((prev) => (prev ? { ...prev, balance: newBal } : null));
           }
         }
       }
@@ -459,76 +460,89 @@ export default function GamesCenterClient() {
   });
 
   // Jouer son si actif
-  const playSound = useCallback((type: "card" | "chip" | "win" | "spin" | "dice") => {
-    if (soundEnabled) {
-      playProceduralSound(type);
-    }
-  }, [soundEnabled]);
-
-  const refreshWallet = useCallback(async (guildId: string) => {
-    if (!guildId || !profile?.user?.id) return;
-    try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/wallets/${profile.user.id}`);
-      if (res.ok) {
-        const d = await res.json();
-        if (d.wallet) setUserWallet(d.wallet);
+  const playSound = useCallback(
+    (type: "card" | "chip" | "win" | "spin" | "dice") => {
+      if (soundEnabled) {
+        playProceduralSound(type);
       }
-    } catch {
-      // ignore
-    }
-  }, [profile?.user?.id]);
+    },
+    [soundEnabled]
+  );
+
+  const refreshWallet = useCallback(
+    async (guildId: string) => {
+      if (!guildId || !profile?.user?.id) return;
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/wallets/${profile.user.id}`);
+        if (res.ok) {
+          const d = await res.json();
+          if (d.wallet) setUserWallet(d.wallet);
+        }
+      } catch {
+        // ignore
+      }
+    },
+    [profile?.user?.id]
+  );
 
   // Chargement des données du casino et de l'économie
-  const fetchCasinoData = useCallback(async (guildId: string) => {
-    if (!guildId) return;
-    setLoading(true);
-    try {
-      const [ovRes, cfgRes, questRes, ecoCfgRes, walletRes] = await Promise.allSettled([
-        fetch(`${BOT_API_URL}/api/guilds/${guildId}/games/overview`),
-        fetch(`${BOT_API_URL}/api/guilds/${guildId}/games/config`),
-        fetch(`${BOT_API_URL}/api/guilds/${guildId}/games/quests`),
-        fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/config`),
-        profile?.user?.id
-          ? fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/wallets/${profile.user.id}`)
-          : Promise.reject(),
-      ]);
+  const fetchCasinoData = useCallback(
+    async (guildId: string) => {
+      if (!guildId) return;
+      setLoading(true);
+      try {
+        const [ovRes, cfgRes, questRes, ecoCfgRes, walletRes] = await Promise.allSettled([
+          fetch(`${BOT_API_URL}/api/guilds/${guildId}/games/overview`),
+          fetch(`${BOT_API_URL}/api/guilds/${guildId}/games/config`),
+          fetch(`${BOT_API_URL}/api/guilds/${guildId}/games/quests`),
+          fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/config`),
+          profile?.user?.id
+            ? fetch(`${BOT_API_URL}/api/guilds/${guildId}/economy/wallets/${profile.user.id}`)
+            : Promise.reject(),
+        ]);
 
-      if (ovRes.status === "fulfilled" && ovRes.value.ok) {
-        const ov = await ovRes.value.json();
-        setOverview(ov);
-        if (ov.currencyName) setCurrencyName(ov.currencyName);
-        if (ov.currencySymbol) setCurrencySymbol(ov.currencySymbol);
-      }
-      if (cfgRes.status === "fulfilled" && cfgRes.value.ok) {
-        const cfg = await cfgRes.value.json();
-        setConfig(cfg);
-        if (cfg.currencyName) setCurrencyName(cfg.currencyName);
-        if (cfg.currencySymbol) setCurrencySymbol(cfg.currencySymbol);
-      }
-      if (questRes.status === "fulfilled" && questRes.value.ok) {
-        const q = await questRes.value.json();
-        if (q.quests) setQuests(q.quests);
-      }
-      if (ecoCfgRes.status === "fulfilled" && ecoCfgRes.value.ok) {
-        const eco = await ecoCfgRes.value.json();
-        if (eco.config) {
-          if (eco.config.currencyName) setCurrencyName(eco.config.currencyName);
-          if (eco.config.currencySymbol) setCurrencySymbol(eco.config.currencySymbol);
-          setEconomyEnabled(eco.config.enabled ?? true);
+        if (ovRes.status === "fulfilled" && ovRes.value.ok) {
+          const ov = await ovRes.value.json();
+          setOverview(ov);
+          if (ov.currencyName) setCurrencyName(ov.currencyName);
+          if (ov.currencySymbol) setCurrencySymbol(ov.currencySymbol);
+          setOffline(false);
+        } else {
+          setOffline(true);
         }
-      }
-      if (walletRes.status === "fulfilled" && walletRes.value.ok) {
-        const wData = await walletRes.value.json();
-        if (wData.wallet) {
-          setUserWallet(wData.wallet);
+
+        if (cfgRes.status === "fulfilled" && cfgRes.value.ok) {
+          const cfg = await cfgRes.value.json();
+          setConfig(cfg);
+          if (cfg.currencyName) setCurrencyName(cfg.currencyName);
+          if (cfg.currencySymbol) setCurrencySymbol(cfg.currencySymbol);
         }
+        if (questRes.status === "fulfilled" && questRes.value.ok) {
+          const q = await questRes.value.json();
+          if (q.quests) setQuests(q.quests);
+        }
+        if (ecoCfgRes.status === "fulfilled" && ecoCfgRes.value.ok) {
+          const eco = await ecoCfgRes.value.json();
+          if (eco.config) {
+            if (eco.config.currencyName) setCurrencyName(eco.config.currencyName);
+            if (eco.config.currencySymbol) setCurrencySymbol(eco.config.currencySymbol);
+            setEconomyEnabled(eco.config.enabled ?? true);
+          }
+        }
+        if (walletRes.status === "fulfilled" && walletRes.value.ok) {
+          const wData = await walletRes.value.json();
+          if (wData.wallet) {
+            setUserWallet(wData.wallet);
+          }
+        }
+      } catch {
+        setOffline(true);
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      // Fallback gracieux sur données par défaut
-    } finally {
-      setLoading(false);
-    }
-  }, [profile?.user?.id]);
+    },
+    [profile?.user?.id]
+  );
 
   const handleClaimDaily = async () => {
     if (!selectedGuildId) return;
@@ -587,7 +601,9 @@ export default function GamesCenterClient() {
   }) => {
     if (isRealMode && userWallet && profile?.user?.id) {
       if (userWallet.balance < params.bet) {
-        toastError(`Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${params.bet.toLocaleString("fr-FR")} ${currencySymbol} requis).`);
+        toastError(
+          `Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${params.bet.toLocaleString("fr-FR")} ${currencySymbol} requis).`
+        );
         return false;
       }
       try {
@@ -611,7 +627,7 @@ export default function GamesCenterClient() {
           return false;
         }
         if (typeof data.newBalance === "number") {
-          setUserWallet((prev) => prev ? { ...prev, balance: data.newBalance } : null);
+          setUserWallet((prev) => (prev ? { ...prev, balance: data.newBalance } : null));
         }
         if (typeof data.jackpotPool === "number") {
           setOverview((prev) => ({ ...prev, jackpotPool: data.jackpotPool }));
@@ -628,7 +644,7 @@ export default function GamesCenterClient() {
         return false;
       }
     } else {
-      // Démo
+      // Mode Démo
       setDemoBalance((prev) => Math.max(0, prev - params.bet + params.payout));
       return true;
     }
@@ -684,7 +700,9 @@ export default function GamesCenterClient() {
   // Démo & Jeu Blackjack : Démarrer une nouvelle main
   const startNewBlackjackRound = () => {
     if (isRealMode && userWallet && userWallet.balance < bjBet) {
-      toastError(`Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${bjBet.toLocaleString("fr-FR")} ${currencySymbol} requis).`);
+      toastError(
+        `Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${bjBet.toLocaleString("fr-FR")} ${currencySymbol} requis).`
+      );
       return;
     }
     playSound("card");
@@ -797,7 +815,9 @@ export default function GamesCenterClient() {
   const handleBjDouble = () => {
     if (bjStatus !== "playing" || bjPlayerCards.length !== 2) return;
     if (isRealMode && userWallet && userWallet.balance < bjBet * 2) {
-      toastError(`Fonds insuffisants en ${currencyName} pour doubler la mise (${(bjBet * 2).toLocaleString("fr-FR")} ${currencySymbol} requis).`);
+      toastError(
+        `Fonds insuffisants en ${currencyName} pour doubler la mise (${(bjBet * 2).toLocaleString("fr-FR")} ${currencySymbol} requis).`
+      );
       return;
     }
     playSound("chip");
@@ -866,7 +886,9 @@ export default function GamesCenterClient() {
   const handleSpinRoulette = () => {
     if (rouletteSpinning) return;
     if (isRealMode && userWallet && userWallet.balance < rouletteBet) {
-      toastError(`Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${rouletteBet.toLocaleString("fr-FR")} ${currencySymbol} requis).`);
+      toastError(
+        `Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${rouletteBet.toLocaleString("fr-FR")} ${currencySymbol} requis).`
+      );
       return;
     }
     setRouletteSpinning(true);
@@ -937,7 +959,9 @@ export default function GamesCenterClient() {
   const handleRollDiceDuel = () => {
     if (diceRolling) return;
     if (isRealMode && userWallet && userWallet.balance < diceBet) {
-      toastError(`Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${diceBet.toLocaleString("fr-FR")} ${currencySymbol} requis).`);
+      toastError(
+        `Solde insuffisant en ${currencyName} (${userWallet.balance.toLocaleString("fr-FR")} ${currencySymbol} disponible, ${diceBet.toLocaleString("fr-FR")} ${currencySymbol} requis).`
+      );
       return;
     }
     setDiceRolling(true);
@@ -955,7 +979,10 @@ export default function GamesCenterClient() {
       const sum2 = p2[0] + p2[1];
 
       if (sum1 > sum2) {
-        setDiceOutcome({ won: true, msg: `Victoire éclatante ! ${sum1} contre ${sum2} (+${diceBet} ${currencySymbol})` });
+        setDiceOutcome({
+          won: true,
+          msg: `Victoire éclatante ! ${sum1} contre ${sum2} (+${diceBet} ${currencySymbol})`,
+        });
         playSound("win");
         executePlayRound({
           gameType: "dice",
@@ -965,7 +992,10 @@ export default function GamesCenterClient() {
           detail: `Duel remporté ${sum1} contre ${sum2}`,
         });
       } else if (sum1 < sum2) {
-        setDiceOutcome({ won: false, msg: `Défaite... L'adversaire l'emporte avec ${sum2} contre vos ${sum1}.` });
+        setDiceOutcome({
+          won: false,
+          msg: `Défaite... L'adversaire l'emporte avec ${sum2} contre vos ${sum1}.`,
+        });
         executePlayRound({
           gameType: "dice",
           bet: diceBet,
@@ -974,7 +1004,10 @@ export default function GamesCenterClient() {
           detail: `Duel perdu ${sum1} contre ${sum2}`,
         });
       } else {
-        setDiceOutcome({ won: false, msg: `Égalité parfaite (${sum1} partout) ! Mise remboursée.` });
+        setDiceOutcome({
+          won: false,
+          msg: `Égalité parfaite (${sum1} partout) ! Mise remboursée.`,
+        });
         executePlayRound({
           gameType: "dice",
           bet: diceBet,
@@ -1020,340 +1053,313 @@ export default function GamesCenterClient() {
   const currentGuildName = selectedGuild ? selectedGuild.name : "Serveur Discord";
 
   return (
-    <div className="min-h-screen bg-[var(--surface-base)] text-[var(--text-primary)]">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
-        {/* Navigation & Titre Module */}
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <Link
-              href="/discord"
-              className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
-            >
-              <ArrowLeft size={14} />
-              Retour au Hub Discord
-            </Link>
-
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setSoundEnabled(!soundEnabled)}
-                aria-label="Effets sonores"
-                className={cn(
-                  "flex items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
-                  soundEnabled
-                    ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
-                    : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                )}
-              >
-                {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
-                <span>{soundEnabled ? "Effets sonores activés" : "Son coupé"}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => fetchCasinoData(selectedGuildId)}
-                disabled={loading}
-                className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] transition-colors hover:border-[var(--input-border-hover)] hover:text-[var(--text-primary)] cursor-pointer"
-              >
-                <RefreshCw size={14} className={cn(loading && "animate-spin")} />
-                Actualiser
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setSimModalOpen(true)}
-                className="flex items-center gap-2 rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 px-3.5 py-1.5 text-xs font-semibold text-amber-300 shadow-sm hover:from-amber-500/30 hover:to-yellow-500/30 transition-all cursor-pointer"
-              >
-                <Sparkles size={14} className="text-amber-400" />
-                Simulateur de Casino
-              </button>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <ModulePageTitle
-              icon={<Dice5 className="h-5 w-5 text-amber-400" />}
-              title="Mini-Jeux & Casino Communautaire"
-              subtitle="Blackjack 21, Roulette Royale, Duels de dés PvP, cagnotte progressive et quêtes actives récompensées."
-              badge={
-                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300">
-                  Gaming & Économie
-                </span>
-              }
-            />
-
-            <div className="shrink-0">
-              {manageableGuilds.length > 0 && selectedGuild && (
-                <GuildSelector
-                  guilds={manageableGuilds}
-                  value={selectedGuild.id}
-                  onChange={(guild: DiscordGuild) => {
-                    userSelectedRef.current = true;
-                    setSelectedGuild(guild);
-                  }}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Bannière Portefeuille Ethone Coin & Mode de Jeu */}
-        <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-[var(--surface-raised)]/70 to-yellow-500/10 p-4 sm:p-5 backdrop-blur-xl shadow-lg shadow-amber-500/5">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            {/* Solde Ethone Coin */}
-            <div className="flex items-center gap-3.5">
-              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500/20 to-yellow-500/20 border border-amber-500/40 text-amber-300 shadow-md">
-                <Coins className="h-6 w-6 animate-pulse" />
-              </div>
-              <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
-                    Portefeuille Joueur
-                  </span>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    {currencyName} ({currencySymbol})
-                  </span>
-                  {userWallet && userWallet.rank > 0 && (
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/30">
-                      Rang #{userWallet.rank}
-                    </span>
-                  )}
-                  {userWallet && (userWallet.dailyStreak || 0) > 0 && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/30 flex items-center gap-1">
-                      <Flame size={11} className="text-orange-400" />
-                      Série {userWallet.dailyStreak} j
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-baseline gap-2 mt-0.5">
-                  <span className="text-2xl font-black font-mono tracking-tight text-amber-300 drop-shadow-sm">
-                    {activeBalance.toLocaleString("fr-FR")}
-                  </span>
-                  <span className="text-sm font-bold text-amber-400/90">{currencySymbol}</span>
-                  {isRealMode ? (
-                    <span className="text-xs text-emerald-400 font-medium ml-1 flex items-center gap-1">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
-                      Mises en argent réel {currencyName}
-                    </span>
-                  ) : (
-                    <span className="text-xs text-amber-400/70 font-medium ml-1">
-                      (Solde démo fictif pour s'entraîner)
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Actions & Switcher de mode */}
-            <div className="flex flex-wrap items-center gap-2.5">
-              {/* Sélecteur Mode Réel / Démo */}
-              <div className="flex items-center rounded-xl bg-[var(--surface-base)]/80 border border-[var(--panel-border)] p-1 text-xs">
-                <button
-                  type="button"
-                  onClick={() => setIsRealMode(true)}
-                  className={cn(
-                    "px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer",
-                    isRealMode
-                      ? "bg-amber-500 text-black shadow-sm font-bold"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                  )}
-                >
-                  {currencySymbol} Mises Réelles
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsRealMode(false)}
-                  className={cn(
-                    "px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer",
-                    !isRealMode
-                      ? "bg-white/20 text-white shadow-sm font-bold"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                  )}
-                >
-                  🎮 Mode Démo
-                </button>
-              </div>
-
-              {/* Bonus Quotidien */}
-              <button
-                type="button"
-                onClick={handleClaimDaily}
-                disabled={claimingDaily}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition-all cursor-pointer disabled:opacity-50"
-              >
-                <Gift className={cn("w-3.5 h-3.5", claimingDaily && "animate-bounce")} />
-                {claimingDaily ? "Réclamation..." : "Bonus Quotidien"}
-              </button>
-
-              {/* Boulot rapide */}
-              <button
-                type="button"
-                onClick={handleQuickWork}
-                disabled={workingJob}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40 hover:bg-blue-500/30 transition-all cursor-pointer disabled:opacity-50"
-              >
-                <Briefcase className={cn("w-3.5 h-3.5", workingJob && "animate-spin")} />
-                {workingJob ? "Travail..." : "Petit Boulot /work"}
-              </button>
-
-              {/* Lien vers Module Économie */}
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-[var(--text-primary)] pb-44">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
+        {/* Top Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)]">
+          <div>
+            <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
-                href={`/discord/economy?guildId=${selectedGuildId}`}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-[var(--surface-raised)]/60 text-[var(--text-primary)] border border-[var(--panel-border)] hover:border-amber-500/40 transition-all"
+                href={`/discord${selectedGuildId ? `?guildId=${selectedGuildId}` : ""}`}
+                className="inline-flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-3 text-xs font-semibold normal-case tracking-normal text-[var(--text-muted)] outline-none transition-[border-color,background-color,color] duration-200 hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 cursor-pointer"
+                title="Retour au hub Discord"
               >
-                <span>Gérer l'Économie</span>
-                <ArrowRight size={13} />
+                <ArrowLeft className="h-3.5 w-3.5" />
+                <span>Retour Discord</span>
               </Link>
             </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] flex items-center gap-3">
+              <span className="icon-pop grid h-10 w-10 shrink-0 place-items-center rounded-[var(--inset-radius)] border border-amber-500/25 bg-amber-500/10 text-amber-400">
+                <Gamepad2 className="h-5 w-5" />
+              </span>
+              Mini-Jeux & Casino — Ethone Coins
+            </h1>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              Blackjack 21, Roulette Royale, Duels PvP, cagnotte progressive et liaison directe au système monétaire.
+              {offline && <span className="text-amber-400"> (mode local / bot non joignable)</span>}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {manageableGuilds.length > 0 && selectedGuild && (
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild.id}
+                onChange={(g: DiscordGuild) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
+            )}
+            <button
+              type="button"
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              aria-label="Effets sonores"
+              className={cn(
+                "flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer",
+                soundEnabled
+                  ? "bg-amber-500/15 border-amber-500/30 text-amber-300"
+                  : "bg-[var(--surface-raised)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              )}
+            >
+              {soundEnabled ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
+              <span>{soundEnabled ? "Sons ON" : "Sons OFF"}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => fetchCasinoData(selectedGuildId)}
+              disabled={loading}
+              className="flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/70 hover:text-[var(--text-primary)] disabled:opacity-50 cursor-pointer transition-colors"
+            >
+              <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
+              Actualiser
+            </button>
+            <button
+              type="button"
+              onClick={() => setSimModalOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-110 text-[var(--accent-contrast)] text-xs font-semibold cursor-pointer btn-sheen transition-[filter,transform] duration-200 active:scale-[0.97]"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Simulateur Discord</span>
+            </button>
           </div>
         </div>
 
-        {/* 4 Cartes de statistiques clés avec lueur Sonoma */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Cagnotte Jackpot Progressive */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="relative overflow-hidden rounded-[var(--panel-radius)] border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-[var(--surface-raised)]/60 to-[var(--surface-raised)]/30 p-5 backdrop-blur-xl shadow-lg shadow-amber-500/5"
-          >
+        {/* Bot non installé banner */}
+        {selectedGuild && !isBotPresent && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
+                <Bot className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Bot non installé sur ce serveur</p>
+                <p className="text-xs text-amber-300/80">
+                  Invitez le bot ETHONE sur <strong>{selectedGuild.name}</strong> pour activer les commandes de jeux et le portefeuille de casino.
+                </p>
+              </div>
+            </div>
+            <a
+              href={BOT_INVITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs shadow-sm transition-colors cursor-pointer shrink-0"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
+
+        {/* Offline banner */}
+        {offline && selectedGuild && (
+          <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>Mode hors-ligne : la synchronisation en direct avec le bot Discord est temporairement indisponible. Les parties démo et paramètres locaux restent accessibles.</span>
+          </div>
+        )}
+
+        {/* Bannière Portefeuille Ethone Coin & Mode de Jeu */}
+        <div className="rounded-2xl border border-amber-500/25 bg-[var(--surface-raised)]/40 p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400 shadow-md">
+              <Coins className="h-6 w-6 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+                  Portefeuille Joueur
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  {currencyName} ({currencySymbol})
+                </span>
+                {userWallet && userWallet.rank > 0 && (
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/30">
+                    Rang #{userWallet.rank}
+                  </span>
+                )}
+                {userWallet && (userWallet.dailyStreak || 0) > 0 && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/30 flex items-center gap-1">
+                    <Flame size={11} className="text-orange-400" />
+                    Série {userWallet.dailyStreak} j
+                  </span>
+                )}
+              </div>
+              <div className="flex items-baseline gap-2 mt-0.5">
+                <span className="text-2xl font-black font-mono tracking-tight text-amber-300 drop-shadow-sm">
+                  {activeBalance.toLocaleString("fr-FR")}
+                </span>
+                <span className="text-sm font-bold text-amber-400/90">{currencySymbol}</span>
+                {isRealMode ? (
+                  <span className="text-xs text-emerald-400 font-medium ml-1 flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                    Mises en argent réel {currencyName}
+                  </span>
+                ) : (
+                  <span className="text-xs text-amber-400/70 font-medium ml-1">
+                    (Solde démo fictif pour s&apos;entraîner)
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Actions & Switcher de mode */}
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Sélecteur Mode Réel / Démo */}
+            <div className="flex items-center rounded-xl bg-[var(--surface-base)]/80 border border-[var(--panel-border)] p-1 text-xs">
+              <button
+                type="button"
+                onClick={() => setIsRealMode(true)}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer",
+                  isRealMode
+                    ? "bg-amber-500 text-black shadow-sm font-bold"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                {currencySymbol} Mises Réelles
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsRealMode(false)}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer",
+                  !isRealMode
+                    ? "bg-white/20 text-white shadow-sm font-bold"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                🎮 Mode Démo
+              </button>
+            </div>
+
+            {/* Bonus Quotidien */}
+            <button
+              type="button"
+              onClick={handleClaimDaily}
+              disabled={claimingDaily}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition-all cursor-pointer disabled:opacity-50"
+            >
+              <Gift className={cn("w-3.5 h-3.5", claimingDaily && "animate-bounce")} />
+              {claimingDaily ? "Réclamation..." : "Bonus Quotidien"}
+            </button>
+
+            {/* Boulot rapide */}
+            <button
+              type="button"
+              onClick={handleQuickWork}
+              disabled={workingJob}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40 hover:bg-blue-500/30 transition-all cursor-pointer disabled:opacity-50"
+            >
+              <Briefcase className={cn("w-3.5 h-3.5", workingJob && "animate-spin")} />
+              {workingJob ? "Travail..." : "Petit Boulot /work"}
+            </button>
+
+            {/* Lien vers Module Économie */}
+            <Link
+              href={`/discord/economy?guildId=${selectedGuildId}`}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-[var(--surface-raised)]/60 text-[var(--text-primary)] border border-[var(--panel-border)] hover:border-amber-500/40 transition-all"
+            >
+              <span>Gérer l&apos;Économie</span>
+              <ArrowRight size={13} />
+            </Link>
+          </div>
+        </div>
+
+        {/* 4 Metric KPI Cards (exact style of older pages) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-amber-400/90 flex items-center gap-1.5">
-                <Crown size={14} className="text-amber-400" />
-                Cagnotte Jackpot
-              </span>
-              <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300">
-                +{config.jackpotContributionPercent}% / mise
+              <span className="text-xs text-[var(--text-muted)] font-medium">Cagnotte Jackpot</span>
+              <span className="rounded-full bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-300">
+                +{config.jackpotContributionPercent}%/mise
               </span>
             </div>
-            <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-3xl font-extrabold tracking-tight text-white drop-shadow-sm">
-                {overview.jackpotPool.toLocaleString("fr-FR")}
-              </span>
-              <span className="text-base font-semibold text-amber-400">{currencySymbol}</span>
-            </div>
-            <div className="mt-3 flex items-center justify-between text-xs text-[var(--text-muted)]">
-              <span>Alimentée en continu</span>
+            <p className="text-2xl font-bold text-amber-400">
+              {overview.jackpotPool.toLocaleString("fr-FR")} {currencySymbol}
+            </p>
+            <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
+              <span>Trésor commun</span>
               <button
                 type="button"
                 onClick={() => handleSeedJackpot(1000)}
-                className="text-[11px] font-semibold text-amber-400 underline decoration-amber-400/40 hover:decoration-amber-400 cursor-pointer"
+                className="text-[11px] font-semibold text-amber-400 hover:underline cursor-pointer"
               >
-                +1 000 {currencySymbol} (Admin)
+                +1 000
               </button>
             </div>
-          </motion.div>
+          </div>
 
-          {/* Total des parties */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 backdrop-blur-xl"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
-                <Dice5 size={14} className="text-indigo-400" />
-                Parties Jouées
-              </span>
-              <span className="text-[10px] font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                Actif 24/7
-              </span>
-            </div>
-            <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
-                {overview.totalGamesPlayed.toLocaleString("fr-FR")}
-              </span>
-              <span className="text-xs text-[var(--text-muted)]">parties</span>
-            </div>
-            <p className="mt-3 text-xs text-[var(--text-muted)] truncate">
-              BJ (42%) • Roulette (36%) • Dés (22%)
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
+            <span className="text-xs text-[var(--text-muted)] font-medium">Parties Jouées</span>
+            <p className="text-2xl font-bold text-[var(--text-primary)]">
+              {overview.totalGamesPlayed.toLocaleString("fr-FR")}
             </p>
-          </motion.div>
+            <span className="text-xs text-[var(--text-muted)]">BJ (42%) • Roulette (36%) • Dés (22%)</span>
+          </div>
 
-          {/* Volume des mises vs gains (RTP) */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 backdrop-blur-xl"
-          >
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
-                <Coins size={14} className="text-yellow-400" />
-                Volume & RTP Joueur
-              </span>
-              <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-400">
+              <span className="text-xs text-[var(--text-muted)] font-medium">Volume & RTP</span>
+              <span className="rounded-full bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-bold text-blue-400">
                 {overview.totalBets > 0
                   ? `${Math.round((overview.totalPayouts / overview.totalBets) * 100)}% RTP`
-                  : "96.4% RTP"}
+                  : "96% RTP"}
               </span>
             </div>
-            <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-2xl font-extrabold tracking-tight text-[var(--text-primary)]">
-                {overview.totalBets.toLocaleString("fr-FR")} {currencySymbol}
-              </span>
-            </div>
-            <p className="mt-3 text-xs text-[var(--text-muted)]">
-              {overview.totalPayouts.toLocaleString("fr-FR")} {currencySymbol} redistribués aux joueurs
+            <p className="text-2xl font-bold text-[var(--text-primary)]">
+              {overview.totalBets.toLocaleString("fr-FR")} {currencySymbol}
             </p>
-          </motion.div>
+            <span className="text-xs text-[var(--text-muted)] truncate block">
+              {overview.totalPayouts.toLocaleString("fr-FR")} redistribués
+            </span>
+          </div>
 
-          {/* Plus gros gain historique */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 backdrop-blur-xl"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
-                <Trophy size={14} className="text-amber-400" />
-                Record de Gain
-              </span>
-              <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">
-                Légendaire
-              </span>
-            </div>
-            <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-2xl font-extrabold tracking-tight text-amber-400">
-                +{overview.biggestWin ? overview.biggestWin.amount.toLocaleString("fr-FR") : "7 200"}
-              </span>
-              <span className="text-xs font-medium text-amber-300">{currencySymbol}</span>
-            </div>
-            <p className="mt-3 text-xs text-[var(--text-muted)] truncate">
-              {overview.biggestWin ? `${overview.biggestWin.username} (${overview.biggestWin.game})` : "Alex_HighRoller"}
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-2xl p-4 space-y-1">
+            <span className="text-xs text-[var(--text-muted)] font-medium">Record de Gain</span>
+            <p className="text-2xl font-bold text-amber-400 truncate">
+              +{overview.biggestWin ? overview.biggestWin.amount.toLocaleString("fr-FR") : "7 200"} {currencySymbol}
             </p>
-          </motion.div>
+            <span className="text-xs text-[var(--text-muted)] truncate block">
+              {overview.biggestWin ? `${overview.biggestWin.username}` : "Alex_HighRoller"}
+            </span>
+          </div>
         </div>
 
-        {/* Barre d'onglets Sonoma */}
-        <div className="flex flex-wrap items-center gap-2 border-b border-[var(--panel-border)] pb-3">
+        {/* Navigation Tabs (style matching Leveling / Welcome / Streamers) */}
+        <div className="flex border-b border-[var(--panel-border)] gap-2 overflow-x-auto pb-1">
           {[
             { id: "overview", label: "Vue d'ensemble & Cagnotte", icon: Flame },
             { id: "blackjack", label: "Table Blackjack 21", icon: Gamepad2 },
             { id: "roulette", label: "Roulette Royale", icon: Sparkles },
-            { id: "dice", label: "Arène de Duels PvP", icon: Dice5 },
+            { id: "dice", label: "Duels de Dés PvP", icon: Dice5 },
             { id: "settings", label: "Paramètres & Banque", icon: Sliders },
+            { id: "preview", label: "Aperçu Discord", icon: Eye },
           ].map((tab) => {
             const Icon = tab.icon;
-            const active = activeTab === tab.id;
+            const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
-                type="button"
                 onClick={() => {
                   setActiveTab(tab.id as any);
                   playSound("card");
                 }}
-                className={cn(
-                  "relative flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-all cursor-pointer",
-                  active
-                    ? "bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-sm"
-                    : "text-[var(--text-muted)] hover:bg-[var(--surface-raised)]/40 hover:text-[var(--text-primary)]"
-                )}
+                className={`relative px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer outline-none ${
+                  isActive
+                    ? "border-transparent text-[var(--text-primary)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                }`}
               >
-                <Icon size={15} className={active ? "text-amber-400" : "text-[var(--text-muted)]"} />
-                <span>{tab.label}</span>
+                {isActive && (
+                  <motion.span
+                    layoutId="games-active-tab"
+                    transition={{ type: "spring", stiffness: 450, damping: 43 }}
+                    className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--accent-primary)]"
+                  />
+                )}
+                <Icon className={`w-4 h-4 ${isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]"}`} />
+                {tab.label}
               </button>
             );
           })}
@@ -1370,23 +1376,22 @@ export default function GamesCenterClient() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="space-y-8"
+              className="space-y-6"
             >
               {/* Bannière Coffre-fort du Jackpot */}
-              <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-amber-500/30 bg-gradient-to-r from-amber-950/40 via-amber-900/20 to-[var(--surface-raised)]/40 p-6 backdrop-blur-xl">
-                <div className="absolute -right-10 -bottom-10 h-48 w-48 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
+              <div className="rounded-2xl border border-amber-500/30 bg-[var(--surface-raised)]/40 p-6 space-y-4">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                   <div className="space-y-2 max-w-2xl">
                     <div className="flex items-center gap-2">
                       <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400">
                         <Crown size={14} />
                       </span>
-                      <h3 className="text-lg font-bold text-amber-200">
+                      <h3 className="text-base font-bold text-amber-200">
                         Cagnotte Progressive du Serveur
                       </h3>
                     </div>
                     <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                      Chaque pari placé dans le casino contribue à hauteur de {config.jackpotContributionPercent}% dans le trésor commun. Le jackpot se déclenche automatiquement lors d&apos;un Blackjack Naturel 21 doré ou d&apos;un 777 à la roulette.
+                      Chaque pari placé dans le casino contribue à hauteur de {config.jackpotContributionPercent}% dans le trésor commun. Le jackpot se déclenche automatiquement lors d&apos;un Blackjack Naturel 21 doré ou d&apos;un résultat 777.
                     </p>
                   </div>
                   <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0">
@@ -1408,9 +1413,9 @@ export default function GamesCenterClient() {
               </div>
 
               {/* Grille : Quêtes Actives + Classement des Gagnants */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Quêtes communautaires actives */}
-                <div className="space-y-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-6 backdrop-blur-xl">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Sparkles size={16} className="text-amber-400" />
@@ -1450,42 +1455,44 @@ export default function GamesCenterClient() {
                             </span>
                           </div>
                         </div>
-                        <div className="mt-3 flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                          <span>Objectif : {q.requiredCount}x {q.gameType}</span>
-                          <span className="text-amber-400 font-semibold">En cours</span>
-                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Top Gagnants du Serveur */}
-                <div className="space-y-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-6 backdrop-blur-xl">
+                {/* Classement des plus grands gagnants */}
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Trophy size={16} className="text-amber-400" />
                       <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                        Classement des Plus Grands Gagnants
+                        Top Flambeurs du Casino
                       </h3>
                     </div>
-                    <span className="text-[11px] text-[var(--text-muted)]">
-                      Derniers 30 jours
+                    <span className="text-xs text-[var(--text-muted)]">
+                      Saison en cours
                     </span>
                   </div>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    Les membres ayant accumulé les gains nets les plus spectaculaires sur vos tables de jeux.
+                  </p>
 
                   <div className="space-y-2.5 pt-2">
                     {overview.topWinners.map((winner, idx) => {
                       const medalColors = [
-                        "text-amber-300 border-amber-500/40 bg-amber-500/15",
-                        "text-zinc-200 border-zinc-400/40 bg-zinc-400/15",
-                        "text-amber-600 border-amber-700/40 bg-amber-700/15",
+                        "text-amber-400 bg-amber-500/20 border-amber-500/30",
+                        "text-stone-300 bg-stone-500/20 border-stone-500/30",
+                        "text-amber-600 bg-amber-800/20 border-amber-700/30",
                       ];
-                      const badgeClass = medalColors[idx] || "text-[var(--text-muted)] border-[var(--panel-border)] bg-[var(--surface-raised)]/30";
+                      const badgeClass =
+                        idx < 3
+                          ? medalColors[idx]
+                          : "text-[var(--text-muted)] bg-[var(--surface-raised)]/60 border-[var(--panel-border)]";
 
                       return (
                         <div
                           key={winner.userId}
-                          className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 transition-colors hover:border-[var(--input-border-hover)]"
+                          className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 transition-colors hover:bg-[var(--surface-raised)]/70"
                         >
                           <div className="flex items-center gap-3">
                             <span
@@ -1519,7 +1526,7 @@ export default function GamesCenterClient() {
               </div>
 
               {/* Flux des dernières parties en direct */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-6 backdrop-blur-xl space-y-4">
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Clock size={16} className="text-indigo-400" />
@@ -1591,226 +1598,217 @@ export default function GamesCenterClient() {
               exit={{ opacity: 0, y: -10 }}
               className="space-y-6"
             >
-              {/* Table de jeu feutre sombre / verte */}
-              <div className="relative overflow-hidden rounded-[24px] border-2 border-emerald-900/60 bg-gradient-to-b from-[#0a2318] via-[#061811] to-[#040e0a] p-8 shadow-2xl text-white">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(16,185,129,0.15),transparent_70%)] pointer-events-none" />
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-6">
+                {/* Table de jeu feutre sombre / verte */}
+                <div className="relative overflow-hidden rounded-2xl border-2 border-emerald-900/60 bg-gradient-to-b from-[#0a2318] via-[#061811] to-[#040e0a] p-8 shadow-2xl text-white">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(16,185,129,0.15),transparent_70%)] pointer-events-none" />
 
-                {/* Entête de la table */}
-                <div className="flex items-center justify-between border-b border-emerald-800/40 pb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-                      Table VIP • Blackjack 21
-                    </span>
-                    <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
-                      Blackjack paie 3:2
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-emerald-300">Mise actuelle :</span>
-                    <span className="rounded-lg bg-emerald-950/80 border border-emerald-700/50 px-3 py-1 text-sm font-black text-amber-400">
-                      {bjBet} {currencySymbol}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Main du Croupier */}
-                <div className="my-8 text-center space-y-3">
-                  <div className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-300 bg-emerald-950/50 px-3 py-1 rounded-full border border-emerald-800/40">
-                    <span>Main du Croupier</span>
-                    <span className="font-bold text-amber-300">
-                      {bjDealerRevealed ? `(Score : ${dealerScore})` : `(Score visible : ${dealerScore})`}
-                    </span>
+                  {/* Entête de la table */}
+                  <div className="flex items-center justify-between border-b border-emerald-800/40 pb-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+                        Table VIP • Blackjack 21
+                      </span>
+                      <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                        Blackjack paie 3:2
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs text-emerald-300">Mise actuelle :</span>
+                      <span className="rounded-lg bg-emerald-950/80 border border-emerald-700/50 px-3 py-1 text-sm font-black text-amber-400">
+                        {bjBet} {currencySymbol}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="flex justify-center gap-3 min-h-[110px] items-center">
-                    {bjDealerCards.map((card, i) => {
-                      const isHidden = i === 1 && !bjDealerRevealed;
-                      if (isHidden) {
+                  {/* Main du Croupier */}
+                  <div className="my-8 text-center space-y-3">
+                    <div className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-300 bg-emerald-950/50 px-3 py-1 rounded-full border border-emerald-800/40">
+                      <span>Main du Croupier</span>
+                      <span className="font-bold text-amber-300">
+                        {bjDealerRevealed ? `(Score : ${dealerScore})` : `(Score visible : ${dealerScore})`}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-center gap-3 min-h-[110px] items-center">
+                      {bjDealerCards.map((card, i) => {
+                        const isHidden = i === 1 && !bjDealerRevealed;
+                        if (isHidden) {
+                          return (
+                            <div
+                              key={i}
+                              className="h-28 w-20 rounded-xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-900 via-amber-950 to-stone-900 flex items-center justify-center shadow-lg"
+                            >
+                              <span className="text-2xl font-black text-amber-500/60">ETH</span>
+                            </div>
+                          );
+                        }
+                        const isRed = ["♥", "♦"].includes(card.suit);
                         return (
-                          <div
+                          <motion.div
                             key={i}
-                            className="h-28 w-20 rounded-xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-900 via-amber-950 to-stone-900 flex items-center justify-center shadow-lg"
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="h-28 w-20 rounded-xl bg-white border border-stone-200 text-stone-900 shadow-xl flex flex-col justify-between p-2 font-bold"
                           >
-                            <span className="text-2xl font-black text-amber-500/60">ETH</span>
-                          </div>
+                            <div className="flex justify-between items-start text-xs leading-none">
+                              <span>{card.value}</span>
+                              <span className={isRed ? "text-rose-600" : "text-stone-900"}>{card.suit}</span>
+                            </div>
+                            <div className={cn("text-center text-2xl", isRed ? "text-rose-600" : "text-stone-900")}>
+                              {card.suit}
+                            </div>
+                            <div className="flex justify-between items-end text-xs leading-none rotate-180">
+                              <span>{card.value}</span>
+                              <span className={isRed ? "text-rose-600" : "text-stone-900"}>{card.suit}</span>
+                            </div>
+                          </motion.div>
                         );
-                      }
-                      const isRed = ["♥", "♦"].includes(card.suit);
-                      return (
-                        <motion.div
-                          key={i}
-                          initial={{ scale: 0.8, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          className="h-28 w-20 rounded-xl bg-white border border-stone-200 text-stone-900 shadow-xl flex flex-col justify-between p-2 font-bold"
-                        >
-                          <div className="flex justify-between items-start text-xs leading-none">
-                            <span>{card.value}</span>
-                            <span className={isRed ? "text-rose-600" : "text-stone-900"}>{card.suit}</span>
-                          </div>
-                          <div className={cn("text-center text-2xl", isRed ? "text-rose-600" : "text-stone-900")}>
-                            {card.suit}
-                          </div>
-                          <div className="flex justify-between items-end text-xs leading-none rotate-180">
-                            <span>{card.value}</span>
-                            <span className={isRed ? "text-rose-600" : "text-stone-900"}>{card.suit}</span>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Bannière de Résultat */}
-                <div className="my-4 text-center min-h-[36px]">
-                  {bjStatus === "blackjack" && (
-                    <motion.span
-                      initial={{ scale: 0.8 }}
-                      animate={{ scale: 1 }}
-                      className="inline-block rounded-xl bg-amber-500/20 border border-amber-500/50 px-4 py-1.5 text-sm font-black text-amber-300 shadow-lg shadow-amber-500/10"
-                    >
-                      🌟 BLACKJACK NATUREL 21 ! Gain de +{Math.round(bjBet * 1.5)} {currencySymbol}
-                    </motion.span>
-                  )}
-                  {bjStatus === "won" && (
-                    <motion.span
-                      initial={{ scale: 0.8 }}
-                      animate={{ scale: 1 }}
-                      className="inline-block rounded-xl bg-emerald-500/20 border border-emerald-500/50 px-4 py-1.5 text-sm font-black text-emerald-300"
-                    >
-                      🎉 VOUS GAGNEZ ! +{bjBet} {currencySymbol}
-                    </motion.span>
-                  )}
-                  {bjStatus === "lost" && (
-                    <motion.span
-                      initial={{ scale: 0.8 }}
-                      animate={{ scale: 1 }}
-                      className="inline-block rounded-xl bg-rose-500/20 border border-rose-500/50 px-4 py-1.5 text-sm font-black text-rose-300"
-                    >
-                      💥 PERDU ! Le croupier remporte la manche (-{bjBet} {currencySymbol})
-                    </motion.span>
-                  )}
-                  {bjStatus === "push" && (
-                    <motion.span
-                      initial={{ scale: 0.8 }}
-                      animate={{ scale: 1 }}
-                      className="inline-block rounded-xl bg-blue-500/20 border border-blue-500/50 px-4 py-1.5 text-sm font-black text-blue-300"
-                    >
-                      🤝 ÉGALITÉ (PUSH) ! Mise restituée.
-                    </motion.span>
-                  )}
-                </div>
-
-                {/* Main du Joueur */}
-                <div className="my-8 text-center space-y-3">
-                  <div className="flex justify-center gap-3 min-h-[110px] items-center">
-                    {bjPlayerCards.map((card, i) => {
-                      const isRed = ["♥", "♦"].includes(card.suit);
-                      return (
-                        <motion.div
-                          key={i}
-                          initial={{ scale: 0.8, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          className="h-28 w-20 rounded-xl bg-white border border-stone-200 text-stone-900 shadow-xl flex flex-col justify-between p-2 font-bold"
-                        >
-                          <div className="flex justify-between items-start text-xs leading-none">
-                            <span>{card.value}</span>
-                            <span className={isRed ? "text-rose-600" : "text-stone-900"}>{card.suit}</span>
-                          </div>
-                          <div className={cn("text-center text-2xl", isRed ? "text-rose-600" : "text-stone-900")}>
-                            {card.suit}
-                          </div>
-                          <div className="flex justify-between items-end text-xs leading-none rotate-180">
-                            <span>{card.value}</span>
-                            <span className={isRed ? "text-rose-600" : "text-stone-900"}>{card.suit}</span>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
+                      })}
+                    </div>
                   </div>
 
-                  <div className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-300 bg-emerald-950/50 px-3 py-1 rounded-full border border-emerald-800/40">
-                    <span>Votre main</span>
-                    <span className="font-bold text-amber-300">(Score : {playerScore})</span>
+                  {/* Statut central de la manche */}
+                  <div className="my-4 text-center">
+                    {bjStatus === "blackjack" && (
+                      <span className="inline-block rounded-xl bg-amber-500/20 border border-amber-500/40 px-4 py-1.5 text-sm font-black text-amber-300 animate-pulse">
+                        👑 BLACKJACK NATUREL ! (Gain 3:2)
+                      </span>
+                    )}
+                    {bjStatus === "won" && (
+                      <span className="inline-block rounded-xl bg-emerald-500/20 border border-emerald-500/40 px-4 py-1.5 text-sm font-black text-emerald-300">
+                        🎉 VICTOIRE DU JOUEUR !
+                      </span>
+                    )}
+                    {bjStatus === "lost" && (
+                      <span className="inline-block rounded-xl bg-rose-500/20 border border-rose-500/40 px-4 py-1.5 text-sm font-black text-rose-300">
+                        ❌ MAIN PERDUE
+                      </span>
+                    )}
+                    {bjStatus === "push" && (
+                      <span className="inline-block rounded-xl bg-blue-500/20 border border-blue-500/40 px-4 py-1.5 text-sm font-black text-blue-300">
+                        🤝 ÉGALITÉ (PUSH) — MISE RENDUE
+                      </span>
+                    )}
+                    {bjStatus === "playing" && (
+                      <span className="text-xs text-emerald-300 font-medium">
+                        À vous de jouer : Tirer, Rester ou Doubler.
+                      </span>
+                    )}
                   </div>
-                </div>
 
-                {/* Actions de jeu : Hit / Stand / Double / Nouvelle Manche */}
-                <div className="flex flex-wrap items-center justify-center gap-3 pt-4 border-t border-emerald-800/40">
-                  {bjStatus === "playing" ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={handleBjHit}
-                        className="rounded-xl border border-emerald-500/40 bg-emerald-600/80 hover:bg-emerald-500 px-5 py-2.5 text-xs font-bold text-white shadow-md transition-all cursor-pointer"
-                      >
-                        🃏 Tirer (Hit)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleBjStand}
-                        className="rounded-xl border border-amber-500/40 bg-amber-600/80 hover:bg-amber-500 px-5 py-2.5 text-xs font-bold text-white shadow-md transition-all cursor-pointer"
-                      >
-                        🛑 Rester (Stand)
-                      </button>
-                      {bjPlayerCards.length === 2 && (
+                  {/* Main du Joueur */}
+                  <div className="my-8 text-center space-y-3">
+                    <div className="flex justify-center gap-3 min-h-[110px] items-center">
+                      {bjPlayerCards.map((card, i) => {
+                        const isRed = ["♥", "♦"].includes(card.suit);
+                        return (
+                          <motion.div
+                            key={i}
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="h-28 w-20 rounded-xl bg-white border border-stone-200 text-stone-900 shadow-xl flex flex-col justify-between p-2 font-bold"
+                          >
+                            <div className="flex justify-between items-start text-xs leading-none">
+                              <span>{card.value}</span>
+                              <span className={isRed ? "text-rose-600" : "text-stone-900"}>{card.suit}</span>
+                            </div>
+                            <div className={cn("text-center text-2xl", isRed ? "text-rose-600" : "text-stone-900")}>
+                              {card.suit}
+                            </div>
+                            <div className="flex justify-between items-end text-xs leading-none rotate-180">
+                              <span>{card.value}</span>
+                              <span className={isRed ? "text-rose-600" : "text-stone-900"}>{card.suit}</span>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-300 bg-emerald-950/50 px-3 py-1 rounded-full border border-emerald-800/40">
+                      <span>Votre Main</span>
+                      <span className="font-bold text-amber-300">(Score : {playerScore})</span>
+                    </div>
+                  </div>
+
+                  {/* Contrôles de jeu */}
+                  <div className="flex flex-wrap items-center justify-center gap-3 pt-4 border-t border-emerald-800/40">
+                    {bjStatus === "playing" ? (
+                      <>
                         <button
                           type="button"
-                          onClick={handleBjDouble}
-                          className="rounded-xl border border-indigo-500/40 bg-indigo-600/80 hover:bg-indigo-500 px-5 py-2.5 text-xs font-bold text-white shadow-md transition-all cursor-pointer"
+                          onClick={handleBjHit}
+                          className="rounded-xl border border-emerald-500/40 bg-emerald-600/80 hover:bg-emerald-500 px-5 py-2.5 text-xs font-bold text-white shadow-md transition-all cursor-pointer"
                         >
-                          💰 Doubler (Double)
+                          🃏 Tirer (Hit)
                         </button>
-                      )}
-                    </>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={startNewBlackjackRound}
-                      className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 px-6 py-2.5 text-xs font-black text-stone-950 shadow-lg transition-all cursor-pointer"
-                    >
-                      ✨ Distribuer une Nouvelle Main
-                    </button>
-                  )}
+                        <button
+                          type="button"
+                          onClick={handleBjStand}
+                          className="rounded-xl border border-amber-500/40 bg-amber-600/80 hover:bg-amber-500 px-5 py-2.5 text-xs font-bold text-white shadow-md transition-all cursor-pointer"
+                        >
+                          🛑 Rester (Stand)
+                        </button>
+                        {bjPlayerCards.length === 2 && (
+                          <button
+                            type="button"
+                            onClick={handleBjDouble}
+                            className="rounded-xl border border-indigo-500/40 bg-indigo-600/80 hover:bg-indigo-500 px-5 py-2.5 text-xs font-bold text-white shadow-md transition-all cursor-pointer"
+                          >
+                            💰 Doubler (Double)
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={startNewBlackjackRound}
+                        className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 px-6 py-2.5 text-xs font-black text-stone-950 shadow-lg transition-all cursor-pointer"
+                      >
+                        ✨ Distribuer une Nouvelle Main
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Sélecteur de jetons */}
+                  <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+                    <span className="text-[11px] text-emerald-400/80 font-semibold mr-2">Jetons :</span>
+                    {[25, 50, 100, 250, 500, 1000].map((val) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => {
+                          setBjBet(val);
+                          playSound("chip");
+                        }}
+                        className={cn(
+                          "h-8 w-8 rounded-full border text-[11px] font-black flex items-center justify-center transition-all cursor-pointer shadow-sm",
+                          bjBet === val
+                            ? "bg-amber-400 text-stone-950 border-white scale-110 ring-2 ring-amber-400/50"
+                            : "bg-emerald-950/80 text-emerald-300 border-emerald-700/60 hover:border-amber-400"
+                        )}
+                      >
+                        {val}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                {/* Sélecteur de jetons */}
-                <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-                  <span className="text-[11px] text-emerald-400/80 font-semibold mr-2">Jetons :</span>
-                  {[25, 50, 100, 250, 500, 1000].map((val) => (
-                    <button
-                      key={val}
-                      type="button"
-                      onClick={() => {
-                        setBjBet(val);
-                        playSound("chip");
-                      }}
-                      className={cn(
-                        "h-8 w-8 rounded-full border text-[11px] font-black flex items-center justify-center transition-all cursor-pointer shadow-sm",
-                        bjBet === val
-                          ? "bg-amber-400 text-stone-950 border-white scale-110 ring-2 ring-amber-400/50"
-                          : "bg-emerald-950/80 text-emerald-300 border-emerald-700/60 hover:border-amber-400"
-                      )}
-                    >
-                      {val}
-                    </button>
-                  ))}
+                {/* Guide de commande Slash Discord */}
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <span className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+                      <Bot size={15} className="text-indigo-400" />
+                      Commande Slash sur votre Discord
+                    </span>
+                    <p className="text-xs text-[var(--text-muted)]">
+                      Vos membres peuvent lancer des parties directement avec des boutons interactifs en tapant :
+                    </p>
+                  </div>
+                  <code className="rounded-lg bg-stone-950/80 border border-stone-800 px-3 py-1.5 text-xs font-mono text-amber-400">
+                    /blackjack mise:{bjBet}
+                  </code>
                 </div>
-              </div>
-
-              {/* Guide de commande Slash Discord */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-5 backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <span className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
-                    <Bot size={15} className="text-indigo-400" />
-                    Commande Slash sur votre Discord
-                  </span>
-                  <p className="text-xs text-[var(--text-muted)]">
-                    Vos membres peuvent lancer des parties directement avec des boutons interactifs en tapant :
-                  </p>
-                </div>
-                <code className="rounded-lg bg-stone-950/80 border border-stone-800 px-3 py-1.5 text-xs font-mono text-amber-400">
-                  /blackjack mise:{bjBet}
-                </code>
               </div>
             </motion.div>
           )}
@@ -1826,172 +1824,177 @@ export default function GamesCenterClient() {
               exit={{ opacity: 0, y: -10 }}
               className="space-y-6"
             >
-              {/* Plateau de Roulette Royale */}
-              <div className="relative overflow-hidden rounded-[24px] border border-amber-500/30 bg-gradient-to-b from-[#1c120c] via-[#120a06] to-[#0a0503] p-8 shadow-2xl text-white">
-                <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-                  {/* Roue animée */}
-                  <div className="flex flex-col items-center gap-4 shrink-0">
-                    <div className="relative h-56 w-56 rounded-full border-4 border-amber-500/40 bg-gradient-to-tr from-stone-950 to-amber-950 p-2 shadow-2xl flex items-center justify-center">
-                      {/* Anneau extérieur */}
-                      <div
-                        className={cn(
-                          "absolute inset-2 rounded-full border-2 border-dashed border-amber-500/30 transition-transform duration-1000",
-                          rouletteSpinning && "animate-spin"
-                        )}
-                      />
-                      {/* Bille & Résultat */}
-                      <div className="relative z-10 flex flex-col items-center justify-center">
-                        <span className="text-xs uppercase font-bold text-amber-400/80">Numéro</span>
-                        <span
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-6">
+                {/* Plateau de Roulette Royale */}
+                <div className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-b from-[#1c120c] via-[#120a06] to-[#0a0503] p-8 shadow-2xl text-white">
+                  <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+                    {/* Roue animée */}
+                    <div className="flex flex-col items-center gap-4 shrink-0">
+                      <div className="relative h-56 w-56 rounded-full border-4 border-amber-500/40 bg-gradient-to-tr from-stone-950 to-amber-950 p-2 shadow-2xl flex items-center justify-center">
+                        {/* Anneau extérieur */}
+                        <div
                           className={cn(
-                            "text-5xl font-black drop-shadow-lg",
-                            rouletteResultColor === "rouge"
-                              ? "text-rose-500"
-                              : rouletteResultColor === "vert"
-                              ? "text-emerald-400"
-                              : "text-zinc-200"
+                            "absolute inset-2 rounded-full border-2 border-dashed border-amber-500/30 transition-transform duration-1000",
+                            rouletteSpinning && "animate-spin"
                           )}
-                        >
-                          {rouletteSpinning ? "?" : rouletteResultNumber}
-                        </span>
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-amber-300">
-                          {rouletteSpinning ? "En rotation..." : rouletteResultColor}
-                        </span>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      disabled={rouletteSpinning}
-                      onClick={handleSpinRoulette}
-                      className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 px-6 py-2.5 text-xs font-black text-stone-950 shadow-lg transition-all cursor-pointer disabled:opacity-50"
-                    >
-                      {rouletteSpinning ? "La bille tourne..." : "🎰 Faire tourner la Roulette"}
-                    </button>
-                  </div>
-
-                  {/* Tapis de mises */}
-                  <div className="flex-1 w-full space-y-4">
-                    <div className="flex items-center justify-between border-b border-amber-800/40 pb-3">
-                      <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
-                        Choix de Mise
-                      </span>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs text-[var(--text-muted)]">Mise :</span>
-                        <span className="rounded-lg bg-stone-900 border border-stone-800 px-2.5 py-0.5 text-xs font-bold text-amber-400">
-                          {rouletteBet} {currencySymbol}
-                        </span>
-                        <div className="flex items-center gap-1 ml-1">
-                          {[25, 50, 100, 250, 500].map((val) => (
-                            <button
-                              key={val}
-                              type="button"
-                              onClick={() => {
-                                setRouletteBet(val);
-                                playSound("chip");
-                              }}
-                              className={cn(
-                                "h-6 px-1.5 rounded-md text-[10px] font-bold border transition-colors cursor-pointer",
-                                rouletteBet === val
-                                  ? "bg-amber-400 text-stone-950 border-amber-300"
-                                  : "bg-stone-900/80 text-stone-300 border-stone-800 hover:border-amber-400"
-                              )}
-                            >
-                              {val}
-                            </button>
-                          ))}
+                        />
+                        {/* Bille & Résultat */}
+                        <div className="relative z-10 flex flex-col items-center justify-center">
+                          <span className="text-xs uppercase font-bold text-amber-400/80">Numéro</span>
+                          <span
+                            className={cn(
+                              "text-5xl font-black drop-shadow-lg",
+                              rouletteResultColor === "rouge"
+                                ? "text-rose-500"
+                                : rouletteResultColor === "vert"
+                                ? "text-emerald-400"
+                                : "text-zinc-200"
+                            )}
+                          >
+                            {rouletteSpinning ? "?" : rouletteResultNumber}
+                          </span>
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-amber-300">
+                            {rouletteSpinning ? "En rotation..." : rouletteResultColor}
+                          </span>
                         </div>
                       </div>
+
+                      <button
+                        type="button"
+                        disabled={rouletteSpinning}
+                        onClick={handleSpinRoulette}
+                        className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 px-6 py-2.5 text-xs font-black text-stone-950 shadow-lg transition-all cursor-pointer disabled:opacity-50"
+                      >
+                        {rouletteSpinning ? "La bille tourne..." : "🎰 Faire tourner la Roulette"}
+                      </button>
                     </div>
 
-                    {/* Options Simples (Rouge / Noir / Pair / Impair) */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                      {[
-                        { id: "rouge", label: "Rouge", mult: "2x", bg: "bg-rose-900/60 border-rose-500/40 text-rose-300" },
-                        { id: "noir", label: "Noir", mult: "2x", bg: "bg-stone-900 border-stone-700 text-stone-200" },
-                        { id: "pair", label: "Pair", mult: "2x", bg: "bg-amber-950/40 border-amber-700/40 text-amber-300" },
-                        { id: "impair", label: "Impair", mult: "2x", bg: "bg-amber-950/40 border-amber-700/40 text-amber-300" },
-                      ].map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => {
-                            setRouletteChoice(item.id);
-                            playSound("chip");
-                          }}
-                          className={cn(
-                            "rounded-xl border p-3 text-center transition-all cursor-pointer shadow-sm",
-                            item.bg,
-                            rouletteChoice === item.id && "ring-2 ring-amber-400 scale-[1.02]"
-                          )}
-                        >
-                          <span className="block text-xs font-bold">{item.label}</span>
-                          <span className="text-[10px] opacity-80">Paie {item.mult}</span>
-                        </button>
-                      ))}
-                    </div>
+                    {/* Tapis de mises */}
+                    <div className="flex-1 w-full space-y-4">
+                      <div className="flex items-center justify-between border-b border-amber-800/40 pb-3">
+                        <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
+                          Choix de Mise
+                        </span>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-xs text-[var(--text-muted)]">Mise :</span>
+                          <span className="rounded-lg bg-stone-900 border border-stone-800 px-2.5 py-0.5 text-xs font-bold text-amber-400">
+                            {rouletteBet} {currencySymbol}
+                          </span>
+                          <div className="flex items-center gap-1 ml-1">
+                            {[25, 50, 100, 250, 500].map((val) => (
+                              <button
+                                key={val}
+                                type="button"
+                                onClick={() => {
+                                  setRouletteBet(val);
+                                  playSound("chip");
+                                }}
+                                className={cn(
+                                  "h-6 px-1.5 rounded-md text-[10px] font-bold border transition-colors cursor-pointer",
+                                  rouletteBet === val
+                                    ? "bg-amber-400 text-stone-950 border-amber-300"
+                                    : "bg-stone-900/80 text-stone-300 border-stone-800 hover:border-amber-400"
+                                )}
+                              >
+                                {val}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
 
-                    {/* Numéros Spécifiques (Plein 36x) */}
-                    <div className="space-y-1.5 pt-2">
-                      <span className="text-[11px] font-semibold text-amber-300/80 block">
-                        Numéro Plein (Paiement Légendaire 36x) :
-                      </span>
-                      <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5">
-                        {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
+                      {/* Options de mises simples */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        {[
+                          { id: "rouge", label: "🔴 Rouge (x2)", bg: "bg-rose-900/40 border-rose-600/40 text-rose-200" },
+                          { id: "noir", label: "⚫ Noir (x2)", bg: "bg-stone-900/80 border-stone-700 text-stone-200" },
+                          { id: "pair", label: "⚖️ Pair (x2)", bg: "bg-indigo-950/60 border-indigo-700/40 text-indigo-200" },
+                          { id: "impair", label: "🎲 Impair (x2)", bg: "bg-purple-950/60 border-purple-700/40 text-purple-200" },
+                        ].map((opt) => (
                           <button
-                            key={n}
+                            key={opt.id}
                             type="button"
                             onClick={() => {
-                              setRouletteChoice(String(n));
+                              setRouletteChoice(opt.id);
                               playSound("chip");
                             }}
                             className={cn(
-                              "h-8 rounded-lg border text-xs font-bold flex items-center justify-center transition-all cursor-pointer",
-                              rouletteChoice === String(n)
-                                ? "bg-amber-400 text-stone-950 border-white font-black scale-105"
-                                : "bg-stone-900/80 border-stone-800 text-stone-300 hover:border-amber-400"
+                              "rounded-xl border p-3 text-xs font-bold transition-all cursor-pointer flex flex-col items-center justify-center gap-1",
+                              opt.bg,
+                              rouletteChoice === opt.id && "ring-2 ring-amber-400 scale-[1.02] shadow-lg shadow-amber-500/10"
                             )}
                           >
-                            {n}
+                            <span>{opt.label}</span>
                           </button>
                         ))}
                       </div>
-                    </div>
 
-                    {/* Résultat bandeau */}
-                    {rouletteOutcome && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={cn(
-                          "rounded-xl border p-3 text-xs font-semibold flex items-center justify-between",
-                          rouletteOutcome.won
-                            ? "bg-emerald-950/40 border-emerald-500/40 text-emerald-300"
-                            : "bg-rose-950/40 border-rose-500/40 text-rose-300"
-                        )}
-                      >
-                        <span>{rouletteOutcome.msg}</span>
-                        <span className="font-black">{rouletteOutcome.won ? `+${rouletteOutcome.payout} ${currencySymbol}` : `0 ${currencySymbol}`}</span>
-                      </motion.div>
-                    )}
+                      {/* Grille numéros favoris */}
+                      <div className="space-y-1.5 pt-2">
+                        <span className="text-[11px] font-semibold text-[var(--text-muted)] block">
+                          Ou pari sur Numéro Plein (Paiement direct x36) :
+                        </span>
+                        <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5 max-h-32 overflow-y-auto pr-1">
+                          {Array.from({ length: 37 }, (_, i) => i).map((num) => {
+                            const isRed = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36].includes(num);
+                            const isGreen = num === 0;
+                            return (
+                              <button
+                                key={num}
+                                type="button"
+                                onClick={() => {
+                                  setRouletteChoice(String(num));
+                                  playSound("chip");
+                                }}
+                                className={cn(
+                                  "h-8 rounded-lg border text-xs font-black transition-all cursor-pointer flex items-center justify-center",
+                                  isGreen
+                                    ? "bg-emerald-900/80 border-emerald-600 text-emerald-200"
+                                    : isRed
+                                    ? "bg-rose-950/80 border-rose-700 text-rose-200"
+                                    : "bg-stone-900 border-stone-800 text-stone-200",
+                                  rouletteChoice === String(num) && "ring-2 ring-amber-400 scale-105"
+                                )}
+                              >
+                                {num}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Résultat du tirage */}
+                      {rouletteOutcome && (
+                        <div
+                          className={cn(
+                            "rounded-xl border p-3 text-xs font-bold text-center",
+                            rouletteOutcome.won
+                              ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
+                              : "bg-rose-950/60 border-rose-500/40 text-rose-300"
+                          )}
+                        >
+                          {rouletteOutcome.msg}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Guide Slash Command */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-5 backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <span className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
-                    <Bot size={15} className="text-indigo-400" />
-                    Commande Slash Roulette
-                  </span>
-                  <p className="text-xs text-[var(--text-muted)]">
-                    Misez sur la couleur, la parité ou votre chiffre fétiche avec :
-                  </p>
+                {/* Guide Slash Command */}
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <span className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+                      <Bot size={15} className="text-indigo-400" />
+                      Commande Slash Roulette Discord
+                    </span>
+                    <p className="text-xs text-[var(--text-muted)]">
+                      Vos membres peuvent parier sur un numéro ou une couleur :
+                    </p>
+                  </div>
+                  <code className="rounded-lg bg-stone-950/80 border border-stone-800 px-3 py-1.5 text-xs font-mono text-amber-400">
+                    /roulette mise:{rouletteBet} pari:{rouletteChoice}
+                  </code>
                 </div>
-                <code className="rounded-lg bg-stone-950/80 border border-stone-800 px-3 py-1.5 text-xs font-mono text-amber-400">
-                  /roulette mise:{rouletteBet} pari:{rouletteChoice}
-                </code>
               </div>
             </motion.div>
           )}
@@ -2007,123 +2010,125 @@ export default function GamesCenterClient() {
               exit={{ opacity: 0, y: -10 }}
               className="space-y-6"
             >
-              {/* Arène de duel PvP */}
-              <div className="relative overflow-hidden rounded-[24px] border border-indigo-500/30 bg-gradient-to-b from-[#0f1124] via-[#090b16] to-[#05060b] p-8 shadow-2xl text-white">
-                <div className="text-center space-y-1 pb-6 border-b border-indigo-900/40">
-                  <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">
-                    Arène de Duel PvP • 2d6 Clash
-                  </span>
-                  <h3 className="text-xl font-black text-white">
-                    Défiez un membre et rafler la mise
-                  </h3>
-                </div>
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-6">
+                {/* Arène de duel PvP */}
+                <div className="relative overflow-hidden rounded-2xl border border-indigo-500/30 bg-gradient-to-b from-[#0f1124] via-[#090b16] to-[#05060b] p-8 shadow-2xl text-white">
+                  <div className="text-center space-y-1 pb-6 border-b border-indigo-900/40">
+                    <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">
+                      Arène de Duel PvP • 2d6 Clash
+                    </span>
+                    <h3 className="text-xl font-black text-white">
+                      Défiez un membre et rafler la mise
+                    </h3>
+                  </div>
 
-                <div className="my-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                  {/* Challenger (Vous) */}
-                  <div className="flex flex-col items-center gap-4 rounded-2xl border border-indigo-500/20 bg-indigo-950/20 p-6">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-amber-500 to-indigo-500 flex items-center justify-center font-bold text-xs text-white">
-                        {profile?.user?.username ? profile.user.username[0]?.toUpperCase() : "V"}
+                  <div className="my-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    {/* Challenger (Vous) */}
+                    <div className="flex flex-col items-center gap-4 rounded-2xl border border-indigo-500/20 bg-indigo-950/20 p-6">
+                      <div className="flex items-center gap-2">
+                        <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-amber-500 to-indigo-500 flex items-center justify-center font-bold text-xs text-white">
+                          {profile?.user?.username ? profile.user.username[0]?.toUpperCase() : "V"}
+                        </div>
+                        <span className="text-sm font-bold text-indigo-200">
+                          {profile?.user?.username ? profile.user.username : "Vous (Challenger)"}
+                        </span>
                       </div>
-                      <span className="text-sm font-bold text-indigo-200">
-                        {profile?.user?.username ? profile.user.username : "Vous (Challenger)"}
+
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-indigo-400/40 bg-indigo-900/40 text-3xl font-black text-white shadow-lg">
+                          {dicePlayerRoll[0]}
+                        </div>
+                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-indigo-400/40 bg-indigo-900/40 text-3xl font-black text-white shadow-lg">
+                          {dicePlayerRoll[1]}
+                        </div>
+                      </div>
+                      <span className="text-xs font-bold text-indigo-300">
+                        Total : {dicePlayerRoll[0] + dicePlayerRoll[1]}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-indigo-400/40 bg-indigo-900/40 text-3xl font-black text-white shadow-lg">
-                        {dicePlayerRoll[0]}
+                    {/* Adversaire */}
+                    <div className="flex flex-col items-center gap-4 rounded-2xl border border-rose-500/20 bg-rose-950/20 p-6">
+                      <div className="flex items-center gap-2">
+                        <div className="h-8 w-8 rounded-full bg-rose-600 flex items-center justify-center font-bold text-xs text-white">
+                          A
+                        </div>
+                        <span className="text-sm font-bold text-rose-200">
+                          Adversaire Défié
+                        </span>
                       </div>
-                      <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-indigo-400/40 bg-indigo-900/40 text-3xl font-black text-white shadow-lg">
-                        {dicePlayerRoll[1]}
-                      </div>
-                    </div>
-                    <span className="text-xs font-bold text-indigo-300">
-                      Total : {dicePlayerRoll[0] + dicePlayerRoll[1]}
-                    </span>
-                  </div>
 
-                  {/* Adversaire */}
-                  <div className="flex flex-col items-center gap-4 rounded-2xl border border-rose-500/20 bg-rose-950/20 p-6">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-full bg-rose-600 flex items-center justify-center font-bold text-xs text-white">
-                        A
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-rose-400/40 bg-rose-900/40 text-3xl font-black text-white shadow-lg">
+                          {diceOpponentRoll[0]}
+                        </div>
+                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-rose-400/40 bg-rose-900/40 text-3xl font-black text-white shadow-lg">
+                          {diceOpponentRoll[1]}
+                        </div>
                       </div>
-                      <span className="text-sm font-bold text-rose-200">
-                        Adversaire Défié
+                      <span className="text-xs font-bold text-rose-300">
+                        Total : {diceOpponentRoll[0] + diceOpponentRoll[1]}
                       </span>
                     </div>
-
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-rose-400/40 bg-rose-900/40 text-3xl font-black text-white shadow-lg">
-                        {diceOpponentRoll[0]}
-                      </div>
-                      <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-rose-400/40 bg-rose-900/40 text-3xl font-black text-white shadow-lg">
-                        {diceOpponentRoll[1]}
-                      </div>
-                    </div>
-                    <span className="text-xs font-bold text-rose-300">
-                      Total : {diceOpponentRoll[0] + diceOpponentRoll[1]}
-                    </span>
                   </div>
-                </div>
 
-                {/* Bannière d'issue de duel */}
-                {diceOutcome && (
-                  <div className="my-4 text-center">
-                    <span
-                      className={cn(
-                        "inline-block rounded-xl border px-4 py-2 text-xs font-bold",
-                        diceOutcome.won
-                          ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
-                          : "bg-rose-950/60 border-rose-500/40 text-rose-300"
-                      )}
+                  {/* Bannière d'issue de duel */}
+                  {diceOutcome && (
+                    <div className="my-4 text-center">
+                      <span
+                        className={cn(
+                          "inline-block rounded-xl border px-4 py-2 text-xs font-bold",
+                          diceOutcome.won
+                            ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
+                            : "bg-rose-950/60 border-rose-500/40 text-rose-300"
+                        )}
+                      >
+                        {diceOutcome.msg}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Bouton de lancer de duel */}
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6 border-t border-indigo-900/40">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-indigo-300">Mise du duel :</span>
+                      <input
+                        type="number"
+                        min={10}
+                        max={10000}
+                        value={diceBet}
+                        onChange={(e) => setDiceBet(parseInt(e.target.value, 10) || 10)}
+                        className="w-24 rounded-lg border border-indigo-800 bg-indigo-950 px-2.5 py-1 text-xs font-bold text-amber-300 text-center"
+                      />
+                      <span className="text-xs text-amber-400">{currencySymbol}</span>
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={diceRolling}
+                      onClick={handleRollDiceDuel}
+                      className="rounded-xl border border-indigo-500/40 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 px-6 py-2.5 text-xs font-black text-white shadow-lg transition-all cursor-pointer disabled:opacity-50"
                     >
-                      {diceOutcome.msg}
+                      {diceRolling ? "Jet de dés en cours..." : "🎲 Lancer le Duel de Dés"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Guide Slash Command */}
+                <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <span className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+                      <Bot size={15} className="text-indigo-400" />
+                      Commande Slash Duel PvP
                     </span>
+                    <p className="text-xs text-[var(--text-muted)]">
+                      Défiez un membre avec boutons d&apos;acceptation/refus Discord :
+                    </p>
                   </div>
-                )}
-
-                {/* Bouton de lancer de duel */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6 border-t border-indigo-900/40">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-indigo-300">Mise du duel :</span>
-                    <input
-                      type="number"
-                      min={10}
-                      max={10000}
-                      value={diceBet}
-                      onChange={(e) => setDiceBet(parseInt(e.target.value, 10) || 10)}
-                      className="w-24 rounded-lg border border-indigo-800 bg-indigo-950 px-2.5 py-1 text-xs font-bold text-amber-300 text-center"
-                    />
-                    <span className="text-xs text-amber-400">{currencySymbol}</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    disabled={diceRolling}
-                    onClick={handleRollDiceDuel}
-                    className="rounded-xl border border-indigo-500/40 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 px-6 py-2.5 text-xs font-black text-white shadow-lg transition-all cursor-pointer disabled:opacity-50"
-                  >
-                    {diceRolling ? "Jet de dés en cours..." : "🎲 Lancer le Duel de Dés"}
-                  </button>
+                  <code className="rounded-lg bg-stone-950/80 border border-stone-800 px-3 py-1.5 text-xs font-mono text-amber-400">
+                    /dice mise:{diceBet} adversaire:@ami
+                  </code>
                 </div>
-              </div>
-
-              {/* Guide Slash Command */}
-              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-5 backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <span className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
-                    <Bot size={15} className="text-indigo-400" />
-                    Commande Slash Duel PvP
-                  </span>
-                  <p className="text-xs text-[var(--text-muted)]">
-                    Défiez un membre avec boutons d&apos;acceptation/refus Discord :
-                  </p>
-                </div>
-                <code className="rounded-lg bg-stone-950/80 border border-stone-800 px-3 py-1.5 text-xs font-mono text-amber-400">
-                  /dice mise:{diceBet} adversaire:@ami
-                </code>
               </div>
             </motion.div>
           )}
@@ -2141,7 +2146,7 @@ export default function GamesCenterClient() {
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Activation des mini-jeux */}
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-6 backdrop-blur-xl space-y-4">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
                   <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <Gamepad2 size={16} className="text-amber-400" />
                     Jeux Autorisés sur le Serveur
@@ -2199,7 +2204,7 @@ export default function GamesCenterClient() {
                 </div>
 
                 {/* Limites de mises et Cagnotte */}
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-6 backdrop-blur-xl space-y-4">
+                <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-4">
                   <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <Coins size={16} className="text-amber-400" />
                     Limites Financières & Cagnotte
@@ -2285,7 +2290,7 @@ export default function GamesCenterClient() {
                 </div>
 
                 {/* Liaison Système Monétaire Ethone Coin */}
-                <div className="lg:col-span-2 rounded-[var(--panel-radius)] border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-[var(--surface-raised)]/40 to-[var(--surface-base)]/40 p-6 backdrop-blur-xl space-y-4">
+                <div className="lg:col-span-2 rounded-2xl border border-amber-500/30 bg-[var(--surface-raised)]/40 p-6 space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
@@ -2338,7 +2343,7 @@ export default function GamesCenterClient() {
               </div>
 
               {/* Bouton de sauvegarde */}
-              <div className="flex justify-end pt-4">
+              <div className="flex justify-end pt-2">
                 <button
                   type="button"
                   disabled={saving}
@@ -2351,141 +2356,153 @@ export default function GamesCenterClient() {
               </div>
             </motion.div>
           )}
-        </AnimatePresence>
 
-        {/* ======================================================== */}
-        {/* APERÇU EMBED DISCORD TEMPS RÉEL                          */}
-        {/* ======================================================== */}
-        <div className="space-y-4 pt-6 border-t border-[var(--panel-border)]">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-              <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <Eye size={16} className="text-amber-400" />
-                Aperçu de l&apos;Embed Discord en Direct
-              </h3>
-              <p className="text-xs text-[var(--text-muted)]">
-                Rendu exact de ce que vos membres voient dans leur salon textuel.
-              </p>
-            </div>
-
-            {/* Sélecteur de type d'embed */}
-            <div className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-1">
-              {[
-                { id: "blackjack", label: "Blackjack 21" },
-                { id: "roulette", label: "Roulette" },
-                { id: "dice", label: "Duel Dés" },
-                { id: "jackpot", label: "Jackpot Win" },
-              ].map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => setPreviewTab(p.id as any)}
-                  className={cn(
-                    "rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all cursor-pointer",
-                    previewTab === p.id
-                      ? "bg-amber-500/20 text-amber-300 font-bold"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                  )}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Rendu Embed Dark Discord */}
-          <div className="rounded-xl border border-stone-800 bg-[#2b2d31] p-5 text-stone-200 max-w-xl shadow-xl font-sans text-xs">
-            {/* Header Bot */}
-            <div className="flex items-center gap-2.5 mb-3">
-              <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-amber-500 to-indigo-500 flex items-center justify-center font-bold text-[10px] text-white">
-                ETH
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-bold text-white text-xs">ETHONE</span>
-                <span className="rounded bg-[#5865f2] px-1 py-0.2 text-[9px] font-bold text-white uppercase tracking-wider">
-                  BOT
-                </span>
-                <span className="text-[10px] text-stone-400">Aujourd&apos;hui à 19:42</span>
-              </div>
-            </div>
-
-            {/* Corps Embed avec bande latérale colorée */}
-            <div
-              className={cn(
-                "rounded-md bg-[#232428] p-4 border-l-4 space-y-3",
-                previewTab === "blackjack"
-                  ? "border-emerald-500"
-                  : previewTab === "roulette"
-                  ? "border-rose-500"
-                  : previewTab === "dice"
-                  ? "border-indigo-500"
-                  : "border-amber-400"
-              )}
+          {/* ======================================================== */}
+          {/* ONGLET 6 : APERÇU EMBED DISCORD                          */}
+          {/* ======================================================== */}
+          {activeTab === "preview" && (
+            <motion.div
+              key="tab-preview"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-6"
             >
-              {/* Titre Embed */}
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-white text-sm">
-                  {previewTab === "blackjack" && "🃏 Blackjack 21 • Résultat de la main"}
-                  {previewTab === "roulette" && "🎰 Roulette Royale • Tirage de la bille"}
-                  {previewTab === "dice" && "🎲 Duel de Dés • Victoire"}
-                  {previewTab === "jackpot" && "👑 JACKPOT PROGRESSIF DÉCROCHÉ !"}
-                </span>
-              </div>
+              <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                      <Eye size={16} className="text-amber-400" />
+                      Aperçu de l&apos;Embed Discord en Direct
+                    </h3>
+                    <p className="text-xs text-[var(--text-muted)]">
+                      Rendu exact de ce que vos membres voient dans leur salon textuel.
+                    </p>
+                  </div>
 
-              {/* Description */}
-              <p className="text-stone-300 leading-relaxed text-[11px]">
-                {previewTab === "blackjack" && "Félicitations ShadowKnight ! Vous remportez la manche contre le croupier."}
-                {previewTab === "roulette" && "La bille s'arrête sur le 14 Rouge. Vos gains ont été crédités !"}
-                {previewTab === "dice" && "ShadowKnight a battu Valkyrie99 avec un score de 11 contre 8 !"}
-                {previewTab === "jackpot" && "INCROYABLE ! ShadowKnight vient d'empocher la cagnotte progressive totale !"}
-              </p>
-
-              {/* Champs de données */}
-              <div className="grid grid-cols-2 gap-3 pt-1 border-t border-stone-800 text-[11px]">
-                <div>
-                  <span className="text-stone-400 font-semibold block">Mise initiale</span>
-                  <span className="text-white font-bold">250 {currencySymbol}</span>
+                  {/* Sélecteur de type d'embed */}
+                  <div className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-1">
+                    {[
+                      { id: "blackjack", label: "Blackjack 21" },
+                      { id: "roulette", label: "Roulette" },
+                      { id: "dice", label: "Duel Dés" },
+                      { id: "jackpot", label: "Jackpot Win" },
+                    ].map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => setPreviewTab(p.id as any)}
+                        className={cn(
+                          "rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all cursor-pointer",
+                          previewTab === p.id
+                            ? "bg-amber-500/20 text-amber-300 font-bold"
+                            : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                        )}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div>
-                  <span className="text-stone-400 font-semibold block">Gain net</span>
-                  <span className="text-emerald-400 font-bold">
-                    {previewTab === "jackpot" ? `+${overview.jackpotPool.toLocaleString("fr-FR")} ${currencySymbol}` : `+500 ${currencySymbol}`}
-                  </span>
+
+                {/* Rendu Embed Dark Discord */}
+                <div className="rounded-xl border border-stone-800 bg-[#2b2d31] p-5 text-stone-200 max-w-xl shadow-xl font-sans text-xs">
+                  {/* Header Bot */}
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-amber-500 to-indigo-500 flex items-center justify-center font-bold text-[10px] text-white">
+                      ETH
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-white text-xs">ETHONE</span>
+                      <span className="rounded bg-[#5865f2] px-1 py-0.2 text-[9px] font-bold text-white uppercase tracking-wider">
+                        BOT
+                      </span>
+                      <span className="text-[10px] text-stone-400">Aujourd&apos;hui à 19:42</span>
+                    </div>
+                  </div>
+
+                  {/* Corps Embed avec bande latérale colorée */}
+                  <div
+                    className={cn(
+                      "rounded-md bg-[#232428] p-4 border-l-4 space-y-3",
+                      previewTab === "blackjack"
+                        ? "border-emerald-500"
+                        : previewTab === "roulette"
+                        ? "border-rose-500"
+                        : previewTab === "dice"
+                        ? "border-indigo-500"
+                        : "border-amber-400"
+                    )}
+                  >
+                    {/* Titre Embed */}
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-white text-sm">
+                        {previewTab === "blackjack" && "🃏 Blackjack 21 • Résultat de la main"}
+                        {previewTab === "roulette" && "🎰 Roulette Royale • Tirage de la bille"}
+                        {previewTab === "dice" && "🎲 Duel de Dés • Victoire"}
+                        {previewTab === "jackpot" && "👑 JACKPOT PROGRESSIF DÉCROCHÉ !"}
+                      </span>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-stone-300 leading-relaxed text-[11px]">
+                      {previewTab === "blackjack" && "Félicitations ShadowKnight ! Vous remportez la manche contre le croupier."}
+                      {previewTab === "roulette" && "La bille s'arrête sur le 14 Rouge. Vos gains ont été crédités !"}
+                      {previewTab === "dice" && "ShadowKnight a battu Valkyrie99 avec un score de 11 contre 8 !"}
+                      {previewTab === "jackpot" && "INCROYABLE ! ShadowKnight vient d'empocher la cagnotte progressive totale !"}
+                    </p>
+
+                    {/* Champs de données */}
+                    <div className="grid grid-cols-2 gap-3 pt-1 border-t border-stone-800 text-[11px]">
+                      <div>
+                        <span className="text-stone-400 font-semibold block">Mise initiale</span>
+                        <span className="text-white font-bold">250 {currencySymbol}</span>
+                      </div>
+                      <div>
+                        <span className="text-stone-400 font-semibold block">Gain net</span>
+                        <span className="text-emerald-400 font-bold">
+                          {previewTab === "jackpot"
+                            ? `+${overview.jackpotPool.toLocaleString("fr-FR")} ${currencySymbol}`
+                            : `+500 ${currencySymbol}`}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Footer Embed */}
+                    <div className="pt-2 text-[10px] text-stone-400 flex items-center justify-between">
+                      <span>{currentGuildName} • Module Casino</span>
+                      <span>Solde : 4 820 {currencySymbol}</span>
+                    </div>
+                  </div>
+
+                  {/* Boutons interactifs Discord sous le message */}
+                  {previewTab === "blackjack" && (
+                    <div className="flex items-center gap-2 mt-3">
+                      <button
+                        type="button"
+                        className="rounded bg-[#4e5058] px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-[#6d6f78] transition-colors"
+                      >
+                        🃏 Tirer
+                      </button>
+                      <button
+                        type="button"
+                        className="rounded bg-[#4e5058] px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-[#6d6f78] transition-colors"
+                      >
+                        🛑 Rester
+                      </button>
+                      <button
+                        type="button"
+                        className="rounded bg-[#4e5058] px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-[#6d6f78] transition-colors"
+                      >
+                        💰 Doubler
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
-
-              {/* Footer Embed */}
-              <div className="pt-2 text-[10px] text-stone-400 flex items-center justify-between">
-                <span>{currentGuildName} • Module Casino</span>
-                <span>Solde : 4 820 {currencySymbol}</span>
-              </div>
-            </div>
-
-            {/* Boutons interactifs Discord sous le message */}
-            {previewTab === "blackjack" && (
-              <div className="flex items-center gap-2 mt-3">
-                <button
-                  type="button"
-                  className="rounded bg-[#4e5058] px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-[#6d6f78] transition-colors"
-                >
-                  🃏 Tirer
-                </button>
-                <button
-                  type="button"
-                  className="rounded bg-[#4e5058] px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-[#6d6f78] transition-colors"
-                >
-                  🛑 Rester
-                </button>
-                <button
-                  type="button"
-                  className="rounded bg-[#4e5058] px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-[#6d6f78] transition-colors"
-                >
-                  💰 Doubler
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ======================================================== */}
         {/* MODAL : SIMULATEUR DE CASINO DISCORD                    */}

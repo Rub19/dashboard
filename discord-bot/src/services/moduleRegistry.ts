@@ -390,7 +390,7 @@ export const CORE_MODULE_IDS: readonly string[] = ['moderation', 'music', 'remin
 
 export type ModulePresetId = 'minimal' | 'community' | 'security' | 'all';
 
-const COMMUNITY_IDS = ['welcome', 'roles', 'leveling', 'economy', 'suggestions', 'polls', 'giveaways', 'events', 'forms', 'starboard', 'highlights', 'birthdays', 'voice', 'tickets', 'invites', 'afk', 'counting', 'stats', 'statroles', 'reports', 'serverstats', 'sticky', 'commands'];
+const COMMUNITY_IDS = ['welcome', 'roles', 'leveling', 'economy', 'suggestions', 'polls', 'giveaways', 'events', 'forms', 'starboard', 'highlights', 'birthdays', 'voice', 'tickets', 'invites', 'afk', 'counting', 'stats', 'statroles', 'reports', 'serverstats', 'sticky', 'commands', 'streamers', 'games'];
 const SECURITY_IDS = ['security', 'anti-nuke', 'automod', 'logs', 'welcome', 'tickets', 'backups', 'reports', 'secureroles'];
 
 /** Ensembles de modules proposés par la configuration rapide (le socle est toujours inclus). */

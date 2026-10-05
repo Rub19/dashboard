@@ -27,7 +27,7 @@ for (const id of ['minimal', 'community', 'security', 'all'] as const) {
   const on = enabledIds();
   ok(reg.CORE_MODULE_IDS.every((c) => on.includes(c)), `« ${id} » garde le socle (${on.length} modules actifs)`);
 }
-ok(enabledIds().length === reg.MODULES.length, '« tout activer » active les 29 modules');
+ok(enabledIds().length === reg.MODULES.length, `« tout activer » active tous les modules (${reg.MODULES.length})`);
 
 console.log('\nPanneau Discord');
 reg.applyModuleSelection(G, reg.CORE_MODULE_IDS);

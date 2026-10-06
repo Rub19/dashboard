@@ -142,6 +142,8 @@ struct GuildDetailView: View {
                     NavigationLink { ModuleScreen(guild: currentGuild, spec: AdminCatalog.streamersSpec) } label: { Label("Alertes Streamers", systemImage: "antenna.radiowaves.left.and.right") }
                     NavigationLink { ModuleScreen(guild: currentGuild, spec: AdminCatalog.gamesSpec) } label: { Label("Mini-Jeux & Casino", systemImage: "dice.fill") }
                     NavigationLink { OwnerShieldView() } label: { Label("Owner Shield", systemImage: "shield.lefthalf.filled.badge.checkmark") }
+                    NavigationLink { MusicPlayerView(guild: currentGuild) } label: { Label("Musique & Vocal", systemImage: "music.note.list") }
+                    NavigationLink { PublicLeaderboardView(guildId: currentGuild.id) } label: { Label("Classement public", systemImage: "trophy.fill") }
                     NavigationLink { DiscordModuleHubView(guild: currentGuild) } label: { Label("Tous les modules", systemImage: "square.grid.2x2.fill") }
                     NavigationLink { AuditLogAdminView(guild: currentGuild) } label: { Label("Journal d'audit", systemImage: "list.bullet.rectangle.fill") }
                 } header: { Text("Outils").sectionTitle() }

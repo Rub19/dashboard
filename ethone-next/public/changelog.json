@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.55.37",
+    "date": "2026-10-06",
+    "title": "Parité iOS Native : Hub d'Accueil Enrichi & Lecteur Soundscape Partagé",
+    "items": [
+      "Hub d'accueil iOS dynamisé (`HomeView`) : barre de raccourcis rapides Liquid Glass (Brain, Soundscape, Clip, Discord, Agenda, Espaces) avec retours haptiques et animations fluides.",
+      "Widget Soundscape temps réel : mini-lecteur partagé sur l'écran d'accueil avec forme d'onde animée réactive, affichage des fréquences Solfeggio / ondes actives et contrôle direct.",
+      "Agenda du jour : affichage des événements programmés pour aujourd'hui avec horodatages précis et accès 1-geste vers le calendrier complet.",
+      "Aperçu des notes récentes : cartes de lecture instantanée des dernières notes avec texte épuré et ouverture directe dans l'onglet Notes.",
+      "Intégration Discord optimisée : raccourcis directs vers le Lecteur Musical et le Classement Public avec sélection instantanée des serveurs connectés."
+    ]
+  },
+  {
     "version": "v1.55.36",
     "date": "2026-10-06",
     "title": "Parité iOS Native : Bouclier Propriétaire Suprême (Owner Shield)",
@@ -515,18 +527,6 @@
       "Intégrations : le filtre « Erreurs » suit l'état réel des services.",
       "Musique : la recherche tient compte des serveurs où le bot est réellement installé.",
       "94 fichiers de code mort retirés (dashboard, bot et worker), sans changement visible."
-    ]
-  },
-  {
-    "version": "v1.52.14",
-    "date": "2026-10-04",
-    "title": "Motion design : dernières pages Discord",
-    "items": [
-      "Comptage, Highlights, Paramètres du bot, réglages de l'Invite Tracker et de la sauvegarde : entrée en cascade, retour au clic et couleurs du thème.",
-      "Highlights : les mots-clés et salons ignorés apparaissent et disparaissent en douceur.",
-      "Invite Tracker : la sensibilité se choisit avec une pastille qui glisse, et les interrupteurs sont ceux du reste du site.",
-      "Paramètres du bot et sauvegarde : la barre d'enregistrement et les options qui s'ouvrent sont animées.",
-      "Thème clair : les avertissements de Comptage et des Paramètres du bot sont de nouveau lisibles."
     ]
   }
 ]

@@ -45214,10 +45214,62 @@ const v1_55_36_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_37_fr: ChangelogEntry = {
+  version: "v1.55.37",
+  date: "2026-10-06",
+  title: "Parité iOS Native : Hub d'Accueil Enrichi & Lecteur Soundscape Partagé",
+  items: [
+    "Hub d'accueil iOS dynamisé (`HomeView`) : barre de raccourcis rapides Liquid Glass (Brain, Soundscape, Clip, Discord, Agenda, Espaces) avec retours haptiques et animations fluides.",
+    "Widget Soundscape temps réel : mini-lecteur partagé sur l'écran d'accueil avec forme d'onde animée réactive, affichage des fréquences Solfeggio / ondes actives et contrôle direct.",
+    "Agenda du jour : affichage des événements programmés pour aujourd'hui avec horodatages précis et accès 1-geste vers le calendrier complet.",
+    "Aperçu des notes récentes : cartes de lecture instantanée des dernières notes avec texte épuré et ouverture directe dans l'onglet Notes.",
+    "Intégration Discord optimisée : raccourcis directs vers le Lecteur Musical et le Classement Public avec sélection instantanée des serveurs connectés.",
+  ],
+};
+
+const v1_55_37_en: ChangelogEntry = {
+  version: "v1.55.37",
+  date: "2026-10-06",
+  title: "Native iOS Parity: Enriched Home Hub & Shared Soundscape Player",
+  items: [
+    "Enhanced iOS Home Hub (`HomeView`): Liquid Glass quick action chips (Brain, Soundscape, Clip, Discord, Agenda, Spaces) with fluid spring physics.",
+    "Real-time Soundscape widget: shared mini-player on the Home screen featuring animated reactive waveform, Solfeggio/binaural wave display, and direct controls.",
+    "Today's Agenda: live schedule of events planned for today with exact timestamps and 1-tap navigation to the full calendar.",
+    "Recent Notes preview: instant glance at newly edited notes with clean plaintext excerpts and direct navigation.",
+    "Optimized Discord integration: direct shortcuts to Music Player and Public Leaderboard with 1-tap connected server switcher.",
+  ],
+};
+
+const v1_55_37_es: ChangelogEntry = {
+  version: "v1.55.37",
+  date: "2026-10-06",
+  title: "Paridad Nativa en iOS: Hub de Inicio Enriquecido & Reproductor Soundscape Compartido",
+  items: [
+    "Hub de Inicio enriquecido en iOS (`HomeView`): barra de accesos rápidos Liquid Glass (Brain, Soundscape, Clip, Discord, Agenda, Espacios) con animaciones fluidas.",
+    "Widget de Soundscape en tiempo real: mini-reproductor compartido en la pantalla de inicio con onda sonora reactiva y controles directos.",
+    "Agenda de hoy: vista de eventos programados para el día con horarios precisos y acceso rápido al calendario completo.",
+    "Vista previa de notas recientes: lectura directa de las últimas notas editadas con navegación fluida.",
+    "Integración Discord optimizada: accesos directos al Reproductor de Música y Clasificación Pública con selector de servidores conectados.",
+  ],
+};
+
+const v1_55_37_de: ChangelogEntry = {
+  version: "v1.55.37",
+  date: "2026-10-06",
+  title: "Native iOS-Parität: Erweiterter Home-Hub & Geteilter Soundscape-Player",
+  items: [
+    "Erweiterter nativer iOS Home-Hub (`HomeView`): Liquid Glass Schnellzugriffsleiste (Brain, Soundscape, Clip, Discord, Kalender, Spaces) mit flüssiger Physik.",
+    "Echtzeit Soundscape-Widget: geteilter Mini-Player auf dem Startbildschirm mit reaktiver Wellenform und direkter Steuerung.",
+    "Heutige Agenda: Live-Übersicht der für heute geplanten Termine mit präzisen Zeitstempeln und Schnellzugriff auf den Kalender.",
+    "Vorschau der neuesten Notizen: Direktansicht kürzlich bearbeiteter Notizen mit nahtlosem Wechsel zum Notizen-Reiter.",
+    "Optimierte Discord-Integration: direkte Shortcuts zum Musik-Player und zur öffentlichen Rangliste mit Server-Auswahl.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

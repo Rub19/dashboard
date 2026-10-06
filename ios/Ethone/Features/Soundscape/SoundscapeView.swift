@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SoundscapeView: View {
     @Environment(AppModel.self) private var model
-    @State private var engine = SoundscapeEngine()
+    @State private var engine = SoundscapeEngine.shared
 
     @State private var showTimerSheet = false
     @State private var activeTab: SoundscapeSection = .presets

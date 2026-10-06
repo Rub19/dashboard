@@ -18,6 +18,7 @@ final class AppModel {
     let spaces: SpacesStore
     let valorant: ValorantStore
     let discord = DiscordStore()
+    let soundscape = SoundscapeEngine.shared
 
     static let shared = AppModel()
 

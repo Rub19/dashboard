@@ -1,14 +1,40 @@
 import SwiftUI
 
 struct PublicLeaderboardView: View {
-    @State private var guildId = UserDefaults.standard.string(forKey: "ethone.leaderboard.guild") ?? ""
+    @Environment(AppModel.self) private var model
+    let initialGuildId: String?
+
+    @State private var guildId: String
     @State private var payload: JSONValue?
     @State private var loading = false
     @State private var message: String?
 
+    init(guildId: String? = nil) {
+        self.initialGuildId = guildId
+        let saved = UserDefaults.standard.string(forKey: "ethone.leaderboard.guild") ?? ""
+        _guildId = State(initialValue: guildId ?? (saved.isEmpty ? "" : saved))
+    }
+
     var body: some View {
         List {
             Section {
+                let presentGuilds = model.discord.guilds.filter(\.botPresent)
+                if !presentGuilds.isEmpty {
+                    Menu {
+                        ForEach(presentGuilds) { g in
+                            Button(g.name) {
+                                guildId = g.id
+                                Task { await load() }
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Label("Choisir un serveur connecté", systemImage: "server.rack")
+                            Spacer()
+                            Image(systemName: "chevron.up.chevron.down").font(.caption).foregroundStyle(.secondary)
+                        }
+                    }
+                }
                 TextField("Identifiant du serveur Discord", text: $guildId).keyboardType(.numberPad)
                 Button {
                     Task { await load() }

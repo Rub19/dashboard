@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.37 — 2026-10-06
+
+**Parité iOS Native : Hub d'Accueil Enrichi & Lecteur Soundscape Partagé**
+
+- Hub d'accueil iOS dynamisé (`HomeView`) : rangée de raccourcis rapides Liquid Glass (Brain, Soundscape, Clip, Discord, Agenda, Espaces) avec physique de ressorts fluide.
+- Widget Soundscape temps réel : mini-lecteur partagé sur l'écran d'accueil avec indicateur de forme d'onde réactive animée, affichage des fréquences Solfeggio / ondes actives et bascule lecture/pause instantanée.
+- Agenda du jour : affichage des événements programmés pour aujourd'hui avec horodatages précis et accès 1-geste vers le calendrier complet.
+- Aperçu des notes récentes : cartes de lecture instantanée des dernières notes avec texte épuré et ouverture directe dans l'onglet Notes.
+- Intégration Discord optimisée : raccourcis directs vers le Lecteur Musical et le Classement Public avec sélection instantanée des serveurs connectés.
+
 ## v1.55.36 — 2026-10-06
 
 **Parité iOS Native : Bouclier Propriétaire Suprême (Owner Shield)**

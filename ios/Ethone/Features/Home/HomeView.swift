@@ -9,11 +9,30 @@ struct HomeView: View {
     private var openTasks: [Item] { model.tasks.items.filter { !$0.isDone } }
     private var doneToday: Int { model.habits.activeHabits.filter { model.habits.isDone($0) }.count }
 
+    private var todayEvents: [Item] {
+        let cal = Calendar.current
+        let now = Date()
+        return model.events.items.filter { item in
+            guard let start = item.startAt else { return false }
+            return cal.isDate(start, inSameDayAs: now)
+        }.sorted { ($0.startAt ?? now) < ($1.startAt ?? now) }
+    }
+
+    private var recentNotes: [Item] {
+        Array(model.notes.items.sorted { $0.updatedAt > $1.updatedAt }.prefix(3))
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
                     header
+
+                    quickActionsRow
+
+                    if model.soundscape.isPlaying {
+                        soundscapeCard
+                    }
 
                     GlassEffectContainer(spacing: 14) {
                         HStack(spacing: 14) {
@@ -30,66 +49,22 @@ struct HomeView: View {
 
                     focusCard
 
-                    if !model.habits.activeHabits.isEmpty {
-                        GlassCard {
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text("Habitudes du jour").sectionTitle()
-                                ForEach(model.habits.activeHabits.prefix(5)) { habit in
-                                    HStack(spacing: 12) {
-                                        Button {
-                                            Task { await model.habits.toggleToday(habit) }
-                                        } label: {
-                                            Image(systemName: model.habits.isDone(habit) ? "checkmark.circle.fill" : "circle")
-                                                .font(.title3)
-                                                .foregroundStyle(model.habits.isDone(habit) ? Theme.success : Color.secondary)
-                                        }
-                                        .buttonStyle(.plain)
-                                        Text("\(habit.emoji ?? "🎯") \(habit.name)").lineLimit(1)
-                                        Spacer()
-                                        let streak = model.habits.streak(habit)
-                                        if streak > 0 { GlassPill(text: "\(streak) j", systemImage: "flame.fill", tint: Color(hex: 0xF59E0B).opacity(0.5)) }
-                                    }
-                                }
-                            }
-                        }
+                    if !todayEvents.isEmpty {
+                        agendaCard
                     }
 
-                    GlassCard {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Ajout rapide").sectionTitle()
-                            HStack {
-                                TextField("Nouvelle tâche…", text: $quickTask)
-                                    .focused($quickFocused)
-                                    .submitLabel(.done)
-                                    .onSubmit(addQuickTask)
-                                Button(action: addQuickTask) {
-                                    Image(systemName: "plus").fontWeight(.bold)
-                                }
-                                .buttonStyle(.glassProminent)
-                                .buttonBorderShape(.circle)
-                                .disabled(quickTask.trimmingCharacters(in: .whitespaces).isEmpty)
-                            }
-                        }
+                    if !model.habits.activeHabits.isEmpty {
+                        habitsCard
                     }
+
+                    quickTaskCard
 
                     if !openTasks.isEmpty {
-                        GlassCard {
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text("À faire").sectionTitle()
-                                ForEach(openTasks.prefix(5)) { task in
-                                    HStack(spacing: 12) {
-                                        Button {
-                                            Task { await model.tasks.setDone(task, true) }
-                                        } label: {
-                                            Image(systemName: "circle").font(.title3)
-                                        }
-                                        .buttonStyle(.plain)
-                                        Text(task.title).lineLimit(2)
-                                        Spacer()
-                                    }
-                                }
-                            }
-                        }
+                        tasksCard
+                    }
+
+                    if !recentNotes.isEmpty {
+                        recentNotesCard
                     }
 
                     if let error = model.tasks.errorMessage ?? model.notes.errorMessage {
@@ -104,6 +79,213 @@ struct HomeView: View {
             .navigationTitle("Accueil")
             .ethoneScreen()
             .toolbarTitleDisplayMode(.inlineLarge)
+        }
+    }
+
+    private var quickActionsRow: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                quickChip(title: "Brain", systemImage: "sparkles", tint: Theme.accent) {
+                    model.morePath = [.brain]
+                    model.requestedTab = .more
+                }
+                quickChip(title: "Soundscape", systemImage: "waveform.circle.fill", tint: Theme.teal) {
+                    model.morePath = [.soundscape]
+                    model.requestedTab = .more
+                }
+                quickChip(title: "Clip", systemImage: "paperclip", tint: Theme.violet) {
+                    model.morePath = [.clip]
+                    model.requestedTab = .more
+                }
+                quickChip(title: "Discord", systemImage: "bubble.left.and.bubble.right.fill", tint: Color(hex: 0x5865F2)) {
+                    model.morePath = [.discord]
+                    model.requestedTab = .more
+                }
+                quickChip(title: "Agenda", systemImage: "calendar", tint: Theme.warning) {
+                    model.morePath = [.calendar]
+                    model.requestedTab = .more
+                }
+                quickChip(title: "Espaces", systemImage: "person.2.fill", tint: Color(hex: 0x10B981)) {
+                    model.morePath = [.spaces]
+                    model.requestedTab = .more
+                }
+            }
+            .padding(.vertical, 2)
+        }
+    }
+
+    private func quickChip(title: String, systemImage: String, tint: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: systemImage).foregroundStyle(tint)
+                Text(title).font(.subheadline.weight(.medium)).foregroundStyle(.primary)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 9)
+            .glassEffect(Glass.regular.tint(tint.opacity(0.12)), in: .capsule)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var soundscapeCard: some View {
+        let soundscape = model.soundscape
+        return GlassCard(tint: Theme.teal.opacity(0.2)) {
+            HStack(spacing: 12) {
+                Image(systemName: "waveform")
+                    .font(.title2)
+                    .foregroundStyle(Theme.teal)
+                    .symbolEffect(.variableColor.iterative.reversing, isActive: soundscape.isPlaying)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Soundscape en cours").font(.headline)
+                    Text("\(soundscape.selectedSolfeggio.label) · \(soundscape.selectedWave.label)").font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button {
+                    soundscape.togglePlay()
+                } label: {
+                    Image(systemName: soundscape.isPlaying ? "pause.fill" : "play.fill")
+                }
+                .buttonStyle(.glass)
+                Button {
+                    model.morePath = [.soundscape]
+                    model.requestedTab = .more
+                } label: {
+                    Text("Mixeur")
+                }
+                .buttonStyle(.glass)
+            }
+        }
+    }
+
+    private var agendaCard: some View {
+        GlassCard {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("Agenda du jour").sectionTitle()
+                    Spacer()
+                    Button {
+                        model.morePath = [.calendar]
+                        model.requestedTab = .more
+                    } label: {
+                        Text("Voir tout").font(.caption.weight(.medium)).foregroundStyle(Theme.accentSoft)
+                    }
+                }
+                ForEach(todayEvents.prefix(4)) { event in
+                    HStack(spacing: 12) {
+                        if let start = event.startAt {
+                            Text(start.formatted(date: .omitted, time: .shortened))
+                                .font(.caption.weight(.semibold).monospacedDigit())
+                                .foregroundStyle(Theme.accentSoft)
+                                .frame(width: 48, alignment: .leading)
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(event.title).font(.subheadline.weight(.medium)).lineLimit(1)
+                            if !event.plainBody.isEmpty {
+                                Text(event.plainBody).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
+                            }
+                        }
+                        Spacer()
+                    }
+                }
+            }
+        }
+    }
+
+    private var habitsCard: some View {
+        GlassCard {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Habitudes du jour").sectionTitle()
+                ForEach(model.habits.activeHabits.prefix(5)) { habit in
+                    HStack(spacing: 12) {
+                        Button {
+                            Task { await model.habits.toggleToday(habit) }
+                        } label: {
+                            Image(systemName: model.habits.isDone(habit) ? "checkmark.circle.fill" : "circle")
+                                .font(.title3)
+                                .foregroundStyle(model.habits.isDone(habit) ? Theme.success : Color.secondary)
+                        }
+                        .buttonStyle(.plain)
+                        Text("\(habit.emoji ?? "🎯") \(habit.name)").lineLimit(1)
+                        Spacer()
+                        let streak = model.habits.streak(habit)
+                        if streak > 0 { GlassPill(text: "\(streak) j", systemImage: "flame.fill", tint: Color(hex: 0xF59E0B).opacity(0.5)) }
+                    }
+                }
+            }
+        }
+    }
+
+    private var quickTaskCard: some View {
+        GlassCard {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Ajout rapide").sectionTitle()
+                HStack {
+                    TextField("Nouvelle tâche…", text: $quickTask)
+                        .focused($quickFocused)
+                        .submitLabel(.done)
+                        .onSubmit(addQuickTask)
+                    Button(action: addQuickTask) {
+                        Image(systemName: "plus").fontWeight(.bold)
+                    }
+                    .buttonStyle(.glassProminent)
+                    .buttonBorderShape(.circle)
+                    .disabled(quickTask.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+        }
+    }
+
+    private var tasksCard: some View {
+        GlassCard {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("À faire").sectionTitle()
+                ForEach(openTasks.prefix(5)) { task in
+                    HStack(spacing: 12) {
+                        Button {
+                            Task { await model.tasks.setDone(task, true) }
+                        } label: {
+                            Image(systemName: "circle").font(.title3)
+                        }
+                        .buttonStyle(.plain)
+                        Text(task.title).lineLimit(2)
+                        Spacer()
+                    }
+                }
+            }
+        }
+    }
+
+    private var recentNotesCard: some View {
+        GlassCard {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("Notes récentes").sectionTitle()
+                    Spacer()
+                    Button {
+                        model.requestedTab = .notes
+                    } label: {
+                        Text("Toutes").font(.caption.weight(.medium)).foregroundStyle(Theme.teal)
+                    }
+                }
+                ForEach(recentNotes) { note in
+                    Button {
+                        model.requestedTab = .notes
+                    } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: "note.text").foregroundStyle(Theme.teal)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(note.title.isEmpty ? "Sans titre" : note.title).font(.subheadline.weight(.medium)).lineLimit(1).foregroundStyle(.primary)
+                                if !note.plainBody.isEmpty {
+                                    Text(note.plainBody.replacingOccurrences(of: "\n", with: " ")).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
+                                }
+                            }
+                            Spacer()
+                            Text(note.updatedAt.formatted(date: .abbreviated, time: .omitted)).font(.caption2).foregroundStyle(.secondary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
         }
     }
 

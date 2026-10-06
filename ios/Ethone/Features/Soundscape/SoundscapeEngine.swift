@@ -164,6 +164,8 @@ struct SoundscapePreset: Identifiable, Hashable {
 
 @Observable
 final class SoundscapeEngine {
+    static let shared = SoundscapeEngine()
+
     var isPlaying = false
     var masterVolume: Double = 0.8
     var solfeggioVolume: Double = 0.45

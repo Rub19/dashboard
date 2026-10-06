@@ -46,6 +46,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -55,6 +58,8 @@ import dev.ethone.app.service.BrainMessage
 import dev.ethone.app.service.BrainService
 import dev.ethone.app.ui.components.EthoneBrainOrb
 import dev.ethone.app.ui.components.EthoneModelBadge
+import dev.ethone.app.ui.components.LiquidGlassPill
+import dev.ethone.app.ui.components.LiquidGlassSurface
 import dev.ethone.app.ui.theme.EthoneBgRaised
 import dev.ethone.app.ui.theme.EthoneEmerald
 import dev.ethone.app.ui.theme.EthoneViolet
@@ -82,29 +87,12 @@ fun BrainScreen(client: SupabaseClient) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(EthoneBgRaised)
-                    .border(0.6.dp, GlassBorder, CircleShape)
-                    .clickable { showModelDialog = true }
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
-            ) {
-                Text(
-                    text = BrainService.selectedModel.name,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
+            LiquidGlassPill(
+                label = BrainService.selectedModel.name,
+                icon = Icons.Default.KeyboardArrowDown,
+                tint = EthoneViolet,
+                onClick = { showModelDialog = true }
+            )
 
             IconButton(onClick = { BrainService.clearMessages() }) {
                 Icon(
@@ -164,8 +152,31 @@ fun BrainScreen(client: SupabaseClient) {
             }
         }
 
-        Column(modifier = Modifier.fillMaxWidth().background(EthoneBgRaised.copy(alpha = 0.95f))) {
-            Divider(color = GlassBorder)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            EthoneBgRaised.copy(alpha = 0.70f),
+                            EthoneBgRaised.copy(alpha = 0.95f)
+                        )
+                    )
+                )
+                .drawBehind {
+                    drawRect(
+                        brush = Brush.horizontalGradient(
+                            listOf(
+                                Color.White.copy(alpha = 0.28f),
+                                Color.White.copy(alpha = 0.05f),
+                                Color.Transparent
+                            )
+                        ),
+                        topLeft = Offset(0f, 0f),
+                        size = size.copy(height = 1.dp.toPx())
+                    )
+                }
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -274,13 +285,10 @@ fun BrainBubble(message: BrainMessage) {
                 Spacer(modifier = Modifier.height(4.dp))
             }
 
-            Surface(
-                color = if (isUser) EthoneViolet.copy(alpha = 0.85f) else EthoneBgRaised,
-                shape = RoundedCornerShape(18.dp),
-                border = androidx.compose.foundation.BorderStroke(
-                    0.6.dp,
-                    if (isUser) Color.White.copy(alpha = 0.2f) else GlassBorder
-                )
+            LiquidGlassSurface(
+                modifier = Modifier.clip(RoundedCornerShape(18.dp)),
+                cornerRadius = 18.dp,
+                tint = if (isUser) EthoneViolet else null
             ) {
                 Text(
                     text = message.content,

@@ -1,5 +1,29 @@
 import SwiftUI
 
+struct LiquidGlassBorder: ViewModifier {
+    var cornerRadius: CGFloat
+    var opacity: Double = 0.38
+
+    func body(content: Content) -> some View {
+        content.overlay {
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .stroke(
+                    LinearGradient(
+                        stops: [
+                            .init(color: .white.opacity(opacity), location: 0.0),
+                            .init(color: .white.opacity(opacity * 0.25), location: 0.4),
+                            .init(color: .clear, location: 0.7),
+                            .init(color: .white.opacity(opacity * 0.35), location: 1.0)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 0.8
+                )
+        }
+    }
+}
+
 struct GlassCard<Content: View>: View {
     var tint: Color? = nil
     var padding: CGFloat = 16
@@ -11,6 +35,7 @@ struct GlassCard<Content: View>: View {
             .padding(padding)
             .frame(maxWidth: .infinity, alignment: .leading)
             .glassEffect(Glass.regular.tint(tint), in: .rect(cornerRadius: cornerRadius))
+            .modifier(LiquidGlassBorder(cornerRadius: cornerRadius))
     }
 }
 
@@ -28,6 +53,52 @@ struct GlassPill: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 7)
         .glassEffect(Glass.regular.tint(tint), in: .capsule)
+        .overlay {
+            Capsule()
+                .stroke(
+                    LinearGradient(
+                        stops: [
+                            .init(color: .white.opacity(0.36), location: 0.0),
+                            .init(color: .white.opacity(0.1), location: 0.4),
+                            .init(color: .clear, location: 0.7),
+                            .init(color: .white.opacity(0.15), location: 1.0)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 0.7
+                )
+        }
+    }
+}
+
+struct GlassRowBackground: View {
+    var cornerRadius: CGFloat = 20
+    var tint: Color? = nil
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+            .fill(Color.clear)
+            .glassEffect(Glass.regular.tint(tint), in: .rect(cornerRadius: cornerRadius))
+            .modifier(LiquidGlassBorder(cornerRadius: cornerRadius, opacity: 0.32))
+            .padding(.vertical, 3)
+    }
+}
+
+struct LiquidGlassInputModifier: ViewModifier {
+    var cornerRadius: CGFloat = 16
+
+    func body(content: Content) -> some View {
+        content
+            .padding(14)
+            .glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
+            .modifier(LiquidGlassBorder(cornerRadius: cornerRadius, opacity: 0.32))
+    }
+}
+
+extension View {
+    func liquidGlassInput(cornerRadius: CGFloat = 16) -> some View {
+        modifier(LiquidGlassInputModifier(cornerRadius: cornerRadius))
     }
 }
 

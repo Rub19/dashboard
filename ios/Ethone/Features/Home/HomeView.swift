@@ -123,6 +123,22 @@ struct HomeView: View {
             .padding(.horizontal, 14)
             .padding(.vertical, 9)
             .glassEffect(Glass.regular.tint(tint.opacity(0.12)), in: .capsule)
+            .overlay {
+                Capsule()
+                    .stroke(
+                        LinearGradient(
+                            stops: [
+                                .init(color: .white.opacity(0.35), location: 0.0),
+                                .init(color: .white.opacity(0.08), location: 0.4),
+                                .init(color: .clear, location: 0.7),
+                                .init(color: .white.opacity(0.14), location: 1.0)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 0.7
+                    )
+            }
         }
         .buttonStyle(.plain)
     }

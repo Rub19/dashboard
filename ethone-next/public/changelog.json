@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.42",
+    "date": "2026-10-06",
+    "title": "Design System Liquid Glass Avancé : Reflets Spéculaires & Fond Lumineux Ambiant",
+    "items": [
+      "Design System Liquid Glass Avancé (iOS & Android) : intégration de bordures spéculaires à réfraction de lumière (`LiquidGlassBorder`) sur l'ensemble des cartes, champs de saisie, pilules tactiles et arrière-plans de rangées de listes (`GlassRowBackground`).",
+      "Fond Lumineux Ambiant Réactif Android (`AmbientLuminousBackground`) : orbes de gradient mouvants projetant des reflets subtils à travers les surfaces translucides de `BentoGridScreen` et de l'écran de connexion `LoginScreen`.",
+      "Dock Flottant & Pilules Tactiles Sublimés (`NativeFloatingDock`) : capsule de sélection en verre acrylique avec micro-haptique et élévation spéculaire sur Android.",
+      "Expérience Liquid Glass unifiée : bulles de discussion Brain (`BrainBubble`), sélecteurs de filtres (`LiquidGlassPill`), mini-barre Focus (`FocusMiniBar`), orbe IA (`ETHBrainOrb`) et écran de verrouillage (`LockScreen`)."
+    ]
+  },
+  {
     "version": "v1.55.41",
     "date": "2026-10-06",
     "title": "Android Natif : Grille/Liste, Navigation Dossiers, Favoris Cloud & Fiabilisation",
@@ -515,19 +526,6 @@
     "title": "Tracker LoL : vrais objets affichés",
     "items": [
       "Les objets et la balise de chaque joueur s'affichent de nouveau à partir des données réelles de la partie."
-    ]
-  },
-  {
-    "version": "v1.53.2",
-    "date": "2026-10-04",
-    "title": "Nettoyage du code et tracker LoL sans données inventées",
-    "items": [
-      "Environ 120 variables et fonctions abandonnées retirées (fenêtres jamais branchées, états jamais affichés) : le code est plus léger, sans changement visible.",
-      "Tracker LoL : les objets, sorts, runes, balises et champions manquants ne sont plus remplacés par des valeurs inventées ; un emplacement vide reste vide.",
-      "Tracker LoL : le badge « +123 / −15 » écrit en dur affiche maintenant Victoire ou Défaite.",
-      "Tracker LoL : dans l'aperçu des équipes, chaque joueur affiche son vrai champion (les joueurs 2 à 10 pouvaient montrer Annie, Olaf, Galio…).",
-      "Tracker LoL : les images suivent la dernière version de Data Dragon, les objets récents s'affichent.",
-      "Tickets : une requête inutile au bot a été retirée."
     ]
   }
 ]

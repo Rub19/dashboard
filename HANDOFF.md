@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-06, version 1.55.41)
+# ETHONE — passation à la prochaine IA (état au 2026-10-06, version 1.55.42)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 
@@ -189,6 +189,8 @@ git log --oneline -10
 - Ergonomie Discord & Zéro Avertissement de Code (v1.55.29) : navigation au clavier complète (flèches Haut/Bas, Entrée, Échap) et fermeture automatique sur mobile pour le sélecteur de serveur. Résolution de tous les avertissements React hooks (`exhaustive-deps`) et expressions fonctionnelles dans tout le projet (0 avertissement fonctionnel).
 - Synchronisation Palette de Commandes & Assistant (v1.55.30) : intégration des modules Alertes Streamers (`/discord/streamers`), Mini-Jeux & Casino (`/discord/games`) et AutoMod natif dans l'index global de la palette de commandes (`DISCORD_MODULES`) avec mots-clés enrichis. Synchronisation des préréglages et groupes de l'assistant d'onboarding (`SetupModulesStep.tsx`).
 - Fiabilisation du Sélecteur de Serveurs (v1.55.31) : correction du cycle de réinitialisation dans `HubSidebar.tsx` en dissociant l'initialisation à l'ouverture du bornage du curseur lors de la frappe, assurant une saisie fluide et persistante dans la barre de recherche des serveurs Discord. Bornage dynamique du curseur de navigation clavier.
+- Gestionnaire de Fichiers iOS & Android Réel (v1.55.39 à v1.55.41) : parité native avec arborescence dossiers, fil d'Ariane interactif, grille/liste 2 colonnes, favoris Cloud réels (`ethone_file_favorites`), raccourcis d'action contextuels et inspecteur de détails.
+- Design System Liquid Glass Avancé iOS & Android (v1.55.42) : reflets spéculaires à réfraction de lumière (`LiquidGlassBorder`), fond lumineux ambiant réactif (`AmbientLuminousBackground`), pilules et dock tactile flottant (`LiquidGlassPill`, `NativeFloatingDock`), bulles de chat Brain, mini-barre Focus, orbe IA (`ETHBrainOrb`) et écrans de connexion et verrouillage.
 
 ## Reste à faire (par priorité)
 1. **Bot animé, vérification réelle** : regarder dans un vrai salon qu'une réponse du bot affiche bien les émojis animés (29 émojis d'application synchronisés au démarrage) et qu'une arrivée de membre envoie la carte GIF (interrupteur et aperçu GIF intégrés sur le site).

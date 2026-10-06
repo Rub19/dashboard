@@ -102,6 +102,22 @@ struct LockScreen: View {
                     .font(.system(size: 40))
                     .padding(26)
                     .glassEffect(Glass.regular.tint(Theme.accent.opacity(0.35)), in: .circle)
+                    .overlay {
+                        Circle()
+                            .stroke(
+                                LinearGradient(
+                                    stops: [
+                                        .init(color: .white.opacity(0.42), location: 0.0),
+                                        .init(color: .white.opacity(0.12), location: 0.4),
+                                        .init(color: .clear, location: 0.7),
+                                        .init(color: .white.opacity(0.20), location: 1.0)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 0.9
+                            )
+                    }
                 Text("ETHONE est verrouillé").font(.title3.weight(.semibold))
                 Button("Déverrouiller") { Task { await model.lock.unlock() } }
                     .buttonStyle(.glassProminent)

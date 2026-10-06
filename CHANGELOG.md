@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.42 — 2026-10-06
+
+**Design System Liquid Glass Avancé : Reflets Spéculaires & Fond Lumineux Ambiant**
+
+- Design System Liquid Glass Avancé (iOS & Android) : intégration de bordures spéculaires à réfraction de lumière (`LiquidGlassBorder`) sur l'ensemble des cartes, champs de saisie, pilules tactiles et arrière-plans de rangées de listes (`GlassRowBackground`).
+- Fond Lumineux Ambiant Réactif Android (`AmbientLuminousBackground`) : orbes de gradient mouvants projetant des reflets subtils à travers les surfaces translucides de `BentoGridScreen` et de l'écran de connexion `LoginScreen`.
+- Dock Flottant & Pilules Tactiles Sublimés (`NativeFloatingDock`) : capsule de sélection en verre acrylique avec micro-haptique et élévation spéculaire sur Android.
+- Expérience Liquid Glass unifiée : bulles de discussion Brain (`BrainBubble`), sélecteurs de filtres (`LiquidGlassPill`), mini-barre Focus (`FocusMiniBar`), orbe IA (`ETHBrainOrb`) et écran de verrouillage (`LockScreen`).
+
 ## v1.55.41 — 2026-10-06
 
 **Android Natif : Grille/Liste, Navigation Dossiers, Favoris Cloud & Fiabilisation**

@@ -73,6 +73,7 @@ import dev.ethone.app.data.EthoneFile
 import dev.ethone.app.data.SupabaseClient
 import dev.ethone.app.ui.components.EthoneCard
 import dev.ethone.app.ui.components.EthoneEmptyState
+import dev.ethone.app.ui.components.LiquidGlassPill
 import dev.ethone.app.ui.theme.EthoneAmber
 import dev.ethone.app.ui.theme.EthoneBgRaised
 import dev.ethone.app.ui.theme.EthoneCyan
@@ -284,21 +285,11 @@ fun FilesScreen(
         ) {
             FileCategoryFilter.values().forEach { cat ->
                 val isSelected = cat == selectedCategory
-                Surface(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .clickable { selectedCategory = cat },
-                    color = if (isSelected) EthoneEmerald.copy(alpha = 0.2f) else EthoneBgRaised.copy(alpha = 0.6f),
-                    shape = CircleShape
-                ) {
-                    Text(
-                        text = cat.label,
-                        fontSize = 12.sp,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                        color = if (isSelected) EthoneEmerald else MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                    )
-                }
+                LiquidGlassPill(
+                    label = cat.label,
+                    tint = if (isSelected) EthoneEmerald else Color.Gray,
+                    onClick = { selectedCategory = cat }
+                )
             }
         }
 

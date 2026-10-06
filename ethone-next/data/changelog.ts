@@ -45366,6 +45366,54 @@ const v1_55_39_de: ChangelogEntry = {
   ],
 };
 
+const v1_55_42_fr: ChangelogEntry = {
+  version: "v1.55.42",
+  date: "2026-10-06",
+  title: "Design System Liquid Glass Avancé : Reflets Spéculaires & Fond Lumineux Ambiant",
+  items: [
+    "Design System Liquid Glass Avancé (iOS & Android) : intégration de bordures spéculaires à réfraction de lumière (`LiquidGlassBorder`) sur l'ensemble des cartes, champs de saisie, pilules tactiles et arrière-plans de rangées de listes (`GlassRowBackground`).",
+    "Fond Lumineux Ambiant Réactif Android (`AmbientLuminousBackground`) : orbes de gradient mouvants projetant des reflets subtils à travers les surfaces translucides de `BentoGridScreen` et de l'écran de connexion `LoginScreen`.",
+    "Dock Flottant & Pilules Tactiles Sublimés (`NativeFloatingDock`) : capsule de sélection en verre acrylique avec micro-haptique et élévation spéculaire sur Android.",
+    "Expérience Liquid Glass unifiée : bulles de discussion Brain (`BrainBubble`), sélecteurs de filtres (`LiquidGlassPill`), mini-barre Focus (`FocusMiniBar`), orbe IA (`ETHBrainOrb`) et écran de verrouillage (`LockScreen`).",
+  ],
+};
+
+const v1_55_42_en: ChangelogEntry = {
+  version: "v1.55.42",
+  date: "2026-10-06",
+  title: "Advanced Liquid Glass Design System: Specular Reflections & Ambient Glow",
+  items: [
+    "Advanced Liquid Glass Design System (iOS & Android): specular refraction borders (`LiquidGlassBorder`) across cards, input fields, tactile pills, and list row backgrounds (`GlassRowBackground`).",
+    "Reactive Ambient Luminous Background on Android (`AmbientLuminousBackground`): drifting gradient orbs radiating soft glows through `BentoGridScreen` and `LoginScreen` translucent surfaces.",
+    "Refined Floating Dock & Tactile Pills (`NativeFloatingDock`): acrylic glass active capsules with micro-haptic feedback and specular elevation on Android.",
+    "Unified Liquid Glass experience: Brain chat bubbles (`BrainBubble`), filter selectors (`LiquidGlassPill`), Focus mini bar (`FocusMiniBar`), AI orb (`ETHBrainOrb`), and lock screen (`LockScreen`).",
+  ],
+};
+
+const v1_55_42_es: ChangelogEntry = {
+  version: "v1.55.42",
+  date: "2026-10-06",
+  title: "Sistema Liquid Glass Avanzado: Reflejos Especulares & Fondo Luminoso Ambiental",
+  items: [
+    "Sistema de Diseño Liquid Glass Avanzado (iOS & Android): bordes de refracción especular (`LiquidGlassBorder`) en tarjetas, campos de entrada, cápsulas táctiles y fondos de filas de lista (`GlassRowBackground`).",
+    "Fondo Luminoso Ambiente en Android (`AmbientLuminousBackground`): orbes degradados que proyectan reflejos sutiles a través de superficies translúcidas en `BentoGridScreen` y `LoginScreen`.",
+    "Dock Flotante & Pastillas Táctiles Mejoradas (`NativeFloatingDock`): cápsulas activas de vidrio acrílico con retroalimentación háptica.",
+    "Experiencia Liquid Glass unificada: burbujas de chat de Brain (`BrainBubble`), selectores de filtros (`LiquidGlassPill`), mini barra Focus (`FocusMiniBar`), orbe IA (`ETHBrainOrb`) y pantalla de bloqueo (`LockScreen`).",
+  ],
+};
+
+const v1_55_42_de: ChangelogEntry = {
+  version: "v1.55.42",
+  date: "2026-10-06",
+  title: "Erweitertes Liquid Glass Designsystem: Spekulare Reflexionen & Ambient Glow",
+  items: [
+    "Erweitertes Liquid Glass Designsystem (iOS & Android): spekulare Lichtbrechungskanten (`LiquidGlassBorder`) auf Karten, Eingabefeldern, Touch-Pills und Listenreihen-Hintergründen (`GlassRowBackground`).",
+    "Reaktiver Luminous Ambient-Hintergrund auf Android (`AmbientLuminousBackground`): driftende Farbverläufe, die durch transluzente Flächen in `BentoGridScreen` und `LoginScreen` scheinen.",
+    "Veredeltes Floating Dock & Touch-Pills (`NativeFloatingDock`): Acrylglas-Aktivkapseln mit Mikro-Haptik und spekularer Elevation.",
+    "Vereinte Liquid Glass-Erfahrung: Brain-Chatblasen (`BrainBubble`), Filterwähler (`LiquidGlassPill`), Focus-Minileiste (`FocusMiniBar`), KI-Orb (`ETHBrainOrb`) und Sperrbildschirm (`LockScreen`).",
+  ],
+};
+
 const v1_55_41_fr: ChangelogEntry = {
   version: "v1.55.41",
   date: "2026-10-06",
@@ -45458,10 +45506,10 @@ const v1_55_40_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_41_fr, v1_55_40_fr, v1_55_39_fr, v1_55_38_fr, v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_41_en, v1_55_40_en, v1_55_39_en, v1_55_38_en, v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_41_es, v1_55_40_es, v1_55_39_es, v1_55_38_es, v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_41_de, v1_55_40_de, v1_55_39_de, v1_55_38_de, v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+CHANGELOG_BY_LANG.fr.unshift(v1_55_42_fr, v1_55_41_fr, v1_55_40_fr, v1_55_39_fr, v1_55_38_fr, v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_42_en, v1_55_41_en, v1_55_40_en, v1_55_39_en, v1_55_38_en, v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_42_es, v1_55_41_es, v1_55_40_es, v1_55_39_es, v1_55_38_es, v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_42_de, v1_55_41_de, v1_55_40_de, v1_55_39_de, v1_55_38_de, v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

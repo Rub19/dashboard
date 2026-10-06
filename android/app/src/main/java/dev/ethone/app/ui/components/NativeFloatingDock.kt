@@ -13,18 +13,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -42,10 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.ethone.app.ui.theme.EthoneBgRaised
 import dev.ethone.app.ui.theme.EthoneEmerald
-import dev.ethone.app.ui.theme.GlassBorder
-
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Folder
 
 enum class BottomTab(val label: String, val icon: ImageVector) {
     Home("Home", Icons.Default.Home),
@@ -76,26 +74,47 @@ fun NativeFloatingDock(
         )
     }
 
+    val specularGradient = remember {
+        Brush.linearGradient(
+            colors = listOf(
+                Color.White.copy(alpha = 0.40f),
+                Color.White.copy(alpha = 0.08f),
+                Color.Transparent,
+                Color.White.copy(alpha = 0.16f)
+            ),
+            start = Offset(0f, 0f),
+            end = Offset(800f, 800f)
+        )
+    }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 14.dp, vertical = 10.dp)
     ) {
-        Surface(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp)
-                .clip(RoundedCornerShape(30.dp))
-                .border(0.8.dp, GlassBorder, RoundedCornerShape(30.dp))
-                .shadow(20.dp, shape = RoundedCornerShape(30.dp)),
-            color = EthoneBgRaised.copy(alpha = 0.92f),
-            shape = RoundedCornerShape(30.dp),
-            tonalElevation = 6.dp
+                .height(64.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            EthoneBgRaised.copy(alpha = 0.94f),
+                            EthoneBgRaised.copy(alpha = 0.82f)
+                        )
+                    )
+                )
+                .border(0.8.dp, specularGradient, RoundedCornerShape(32.dp))
+                .shadow(24.dp, shape = RoundedCornerShape(32.dp)),
+            contentAlignment = Alignment.Center
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 6.dp)
             ) {
                 dockTabs.forEach { tab ->
                     val selected = tab == selectedTab
@@ -104,11 +123,15 @@ fun NativeFloatingDock(
                         label = "tabIconColor"
                     )
 
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
+                    Box(
                         modifier = Modifier
-                            .clip(CircleShape)
+                            .clip(RoundedCornerShape(18.dp))
+                            .background(if (selected) EthoneEmerald.copy(alpha = 0.16f) else Color.Transparent)
+                            .border(
+                                width = if (selected) 0.6.dp else 0.dp,
+                                color = if (selected) EthoneEmerald.copy(alpha = 0.35f) else Color.Transparent,
+                                shape = RoundedCornerShape(18.dp)
+                            )
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null
@@ -116,20 +139,26 @@ fun NativeFloatingDock(
                                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 onTabSelected(tab)
                             }
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            imageVector = tab.icon,
-                            contentDescription = tab.label,
-                            tint = iconColor,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Text(
-                            text = tab.label,
-                            fontSize = 10.sp,
-                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
-                            color = if (selected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = tab.icon,
+                                contentDescription = tab.label,
+                                tint = iconColor,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = tab.label,
+                                fontSize = 10.sp,
+                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+                                color = if (selected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
             }

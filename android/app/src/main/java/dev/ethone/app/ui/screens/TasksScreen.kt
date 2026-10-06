@@ -48,6 +48,7 @@ import dev.ethone.app.data.SupabaseClient
 import dev.ethone.app.ui.components.EthoneCard
 import dev.ethone.app.ui.components.EthoneEmptyState
 import dev.ethone.app.ui.components.EthoneStatusBadge
+import dev.ethone.app.ui.components.LiquidGlassPill
 import dev.ethone.app.ui.theme.EthoneAmber
 import dev.ethone.app.ui.theme.EthoneEmerald
 import dev.ethone.app.ui.theme.EthoneRose
@@ -84,14 +85,10 @@ fun TasksScreen(client: SupabaseClient) {
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             TaskFilterTab.values().forEach { tab ->
-                FilterChip(
-                    selected = filter == tab,
-                    onClick = { filter = tab },
-                    label = { Text(tab.label, fontSize = 13.sp) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = EthoneEmerald,
-                        selectedLabelColor = Color.Black
-                    )
+                LiquidGlassPill(
+                    label = tab.label,
+                    tint = if (filter == tab) EthoneEmerald else Color.Gray,
+                    onClick = { filter = tab }
                 )
             }
         }

@@ -55,6 +55,7 @@ import dev.ethone.app.service.AudioManager
 import dev.ethone.app.service.FocusManager
 import dev.ethone.app.service.FocusPreset
 import dev.ethone.app.ui.components.EthoneCard
+import dev.ethone.app.ui.components.LiquidGlassPill
 import dev.ethone.app.ui.theme.EthoneAmber
 import dev.ethone.app.ui.theme.EthoneCyan
 import dev.ethone.app.ui.theme.EthoneEmerald
@@ -83,14 +84,10 @@ fun FocusScreen() {
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(FocusPreset.values()) { preset ->
-                FilterChip(
-                    selected = FocusManager.currentPreset == preset,
-                    onClick = { FocusManager.selectPreset(preset) },
-                    label = { Text(preset.label, fontSize = 13.sp) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = preset.tint,
-                        selectedLabelColor = Color.Black
-                    )
+                LiquidGlassPill(
+                    label = preset.label,
+                    tint = if (FocusManager.currentPreset == preset) preset.tint else Color.Gray,
+                    onClick = { FocusManager.selectPreset(preset) }
                 )
             }
         }

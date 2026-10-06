@@ -67,15 +67,6 @@ struct NoteDraft: Identifiable {
     let item: Item?
 }
 
-struct GlassRowBackground: View {
-    var body: some View {
-        RoundedRectangle(cornerRadius: 20, style: .continuous)
-            .fill(Color.clear)
-            .glassEffect(.regular, in: .rect(cornerRadius: 20))
-            .padding(.vertical, 3)
-    }
-}
-
 struct NoteEditorView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss

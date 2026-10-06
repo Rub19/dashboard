@@ -213,7 +213,7 @@ fun SettingsScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("ETHONE OS pour Android", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-            Text("Version 1.55.41 (Kotlin / Jetpack Compose 2026)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Version 1.55.42 (Kotlin / Jetpack Compose 2026)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
         Spacer(modifier = Modifier.height(100.dp))

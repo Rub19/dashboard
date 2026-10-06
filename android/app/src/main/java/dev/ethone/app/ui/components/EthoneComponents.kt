@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -62,47 +63,15 @@ fun EthoneCard(
     tint: Color? = null,
     content: @Composable () -> Unit
 ) {
-    val specularGradient = remember {
-        Brush.linearGradient(
-            colors = listOf(
-                Color.White.copy(alpha = 0.38f),
-                Color.White.copy(alpha = 0.08f),
-                Color.Transparent,
-                Color.White.copy(alpha = 0.14f)
-            ),
-            start = Offset(0f, 0f),
-            end = Offset(800f, 800f)
-        )
-    }
-
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(cornerRadius))
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        tint?.copy(alpha = 0.14f) ?: EthoneBgRaised.copy(alpha = 0.88f),
-                        EthoneBgRaised.copy(alpha = 0.72f)
-                    )
-                )
-            )
-            .border(0.8.dp, specularGradient, RoundedCornerShape(cornerRadius))
-            .drawBehind {
-                drawRoundRect(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            Color.White.copy(alpha = 0.22f),
-                            Color.White.copy(alpha = 0.04f),
-                            Color.Transparent
-                        )
-                    ),
-                    topLeft = Offset(0f, 0f),
-                    size = size.copy(height = 1.dp.toPx())
-                )
-            }
-            .padding(16.dp)
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(cornerRadius),
+        color = tint?.copy(alpha = 0.12f) ?: EthoneBgRaised,
+        border = BorderStroke(1.dp, GlassBorder)
     ) {
-        content()
+        Box(modifier = Modifier.padding(16.dp)) {
+            content()
+        }
     }
 }
 
@@ -297,34 +266,14 @@ fun EthoneChip(
     modifier: Modifier = Modifier,
     tint: Color = EthoneEmerald
 ) {
-    val specularGradient = remember {
-        Brush.linearGradient(
-            colors = listOf(
-                Color.White.copy(alpha = 0.35f),
-                Color.White.copy(alpha = 0.08f),
-                Color.Transparent
-            ),
-            start = Offset(0f, 0f),
-            end = Offset(400f, 400f)
-        )
-    }
-
-    Box(
-        modifier = modifier
-            .clip(CircleShape)
-            .background(
-                Brush.horizontalGradient(
-                    colors = listOf(
-                        tint.copy(alpha = 0.16f),
-                        EthoneBgRaised.copy(alpha = 0.75f)
-                    )
-                )
-            )
-            .border(0.8.dp, specularGradient, CircleShape)
-            .clickable { onClick() }
-            .padding(horizontal = 13.dp, vertical = 7.dp)
+    Surface(
+        modifier = modifier.clickable { onClick() },
+        shape = CircleShape,
+        color = tint.copy(alpha = 0.12f),
+        border = BorderStroke(1.dp, tint.copy(alpha = 0.25f))
     ) {
         Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {

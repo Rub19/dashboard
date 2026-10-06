@@ -69,11 +69,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import dev.ethone.app.data.EthoneFile
 import dev.ethone.app.data.SupabaseClient
 import dev.ethone.app.ui.components.EthoneCard
 import dev.ethone.app.ui.components.EthoneEmptyState
-import dev.ethone.app.ui.components.LiquidGlassPill
 import dev.ethone.app.ui.theme.EthoneAmber
 import dev.ethone.app.ui.theme.EthoneBgRaised
 import dev.ethone.app.ui.theme.EthoneCyan
@@ -285,10 +286,19 @@ fun FilesScreen(
         ) {
             FileCategoryFilter.values().forEach { cat ->
                 val isSelected = cat == selectedCategory
-                LiquidGlassPill(
-                    label = cat.label,
-                    tint = if (isSelected) EthoneEmerald else Color.Gray,
-                    onClick = { selectedCategory = cat }
+                FilterChip(
+                    selected = isSelected,
+                    onClick = { selectedCategory = cat },
+                    label = { Text(cat.label) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = EthoneEmerald.copy(alpha = 0.2f),
+                        selectedLabelColor = EthoneEmerald
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = isSelected,
+                        borderColor = if (isSelected) EthoneEmerald else MaterialTheme.colorScheme.outlineVariant
+                    )
                 )
             }
         }

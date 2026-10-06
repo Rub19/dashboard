@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.ethone.app.data.SupabaseClient
-import dev.ethone.app.ui.components.LiquidGlassSurface
+import dev.ethone.app.ui.components.EthoneCard
 import dev.ethone.app.ui.theme.EthoneCyan
 import dev.ethone.app.ui.theme.EthonePink
 import dev.ethone.app.ui.theme.EthonePurple
@@ -34,7 +34,7 @@ fun StorageMetricsCard(client: SupabaseClient) {
     val filesCount = client.files.size
     val totalCount = notesCount + tasksCount + filesCount
 
-    LiquidGlassSurface(modifier = Modifier.height(260.dp)) {
+    EthoneCard(modifier = Modifier.height(260.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Stockage",

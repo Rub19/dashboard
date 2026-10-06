@@ -45366,6 +45366,54 @@ const v1_55_39_de: ChangelogEntry = {
   ],
 };
 
+const v1_55_43_fr: ChangelogEntry = {
+  version: "v1.55.43",
+  date: "2026-10-06",
+  title: "Pureté Native : Liquid Glass iOS 26/27 & Material Design 3 Android",
+  items: [
+    "iOS 26/27 : alignement strict sur le framework natif officiel Apple (.glassEffect, Glass.regular, GlassEffectContainer), retrait des faux contours à gradient manuel.",
+    "Android 100% Material Design 3 : suppression des imitations de verre (LiquidGlassSurface, AmbientLuminousBackground), adoption intégrale des composants M3 (Surface, FilterChip, AssistChip, élévation tonale, formes standard).",
+    "Dock tactile flottant Android (NativeFloatingDock) : Surface Material 3 avec conteneur surélevé, élévation tonale et bordure outlineVariant.",
+    "Orbes IA et composants partagés épurés : BrainOrb, cartes métriques, capture et timer sans artefacts visuels non-standards.",
+  ],
+};
+
+const v1_55_43_en: ChangelogEntry = {
+  version: "v1.55.43",
+  date: "2026-10-06",
+  title: "Native Authenticity: iOS 26/27 Liquid Glass & Android Material Design 3",
+  items: [
+    "iOS 26/27: strict alignment with the official Apple native framework (.glassEffect, Glass.regular, GlassEffectContainer), removing faux gradient stroke overlays.",
+    "Android 100% Material Design 3: completely eliminated simulated glass hacks (LiquidGlassSurface, AmbientLuminousBackground) in favor of authentic M3 components (Surface, FilterChip, AssistChip, tonal elevation).",
+    "Android Native Floating Dock (NativeFloatingDock): Material 3 elevated Surface with container styling, tonal elevation, and clean outlineVariant border.",
+    "Purified AI Orbs & shared components: BrainOrb, metric cards, capture, and timer refined without non-standard visual artifacts.",
+  ],
+};
+
+const v1_55_43_es: ChangelogEntry = {
+  version: "v1.55.43",
+  date: "2026-10-06",
+  title: "Autenticidad Nativa: Liquid Glass iOS 26/27 & Material Design 3 Android",
+  items: [
+    "iOS 26/27: alineación estricta con el framework nativo oficial de Apple (.glassEffect, Glass.regular, GlassEffectContainer), eliminando bordes de gradiente simulados.",
+    "Android 100% Material Design 3: eliminación completa de efectos de vidrio simulados en favor de componentes M3 puros (Surface, FilterChip, AssistChip, elevación tonal).",
+    "Dock flotante táctil en Android (NativeFloatingDock): Surface de Material 3 con elevación tonal y borde outlineVariant.",
+    "Orbe IA y componentes limpios: BrainOrb, tarjetas de métricas, captura y temporizador sin artefactos visuales artificiales.",
+  ],
+};
+
+const v1_55_43_de: ChangelogEntry = {
+  version: "v1.55.43",
+  date: "2026-10-06",
+  title: "Native Reinheit: iOS 26/27 Liquid Glass & Android Material Design 3",
+  items: [
+    "iOS 26/27: Strikte Ausrichtung am offiziellen nativen Apple-Framework (.glassEffect, Glass.regular, GlassEffectContainer) ohne künstliche Verlaufsränder.",
+    "Android 100% Material Design 3: Vollständiges Entfernen von Fake-Glaseffekten zugunsten nativer M3-Komponenten (Surface, FilterChip, AssistChip, tonale Elevation).",
+    "Android Native Floating Dock (NativeFloatingDock): Material 3 Surface mit tonaler Elevation und standardisiertem outlineVariant-Rahmen.",
+    "Bereinigte KI-Orbs & geteilte Karten: BrainOrb, Metriken, Erfassung und Timer ohne künstliche visuelle Überlagerungen.",
+  ],
+};
+
 const v1_55_42_fr: ChangelogEntry = {
   version: "v1.55.42",
   date: "2026-10-06",
@@ -45506,10 +45554,10 @@ const v1_55_40_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_42_fr, v1_55_41_fr, v1_55_40_fr, v1_55_39_fr, v1_55_38_fr, v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_42_en, v1_55_41_en, v1_55_40_en, v1_55_39_en, v1_55_38_en, v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_42_es, v1_55_41_es, v1_55_40_es, v1_55_39_es, v1_55_38_es, v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_42_de, v1_55_41_de, v1_55_40_de, v1_55_39_de, v1_55_38_de, v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+CHANGELOG_BY_LANG.fr.unshift(v1_55_43_fr, v1_55_42_fr, v1_55_41_fr, v1_55_40_fr, v1_55_39_fr, v1_55_38_fr, v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_43_en, v1_55_42_en, v1_55_41_en, v1_55_40_en, v1_55_39_en, v1_55_38_en, v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_43_es, v1_55_42_es, v1_55_41_es, v1_55_40_es, v1_55_39_es, v1_55_38_es, v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_43_de, v1_55_42_de, v1_55_41_de, v1_55_40_de, v1_55_39_de, v1_55_38_de, v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

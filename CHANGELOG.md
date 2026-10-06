@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.43 — 2026-10-06
+
+**Pureté Native : Liquid Glass iOS 26/27 & Material Design 3 Android**
+
+- iOS 26/27 : alignement strict sur le framework natif officiel Apple (`.glassEffect`, `Glass.regular`, `GlassEffectContainer`), retrait de tous les faux contours à gradient manuel.
+- Android 100% Material Design 3 : suppression totale des imitations de verre (`LiquidGlassSurface`, `AmbientLuminousBackground`, `LiquidGlassPill`), adoption intégrale des composants et idiomes natifs M3 (`Surface`, `FilterChip`, `AssistChip`, élévation tonale, formes standard).
+- Dock tactile flottant Android (`NativeFloatingDock`) : Surface Material 3 avec conteneur surélevé, élévation tonale et bordure standardisée `outlineVariant`.
+- Orbes IA et cartes métriques épurés : BrainOrb, cartes métriques, capture et timer sans artefacts visuels artificiels.
+
 ## v1.55.42 — 2026-10-06
 
 **Design System Liquid Glass Avancé : Reflets Spéculaires & Fond Lumineux Ambiant**

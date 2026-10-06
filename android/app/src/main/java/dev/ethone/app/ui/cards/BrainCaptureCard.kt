@@ -33,7 +33,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.ethone.app.data.SupabaseClient
-import dev.ethone.app.ui.components.LiquidGlassSurface
+import dev.ethone.app.ui.components.EthoneCard
 import kotlinx.coroutines.launch
 
 @Composable
@@ -54,7 +54,7 @@ fun BrainCaptureCard(client: SupabaseClient) {
 
     val scope = rememberCoroutineScope()
 
-    LiquidGlassSurface(modifier = Modifier.height(260.dp)) {
+    EthoneCard(modifier = Modifier.height(260.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Brain",

@@ -224,22 +224,6 @@ struct FocusMiniBar: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
             .glassEffect(.regular, in: .capsule)
-            .overlay {
-                Capsule()
-                    .stroke(
-                        LinearGradient(
-                            stops: [
-                                .init(color: .white.opacity(0.38), location: 0.0),
-                                .init(color: .white.opacity(0.12), location: 0.4),
-                                .init(color: .clear, location: 0.7),
-                                .init(color: .white.opacity(0.16), location: 1.0)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 0.8
-                    )
-            }
         }
     }
 }

@@ -16,6 +16,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,9 +34,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.ethone.app.data.SupabaseClient
-import dev.ethone.app.ui.components.AmbientLuminousBackground
 import dev.ethone.app.ui.components.EthoneBrainOrb
-import dev.ethone.app.ui.components.LiquidGlassSurface
+import dev.ethone.app.ui.components.EthoneCard
 import dev.ethone.app.ui.theme.EthoneEmerald
 import dev.ethone.app.ui.theme.GlassBorder
 import kotlinx.coroutines.launch
@@ -48,9 +48,10 @@ fun LoginScreen(client: SupabaseClient) {
     var busy by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        AmbientLuminousBackground()
-
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -64,7 +65,7 @@ fun LoginScreen(client: SupabaseClient) {
             Text("Votre espace, partout.", color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(modifier = Modifier.height(28.dp))
 
-            LiquidGlassSurface(
+            EthoneCard(
                 modifier = Modifier.fillMaxWidth(),
                 cornerRadius = 24.dp
             ) {

@@ -19,22 +19,6 @@ struct LoginView: View {
                         .foregroundStyle(Theme.accentSoft)
                         .padding(22)
                         .glassEffect(Glass.regular.tint(Theme.accent.opacity(0.35)), in: .circle)
-                        .overlay {
-                            Circle()
-                                .stroke(
-                                    LinearGradient(
-                                        stops: [
-                                            .init(color: .white.opacity(0.42), location: 0.0),
-                                            .init(color: .white.opacity(0.12), location: 0.4),
-                                            .init(color: .clear, location: 0.7),
-                                            .init(color: .white.opacity(0.20), location: 1.0)
-                                        ],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    ),
-                                    lineWidth: 0.9
-                                )
-                        }
                     Text("ETHONE").font(.system(size: 34, weight: .bold, design: .rounded))
                     Text("Votre espace, partout.").foregroundStyle(.secondary)
                 }
@@ -50,14 +34,16 @@ struct LoginView: View {
                             .focused($focus, equals: .email)
                             .submitLabel(.next)
                             .onSubmit { focus = .password }
-                            .liquidGlassInput(cornerRadius: 16)
+                            .padding(14)
+                            .glassEffect(.regular, in: .rect(cornerRadius: 16))
 
                         SecureField("Mot de passe", text: $password)
                             .textContentType(.password)
                             .focused($focus, equals: .password)
                             .submitLabel(.go)
                             .onSubmit(signIn)
-                            .liquidGlassInput(cornerRadius: 16)
+                            .padding(14)
+                            .glassEffect(.regular, in: .rect(cornerRadius: 16))
 
                         if let message = auth.errorMessage {
                             Text(message)
@@ -185,22 +171,6 @@ struct MFAView: View {
                 .foregroundStyle(Theme.accentSoft)
                 .padding(22)
                 .glassEffect(Glass.regular.tint(Theme.accent.opacity(0.3)), in: .circle)
-                .overlay {
-                    Circle()
-                        .stroke(
-                            LinearGradient(
-                                stops: [
-                                    .init(color: .white.opacity(0.42), location: 0.0),
-                                    .init(color: .white.opacity(0.12), location: 0.4),
-                                    .init(color: .clear, location: 0.7),
-                                    .init(color: .white.opacity(0.20), location: 1.0)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 0.9
-                        )
-                }
             Text("Vérification en deux étapes").font(.title2.bold())
             Text(useBackup ? "Saisissez un code de secours." : "Saisissez le code à 6 chiffres de votre application d'authentification.")
                 .multilineTextAlignment(.center)
@@ -215,7 +185,8 @@ struct MFAView: View {
                         .multilineTextAlignment(.center)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
-                        .liquidGlassInput(cornerRadius: 16)
+                        .padding(14)
+                        .glassEffect(.regular, in: .rect(cornerRadius: 16))
 
                     if let message = auth.errorMessage {
                         Text(message).font(.footnote).foregroundStyle(Theme.danger)

@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.ethone.app.ui.components.LiquidGlassSurface
+import dev.ethone.app.ui.components.EthoneCard
 import dev.ethone.app.ui.theme.EthonePink
 
 @Composable
@@ -29,7 +29,7 @@ fun SupportCard() {
     val haptic = LocalHapticFeedback.current
     val stripeUrl = Uri.parse("https://donate.stripe.com/test_fZu5kD8923u73gn3Bv4Ni00")
 
-    LiquidGlassSurface(modifier = Modifier.height(140.dp)) {
+    EthoneCard(modifier = Modifier.height(140.dp)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()

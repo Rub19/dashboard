@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.43",
+    "date": "2026-10-06",
+    "title": "Pureté Native : Liquid Glass iOS 26/27 & Material Design 3 Android",
+    "items": [
+      "iOS 26/27 : alignement strict sur le framework natif officiel Apple (.glassEffect, Glass.regular, GlassEffectContainer), retrait des faux contours à gradient manuel.",
+      "Android 100% Material Design 3 : suppression des imitations de verre (LiquidGlassSurface, AmbientLuminousBackground), adoption intégrale des composants M3 (Surface, FilterChip, AssistChip, élévation tonale, formes standard).",
+      "Dock tactile flottant Android (NativeFloatingDock) : Surface Material 3 avec conteneur surélevé, élévation tonale et bordure outlineVariant.",
+      "Orbes IA et composants partagés épurés : BrainOrb, cartes métriques, capture et timer sans artefacts visuels non-standards."
+    ]
+  },
+  {
     "version": "v1.55.42",
     "date": "2026-10-06",
     "title": "Design System Liquid Glass Avancé : Reflets Spéculaires & Fond Lumineux Ambiant",
@@ -518,14 +529,6 @@
     "title": "Tracker LoL : sorts et rune affichés",
     "items": [
       "Les sorts d'invocateur et la rune principale de chaque joueur s'affichent, y compris pour les parties déjà en cache."
-    ]
-  },
-  {
-    "version": "v1.53.3",
-    "date": "2026-10-04",
-    "title": "Tracker LoL : vrais objets affichés",
-    "items": [
-      "Les objets et la balise de chaque joueur s'affichent de nouveau à partir des données réelles de la partie."
     ]
   }
 ]

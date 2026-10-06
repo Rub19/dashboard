@@ -21,8 +21,4 @@ val EthoneLightSurface = Color(0xFFFFFFFF)
 val EthoneLight = Color(0xFFF8F8FB)
 val EthoneLightRaised = Color(0xFFECEEF5)
 
-val LiquidGlassLightStart = Color(0x40FFFFFF)
-val LiquidGlassLightEnd = Color(0x10FFFFFF)
-val LiquidGlassDarkStart = Color(0x20FFFFFF)
-val LiquidGlassDarkEnd = Color(0x05FFFFFF)
 val GlassBorder = Color(0x2EFFFFFF)

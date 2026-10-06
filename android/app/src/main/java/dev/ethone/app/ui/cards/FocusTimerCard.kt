@@ -38,7 +38,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.ethone.app.service.LocalNotificationManager
-import dev.ethone.app.ui.components.LiquidGlassSurface
+import dev.ethone.app.ui.components.EthoneCard
 import dev.ethone.app.ui.theme.EthoneCyan
 import dev.ethone.app.ui.theme.EthonePink
 import dev.ethone.app.ui.theme.EthonePurple
@@ -68,11 +68,10 @@ fun FocusTimerCard() {
         }
     }
 
-    LiquidGlassSurface(modifier = Modifier.height(260.dp)) {
+    EthoneCard(modifier = Modifier.height(260.dp)) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(

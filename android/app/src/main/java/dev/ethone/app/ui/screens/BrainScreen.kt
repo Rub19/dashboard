@@ -53,13 +53,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import dev.ethone.app.data.SupabaseClient
 import dev.ethone.app.service.BrainMessage
 import dev.ethone.app.service.BrainService
 import dev.ethone.app.ui.components.EthoneBrainOrb
 import dev.ethone.app.ui.components.EthoneModelBadge
-import dev.ethone.app.ui.components.LiquidGlassPill
-import dev.ethone.app.ui.components.LiquidGlassSurface
 import dev.ethone.app.ui.theme.EthoneBgRaised
 import dev.ethone.app.ui.theme.EthoneEmerald
 import dev.ethone.app.ui.theme.EthoneViolet
@@ -87,11 +88,26 @@ fun BrainScreen(client: SupabaseClient) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            LiquidGlassPill(
-                label = BrainService.selectedModel.name,
-                icon = Icons.Default.KeyboardArrowDown,
-                tint = EthoneViolet,
-                onClick = { showModelDialog = true }
+            AssistChip(
+                onClick = { showModelDialog = true },
+                label = { Text(BrainService.selectedModel.name, fontWeight = FontWeight.SemiBold) },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = EthoneViolet.copy(alpha = 0.15f),
+                    labelColor = EthoneViolet,
+                    trailingIconContentColor = EthoneViolet
+                ),
+                border = AssistChipDefaults.assistChipBorder(
+                    enabled = true,
+                    borderColor = EthoneViolet.copy(alpha = 0.35f)
+                ),
+                shape = CircleShape
             )
 
             IconButton(onClick = { BrainService.clearMessages() }) {
@@ -152,30 +168,11 @@ fun BrainScreen(client: SupabaseClient) {
             }
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    Brush.verticalGradient(
-                        listOf(
-                            EthoneBgRaised.copy(alpha = 0.70f),
-                            EthoneBgRaised.copy(alpha = 0.95f)
-                        )
-                    )
-                )
-                .drawBehind {
-                    drawRect(
-                        brush = Brush.horizontalGradient(
-                            listOf(
-                                Color.White.copy(alpha = 0.28f),
-                                Color.White.copy(alpha = 0.05f),
-                                Color.Transparent
-                            )
-                        ),
-                        topLeft = Offset(0f, 0f),
-                        size = size.copy(height = 1.dp.toPx())
-                    )
-                }
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 3.dp,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f))
         ) {
             Row(
                 modifier = Modifier
@@ -285,14 +282,16 @@ fun BrainBubble(message: BrainMessage) {
                 Spacer(modifier = Modifier.height(4.dp))
             }
 
-            LiquidGlassSurface(
+            Surface(
                 modifier = Modifier.clip(RoundedCornerShape(18.dp)),
-                cornerRadius = 18.dp,
-                tint = if (isUser) EthoneViolet else null
+                shape = RoundedCornerShape(18.dp),
+                color = if (isUser) EthoneViolet else MaterialTheme.colorScheme.surfaceContainerHigh,
+                tonalElevation = if (isUser) 0.dp else 2.dp,
+                border = if (!isUser) BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)) else null
             ) {
                 Text(
                     text = message.content,
-                    color = if (isUser) Color.White else MaterialTheme.colorScheme.onBackground,
+                    color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(14.dp)
                 )

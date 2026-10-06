@@ -85,17 +85,6 @@ export default function IntegrationsSettings() {
               map[i.id] = true;
             }
           });
-          // NOTE: this used to also force `map.discord = false` whenever the
-          // one-time Sept-4 revocation flag (DISCORD_REVOCATION_KEY) was set and
-          // `ethone:connected:discord` wasn't exactly "true" at this precise
-          // instant — a client-only heuristic that second-guessed the server's
-          // own authoritative /api/connections response. Since this component's
-          // own fetch above runs in parallel with (and can resolve before) the
-          // OAuth exchange in OAuthHandler.tsx, that race could permanently pin
-          // Discord to "disconnected" even right after a genuinely successful
-          // connect. The migration that originally justified this gate no longer
-          // runs (see lib/discord-migration.ts), so the server response here is
-          // trusted as-is.
         }
 
         setConnected(map);

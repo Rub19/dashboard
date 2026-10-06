@@ -230,7 +230,6 @@ struct GuildDetailView: View {
         }
     }
 
-    /// Bascule optimiste ; l'interrupteur revient à l'état réel si le bot refuse.
     private func toggle(_ module: DiscordModule, _ enabled: Bool) {
         guard let index = modules.firstIndex(where: { $0.id == module.id }) else { return }
         modules[index].enabled = enabled

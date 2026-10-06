@@ -55,10 +55,6 @@ async function runTests() {
 
   // 2. Snapshot round-trip — the core of restart survival
   console.log('\n💾 2. Queue Snapshot Round-Trip (restart survival):');
-  // Note: setCurrentTrack() (called directly above) only tracks "what's
-  // playing now" for history purposes — it does NOT dequeue; only next()/
-  // previous() remove from the array. So the queue still holds t2 (never
-  // shifted off) plus the newly-added t3.
   queue.add(t3);
   queue.setRepeatMode('QUEUE');
   const snapshot = queue.toSnapshot();

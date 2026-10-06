@@ -62,15 +62,6 @@ export function createBotControlRouter(client: Client): Router {
     }
   });
 
-  // NOTE: This router used to expose GET /modules and POST /modules/:moduleId/toggle
-  // backed by a hardcoded, in-memory, global (not per-guild) BotModuleRegistryService —
-  // fabricated uptime/error/memory stats and a toggle that never touched real bot
-  // behavior (guildConfigService). It has been removed: the real, guild-scoped module
-  // toggle system lives in moduleRoutes.ts (GET/PATCH /api/guilds/:guildId/modules...),
-  // which is genuinely backed by guildConfigService and shared with the /module Discord
-  // command. The dashboard now calls that API directly instead of this one.
-
-  // Command Center
   router.get('/commands', (req: Request, res: Response) => {
     try {
       const commands = commandStats.getAllCommands();

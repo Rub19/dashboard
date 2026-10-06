@@ -8,10 +8,6 @@ export const summarizeCommand: Command = {
   name: 'summarize',
   description: 'Résume les derniers échanges du salon actuel',
   category: 'Général',
-  // NOTE: "resume" was previously listed here, but it collides with the real,
-  // unrelated /resume command (music/musicShortcuts.ts, unpause playback) and
-  // always resolved to this handler instead of the music one. Removed; use
-  // !recap or /summarize.
   aliases: ['recap'],
   slashData: new SlashCommandBuilder()
     .setName('summarize')

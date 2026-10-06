@@ -28,11 +28,6 @@ export const botCommand: Command = {
   name: 'bot',
   description: 'Statut système, métriques et informations sur le bot ETHONE',
   category: 'Général',
-  // NOTE: "status" was previously listed here, but it collides with the real,
-  // unrelated /status command (admin/statusCommand.ts, Bot Owner presence
-  // control) and always resolved to this handler instead — crashing with
-  // CommandInteractionOptionNoSubcommand whenever /status was actually
-  // invoked. Removed; use /bot status, !botstats, or !about instead.
   aliases: ['botstats', 'about'],
   slashData: new SlashCommandBuilder()
     .setName('bot')

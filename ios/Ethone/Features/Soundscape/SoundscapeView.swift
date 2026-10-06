@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Studio immersif audio-visuel Soundscape & Fréquences (ondes binaurales, fréquences sacrées Solfeggio et ambiances).
 struct SoundscapeView: View {
     @Environment(AppModel.self) private var model
     @State private var engine = SoundscapeEngine()
@@ -19,7 +18,6 @@ struct SoundscapeView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Visualiseur d'ondes interactif
                 WaveVisualizer(engine: engine)
                     .frame(height: 180)
                     .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
@@ -30,7 +28,6 @@ struct SoundscapeView: View {
                     .shadow(color: Color.black.opacity(0.3), radius: 16, y: 8)
                     .padding(.horizontal)
 
-                // Barre d'onglets de navigation
                 Picker("Section", selection: $activeTab) {
                     ForEach(SoundscapeSection.allCases) { section in
                         Text(section.rawValue).tag(section)
@@ -39,7 +36,6 @@ struct SoundscapeView: View {
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
 
-                // Contenu selon la section active
                 switch activeTab {
                 case .presets:
                     presetsSection
@@ -50,7 +46,7 @@ struct SoundscapeView: View {
                 }
             }
             .padding(.top, 12)
-            .padding(.bottom, 100) // Marge pour le lecteur flottant
+            .padding(.bottom, 100)
         }
         .scrollIndicators(.hidden)
         .navigationTitle("Soundscape")
@@ -62,12 +58,7 @@ struct SoundscapeView: View {
         .sheet(isPresented: $showTimerSheet) {
             timerSheetView
         }
-        .onDisappear {
-            // Maintient la lecture en arrière-plan si désiré ou coupe à la fermeture
-        }
     }
-
-    // MARK: - Section Préréglages
 
     private var presetsSection: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -117,11 +108,8 @@ struct SoundscapeView: View {
         }
     }
 
-    // MARK: - Section Fréquences
-
     private var frequenciesSection: some View {
         VStack(spacing: 18) {
-            // Fréquences Solfeggio
             VStack(alignment: .leading, spacing: 12) {
                 Text("Fréquences sacrées Solfeggio").sectionTitle()
                     .padding(.horizontal)
@@ -157,7 +145,6 @@ struct SoundscapeView: View {
                 .padding(.horizontal)
             }
 
-            // Ondes cérébrales binaurales
             VStack(alignment: .leading, spacing: 12) {
                 Text("Ondes cérébrales binaurales (stéréo)").sectionTitle()
                     .padding(.horizontal)
@@ -195,22 +182,18 @@ struct SoundscapeView: View {
         }
     }
 
-    // MARK: - Section Mixeur
-
     private var mixerSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Mixeur multi-pistes").sectionTitle()
                 .padding(.horizontal)
 
             VStack(spacing: 12) {
-                // Volume Fréquence pure
                 mixerRow(
                     title: "Fréquence Solfeggio (\(engine.selectedSolfeggio.label))",
                     symbol: "waveform.circle.fill",
                     value: $engine.solfeggioVolume
                 )
 
-                // Volume Battement binaural
                 mixerRow(
                     title: "Battement Binaural (\(engine.selectedWave.label))",
                     symbol: "headphones",
@@ -219,7 +202,6 @@ struct SoundscapeView: View {
 
                 Divider().opacity(0.3).padding(.vertical, 4)
 
-                // Pistes d'ambiance naturelle
                 ForEach(AmbientSoundKind.allCases) { kind in
                     let binding = Binding<Double>(
                         get: { engine.ambientVolumes[kind] ?? 0.0 },
@@ -259,8 +241,6 @@ struct SoundscapeView: View {
         .glassEffect(.regular, in: .rect(cornerRadius: 16))
     }
 
-    // MARK: - Barre inférieure flottante
-
     private var bottomFloatingBar: some View {
         HStack(spacing: 16) {
             Button {
@@ -280,7 +260,6 @@ struct SoundscapeView: View {
 
             Spacer()
 
-            // Minuteur de mise en veille
             Button {
                 showTimerSheet = true
             } label: {
@@ -305,8 +284,6 @@ struct SoundscapeView: View {
         .padding(.horizontal)
         .padding(.bottom, 6)
     }
-
-    // MARK: - Feuille minuteur
 
     private var timerSheetView: some View {
         NavigationStack {
@@ -348,8 +325,6 @@ struct SoundscapeView: View {
     }
 }
 
-// MARK: - Visualiseur d'ondes interactif (60 FPS Canvas SwiftUI)
-
 private struct WaveVisualizer: View {
     @Environment(AppModel.self) private var model
     let engine: SoundscapeEngine
@@ -364,12 +339,10 @@ private struct WaveVisualizer: View {
                 let midY = size.height * 0.5
                 let width = size.width
 
-                // Fond dégradé doux
                 let bgRect = CGRect(origin: .zero, size: size)
                 context.fill(Path(bgRect), with: .color(Color.black.opacity(0.65)))
 
                 guard isPlaying else {
-                    // Ligne de veille zen
                     var flatPath = Path()
                     flatPath.move(to: CGPoint(x: 0, y: midY))
                     flatPath.addLine(to: CGPoint(x: width, y: midY))
@@ -377,7 +350,6 @@ private struct WaveVisualizer: View {
                     return
                 }
 
-                // Ondes sinusoïdales multi-couches
                 let layers: [(amplitude: Double, speed: Double, color: Color, width: CGFloat)] = [
                     (amplitude: 28.0, speed: 2.2, color: accent.opacity(0.75), width: 2.5),
                     (amplitude: 18.0, speed: 3.4, color: Color.cyan.opacity(0.60), width: 2.0),
@@ -391,7 +363,6 @@ private struct WaveVisualizer: View {
                     let step = 3.0
                     for x in stride(from: 0.0, through: Double(width), by: step) {
                         let relX = x / Double(width)
-                        // Atténuation aux extrémités
                         let envelope = sin(relX * .pi)
                         let y = midY + sin((x * 0.02) + (date * layer.speed)) * layer.amplitude * envelope
                         path.addLine(to: CGPoint(x: x, y: y))

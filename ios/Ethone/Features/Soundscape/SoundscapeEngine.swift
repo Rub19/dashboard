@@ -2,7 +2,6 @@ import Foundation
 import AVFoundation
 import Combine
 
-/// Types d'ondes binaurales avec leur fréquence de battement (différence oreille gauche / oreille droite).
 enum BinauralWaveType: String, CaseIterable, Identifiable {
     case delta = "delta"
     case theta = "theta"
@@ -43,7 +42,6 @@ enum BinauralWaveType: String, CaseIterable, Identifiable {
     }
 }
 
-/// Fréquences sacrées Solfeggio.
 enum SolfeggioFrequency: Int, CaseIterable, Identifiable {
     case f432 = 432
     case f528 = 528
@@ -64,7 +62,6 @@ enum SolfeggioFrequency: Int, CaseIterable, Identifiable {
     }
 }
 
-/// Ambiances sonores procédurales générées en direct (sans dépendance réseau ni fichiers volumineux).
 enum AmbientSoundKind: String, CaseIterable, Identifiable {
     case rain = "rain"
     case ocean = "ocean"
@@ -98,7 +95,6 @@ enum AmbientSoundKind: String, CaseIterable, Identifiable {
     }
 }
 
-/// Préréglages audio 1-clic pour le studio Soundscape.
 struct SoundscapePreset: Identifiable, Hashable {
     let id: String
     let title: String
@@ -166,7 +162,6 @@ struct SoundscapePreset: Identifiable, Hashable {
     ]
 }
 
-/// Moteur audio procédural pour Soundscape : synthèse de fréquences pures, battements binauraux et ambiances naturelles via AVFoundation.
 @Observable
 final class SoundscapeEngine {
     var isPlaying = false
@@ -185,19 +180,16 @@ final class SoundscapeEngine {
         .whiteNoise: 0.0,
     ]
 
-    // Minuteur d'extinction
     var timerRemainingSeconds: Int? = nil
     private var sleepTimer: AnyCancellable?
 
     private var audioEngine: AVAudioEngine?
     private var sourceNode: AVAudioSourceNode?
 
-    // État de phase de synthèse
     private var solfeggioPhase: Double = 0.0
     private var leftBinauralPhase: Double = 0.0
     private var rightBinauralPhase: Double = 0.0
 
-    // Synthèse de bruits procéduraux
     private var lastNoise: Double = 0.0
     private var brownNoise: Double = 0.0
     private var windLFO: Double = 0.0
@@ -216,9 +208,7 @@ final class SoundscapeEngine {
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.playback, mode: .default, options: [.mixWithOthers])
             try session.setActive(true)
-        } catch {
-            // Audio session warning
-        }
+        } catch {}
     }
 
     func togglePlay() {
@@ -246,8 +236,6 @@ final class SoundscapeEngine {
 
         let engine = AVAudioEngine()
         let sampleRate: Double = 44100.0
-
-        // Variables capturées pour le bloc temps-réel (sans lock mémoire)
         let twoPi = 2.0 * Double.pi
 
         let node = AVAudioSourceNode { [weak self] _, _, frameCount, audioBufferList -> OSStatus in
@@ -264,7 +252,7 @@ final class SoundscapeEngine {
             let binauralVol = Float(self.binauralVolume)
 
             let solfFreq = Double(self.selectedSolfeggio.rawValue)
-            let carrierFreq = solfFreq * 0.5 // porteuse agréable
+            let carrierFreq = solfFreq * 0.5
             let beatFreq = self.selectedWave.beatFrequency
 
             let leftBinauralFreq = carrierFreq
@@ -282,12 +270,10 @@ final class SoundscapeEngine {
             let whiteVol = Float(self.ambientVolumes[.whiteNoise] ?? 0.0)
 
             for frame in 0..<Int(frameCount) {
-                // 1. Fréquence sacrée Solfeggio pure
                 let solfSample = Float(sin(self.solfeggioPhase)) * 0.28 * solfeggioVol
                 self.solfeggioPhase += solfStep
                 if self.solfeggioPhase > twoPi { self.solfeggioPhase -= twoPi }
 
-                // 2. Battements binauraux stéréo
                 let leftBin = Float(sin(self.leftBinauralPhase)) * 0.22 * binauralVol
                 let rightBin = Float(sin(self.rightBinauralPhase)) * 0.22 * binauralVol
 
@@ -297,7 +283,6 @@ final class SoundscapeEngine {
                 self.rightBinauralPhase += rightBinauralStep
                 if self.rightBinauralPhase > twoPi { self.rightBinauralPhase -= twoPi }
 
-                // 3. Synthèse procédurale d'ambiance
                 let whiteRaw = (Double.random(in: -1.0...1.0))
                 self.brownNoise = (self.brownNoise * 0.98) + (whiteRaw * 0.02)
                 self.lastNoise = (self.lastNoise * 0.70) + (whiteRaw * 0.30)
@@ -339,9 +324,7 @@ final class SoundscapeEngine {
             self.audioEngine = engine
             self.sourceNode = node
             self.isPlaying = true
-        } catch {
-            // Engine start failed
-        }
+        } catch {}
     }
 
     func stop() {

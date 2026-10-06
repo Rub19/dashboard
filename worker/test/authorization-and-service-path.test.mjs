@@ -27,18 +27,6 @@ beforeEach(() => {
   clearSessionRevocationCache();
 });
 
-// -----------------------------------------------------------------------
-// (a) Authorization: the only admin-gated route in the Worker.
-//
-// Note: this route (adminStatsRoute, src/routes/admin.js) gates on a
-// hardcoded ADMIN_EMAILS allow-list checked against the token's `email`
-// claim, NOT via middleware/auth.js's requireRole()/appRole — a grep across
-// worker/src finds requireRole imported and called nowhere. That's not a bug
-// introduced by this phase and nothing here changes it; it's just why this
-// spot-check exercises the email allow-list rather than appRole. Flagged in
-// the phase report as an observation, not fixed here (scope creep guard).
-// -----------------------------------------------------------------------
-
 function createAdminStatsFetch() {
   return async (input) => {
     const url = new URL(String(input));

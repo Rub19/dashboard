@@ -81,7 +81,6 @@ enum AdminCatalog {
     static let moderation: [AdminModuleSpec] = [
         .init(id: "automod", title: "AutoMod", symbol: "shield.checkered", group: groups[0],
               lists: [.init(title: "Règles", path: "/rules"), .init(title: "Historique", path: "/history")]),
-        // Règles d'auto-modération natives de Discord : exécutées par Discord lui-même, même si le bot est hors ligne.
         .init(id: "automod-native", title: "AutoMod natif Discord", symbol: "checkmark.shield.fill", group: groups[0], overview: nil,
               lists: [.init(title: "Règles", path: "/", key: "rules", rowActions: [
                 .init(title: "Activer / désactiver", path: "/{id}/toggle", method: "PATCH", symbol: "power"),
@@ -189,7 +188,6 @@ enum AdminCatalog {
         .init(id: "server-stats", title: "Salons de statistiques", symbol: "gauge.with.dots.needle.67percent", group: groups[2],
               configs: [.init(title: "Réglages", get: "/config", put: "/config")],
               actions: [.init(title: "Rafraîchir les salons", path: "/refresh", symbol: "arrow.triangle.2.circlepath")]),
-        // Les règles (arbre de conditions imbriquées) restent éditables sur le site uniquement : pas de constructeur générique ici.
         .init(id: "statroles", title: "Rôles automatiques par statistiques", symbol: "person.crop.circle.badge.checkmark", group: groups[2],
               configs: [.init(title: "Réglages", get: "/overview", put: "/config", strict: true)],
               actions: [.init(title: "Lancer maintenant", path: "/run", symbol: "play.fill")]),
@@ -281,14 +279,10 @@ enum AdminCatalog {
 
     static let bot: [AdminModuleSpec] = [
         .init(id: "control", title: "Centre de contrôle", symbol: "gauge.high", group: groups[5], scope: .bot, base: "bot",
-              // Réglages bot-wide (maintenance/logLevel/limites) réellement persistés côté bot (configService), pas
-              // les mêmes que le toggle "Mode Maintenance" du site (qui s'est avéré local-only, jamais envoyé ici).
               configs: [.init(title: "Réglages du bot", get: "/settings", put: "/settings")],
               lists: [
                 .init(title: "Commandes", path: "/commands"), .init(title: "Événements", path: "/events", key: "data.topEvents"),
                 .init(title: "Tâches planifiées", path: "/jobs", rowActions: [.init(title: "Lancer maintenant", path: "/jobs/{id}/run", symbol: "play.fill")]),
-                // /errors renvoie {data:{fingerprints,incidents}} — atteint via la clé à point "data.fingerprints"
-                // (un fingerprint = un type d'erreur dédupliqué, ce que POST /errors/{fingerprint}/resolve cible).
                 .init(title: "Erreurs", path: "/errors", key: "data.fingerprints", idKey: "fingerprint", rowActions: [
                   .init(title: "Marquer résolue", path: "/errors/{id}/resolve", symbol: "checkmark.circle.fill"),
                 ]),
@@ -305,14 +299,10 @@ enum AdminCatalog {
         .init(id: "presence", title: "Présence du bot", symbol: "person.wave.2.fill", group: groups[5], scope: .bot, base: "bot/presence", overview: "/",
               configs: [
                 .init(title: "Rotation automatique", get: "/rotation", put: "/rotation"),
-                // GET renvoie l'identité complète (username/avatarUrl/tag/…) mais chaque PUT n'a qu'un seul champ
-                // réel côté bot (route dédiée par champ) : les autres clés éventuellement modifiées sont ignorées
-                // sans erreur côté serveur, pas envoyées ailleurs.
                 .init(title: "Identité — nom d'utilisateur", get: "/identity", put: "/identity/username"),
                 .init(title: "Identité — avatar (URL)", get: "/identity", put: "/identity/avatar"),
               ],
               lists: [
-                // /rotation renvoie {data:{…,activities:[…]}} — atteint via la clé à point "data.activities".
                 .init(title: "Activités de rotation", path: "/rotation", key: "data.activities"),
                 .init(title: "Planning", path: "/schedule"),
                 .init(title: "Profils", path: "/profiles", rowActions: [.init(title: "Appliquer", path: "/profiles/{id}/apply", symbol: "checkmark.circle.fill")]),
@@ -324,8 +314,6 @@ enum AdminCatalog {
                 .init(title: "Désactiver le mode maintenance", path: "/maintenance",
                       body: ["enabled": .bool(false)], symbol: "wrench.and.screwdriver"),
               ]),
-        // /status renvoie {data:{…,guilds:[…],history:[…]}} — deux niveaux de nesting, atteints via
-        // les clés à point "data.guilds"/"data.history" (firstArray les descend maintenant).
         .init(id: "owner-shield", title: "Owner Shield", symbol: "shield.lefthalf.filled.badge.checkmark", group: groups[5], scope: .bot, base: "bot/owner-shield", overview: "/status",
               configs: [.init(title: "Réglages", get: "/config", put: "/config", method: "POST")],
               lists: [

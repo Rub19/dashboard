@@ -1,7 +1,5 @@
 import Foundation
 
-/// État utilisateur du site (`ethone_user_state` : une ligne par compte, un JSON contenant plusieurs clés : scratchpad…).
-/// Même lecture / écriture que `ethone-next/lib/user-state.ts` : on relit la ligne, on remplace la clé demandée, on réécrit.
 @MainActor
 struct UserStateClient {
     let api: APIClient
@@ -29,3 +27,4 @@ struct UserStateClient {
         )
     }
 }
+

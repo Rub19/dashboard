@@ -1,7 +1,6 @@
 import Charts
 import SwiftUI
 
-/// Analytique : uniquement des données réelles (sessions de focus, habitudes, tâches) tracées avec Swift Charts.
 struct AnalyticsView: View {
     @Environment(AppModel.self) private var model
     @State private var range: Period = .week
@@ -133,3 +132,4 @@ struct AnalyticsView: View {
         }
     }
 }
+

@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Membres du serveur : recherche, consultation (statut, rôles, ancienneté) et sanctions (fiche du membre).
 struct MembersAdminView: View {
     @Environment(AppModel.self) private var model
     let guild: DiscordGuild
@@ -98,3 +97,4 @@ struct MembersAdminView: View {
         }
     }
 }
+

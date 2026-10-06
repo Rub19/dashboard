@@ -79,7 +79,6 @@ struct MainTabs: View {
 }
 
 private extension View {
-    /// Mini-lecteur Focus au-dessus de la barre d'onglets, uniquement pendant une session.
     @ViewBuilder
     func focusAccessory(model: AppModel, selection: Binding<AppTab>) -> some View {
         if #available(iOS 26.1, *) {
@@ -92,7 +91,6 @@ private extension View {
     }
 }
 
-/// Écran affiché tant que l'app est verrouillée (le contenu est masqué, y compris dans le sélecteur d'apps).
 struct LockScreen: View {
     @Environment(AppModel.self) private var model
 
@@ -115,3 +113,4 @@ struct LockScreen: View {
         .task { await model.lock.unlock() }
     }
 }
+

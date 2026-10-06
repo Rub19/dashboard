@@ -81,9 +81,6 @@ struct SharedLinksView: View {
         }
     }
 
-    // MARK: Lien
-
-    /// Accepte un lien complet (`…/share?slug=…&password=…`, `…/drop?slug=…`) ou un simple identifiant.
     private func parse() -> (slug: String, password: String?, kind: String?) {
         let raw = input.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let url = URL(string: raw), let components = URLComponents(url: url, resolvingAgainstBaseURL: false), url.host != nil else {
@@ -171,3 +168,4 @@ struct SharedLinksView: View {
         ByteCountFormatter.string(fromByteCount: Int64(value), countStyle: .file)
     }
 }
+

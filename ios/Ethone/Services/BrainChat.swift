@@ -12,7 +12,6 @@ struct ChatMessage: Identifiable, Hashable {
     var text: String
 }
 
-/// Assistant Brain : modèle Apple Intelligence sur l'appareil (FoundationModels, hors ligne et privé) ou Cloud ETHONE via le Worker.
 @MainActor
 @Observable
 final class BrainChat {
@@ -28,7 +27,6 @@ final class BrainChat {
             }
         }
 
-        /// Moteurs proposés sur cette version d'iOS (Private Cloud Compute : iOS 27 et SDK correspondant uniquement).
         static var supported: [Engine] {
             var list: [Engine] = [.device]
             #if compiler(>=6.4) && canImport(FoundationModels)
@@ -53,7 +51,6 @@ final class BrainChat {
         self.engine = Engine.supported.contains(saved ?? .cloud) ? (saved ?? .cloud) : .cloud
     }
 
-    /// Explication lisible quand le modèle local n'est pas utilisable ; `nil` s'il est disponible.
     var deviceUnavailableReason: String? {
         #if canImport(FoundationModels)
         switch SystemLanguageModel.default.availability {
@@ -84,7 +81,6 @@ final class BrainChat {
         errorMessage = nil
     }
 
-    /// `context` : résumé factuel des données de l'utilisateur (tâches, agenda, habitudes) pour que Brain réponde à propos de SES données.
     func send(_ text: String, context: String) async {
         let prompt = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !prompt.isEmpty, !isThinking else { return }
@@ -106,8 +102,6 @@ final class BrainChat {
         }
     }
 
-    // MARK: Sur l'appareil
-
     private func askDevice(_ prompt: String, context: String) async throws -> String {
         #if canImport(FoundationModels)
         if let reason = deviceUnavailableReason { throw APIError.http(status: 503, code: nil, message: reason) }
@@ -124,8 +118,6 @@ final class BrainChat {
         throw APIError.http(status: 503, code: nil, message: "Apple Intelligence n'est pas disponible dans cette version.")
         #endif
     }
-
-    // MARK: Private Cloud Compute (iOS 27)
 
     private func askPrivateCloud(_ prompt: String, context: String) async throws -> String {
         #if compiler(>=6.4) && canImport(FoundationModels)
@@ -152,8 +144,6 @@ final class BrainChat {
         throw APIError.http(status: 503, code: nil, message: "Private Cloud Compute nécessite iOS 27.")
     }
 
-    // MARK: Cloud ETHONE
-
     private func askCloud(context: String) async throws -> String {
         var payload: [JSONValue] = [.object(["role": .string("system"), "content": .string(Self.instructions(context: context))])]
         for message in messages {
@@ -179,3 +169,4 @@ final class BrainChat {
         """
     }
 }
+

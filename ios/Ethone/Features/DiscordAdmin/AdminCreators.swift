@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// Formulaire de création guidé pour une ressource du bot (sondage, événement, rappel, tag, commande, article de boutique…).
-/// Chaque formulaire construit le corps attendu par la route de création du bot (mêmes schémas que le panneau du site).
 struct CreateSpec {
     enum Kind {
         case text, multiline, number, toggle, channel, role, dateTime
@@ -29,7 +27,6 @@ struct CreateSpec {
     }
 
     let title: String
-    /// `{clé}` est remplacé par la valeur du champ (ex. `/{name}` pour les tags).
     let path: String
     var method = "POST"
     let fields: [Field]
@@ -298,7 +295,6 @@ enum AdminCreators {
     )
 }
 
-/// Formulaire généré à partir d'un `CreateSpec`.
 struct CreateFormView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -393,3 +389,4 @@ struct CreateFormView: View {
         }
     }
 }
+

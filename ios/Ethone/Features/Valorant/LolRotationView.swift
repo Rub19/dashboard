@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// Rotation gratuite hebdomadaire de League of Legends (API Riot via le Worker ETHONE, noms et icônes Data Dragon).
-/// La boutique LoL (skins en promotion, packs) n'a pas d'API publique : elle n'est pas affichée.
 struct LolRotationView: View {
     @Environment(AppModel.self) private var model
     @State private var region = "euw1"
@@ -109,3 +107,4 @@ struct LolRotationView: View {
         }
     }
 }
+

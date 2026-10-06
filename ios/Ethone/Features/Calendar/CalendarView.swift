@@ -45,8 +45,6 @@ struct CalendarView: View {
         .sheet(item: $editing) { draft in EventEditorView(draft: draft) }
     }
 
-    // MARK: Mois
-
     private var monthHeader: some View {
         HStack {
             Button { shiftMonth(-1) } label: { Image(systemName: "chevron.left") }
@@ -129,8 +127,6 @@ struct CalendarView: View {
         .buttonStyle(.plain)
     }
 
-    // MARK: Jour sélectionné
-
     private var dayList: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(selectedDay, format: .dateTime.weekday(.wide).day().month(.wide))
@@ -190,8 +186,6 @@ struct CalendarView: View {
             }
         }
     }
-
-    // MARK: Données
 
     private func ethoneEvents(on day: Date) -> [Item] {
         model.events.items
@@ -311,3 +305,4 @@ struct EventEditorView: View {
         }
     }
 }
+

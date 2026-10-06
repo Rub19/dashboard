@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Lecteur musique du bot : titre en cours, file d'attente, commandes, volume, recherche et lecture d'un titre.
 struct MusicPlayerView: View {
     @Environment(AppModel.self) private var model
     let guild: DiscordGuild
@@ -95,7 +94,6 @@ struct MusicPlayerView: View {
         .ethoneScreen()
         .refreshable { await load() }
         .task {
-            // Rafraîchit l'état toutes les 5 secondes tant que l'écran est ouvert.
             while !Task.isCancelled {
                 await load()
                 try? await Task.sleep(for: .seconds(5))
@@ -165,3 +163,4 @@ struct MusicPlayerView: View {
         }
     }
 }
+

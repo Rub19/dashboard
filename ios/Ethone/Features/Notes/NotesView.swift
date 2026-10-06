@@ -134,7 +134,6 @@ struct NoteEditorView: View {
         let trimmedTitle = title.trimmingCharacters(in: .whitespaces)
         Task {
             if let item = draft.item {
-                // Le site stocke le corps en HTML riche : on ne le réécrit que si le texte a réellement changé (pour ne pas perdre la mise en forme).
                 let body: String? = text == originalText ? nil : HTMLText.html(from: text)
                 await model.notes.update(item, title: trimmedTitle, body: body)
             } else {
@@ -145,3 +144,4 @@ struct NoteEditorView: View {
         }
     }
 }
+

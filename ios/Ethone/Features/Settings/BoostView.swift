@@ -2,8 +2,6 @@ import Network
 import SwiftUI
 import UIKit
 
-/// Performance de l'appareil : mesures réelles (état thermique, mémoire, stockage, batterie, réseau, latence des services ETHONE)
-/// et nettoyage du cache de l'app. Équivalent iOS de la page « Boost » du site (qui mesure le navigateur).
 struct BoostView: View {
     @Environment(AppModel.self) private var model
     @State private var cacheBytes: Int64 = 0
@@ -149,3 +147,4 @@ struct BoostView: View {
         latencies = results
     }
 }
+

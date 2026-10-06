@@ -1,7 +1,6 @@
 import UIKit
 import UserNotifications
 
-/// Point d'entrée UIKit : notifications (actions, enregistrement APNs) et orientation.
 final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         UNUserNotificationCenter.current().delegate = self
@@ -15,10 +14,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        // Normal avec un IPA non signé (pas d'entitlement push) : les notifications locales continuent de fonctionner.
     }
 
-    // Affiche les notifications même quand l'app est ouverte.
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
         [.banner, .list, .sound]
     }
@@ -27,3 +24,4 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         await NotificationManager.handle(response: response)
     }
 }
+

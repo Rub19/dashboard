@@ -16,7 +16,6 @@ struct TeamMember: Identifiable, Decodable, Hashable {
     var statusLabel: String { status == "active" ? "Actif" : "En attente" }
 }
 
-/// Équipe : membres suivis côté ETHONE. Le serveur n'envoie pas encore d'e-mail d'invitation : la ligne est créée « en attente ».
 struct TeamView: View {
     @Environment(AppModel.self) private var model
     @State private var members: [TeamMember] = []
@@ -122,3 +121,4 @@ struct TeamView: View {
         (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
     }
 }
+

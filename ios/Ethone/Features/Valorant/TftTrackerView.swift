@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// Tracker Teamfight Tactics : dernières parties (classement, niveau, synergies, unités) via le Worker ETHONE (API officielle Riot).
-/// La clé Riot utilisée est celle enregistrée sur le compte ETHONE (Connexions, sur le site) : aucune clé n'est saisie dans l'app.
 struct TftTrackerView: View {
     @Environment(AppModel.self) private var model
     @State private var name = UserDefaults.standard.string(forKey: "ethone.tft.name") ?? ""
@@ -129,3 +127,4 @@ struct TftTrackerView: View {
         }
     }
 }
+

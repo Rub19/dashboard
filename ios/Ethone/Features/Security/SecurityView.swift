@@ -35,7 +35,6 @@ struct DeviceRecord: Identifiable, Decodable {
 }
 
 enum JWT {
-    /// Lit une revendication du jeton (sans vérifier la signature : c'est le rôle du Worker).
     static func claim(_ name: String, in token: String) -> String? {
         let parts = token.split(separator: ".")
         guard parts.count == 3 else { return nil }
@@ -47,7 +46,6 @@ enum JWT {
     }
 }
 
-/// Appareils connectés (mêmes lignes `ethone_devices` que le Centre de sécurité du site).
 struct SecurityView: View {
     @Environment(AppModel.self) private var model
     @Environment(AuthStore.self) private var auth
@@ -158,3 +156,4 @@ struct SecurityView: View {
         }
     }
 }
+

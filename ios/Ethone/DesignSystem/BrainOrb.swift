@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Orbe animée de l'assistant Brain.
 struct ETHBrainOrb: View {
     @State private var breathing = false
 
@@ -19,3 +18,4 @@ struct ETHBrainOrb: View {
         }
     }
 }
+

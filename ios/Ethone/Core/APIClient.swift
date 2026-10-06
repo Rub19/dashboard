@@ -1,6 +1,5 @@
 import Foundation
 
-/// Accès authentifié au Worker Cloudflare, à l'API REST Supabase (RLS par utilisateur) et à l'API du bot Discord.
 @MainActor
 final class APIClient {
     let auth: AuthStore
@@ -9,13 +8,10 @@ final class APIClient {
         self.auth = auth
     }
 
-    // MARK: Cœur
-
     private func authorized(_ make: (String) -> URLRequest) async throws -> (Data, HTTPURLResponse) {
         var token = try await auth.validAccessToken()
         var result = try await HTTP.send(make(token))
         if result.1.statusCode == 401 {
-            // Jeton refusé (horloge, rotation) : un seul nouvel essai avec un jeton frais.
             if let refreshed = try? await auth.forceRefresh() {
                 token = refreshed.accessToken
                 result = try await HTTP.send(make(token))
@@ -41,8 +37,6 @@ final class APIClient {
         (try? JSONEncoder.api.encode(object)) ?? Data("{}".utf8)
     }
 
-    // MARK: Worker
-
     func worker<T: Decodable>(_ path: String, method: String = "GET", query: [URLQueryItem] = [], body: Data? = nil, headers: [String: String] = [:], as type: T.Type = T.self) async throws -> T {
         let (data, _) = try await authorized { WorkerHTTP.request(path: path, method: method, query: query, body: body, headers: headers, token: $0) }
         let envelope = try decode(data, as: WorkerEnvelope<T>.self)
@@ -53,8 +47,6 @@ final class APIClient {
     func workerVoid(_ path: String, method: String = "POST", query: [URLQueryItem] = [], body: Data? = nil) async throws {
         _ = try await authorized { WorkerHTTP.request(path: path, method: method, query: query, body: body, token: $0) }
     }
-
-    // MARK: API du bot Discord
 
     func bot<T: Decodable>(_ path: String, method: String = "GET", query: [URLQueryItem] = [], body: Data? = nil, as type: T.Type = T.self) async throws -> T {
         let (data, _) = try await authorized { token in
@@ -72,8 +64,6 @@ final class APIClient {
         }
         return try decode(data, as: T.self)
     }
-
-    // MARK: Supabase REST
 
     private func restRequest(table: String, method: String, query: [URLQueryItem], body: Data?, prefer: String?, token: String) -> URLRequest {
         var components = URLComponents(url: Config.supabaseURL.appendingPathComponent("rest/v1/\(table)"), resolvingAgainstBaseURL: false)!
@@ -96,7 +86,6 @@ final class APIClient {
         return try decode(data, as: [T].self)
     }
 
-    /// `userColumn` : colonne recevant l'identifiant de l'utilisateur (`user_id` par défaut, `created_by` pour les tâches d'espace) ; `nil` pour ne rien ajouter.
     func insert<T: Decodable>(_ table: String, fields: [String: JSONValue], userColumn: String? = "user_id", as type: T.Type = T.self) async throws -> T {
         var payload = fields
         if let userColumn, payload[userColumn] == nil, let userId = auth.user?.id { payload[userColumn] = .string(userId) }
@@ -106,7 +95,6 @@ final class APIClient {
         return first
     }
 
-    /// Insertion en ignorant les doublons (`on_conflict` avec contrainte unique).
     func upsert<T: Decodable>(_ table: String, fields: [String: JSONValue], conflict: String, as type: T.Type = T.self) async throws -> T? {
         var payload = fields
         if payload["user_id"] == nil, let userId = auth.user?.id { payload["user_id"] = .string(userId) }
@@ -136,3 +124,4 @@ final class APIClient {
         _ = try await authorized { restRequest(table: table, method: "DELETE", query: query, body: nil, prefer: nil, token: $0) }
     }
 }
+

@@ -18,7 +18,6 @@ final class HabitsStore {
         self.api = api
     }
 
-    /// Ordre personnalisé (glisser-déposer, iOS 27), conservé sur l'appareil : la base ne stocke pas d'ordre.
     private(set) var order: [String] = UserDefaults.standard.stringArray(forKey: "ethone.habits.order") ?? []
 
     var activeHabits: [Habit] {
@@ -103,7 +102,6 @@ final class HabitsStore {
         completions.contains { $0.habitId == habit.id && $0.completedOn == day }
     }
 
-    /// Valide ou annule le jour courant (une ligne par habitude et par jour, comme sur le site).
     func toggleToday(_ habit: Habit) async {
         let today = DayKey.string()
         if let existing = completions.first(where: { $0.habitId == habit.id && $0.completedOn == today }) {
@@ -130,7 +128,6 @@ final class HabitsStore {
         DiskCache.write(completions, key: completionsKey)
     }
 
-    /// Série en cours : jours consécutifs validés, en comptant depuis aujourd'hui (ou hier si aujourd'hui n'est pas encore validé).
     func streak(_ habit: Habit) -> Int {
         let days = Set(completions.filter { $0.habitId == habit.id }.map(\.completedOn))
         var offset = days.contains(DayKey.string(DayKey.daysAgo(0))) ? 0 : 1
@@ -142,7 +139,6 @@ final class HabitsStore {
         return count
     }
 
-    /// Les 14 derniers jours (du plus ancien au plus récent) avec l'état de validation.
     func history(_ habit: Habit, days: Int = 14) -> [HabitDay] {
         let done = Set(completions.filter { $0.habitId == habit.id }.map(\.completedOn))
         return (0..<days).reversed().map { offset in
@@ -157,3 +153,4 @@ struct HabitDay: Identifiable {
     let done: Bool
     var id: String { day }
 }
+

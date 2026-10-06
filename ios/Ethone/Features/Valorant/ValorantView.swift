@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// Tracker Valorant : dernières parties via l'API HenrikDev. Depuis le patch 13.06 le score affiché est le score de
-/// performance (0-500) tel que fourni par l'API ; il n'est jamais recalculé (« — » s'il est absent).
 struct ValorantView: View {
     @Environment(AppModel.self) private var model
     @State private var editing = false
@@ -15,7 +13,6 @@ struct ValorantView: View {
         return deaths == 0 ? Double(kills) : Double(kills) / Double(deaths)
     }
 
-    /// Moyenne du score de performance sur les parties qui le fournissent ; ACS seulement pour les anciennes parties.
     private var scoreSummary: (label: String, value: Int?) {
         let performance = store.matches.filter { $0.scoring == .performance }.compactMap(\.scoreValue)
         if !performance.isEmpty { return ("PERF moyen", performance.reduce(0, +) / performance.count) }
@@ -156,3 +153,4 @@ struct ValorantSettingsSheet: View {
         .presentationDetents([.medium])
     }
 }
+

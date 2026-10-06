@@ -1,7 +1,6 @@
 import Foundation
 import Observation
 
-/// Ligne de la table `tasks` : c'est celle que lit et écrit la page « Tâches » du site (`useTasks`), et non `ethone_items`.
 struct CloudTaskRow: Codable {
     let id: String
     var title: String
@@ -20,7 +19,6 @@ struct CloudTaskRow: Codable {
         case updatedAt = "updated_at"
     }
 
-    /// Les vues manipulent des `Item` : la priorité et l'échéance sont exposées dans `data`, comme sur le site.
     var item: Item {
         var data: [String: JSONValue] = ["priority": .string(priority ?? "medium")]
         if let dueDate { data["dueDate"] = .string(ISODate.string(dueDate)) }
@@ -146,8 +144,6 @@ final class ItemsStore {
         }
     }
 
-    // MARK: Interne
-
     private func apply(_ item: Item, fields: [String: JSONValue], mutate: (inout Item) -> Void) async {
         guard let index = items.firstIndex(where: { $0.id == item.id }) else { return }
         let before = items[index]
@@ -182,3 +178,4 @@ final class ItemsStore {
         (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
     }
 }
+

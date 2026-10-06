@@ -12,7 +12,6 @@ extension Color {
     }
 }
 
-/// Thèmes prédéfinis, les mêmes 13 que sur le site (`ethone-next/lib/theme-tokens.ts`) : fond, accent d'origine et ambiance.
 enum ThemePreset: String, CaseIterable, Identifiable {
     case dynoRose = "dyno-rose"
     case obsidian, midnight, aurora
@@ -23,7 +22,6 @@ enum ThemePreset: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    /// Anciens noms de thèmes et alias du site (`LEGACY_THEME_MAP` de `theme-engine.ts`) vers les 13 thèmes actuels.
     static func resolve(legacy raw: String?) -> ThemePreset {
         let id = (raw ?? "").lowercased().trimmingCharacters(in: .whitespaces)
         if let exact = ThemePreset(rawValue: id) { return exact }
@@ -55,10 +53,8 @@ enum ThemePreset: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Seul Arctic est clair ; les autres thèmes sont sombres (comme sur le site).
     var isLight: Bool { self == .arctic }
 
-    /// Fond principal (`bgMain`).
     var base: UInt32 {
         switch self {
         case .dynoRose: 0x0E1015
@@ -77,7 +73,6 @@ enum ThemePreset: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Accent d'origine du thème (`accentPrimary`).
     var accent: UInt32 {
         switch self {
         case .dynoRose: 0xC1234F
@@ -96,7 +91,6 @@ enum ThemePreset: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Accent secondaire (`accentSecondary`) : sert de seconde teinte à l'ambiance.
     var secondary: UInt32 {
         switch self {
         case .dynoRose: 0xE03365
@@ -115,7 +109,6 @@ enum ThemePreset: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Intensité des reflets colorés du fond : les thèmes monochromes (OLED, Minimal, Carbon) restent quasi noirs.
     var glow: Double {
         switch self {
         case .midnight: 0.22
@@ -127,7 +120,6 @@ enum ThemePreset: String, CaseIterable, Identifiable {
     }
 }
 
-/// Identité visuelle ETHONE : thème choisi (fond, ambiance) + couleur d'accent (celle du thème, ou celle choisie).
 enum Theme {
     static let accentKey = "ethone.accent"
     static let themeKey = "ethone.theme"
@@ -137,7 +129,6 @@ enum Theme {
         ThemePreset(rawValue: UserDefaults.standard.string(forKey: themeKey) ?? "") ?? defaultTheme
     }
 
-    /// Accent choisi explicitement par l'utilisateur ; `nil` = « Auto » (suit le thème, comme sur le site).
     static var chosenAccentHex: UInt32? {
         let saved = UserDefaults.standard.integer(forKey: accentKey)
         return saved == 0 ? nil : UInt32(truncatingIfNeeded: saved)
@@ -159,9 +150,6 @@ enum Theme {
     static let cardRadius: CGFloat = 26
     static let pillRadius: CGFloat = 18
 
-    // MARK: Lisibilité de l'accent
-
-    /// Luminance relative WCAG d'une couleur `0xRRGGBB`.
     static func luminance(_ hex: UInt32) -> Double {
         func channel(_ value: UInt32) -> Double {
             let v = Double(value) / 255
@@ -170,8 +158,6 @@ enum Theme {
         return 0.2126 * channel((hex >> 16) & 0xFF) + 0.7152 * channel((hex >> 8) & 0xFF) + 0.0722 * channel(hex & 0xFF)
     }
 
-    /// Teinte à utiliser pour les boutons pleins (texte blanc dessus) : l'accent lui-même s'il donne au moins 4.5:1,
-    /// sinon assombri jusqu'à l'atteindre (un accent blanc, jaune ou cyan rendrait le libellé illisible).
     static func readableTint(_ hex: UInt32) -> UInt32 {
         var candidate = hex
         var step = 0
@@ -185,7 +171,6 @@ enum Theme {
     }
 }
 
-/// Statuts de présence (mêmes couleurs fixes que le site).
 enum PresenceStatus: String, CaseIterable, Identifiable {
     case online, focus, busy, away, invisible
     var id: String { rawValue }
@@ -210,3 +195,4 @@ enum PresenceStatus: String, CaseIterable, Identifiable {
         }
     }
 }
+

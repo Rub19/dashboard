@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// Système : vue d'ensemble des espaces et des flows (mêmes lignes `ethone_user_data` que la page Système du site)
-/// et état de la synchronisation de l'app.
 struct SystemView: View {
     @Environment(AppModel.self) private var model
     @State private var spaces: [FlowRecord] = []
@@ -91,3 +89,4 @@ struct SystemView: View {
         }
     }
 }
+

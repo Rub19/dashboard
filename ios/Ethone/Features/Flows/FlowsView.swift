@@ -9,7 +9,6 @@ struct FlowRecord: Identifiable, Decodable, Hashable {
     var templateId: String? { data?["templateId"]?.stringValue ?? data?["workspaceId"]?.stringValue }
 }
 
-/// Flows (espaces de travail automatisés) : mêmes lignes `ethone_user_data` (kind = flow) que le site.
 struct FlowsView: View {
     @Environment(AppModel.self) private var model
     @State private var flows: [FlowRecord] = []
@@ -143,3 +142,4 @@ struct FlowsView: View {
         (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
     }
 }
+

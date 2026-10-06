@@ -19,8 +19,6 @@ struct BillRecord: Identifiable, Decodable, Hashable {
     }
 }
 
-/// Factures et abonnements (`ethone_user_data`, kind = bill, via le Worker). Le calendrier de factures du site est stocké
-/// dans le navigateur : les factures créées ici ne s'y retrouvent donc pas pour l'instant.
 struct BillsView: View {
     @Environment(AppModel.self) private var model
     @State private var bills: [BillRecord] = []
@@ -220,3 +218,4 @@ struct AddBillSheet: View {
         }
     }
 }
+

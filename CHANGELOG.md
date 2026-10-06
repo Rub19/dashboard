@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.35 — 2026-10-06
+
+**Parité iOS Native : Journal des Modifications & Code Épuré**
+
+- Écran natif Journal des modifications (`ChangelogView`) : consultation optimisée de l'historique complet des versions avec filtrage par catégorie (Nouveautés, Correctifs, Améliorations) et recherche plein texte.
+- Interface Liquid Glass : cartes interactives dépliables avec animations fluides, badges colorés typologiques et extraction dynamique des versions.
+- Intégration globale de la navigation : accès direct via l'onglet Plus (`MoreDestination.changelog`), schéma d'URL `ethone://changelog`, chemin web `/changelog` et raccourci sur la pastille de version de l'application.
+- Génération automatisée de l'index des versions statique `public/changelog.json` pour la consommation par l'application native et les clients web.
+- Épuration intégrale de la base de code native : suppression sans reste de l'ensemble des 241 commentaires résiduels et notes de documentation sur les 81 fichiers Swift.
+
 ## v1.55.34 — 2026-10-06
 
 **Parité iOS Native : Clip Rapide Liquid Glass & Code Épuré**

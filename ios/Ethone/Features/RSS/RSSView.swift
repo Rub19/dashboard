@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Lecteur RSS : le Worker ETHONE (`/api/rss`) récupère et nettoie le flux, comme sur le site.
 struct RSSView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.openURL) private var openURL
@@ -75,7 +74,6 @@ struct RSSView: View {
         .ethoneScreen()
     }
 
-    /// Seuls http et https sont acceptés (pas de `javascript:` ni de `file:`).
     private static func httpURL(_ raw: String) -> URL? {
         guard let url = URL(string: raw.trimmingCharacters(in: .whitespaces)), let scheme = url.scheme?.lowercased(),
               scheme == "http" || scheme == "https", url.host != nil else { return nil }
@@ -121,3 +119,4 @@ struct RSSView: View {
         return nil
     }
 }
+

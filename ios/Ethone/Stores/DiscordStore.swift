@@ -59,7 +59,6 @@ struct GuildOverview: Decodable {
     let stats: Stats
 }
 
-/// Centre de contrôle du bot Discord : connexion Discord (jeton propre au bot, distinct de la session Supabase) puis serveurs et modules.
 @MainActor
 @Observable
 final class DiscordStore {
@@ -80,8 +79,6 @@ final class DiscordStore {
             isConnected = false
         }
     }
-
-    // MARK: Connexion
 
     func signIn() async {
         isLoading = true
@@ -106,7 +103,6 @@ final class DiscordStore {
             errorMessage = nil
             await refresh()
         } catch is CancellationError {
-            // Fenêtre fermée par l'utilisateur.
         } catch {
             if let webError = error as? ASWebAuthenticationSessionError, webError.code == .canceledLogin { return }
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
@@ -120,8 +116,6 @@ final class DiscordStore {
         guilds = []
         Keychain.remove(Self.tokenKey)
     }
-
-    // MARK: Données
 
     func refresh() async {
         guard isConnected else { return }
@@ -156,9 +150,6 @@ final class DiscordStore {
         let _: Ack = try await request("api/guilds/\(guildId)/modules/\(moduleId)", method: "PATCH", body: APIClient.json(["enabled": .bool(enabled)]))
     }
 
-    // MARK: Réseau
-
-    /// Appel générique vers l'API du bot (écrans d'administration : tickets, giveaways, modération, journal).
     func call(_ path: String, method: String = "GET", query: [URLQueryItem] = [], body: [String: JSONValue]? = nil) async throws -> JSONValue {
         try await request(path, method: method, query: query, body: body.map { APIClient.json($0) })
     }
@@ -196,3 +187,4 @@ final class DiscordStore {
         Keychain.set(Data(newToken.utf8), for: Self.tokenKey)
     }
 }
+

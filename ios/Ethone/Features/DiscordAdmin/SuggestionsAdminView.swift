@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Suggestions des membres : liste triée par score, changement de statut avec réponse du staff (API du bot).
 struct SuggestionsAdminView: View {
     @Environment(AppModel.self) private var model
     let guild: DiscordGuild
@@ -150,3 +149,4 @@ private struct SuggestionStatusSheet: View {
         }
     }
 }
+

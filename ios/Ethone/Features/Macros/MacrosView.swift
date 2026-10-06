@@ -10,8 +10,6 @@ struct MacroRecord: Identifiable, Decodable, Hashable {
     var setting: String { data?["setting"]?.stringValue ?? "" }
 }
 
-/// Macros : mêmes lignes `ethone_user_data` (kind = macro) que le site. « Ouvrir une page » est exécutable sur iOS
-/// (la page web est traduite vers l'écran équivalent) ; « Basculer un réglage » n'existe que sur le site.
 struct MacrosView: View {
     @Environment(AppModel.self) private var model
     @State private var macros: [MacroRecord] = []
@@ -124,3 +122,4 @@ struct MacrosView: View {
         }
     }
 }
+

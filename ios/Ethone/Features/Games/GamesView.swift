@@ -1,7 +1,6 @@
 import SwiftUI
 import WebKit
 
-/// Mini-jeux hébergés par le Worker (les mêmes que sur le site), affichés dans un WKWebView.
 struct GamesView: View {
     private struct Game: Identifiable, Hashable {
         let id: String
@@ -52,3 +51,4 @@ private struct GameWebView: UIViewRepresentable {
 
     func updateUIView(_ view: WKWebView, context: Context) {}
 }
+

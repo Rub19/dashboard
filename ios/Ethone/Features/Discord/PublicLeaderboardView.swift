@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// Classement public d'un serveur (activé par son propriétaire) : lecture seule, sans connexion Discord.
-/// Même endpoint public que la page `/leaderboard` du site.
 struct PublicLeaderboardView: View {
     @State private var guildId = UserDefaults.standard.string(forKey: "ethone.leaderboard.guild") ?? ""
     @State private var payload: JSONValue?
@@ -87,3 +85,4 @@ struct PublicLeaderboardView: View {
         }
     }
 }
+

@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Tickets d'un serveur : liste, détail, prise en charge, priorité, fermeture et réouverture (API du bot, comme le panneau du site).
 struct TicketsAdminView: View {
     @Environment(AppModel.self) private var model
     let guild: DiscordGuild
@@ -234,3 +233,4 @@ struct TicketDetailView: View {
         }
     }
 }
+

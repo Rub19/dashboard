@@ -13,7 +13,6 @@ struct DeviceEvent: Identifiable, Hashable {
     let colorHex: UInt32
 }
 
-/// Calendrier de l'iPhone (EventKit) : lecture seule, affiché à côté des événements ETHONE.
 @MainActor
 @Observable
 final class DeviceCalendar {
@@ -64,3 +63,4 @@ final class DeviceCalendar {
         return (r << 16) | (g << 8) | b
     }
 }
+

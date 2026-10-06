@@ -27,7 +27,6 @@ struct SpaceTask: Identifiable, Codable, Hashable {
     }
 }
 
-/// Espaces partagés (liste de tâches commune) : espaces via le Worker, tâches via Supabase (RLS).
 @MainActor
 @Observable
 final class SpacesStore {
@@ -71,8 +70,6 @@ final class SpacesStore {
         }
     }
 
-    // MARK: Tâches d'un espace
-
     func tasks(in space: SharedSpace) async throws -> [SpaceTask] {
         try await api.list("ethone_space_tasks", query: [
             URLQueryItem(name: "space_id", value: "eq.\(space.id)"),
@@ -101,3 +98,4 @@ final class SpacesStore {
         (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
     }
 }
+

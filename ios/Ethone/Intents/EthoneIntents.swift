@@ -1,8 +1,6 @@
 import AppIntents
 import Foundation
 
-/// Raccourcis Siri, Spotlight, Action Button et app Raccourcis. Les intents s'exécutent dans le processus de l'app
-/// (même en arrière-plan) : la session est donc restaurée avant tout appel réseau.
 @MainActor
 private func signedInModel() async throws -> AppModel {
     let model = AppModel.shared
@@ -160,8 +158,6 @@ struct OpenSectionIntent: AppIntent {
     }
 }
 
-// MARK: - Entités (Siri, Spotlight, Raccourcis)
-
 struct TaskEntity: AppEntity {
     static let typeDisplayRepresentation: TypeDisplayRepresentation = "Tâche"
     static let defaultQuery = TaskEntityQuery()
@@ -208,8 +204,6 @@ struct CompleteTaskIntent: AppIntent {
     }
 }
 
-// MARK: - Phrases Siri
-
 struct EthoneShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
@@ -244,3 +238,4 @@ struct EthoneShortcuts: AppShortcutsProvider {
         )
     }
 }
+

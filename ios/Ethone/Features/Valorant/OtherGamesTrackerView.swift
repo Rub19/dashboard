@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// Autres jeux (tracker.gg via le Worker ETHONE) : Apex Legends, Counter-Strike 2, The Division 2, Splitgate, The Finals, Battlefield 2042.
-/// La clé tracker.gg utilisée est celle enregistrée sur le compte ETHONE (Connexions, sur le site) : aucune clé n'est saisie dans l'app.
 struct OtherGamesTrackerView: View {
     @Environment(AppModel.self) private var model
     @State private var game = UserDefaults.standard.string(forKey: "ethone.trn.game") ?? "apex"
@@ -113,7 +111,6 @@ struct OtherGamesTrackerView: View {
         }
     }
 
-    /// Statistiques du Worker : `{ clé: { displayName?, displayValue, value } }` ; on n'affiche que les valeurs fournies.
     private static func flatten(_ raw: JSONValue?) -> [(name: String, value: String)] {
         guard case .object(let dictionary)? = raw else { return [] }
         return dictionary.keys.sorted().prefix(20).compactMap { key in
@@ -124,3 +121,4 @@ struct OtherGamesTrackerView: View {
         }
     }
 }
+

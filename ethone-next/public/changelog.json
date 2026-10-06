@@ -1,0 +1,529 @@
+[
+  {
+    "version": "v1.55.35",
+    "date": "2026-10-06",
+    "title": "Parité iOS Native : Journal des Modifications & Code Épuré",
+    "items": [
+      "Nouveau module natif Journal des modifications sur iOS (`ChangelogView`) : consultation complète des versions avec filtrage par catégorie (Nouveautés, Correctifs, Améliorations) et recherche instantanée.",
+      "Composants Liquid Glass interactifs : cartes dépliables animées, badges de typologie et intégration du schéma d'URL `ethone://changelog` et de la route `/changelog`.",
+      "Accès rapide depuis la section Compte : la pastille de version dans Plus ouvre directement le journal natif.",
+      "Épuration intégrale de la base de code native : suppression sans reste de l'ensemble des commentaires et notes explicatives dans tous les modules Swift."
+    ]
+  },
+  {
+    "version": "v1.55.34",
+    "date": "2026-10-06",
+    "title": "Parité iOS Native : Clip Rapide Liquid Glass & Code Épuré",
+    "items": [
+      "Nouvel écran natif Clip sur iOS (`ClipView`) : capture instantanée de notes et tâches depuis le presse-papier (`UIPasteboard`) avec extraction intelligente d'URL et détection de citations Markdown.",
+      "Formulaire interactif Liquid Glass : bascule Note/Tâche, sélecteur de priorité (Basse, Moyenne, Haute, Urgente), sélecteur d'échéance et retours haptiques UINotificationFeedbackGenerator.",
+      "Routage universel et deeplinks : ouverture directe via `/clip` et schéma d'URL `ethone://clip`.",
+      "Nettoyage global de la base de code Swift : suppression intégrale des commentaires et notes de code redondantes dans l'authentification, le moteur d'administration et les modèles natifs."
+    ]
+  },
+  {
+    "version": "v1.55.33",
+    "date": "2026-10-06",
+    "title": "Parité iOS Native : Marketplace de Plugins & Extensions Liquid Glass",
+    "items": [
+      "Intégration native de l'écosystème Plugins & Extensions sur iOS : catalogue complet (Widgets, Thèmes, Dispositions, Automatisations, IA Brain) avec badges de certification officiels, notes et compteurs d'installation.",
+      "Boutique interactive Liquid Glass : recherche en direct, filtrage par onglets (Tous, Installés, Favoris) et sélecteur horizontal de catégories.",
+      "Gestion locale des extensions : installation, désactivation instantanée sans perte de configuration et mise en favoris avec persistance.",
+      "Fiche détaillée modale : aperçu des permissions requises, fonctionnalités intégrées, métadonnées techniques et journal des modifications par extension."
+    ]
+  },
+  {
+    "version": "v1.55.32",
+    "date": "2026-10-06",
+    "title": "Parité iOS Native : Soundscape Studio & Modules Discord Avancés",
+    "items": [
+      "Intégration native de Soundscape sur iOS : moteur audio procédural pur AVFoundation (ondes binaurales stéréo, fréquences Solfeggio 432-852 Hz, ambiances naturelles générées en direct) et visualiseur d'ondes 60 FPS en Canvas SwiftUI sans aucun fichier audio externe.",
+      "Support de la lecture audio en arrière-plan (mode audio iOS) et minuteur d'extinction automatique progressif.",
+      "Parité complète des modules Discord d'administration sur iOS : Alertes Streamers (Twitch, YouTube, Kick) et Mini-Jeux & Casino.",
+      "Sélecteur de serveur instantané dans la barre d'outils iOS pour basculer d'un serveur à un autre sans retour en arrière."
+    ]
+  },
+  {
+    "version": "v1.55.31",
+    "date": "2026-10-06",
+    "title": "Fiabilisation du Filtre de Recherche des Serveurs Discord",
+    "items": [
+      "Correction du cycle de réinitialisation dans le sélecteur de serveur de la barre latérale Discord (HubSidebar) : préservation de la saisie utilisateur lors de la recherche.",
+      "Bornage dynamique du curseur de navigation au clavier (flèches Haut/Bas, validation Entrée) lors du filtrage en direct des serveurs.",
+      "Synchronisation instantanée du curseur au survol et fermeture fluide du tiroir mobile."
+    ]
+  },
+  {
+    "version": "v1.55.30",
+    "date": "2026-10-06",
+    "title": "Synchronisation Palette de Commandes & Assistant de Configuration Discord",
+    "items": [
+      "Intégration globale des modules Alertes Streamers (/discord/streamers), Mini-Jeux & Casino (/discord/games) et AutoMod natif dans la palette de commandes (Ctrl+K).",
+      "Mots-clés de recherche enrichis pour un accès immédiat depuis n'importe quelle page du tableau de bord.",
+      "Synchronisation des préréglages et catégories de l'assistant d'onboarding Discord avec le registre d'activation du bot.",
+      "Harmonisation des icônes de modules avec l'icône dédiée aux jeux et mini-jeux."
+    ]
+  },
+  {
+    "version": "v1.55.29",
+    "date": "2026-10-06",
+    "title": "Optimisation de l'Ergonomie Discord et Zéro Avertissement de Code",
+    "items": [
+      "Perfectionnement du sélecteur de serveur dans la barre latérale Discord : navigation complète au clavier (flèches Haut/Bas, Entrée, Échap) et fermeture automatique du tiroir mobile lors de la sélection.",
+      "Résolution intégrale de tous les avertissements React hooks (exhaustive-deps) et expressions fonctionnelles dans Brain, Contrôle Bot, Musique, Invitations et Gestion Serveur.",
+      "Zéro avertissement de code fonctionnel sur l'ensemble du projet : conformité totale aux exigences d'hygiène logicielle et de maintenabilité."
+    ]
+  },
+  {
+    "version": "v1.55.28",
+    "date": "2026-10-05",
+    "title": "Sélecteur de Changement de Serveur dans la Barre Latérale Discord",
+    "items": [
+      "Transformation de la tuile serveur en haut à gauche de la barre latérale (/discord) en sélecteur interactif avec menu déroulant.",
+      "Bouton rapide « Changer de serveur » ouvrant instantanément la grille complète des serveurs.",
+      "Liste déroulante de tous les serveurs de l'utilisateur avec icônes, pastille de présence du bot et indicateur de sélection.",
+      "Barre de filtre rapide par recherche et lien d'invitation directe d'Etho sur un nouveau serveur."
+    ]
+  },
+  {
+    "version": "v1.55.27",
+    "date": "2026-10-05",
+    "title": "Harmonisation Visuelle des Modules Streamers et Mini-Jeux / Casino",
+    "items": [
+      "Refonte complète de l'architecture graphique des modules Alertes Streamers (/discord/streamers) et Mini-Jeux (/discord/games) dans le design natif d'ETHONE.",
+      "En-têtes unifiés avec fil d'Ariane Retour Discord, badge dynamique icon-pop, sélecteur de serveur et boutons d'actions contextuelles.",
+      "Bannières d'alerte standardisées (bot non installé avec bouton d'invitation directe, statut de connectivité et mode hors-ligne).",
+      "Cartes d'indicateurs KPI et barres d'onglets horizontales fluides avec animation de transition layoutId.",
+      "Intégration d'un onglet Aperçu Discord dédié dans le module Casino pour tester les embeds de Blackjack, Roulette, Dés et Jackpot en temps réel."
+    ]
+  },
+  {
+    "version": "v1.55.26",
+    "date": "2026-10-05",
+    "title": "Liaison Casino & Mini-Jeux au Système Monétaire Ethone Coin",
+    "items": [
+      "Liaison complète de l'arène de jeux (/discord/games) au système monétaire officiel du serveur : devise personnalisée (Ethone Coins 🪙) synchronisée dynamiquement.",
+      "Portefeuille joueur en direct : bascule fluide entre le mode Mises Réelles (déduction/crédit immédiat du solde Discord) et le Mode Démo.",
+      "Grand livre économique unifié : enregistrement de chaque partie (blackjack, roulette, duel de dés) dans l'historique des transactions du serveur.",
+      "Alimentation continue du jackpot : prélèvement de 1% à 5% par mise réelle reversé directement dans la cagnotte progressive commune en Ethone Coins.",
+      "Recharges rapides intégrées : réclamation du bonus quotidien (/daily) et exécution du job (/work) directement depuis le centre de jeux.",
+      "Passerelle croisée et panneau de contrôle dans les paramètres du casino avec redirection directe vers la gestion économique (/discord/economy)."
+    ]
+  },
+  {
+    "version": "v1.55.25",
+    "date": "2026-10-05",
+    "title": "Nouveau Module Bot : Mini-Jeux & Casino Communautaire (Blackjack, Roulette, Dés PvP & Jackpot)",
+    "items": [
+      "Nouveau module Mini-Jeux & Casino (/discord/games) avec interface Apple Sonoma interactive et synthétiseur audio Web Audio sans latence.",
+      "Table de Blackjack 21 VIP : jeu interactif en direct avec calcul de score dynamique, options Tirer (Hit), Rester (Stand) et Doubler (Double), ratio Blackjack naturel 3:2.",
+      "Roulette Royale : roue animée et tapis complet avec paris extérieurs (Rouge/Noir 2x, Pair/Impair 2x) et numéros pleins (36x).",
+      "Arène de Duels de dés PvP : affrontements 2d6 entre membres du serveur avec boutons d'acceptation/refus Discord et cagnotte en jeu.",
+      "Cagnotte Jackpot Progressive : prélèvement paramétrable sur chaque mise avec déclenchement automatique sur 21 naturel ou triple 7.",
+      "Quêtes communautaires hebdomadaires récompensant l'activité avec des crédits d'économie et de l'expérience de leveling.",
+      "Simulateur de live interactif pour les streamers (/discord/streamers) : test 1-clic avec génération d'alertes en direct et attribution de rôle @En Live.",
+      "Nouvelles commandes slash : /blackjack, /roulette, /dice, /casino (jackpot | daily | top | stats) intégrées au /help."
+    ]
+  },
+  {
+    "version": "v1.55.24",
+    "date": "2026-10-05",
+    "title": "Alertes Streamers : Options de personnalisation avancées, routage & pings dédiés",
+    "items": [
+      "Salons et rôles dédiés par plateforme : définissez des salons et rôles de ping spécifiques pour Twitch, YouTube et Kick ou par streamer.",
+      "Liaison directe de membre Discord : liez chaque streamer à son compte Discord sur le serveur pour garantir l'attribution instantanée du rôle @En Live.",
+      "Modes de mention avancés : choisissez entre le ping par défaut, @everyone, @here, un rôle personnalisé ou aucun ping.",
+      "Filtres de jeu et seuil de viewers : filtrez les lives par jeu/catégorie et définissez un nombre minimum de viewers avant d'envoyer l'alerte.",
+      "Personnalisation visuelle et anti-spam : sélecteur de couleur hexadécimale, masquage de miniature, boutons d'action sur-mesure, délai anti-reconnexion et action de fin de live (mise à jour hors-ligne, suppression ou maintien).",
+      "Tiroir de configuration Apple Sonoma refait à neuf avec onglets Dédiés et prévisualisation Discord interactive en temps réel."
+    ]
+  },
+  {
+    "version": "v1.55.23",
+    "date": "2026-10-05",
+    "title": "Nouveau Module Bot : Alertes Streamers Twitch, YouTube & Kick (Motion Design)",
+    "items": [
+      "Nouveau module Alertes Streamers (/discord/streamers) avec interface Apple Sonoma fluide et animations Framer Motion.",
+      "Détection automatique ultra-rapide des diffusions en direct sur Twitch, YouTube et Kick.",
+      "Système d'embeds animés avec emojis pulsants (<a:a_online>, <a:a_sparkles>), compteurs de viewers et miniatures HD.",
+      "Attribution automatique du rôle @En Live aux créateurs du serveur dès le début de leur stream, et retrait automatique à la fin.",
+      "Nouvelles commandes slash Discord : /streamer add, /streamer remove, /streamer list, /streamer check et /streamer config intégrées à l'aide /help."
+    ]
+  },
+  {
+    "version": "v1.55.22",
+    "date": "2026-10-05",
+    "title": "Studio Soundscape : Défilement fluide & navigation optimisée",
+    "items": [
+      "Conteneur de défilement dédié `os-scroll` intégré au module Soundscape (/soundscape), résolvant le blocage de scroll sous le layout ETHONE OS.",
+      "Support tactile complet sur le visualiseur Canvas avec `touchAction: pan-y`, permettant un défilement vertical naturel sur mobile, trackpads et écrans tactiles.",
+      "Bouton d'indication et de saut rapide vers le mixeur et les fréquences en bas du visualiseur.",
+      "Marges de sécurité accrues (pb-44) évitant tout chevauchement avec le dock flottant en bas de page."
+    ]
+  },
+  {
+    "version": "v1.55.21",
+    "date": "2026-10-05",
+    "title": "Nouveau module Soundscape Studio & Visualiseur Audio 60 FPS",
+    "items": [
+      "Nouveau module Studio Soundscape (/soundscape) avec motion design Apple Sonoma et physique fluide Framer Motion.",
+      "Visualiseur audio haute fidélité 60 FPS sur Canvas avec 4 modes interactifs (Nébuleuse stellaire réactive, Spectre radial bloom, Horizon d'ondes Bézier, Ondes Zen harmoniques) réagissant en temps réel aux fréquences et au curseur.",
+      "Générateur d'ondes binaurales pures (Delta, Theta, Alpha, Beta, Gamma) et fréquences sacrées Solfeggio (432 Hz, 528 Hz, 639 Hz, 852 Hz) avec séparation stéréo stricte.",
+      "Mixeur d'ambiances multi-pistes tactile avec curseurs capacitifs, jauges visuelles, presets d'immersion 1-clic et minuteur de mise en veille avec fondu progressif.",
+      "Intégration directe dans la barre latérale sous Assistants et indexation dans la palette de commandes (Ctrl+K)."
+    ]
+  },
+  {
+    "version": "v1.55.20",
+    "date": "2026-10-05",
+    "title": "Synchronisation instantanée du Focus et des Préréglages",
+    "items": [
+      "Suppression du délai d'attente (3s) dans RawKeySync au profit d'un déclenchement événementiel instantané (storage, v8:focus-session-completed et ethone:raw-key-changed)",
+      "Rafraîchissement direct des écrans d'historique et d'objectifs Focus lors des sessions terminées et modifications d'objectifs",
+      "Écoute temps réel des changements de préréglages personnalisés dans les paramètres pour affichage multi-onglets immédiat"
+    ]
+  },
+  {
+    "version": "v1.55.19",
+    "date": "2026-10-05",
+    "title": "Résolution intégrale des hooks React et synchronisation multi-onglets",
+    "items": [
+      "Résolution complète des 75 avertissements de hooks React et navigation dans Next.js (useUserState, CommandPalette, BootProvider, AuthProvider, Mail, etc.)",
+      "Ajout de la synchronisation instantanée multi-onglets via événements storage dans useUserState",
+      "Stabilisation des raccourcis clavier et typage strict dans le client de messagerie Mail",
+      "Validation de l'ensemble des suites de tests (298/298 Jest Next.js, 283/283 tests Worker, audits de sécurité et build statique 277 pages sans erreur)"
+    ]
+  },
+  {
+    "version": "v1.55.18",
+    "date": "2026-10-05",
+    "title": "Stabilité Data Dragon, déploiement bot Discord et assainissement des hooks React",
+    "items": [
+      "Bot Discord Etho : synchronisation et redémarrage propre en production sur le VPS (pm2), connexion passerelle et serveurs API opérationnels.",
+      "Worker LoL & Data Dragon : sécurisation des requêtes de catalogue (champions, objets, runes) avec limite de taille étendue à 4 Mo et délai d'attente à 10s.",
+      "Qualité & Performance React : mémoïsation fine des activités Discord et des filtres de modules, navigation légale avec Link Next.js et écoute réactive immédiate des réglages Météo/Lanyard dans useLiveData."
+    ]
+  },
+  {
+    "version": "v1.55.17",
+    "date": "2026-10-05",
+    "title": "Tracker Valorant : Rangs réels MMR, score de performance et formatage des stats",
+    "items": [
+      "Tracker Valorant : affichage des vrais rangs compétitifs (MMR) pour tous les joueurs au lieu de « Non classé » dans les modes non-classés et Swiftplay via la route Worker /api/stats/valorant-mmr (résolution par lots de 10 joueurs).",
+      "Scores & Performances : correction des colonnes PERF et TRS qui affichaient « — » en restaurant la détection de version et un repli calculé sur le score de combat moyen (ACS).",
+      "Formatage des statistiques : dégâts moyens par round (ADR) arrondis à l'entier et calcul exact du pourcentage de tirs à la tête (HS%).",
+      "Worker API : nouveau service getValorantPlayerMmr avec déduplication, cache edge et enrichissement automatique de la session de jeu."
+    ]
+  },
+  {
+    "version": "v1.55.16",
+    "date": "2026-10-05",
+    "title": "Application iOS : Bibliothèque d'avatars, statut de présence et renommage d'émojis",
+    "items": [
+      "Profil iOS : intégration de la bibliothèque d'avatars ETHONE Originals (Quantum, Solid, Obsidian, Aurora, Sunset…) et populaires avec aperçu dynamique.",
+      "Profil iOS : sélecteur de présence (en ligne, focus, occupé, absent, invisible), message et émoji de statut personnalisés avec sélecteur rapide, bio.",
+      "Résolution d'avatars : AvatarView résout automatiquement les chemins relatifs de la bibliothèque (/avatars/...) vers le domaine officiel.",
+      "Discord iOS : renommage d'émojis du serveur directement depuis l'application avec saisie textuelle native (PATCH /emojis/{id}).",
+      "Worker API : support unifié des avatars de bibliothèque, du statut de présence et des métadonnées de profil dans /api/profile."
+    ]
+  },
+  {
+    "version": "v1.55.15",
+    "date": "2026-10-05",
+    "title": "Refonte intégrale de Mission Control en Motion Design",
+    "items": [
+      "Refonte complète de l'interface Mission Control avec animations Framer Motion haute fluidité (ressorts physiques, halo ambiant dynamique)",
+      "Nouveau sélecteur d'espaces virtuel interactif avec indicateur d'état actif lumineux et micro-interactions",
+      "Cartes de workflows connectées avec badges d'étapes et flèches de progression animées",
+      "Grille Exposé des fenêtres ouvertes avec barre de titre fenêtrée macOS, traffic lights et boutons d'action rapide",
+      "État vide interactif avec icône flottante en lévitation et lanceurs instantanés pour les applications courantes",
+      "Barre de recherche Spotlight unifiée avec onglets de filtrage par catégorie (Tout, Fenêtres, Espaces, Workflows, Apps) sur layout animé",
+      "Colonne latérale avec connecteurs live temps réel, pulsations lumineuses et liste des dashboards réactive"
+    ]
+  },
+  {
+    "version": "v1.55.14",
+    "date": "2026-10-05",
+    "title": "Correction du doublon de notifications lors de l'ouverture via le dock",
+    "items": [
+      "Suppression du panneau de notification mobile parasite à gauche sur grand écran",
+      "Fermeture automatique des autres menus volants du dock lors de l'ouverture des notifications"
+    ]
+  },
+  {
+    "version": "v1.55.13",
+    "date": "2026-10-05",
+    "title": "Optimisation et fluidification des animations UI & flyouts du Dock",
+    "items": [
+      "Suppression des conflits CSS interceptant les transitions Framer Motion en mode animations réduites",
+      "Correction des boutons bascules (switches) du Centre de contrôle avec géométrie symétrique et knob initial stabilisé",
+      "Fluidification du curseur de volume sans saccade ni latence lors du glissement",
+      "Ajout des transitions de sortie fluides sur le lanceur d'applications, le Centre de contrôle, le Focus et la météo",
+      "Harmonisation des transitions sur les cartes Bento du Dock sans interférence avec la physique de ressort"
+    ]
+  },
+  {
+    "version": "v1.55.12",
+    "date": "2026-10-05",
+    "title": "Brain AI : Contexte en direct enrichi (Tâches, Agenda et Habitudes)",
+    "items": [
+      "Brain prend désormais en compte en temps réel les tâches ouvertes de l'utilisateur (titres des tâches en attente et nombre total) pour répondre avec précision sur ce qu'il lui reste à faire.",
+      "Intégration de l'agenda du jour avec les horaires précis des événements planifiés dans le contexte en direct de l'assistant IA.",
+      "Interrogation automatique des habitudes quotidiennes (table Supabase ethone_habits et complétions du jour) lorsque l'utilisateur pose une question sur ses routines, séries ou objectifs du jour.",
+      "Mise à jour automatique des instructions de Brain pour citer fidèlement ces données sans aucune hallucination."
+    ]
+  },
+  {
+    "version": "v1.55.11",
+    "date": "2026-10-05",
+    "title": "Dock : refonte motion design complète Apple-grade, volets bento et fluidité extrême",
+    "items": [
+      "Centre de contrôle (DockControlCenter) : nouvelle esthétique macOS Sonoma en verre dépoli avec contrôle segmenté fluide des animations (layoutId), curseur de volume capsule interactif, interrupteurs à ressorts élastiques et cartes d'actions rapides tactiles.",
+      "Lecteur Média (DockMediaFlyout) : barres d'égaliseur audio dansantes sous l'icône du dock, halo ambiant de pochette d'album animé, commandes circulaires tactiles avec micro-rebonds et horodatages précis.",
+      "Météo et Minuteur Focus : halo atmosphérique respirant selon les conditions célestes, icône météo en lévitation, jauges bento d'humidité/vent et cartes de préréglages Focus tactiles.",
+      "Barre du Dock et Launchpad : grossissement magnétique à physique de ressorts, infobulles flottantes au survol, voyants d'activité lumineux sous les applications ouvertes et recherche instantanée dans le lanceur."
+    ]
+  },
+  {
+    "version": "v1.55.10",
+    "date": "2026-10-05",
+    "title": "Habitudes : refonte complète avec motion design et 3 modes de disposition",
+    "items": [
+      "Nouveaux layouts interchangeables : Grille Bento (cartes avec anneaux de complétion et micro-actions), Vue Semaine (matrice calendaire interactive) et Liste Compacte.",
+      "Jauge radiale animée de progression quotidienne, indicateurs de séries et suivi hebdomadaire interactif (validation directe de n'importe quel jour de la semaine).",
+      "Prise en charge de l'alias /settings/workspaces pour ouvrir directement la section Espace de travail sans 404."
+    ]
+  },
+  {
+    "version": "v1.55.9",
+    "date": "2026-10-05",
+    "title": "Dock : refonte motion design, Apple glassmorphism et prévisions météo visuelles",
+    "items": [
+      "Refonte complète du popover météo (WeatherDetailPopover) : animations fluides avec physique de ressort Apple (framer-motion), halo ambiant dynamique selon le ciel et hiérarchie visuelle aérée sans collision de texte.",
+      "Nouvelles cartes bento pour l'humidité et le vent avec jauges animées, et prévisions sur 5 jours style Apple Weather avec barres de plage thermique en dégradé et curseur de température actuelle.",
+      "Harmonisation motion design de tous les volets du Dock (DockControlCenter, DockMediaFlyout, FocusPopover, DockLauncher) : glassmorphism haute définition, micro-interactions tactiles et boutons d'action fluides."
+    ]
+  },
+  {
+    "version": "v1.55.8",
+    "date": "2026-10-05",
+    "title": "Tracker Valorant : adaptation des parties archivées et durée réelle",
+    "items": [
+      "Adaptation complète du volet déplié pour les parties issues de l'historique long (stored-matches) : affichage d'un résumé individuel clair sans faux MVP ni tableau vide de 10 joueurs.",
+      "Trois blocs statistiques dédiés : Combat (K/D/A, ratio, diff +/-), Dégâts & Impact (infligés, reçus, delta DDΔ, ADR) et Précision des tirs avec jauge tricolore (tête, corps, jambes).",
+      "Élimination de la durée codée en dur (8m 24s) au profit de la durée réelle issue de l'API Henrik ou du nombre réel de manches jouées."
+    ]
+  },
+  {
+    "version": "v1.55.7",
+    "date": "2026-10-04",
+    "title": "Module Émojis : renommage d'émojis existants depuis le dashboard",
+    "items": [
+      "Ajout de la route PATCH /api/guilds/:guildId/server/emojis/:emojiId pour renommer les émojis sur Discord.",
+      "Bouton de renommage (crayon) et édition en ligne (avec validation Entrée/Échap ou clic) sur toutes les cartes d'émojis du serveur.",
+      "Synchronisation immédiate du cache local et activation de l'intent Discord GuildExpressions."
+    ]
+  },
+  {
+    "version": "v1.55.6",
+    "date": "2026-10-04",
+    "title": "Bot Discord : détection publique de la présence sur les serveurs",
+    "items": [
+      "Correction de l'endpoint /api/guild-presence : accessible publiquement sans exiger de cookie de session Discord séparé sur bot.ethone.dev.",
+      "Les serveurs où le bot est installé affichent désormais correctement 'Bot présent' et sont regroupés en tête de liste dans tout le dashboard."
+    ]
+  },
+  {
+    "version": "v1.55.5",
+    "date": "2026-10-04",
+    "title": "Module Accueil : interrupteur carte animée (GIF)",
+    "items": [
+      "Ajout de l'interrupteur 'Carte animée (GIF)' dans le designer de cartes de bienvenue et départ.",
+      "Badge indicateur de format GIF dans l'aperçu réel généré par le bot."
+    ]
+  },
+  {
+    "version": "v1.55.4",
+    "date": "2026-10-04",
+    "title": "Correction de la connexion OAuth GitHub",
+    "items": [
+      "Rétablissement du Client ID GitHub officiel Ov23li7gnklQJ7ipkgZG.",
+      "Acceptation du paramètre redirectUri lors de l'échange de token sur le Worker Cloudflare."
+    ]
+  },
+  {
+    "version": "v1.55.3",
+    "date": "2026-10-04",
+    "title": "Connexion GitHub officielle et gestion des erreurs OAuth",
+    "items": [
+      "Connexion GitHub : alignement du Client ID officiel avec l'application Ethone Login pour permettre la synchronisation du compte.",
+      "Authentification OAuth : affichage explicite du détail d'erreur (error_description) lors d'un échec de redirection."
+    ]
+  },
+  {
+    "version": "v1.55.2",
+    "date": "2026-10-04",
+    "title": "Réglages : liens directs vers chaque section",
+    "items": [
+      "Les adresses de section des Réglages (Thèmes, Apparence, Sécurité…) ouvrent enfin la bonne section au lieu de Général, y compris depuis la palette de commandes et le clic droit des thèmes."
+    ]
+  },
+  {
+    "version": "v1.55.1",
+    "date": "2026-10-04",
+    "title": "Thèmes : clic droit et thèmes personnalisés",
+    "items": [
+      "Menu Thèmes de la barre du haut : clic droit sur un thème pour l'appliquer, changer sa police, créer un thème à partir de lui ou supprimer un thème perso.",
+      "Vos thèmes personnalisés apparaissent dans ce menu, avec une tuile « Nouveau thème » qui ouvre le créateur."
+    ]
+  },
+  {
+    "version": "v1.55.0",
+    "date": "2026-10-04",
+    "title": "Bot animé et module Émojis",
+    "items": [
+      "Bot : les ✅ ❌ ⚠️ ℹ️ ⏳ ✨ de ses réponses et de ses boutons deviennent des émojis animés ; logo animé dans /help.",
+      "Bot : les cartes de bienvenue et de départ par défaut sont animées (lueurs, particules, halo autour de l'avatar).",
+      "Nouveau module Émojis du serveur : glissez vos images ou GIF, prévisualisez-les comme dans Discord et ajoutez-les au serveur en un clic ; quotas, recherche, copie du code et suppression.",
+      "Brain écrit maintenant les statistiques en toutes lettres (éliminations, morts, assistances)."
+    ]
+  },
+  {
+    "version": "v1.54.1",
+    "date": "2026-10-04",
+    "title": "Brain connaît ta météo et tes parties, connexion GitHub",
+    "items": [
+      "Brain répond avec la météo de ta ville réglée dans ETHONE et tes dernières parties Valorant ou League of Legends (résultat, score, carte, agent ou champion, K/D/A).",
+      "Connexions : GitHub et les autres services officiels utilisent toujours l'application ETHONE, un ancien identifiant personnalisé resté dans le navigateur ne fait plus échouer la connexion."
+    ]
+  },
+  {
+    "version": "v1.54.0",
+    "date": "2026-10-04",
+    "title": "Bannière de profil et historique Valorant complet",
+    "items": [
+      "Profil › Apparence : importez votre propre bannière en fond de carte (les GIF restent animés).",
+      "Tracker Valorant : « Charger plus » remonte vraiment l'historique, 25 parties par clic, jusqu'à la plus ancienne disponible.",
+      "Les parties anciennes affichent un résumé (score, agent, carte, stats) sans le tableau des 10 joueurs."
+    ]
+  },
+  {
+    "version": "v1.53.7",
+    "date": "2026-10-04",
+    "title": "Tracker LoL : icônes des runes",
+    "items": [
+      "Les icônes des runes principales s'affichent (leur adresse était incorrecte)."
+    ]
+  },
+  {
+    "version": "v1.53.6",
+    "date": "2026-10-04",
+    "title": "Tracker LoL : sorts, rune et objets récents",
+    "items": [
+      "Les sorts d'invocateur et la rune principale s'affichent : leurs icônes sont retrouvées depuis le navigateur quand le serveur ne peut pas les fournir.",
+      "Les objets s'affichent avec la dernière version de Data Dragon, y compris les plus récents."
+    ]
+  },
+  {
+    "version": "v1.53.5",
+    "date": "2026-10-04",
+    "title": "Tracker LoL : vraie durée et parties annulées",
+    "items": [
+      "La durée réelle de chaque partie s'affiche (au lieu d'un « 25m 00s » par défaut).",
+      "Les parties annulées (remake) sont marquées « Remake » au lieu de Victoire ou Défaite.",
+      "Le détail d'une partie indique la bonne équipe gagnante."
+    ]
+  },
+  {
+    "version": "v1.53.4",
+    "date": "2026-10-04",
+    "title": "Tracker LoL : sorts et rune affichés",
+    "items": [
+      "Les sorts d'invocateur et la rune principale de chaque joueur s'affichent, y compris pour les parties déjà en cache."
+    ]
+  },
+  {
+    "version": "v1.53.3",
+    "date": "2026-10-04",
+    "title": "Tracker LoL : vrais objets affichés",
+    "items": [
+      "Les objets et la balise de chaque joueur s'affichent de nouveau à partir des données réelles de la partie."
+    ]
+  },
+  {
+    "version": "v1.53.2",
+    "date": "2026-10-04",
+    "title": "Nettoyage du code et tracker LoL sans données inventées",
+    "items": [
+      "Environ 120 variables et fonctions abandonnées retirées (fenêtres jamais branchées, états jamais affichés) : le code est plus léger, sans changement visible.",
+      "Tracker LoL : les objets, sorts, runes, balises et champions manquants ne sont plus remplacés par des valeurs inventées ; un emplacement vide reste vide.",
+      "Tracker LoL : le badge « +123 / −15 » écrit en dur affiche maintenant Victoire ou Défaite.",
+      "Tracker LoL : dans l'aperçu des équipes, chaque joueur affiche son vrai champion (les joueurs 2 à 10 pouvaient montrer Annie, Olaf, Galio…).",
+      "Tracker LoL : les images suivent la dernière version de Data Dragon, les objets récents s'affichent.",
+      "Tickets : une requête inutile au bot a été retirée."
+    ]
+  },
+  {
+    "version": "v1.53.1",
+    "date": "2026-10-04",
+    "title": "Bibliothèque d'avatars : aperçu plus varié",
+    "items": [
+      "Les séries Netflix phares apparaissent en premier, et l'aperçu de chaque collection montre une vignette par série."
+    ]
+  },
+  {
+    "version": "v1.53.0",
+    "date": "2026-10-04",
+    "title": "Nouveau profil, nouvelle bibliothèque d'avatars, synchronisation en direct",
+    "items": [
+      "Page Profil refaite de zéro : carte d'identité animée, onglets Profil, Statut, Apparence et Compte, statut personnalisé (emoji + texte), cadres d'avatar et fonds de carte.",
+      "Bibliothèque d'avatars refaite : 530 avatars nets et hébergés sur ETHONE (Netflix, Anime, Valorant, League of Legends, Pokémon, ETHONE Originals), recherche, filtres par série, favoris et récents.",
+      "Le profil (avatar, nom, pseudo, bio, statut, cadre, fond) est synchronisé en direct sur tous vos appareils.",
+      "Aussi synchronisés : espace actif, widgets épinglés et favoris, réglages des widgets, verrouillage de l'accueil, favoris du Marketplace, préréglages et historique Focus.",
+      "Corrigé : choisir un avatar de la bibliothèque n'était jamais enregistré sur le compte.",
+      "Retiré : réglages de personnalisation et « préférences inférées » qui n'avaient aucun effet."
+    ]
+  },
+  {
+    "version": "v1.52.16",
+    "date": "2026-10-04",
+    "title": "Vrais écrans de chargement sur 8 pages Discord",
+    "items": [
+      "Console du bot, Présence, Gestion du serveur, Vocal, Invitations, Réglages des invitations, Signalements et Profil de modération affichent un aperçu animé pendant le premier chargement, au lieu d'une page vide ou de valeurs par défaut qui changent ensuite.",
+      "Signalements et Profil de modération n'affichent plus « file vide » ou « aucune sanction » avant d'avoir reçu les données.",
+      "Gestion du serveur : la fiche d'un membre s'ouvre tout de suite avec un aperçu pendant son chargement.",
+      "Invitations : les 5 requêtes partent en même temps, et la recherche n'interroge le bot qu'une fois la frappe terminée."
+    ]
+  },
+  {
+    "version": "v1.52.15",
+    "date": "2026-10-04",
+    "title": "Nettoyage du code et corrections",
+    "items": [
+      "Réglages › À propos : la dernière version disponible s'actualise correctement.",
+      "Intégrations : le filtre « Erreurs » suit l'état réel des services.",
+      "Musique : la recherche tient compte des serveurs où le bot est réellement installé.",
+      "94 fichiers de code mort retirés (dashboard, bot et worker), sans changement visible."
+    ]
+  },
+  {
+    "version": "v1.52.14",
+    "date": "2026-10-04",
+    "title": "Motion design : dernières pages Discord",
+    "items": [
+      "Comptage, Highlights, Paramètres du bot, réglages de l'Invite Tracker et de la sauvegarde : entrée en cascade, retour au clic et couleurs du thème.",
+      "Highlights : les mots-clés et salons ignorés apparaissent et disparaissent en douceur.",
+      "Invite Tracker : la sensibilité se choisit avec une pastille qui glisse, et les interrupteurs sont ceux du reste du site.",
+      "Paramètres du bot et sauvegarde : la barre d'enregistrement et les options qui s'ouvrent sont animées.",
+      "Thème clair : les avertissements de Comptage et des Paramètres du bot sont de nouveau lisibles."
+    ]
+  },
+  {
+    "version": "v1.52.13",
+    "date": "2026-10-03",
+    "title": "Thème clair : panneaux restés sombres",
+    "items": [
+      "Le panneau de détail d'une connexion, le guide de configuration, l'historique des versions, l'ajout de fichier, le choix du modèle IA, le dock mobile et le rapport quotidien du tracker suivent maintenant le thème (ils restaient noirs en thème clair)."
+    ]
+  }
+]

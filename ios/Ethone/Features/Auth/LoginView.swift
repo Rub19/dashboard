@@ -119,7 +119,6 @@ struct LoginView: View {
     }
 }
 
-/// Création de compte par e-mail et mot de passe.
 struct RegisterView: View {
     @Environment(AuthStore.self) private var auth
     @Environment(\.dismiss) private var dismiss
@@ -160,7 +159,6 @@ struct RegisterView: View {
     }
 }
 
-/// Second facteur (TOTP ou code de secours) demandé par le Worker après la connexion.
 struct MFAView: View {
     @Environment(AuthStore.self) private var auth
     @State private var code = ""
@@ -221,3 +219,4 @@ struct MFAView: View {
         .padding(24)
     }
 }
+

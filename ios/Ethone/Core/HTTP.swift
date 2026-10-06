@@ -1,7 +1,5 @@
 import Foundation
 
-// MARK: - Erreurs
-
 enum APIError: LocalizedError {
     case notSignedIn
     case mfaRequired
@@ -29,8 +27,6 @@ enum APIError: LocalizedError {
     }
 }
 
-// MARK: - Dates ISO 8601 (Postgres renvoie des microsecondes)
-
 enum ISODate {
     private static let withFraction: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
@@ -47,7 +43,6 @@ enum ISODate {
     static func parse(_ raw: String) -> Date? {
         var value = raw
         if let dot = value.firstIndex(of: ".") {
-            // Ne garde que trois chiffres de fraction (les microsecondes ne sont pas toujours acceptées).
             var end = value.index(after: dot)
             var digits = 0
             while end < value.endIndex, value[end].isNumber {
@@ -92,8 +87,6 @@ extension JSONEncoder {
     }()
 }
 
-// MARK: - Transport bas niveau
-
 enum HTTP {
     static let userAgent = "ETHONE/2.0 (iPhone; CPU iPhone OS 26_0 like Mac OS X) EthoneIOS"
 
@@ -116,7 +109,6 @@ enum HTTP {
         }
     }
 
-    /// Erreur normalisée à partir du corps `{ ok:false, error:{ code, message } }` du Worker ou de Supabase.
     static func failure(status: Int, data: Data) -> APIError {
         var code: String?
         var message: String?
@@ -135,8 +127,6 @@ enum HTTP {
         return .http(status: status, code: code, message: message)
     }
 }
-
-// MARK: - Worker Cloudflare (`{ ok, data }`)
 
 struct WorkerEnvelope<T: Decodable>: Decodable {
     let data: T?
@@ -159,3 +149,4 @@ enum WorkerHTTP {
         return request
     }
 }
+

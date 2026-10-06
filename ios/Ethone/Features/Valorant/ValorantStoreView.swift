@@ -1,8 +1,5 @@
 import SwiftUI
 
-/// Bundles à la une de la boutique Valorant (Worker ETHONE → HenrikDev, enrichi par le catalogue public valorant-api.com).
-/// La boutique quotidienne PERSONNELLE du joueur n'est pas proposée : Riot n'a pas d'API publique pour elle, elle exigerait
-/// les jetons de connexion Riot du joueur, qu'ETHONE ne demande ni ne stocke.
 struct ValorantStoreView: View {
     @Environment(AppModel.self) private var model
     @State private var bundles: [FeaturedBundle] = []
@@ -122,7 +119,6 @@ struct ValorantStoreView: View {
     private func load() async {
         isLoading = true
         defer { isLoading = false; loaded = true }
-        // Le Worker utilise la clé HenrikDev enregistrée sur le compte ; à défaut, celle saisie dans cette app.
         var headers: [String: String] = [:]
         if !model.valorant.apiKey.isEmpty { headers["x-henrik-api-key"] = model.valorant.apiKey }
         do {
@@ -134,3 +130,4 @@ struct ValorantStoreView: View {
         }
     }
 }
+

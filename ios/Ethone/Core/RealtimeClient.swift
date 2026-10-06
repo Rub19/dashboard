@@ -1,11 +1,7 @@
 import Foundation
 
-/// Synchronisation en temps réel avec Supabase (protocole Phoenix sur WebSocket, `postgres_changes`) : quand une ligne change
-/// (depuis le site, l'app ou le bot), le magasin concerné est rechargé. Les événements respectent les règles RLS : l'utilisateur
-/// ne reçoit que ses propres lignes. Aucune donnée n'est lue dans l'événement, il sert de signal de rechargement.
 @MainActor
 final class RealtimeClient {
-    /// Tables suivies ; `filtered` = filtre `user_id` (les tables d'espaces partagés n'ont pas cette colonne, la RLS suffit).
     private static let tables: [(name: String, filtered: Bool)] = [
         ("tasks", true), ("ethone_items", true), ("ethone_habits", true), ("ethone_habit_completions", true),
         ("ethone_focus_sessions", true), ("ethone_user_data", true), ("ethone_user_state", true), ("user_settings", true),
@@ -37,7 +33,6 @@ final class RealtimeClient {
                 guard let self else { return }
                 let connectedFor = await self.runOnce(isReconnect: attempt > 0)
                 if Task.isCancelled { return }
-                // Une connexion qui a tenu plus d'une minute remet le compteur d'échecs à zéro.
                 attempt = connectedFor > 60 ? 1 : min(attempt + 1, 6)
                 let delay = min(30.0, pow(2.0, Double(attempt)))
                 try? await Task.sleep(for: .seconds(delay))
@@ -52,9 +47,6 @@ final class RealtimeClient {
         socket = nil
     }
 
-    // MARK: Connexion
-
-    /// Une session de connexion complète ; renvoie sa durée en secondes. Se termine quand la socket se ferme ou est annulée.
     private func runOnce(isReconnect: Bool) async -> TimeInterval {
         let started = Date()
         guard let userId = auth.user?.id, let token = try? await auth.validAccessToken() else { return 0 }
@@ -93,7 +85,6 @@ final class RealtimeClient {
                 elapsed += 25
                 guard let self, !Task.isCancelled else { return }
                 _ = await self.send(event: "heartbeat", topic: "phoenix", payload: .object([:]))
-                // Le jeton expire au bout d'une heure : on le renouvelle sur le canal avant l'échéance.
                 if elapsed >= 45 * 60, let fresh = try? await self.auth.validAccessToken() {
                     elapsed = 0
                     _ = await self.send(event: "access_token", topic: self.topic, payload: .object(["access_token": .string(fresh)]))
@@ -116,7 +107,6 @@ final class RealtimeClient {
                 switch frame["event"]?.stringValue {
                 case "phx_reply" where frame["topic"]?.stringValue == topic:
                     if frame["payload"]?["status"]?.stringValue == "ok", isReconnect, !announcedReconnect {
-                        // On a pu rater des changements pendant la coupure : rechargement complet.
                         announcedReconnect = true
                         onReconnect()
                     }
@@ -150,3 +140,4 @@ final class RealtimeClient {
         }
     }
 }
+

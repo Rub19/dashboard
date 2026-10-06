@@ -48,8 +48,6 @@ struct FocusView: View {
         }
     }
 
-    // MARK: Minuteur
-
     private var timerRing: some View {
         TimelineView(.periodic(from: .now, by: 1)) { context in
             let remaining = focus.isActive ? focus.remaining(at: context.date) : TimeInterval(selectedPreset.work * 60)
@@ -91,8 +89,6 @@ struct FocusView: View {
         }
     }
 
-    // MARK: Préréglages
-
     private var presetPicker: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Préréglage").sectionTitle().padding(.leading, 4)
@@ -118,8 +114,6 @@ struct FocusView: View {
             }
         }
     }
-
-    // MARK: Commandes
 
     @ViewBuilder
     private var controls: some View {
@@ -157,8 +151,6 @@ struct FocusView: View {
         }
         .sensoryFeedback(.impact(weight: .medium), trigger: focus.phase)
     }
-
-    // MARK: Statistiques
 
     private var todayCard: some View {
         GlassEffectContainer(spacing: 14) {
@@ -205,7 +197,6 @@ struct FocusView: View {
     }
 }
 
-/// Mini-lecteur affiché au-dessus de la barre d'onglets pendant une session (comme le lecteur Musique d'iOS 26).
 struct FocusMiniBar: View {
     @Environment(AppModel.self) private var model
 
@@ -234,3 +225,4 @@ struct FocusMiniBar: View {
         }
     }
 }
+

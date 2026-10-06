@@ -2,8 +2,6 @@ import Foundation
 import UIKit
 import UserNotifications
 
-/// Notifications locales riches (actions, rappels de tâches et d'habitudes, fin de focus) et enregistrement APNs.
-/// L'envoi de push par le serveur nécessite un IPA signé avec un compte Apple Developer ; les notifications locales n'en ont pas besoin.
 enum NotificationManager {
     enum Category {
         static let task = "ETHONE_TASK"
@@ -35,7 +33,6 @@ enum NotificationManager {
         UNUserNotificationCenter.current().setNotificationCategories(categories)
     }
 
-    /// Demande l'autorisation (une seule fois) et enregistre l'appareil pour les push distants.
     @discardableResult
     static func requestAuthorization() async -> Bool {
         let center = UNUserNotificationCenter.current()
@@ -46,7 +43,6 @@ enum NotificationManager {
         return granted
     }
 
-    /// À la déconnexion : plus aucun rappel personnel ne doit rester planifié sur l'appareil.
     static func clearAll() {
         let center = UNUserNotificationCenter.current()
         center.removeAllPendingNotificationRequests()
@@ -59,8 +55,6 @@ enum NotificationManager {
     }
 
     static var pushToken: String? { UserDefaults.standard.string(forKey: pushTokenKey) }
-
-    // MARK: Planification
 
     static func scheduleTask(_ item: Item, at date: Date) async {
         guard date > Date() else { return }
@@ -81,7 +75,6 @@ enum NotificationManager {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["task-\(id)"])
     }
 
-    /// Rappel quotidien d'une habitude (à l'heure choisie).
     static func scheduleHabit(_ habit: Habit, hour: Int, minute: Int) async {
         let content = UNMutableNotificationContent()
         content.title = "\(habit.emoji ?? "🎯") \(habit.name)"
@@ -97,7 +90,6 @@ enum NotificationManager {
         try? await UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "habit-\(habit.id)", content: content, trigger: trigger))
     }
 
-    /// Rappel d'un événement du calendrier, `minutesBefore` minutes avant le début.
     static func scheduleEvent(_ item: Item, minutesBefore: Int) async {
         guard let start = item.startAt else { return }
         let fire = start.addingTimeInterval(TimeInterval(-minutesBefore * 60))
@@ -117,7 +109,6 @@ enum NotificationManager {
         try? await UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "event-\(item.id)", content: content, trigger: trigger))
     }
 
-    /// Rappel de facture : la veille de l'échéance à 9 h (ou immédiatement le jour même si la veille est passée).
     static func scheduleBill(id: String, label: String, amount: Double, due: Date) async {
         let calendar = Calendar.current
         let dayBefore = calendar.date(byAdding: .day, value: -1, to: calendar.startOfDay(for: due)) ?? due
@@ -159,8 +150,6 @@ enum NotificationManager {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["focus-end"])
     }
 
-    // MARK: Réponses aux actions
-
     @MainActor
     static func handle(response: UNNotificationResponse) async {
         let info = response.notification.request.content.userInfo
@@ -196,3 +185,4 @@ enum NotificationManager {
         }
     }
 }
+

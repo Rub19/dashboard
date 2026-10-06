@@ -54,7 +54,6 @@ struct WeatherView: View {
     }
 
     private func loadAccountCity() async {
-        // Même ville que sur le site (réglage « liveWeatherCity » du compte).
         struct Row: Decodable { let settings: JSONValue? }
         if let rows: [Row] = try? await model.api.list("user_settings"),
            let value = rows.first?.settings?["liveWeatherCity"]?.stringValue {
@@ -146,3 +145,4 @@ struct WeatherView: View {
         return date.formatted(.dateTime.weekday(.wide)).capitalized
     }
 }
+

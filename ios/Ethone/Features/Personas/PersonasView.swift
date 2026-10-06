@@ -8,8 +8,6 @@ struct PersonaRecord: Identifiable, Decodable, Hashable {
     var theme: ThemePreset { ThemePreset.resolve(legacy: data?["theme"]?.stringValue) }
 }
 
-/// Personas : profils d'ambiance (nom + thème), mêmes lignes `ethone_user_data` (kind = persona) que le site.
-/// Appliquer une persona change le thème de l'app.
 struct PersonasView: View {
     @Environment(AppModel.self) private var model
     @State private var personas: [PersonaRecord] = []
@@ -110,3 +108,4 @@ struct PersonasView: View {
         }
     }
 }
+

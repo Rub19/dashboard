@@ -50,6 +50,7 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.soundscape) { Label("Soundscape", systemImage: "waveform.circle.fill") }
                     NavigationLink(value: MoreDestination.plugins) { Label("Plugins & Extensions", systemImage: "puzzlepiece.extension.fill") }
                     NavigationLink(value: MoreDestination.clip) { Label("Clip", systemImage: "paperclip") }
+                    NavigationLink(value: MoreDestination.changelog) { Label("Journal des modifications", systemImage: "clock.arrow.circlepath") }
                 } header: { Text("Applications").sectionTitle() }
                 .listRowBackground(GlassRowBackground())
 
@@ -112,8 +113,10 @@ struct MoreView: View {
                 }
 
                 Section {
-                    LabeledContent("Version", value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—")
-                        .listRowBackground(GlassRowBackground())
+                    NavigationLink(value: MoreDestination.changelog) {
+                        LabeledContent("Version", value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—")
+                    }
+                    .listRowBackground(GlassRowBackground())
                 }
             }
             .scrollContentBackground(.hidden)
@@ -161,6 +164,7 @@ struct MoreView: View {
                 case .soundscape: SoundscapeView()
                 case .plugins: PluginsView()
                 case .clip: ClipView()
+                case .changelog: ChangelogView()
                 }
             }
             .task { await refreshStatus() }

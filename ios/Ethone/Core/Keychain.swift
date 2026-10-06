@@ -1,7 +1,6 @@
 import Foundation
 import Security
 
-/// Petit enveloppe autour du trousseau iOS pour stocker la session (jetons) hors de UserDefaults.
 enum Keychain {
     static func set(_ data: Data, for account: String) {
         let base: [String: Any] = [
@@ -38,3 +37,4 @@ enum Keychain {
         SecItemDelete(query as CFDictionary)
     }
 }
+

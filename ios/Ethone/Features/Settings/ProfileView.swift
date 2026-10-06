@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Profil public et identité visuelle : avatar, présence, statut, nom affiché, pseudo et visibilité (Worker `/api/profile`).
 struct ProfileView: View {
     @Environment(AppModel.self) private var model
     @State private var displayName = ""
@@ -208,7 +207,6 @@ struct ProfileView: View {
     }
 }
 
-/// Sélecteur d'avatar : bibliothèque ETHONE Originals, icônes populaires et saisie d'URL personnalisée.
 struct AvatarLibrarySheet: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var currentAvatar: String
@@ -329,3 +327,4 @@ struct AvatarLibrarySheet: View {
         .buttonStyle(.plain)
     }
 }
+

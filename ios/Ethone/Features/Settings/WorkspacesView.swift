@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// Profils de travail (espaces : Personnel, Focus, Studio…) : mêmes profils que la page « Choisir un profil » du site (`/api/profiles`).
-/// Changer de profil change les données spécifiques au profil (flows, macros, personas…) ; le site et l'app partagent le profil actif.
 struct WorkspacesView: View {
     @Environment(AppModel.self) private var model
     @State private var profiles: [JSONValue] = []
@@ -83,7 +81,6 @@ struct WorkspacesView: View {
             try await model.api.workerVoid("api/profiles/activate", body: APIClient.json(["id": .string(id)]))
             activeId = id
             errorMessage = nil
-            // Les données liées au profil (flows, macros, personas…) changent : on prévient les écrans ouverts.
             await model.refreshAll()
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
@@ -114,3 +111,4 @@ struct WorkspacesView: View {
         }
     }
 }
+

@@ -1,8 +1,5 @@
 import SwiftUI
 
-// MARK: - Réponses d'un formulaire
-
-/// Réponses reçues par un formulaire : filtre par statut, lecture des réponses, décision (approuver, refuser, demander des modifications, spam).
 struct FormResponsesView: View {
     @Environment(AppModel.self) private var model
     let guild: DiscordGuild
@@ -157,9 +154,6 @@ struct FormResponseDetailView: View {
     }
 }
 
-// MARK: - Participants d'un événement
-
-/// Inscrits à un événement : réponse (RSVP), pointage manuel le jour J, retrait d'un participant.
 struct EventParticipantsView: View {
     @Environment(AppModel.self) private var model
     let guild: DiscordGuild
@@ -256,3 +250,4 @@ struct EventParticipantsView: View {
         }
     }
 }
+

@@ -1,9 +1,6 @@
 import ActivityKit
 import Foundation
 
-/// Live Activity « Prochain événement » : démarrée quand l'app est ouverte et qu'un événement commence dans l'heure (ou est en cours),
-/// terminée automatiquement à la fin de l'événement. iOS n'autorise le démarrage d'une Live Activity que depuis l'app au premier plan
-/// (ou par push, indisponible avec un IPA non signé) : elle apparaît donc à l'ouverture de l'app.
 @MainActor
 enum EventActivityManager {
     private static let lead: TimeInterval = 3600
@@ -34,3 +31,4 @@ enum EventActivityManager {
         }
     }
 }
+

@@ -1,8 +1,5 @@
 import SwiftUI
 
-// MARK: - Constructeur de sondage (plusieurs questions)
-
-/// Sondage à plusieurs questions : chaque question a ses options et peut autoriser plusieurs réponses.
 struct PollBuilderView: View {
     struct Question: Identifiable {
         let id = UUID()
@@ -26,7 +23,6 @@ struct PollBuilderView: View {
     @State private var questions = [Question()]
     @State private var saving = false
     @State private var errorMessage: String?
-    // Sondage natif Discord : un seul salon, une seule question, pas de quorum ni de vote pondéré (Discord gère tout).
     @State private var native = false
     @State private var nativeChannelId = ""
     @State private var nativeDurationHours: Double = 24
@@ -144,9 +140,6 @@ struct PollBuilderView: View {
     }
 }
 
-// MARK: - Constructeur de formulaire
-
-/// Formulaire de candidature ou d'inscription : liste de champs typés, publiable ensuite depuis la liste des formulaires.
 struct FormBuilderView: View {
     struct FieldDraft: Identifiable {
         let id = UUID()
@@ -252,3 +245,4 @@ struct FormBuilderView: View {
         }
     }
 }
+

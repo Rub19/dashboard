@@ -1,6 +1,5 @@
 import Foundation
 
-/// Valeur JSON arbitraire (colonnes `jsonb`, corps de requêtes partiels).
 enum JSONValue: Codable, Hashable {
     case null
     case bool(Bool)
@@ -65,3 +64,4 @@ enum JSONValue: Codable, Hashable {
         return nil
     }
 }
+

@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Message de la boîte ETHONE (`ethone_mail_messages`, via le Worker).
 struct MailMessage: Identifiable, Decodable, Hashable {
     let id: String
     let threadId: String?
@@ -32,7 +31,6 @@ struct MailMessage: Identifiable, Decodable, Hashable {
         case brainSummary = "brain_summary"
     }
 
-    /// Une projection du Worker peut omettre `is_read` : on considère alors le message comme lu.
     var isRead: Bool {
         get { readFlag ?? true }
         set { readFlag = newValue }
@@ -117,7 +115,6 @@ final class MailStore {
         }
     }
 
-    /// Envoie un message via le Worker (depuis l'alias ETHONE de l'utilisateur). Renvoie `true` si le serveur a accepté l'envoi.
     func send(to: [String], subject: String, text: String) async -> Bool {
         do {
             var fields: [String: JSONValue] = ["to": .array(to.map { .string($0) }), "text": .string(text)]
@@ -278,7 +275,6 @@ struct ComposeDraft: Identifiable {
     var body: String
 }
 
-/// Rédaction d'un e-mail : l'envoi n'a lieu qu'après confirmation explicite.
 struct MailComposeView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -338,3 +334,4 @@ struct MailComposeView: View {
         .presentationDetents([.large])
     }
 }
+

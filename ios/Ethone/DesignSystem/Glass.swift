@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Carte Liquid Glass (iOS 26) : le verre réfracte l'arrière-plan ambiant derrière lui.
 struct GlassCard<Content: View>: View {
     var tint: Color? = nil
     var padding: CGFloat = 16
@@ -15,7 +14,6 @@ struct GlassCard<Content: View>: View {
     }
 }
 
-/// Pastille de verre (statuts, compteurs).
 struct GlassPill: View {
     let text: String
     var systemImage: String? = nil
@@ -33,7 +31,6 @@ struct GlassPill: View {
     }
 }
 
-/// Fond ambiant : dégradé maillé qui dérive lentement, aux couleurs du thème actif, pour donner de la profondeur au verre.
 struct AmbientBackground: View {
     @Environment(AppModel.self) private var model
 
@@ -69,13 +66,11 @@ struct AmbientBackground: View {
 }
 
 extension View {
-    /// Titre de section discret utilisé dans les listes en verre.
     func sectionTitle() -> some View {
         self.font(.footnote.weight(.semibold)).foregroundStyle(.secondary).textCase(.uppercase)
     }
 }
 
-/// Avatar rond (photo Discord/Google, bibliothèque ou initiale) avec pastille de présence.
 struct AvatarView: View {
     let url: URL?
     let name: String
@@ -153,8 +148,8 @@ struct AvatarView: View {
 }
 
 extension View {
-    /// Fond ambiant pour un écran de navigation : le verre a quelque chose à réfracter (sinon le fond reste noir uni).
     func ethoneScreen() -> some View {
         containerBackground(for: .navigation) { AmbientBackground() }
     }
 }
+

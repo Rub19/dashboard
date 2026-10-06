@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Journal d'audit du serveur : événements récents filtrables par gravité (lecture seule).
 struct AuditLogAdminView: View {
     @Environment(AppModel.self) private var model
     let guild: DiscordGuild
@@ -76,3 +75,4 @@ struct AuditLogAdminView: View {
         }
     }
 }
+

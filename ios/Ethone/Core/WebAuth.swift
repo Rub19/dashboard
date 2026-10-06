@@ -1,7 +1,6 @@
 import AuthenticationServices
 import UIKit
 
-/// Fenêtre de connexion Web système (ASWebAuthenticationSession), partagée par Supabase (OAuth) et le bot Discord.
 @MainActor
 final class WebAuth: NSObject, ASWebAuthenticationPresentationContextProviding {
     static let shared = WebAuth()
@@ -32,3 +31,4 @@ final class WebAuth: NSObject, ASWebAuthenticationPresentationContextProviding {
         }
     }
 }
+

@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// Tracker League of Legends : profil classé et dernières parties, via le Worker ETHONE (API officielle Riot).
-/// Le Worker utilise la clé Riot enregistrée sur le compte ETHONE (Connexions, sur le site) : aucune clé Riot ne transite par l'app.
 struct LolTrackerView: View {
     @Environment(AppModel.self) private var model
     @State private var name = UserDefaults.standard.string(forKey: "ethone.lol.name") ?? ""
@@ -206,3 +204,4 @@ struct LolTrackerView: View {
         )
     }
 }
+

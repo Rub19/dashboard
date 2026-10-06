@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// Fiche d'un membre et sanctions (avertissement, exclusion temporaire, expulsion, bannissement) : crée une « case » de modération
-/// dans le bot, comme le panneau du site. Chaque envoi porte une clé d'idempotence : un double appui n'applique pas deux fois la sanction.
 struct MemberSanctionView: View {
     @Environment(AppModel.self) private var model
     let guild: DiscordGuild
@@ -93,3 +91,4 @@ struct MemberSanctionView: View {
         }
     }
 }
+

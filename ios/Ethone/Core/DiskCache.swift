@@ -1,6 +1,5 @@
 import Foundation
 
-/// Cache JSON local (dossier Caches) : l'app s'ouvre avec les dernières données même hors ligne.
 enum DiskCache {
     private static var directory: URL {
         let base = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].appendingPathComponent("EthoneCache", isDirectory: true)
@@ -23,7 +22,6 @@ enum DiskCache {
         return try? JSONDecoder.api.decode(T.self, from: data)
     }
 
-    /// Taille du cache en octets.
     static func sizeInBytes() -> Int64 {
         let files = (try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.fileSizeKey])) ?? []
         return files.reduce(0) { $0 + Int64((try? $1.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0) }
@@ -33,3 +31,4 @@ enum DiskCache {
         try? FileManager.default.removeItem(at: directory)
     }
 }
+

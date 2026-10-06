@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Giveaways d'un serveur : suivi, prolongation, clôture, nouveau tirage et annulation (API du bot).
 struct GiveawaysAdminView: View {
     @Environment(AppModel.self) private var model
     let guild: DiscordGuild
@@ -127,3 +126,4 @@ struct GiveawaysAdminView: View {
         }
     }
 }
+

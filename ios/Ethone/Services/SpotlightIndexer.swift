@@ -2,7 +2,6 @@ import CoreSpotlight
 import Foundation
 import UniformTypeIdentifiers
 
-/// Indexe notes et tâches dans Spotlight (recherche système) ; un appui ouvre la section correspondante.
 enum SpotlightIndexer {
     static func index(notes: [Item], tasks: [Item]) {
         let searchable = (notes + tasks).map { item -> CSSearchableItem in
@@ -19,10 +18,10 @@ enum SpotlightIndexer {
         CSSearchableIndex.default().deleteAllSearchableItems { _ in }
     }
 
-    /// Onglet à ouvrir pour un identifiant Spotlight (`note-…` ou `task-…`).
     static func tab(for identifier: String) -> AppTab? {
         if identifier.hasPrefix("task-") { return .tasks }
         if identifier.hasPrefix("note-") { return .notes }
         return nil
     }
 }
+

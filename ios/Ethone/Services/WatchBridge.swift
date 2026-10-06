@@ -1,7 +1,6 @@
 import Foundation
 import WatchConnectivity
 
-/// Pont iPhone → Apple Watch (WatchConnectivity) : envoie l'instantané des données et reçoit les commandes de focus de la montre.
 final class WatchBridge: NSObject, WCSessionDelegate {
     static let shared = WatchBridge()
 
@@ -14,7 +13,6 @@ final class WatchBridge: NSObject, WCSessionDelegate {
         session.activate()
     }
 
-    /// Dernier état connu, lisible par la montre même si l'iPhone n'est pas joignable à cet instant.
     func push(_ snapshot: SharedSnapshot) {
         guard WCSession.isSupported() else { return }
         let session = WCSession.default
@@ -24,8 +22,6 @@ final class WatchBridge: NSObject, WCSessionDelegate {
         guard let data = try? encoder.encode(snapshot) else { return }
         try? session.updateApplicationContext(["snapshot": data])
     }
-
-    // MARK: WCSessionDelegate
 
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {}
 
@@ -58,3 +54,4 @@ final class WatchBridge: NSObject, WCSessionDelegate {
         }
     }
 }
+

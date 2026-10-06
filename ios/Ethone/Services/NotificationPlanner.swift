@@ -1,7 +1,6 @@
 import Foundation
 import UserNotifications
 
-/// Préférences de notifications locales (Plus → Notifications).
 enum NotificationPrefs {
     static let tasksKey = "ethone.notif.tasks"
     static let eventsKey = "ethone.notif.events"
@@ -26,9 +25,6 @@ enum NotificationPrefs {
     static var briefingMinute: Int { int(briefingMinuteKey, default: 0) }
 }
 
-/// Reprogramme les rappels à partir des données réelles (tâches avec échéance et événements créés sur le site ou l'app,
-/// résumé du matin) à chaque synchronisation. Les rappels posés à la main (identifiants `task-`, `event-`, `habit-`) sont conservés ;
-/// ceux du planificateur portent le préfixe `auto-` et sont recalculés en entier. iOS limite à 64 notifications en attente.
 @MainActor
 enum NotificationPlanner {
     private static let prefix = "auto-"
@@ -68,7 +64,6 @@ enum NotificationPlanner {
         if NotificationPrefs.tasks {
             for task in openTasks {
                 guard var due = task.dueDate, !manualIds.contains("task-\(task.id)") else { continue }
-                // Une échéance sans heure (minuit) est rappelée à 9 h.
                 let parts = calendar.dateComponents([.hour, .minute], from: due)
                 if parts.hour == 0 && parts.minute == 0, let morning = calendar.date(bySettingHour: 9, minute: 0, second: 0, of: due) { due = morning }
                 guard due > now else { continue }
@@ -115,3 +110,4 @@ enum NotificationPlanner {
         }
     }
 }
+

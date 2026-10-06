@@ -1,7 +1,6 @@
 import SwiftUI
 import WebKit
 
-/// Navigateur intégré avec inspection d'adresse (schéma, chiffrement, en-têtes de sécurité) : équivalent iOS du labo « Navigateur » du site.
 struct BrowserView: View {
     @State private var input = UserDefaults.standard.string(forKey: "ethone.browser.url") ?? "https://ethone.dev"
     @State private var current: URL?
@@ -79,7 +78,6 @@ struct BrowserView: View {
         current = url
     }
 
-    /// Requête réelle vers l'adresse : code de réponse, redirection, chiffrement et en-têtes de sécurité présents.
     private func inspect() async {
         guard let url = current else { return }
         inspecting = true
@@ -126,3 +124,4 @@ private struct WebView: UIViewRepresentable {
         if view.url != url && view.url?.absoluteString != url.absoluteString { view.load(URLRequest(url: url)) }
     }
 }
+

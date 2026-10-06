@@ -42,7 +42,6 @@ struct ConnectionStatus: Identifiable, Decodable, Hashable {
     }
 }
 
-/// État des services reliés (lecture seule : la liaison OAuth de chaque service se fait depuis le site).
 struct ConnectionsView: View {
     @Environment(AppModel.self) private var model
     @State private var items: [ConnectionStatus] = []
@@ -91,3 +90,4 @@ struct ConnectionsView: View {
         }
     }
 }
+

@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Fil d'activité : dernières notes, tâches, événements et sessions de focus (données réelles, triées par date).
 struct ActivityView: View {
     @Environment(AppModel.self) private var model
 
@@ -62,3 +61,4 @@ struct ActivityView: View {
         .task { await model.refreshAll() }
     }
 }
+

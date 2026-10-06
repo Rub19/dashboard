@@ -2,7 +2,6 @@ import Foundation
 import LocalAuthentication
 import Observation
 
-/// Verrouillage de l'app par Face ID / Touch ID / code de l'appareil (LocalAuthentication).
 @MainActor
 @Observable
 final class AppLock {
@@ -13,7 +12,6 @@ final class AppLock {
     private(set) var isAuthenticating = false
     var errorMessage: String?
 
-    /// Types de biométrie disponibles (pour le libellé du réglage).
     var biometryLabel: String {
         let context = LAContext()
         var error: NSError?
@@ -28,7 +26,6 @@ final class AppLock {
 
     func setEnabled(_ enabled: Bool) async {
         if enabled {
-            // On vérifie que l'utilisateur peut réellement s'authentifier avant d'activer le verrouillage.
             guard await evaluate(reason: "Activer le verrouillage d'ETHONE") else { return }
         }
         isEnabled = enabled
@@ -60,3 +57,4 @@ final class AppLock {
         }
     }
 }
+

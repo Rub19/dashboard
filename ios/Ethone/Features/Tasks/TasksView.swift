@@ -116,7 +116,6 @@ struct TasksView: View {
         }
     }
 
-    /// Priorité affichée ; rien pour « moyenne » (valeur par défaut).
     private func priorityLabel(_ task: Item) -> String? {
         switch task.data?["priority"]?.stringValue {
         case "high": "Priorité haute"
@@ -143,3 +142,4 @@ struct TasksView: View {
         }
     }
 }
+

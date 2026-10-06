@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Carte de chaleur de votre activité (notes, tâches, événements, focus, habitudes) sur les 26 dernières semaines.
 struct InteractionsView: View {
     @Environment(AppModel.self) private var model
 
@@ -17,7 +16,6 @@ struct InteractionsView: View {
         return result
     }
 
-    /// Colonnes = semaines (lundi → dimanche), la dernière colonne contient aujourd'hui.
     private var grid: [[Date?]] {
         var calendar = Calendar.current
         calendar.firstWeekday = 2
@@ -111,3 +109,4 @@ struct InteractionsView: View {
         .glassEffect(.regular, in: .rect(cornerRadius: 18))
     }
 }
+

@@ -45118,12 +45118,61 @@ const v1_55_34_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_35_fr: ChangelogEntry = {
+  version: "v1.55.35",
+  date: "2026-10-06",
+  title: "Parité iOS Native : Journal des Modifications & Code Épuré",
+  items: [
+    "Nouveau module natif Journal des modifications sur iOS (`ChangelogView`) : consultation complète des versions avec filtrage par catégorie (Nouveautés, Correctifs, Améliorations) et recherche instantanée.",
+    "Composants Liquid Glass interactifs : cartes dépliables animées, badges de typologie et intégration du schéma d'URL `ethone://changelog` et de la route `/changelog`.",
+    "Accès rapide depuis la section Compte : la pastille de version dans Plus ouvre directement le journal natif.",
+    "Épuration intégrale de la base de code native : suppression sans reste de l'ensemble des commentaires et notes explicatives dans tous les modules Swift.",
+  ],
+};
+
+const v1_55_35_en: ChangelogEntry = {
+  version: "v1.55.35",
+  date: "2026-10-06",
+  title: "Native iOS Parity: In-App Changelog & Clean Codebase",
+  items: [
+    "New native Changelog screen on iOS (`ChangelogView`): full release history with categorized filtering (Features, Fixes, Improvements) and real-time search.",
+    "Interactive Liquid Glass components: animated collapsible cards, category badges, and deep link routing via `ethone://changelog` and `/changelog`.",
+    "Quick access from the More tab: the Version row directly navigates to the native changelog.",
+    "Zero-comment native codebase: complete removal of unnecessary inline comments and doc annotations across all Swift modules.",
+  ],
+};
+
+const v1_55_35_es: ChangelogEntry = {
+  version: "v1.55.35",
+  date: "2026-10-06",
+  title: "Paridad Nativa en iOS: Historial de Cambios y Código Limpio",
+  items: [
+    "Nueva pantalla nativa de Registro de Cambios en iOS (`ChangelogView`): historial de versiones con filtros de categoría y búsqueda en tiempo real.",
+    "Componentes interactivos Liquid Glass: tarjetas desplegables animadas, etiquetas de categoría y deeplink universal `ethone://changelog`.",
+    "Acceso rápido desde la pestaña Más: la fila de Versión abre directamente el registro nativo.",
+    "Limpieza integral del código Swift: eliminación de todas las notas explicativas y comentarios innecesarios.",
+  ],
+};
+
+const v1_55_35_de: ChangelogEntry = {
+  version: "v1.55.35",
+  date: "2026-10-06",
+  title: "Native iOS-Parität: Versionsverlauf & Bereinigter Code",
+  items: [
+    "Neuer nativer Changelog-Bildschirm auf iOS (`ChangelogView`): vollständiger Versionsverlauf mit Kategoriefilterung und Echtzeit-Suche.",
+    "Interaktive Liquid Glass Komponenten: animierte faltbare Karten, Kategorie-Badges und Deeplinks über `ethone://changelog` und `/changelog`.",
+    "Schnellzugriff über den Mehr-Reiter: die Versionszeile öffnet direkt den nativen Änderungsverlauf.",
+    "Vollständige Bereinigung der Swift-Codebasis: rückstandslose Entfernung aller nicht erforderlichen Inline-Kommentare.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+
 
 
 

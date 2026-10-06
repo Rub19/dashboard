@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Apparence : thème (les mêmes 13 que le site) et couleur d'accent de l'app (boutons, verre teinté, sélection).
 struct AppearanceView: View {
     @Environment(AppModel.self) private var model
 
@@ -103,7 +102,6 @@ struct AppearanceView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    /// Vignette du thème : fond, reflet d'ambiance et pastille d'accent.
     private func themeSwatch(_ preset: ThemePreset) -> some View {
         let base = Color(hex: preset.base)
         return RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -125,3 +123,4 @@ struct AppearanceView: View {
             }
     }
 }
+

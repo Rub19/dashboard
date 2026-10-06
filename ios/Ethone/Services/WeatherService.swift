@@ -32,7 +32,6 @@ struct WeatherNow: Hashable {
     let isDay: Bool
 }
 
-/// Météo via Open-Meteo (service public, sans clé) — la même source que le site en repli.
 @MainActor
 @Observable
 final class WeatherService {
@@ -62,8 +61,6 @@ final class WeatherService {
             errorMessage = error.localizedDescription
         }
     }
-
-    // MARK: Réseau
 
     private struct GeoResponse: Decodable {
         struct Place: Decodable {
@@ -151,7 +148,6 @@ final class WeatherService {
                          precipitation: c.precipitation, code: c.weather_code, isDay: c.is_day == 1)
 
         let h = forecast.hourly
-        // Les heures ont toutes le format « yyyy-MM-ddTHH:mm » : la comparaison de chaînes suffit pour trouver l'heure courante.
         let start = h.time.firstIndex(where: { $0 >= c.time }) ?? 0
         hours = (start..<min(h.time.count, start + 24)).compactMap { index in
             guard index < h.temperature_2m.count, let temperature = h.temperature_2m[index] else { return nil }
@@ -222,3 +218,4 @@ enum WeatherCode {
         }
     }
 }
+

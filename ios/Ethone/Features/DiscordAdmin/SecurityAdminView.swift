@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Sécurité du serveur : Anti-Raid (mode raid, verrouillage d'urgence, incidents) et Anti-Nuke (activation, incidents).
 struct SecurityAdminView: View {
     @Environment(AppModel.self) private var model
     let guild: DiscordGuild
@@ -171,3 +170,4 @@ struct SecurityAdminView: View {
         }
     }
 }
+

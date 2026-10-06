@@ -33,7 +33,6 @@ private struct FilesResponse: Decodable {
     let files: [CloudFile]
 }
 
-/// Fichiers synchronisés depuis Google Drive (index côté ETHONE) : navigation par dossiers, recherche, ouverture dans le navigateur.
 struct FilesView: View {
     @Environment(AppModel.self) private var model
     @State private var path: [CloudFile] = []
@@ -97,7 +96,6 @@ struct FilesView: View {
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await load() }
         .task(id: LoadKey(folder: currentFolder?.id, query: query)) {
-            // Petite attente pour ne pas interroger à chaque lettre tapée.
             if !query.isEmpty { try? await Task.sleep(for: .milliseconds(350)) }
             if Task.isCancelled { return }
             await load()
@@ -124,3 +122,4 @@ struct FilesView: View {
         }
     }
 }
+

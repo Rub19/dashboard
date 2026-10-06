@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Modération : sanctions récentes (cases) et bannissements avec débannissement (API du bot).
 struct ModerationAdminView: View {
     @Environment(AppModel.self) private var model
     let guild: DiscordGuild
@@ -163,3 +162,4 @@ struct ModerationAdminView: View {
         }
     }
 }
+

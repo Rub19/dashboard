@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Recharge un écran quand l'une des tables suivies change ailleurs (site, autre appareil, bot).
 private struct RemoteReload: ViewModifier {
     @Environment(AppModel.self) private var model
     let tables: [String]
@@ -18,3 +17,4 @@ extension View {
         modifier(RemoteReload(tables: tables, action: action))
     }
 }
+

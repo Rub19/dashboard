@@ -1,7 +1,6 @@
 import SwiftUI
 import UserNotifications
 
-/// Réglages des notifications : autorisation, rappels de tâches et d'événements, résumé du matin.
 struct NotificationSettingsView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.openURL) private var openURL
@@ -122,3 +121,4 @@ struct NotificationSettingsView: View {
         }
     }
 }
+

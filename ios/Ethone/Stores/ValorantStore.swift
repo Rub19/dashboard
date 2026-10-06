@@ -1,9 +1,6 @@
 import Foundation
 import Observation
 
-/// Système de notation d'une partie. Depuis le patch 13.06 (22/09/2026) l'ACS est remplacé par le score de performance
-/// (0 à 500 : dégâts, éliminations, capacités, trades, poses/désamorçages). La formule de Riot n'étant pas publique,
-/// le score n'est JAMAIS recalculé : on n'affiche que la valeur fournie par l'API (sinon « — »).
 enum ScoringSystem {
     case acs, performance
 
@@ -37,7 +34,6 @@ struct ValorantMatch: Identifiable, Hashable {
     let headshotPercent: Int
     let startedAt: Date?
     let scoring: ScoringSystem
-    /// Score de performance fourni par l'API (0-500) ou ACS d'avant le patch ; `nil` si indisponible.
     let scoreValue: Int?
 
     var kd: Double { deaths == 0 ? Double(kills) : Double(kills) / Double(deaths) }
@@ -78,7 +74,6 @@ final class ValorantStore {
     var isConfigured: Bool { !nameStorage.isEmpty && !tag.isEmpty }
     var playerName: String { nameStorage }
 
-    /// Reprend le pseudo enregistré sur le compte ETHONE (réglages du site) s'il n'a pas encore été saisi ici.
     func adoptAccountIdentityIfNeeded() async {
         guard !isConfigured else { return }
         struct Row: Decodable { let settings: JSONValue? }
@@ -113,7 +108,6 @@ final class ValorantStore {
         }
     }
 
-    /// Lit le score de performance fourni par l'API (plusieurs noms de champ possibles) ; `nil` s'il est absent ou hors 0-500.
     static func performanceScore(_ player: JSONValue) -> Int? {
         let candidates = [player["stats"]?["performance_score"], player["stats"]?["performanceScore"], player["performance_score"], player["performanceScore"]]
         for candidate in candidates {
@@ -176,3 +170,4 @@ final class ValorantStore {
         )
     }
 }
+

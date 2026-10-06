@@ -2,7 +2,6 @@ import ActivityKit
 import Foundation
 import Observation
 
-/// Préréglages identiques à ceux du site (durées en minutes).
 enum FocusPreset: String, CaseIterable, Identifiable, Codable {
     case pomodoro
     case deepWork = "deep-work"
@@ -58,8 +57,6 @@ enum FocusPreset: String, CaseIterable, Identifiable, Codable {
     }
 }
 
-/// Minuteur de concentration : calculé à partir de dates (jamais d'un compteur), donc exact même après suspension de l'app.
-/// Pilote la Live Activity (écran verrouillé + Dynamic Island) et une notification de fin.
 @MainActor
 @Observable
 final class FocusManager {
@@ -88,7 +85,6 @@ final class FocusManager {
     var errorMessage: String?
 
     @ObservationIgnored private let api: APIClient
-    /// Appelé à chaque changement d'état (l'app met alors à jour les widgets et la montre).
     @ObservationIgnored var onChange: (() -> Void)?
     @ObservationIgnored private var activity: Activity<FocusActivityAttributes>?
     @ObservationIgnored private var completionTask: Task<Void, Never>?
@@ -117,8 +113,6 @@ final class FocusManager {
         return String(format: "%02d:%02d", total / 60, total % 60)
     }
 
-    // MARK: Commandes
-
     func start(preset: FocusPreset, goal: String) {
         self.preset = preset
         self.goal = goal.trimmingCharacters(in: .whitespaces)
@@ -146,7 +140,6 @@ final class FocusManager {
         arm()
     }
 
-    /// Arrête tout sans enregistrer de session (seules les sessions terminées comptent, comme sur le site).
     func stop() {
         completionTask?.cancel()
         NotificationManager.cancelFocusEnd()
@@ -156,8 +149,6 @@ final class FocusManager {
         UserDefaults.standard.removeObject(forKey: Self.storageKey)
         onChange?()
     }
-
-    // MARK: Données
 
     func refreshSessions() async {
         do {
@@ -180,8 +171,6 @@ final class FocusManager {
         return sessions.filter { $0.completedAt >= start }.count
     }
 
-    // MARK: Reprise après relance de l'app
-
     func restore() async {
         activity = Activity<FocusActivityAttributes>.activities.first
         guard let data = UserDefaults.standard.data(forKey: Self.storageKey),
@@ -202,8 +191,6 @@ final class FocusManager {
             arm()
         }
     }
-
-    // MARK: Interne
 
     private func begin(phase newPhase: Phase, minutes: Int) {
         phase = newPhase
@@ -266,8 +253,6 @@ final class FocusManager {
         if let data = try? JSONEncoder().encode(state) { UserDefaults.standard.set(data, forKey: Self.storageKey) }
     }
 
-    // MARK: Live Activity
-
     private func contentState() -> FocusActivityAttributes.ContentState {
         FocusActivityAttributes.ContentState(
             phase: phase.rawValue,
@@ -297,3 +282,4 @@ final class FocusManager {
         Task { await activity.end(nil, dismissalPolicy: .immediate) }
     }
 }
+

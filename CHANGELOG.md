@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.31 — 2026-10-06
+
+**Fiabilisation du Filtre de Recherche des Serveurs Discord**
+
+- Correction du cycle de réinitialisation dans le sélecteur de serveur de la barre latérale Discord (`HubSidebar.tsx`) : dissociation de l'initialisation à l'ouverture et du calcul des limites du curseur pour préserver la saisie utilisateur dans le champ de recherche.
+- Bornage dynamique du curseur de navigation au clavier (`ArrowUp`/`ArrowDown`/`Enter`) lors du filtrage en temps réel des serveurs.
+- Fluidification des survols et synchronisation instantanée du serveur actif.
+
 ## v1.55.30 — 2026-10-06
 
 **Synchronisation de la Palette de Commandes et de l'Assistant de Configuration Discord**

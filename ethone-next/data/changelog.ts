@@ -44930,10 +44930,54 @@ const v1_55_30_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_31_fr: ChangelogEntry = {
+  version: "v1.55.31",
+  date: "2026-10-06",
+  title: "Fiabilisation du Filtre de Recherche des Serveurs Discord",
+  items: [
+    "Correction du cycle de réinitialisation dans le sélecteur de serveur de la barre latérale Discord (HubSidebar) : préservation de la saisie utilisateur lors de la recherche.",
+    "Bornage dynamique du curseur de navigation au clavier (flèches Haut/Bas, validation Entrée) lors du filtrage en direct des serveurs.",
+    "Synchronisation instantanée du curseur au survol et fermeture fluide du tiroir mobile.",
+  ],
+};
+
+const v1_55_31_en: ChangelogEntry = {
+  version: "v1.55.31",
+  date: "2026-10-06",
+  title: "Discord Server Search Filter Stabilization",
+  items: [
+    "Fixed reset cycle in Discord sidebar server switcher (HubSidebar): preserved user input while filtering server list.",
+    "Dynamic bounds clamping for keyboard navigation cursor (Up/Down arrows, Enter to select) during real-time filtering.",
+    "Instant hover cursor synchronization and smooth mobile drawer dismissal.",
+  ],
+};
+
+const v1_55_31_es: ChangelogEntry = {
+  version: "v1.55.31",
+  date: "2026-10-06",
+  title: "Estabilización del Filtro de Búsqueda de Servidores Discord",
+  items: [
+    "Corrección del ciclo de reinicio en el selector de servidor de la barra lateral (HubSidebar): preservación de la búsqueda al escribir.",
+    "Control dinámico del cursor de navegación con teclado al filtrar servidores en tiempo real.",
+    "Sincronización fluida del cursor al pasar el ratón y cierre automático en móviles.",
+  ],
+};
+
+const v1_55_31_de: ChangelogEntry = {
+  version: "v1.55.31",
+  date: "2026-10-06",
+  title: "Stabilisierung der Discord-Serversuche",
+  items: [
+    "Korrektur des Reset-Zyklus im Discord-Server-Wechsler (HubSidebar): Benutzereingaben beim Filtern bleiben zuverlässig erhalten.",
+    "Dynamische Begrenzung des Tastatur-Navigationscursors bei Echtzeit-Serverfilterung.",
+    "Nahtlose Hover-Synchronisation und automatische mobile Menüschließung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

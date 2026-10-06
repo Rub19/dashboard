@@ -197,13 +197,21 @@ export default function HubSidebar({
     };
   }, [serverMenuOpen, filteredGuildList, serverCursor, onSelectGuild, onClose]);
 
+  // Réinitialisation de la recherche et positionnement du curseur à l'ouverture du menu
   useEffect(() => {
     if (serverMenuOpen) {
       setServerQuery("");
-      const idx = filteredGuildList.findIndex((g) => g.id === selectedGuildId);
+      const idx = guilds?.findIndex((g) => g.id === selectedGuildId) ?? -1;
       setServerCursor(idx >= 0 ? idx : 0);
     }
-  }, [serverMenuOpen, selectedGuildId, filteredGuildList]);
+  }, [serverMenuOpen, selectedGuildId, guilds]);
+
+  // Si le filtrage réduit la liste sous le curseur actif, borner le curseur
+  useEffect(() => {
+    if (filteredGuildList.length > 0 && serverCursor >= filteredGuildList.length) {
+      setServerCursor(0);
+    }
+  }, [filteredGuildList.length, serverCursor]);
 
   // « / » place le curseur dans la recherche (hors champs de saisie).
   useEffect(() => {

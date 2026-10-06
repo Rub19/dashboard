@@ -1,4 +1,4 @@
-﻿package dev.ethone.app.ui.screens
+package dev.ethone.app.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -66,7 +66,6 @@ fun NotesScreen(client: SupabaseClient) {
             .fillMaxSize()
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
-        // Search Bar
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },

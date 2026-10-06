@@ -1,4 +1,4 @@
-﻿package dev.ethone.app.ui.screens
+package dev.ethone.app.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -79,7 +79,6 @@ fun TasksScreen(client: SupabaseClient) {
             .fillMaxSize()
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
-        // Filter Chips
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -99,7 +98,6 @@ fun TasksScreen(client: SupabaseClient) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Quick Add Field
         OutlinedTextField(
             value = newTaskTitle,
             onValueChange = { newTaskTitle = it },

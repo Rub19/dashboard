@@ -50,6 +50,8 @@ fun BrainCaptureCard(client: SupabaseClient) {
         }
     }
 
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+
     LiquidGlassSurface(modifier = Modifier.height(260.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -92,8 +94,11 @@ fun BrainCaptureCard(client: SupabaseClient) {
                     onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         if (idea.isNotBlank()) {
-                            // Save via client
+                            val text = idea.trim()
                             idea = ""
+                            scope.launch {
+                                client.createNote("Brain Capture", text)
+                            }
                         }
                     }
                 ) {

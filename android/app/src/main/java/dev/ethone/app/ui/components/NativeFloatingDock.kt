@@ -1,4 +1,4 @@
-﻿package dev.ethone.app.ui.components
+package dev.ethone.app.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -44,12 +44,17 @@ import dev.ethone.app.ui.theme.EthoneBgRaised
 import dev.ethone.app.ui.theme.EthoneEmerald
 import dev.ethone.app.ui.theme.GlassBorder
 
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Folder
+
 enum class BottomTab(val label: String, val icon: ImageVector) {
     Home("Home", Icons.Default.Home),
     Brain("Brain", Icons.Default.AutoAwesome),
     Tasks("Tâches", Icons.Default.CheckCircle),
-    Focus("Focus", Icons.Default.Timer),
     Notes("Notes", Icons.Default.Description),
+    Files("Fichiers", Icons.Default.Folder),
+    Focus("Focus", Icons.Default.Timer),
+    Mail("Mail", Icons.Default.Email),
     Settings("Réglages", Icons.Default.Settings)
 }
 
@@ -60,6 +65,16 @@ fun NativeFloatingDock(
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
+    val dockTabs = remember {
+        listOf(
+            BottomTab.Home,
+            BottomTab.Brain,
+            BottomTab.Tasks,
+            BottomTab.Notes,
+            BottomTab.Files,
+            BottomTab.Settings
+        )
+    }
 
     Box(
         modifier = modifier
@@ -82,7 +97,7 @@ fun NativeFloatingDock(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp)
             ) {
-                BottomTab.values().forEach { tab ->
+                dockTabs.forEach { tab ->
                     val selected = tab == selectedTab
                     val iconColor by animateColorAsState(
                         targetValue = if (selected) EthoneEmerald else MaterialTheme.colorScheme.onSurfaceVariant,

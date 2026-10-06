@@ -1,4 +1,4 @@
-﻿package dev.ethone.app.ui.screens
+package dev.ethone.app.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Email
@@ -66,14 +67,8 @@ data class MailItem(
 )
 
 @Composable
-fun MailScreen() {
-    val messages = remember {
-        mutableStateListOf(
-            MailItem(sender = "GitHub", subject = "[ETHONE] Build & Deploy Cloudflare Worker", snippet = "Le build v1.11.00 est en ligne sur production...", time = "18:42", isUnread = true),
-            MailItem(sender = "Supabase Alert", subject = "Statut de la base de données", snippet = "Votre quota de base de données est optimal à 1.2% d'utilisation.", time = "Hier", isUnread = false),
-            MailItem(sender = "Spotify Developer", subject = "Confirmation des accès PKCE", snippet = "Vos identifiants d'API Spotify sont prêts pour votre instance.", time = "24 août", isUnread = false)
-        )
-    }
+fun MailScreen(onBack: (() -> Unit)? = null) {
+    val messages = remember { mutableStateListOf<MailItem>() }
 
     var searchQuery by remember { mutableStateOf("") }
     var selectedMail by remember { mutableStateOf<MailItem?>(null) }
@@ -95,7 +90,32 @@ fun MailScreen() {
             .fillMaxSize()
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
-        // Search
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (onBack != null) {
+                IconButton(onClick = onBack) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Retour")
+                }
+            }
+            Text(
+                text = "Mail",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "${messages.size} message(s)",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -122,7 +142,7 @@ fun MailScreen() {
             EthoneEmptyState(
                 icon = Icons.Default.Email,
                 title = "Boîte de réception vide",
-                description = "Tous vos e-mails ont été traités."
+                description = "Aucun e-mail reçu pour le moment."
             )
         } else {
             LazyColumn(
@@ -233,7 +253,7 @@ fun MailScreen() {
                                 isSummarizing = true
                                 scope.launch {
                                     delay(600)
-                                    brainSummary = "Message clé : Confirmation de bon fonctionnement des services. Aucune urgence."
+                                    brainSummary = "Message clé : Confirmation de bon fonctionnement des services."
                                     isSummarizing = false
                                 }
                             },

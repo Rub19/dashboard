@@ -1,5 +1,6 @@
-﻿package dev.ethone.app.ui.screens
+package dev.ethone.app.ui.screens
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,7 +16,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -25,7 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,9 +43,13 @@ import dev.ethone.app.ui.cards.TasksCard
 import dev.ethone.app.ui.components.BottomTab
 import dev.ethone.app.ui.components.EthoneBrainOrb
 import dev.ethone.app.ui.components.EthoneCard
+import dev.ethone.app.ui.components.EthoneChip
 import dev.ethone.app.ui.components.EthoneModelBadge
 import dev.ethone.app.ui.components.EthoneStatusBadge
+import dev.ethone.app.ui.theme.EthoneAmber
+import dev.ethone.app.ui.theme.EthoneCyan
 import dev.ethone.app.ui.theme.EthoneEmerald
+import dev.ethone.app.ui.theme.EthonePink
 import dev.ethone.app.ui.theme.EthoneViolet
 
 @Composable
@@ -54,7 +64,6 @@ fun HomeScreen(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp, vertical = 24.dp)
     ) {
-        // Top Header
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -89,9 +98,24 @@ fun HomeScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(18.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
-        // Hero Brain Briefing Card
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            EthoneChip(label = "Brain", icon = Icons.Default.AutoAwesome, onClick = { onNavigateTab(BottomTab.Brain) }, tint = EthoneViolet)
+            EthoneChip(label = "Tâches", icon = Icons.Default.CheckCircle, onClick = { onNavigateTab(BottomTab.Tasks) }, tint = EthoneEmerald)
+            EthoneChip(label = "Notes", icon = Icons.Default.Description, onClick = { onNavigateTab(BottomTab.Notes) }, tint = EthoneCyan)
+            EthoneChip(label = "Fichiers", icon = Icons.Default.Folder, onClick = { onNavigateTab(BottomTab.Files) }, tint = EthonePink)
+            EthoneChip(label = "Focus", icon = Icons.Default.Timer, onClick = { onNavigateTab(BottomTab.Focus) }, tint = EthoneAmber)
+            EthoneChip(label = "Mail", icon = Icons.Default.Email, onClick = { onNavigateTab(BottomTab.Mail) }, tint = EthoneViolet)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         EthoneCard(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = 24.dp
@@ -139,7 +163,6 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Bento Grid
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(14.dp),
@@ -151,7 +174,7 @@ fun HomeScreen(
             item { FocusTimerCard() }
             item { TasksCard(client = client) }
             item { BrainCaptureCard(client = client) }
-            item { StorageMetricsCard() }
+            item { StorageMetricsCard(client = client) }
         }
     }
 }

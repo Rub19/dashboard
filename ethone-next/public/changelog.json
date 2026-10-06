@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.40",
+    "date": "2026-10-06",
+    "title": "Parité Android Native : Fichiers Réels, Métriques de Stockage & Raccourcis Rapides",
+    "items": [
+      "Connexion des fichiers réels sur Android (`FilesScreen`) : chargement dynamique depuis la base Supabase sans données simulées, avec filtrage catégoriel et recherche instantanée.",
+      "Refonte de la carte Stockage (`StorageMetricsCard`) : affichage précis des données réelles (notes, tâches, fichiers) avec pourcentages réels et gestion propre de l'état zéro.",
+      "Bandeau de raccourcis rapides (`HomeScreen`) : puces tactiles ergonomiques Liquid Glass pour naviguer directement vers Brain, Tâches, Notes, Fichiers, Focus et Mail.",
+      "Navigation étendue (`BentoGridScreen` & `NativeFloatingDock`) : intégration fluide des écrans Fichiers et Mail, et sauvegarde de notes depuis la capture rapide Brain."
+    ]
+  },
+  {
     "version": "v1.55.39",
     "date": "2026-10-06",
     "title": "Parité iOS Native : Gestionnaire de Fichiers Enrichi, Grille & Inspecteur",
@@ -515,19 +526,6 @@
     "title": "Bibliothèque d'avatars : aperçu plus varié",
     "items": [
       "Les séries Netflix phares apparaissent en premier, et l'aperçu de chaque collection montre une vignette par série."
-    ]
-  },
-  {
-    "version": "v1.53.0",
-    "date": "2026-10-04",
-    "title": "Nouveau profil, nouvelle bibliothèque d'avatars, synchronisation en direct",
-    "items": [
-      "Page Profil refaite de zéro : carte d'identité animée, onglets Profil, Statut, Apparence et Compte, statut personnalisé (emoji + texte), cadres d'avatar et fonds de carte.",
-      "Bibliothèque d'avatars refaite : 530 avatars nets et hébergés sur ETHONE (Netflix, Anime, Valorant, League of Legends, Pokémon, ETHONE Originals), recherche, filtres par série, favoris et récents.",
-      "Le profil (avatar, nom, pseudo, bio, statut, cadre, fond) est synchronisé en direct sur tous vos appareils.",
-      "Aussi synchronisés : espace actif, widgets épinglés et favoris, réglages des widgets, verrouillage de l'accueil, favoris du Marketplace, préréglages et historique Focus.",
-      "Corrigé : choisir un avatar de la bibliothèque n'était jamais enregistré sur le compte.",
-      "Retiré : réglages de personnalisation et « préférences inférées » qui n'avaient aucun effet."
     ]
   }
 ]

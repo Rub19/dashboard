@@ -1,4 +1,4 @@
-﻿package dev.ethone.app.ui.screens
+package dev.ethone.app.ui.screens
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -78,7 +78,6 @@ fun FocusScreen() {
             .padding(horizontal = 20.dp, vertical = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Preset Selector Row
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -98,7 +97,6 @@ fun FocusScreen() {
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        // Circular Timer Visual
         Box(
             modifier = Modifier.size(240.dp),
             contentAlignment = Alignment.Center
@@ -106,7 +104,6 @@ fun FocusScreen() {
             val tint = FocusManager.currentPreset.tint
 
             Canvas(modifier = Modifier.size(230.dp)) {
-                // Background Track
                 drawArc(
                     color = Color.White.copy(alpha = 0.08f),
                     startAngle = -90f,
@@ -114,7 +111,6 @@ fun FocusScreen() {
                     useCenter = false,
                     style = Stroke(width = 16.dp.toPx(), cap = StrokeCap.Round)
                 )
-                // Progress Arc
                 drawArc(
                     color = tint,
                     startAngle = -90f,
@@ -142,7 +138,6 @@ fun FocusScreen() {
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        // Control Buttons
         Row(
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -197,7 +192,6 @@ fun FocusScreen() {
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        // Ambient Sound Card
         EthoneCard(modifier = Modifier.fillMaxWidth(), cornerRadius = 20.dp) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Row(

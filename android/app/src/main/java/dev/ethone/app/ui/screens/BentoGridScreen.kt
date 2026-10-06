@@ -1,7 +1,6 @@
 package dev.ethone.app.ui.screens
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +29,6 @@ fun BentoGridScreen(
         return
     }
 
-    // Recharge les notes et tâches à l'ouverture puis toutes les minutes (le site peut les avoir modifiées entre-temps).
     LaunchedEffect(supabaseClient.accessToken) {
         while (true) {
             supabaseClient.refreshAll()
@@ -56,6 +54,8 @@ fun BentoGridScreen(
                 BottomTab.Tasks -> TasksScreen(client = supabaseClient)
                 BottomTab.Focus -> FocusScreen()
                 BottomTab.Notes -> NotesScreen(client = supabaseClient)
+                BottomTab.Files -> FilesScreen(client = supabaseClient, onBack = { selectedTab = BottomTab.Home })
+                BottomTab.Mail -> MailScreen(onBack = { selectedTab = BottomTab.Home })
                 BottomTab.Settings -> SettingsScreen()
             }
         }

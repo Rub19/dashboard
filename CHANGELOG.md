@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.40 — 2026-10-06
+
+**Parité Android Native : Fichiers Réels, Métriques de Stockage & Raccourcis Rapides**
+
+- Connexion des fichiers réels sur Android (`FilesScreen`) : chargement dynamique depuis la base Supabase sans données simulées, avec filtrage catégoriel et recherche instantanée.
+- Refonte de la carte Stockage (`StorageMetricsCard`) : affichage précis des données réelles (notes, tâches, fichiers) avec pourcentages réels et gestion propre de l'état zéro.
+- Bandeau de raccourcis rapides (`HomeScreen`) : puces tactiles ergonomiques Liquid Glass pour naviguer directement vers Brain, Tâches, Notes, Fichiers, Focus et Mail.
+- Navigation étendue (`BentoGridScreen` & `NativeFloatingDock`) : intégration fluide des écrans Fichiers et Mail, et sauvegarde de notes depuis la capture rapide Brain.
+
 ## v1.55.39 — 2026-10-06
 
 **Parité iOS Native : Gestionnaire de Fichiers Enrichi, Grille & Inspecteur**

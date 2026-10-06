@@ -45366,10 +45366,58 @@ const v1_55_39_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_39_fr, v1_55_38_fr, v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_39_en, v1_55_38_en, v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_39_es, v1_55_38_es, v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_39_de, v1_55_38_de, v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_40_fr: ChangelogEntry = {
+  version: "v1.55.40",
+  date: "2026-10-06",
+  title: "Parité Android Native : Fichiers Réels, Métriques de Stockage & Raccourcis Rapides",
+  items: [
+    "Connexion des fichiers réels sur Android (`FilesScreen`) : chargement dynamique depuis la base Supabase sans données simulées, avec filtrage catégoriel et recherche instantanée.",
+    "Refonte de la carte Stockage (`StorageMetricsCard`) : affichage précis des données réelles (notes, tâches, fichiers) avec pourcentages réels et gestion propre de l'état zéro.",
+    "Bandeau de raccourcis rapides (`HomeScreen`) : puces tactiles ergonomiques Liquid Glass pour naviguer directement vers Brain, Tâches, Notes, Fichiers, Focus et Mail.",
+    "Navigation étendue (`BentoGridScreen` & `NativeFloatingDock`) : intégration fluide des écrans Fichiers et Mail, et sauvegarde de notes depuis la capture rapide Brain.",
+  ],
+};
+
+const v1_55_40_en: ChangelogEntry = {
+  version: "v1.55.40",
+  date: "2026-10-06",
+  title: "Native Android Parity: Real Files, Storage Metrics & Quick Shortcuts",
+  items: [
+    "Real files connected on Android (`FilesScreen`): dynamic loading from Supabase without mock data, category filtering, and instant search.",
+    "Overhauled Storage card (`StorageMetricsCard`): accurate real data metrics (notes, tasks, files) with genuine percentages and clean zero states.",
+    "Quick shortcuts row (`HomeScreen`): ergonomic Liquid Glass touch chips to jump directly to Brain, Tasks, Notes, Files, Focus, and Mail.",
+    "Extended navigation (`BentoGridScreen` & `NativeFloatingDock`): seamless access to Files and Mail screens, and saving captured Brain notes.",
+  ],
+};
+
+const v1_55_40_es: ChangelogEntry = {
+  version: "v1.55.40",
+  date: "2026-10-06",
+  title: "Paridad Nativa en Android: Archivos Reales, Métricas de Almacenamiento & Accesos Rápidos",
+  items: [
+    "Conexión de archivos reales en Android (`FilesScreen`): carga dinámica desde Supabase sin datos de prueba, con filtrado y búsqueda instantánea.",
+    "Tarjeta de Almacenamiento renovada (`StorageMetricsCard`): métricas reales exactas (notas, tareas, archivos) con porcentajes auténticos.",
+    "Barra de accesos rápidos (`HomeScreen`): pastillas Liquid Glass para acceder directamente a Brain, Tareas, Notas, Archivos, Focus y Correo.",
+    "Navegación ampliada (`BentoGridScreen` & `NativeFloatingDock`): integración fluida de pantallas de Archivos y Correo.",
+  ],
+};
+
+const v1_55_40_de: ChangelogEntry = {
+  version: "v1.55.40",
+  date: "2026-10-06",
+  title: "Native Android-Parität: Echte Dateien, Speichermetriken & Schnellzugriffe",
+  items: [
+    "Echte Dateien auf Android angebunden (`FilesScreen`): dynamisches Laden aus Supabase ohne Mock-Daten, Kategorie-Filter und Sofortsuche.",
+    "Überarbeitete Speicherkarte (`StorageMetricsCard`): präzise reale Nutzungsdaten (Notizen, Aufgaben, Dateien) mit echten Prozentwerten.",
+    "Schnellzugriffsleiste (`HomeScreen`): ergonomische Liquid Glass Touch-Pills für direkten Wechsel zu Brain, Aufgaben, Notizen, Dateien, Focus und Mail.",
+    "Erweiterte Navigation (`BentoGridScreen` & `NativeFloatingDock`): nahtlose Einbindung der Datei- und Mail-Screens.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_40_fr, v1_55_39_fr, v1_55_38_fr, v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_40_en, v1_55_39_en, v1_55_38_en, v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_40_es, v1_55_39_es, v1_55_38_es, v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_40_de, v1_55_39_de, v1_55_38_de, v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

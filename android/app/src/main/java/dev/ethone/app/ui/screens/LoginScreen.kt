@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.sp
 import dev.ethone.app.data.SupabaseClient
 import kotlinx.coroutines.launch
 
-/** Connexion au compte ETHONE (e-mail et mot de passe) : sans session, la base ne renvoie aucune donnée. */
 @Composable
 fun LoginScreen(client: SupabaseClient) {
     var email by remember { mutableStateOf("") }

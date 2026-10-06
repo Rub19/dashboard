@@ -1,7 +1,10 @@
-﻿package dev.ethone.app.ui.screens
+package dev.ethone.app.ui.screens
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,24 +17,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,54 +51,55 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.ethone.app.data.EthoneFile
+import dev.ethone.app.data.SupabaseClient
 import dev.ethone.app.ui.components.EthoneCard
 import dev.ethone.app.ui.components.EthoneEmptyState
 import dev.ethone.app.ui.theme.EthoneAmber
+import dev.ethone.app.ui.theme.EthoneBgRaised
 import dev.ethone.app.ui.theme.EthoneCyan
 import dev.ethone.app.ui.theme.EthoneEmerald
+import dev.ethone.app.ui.theme.EthonePink
 import dev.ethone.app.ui.theme.EthoneRose
 import dev.ethone.app.ui.theme.GlassBorder
 
-data class FileEntry(
-    val name: String,
-    val size: String,
-    val type: String,
-    val date: String
-) {
-    val icon: ImageVector
-        get() = when (type) {
-            "pdf" -> Icons.Default.PictureAsPdf
-            "image" -> Icons.Default.Image
-            "code" -> Icons.Default.Code
-            else -> Icons.Default.Description
-        }
-
-    val tint: Color
-        get() = when (type) {
-            "pdf" -> EthoneRose
-            "image" -> EthoneCyan
-            "code" -> EthoneEmerald
-            else -> EthoneAmber
-        }
+enum class FileCategoryFilter(val label: String) {
+    ALL("Tous"),
+    FAVORITES("Favoris"),
+    FOLDERS("Dossiers"),
+    DOCUMENTS("Documents"),
+    MEDIA("Médias")
 }
 
 @Composable
-fun FilesScreen() {
+fun FilesScreen(
+    client: SupabaseClient,
+    onBack: (() -> Unit)? = null
+) {
     val context = LocalContext.current
-    val files = remember {
-        mutableStateListOf(
-            FileEntry("ETHONE-Architecture-2026.pdf", "2.4 Mo", "pdf", "Aujourd'hui"),
-            FileEntry("Dashboard-Mockup-4K.png", "4.8 Mo", "image", "Hier"),
-            FileEntry("config.production.json", "14 Ko", "code", "26 août"),
-            FileEntry("backup-user-data.zip", "12.8 Mo", "archive", "22 août")
-        )
-    }
-
     var searchQuery by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf(FileCategoryFilter.ALL) }
 
-    val filtered = remember(searchQuery, files.size) {
-        if (searchQuery.isEmpty()) files
-        else files.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    val rawFiles = client.files
+
+    val filtered = remember(searchQuery, selectedCategory, rawFiles) {
+        rawFiles.filter { file ->
+            val matchesQuery = searchQuery.isEmpty() || file.name.contains(searchQuery, ignoreCase = true)
+            val matchesCategory = when (selectedCategory) {
+                FileCategoryFilter.ALL -> true
+                FileCategoryFilter.FAVORITES -> file.isFavorite
+                FileCategoryFilter.FOLDERS -> file.isFolder
+                FileCategoryFilter.DOCUMENTS -> {
+                    val m = file.mimeType.lowercase()
+                    m.contains("pdf") || m.contains("doc") || m.contains("text") || m.contains("sheet")
+                }
+                FileCategoryFilter.MEDIA -> {
+                    val m = file.mimeType.lowercase()
+                    m.startsWith("image/") || m.startsWith("video/") || m.startsWith("audio/")
+                }
+            }
+            matchesQuery && matchesCategory
+        }
     }
 
     Column(
@@ -99,7 +107,32 @@ fun FilesScreen() {
             .fillMaxSize()
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
-        // Search
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (onBack != null) {
+                IconButton(onClick = onBack) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Retour")
+                }
+            }
+            Text(
+                text = "Fichiers",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "${rawFiles.size} fichier(s)",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -120,23 +153,60 @@ fun FilesScreen() {
             singleLine = true
         )
 
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            FileCategoryFilter.values().forEach { cat ->
+                val isSelected = cat == selectedCategory
+                Surface(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable { selectedCategory = cat },
+                    color = if (isSelected) EthoneEmerald.copy(alpha = 0.2f) else EthoneBgRaised.copy(alpha = 0.6f),
+                    shape = CircleShape
+                ) {
+                    Text(
+                        text = cat.label,
+                        fontSize = 12.sp,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (isSelected) EthoneEmerald else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                    )
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         if (filtered.isEmpty()) {
             EthoneEmptyState(
                 icon = Icons.Default.Folder,
-                title = "Aucun fichier",
-                description = "Vos documents et exports apparaîtront ici."
+                title = if (rawFiles.isEmpty()) "Aucun fichier synchronisé" else "Aucun résultat",
+                description = if (rawFiles.isEmpty()) "Reliez Google Drive depuis ethone.dev pour synchroniser vos fichiers." else "Essayez une autre recherche."
             )
         } else {
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(filtered) { file ->
+                items(filtered, key = { it.id }) { file ->
+                    val (icon, tint) = resolveFileVisual(file)
+
                     EthoneCard(modifier = Modifier.fillMaxWidth()) {
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    file.webViewLink?.let { link ->
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+                                        context.startActivity(intent)
+                                    }
+                                },
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
@@ -144,41 +214,54 @@ fun FilesScreen() {
                                 modifier = Modifier
                                     .size(40.dp)
                                     .clip(RoundedCornerShape(10.dp))
-                                    .background(file.tint.copy(alpha = 0.15f)),
+                                    .background(tint.copy(alpha = 0.15f)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(imageVector = file.icon, contentDescription = null, tint = file.tint)
+                                Icon(imageVector = icon, contentDescription = null, tint = tint)
                             }
 
                             Column(modifier = Modifier.weight(1f)) {
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(
+                                        text = file.name,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.SemiBold,
+                                        maxLines = 1,
+                                        modifier = Modifier.weight(1f, fill = false)
+                                    )
+                                    if (file.isFavorite) {
+                                        Icon(
+                                            imageVector = Icons.Default.Star,
+                                            contentDescription = "Favori",
+                                            tint = EthoneAmber,
+                                            modifier = Modifier.size(12.dp)
+                                        )
+                                    }
+                                }
                                 Text(
-                                    text = file.name,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                    maxLines = 1
-                                )
-                                Text(
-                                    text = "${file.size} • ${file.date}",
+                                    text = file.readableSize,
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
 
-                            IconButton(
-                                onClick = {
-                                    val sendIntent = Intent().apply {
-                                        action = Intent.ACTION_SEND
-                                        putExtra(Intent.EXTRA_TEXT, "Fichier ETHONE : ${file.name}")
-                                        type = "text/plain"
+                            if (file.webViewLink != null) {
+                                IconButton(
+                                    onClick = {
+                                        val sendIntent = Intent().apply {
+                                            action = Intent.ACTION_SEND
+                                            putExtra(Intent.EXTRA_TEXT, "${file.name} : ${file.webViewLink}")
+                                            type = "text/plain"
+                                        }
+                                        context.startActivity(Intent.createChooser(sendIntent, "Partager le lien"))
                                     }
-                                    context.startActivity(Intent.createChooser(sendIntent, "Partager via"))
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Share,
+                                        contentDescription = "Partager",
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Share,
-                                    contentDescription = "Partager",
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
                             }
                         }
                     }
@@ -188,5 +271,16 @@ fun FilesScreen() {
                 }
             }
         }
+    }
+}
+
+private fun resolveFileVisual(file: EthoneFile): Pair<ImageVector, Color> {
+    if (file.isFolder) return Pair(Icons.Default.Folder, EthoneAmber)
+    val mime = file.mimeType.lowercase()
+    return when {
+        mime.contains("pdf") -> Pair(Icons.Default.PictureAsPdf, EthoneRose)
+        mime.startsWith("image/") -> Pair(Icons.Default.Image, EthonePink)
+        mime.startsWith("video/") -> Pair(Icons.Default.Movie, EthoneCyan)
+        else -> Pair(Icons.Default.Description, EthoneEmerald)
     }
 }

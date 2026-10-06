@@ -1,4 +1,4 @@
-﻿package dev.ethone.app.ui.screens
+package dev.ethone.app.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -75,7 +75,6 @@ fun BrainScreen(client: SupabaseClient) {
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Header Bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -116,7 +115,6 @@ fun BrainScreen(client: SupabaseClient) {
             }
         }
 
-        // Messages List
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -166,7 +164,6 @@ fun BrainScreen(client: SupabaseClient) {
             }
         }
 
-        // Input Field Bar
         Column(modifier = Modifier.fillMaxWidth().background(EthoneBgRaised.copy(alpha = 0.95f))) {
             Divider(color = GlassBorder)
             Row(

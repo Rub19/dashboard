@@ -36,22 +36,36 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
-/** Configuration publique : la clé « anon » de Supabase est publique par conception (servie dans le JavaScript du site), l'accès est protégé par la RLS. */
 object SupabaseConfig {
     const val URL = "https://bvgifyzhpzkbrwdjrqsg.supabase.co"
     const val ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2Z2lmeXpocHprYnJ3ZGpycXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1ODgzNjAsImV4cCI6MjA5NjE2NDM2MH0.PCm_g4w7ZrLqNilISt-Xnlw_CZrA8PY1Uvk9H_PUhCc"
 }
 
-/** Tâche telle qu'affichée par l'interface (table `tasks`, la même que la page Tâches du site). */
 data class EthoneTask(val id: String, val title: String, val done: Boolean)
 
-/** Note telle qu'affichée par l'interface (table `ethone_items`, kind = note, la même que le site). */
 data class EthoneNote(val id: String, val title: String, val body: String)
 
-/**
- * Client Supabase de l'app : connexion e-mail / mot de passe, session conservée sur l'appareil, notes et tâches réelles du compte.
- * Sans session, la base ne renvoie rien (règles RLS) : l'écran de connexion est donc affiché avant toute donnée.
- */
+data class EthoneFile(
+    val id: String,
+    val name: String,
+    val size: Long,
+    val mimeType: String,
+    val isFolder: Boolean,
+    val isFavorite: Boolean,
+    val webViewLink: String?,
+    val updatedAt: String?
+) {
+    val readableSize: String
+        get() {
+            if (isFolder) return "Dossier"
+            if (size <= 0) return "0 o"
+            val kb = size / 1024.0
+            if (kb < 1024) return String.format(java.util.Locale.US, "%.1f Ko", kb)
+            val mb = kb / 1024.0
+            return String.format(java.util.Locale.US, "%.1f Mo", mb)
+        }
+}
+
 class SupabaseClient(
     context: Context? = null,
     private val baseUrl: String = SupabaseConfig.URL,
@@ -74,14 +88,13 @@ class SupabaseClient(
         private set
     var notes by mutableStateOf(listOf<EthoneNote>())
         private set
+    var files by mutableStateOf(listOf<EthoneFile>())
+        private set
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
     val isSignedIn: Boolean get() = accessToken != null
 
-    // region Session
-
-    /** Renvoie `null` si la connexion réussit, sinon le message à afficher. */
     suspend fun signIn(email: String, password: String): String? = withContext(Dispatchers.IO) {
         try {
             val response = client.request("$baseUrl/auth/v1/token") {
@@ -105,6 +118,7 @@ class SupabaseClient(
         refreshToken = null
         tasks = emptyList()
         notes = emptyList()
+        files = emptyList()
         prefs?.edit()?.clear()?.apply()
     }
 
@@ -139,7 +153,6 @@ class SupabaseClient(
         }
     }
 
-    /** Identifiant de l'utilisateur, lu dans le jeton (champ `sub`) : requis par la RLS à l'insertion. */
     private fun userId(): String? {
         val part = accessToken?.split(".")?.getOrNull(1) ?: return null
         return try {
@@ -149,10 +162,6 @@ class SupabaseClient(
             null
         }
     }
-
-    // endregion
-
-    // region Réseau
 
     private suspend fun call(
         method: HttpMethod,
@@ -179,10 +188,6 @@ class SupabaseClient(
         if (response.status == HttpStatusCode.Unauthorized && refreshSession()) response = once()
         return response
     }
-
-    // endregion
-
-    // region Données
 
     suspend fun refreshAll() = withContext(Dispatchers.IO) {
         if (!isSignedIn) return@withContext
@@ -212,11 +217,35 @@ class SupabaseClient(
                     EthoneNote(
                         id = o["id"]?.jsonPrimitive?.content.orEmpty(),
                         title = o["title"]?.jsonPrimitive?.content.orEmpty(),
-                        // Le site enregistre le corps des notes en HTML (éditeur riche) : on n'affiche que le texte.
                         body = (o["body"] as? JsonPrimitive)?.contentOrNull().orEmpty().replace(Regex("<[^>]+>"), " ").replace(Regex("\\s+"), " ").trim()
                     )
                 }
             }
+
+            val fileRows = call(
+                HttpMethod.Get, "/rest/v1/ethone_files",
+                mapOf(
+                    "select" to "id,name,size,mime_type,is_folder,is_favorite,web_view_link,updated_at",
+                    "trashed" to "eq.false",
+                    "order" to "updated_at.desc"
+                )
+            )
+            if (fileRows.status.isSuccess()) {
+                files = (json.parseToJsonElement(fileRows.bodyAsText()) as? JsonArray).orEmpty().map { row ->
+                    val o = row.jsonObject
+                    EthoneFile(
+                        id = o["id"]?.jsonPrimitive?.content.orEmpty(),
+                        name = o["name"]?.jsonPrimitive?.content.orEmpty(),
+                        size = (o["size"] as? JsonPrimitive)?.contentOrNull()?.toLongOrNull() ?: 0L,
+                        mimeType = o["mime_type"]?.jsonPrimitive?.content.orEmpty(),
+                        isFolder = (o["is_folder"] as? JsonPrimitive)?.boolean ?: false,
+                        isFavorite = (o["is_favorite"] as? JsonPrimitive)?.boolean ?: false,
+                        webViewLink = o["web_view_link"]?.jsonPrimitive?.contentOrNull(),
+                        updatedAt = o["updated_at"]?.jsonPrimitive?.contentOrNull()
+                    )
+                }
+            }
+
             errorMessage = null
         } catch (e: Exception) {
             Log.e("SupabaseClient", "refreshAll error", e)
@@ -239,7 +268,6 @@ class SupabaseClient(
     }
 
     suspend fun toggleTask(id: String, done: Boolean) = withContext(Dispatchers.IO) {
-        // Mise à jour immédiate de l'interface, puis écriture ; l'état serveur remplace de toute façon la liste ensuite.
         tasks = tasks.map { if (it.id == id) it.copy(done = done) else it }
         try {
             call(HttpMethod.Patch, "/rest/v1/tasks", mapOf("id" to "eq.$id"), buildJsonObject { put("is_completed", done) })
@@ -283,13 +311,10 @@ class SupabaseClient(
         refreshAll()
     }
 
-    /** Compatibilité avec les cartes qui affichent un aperçu des tâches. */
     suspend fun fetchTasks(): List<SupabaseTask> {
         refreshAll()
         return tasks.map { SupabaseTask(id = it.id, title = it.title, isCompleted = it.done) }
     }
-
-    // endregion
 
     fun close() {
         client.close()

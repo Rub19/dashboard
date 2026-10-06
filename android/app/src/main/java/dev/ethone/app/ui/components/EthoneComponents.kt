@@ -1,4 +1,4 @@
-﻿package dev.ethone.app.ui.components
+package dev.ethone.app.ui.components
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -228,7 +228,6 @@ fun EthoneBrainOrb(
         modifier = modifier.size(size * 1.5f),
         contentAlignment = Alignment.Center
     ) {
-        // Outer Glow
         Box(
             modifier = Modifier
                 .size(size * pulse)
@@ -237,7 +236,6 @@ fun EthoneBrainOrb(
                 .background(if (isThinking) EthoneViolet.copy(alpha = 0.5f) else EthoneEmerald.copy(alpha = 0.35f))
         )
 
-        // Core Orb Canvas
         Canvas(modifier = Modifier.size(size)) {
             val center = Offset(this.size.width / 2, this.size.height / 2)
             val radius = this.size.width / 2
@@ -253,6 +251,43 @@ fun EthoneBrainOrb(
                 ),
                 radius = radius,
                 center = center
+            )
+        }
+    }
+}
+
+@Composable
+fun EthoneChip(
+    label: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    tint: Color = EthoneEmerald
+) {
+    Surface(
+        modifier = modifier
+            .clip(CircleShape)
+            .border(0.8.dp, GlassBorder, CircleShape)
+            .clickable { onClick() },
+        color = EthoneBgRaised.copy(alpha = 0.75f),
+        shape = CircleShape
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = tint,
+                modifier = Modifier.size(14.dp)
+            )
+            Text(
+                text = label,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
     }

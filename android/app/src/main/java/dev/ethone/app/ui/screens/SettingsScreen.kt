@@ -1,4 +1,4 @@
-﻿package dev.ethone.app.ui.screens
+package dev.ethone.app.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -43,9 +43,9 @@ import dev.ethone.app.ui.theme.GlassBorder
 @Composable
 fun SettingsScreen() {
     var dynamicColorEnabled by remember { mutableStateOf(true) }
+    var brainMemoryEnabled by remember { mutableStateOf(true) }
     var soundEffectsEnabled by remember { mutableStateOf(true) }
     var hapticsEnabled by remember { mutableStateOf(true) }
-    var brainMemoryEnabled by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier
@@ -61,7 +61,6 @@ fun SettingsScreen() {
             color = MaterialTheme.colorScheme.onBackground
         )
 
-        // Profile Card
         EthoneCard(modifier = Modifier.fillMaxWidth()) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -98,7 +97,6 @@ fun SettingsScreen() {
             }
         }
 
-        // Apparence
         Text(
             text = "Apparence & Thème",
             style = MaterialTheme.typography.titleSmall,
@@ -125,7 +123,6 @@ fun SettingsScreen() {
             }
         }
 
-        // Brain
         Text(
             text = "Intelligence & Modèles",
             style = MaterialTheme.typography.titleSmall,
@@ -152,7 +149,6 @@ fun SettingsScreen() {
             }
         }
 
-        // Audio & Haptics
         Text(
             text = "Sensations & Audio",
             style = MaterialTheme.typography.titleSmall,
@@ -189,7 +185,6 @@ fun SettingsScreen() {
             }
         }
 
-        // Sécurité
         Text(
             text = "Sécurité",
             style = MaterialTheme.typography.titleSmall,
@@ -213,13 +208,12 @@ fun SettingsScreen() {
             }
         }
 
-        // About Info
         Column(
             modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("ETHONE OS pour Android", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-            Text("Version 1.11.00 (Kotlin / Jetpack Compose 2026)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Version 1.55.40 (Kotlin / Jetpack Compose 2026)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
         Spacer(modifier = Modifier.height(100.dp))

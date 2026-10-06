@@ -51,6 +51,7 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.plugins) { Label("Plugins & Extensions", systemImage: "puzzlepiece.extension.fill") }
                     NavigationLink(value: MoreDestination.clip) { Label("Clip", systemImage: "paperclip") }
                     NavigationLink(value: MoreDestination.changelog) { Label("Journal des modifications", systemImage: "clock.arrow.circlepath") }
+                    NavigationLink(value: MoreDestination.ownerShield) { Label("Owner Shield", systemImage: "shield.lefthalf.filled.badge.checkmark") }
                 } header: { Text("Applications").sectionTitle() }
                 .listRowBackground(GlassRowBackground())
 
@@ -165,6 +166,7 @@ struct MoreView: View {
                 case .plugins: PluginsView()
                 case .clip: ClipView()
                 case .changelog: ChangelogView()
+                case .ownerShield: OwnerShieldView()
                 }
             }
             .task { await refreshStatus() }

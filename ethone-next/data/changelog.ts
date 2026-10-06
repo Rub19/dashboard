@@ -45166,10 +45166,58 @@ const v1_55_35_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_36_fr: ChangelogEntry = {
+  version: "v1.55.36",
+  date: "2026-10-06",
+  title: "Parité iOS Native : Bouclier Propriétaire Suprême (Owner Shield)",
+  items: [
+    "Intégration native complète du Bouclier Propriétaire sur iOS (`OwnerShieldView`) : contrôle en temps réel du statut de défense automatique, déclenchement du sauvetage global d'urgence et gestion granulaire des règles de protection.",
+    "Tableau de bord défensif Liquid Glass : cartes métriques (serveurs protégés, incidents interceptés, statut hiérarchique du bot) et journal des sanctions interceptées avec attribution des modérateurs.",
+    "Gestion granulaire par serveur : activation / désactivation de la protection et opération de secours ciblé en 1 geste.",
+    "Routage universel et deeplinks : accès direct via `/owner/shield`, `/discord/owner-shield`, le schéma `ethone://owner-shield` et les sections Administration et Outils de Discord.",
+  ],
+};
+
+const v1_55_36_en: ChangelogEntry = {
+  version: "v1.55.36",
+  date: "2026-10-06",
+  title: "Native iOS Parity: Supreme Owner Shield Control",
+  items: [
+    "Full native Owner Shield integration on iOS (`OwnerShieldView`): real-time auto-defense status control, global emergency rescue triggers, and granular rule toggles.",
+    "Liquid Glass defensive dashboard: live metrics grid (protected guilds, intercepted attacks, bot hierarchy status) and real-time interception feed.",
+    "Per-guild management: 1-tap rescue operations and protection toggles for individual Discord servers.",
+    "Universal routing and deeplinking: direct access via `/owner/shield`, `/discord/owner-shield`, `ethone://owner-shield`, and Discord tools menu.",
+  ],
+};
+
+const v1_55_36_es: ChangelogEntry = {
+  version: "v1.55.36",
+  date: "2026-10-06",
+  title: "Paridad Nativa en iOS: Escudo Supremo del Propietario (Owner Shield)",
+  items: [
+    "Integración nativa del Escudo del Propietario en iOS (`OwnerShieldView`): control en tiempo real de defensa automática, rescate global de emergencia y reglas de protección.",
+    "Panel defensivo Liquid Glass: cuadrícula de métricas en vivo y registro de incidentes interceptados con detalles de moderadores.",
+    "Gestión por servidor: operaciones de rescate en 1 toque y alternancia de protección individual.",
+    "Enrutamiento universal y deeplinks: acceso directo mediante `/owner/shield`, `/discord/owner-shield` y el esquema `ethone://owner-shield`.",
+  ],
+};
+
+const v1_55_36_de: ChangelogEntry = {
+  version: "v1.55.36",
+  date: "2026-10-06",
+  title: "Native iOS-Parität: Supreme Owner Shield Schutzschild",
+  items: [
+    "Vollständige native Owner Shield-Integration auf iOS (`OwnerShieldView`): Echtzeit-Kontrolle der automatischen Verteidigung, globale Notfallrettung und granulare Regelsätze.",
+    "Defensives Liquid Glass Dashboard: Live-Metriken (geschützte Server, abgefangene Angriffe, Hierarchiestatus) und detailliertes Vorfallsprotokoll.",
+    "Server-spezifische Verwaltung: 1-Klick-Rettungsaktionen und Schutz-Umschaltung für einzelne Server.",
+    "Universelles Routing und Deeplinks: Direktaufruf über `/owner/shield`, `/discord/owner-shield` und `ethone://owner-shield` URL-Schema.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

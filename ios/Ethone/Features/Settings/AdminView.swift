@@ -23,6 +23,13 @@ struct AdminView: View {
                     .listRowBackground(Color.clear)
             } else if let stats {
                 Section {
+                    NavigationLink { OwnerShieldView() } label: {
+                        Label("Owner Shield — Bouclier Suprême", systemImage: "shield.lefthalf.filled.badge.checkmark")
+                    }
+                } header: { Text("Sécurité Bot & Serveurs").sectionTitle() }
+                .listRowBackground(GlassRowBackground())
+
+                Section {
                     LabeledContent("Utilisateurs", value: "\(Int(stats["users"]?.doubleValue ?? 0))")
                     if let generated = stats["generatedAt"]?.stringValue.flatMap(ISODate.parse) {
                         LabeledContent("Généré", value: generated.formatted(date: .abbreviated, time: .shortened))

@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.36",
+    "date": "2026-10-06",
+    "title": "Parité iOS Native : Bouclier Propriétaire Suprême (Owner Shield)",
+    "items": [
+      "Intégration native complète du Bouclier Propriétaire sur iOS (`OwnerShieldView`) : contrôle en temps réel du statut de défense automatique, déclenchement du sauvetage global d'urgence et gestion granulaire des règles de protection.",
+      "Tableau de bord défensif Liquid Glass : cartes métriques (serveurs protégés, incidents interceptés, statut hiérarchique du bot) et journal des sanctions interceptées avec attribution des modérateurs.",
+      "Gestion granulaire par serveur : activation / désactivation de la protection et opération de secours ciblé en 1 geste.",
+      "Routage universel et deeplinks : accès direct via `/owner/shield`, `/discord/owner-shield`, le schéma `ethone://owner-shield` et les sections Administration et Outils de Discord."
+    ]
+  },
+  {
     "version": "v1.55.35",
     "date": "2026-10-06",
     "title": "Parité iOS Native : Journal des Modifications & Code Épuré",
@@ -516,14 +527,6 @@
       "Invite Tracker : la sensibilité se choisit avec une pastille qui glisse, et les interrupteurs sont ceux du reste du site.",
       "Paramètres du bot et sauvegarde : la barre d'enregistrement et les options qui s'ouvrent sont animées.",
       "Thème clair : les avertissements de Comptage et des Paramètres du bot sont de nouveau lisibles."
-    ]
-  },
-  {
-    "version": "v1.52.13",
-    "date": "2026-10-03",
-    "title": "Thème clair : panneaux restés sombres",
-    "items": [
-      "Le panneau de détail d'une connexion, le guide de configuration, l'historique des versions, l'ajout de fichier, le choix du modèle IA, le dock mobile et le rapport quotidien du tracker suivent maintenant le thème (ils restaient noirs en thème clair)."
     ]
   }
 ]

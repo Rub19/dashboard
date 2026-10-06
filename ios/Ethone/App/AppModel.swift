@@ -203,12 +203,18 @@ final class AppModel {
         ("/macros", "Macros"), ("/personas", "Personas"), ("/rss", "RSS"), ("/discord", "Bot Discord"),
         ("/profile", "Profil"), ("/profile-selection", "Profils de travail"), ("/boost", "Performance"), ("/browser", "Navigateur"), ("/leaderboard", "Classement public"), ("/system", "Système"), ("/share", "Liens partagés"), ("/drop", "Dépôts"), ("/admin", "Administration"),
         ("/soundscape", "Soundscape"), ("/plugins", "Plugins & Extensions"), ("/marketplace", "Marketplace"),
-        ("/clip", "Clip"), ("/changelog", "Journal des modifications"),
+        ("/clip", "Clip"), ("/changelog", "Journal des modifications"), ("/owner/shield", "Bouclier Propriétaire"),
     ]
 
     @discardableResult
     func openWebPage(_ path: String) -> Bool {
-        let key = path.split(separator: "/").first.map(String.init) ?? ""
+        let clean = path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        let key = clean.split(separator: "/").first.map(String.init) ?? ""
+        if clean == "owner/shield" || clean == "discord/owner-shield" || clean == "owner-shield" {
+            morePath = [.ownerShield]
+            requestedTab = .more
+            return true
+        }
         let tabs: [String: AppTab] = ["": .home, "notes": .notes, "tasks": .tasks, "focus": .focus]
         let more: [String: MoreDestination] = [
             "habits": .habits, "calendar": .calendar, "mail": .mail, "brain": .brain, "files": .files, "flows": .flows,
@@ -218,6 +224,7 @@ final class AppModel {
             "personas": .personas, "rss": .rss, "discord": .discord,
             "profile": .profile, "profile-selection": .workspaces, "boost": .boost, "browser": .browser, "leaderboard": .leaderboard, "system": .system, "share": .sharedLinks, "drop": .sharedLinks, "admin": .admin,
             "soundscape": .soundscape, "plugins": .plugins, "marketplace": .plugins, "clip": .clip, "changelog": .changelog,
+            "owner-shield": .ownerShield,
         ]
         if let tab = tabs[key] {
             requestedTab = tab
@@ -248,6 +255,6 @@ enum AppTab: String, CaseIterable, Identifiable {
 }
 
 enum MoreDestination: String, Hashable, CaseIterable, Identifiable {
-    case settings, notifications, team, bills, scratchpad, macros, personas, rss, valorant, valorantStore, lolTracker, lolRotation, tftTracker, otherGames, sharedLinks, profile, workspaces, leaderboard, boost, browser, system, admin, games, interactions, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security, soundscape, plugins, clip, changelog
+    case settings, notifications, team, bills, scratchpad, macros, personas, rss, valorant, valorantStore, lolTracker, lolRotation, tftTracker, otherGames, sharedLinks, profile, workspaces, leaderboard, boost, browser, system, admin, games, interactions, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security, soundscape, plugins, clip, changelog, ownerShield
     var id: String { rawValue }
 }

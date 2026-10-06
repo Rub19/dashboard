@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.36 — 2026-10-06
+
+**Parité iOS Native : Bouclier Propriétaire Suprême (Owner Shield)**
+
+- Nouveau module natif Bouclier Propriétaire (`OwnerShieldView`) en SwiftUI pur et Liquid Glass : surveillance en temps réel de la défense automatique, déclenchement du sauvetage global d'urgence et bascule générale d'activation/désactivation.
+- Grille de télémétrie défensive : compteurs des serveurs protégés, incidents interceptés et statut de hiérarchie suprême du bot.
+- Gestion granulaire des règles de sécurité : débannissement instantané, annulation des exclusions (timeouts), suppression des rôles de mise sous silence, rétablissement vocal, invitation de secours, restauration des rôles, protection du pseudonyme, auto-défense du bot, alertes DM et mode furtif.
+- Contrôle individuel des serveurs Discord : bascule de protection par serveur et sauvetage ciblé en 1 geste avec retours haptiques natifs.
+- Intégration globale de la navigation et deeplinks : accès depuis l'onglet Plus (`MoreDestination.ownerShield`), la page d'administration, le menu d'outils Discord, les routes `/owner/shield`, `/discord/owner-shield` et le schéma `ethone://owner-shield`.
+
 ## v1.55.35 — 2026-10-06
 
 **Parité iOS Native : Journal des Modifications & Code Épuré**

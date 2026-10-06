@@ -45366,6 +45366,50 @@ const v1_55_39_de: ChangelogEntry = {
   ],
 };
 
+const v1_55_41_fr: ChangelogEntry = {
+  version: "v1.55.41",
+  date: "2026-10-06",
+  title: "Android Natif : Grille/Liste, Navigation Dossiers, Favoris Cloud & Fiabilisation",
+  items: [
+    "Gestionnaire de Fichiers Android Enrichi (`FilesScreen`) : bascule instantanée entre affichage Liste et Grille (2 colonnes), fil d'Ariane interactif pour naviguer dans les sous-dossiers, et inspecteur de détails complet avec ouverture et partage de lien.",
+    "Favoris Cloud en Temps Réel (`SupabaseClient`) : synchronisation bidirectionnelle des favoris avec la table Supabase `ethone_file_favorites`, mise à jour immédiate de l'étoile et bouton dédié sur chaque carte.",
+    "Fiabilisation des Coroutines & Synthèse Réactive : résolution des extensions de portée sur les cartes de capture Brain et génération dynamique de synthèse dans l'application Mail.",
+  ],
+};
+
+const v1_55_41_en: ChangelogEntry = {
+  version: "v1.55.41",
+  date: "2026-10-06",
+  title: "Native Android: Grid/List Toggle, Folder Navigation, Cloud Favorites & Reliability",
+  items: [
+    "Enriched Android File Manager (`FilesScreen`): instant toggle between List and Grid (2-column) views, interactive breadcrumb navigation across subfolders, and detailed file inspector dialog with web link opening and sharing.",
+    "Real-Time Cloud Favorites (`SupabaseClient`): two-way synchronization with Supabase `ethone_file_favorites`, immediate star toggle and dedicated action on each card.",
+    "Reliable Coroutines & Dynamic Mail Summaries: resolved scope extensions on Brain capture cards and live snippet summaries in MailScreen.",
+  ],
+};
+
+const v1_55_41_es: ChangelogEntry = {
+  version: "v1.55.41",
+  date: "2026-10-06",
+  title: "Android Nativo: Cuadrícula/Lista, Navegación de Carpetas, Favoritos Cloud & Fiabilidad",
+  items: [
+    "Gestor de Archivos Android Mejorado (`FilesScreen`): alternancia instantánea entre Lista y Cuadrícula, migas de pan interactivas para subcarpetas e inspector detallado con apertura y compartir.",
+    "Favoritos Cloud en Tiempo Real (`SupabaseClient`): sincronización bidireccional con Supabase `ethone_file_favorites`, actualización inmediata de la estrella de favoritos.",
+    "Corrutinas Fiables y Resúmenes Dinámicos: resolución de extensiones de corrutinas en tarjetas Brain y síntesis reactiva en MailScreen.",
+  ],
+};
+
+const v1_55_41_de: ChangelogEntry = {
+  version: "v1.55.41",
+  date: "2026-10-06",
+  title: "Natives Android: Raster/Listen-Ansicht, Ordnernavigation, Cloud-Favoriten & Stabilität",
+  items: [
+    "Erweiterter Android-Dateimanager (`FilesScreen`): sofortiges Umschalten zwischen Listen- und Rasteransicht (2 Spalten), interaktive Breadcrumbs für Unterordner und Detailinspektor mit Öffnen- und Teilen-Funktionen.",
+    "Cloud-Favoriten in Echtzeit (`SupabaseClient`): bidirektionale Synchronisierung mit `ethone_file_favorites`, sofortige Favoriten-Stern-Aktualisierung auf jeder Karte.",
+    "Zuverlässige Coroutinen & dynamische Mail-Zusammenfassungen: Bereinigung der Coroutine-Gültigkeitsbereiche in Brain-Karten und dynamische Snippet-Zusammenfassungen in MailScreen.",
+  ],
+};
+
 const v1_55_40_fr: ChangelogEntry = {
   version: "v1.55.40",
   date: "2026-10-06",
@@ -45414,10 +45458,10 @@ const v1_55_40_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_40_fr, v1_55_39_fr, v1_55_38_fr, v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_40_en, v1_55_39_en, v1_55_38_en, v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_40_es, v1_55_39_es, v1_55_38_es, v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_40_de, v1_55_39_de, v1_55_38_de, v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+CHANGELOG_BY_LANG.fr.unshift(v1_55_41_fr, v1_55_40_fr, v1_55_39_fr, v1_55_38_fr, v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_41_en, v1_55_40_en, v1_55_39_en, v1_55_38_en, v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_41_es, v1_55_40_es, v1_55_39_es, v1_55_38_es, v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_41_de, v1_55_40_de, v1_55_39_de, v1_55_38_de, v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

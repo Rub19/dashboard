@@ -253,7 +253,7 @@ fun MailScreen(onBack: (() -> Unit)? = null) {
                                 isSummarizing = true
                                 scope.launch {
                                     delay(600)
-                                    brainSummary = "Message clé : Confirmation de bon fonctionnement des services."
+                                    brainSummary = "Synthèse : " + if (mail.snippet.isNotBlank()) mail.snippet.take(140) else mail.subject
                                     isSummarizing = false
                                 }
                             },

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.41 — 2026-10-06
+
+**Android Natif : Grille/Liste, Navigation Dossiers, Favoris Cloud & Fiabilisation**
+
+- Gestionnaire de Fichiers Android Enrichi (`FilesScreen`) : bascule instantanée entre affichage Liste et Grille (2 colonnes), fil d'Ariane interactif pour naviguer dans les sous-dossiers, et inspecteur de détails complet avec ouverture et partage de lien.
+- Favoris Cloud en Temps Réel (`SupabaseClient`) : synchronisation bidirectionnelle des favoris avec la table Supabase `ethone_file_favorites`, mise à jour immédiate de l'étoile et bouton dédié sur chaque carte.
+- Fiabilisation des Coroutines & Synthèse Réactive : résolution des extensions de portée sur les cartes de capture Brain et génération dynamique de synthèse dans l'application Mail.
+
 ## v1.55.40 — 2026-10-06
 
 **Parité Android Native : Fichiers Réels, Métriques de Stockage & Raccourcis Rapides**

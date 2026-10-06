@@ -53,7 +53,8 @@ data class EthoneFile(
     val isFolder: Boolean,
     val isFavorite: Boolean,
     val webViewLink: String?,
-    val updatedAt: String?
+    val updatedAt: String?,
+    val parentId: String? = null
 ) {
     val readableSize: String
         get() {
@@ -222,10 +223,21 @@ class SupabaseClient(
                 }
             }
 
+            var favoriteIds = emptySet<String>()
+            val favRows = call(
+                HttpMethod.Get, "/rest/v1/ethone_file_favorites",
+                mapOf("select" to "file_id")
+            )
+            if (favRows.status.isSuccess()) {
+                favoriteIds = (json.parseToJsonElement(favRows.bodyAsText()) as? JsonArray).orEmpty().mapNotNull { row ->
+                    row.jsonObject["file_id"]?.jsonPrimitive?.contentOrNull()
+                }.toSet()
+            }
+
             val fileRows = call(
                 HttpMethod.Get, "/rest/v1/ethone_files",
                 mapOf(
-                    "select" to "id,name,size,mime_type,is_folder,is_favorite,web_view_link,updated_at",
+                    "select" to "id,name,size,mime_type,is_folder,web_view_link,updated_at,parent_id",
                     "trashed" to "eq.false",
                     "order" to "updated_at.desc"
                 )
@@ -233,15 +245,17 @@ class SupabaseClient(
             if (fileRows.status.isSuccess()) {
                 files = (json.parseToJsonElement(fileRows.bodyAsText()) as? JsonArray).orEmpty().map { row ->
                     val o = row.jsonObject
+                    val fileId = o["id"]?.jsonPrimitive?.content.orEmpty()
                     EthoneFile(
-                        id = o["id"]?.jsonPrimitive?.content.orEmpty(),
+                        id = fileId,
                         name = o["name"]?.jsonPrimitive?.content.orEmpty(),
                         size = (o["size"] as? JsonPrimitive)?.contentOrNull()?.toLongOrNull() ?: 0L,
                         mimeType = o["mime_type"]?.jsonPrimitive?.content.orEmpty(),
                         isFolder = (o["is_folder"] as? JsonPrimitive)?.boolean ?: false,
-                        isFavorite = (o["is_favorite"] as? JsonPrimitive)?.boolean ?: false,
+                        isFavorite = favoriteIds.contains(fileId),
                         webViewLink = o["web_view_link"]?.jsonPrimitive?.contentOrNull(),
-                        updatedAt = o["updated_at"]?.jsonPrimitive?.contentOrNull()
+                        updatedAt = o["updated_at"]?.jsonPrimitive?.contentOrNull(),
+                        parentId = o["parent_id"]?.jsonPrimitive?.contentOrNull()
                     )
                 }
             }
@@ -307,6 +321,38 @@ class SupabaseClient(
             call(HttpMethod.Delete, "/rest/v1/ethone_items", mapOf("id" to "eq.$id"))
         } catch (e: Exception) {
             Log.e("SupabaseClient", "deleteNote error", e)
+        }
+        refreshAll()
+    }
+
+    suspend fun toggleFavoriteFile(id: String, isFavorite: Boolean) = withContext(Dispatchers.IO) {
+        val user = userId() ?: return@withContext
+        files = files.map { if (it.id == id) it.copy(isFavorite = isFavorite) else it }
+        try {
+            if (isFavorite) {
+                call(
+                    HttpMethod.Post, "/rest/v1/ethone_file_favorites",
+                    body = buildJsonObject { put("file_id", id); put("user_id", user) },
+                    prefer = "return=minimal"
+                )
+            } else {
+                call(
+                    HttpMethod.Delete, "/rest/v1/ethone_file_favorites",
+                    mapOf("file_id" to "eq.$id")
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("SupabaseClient", "toggleFavoriteFile error", e)
+        }
+        refreshAll()
+    }
+
+    suspend fun deleteFile(id: String) = withContext(Dispatchers.IO) {
+        files = files.filterNot { it.id == id }
+        try {
+            call(HttpMethod.Delete, "/rest/v1/ethone_files", mapOf("id" to "eq.$id"))
+        } catch (e: Exception) {
+            Log.e("SupabaseClient", "deleteFile error", e)
         }
         refreshAll()
     }

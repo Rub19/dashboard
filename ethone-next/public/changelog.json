@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.55.41",
+    "date": "2026-10-06",
+    "title": "Android Natif : Grille/Liste, Navigation Dossiers, Favoris Cloud & Fiabilisation",
+    "items": [
+      "Gestionnaire de Fichiers Android Enrichi (`FilesScreen`) : bascule instantanée entre affichage Liste et Grille (2 colonnes), fil d'Ariane interactif pour naviguer dans les sous-dossiers, et inspecteur de détails complet avec ouverture et partage de lien.",
+      "Favoris Cloud en Temps Réel (`SupabaseClient`) : synchronisation bidirectionnelle des favoris avec la table Supabase `ethone_file_favorites`, mise à jour immédiate de l'étoile et bouton dédié sur chaque carte.",
+      "Fiabilisation des Coroutines & Synthèse Réactive : résolution des extensions de portée sur les cartes de capture Brain et génération dynamique de synthèse dans l'application Mail."
+    ]
+  },
+  {
     "version": "v1.55.40",
     "date": "2026-10-06",
     "title": "Parité Android Native : Fichiers Réels, Métriques de Stockage & Raccourcis Rapides",
@@ -518,14 +528,6 @@
       "Tracker LoL : dans l'aperçu des équipes, chaque joueur affiche son vrai champion (les joueurs 2 à 10 pouvaient montrer Annie, Olaf, Galio…).",
       "Tracker LoL : les images suivent la dernière version de Data Dragon, les objets récents s'affichent.",
       "Tickets : une requête inutile au bot a été retirée."
-    ]
-  },
-  {
-    "version": "v1.53.1",
-    "date": "2026-10-04",
-    "title": "Bibliothèque d'avatars : aperçu plus varié",
-    "items": [
-      "Les séries Netflix phares apparaissent en premier, et l'aperçu de chaque collection montre une vignette par série."
     ]
   }
 ]

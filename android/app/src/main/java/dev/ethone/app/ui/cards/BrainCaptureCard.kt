@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.ethone.app.data.SupabaseClient
 import dev.ethone.app.ui.components.LiquidGlassSurface
+import kotlinx.coroutines.launch
 
 @Composable
 fun BrainCaptureCard(client: SupabaseClient) {
@@ -50,7 +52,7 @@ fun BrainCaptureCard(client: SupabaseClient) {
         }
     }
 
-    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
     LiquidGlassSurface(modifier = Modifier.height(260.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {

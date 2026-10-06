@@ -1,4 +1,4 @@
-﻿package dev.ethone.app.service
+package dev.ethone.app.service
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -10,7 +10,7 @@ import java.util.UUID
 
 data class BrainMessage(
     val id: String = UUID.randomUUID().toString(),
-    val role: String, // "user" or "assistant"
+    val role: String,
     val content: String,
     val model: String? = null,
     val actionSummary: String? = null

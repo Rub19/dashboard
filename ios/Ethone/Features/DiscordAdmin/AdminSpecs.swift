@@ -70,6 +70,14 @@ enum AdminCatalog {
 
     static let guild: [AdminModuleSpec] = moderation + community + engagement + serverGroup + media
 
+    static var streamersSpec: AdminModuleSpec {
+        media.first { $0.id == "streamers" } ?? media[0]
+    }
+
+    static var gamesSpec: AdminModuleSpec {
+        engagement.first { $0.id == "games" } ?? engagement[0]
+    }
+
     static let moderation: [AdminModuleSpec] = [
         .init(id: "automod", title: "AutoMod", symbol: "shield.checkered", group: groups[0],
               lists: [.init(title: "Règles", path: "/rules"), .init(title: "Historique", path: "/history")]),
@@ -188,6 +196,15 @@ enum AdminCatalog {
         .init(id: "analytics", title: "Analytique du serveur", symbol: "chart.pie.fill", group: groups[2]),
         .init(id: "calendar", title: "Calendrier du serveur", symbol: "calendar", group: groups[2], overview: nil,
               lists: [.init(title: "Calendrier", path: "/")]),
+        .init(id: "games", title: "Mini-Jeux & Casino", symbol: "dice.fill", group: groups[2],
+              configs: [.init(title: "Réglages du casino", get: "/config", put: "/config", method: "PATCH")],
+              lists: [
+                .init(title: "Historique des parties", path: "/history", key: "history"),
+                .init(title: "Quêtes actives", path: "/quests", key: "quests"),
+              ],
+              actions: [
+                .init(title: "Alimenter le Jackpot (+1 000 🪙)", path: "/jackpot/seed", body: ["amount": .number(1000)], symbol: "plus.circle.fill"),
+              ]),
     ]
 
     static let serverGroup: [AdminModuleSpec] = [
@@ -229,6 +246,17 @@ enum AdminCatalog {
     ]
 
     static let media: [AdminModuleSpec] = [
+        .init(id: "streamers", title: "Alertes Streamers", symbol: "antenna.radiowaves.left.and.right", group: groups[4],
+              configs: [.init(title: "Réglages des alertes", get: "/config", put: "/config", method: "PUT")],
+              lists: [
+                .init(title: "Streamers suivis", path: "", key: "streamers", rowActions: [
+                  .init(title: "Tester l'alerte en direct", path: "/{id}/test", symbol: "play.fill"),
+                  .init(title: "Supprimer", path: "/{id}", method: "DELETE", destructive: true, symbol: "trash"),
+                ]),
+              ],
+              actions: [
+                .init(title: "Simuler une alerte de stream", path: "/simulate", symbol: "bell.badge.fill"),
+              ]),
         .init(id: "ai", title: "Assistant IA", symbol: "sparkles", group: groups[4],
               configs: [
                 .init(title: "Personnalité", get: "/personality", put: "/personality"),

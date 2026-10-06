@@ -71,6 +71,7 @@ targets:
           - remote-notification
           - fetch
           - processing
+          - audio
         BGTaskSchedulerPermittedIdentifiers:
           - dev.ethone.app.refresh
           - dev.ethone.app.sync

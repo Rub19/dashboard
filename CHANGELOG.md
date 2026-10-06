@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.32 — 2026-10-06
+
+**Parité iOS Native : Soundscape Studio & Modules Discord Avancés**
+
+- Intégration native de Soundscape sur iOS (`SoundscapeView` et `SoundscapeEngine`) : moteur de synthèse audio procédurale pure via `AVFoundation` (`AVAudioEngine`, `AVAudioSourceNode`), générant des battements binauraux stéréo (Delta 2 Hz, Theta 6 Hz, Alpha 10 Hz, Beta 18 Hz, Gamma 40 Hz), des fréquences sacrées Solfeggio (432, 528, 639, 852 Hz) et des textures d'ambiance naturelle (pluie, vagues océaniques, ruisseau, vent, feu de camp, bruit blanc) sans aucun fichier audio externe.
+- Visualiseur d'ondes Liquid Glass 60 FPS propulsé par Canvas SwiftUI (`TimelineView(.animation)`), préréglages d'immersion en 1 clic et mixeur tactile multi-pistes.
+- Support du mode audio en arrière-plan iOS (`UIBackgroundModes: audio`) avec minuteur d'extinction automatique progressif.
+- Parité d'administration Discord sur iOS : modules Alertes Streamers (`streamers`) pour Twitch, YouTube et Kick (gestion des streamers, tests d'alerte, seuils de spectateurs, simulation) et Mini-Jeux & Casino (`games`) avec alimentation du jackpot communautaire.
+- Sélecteur rapide de serveur Discord dans la barre d'outils iOS permettant de naviguer instantanément entre les serveurs sans quitter la vue détaillée.
+
 ## v1.55.31 — 2026-10-06
 
 **Fiabilisation du Filtre de Recherche des Serveurs Discord**

@@ -50,9 +50,37 @@ enum AdminCreators {
         case "backups": [backup]
         case "server": [channel, role]
         case "secure-roles": [secureRole]
+        case "streamers": [streamer]
         default: []
         }
     }
+
+    static let streamer = CreateSpec(
+        title: "Suivre un nouveau streamer", path: "",
+        fields: [
+            .init(key: "platform", label: "Plateforme", kind: .choice([("twitch", "Twitch"), ("youtube", "YouTube"), ("kick", "Kick")]), initial: "twitch"),
+            .init(key: "username", label: "Pseudo du streamer", hint: "Nom d'utilisateur sur la plateforme"),
+            .init(key: "channelId", label: "Salon d'annonce", kind: .channel),
+            .init(key: "pingMode", label: "Mode de notification", kind: .choice([("default", "Par défaut du serveur"), ("none", "Aucun ping"), ("here", "@here"), ("everyone", "@everyone"), ("role", "Rôle spécifique")]), initial: "default"),
+            .init(key: "pingRoleId", label: "Rôle à notifier (si rôle spécifique)", kind: .role, required: false),
+            .init(key: "minViewers", label: "Spectateurs minimum", kind: .number, required: false, initial: "0"),
+        ],
+        build: { c in
+            var payload: [String: JSONValue] = [
+                "platform": .string(c.text("platform")),
+                "username": .string(c.text("username")),
+                "channelId": c.text("channelId").isEmpty ? .null : .string(c.text("channelId")),
+                "pingMode": .string(c.text("pingMode")),
+            ]
+            if !c.text("pingRoleId").isEmpty {
+                payload["pingRoleId"] = .string(c.text("pingRoleId"))
+            }
+            if c.number("minViewers") > 0 {
+                payload["minViewers"] = .number(c.number("minViewers"))
+            }
+            return payload
+        }
+    )
 
     static let secureRole = CreateSpec(
         title: "Sécuriser un rôle", path: "/roles",

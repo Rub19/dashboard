@@ -95,13 +95,19 @@ struct DiscordView: View {
 
 struct GuildDetailView: View {
     @Environment(AppModel.self) private var model
-    let guild: DiscordGuild
+    let initialGuild: DiscordGuild
 
+    @State private var currentGuild: DiscordGuild
     @State private var overview: GuildOverview?
     @State private var modules: [DiscordModule] = []
     @State private var loading = true
     @State private var errorMessage: String?
     @State private var search = ""
+
+    init(guild: DiscordGuild) {
+        self.initialGuild = guild
+        _currentGuild = State(initialValue: guild)
+    }
 
     private var filtered: [DiscordModule] {
         search.isEmpty ? modules : modules.filter { $0.name.localizedCaseInsensitiveContains(search) }
@@ -125,16 +131,18 @@ struct GuildDetailView: View {
             if let errorMessage {
                 Text(errorMessage).font(.footnote).foregroundStyle(Theme.danger).listRowBackground(Color.clear)
             }
-            if guild.botPresent {
+            if currentGuild.botPresent {
                 Section {
-                    NavigationLink { TicketsAdminView(guild: guild) } label: { Label("Tickets", systemImage: "ticket.fill") }
-                    NavigationLink { ModerationAdminView(guild: guild) } label: { Label("Modération", systemImage: "shield.lefthalf.filled") }
-                    NavigationLink { GiveawaysAdminView(guild: guild) } label: { Label("Giveaways", systemImage: "gift.fill") }
-                    NavigationLink { SecurityAdminView(guild: guild) } label: { Label("Sécurité", systemImage: "lock.shield.fill") }
-                    NavigationLink { MembersAdminView(guild: guild) } label: { Label("Membres", systemImage: "person.2.fill") }
-                    NavigationLink { SuggestionsAdminView(guild: guild) } label: { Label("Suggestions", systemImage: "lightbulb.fill") }
-                    NavigationLink { DiscordModuleHubView(guild: guild) } label: { Label("Tous les modules", systemImage: "square.grid.2x2.fill") }
-                    NavigationLink { AuditLogAdminView(guild: guild) } label: { Label("Journal d'audit", systemImage: "list.bullet.rectangle.fill") }
+                    NavigationLink { TicketsAdminView(guild: currentGuild) } label: { Label("Tickets", systemImage: "ticket.fill") }
+                    NavigationLink { ModerationAdminView(guild: currentGuild) } label: { Label("Modération", systemImage: "shield.lefthalf.filled") }
+                    NavigationLink { GiveawaysAdminView(guild: currentGuild) } label: { Label("Giveaways", systemImage: "gift.fill") }
+                    NavigationLink { SecurityAdminView(guild: currentGuild) } label: { Label("Sécurité", systemImage: "lock.shield.fill") }
+                    NavigationLink { MembersAdminView(guild: currentGuild) } label: { Label("Membres", systemImage: "person.2.fill") }
+                    NavigationLink { SuggestionsAdminView(guild: currentGuild) } label: { Label("Suggestions", systemImage: "lightbulb.fill") }
+                    NavigationLink { ModuleScreen(guild: currentGuild, spec: AdminCatalog.streamersSpec) } label: { Label("Alertes Streamers", systemImage: "antenna.radiowaves.left.and.right") }
+                    NavigationLink { ModuleScreen(guild: currentGuild, spec: AdminCatalog.gamesSpec) } label: { Label("Mini-Jeux & Casino", systemImage: "dice.fill") }
+                    NavigationLink { DiscordModuleHubView(guild: currentGuild) } label: { Label("Tous les modules", systemImage: "square.grid.2x2.fill") }
+                    NavigationLink { AuditLogAdminView(guild: currentGuild) } label: { Label("Journal d'audit", systemImage: "list.bullet.rectangle.fill") }
                 } header: { Text("Outils").sectionTitle() }
                 .listRowBackground(GlassRowBackground())
             }
@@ -160,9 +168,38 @@ struct GuildDetailView: View {
         .scrollContentBackground(.hidden)
         .overlay { if loading && modules.isEmpty { ProgressView() } }
         .searchable(text: $search, prompt: "Rechercher un module")
-        .navigationTitle(guild.name)
+        .navigationTitle(currentGuild.name)
         .ethoneScreen()
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if model.discord.guilds.filter(\.botPresent).count > 1 {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        ForEach(model.discord.guilds.filter(\.botPresent)) { g in
+                            Button {
+                                if currentGuild.id != g.id {
+                                    currentGuild = g
+                                    Task { await load() }
+                                }
+                            } label: {
+                                HStack {
+                                    Text(g.name)
+                                    if g.id == currentGuild.id {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            AvatarView(url: currentGuild.iconURL, name: currentGuild.name, size: 22)
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.caption2)
+                        }
+                    }
+                }
+            }
+        }
         .refreshable { await load() }
         .task { await load() }
     }
@@ -182,8 +219,8 @@ struct GuildDetailView: View {
         loading = true
         defer { loading = false }
         do {
-            async let o = model.discord.overview(guildId: guild.id)
-            async let m = model.discord.modules(guildId: guild.id)
+            async let o = model.discord.overview(guildId: currentGuild.id)
+            async let m = model.discord.modules(guildId: currentGuild.id)
             let (loadedOverview, loadedModules) = try await (o, m)
             overview = loadedOverview
             modules = loadedModules
@@ -199,7 +236,7 @@ struct GuildDetailView: View {
         modules[index].enabled = enabled
         Task {
             do {
-                try await model.discord.setModule(guildId: guild.id, moduleId: module.id, enabled: enabled)
+                try await model.discord.setModule(guildId: currentGuild.id, moduleId: module.id, enabled: enabled)
                 errorMessage = nil
             } catch {
                 if let current = modules.firstIndex(where: { $0.id == module.id }) { modules[current].enabled = !enabled }

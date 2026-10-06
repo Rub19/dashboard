@@ -44974,10 +44974,58 @@ const v1_55_31_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_32_fr: ChangelogEntry = {
+  version: "v1.55.32",
+  date: "2026-10-06",
+  title: "Parité iOS Native : Soundscape Studio & Modules Discord Avancés",
+  items: [
+    "Intégration native de Soundscape sur iOS : moteur audio procédural pur AVFoundation (ondes binaurales stéréo, fréquences Solfeggio 432-852 Hz, ambiances naturelles générées en direct) et visualiseur d'ondes 60 FPS en Canvas SwiftUI sans aucun fichier audio externe.",
+    "Support de la lecture audio en arrière-plan (mode audio iOS) et minuteur d'extinction automatique progressif.",
+    "Parité complète des modules Discord d'administration sur iOS : Alertes Streamers (Twitch, YouTube, Kick) et Mini-Jeux & Casino.",
+    "Sélecteur de serveur instantané dans la barre d'outils iOS pour basculer d'un serveur à un autre sans retour en arrière.",
+  ],
+};
+
+const v1_55_32_en: ChangelogEntry = {
+  version: "v1.55.32",
+  date: "2026-10-06",
+  title: "Native iOS Parity: Soundscape Studio & Advanced Discord Modules",
+  items: [
+    "Native Soundscape integration on iOS: procedural pure AVFoundation audio engine (stereo binaural beats, Solfeggio frequencies 432-852 Hz, real-time procedural nature ambience) and 60 FPS Canvas SwiftUI wave visualizer with zero external audio assets.",
+    "Background audio playback support (iOS audio mode) and gentle auto-sleep timer.",
+    "Full parity of Discord management modules on iOS: Streamer Alerts (Twitch, YouTube, Kick) and Mini-Games & Casino.",
+    "Instant top-bar Discord server switcher to toggle between managed servers seamlessly.",
+  ],
+};
+
+const v1_55_32_es: ChangelogEntry = {
+  version: "v1.55.32",
+  date: "2026-10-06",
+  title: "Paridad Nativa en iOS: Estudio Soundscape y Módulos Discord Avanzados",
+  items: [
+    "Integración nativa de Soundscape en iOS: motor de audio procedimental puro con AVFoundation (ondas binaurales estéreo, frecuencias Solfeggio 432-852 Hz, ambientes naturales en tiempo real) y visualizador de ondas 60 FPS en Canvas SwiftUI sin archivos de audio externos.",
+    "Soporte para reproducción en segundo plano y temporizador de apagado suave.",
+    "Paridad total de módulos de gestión Discord en iOS: Alertas de Streamers (Twitch, YouTube, Kick) y Mini-Juegos y Casino.",
+    "Selector rápido de servidor en la barra superior de Discord para cambiar entre servidores sin retroceder.",
+  ],
+};
+
+const v1_55_32_de: ChangelogEntry = {
+  version: "v1.55.32",
+  date: "2026-10-06",
+  title: "Native iOS-Parität: Soundscape Studio & Erweiterte Discord-Module",
+  items: [
+    "Native Soundscape-Integration auf iOS: prozedurale AVFoundation-Audio-Engine (Stereo-Binaural-Beats, Solfeggio-Frequenzen 432-852 Hz, prozedurale Naturgeräusche) und 60-FPS-Canvas-Wellenvisualisierung ohne externe Audiodateien.",
+    "Unterstützung für Hintergrund-Audiowiedergabe und sanfter Sleep-Timer.",
+    "Vollständige Parität der Discord-Verwaltungsmodule auf iOS: Streamer-Benachrichtigungen (Twitch, YouTube, Kick) und Minispiele & Casino.",
+    "Schneller Server-Wechsler in der oberen Symbolleiste für sofortigen Wechsel zwischen verwalteten Servern.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

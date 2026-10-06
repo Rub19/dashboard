@@ -44838,10 +44838,54 @@ const v1_55_28_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_29_fr: ChangelogEntry = {
+  version: "v1.55.29",
+  date: "2026-10-06",
+  title: "Optimisation de l'Ergonomie Discord et Zéro Avertissement de Code",
+  items: [
+    "Perfectionnement du sélecteur de serveur dans la barre latérale Discord : navigation complète au clavier (flèches Haut/Bas, Entrée, Échap) et fermeture automatique du tiroir mobile lors de la sélection.",
+    "Résolution intégrale de tous les avertissements React hooks (exhaustive-deps) et expressions fonctionnelles dans Brain, Contrôle Bot, Musique, Invitations et Gestion Serveur.",
+    "Zéro avertissement de code fonctionnel sur l'ensemble du projet : conformité totale aux exigences d'hygiène logicielle et de maintenabilité.",
+  ],
+};
+
+const v1_55_29_en: ChangelogEntry = {
+  version: "v1.55.29",
+  date: "2026-10-06",
+  title: "Discord UX Polish and Zero Functional Code Warnings",
+  items: [
+    "Refined Discord sidebar server switcher: full keyboard navigation (Up/Down arrows, Enter, Escape) and automatic mobile drawer closing on guild selection.",
+    "Complete resolution of all React hook warnings (exhaustive-deps) and expression statements across Brain, Bot Control, Music, Invites, and Server Management.",
+    "Zero functional lint warnings across the entire repository: strict adherence to production code hygiene and maintainability standards.",
+  ],
+};
+
+const v1_55_29_es: ChangelogEntry = {
+  version: "v1.55.29",
+  date: "2026-10-06",
+  title: "Pulido de Usabilidad Discord y Cero Advertencias de Código",
+  items: [
+    "Mejora del selector de servidor en la barra lateral Discord: navegación completa con teclado y cierre automático del menú móvil al seleccionar.",
+    "Resolución total de advertencias de hooks React y expresiones en Brain, Control del Bot, Música, Invitaciones y Gestión de Servidor.",
+    "Cero advertencias funcionales en todo el proyecto: máxima higiene y estabilidad del código.",
+  ],
+};
+
+const v1_55_29_de: ChangelogEntry = {
+  version: "v1.55.29",
+  date: "2026-10-06",
+  title: "Discord UX-Feinschliff und Null funktionale Code-Warnungen",
+  items: [
+    "Optimierter Discord-Server-Wechsler in der Seitenleiste: vollständige Tastaturnavigation und automatisches Schließen des mobilen Menüs bei Serverauswahl.",
+    "Vollständige Behebung aller React-Hook-Warnungen (exhaustive-deps) in Brain, Bot-Steuerung, Musik, Einladungen und Server-Verwaltung.",
+    "Null funktionale Lint-Warnungen im gesamten Repository für maximale Code-Hygiene.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

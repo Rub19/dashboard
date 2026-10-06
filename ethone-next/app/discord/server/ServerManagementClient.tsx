@@ -444,7 +444,7 @@ export default function ServerManagementClient({
 
     setSelectedMember(null);
     setLoadingMemberProfile(false);
-  }, [guildId, members]);
+  }, [guildId]);
 
   const fetchChannels = useCallback(async () => {
     if (BOT_API_URL) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBrain } from "@/lib/hooks/useBrain";
 import { useMail } from "@/lib/hooks/useMail";
@@ -70,12 +70,17 @@ export default function BrainPage() {
   }, [brain.loading, setBrain, register, unregister]);
 
   // Handle Command Center / External Query Dispatch (?q=...)
+  const sendRef = useRef(brain.send);
+  useEffect(() => {
+    sendRef.current = brain.send;
+  }, [brain.send]);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const q = params.get("q");
     if (q && q.trim()) {
-      brain.send(q.trim());
+      sendRef.current(q.trim());
       // Clean query parameter from URL without reload
       window.history.replaceState({}, "", window.location.pathname);
     }

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.29 — 2026-10-06
+
+**Optimisation de l'Ergonomie Discord et Zéro Avertissement de Code**
+
+- Perfectionnement du sélecteur de serveur dans la barre latérale Discord (`/discord`) : prise en charge complète de la navigation au clavier (flèches Haut/Bas, validation Entrée, fermeture Échap) avec survol synchronisé du curseur.
+- Fermeture automatique et fluide du tiroir mobile lors de la sélection d'un serveur ou du lancement du sélecteur complet.
+- Couleur de fond de repli dérivée dynamiquement pour les serveurs sans icône sur le déclencheur principal de la barre latérale.
+- Résolution intégrale de tous les avertissements React hooks (`exhaustive-deps`) et expressions fonctionnelles du projet (`app/brain/page.tsx`, `app/discord/bot/BotControlClient.tsx`, `app/discord/music/MusicCenterClient.tsx`, `app/discord/invites/...`, `app/discord/server/...`).
+- Zéro avertissement de code fonctionnel sur l'ensemble de la base de code pour une stabilité optimale en production.
+
 ## v1.55.28 — 2026-10-05
 
 **Sélecteur de Changement de Serveur dans la Barre Latérale Discord**

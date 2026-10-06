@@ -341,7 +341,7 @@ export default function MusicCenterClient() {
         .then((d) => setStats(d.stats || null))
         .catch(() => setTabError("Impossible de lire les statistiques musicales de ce serveur."));
     }
-  }, [guildId, isReady, botGuildIds, activeTab]);
+  }, [guildId, isReady, botGuildIds, activeTab, fetchRolesAndChannels]);
 
   // Recherche : automatique pendant la frappe (350 ms), les requêtes périmées sont annulées, et
   // chaque cas (erreur, aucun résultat) est signalé — avant, une réponse refusée ou vide ne

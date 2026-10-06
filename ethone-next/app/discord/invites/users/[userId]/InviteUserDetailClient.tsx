@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { usePathSegment } from "@/lib/hooks/usePathSegment";
@@ -27,7 +27,7 @@ export default function InviteUserDetailClient() {
   const [referrals, setReferrals] = useState<any[]>([]);
   const [search, setSearch] = useState("");
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     if (!userId || !API_BASE) {
       setProfile(null);
@@ -47,14 +47,15 @@ export default function InviteUserDetailClient() {
     } catch {
       // Bot injoignable : aucun profil inventé.
       setProfile(null);
-      setReferrals([]);    } finally {
+      setReferrals([]);
+    } finally {
       setLoading(false);
     }
-  };
+  }, [guildId, userId]);
 
   useEffect(() => {
     fetchData();
-  }, [userId, guildId]);
+  }, [fetchData]);
 
   const filteredReferrals = referrals.filter((r) =>
     (r.invitedUserTag || "").toLowerCase().includes(search.toLowerCase()) ||

@@ -142,6 +142,7 @@ export default function HubSidebar({
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [serverMenuOpen, setServerMenuOpen] = useState(false);
   const [serverQuery, setServerQuery] = useState("");
+  const [serverCursor, setServerCursor] = useState(0);
   const serverMenuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const q = fold(query.trim());
@@ -163,7 +164,7 @@ export default function HubSidebar({
     return guilds.filter((g) => g.name.toLowerCase().includes(sq));
   }, [guilds, serverQuery]);
 
-  // Fermeture du menu serveur lors du clic extérieur ou d'Échap
+  // Fermeture du menu serveur lors du clic extérieur ou navigation au clavier (Échap, ↑, ↓, Entrée)
   useEffect(() => {
     if (!serverMenuOpen) return;
     const onMouseDown = (e: MouseEvent) => {
@@ -174,6 +175,18 @@ export default function HubSidebar({
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setServerMenuOpen(false);
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setServerCursor((c) => Math.min(filteredGuildList.length - 1, c + 1));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setServerCursor((c) => Math.max(0, c - 1));
+      } else if (e.key === "Enter" && filteredGuildList[serverCursor]) {
+        e.preventDefault();
+        const chosen = filteredGuildList[serverCursor];
+        setServerMenuOpen(false);
+        if (onSelectGuild) onSelectGuild(chosen);
+        onClose();
       }
     };
     document.addEventListener("mousedown", onMouseDown);
@@ -182,11 +195,15 @@ export default function HubSidebar({
       document.removeEventListener("mousedown", onMouseDown);
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [serverMenuOpen]);
+  }, [serverMenuOpen, filteredGuildList, serverCursor, onSelectGuild, onClose]);
 
   useEffect(() => {
-    if (serverMenuOpen) setServerQuery("");
-  }, [serverMenuOpen]);
+    if (serverMenuOpen) {
+      setServerQuery("");
+      const idx = filteredGuildList.findIndex((g) => g.id === selectedGuildId);
+      setServerCursor(idx >= 0 ? idx : 0);
+    }
+  }, [serverMenuOpen, selectedGuildId, filteredGuildList]);
 
   // « / » place le curseur dans la recherche (hors champs de saisie).
   useEffect(() => {
@@ -250,8 +267,8 @@ export default function HubSidebar({
             >
               <span className="relative shrink-0">
                 <span
-                  className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-[var(--inset-radius)] bg-[var(--surface-raised)] bg-cover bg-center text-xs font-bold text-[var(--text-primary)] ring-1 ring-[var(--panel-border)] transition-transform duration-200 group-hover:scale-[1.03]"
-                  style={guildIconUrl ? { backgroundImage: `url(${guildIconUrl})` } : undefined}
+                  className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-[var(--inset-radius)] bg-[var(--surface-raised)] bg-cover bg-center text-xs font-bold text-white ring-1 ring-[var(--panel-border)] transition-transform duration-200 group-hover:scale-[1.03]"
+                  style={guildIconUrl ? { backgroundImage: `url(${guildIconUrl})` } : { background: guildTint(guildName) }}
                   aria-hidden="true"
                 >
                   {guildIconUrl ? null : guildInitials(guildName)}
@@ -302,6 +319,7 @@ export default function HubSidebar({
                     onClick={() => {
                       setServerMenuOpen(false);
                       onChangeGuild();
+                      onClose();
                     }}
                     className="flex w-full cursor-pointer items-center gap-2.5 rounded-[var(--inset-radius)] bg-[var(--text-primary)]/[0.04] px-2.5 py-2 text-left text-xs font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-primary)]/15 hover:text-[var(--accent-primary)]"
                   >
@@ -349,21 +367,25 @@ export default function HubSidebar({
                           Aucun serveur correspondant
                         </li>
                       ) : (
-                        filteredGuildList.map((g) => {
+                        filteredGuildList.map((g, i) => {
                           const isSelected = g.id === selectedGuildId;
                           const hasBot = botGuildIds ? botGuildIds.has(g.id) : false;
                           return (
                             <li key={g.id}>
                               <button
                                 type="button"
+                                onMouseEnter={() => setServerCursor(i)}
                                 onClick={() => {
                                   setServerMenuOpen(false);
                                   if (onSelectGuild) onSelectGuild(g);
+                                  onClose();
                                 }}
                                 className={cn(
                                   "group/row relative flex w-full cursor-pointer items-center gap-2 rounded-[var(--inset-radius)] px-2 py-1.5 text-left text-xs transition-colors",
                                   isSelected
                                     ? "bg-[var(--text-primary)]/[0.08] font-semibold text-[var(--text-primary)]"
+                                    : i === serverCursor
+                                    ? "bg-[var(--text-primary)]/[0.06] text-[var(--text-primary)]"
                                     : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.05] hover:text-[var(--text-primary)]"
                                 )}
                               >

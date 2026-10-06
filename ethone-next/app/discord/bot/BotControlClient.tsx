@@ -838,8 +838,11 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
           throw new Error(formatApiError(data?.error, ""));
         }
       }
-      (toast as any)?.success?.("Configuration opérationnelle enregistrée avec succès !") ||
-      (toast as any)?.info?.("Configuration enregistrée !");
+      if ((toast as any)?.success) {
+        (toast as any).success("Configuration opérationnelle enregistrée avec succès !");
+      } else {
+        (toast as any)?.info?.("Configuration enregistrée !");
+      }
     } catch (err) {
       (toast as any)?.error?.(errorReason(err, "Erreur lors de l'enregistrement."));
     } finally {

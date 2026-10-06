@@ -2,7 +2,6 @@ import Foundation
 import Observation
 import WidgetKit
 
-/// Racine des données de l'app : authentification, client réseau et stores partagés par tous les écrans.
 @MainActor
 @Observable
 final class AppModel {
@@ -20,26 +19,19 @@ final class AppModel {
     let valorant: ValorantStore
     let discord = DiscordStore()
 
-    /// Instance unique : les actions de notification peuvent arriver avant que l'interface n'existe.
     static let shared = AppModel()
 
-    /// Compteur de changements distants par table (rechargement des écrans qui affichent ces tables, voir `reloadOnRemoteChange`).
     private(set) var remoteChanges: [String: Int] = [:]
     @ObservationIgnored private var realtime: RealtimeClient?
     @ObservationIgnored private var pendingTables: Set<String> = []
     @ObservationIgnored private var flushTask: Task<Void, Never>?
 
-    /// Onglet demandé par un lien profond (`ethone://notes`), un raccourci ou une notification.
     var requestedTab: AppTab?
-    /// Pile de navigation de l'onglet « Plus » (ouvre directement une section).
     var morePath: [MoreDestination] = []
 
-    /// Thème actif (fond, ambiance, clair/sombre), observé par l'interface.
     private(set) var themePreset: ThemePreset = Theme.preset
-    /// Accent choisi explicitement ; `nil` = « Auto » (suit le thème).
     private(set) var chosenAccentHex: UInt32? = Theme.chosenAccentHex
 
-    /// Couleur d'accent courante (observée par l'interface pour teinter l'app en direct).
     var accentHex: UInt32 { chosenAccentHex ?? themePreset.accent }
 
     func setTheme(_ preset: ThemePreset) {
@@ -47,7 +39,6 @@ final class AppModel {
         UserDefaults.standard.set(preset.rawValue, forKey: Theme.themeKey)
     }
 
-    /// `nil` rétablit l'accent du thème.
     func setAccent(_ hex: UInt32?) {
         chosenAccentHex = hex
         if let hex { UserDefaults.standard.set(Int(hex), forKey: Theme.accentKey) } else { UserDefaults.standard.removeObject(forKey: Theme.accentKey) }
@@ -71,8 +62,6 @@ final class AppModel {
         WatchBridge.shared.activate()
     }
 
-    // MARK: Synchronisation temps réel (site <-> app)
-
     func startRealtime() {
         if realtime == nil {
             realtime = RealtimeClient(
@@ -90,7 +79,6 @@ final class AppModel {
         pendingTables = []
     }
 
-    /// Regroupe les rafales d'événements (une modification en produit souvent plusieurs) avant de recharger.
     private func remoteChanged(_ table: String) {
         pendingTables.insert(table)
         flushTask?.cancel()
@@ -121,7 +109,6 @@ final class AppModel {
         }
     }
 
-    /// Réveil en arrière-plan : restaure la session si l'app vient d'être lancée par le système, puis recharge tout.
     func backgroundSync() async -> Bool {
         if auth.phase == .launching { await auth.restore() }
         guard auth.phase == .signedIn else { return false }
@@ -142,7 +129,6 @@ final class AppModel {
         await EventActivityManager.sync(events: events.items)
     }
 
-    /// Écrit l'instantané lu par les widgets (App Group) puis demande leur rafraîchissement.
     func publishSnapshot() {
         let open = tasks.items.filter { !$0.isDone }.sorted { $0.createdAt > $1.createdAt }
         let snapshot = SharedSnapshot(
@@ -164,7 +150,6 @@ final class AppModel {
         WidgetCenter.shared.reloadAllTimelines()
     }
 
-    /// Termine une tâche depuis une action de notification (l'app peut être lancée en arrière-plan, sans cache chargé).
     func completeTask(id: String) async {
         if let item = tasks.items.first(where: { $0.id == id }) {
             await tasks.setDone(item, true)
@@ -180,7 +165,6 @@ final class AppModel {
         }
     }
 
-    /// Résumé factuel des données de l'utilisateur, injecté dans les instructions de Brain.
     func brainContext() -> String {
         var lines: [String] = []
         let open = tasks.items.filter { !$0.isDone }
@@ -210,7 +194,6 @@ final class AppModel {
         return lines.joined(separator: "\n")
     }
 
-    /// Pages du site pouvant être ouvertes par une macro, avec l'écran iOS équivalent.
     static let webPages: [(path: String, title: String)] = [
         ("/", "Accueil"), ("/notes", "Notes"), ("/tasks", "Tâches"), ("/focus", "Focus"), ("/habits", "Habitudes"),
         ("/calendar", "Calendrier"), ("/mail", "Mail"), ("/brain", "Brain"), ("/files", "Fichiers"), ("/flows", "Flows"),
@@ -219,10 +202,9 @@ final class AppModel {
         ("/team", "Équipe"), ("/security", "Sécurité"), ("/settings", "Apparence"), ("/scratchpad", "Scratchpad"),
         ("/macros", "Macros"), ("/personas", "Personas"), ("/rss", "RSS"), ("/discord", "Bot Discord"),
         ("/profile", "Profil"), ("/profile-selection", "Profils de travail"), ("/boost", "Performance"), ("/browser", "Navigateur"), ("/leaderboard", "Classement public"), ("/system", "Système"), ("/share", "Liens partagés"), ("/drop", "Dépôts"), ("/admin", "Administration"),
-        ("/soundscape", "Soundscape"),
+        ("/soundscape", "Soundscape"), ("/plugins", "Plugins & Extensions"), ("/marketplace", "Marketplace"),
     ]
 
-    /// Ouvre l'écran iOS correspondant à un chemin du site ; `false` si la page n'a pas d'équivalent.
     @discardableResult
     func openWebPage(_ path: String) -> Bool {
         let key = path.split(separator: "/").first.map(String.init) ?? ""
@@ -234,7 +216,7 @@ final class AppModel {
             "team": .team, "security": .security, "settings": .settings, "notifications": .notifications, "scratchpad": .scratchpad, "macros": .macros,
             "personas": .personas, "rss": .rss, "discord": .discord,
             "profile": .profile, "profile-selection": .workspaces, "boost": .boost, "browser": .browser, "leaderboard": .leaderboard, "system": .system, "share": .sharedLinks, "drop": .sharedLinks, "admin": .admin,
-            "soundscape": .soundscape,
+            "soundscape": .soundscape, "plugins": .plugins, "marketplace": .plugins,
         ]
         if let tab = tabs[key] {
             requestedTab = tab
@@ -248,7 +230,6 @@ final class AppModel {
         return false
     }
 
-    /// Liens `ethone://<page>` (raccourcis, widgets, notifications).
     func handle(url: URL) {
         guard url.scheme == Config.oauthCallbackScheme, let host = url.host else { return }
         if let tab = AppTab(rawValue: host) {
@@ -265,8 +246,7 @@ enum AppTab: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-/// Sections accessibles depuis l'onglet « Plus ».
 enum MoreDestination: String, Hashable, CaseIterable, Identifiable {
-    case settings, notifications, team, bills, scratchpad, macros, personas, rss, valorant, valorantStore, lolTracker, lolRotation, tftTracker, otherGames, sharedLinks, profile, workspaces, leaderboard, boost, browser, system, admin, games, interactions, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security, soundscape
+    case settings, notifications, team, bills, scratchpad, macros, personas, rss, valorant, valorantStore, lolTracker, lolRotation, tftTracker, otherGames, sharedLinks, profile, workspaces, leaderboard, boost, browser, system, admin, games, interactions, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security, soundscape, plugins
     var id: String { rawValue }
 }

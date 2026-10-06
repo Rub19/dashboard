@@ -45022,10 +45022,58 @@ const v1_55_32_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_33_fr: ChangelogEntry = {
+  version: "v1.55.33",
+  date: "2026-10-06",
+  title: "Parité iOS Native : Marketplace de Plugins & Extensions Liquid Glass",
+  items: [
+    "Intégration native de l'écosystème Plugins & Extensions sur iOS : catalogue complet (Widgets, Thèmes, Dispositions, Automatisations, IA Brain) avec badges de certification officiels, notes et compteurs d'installation.",
+    "Boutique interactive Liquid Glass : recherche en direct, filtrage par onglets (Tous, Installés, Favoris) et sélecteur horizontal de catégories.",
+    "Gestion locale des extensions : installation, désactivation instantanée sans perte de configuration et mise en favoris avec persistance.",
+    "Fiche détaillée modale : aperçu des permissions requises, fonctionnalités intégrées, métadonnées techniques et journal des modifications par extension.",
+  ],
+};
+
+const v1_55_33_en: ChangelogEntry = {
+  version: "v1.55.33",
+  date: "2026-10-06",
+  title: "Native iOS Parity: Liquid Glass Plugins & Extensions Marketplace",
+  items: [
+    "Native Plugins & Extensions ecosystem on iOS: full catalog (Widgets, Themes, Layouts, Automations, Brain AI) with official verification badges, ratings, and install counts.",
+    "Interactive Liquid Glass store: live search, segmented filter tabs (All, Installed, Favorites), and horizontal category selector.",
+    "Local extension management: 1-tap install/uninstall, instant enable/disable toggles, and favorites with persistent state.",
+    "Detailed modal sheet: required permissions overview, key feature breakdown, technical metadata, and extension changelogs.",
+  ],
+};
+
+const v1_55_33_es: ChangelogEntry = {
+  version: "v1.55.33",
+  date: "2026-10-06",
+  title: "Paridad Nativa en iOS: Marketplace de Plugins y Extensiones Liquid Glass",
+  items: [
+    "Ecosistema nativo de Plugins y Extensiones en iOS: catálogo completo (Widgets, Temas, Diseños, Automatizaciones, IA Brain) con insignias de verificación, calificaciones y descargas.",
+    "Tienda interactiva Liquid Glass: búsqueda en tiempo real, pestañas de filtrado (Todos, Instalados, Favoritos) y selector horizontal de categorías.",
+    "Gestión local de extensiones: instalación en 1 toque, activación/desactivación instantánea y favoritos con persistencia.",
+    "Ficha detallada modal: permisos requeridos, características clave, metadatos técnicos e historial de versiones por extensión.",
+  ],
+};
+
+const v1_55_33_de: ChangelogEntry = {
+  version: "v1.55.33",
+  date: "2026-10-06",
+  title: "Native iOS-Parität: Liquid Glass Plugins & Erweiterungen Marketplace",
+  items: [
+    "Natives Plugins- & Erweiterungs-Ökosystem auf iOS: vollständiger Katalog (Widgets, Themes, Layouts, Automatisierungen, Brain KI) mit offiziellen Verifizierungsabzeichen, Bewertungen und Installationszahlen.",
+    "Interaktiver Liquid Glass Store: Live-Suche, Filter-Tabs (Alle, Installiert, Favoriten) und horizontale Kategorieauswahl.",
+    "Lokale Erweiterungsverwaltung: 1-Klick-Installation, sofortiges Aktivieren/Deaktivieren und Favoriten mit persistenter Speicherung.",
+    "Detailliertes modales Sheet: Übersicht der Berechtigungen, Funktionsaufschlüsselung, technische Metadaten und Versionsverlauf je Erweiterung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

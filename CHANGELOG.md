@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.33 — 2026-10-06
+
+**Parité iOS Native : Marketplace de Plugins & Extensions Liquid Glass**
+
+- Écosystème natif de Plugins & Extensions pour iOS (`PluginsView`, `PluginsStore`, `PluginsCatalog`) : catalogue complet catégorisé (Widgets, Thèmes, Dispositions, Automatisations, IA Brain) avec badges officiels de vérification (`ETHONE Core`, `Vérifié`, `Communauté`), notes communautaires, métadonnées techniques et nombre d'installations.
+- Interface moderne Liquid Glass : recherche instantanée plein texte (`searchable`), onglets de filtrage segmented (Tous, Installés, Favoris) et pills horizontales de catégories avec reflets dynamiques aux couleurs du thème de l'application.
+- Gestion d'état locale ultra-rapide avec persistance `UserDefaults` : installation / désinstallation en 1 geste, bascule d'activation sans perte des réglages et gestion des favoris.
+- Fiche détaillée modale (`PluginDetailSheet`) : détail complet des permissions système, liste des fonctionnalités, historique de version et actions directes.
+- Intégration complète dans la navigation globale iOS (`MoreDestination.plugins`, routage d'URL universelles `/plugins` et `/marketplace` vers l'écran natif).
+
 ## v1.55.32 — 2026-10-06
 
 **Parité iOS Native : Soundscape Studio & Modules Discord Avancés**

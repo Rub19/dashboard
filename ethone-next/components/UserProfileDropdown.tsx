@@ -17,7 +17,6 @@ import { useToast } from "@/components/ToastProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import ChangelogModal from "@/components/ChangelogModal";
 
-// Lazy: only loaded once the user opens the avatar picker
 const AvatarLibrary = dynamic(() => import("@/components/profile/AvatarLibrary"), {
   ssr: false,
 });
@@ -96,10 +95,9 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = changelog[0]?.version || "v1.55.32";
+  const VERSION_LABEL = changelog[0]?.version || "v1.55.33";
 
   const isOwner = Boolean(email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
-  // Raccourcis affichés selon la plateforme (⌘ sur Mac, Ctrl ailleurs).
   const mod = useModKey();
 
   const quickLinks = [

@@ -48,6 +48,7 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.rss) { Label("RSS", systemImage: "dot.radiowaves.up.forward") }
                     NavigationLink(value: MoreDestination.weather) { Label("Météo", systemImage: "cloud.sun.fill") }
                     NavigationLink(value: MoreDestination.soundscape) { Label("Soundscape", systemImage: "waveform.circle.fill") }
+                    NavigationLink(value: MoreDestination.plugins) { Label("Plugins & Extensions", systemImage: "puzzlepiece.extension.fill") }
                 } header: { Text("Applications").sectionTitle() }
                 .listRowBackground(GlassRowBackground())
 
@@ -157,6 +158,7 @@ struct MoreView: View {
                 case .weather: WeatherView()
                 case .security: SecurityView()
                 case .soundscape: SoundscapeView()
+                case .plugins: PluginsView()
                 }
             }
             .task { await refreshStatus() }

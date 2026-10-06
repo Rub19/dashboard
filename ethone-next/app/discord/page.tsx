@@ -206,6 +206,8 @@ const MODULE_ICONS = {
   serverstats: ethoneIcon("mod-serverstats"),
   highlights: ethoneIcon("mod-highlights"),
   bot: ethoneIcon("mod-bot"),
+  streamers: ethoneIcon("mod-events"),
+  games: ethoneIcon("games"),
 };
 
 /** Cartes de l'accueil : les pages les plus utilisées, chacune ouvre la vraie page du module pour le serveur choisi. */
@@ -511,8 +513,8 @@ const NAV_MODULES_BASE: NavigatorModule[] = [
   { id: "economy", title: "Économie & Boutique", description: "Monnaie du serveur, récompense quotidienne, boutique de rôles et classement.", icon: ethoneIcon("mod-economy"), tint: "text-yellow-300", href: MODULE_PAGES.economy },
   { id: "calendar", title: "Calendrier", description: "Vue mensuelle des événements, anniversaires et rappels du serveur.", icon: ethoneIcon("calendar"), tint: "text-orange-300", href: MODULE_PAGES.calendar },
   { id: "automodnative", title: "AutoMod natif Discord", description: "Règles d'auto-modération intégrées à Discord (mots-clés, spam, mentions), exécutées même si le bot est hors ligne.", icon: MODULE_ICONS.security, tint: "text-red-300", href: MODULE_PAGES.automodnative },
-  { id: "streamers", title: "Alertes Streamers", description: "Notifications en direct Twitch, YouTube & Kick avec rôle @En Live automatique et embeds animés.", icon: ethoneIcon("mod-events"), tint: "text-purple-400", href: MODULE_PAGES.streamers },
-  { id: "games", title: "Mini-Jeux & Casino", description: "Blackjack 21, Roulette Royale, Duels de dés PvP, cagnotte progressive et quêtes actives.", icon: ethoneIcon("mod-giveaways"), tint: "text-amber-400", href: MODULE_PAGES.games },
+  { id: "streamers", title: "Alertes Streamers", description: "Notifications en direct Twitch, YouTube & Kick avec rôle @En Live automatique et embeds animés.", icon: MODULE_ICONS.streamers, tint: "text-purple-400", href: MODULE_PAGES.streamers },
+  { id: "games", title: "Mini-Jeux & Casino", description: "Blackjack 21, Roulette Royale, Duels de dés PvP, cagnotte progressive et quêtes actives.", icon: MODULE_ICONS.games, tint: "text-amber-400", href: MODULE_PAGES.games },
 ];
 
 

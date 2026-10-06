@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.30 — 2026-10-06
+
+**Synchronisation de la Palette de Commandes et de l'Assistant de Configuration Discord**
+
+- Intégration globale des modules Alertes Streamers (`/discord/streamers`), Mini-Jeux & Casino (`/discord/games`) et AutoMod natif dans l'index de la palette de commandes (`Ctrl+K`, `DISCORD_MODULES`).
+- Enrichissement des mots-clés de recherche globale (stream, streamer, twitch, youtube, kick, alerte, notification, casino, jeux, mini jeux, blackjack, roulette, des, jackpot, ethone coin, pari).
+- Synchronisation des préréglages et regroupements de modules dans l'assistant de configuration initiale (`SetupModulesStep.tsx`) pour une cohérence parfaite avec le registre du bot.
+- Référencement de l'icône dédiée `games` et harmonisation des icônes de modules dans `MODULE_ICONS` et `NAV_MODULES_BASE`.
+
 ## v1.55.29 — 2026-10-06
 
 **Optimisation de l'Ergonomie Discord et Zéro Avertissement de Code**

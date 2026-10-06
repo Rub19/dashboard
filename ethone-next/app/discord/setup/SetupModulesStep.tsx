@@ -18,7 +18,7 @@ const PRESETS: Array<{ id: string; emoji: string; label: string; text: string; i
     emoji: "🎉",
     label: "Communauté",
     text: "Accueil, rôles, niveaux, économie, sondages, événements, tickets…",
-    ids: [...CORE, "welcome", "roles", "leveling", "economy", "suggestions", "polls", "giveaways", "events", "forms", "starboard", "highlights", "birthdays", "voice", "tickets", "invites", "afk", "counting", "stats", "statroles", "serverstats", "sticky", "commands"],
+    ids: [...CORE, "welcome", "roles", "leveling", "economy", "suggestions", "polls", "giveaways", "events", "forms", "starboard", "highlights", "birthdays", "voice", "tickets", "invites", "afk", "counting", "stats", "statroles", "reports", "serverstats", "sticky", "commands", "streamers", "games"],
   },
   { id: "security", emoji: "🛡️", label: "Sécurité", text: "Anti-Raid, Anti-Nuke, AutoMod, journaux, accueil, tickets, sauvegardes.", ids: [...CORE, "security", "anti-nuke", "automod", "logs", "welcome", "tickets", "backups", "reports", "secureroles"] },
   { id: "all", emoji: "✅", label: "Tout activer", text: "Tous les modules, y compris l'assistant IA.", ids: "all" },
@@ -26,7 +26,7 @@ const PRESETS: Array<{ id: string; emoji: string; label: string; text: string; i
 
 const GROUPS: Array<{ title: string; ids: string[] }> = [
   { title: "Protection & gestion", ids: ["moderation", "security", "anti-nuke", "automod", "logs", "tickets", "reports", "secureroles", "backups", "invites"] },
-  { title: "Communauté & animation", ids: ["welcome", "roles", "leveling", "economy", "suggestions", "polls", "giveaways", "events", "forms", "starboard", "highlights", "birthdays", "music", "voice", "commands", "tags", "reminders", "sticky", "afk", "counting", "stats", "statroles", "serverstats", "ai"] },
+  { title: "Communauté & animation", ids: ["welcome", "roles", "leveling", "economy", "suggestions", "polls", "giveaways", "events", "forms", "starboard", "highlights", "birthdays", "music", "voice", "commands", "tags", "reminders", "sticky", "afk", "counting", "stats", "statroles", "serverstats", "streamers", "games", "ai"] },
 ];
 
 const EXTRA_TITLES: Record<string, string> = { ai: "Assistant IA" };

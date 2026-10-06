@@ -44882,10 +44882,58 @@ const v1_55_29_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_30_fr: ChangelogEntry = {
+  version: "v1.55.30",
+  date: "2026-10-06",
+  title: "Synchronisation Palette de Commandes & Assistant de Configuration Discord",
+  items: [
+    "Intégration globale des modules Alertes Streamers (/discord/streamers), Mini-Jeux & Casino (/discord/games) et AutoMod natif dans la palette de commandes (Ctrl+K).",
+    "Mots-clés de recherche enrichis pour un accès immédiat depuis n'importe quelle page du tableau de bord.",
+    "Synchronisation des préréglages et catégories de l'assistant d'onboarding Discord avec le registre d'activation du bot.",
+    "Harmonisation des icônes de modules avec l'icône dédiée aux jeux et mini-jeux.",
+  ],
+};
+
+const v1_55_30_en: ChangelogEntry = {
+  version: "v1.55.30",
+  date: "2026-10-06",
+  title: "Command Palette & Discord Setup Wizard Synchronization",
+  items: [
+    "Global indexing of Streamers Alerts (/discord/streamers), Mini-Games & Casino (/discord/games), and native AutoMod in the Command Palette (Ctrl+K).",
+    "Enriched search keywords for instant navigation across all dashboard pages.",
+    "Synchronized Discord onboarding wizard presets and groups with the bot's runtime module registry.",
+    "Harmonized module icons featuring dedicated gaming iconography.",
+  ],
+};
+
+const v1_55_30_es: ChangelogEntry = {
+  version: "v1.55.30",
+  date: "2026-10-06",
+  title: "Sincronización de Paleta de Comandos y Asistente de Configuración",
+  items: [
+    "Indexación global de Alertas de Streamers (/discord/streamers), Mini-Juegos y Casino (/discord/games) y AutoMod nativo en la paleta de comandos (Ctrl+K).",
+    "Palabras clave enriquecidas para navegación instantánea desde cualquier pantalla.",
+    "Sincronización de ajustes preestablecidos del asistente de bienvenida con el registro del bot.",
+    "Iconografía armonizada para todos los módulos de entretenimiento.",
+  ],
+};
+
+const v1_55_30_de: ChangelogEntry = {
+  version: "v1.55.30",
+  date: "2026-10-06",
+  title: "Synchronisierung der Befehlspalette & Discord-Einrichtungsassistent",
+  items: [
+    "Globale Indexierung von Streamer-Benachrichtigungen (/discord/streamers), Minispielen & Casino (/discord/games) und nativem AutoMod in der Befehlspalette (Strg+K).",
+    "Erweiterte Suchbegriffe für sofortigen Zugriff aus dem gesamten Dashboard.",
+    "Synchronisierung der Onboarding-Voreinstellungen mit der Bot-Modulregistrierung.",
+    "Harmonisierte Modul-Icons mit dedizierter Gaming-Symbolik.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

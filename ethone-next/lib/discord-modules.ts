@@ -57,4 +57,7 @@ export const DISCORD_MODULES: DiscordModuleMeta[] = [
   { id: "analytics", title: "Vue d'Ensemble & Insights", href: "/discord/analytics", keywords: ["analytics", "insights", "stats", "activite", "graphique"], icon: "mod-analytics", tint: "text-indigo-300" },
   { id: "ai", title: "AI Assistant", href: "/discord/ai", keywords: ["ia", "ai", "assistant", "chatbot", "brain", "openrouter"], icon: "mod-ai", tint: "text-violet-400" },
   { id: "bot", title: "Bot Control Center", href: "/discord/bot", keywords: ["bot", "controle", "diagnostic", "statut", "presence", "maintenance", "taches"], icon: "mod-bot", tint: "text-indigo-400" },
+  { id: "automodnative", title: "AutoMod natif Discord", href: "/discord/automod-native", keywords: ["automod", "regles", "discord natif", "filtre", "spam", "mentions"], icon: "mod-security", tint: "text-red-300" },
+  { id: "streamers", title: "Alertes Streamers", href: "/discord/streamers", keywords: ["stream", "streamer", "twitch", "youtube", "kick", "live", "notification", "alerte"], icon: "mod-events", tint: "text-purple-400" },
+  { id: "games", title: "Mini-Jeux & Casino", href: "/discord/games", keywords: ["casino", "jeux", "mini jeux", "blackjack", "roulette", "des", "jackpot", "ethone coin", "pari"], icon: "games", tint: "text-amber-400" },
 ];

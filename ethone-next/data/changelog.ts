@@ -45713,6 +45713,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_46_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_46_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_46_de);
 
+const v1_55_47_fr: ChangelogEntry = {
+  version: "v1.55.47",
+  date: "2026-10-06",
+  title: "Dashboard Web : Alignement Espaces & Gestionnaire de Flows Intégré",
+  items: [
+    "Espaces Partagés (/spaces) : alignement responsive précis des onglets et suppression des marges superflues sur smartphone et tablette.",
+    "Inspecteur d'Espace (/spaces/[spaceId]) : affichage d'un indicateur de chargement dédié et écran d'erreur clair avec bouton de retour si l'espace est introuvable.",
+    "Gestionnaire de Flows (/flows) : barre de création intégrée réunissant le sélecteur de modèle et le champ de nom personnalisé dans une carte épurée.",
+    "Fiabilité & Erreurs : meilleure gestion des états asynchrones lors du chargement des espaces Cloud.",
+  ],
+};
+
+const v1_55_47_en: ChangelogEntry = {
+  version: "v1.55.47",
+  date: "2026-10-06",
+  title: "Web Dashboard: Spaces Mobile Alignment & Integrated Flows Manager",
+  items: [
+    "Shared Spaces (/spaces): accurate responsive alignment of tabs removing excess margin offsets on mobile and tablet screens.",
+    "Space Inspector (/spaces/[spaceId]): dedicated loading indicator and clear error fallback screen with back button if space is missing.",
+    "Flows Manager (/flows): unified creation bar combining template selector and custom flow name input into a single clean panel.",
+    "Reliability & Fallbacks: hardened asynchronous states when loading Cloud workspaces.",
+  ],
+};
+
+const v1_55_47_es: ChangelogEntry = {
+  version: "v1.55.47",
+  date: "2026-10-06",
+  title: "Panel Web: Alineación Móvil de Espacios & Gestor de Flujos Integrado",
+  items: [
+    "Espacios Compartidos (/spaces): alineación responsiva precisa de pestañas eliminando márgenes innecesarios en móviles y tabletas.",
+    "Inspector de Espacio (/spaces/[spaceId]): indicador de carga dedicado y pantalla de error con botón de regreso si el espacio no existe.",
+    "Gestor de Flujos (/flows): barra de creación unificada que combina el selector de plantillas y el nombre personalizado en un panel limpio.",
+    "Fiabilidad y Errores: gestión reforzada de estados asíncronos al cargar espacios en la nube.",
+  ],
+};
+
+const v1_55_47_de: ChangelogEntry = {
+  version: "v1.55.47",
+  date: "2026-10-06",
+  title: "Web-Dashboard: Mobile Bereichs-Ausrichtung & Integrierter Flow-Manager",
+  items: [
+    "Geteilte Bereiche (/spaces): Präzise responsive Ausrichtung der Tabs ohne überflüssige Abstände auf Mobilgeräten und Tablets.",
+    "Bereichs-Inspektor (/spaces/[spaceId]): Eigener Ladeindikator und klarer Fehlerzustand samt Zurück-Button bei nicht gefundenen Bereichen.",
+    "Flow-Manager (/flows): Einheitliche Erstellungsleiste, die Vorlagenauswahl und benutzerdefinierten Namen in einem aufgeräumten Panel bündelt.",
+    "Zuverlässigkeit & Fehlerbehandlung: Optimierte asynchrone Zustandsverwaltung beim Laden von Cloud-Bereichen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_47_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_47_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_47_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_47_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

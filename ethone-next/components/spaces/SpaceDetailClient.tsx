@@ -39,7 +39,7 @@ export default function SpaceDetailClient() {
   const spaceId = typeof params?.spaceId === "string" ? params.spaceId : Array.isArray(params?.spaceId) ? params.spaceId[0] : null;
   const { success, error: showError } = useToast();
 
-  const { spaces, linkDiscord } = useSharedSpaces();
+  const { spaces, linkDiscord, loading: spacesLoading } = useSharedSpaces();
   const space = useMemo(() => spaces.find((s) => s.id === spaceId) || null, [spaces, spaceId]);
   const { members, invite, revoke, remove: removeMember } = useSpaceMembers(spaceId);
   const { items: tasks, create, update, remove: removeTask } = useSpaceTasks(spaceId);
@@ -162,6 +162,36 @@ export default function SpaceDetailClient() {
   }
 
   if (!spaceId) return null;
+
+  if (spacesLoading && !space) {
+    return (
+      <div className="flex h-full min-h-0 w-full items-center justify-center p-6">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--accent-primary)] border-t-transparent" />
+          <p className="text-xs text-[var(--text-muted)]">Chargement de l&apos;espace...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!space && !spacesLoading) {
+    return (
+      <div className="flex h-full min-h-0 w-full items-center justify-center p-6">
+        <div className="flex max-w-sm flex-col items-center gap-3 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--danger)]/10 text-[var(--danger)]">
+            <Users className="h-6 w-6" />
+          </div>
+          <h2 className="text-base font-bold text-[var(--text-primary)]">Espace introuvable</h2>
+          <p className="text-xs text-[var(--text-muted)]">
+            Cet espace partagé n&apos;existe pas ou vous n&apos;avez pas les droits nécessaires pour y accéder.
+          </p>
+          <Button type="button" variant="primary" size="sm" onClick={() => router.push("/spaces")} className="mt-2">
+            Retour aux espaces
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden p-4 sm:p-6">

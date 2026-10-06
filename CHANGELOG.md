@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.47 — 2026-10-06
+
+**Dashboard Web : Alignement Espaces & Gestionnaire de Flows Intégré**
+
+- Espaces Partagés (/spaces) : alignement responsive précis des onglets et suppression des marges superflues sur smartphone et tablette.
+- Inspecteur d'Espace (/spaces/[spaceId]) : affichage d'un indicateur de chargement dédié et écran d'erreur clair avec bouton de retour si l'espace est introuvable.
+- Gestionnaire de Flows (/flows) : barre de création intégrée réunissant le sélecteur de modèle et le champ de nom personnalisé dans une carte épurée.
+- Fiabilité & Erreurs : meilleure gestion des états asynchrones lors du chargement des espaces Cloud.
+
 ## v1.55.46 — 2026-10-06
 
 **Dashboard Web : Filtres Dynamiques de Tâches & Expérience Mobile Notes Apple-Grade**

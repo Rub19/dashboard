@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.47",
+    "date": "2026-10-06",
+    "title": "Dashboard Web : Alignement Espaces & Gestionnaire de Flows Intégré",
+    "items": [
+      "Espaces Partagés (/spaces) : alignement responsive précis des onglets et suppression des marges superflues sur smartphone et tablette.",
+      "Inspecteur d'Espace (/spaces/[spaceId]) : affichage d'un indicateur de chargement dédié et écran d'erreur clair avec bouton de retour si l'espace est introuvable.",
+      "Gestionnaire de Flows (/flows) : barre de création intégrée réunissant le sélecteur de modèle et le champ de nom personnalisé dans une carte épurée.",
+      "Fiabilité & Erreurs : meilleure gestion des états asynchrones lors du chargement des espaces Cloud."
+    ]
+  },
+  {
     "version": "v1.55.46",
     "date": "2026-10-06",
     "title": "Dashboard Web : Filtres Dynamiques de Tâches & Expérience Mobile Notes Apple-Grade",
@@ -527,14 +538,6 @@
       "Profil › Apparence : importez votre propre bannière en fond de carte (les GIF restent animés).",
       "Tracker Valorant : « Charger plus » remonte vraiment l'historique, 25 parties par clic, jusqu'à la plus ancienne disponible.",
       "Les parties anciennes affichent un résumé (score, agent, carte, stats) sans le tableau des 10 joueurs."
-    ]
-  },
-  {
-    "version": "v1.53.7",
-    "date": "2026-10-04",
-    "title": "Tracker LoL : icônes des runes",
-    "items": [
-      "Les icônes des runes principales s'affichent (leur adresse était incorrecte)."
     ]
   }
 ]

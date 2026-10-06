@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMemo, useState } from "react";
 import { Zap, Workflow, CheckCircle2, Plus } from "@/components/icons/ph";
@@ -217,42 +217,47 @@ export default function FlowsPage() {
         ))}
       </div>
 
-      <div className="mb-6 flex flex-col items-start justify-between gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card)] p-4 backdrop-blur-md sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-sm font-semibold text-[var(--text-primary)]">Gestionnaire de Flows</h1>
-          <p className="text-xs text-[var(--text-muted)]/80">Créez, exécutez et automatisez vos flows.</p>
+      <div className="mb-6 flex flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card)] p-4 backdrop-blur-md">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div>
+            <h1 className="text-sm font-semibold text-[var(--text-primary)]">Gestionnaire de Flows</h1>
+            <p className="text-xs text-[var(--text-muted)]/80">Créez, exécutez et automatisez vos flows de travail.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-[var(--text-muted)] shrink-0">Modèle :</span>
+            <Select
+              value={selectedTemplate}
+              onChange={setSelectedTemplate}
+              options={TEMPLATES.map((t) => ({ id: t.id, label: i18n(t.id) }))}
+              aria-label={i18n("workspace")}
+              className="min-w-0 sm:min-w-[9rem]"
+            />
+          </div>
         </div>
 
-        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
-          <Select
-            value={selectedTemplate}
-            onChange={setSelectedTemplate}
-            options={TEMPLATES.map((t) => ({ id: t.id, label: i18n(t.id) }))}
-            aria-label={i18n("workspace")}
-            className="min-w-0 sm:min-w-[9rem]"
+        <div className="flex items-center gap-2 pt-1">
+          <Input
+            type="text"
+            value={newLabel}
+            onChange={(e) => setNewLabel(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addFlow()}
+            aria-label="Nom du flow personnalisé"
+            placeholder="Nom personnalisé du flow (ex: Sprint du matin)..."
+            inputSize="compact"
+            className="min-w-0 flex-1"
           />
           <Button
             type="button"
             variant="primary"
-            size="sm"
+            size="md"
             onClick={addFlow}
             disabled={loading}
             leftIcon={<Plus className="h-3.5 w-3.5" />}
           >
-            Nouveau Flow
+            Créer
           </Button>
         </div>
       </div>
-
-      <Input
-        type="text"
-        value={newLabel}
-        onChange={(e) => setNewLabel(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && addFlow()}
-        aria-label={i18n("create")}
-        placeholder={i18n("create")}
-        className="w-full"
-      />
 
       {error && (
         <div className="rounded-[var(--panel-radius)] border border-red-500/20 bg-red-500/[0.05] p-4 text-sm text-red-400">

@@ -147,16 +147,16 @@ export default function SpacesPage() {
       </div>
 
       <Tabs defaultValue="presets" className="flex min-h-0 flex-1 flex-col">
-        <TabsList className="mx-6 mt-1 self-start">
+        <TabsList className="mt-1 self-start">
           <TabsTrigger value="presets">Préréglages</TabsTrigger>
           <TabsTrigger value="shared">Partagés</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="shared" className="min-h-0 flex-1 overflow-y-auto p-6 pb-10 no-scrollbar">
+        <TabsContent value="shared" className="min-h-0 flex-1 overflow-y-auto py-4 pb-10 no-scrollbar">
           <SharedSpacesTab />
         </TabsContent>
 
-        <TabsContent value="presets" className="min-h-0 w-full flex-1 space-y-6 overflow-y-auto p-6 pb-10 no-scrollbar">
+        <TabsContent value="presets" className="min-h-0 w-full flex-1 space-y-6 overflow-y-auto py-4 pb-10 no-scrollbar">
       <FlatCard>
         <h2 className="mb-3 text-sm font-semibold capitalize text-[var(--text-primary)]">{i18n("active")} {i18n("spaces")}</h2>
         <div className="stagger-children grid grid-cols-2 gap-3 sm:grid-cols-4">

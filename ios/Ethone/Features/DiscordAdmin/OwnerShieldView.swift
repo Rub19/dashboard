@@ -564,7 +564,7 @@ struct OwnerShieldView: View {
             ForEach(filteredGuilds) { guild in
                 GlassCard {
                     HStack(spacing: 12) {
-                        AvatarView(url: guild.guildIcon, name: guild.guildName, size: 40)
+                        AvatarView(urlString: guild.guildIcon, name: guild.guildName, size: 40)
 
                         VStack(alignment: .leading, spacing: 3) {
                             Text(guild.guildName)

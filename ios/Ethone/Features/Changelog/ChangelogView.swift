@@ -195,7 +195,7 @@ struct ChangelogView: View {
                     HStack(spacing: 8) {
                         Text("ETHONE")
                             .font(.headline)
-                        GlassBadge(text: appVersionString, color: Theme.accent)
+                        GlassPill(text: appVersionString, tint: Theme.accent)
                     }
                     Text("Toutes les évolutions, nouveautés et corrections de l'application.")
                         .font(.caption)
@@ -256,7 +256,7 @@ struct ChangelogView: View {
                     HStack(alignment: .top, spacing: 12) {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 8) {
-                                GlassBadge(text: entry.version, color: Theme.accent)
+                                GlassPill(text: entry.version, tint: Theme.accent)
                                 if !entry.date.isEmpty {
                                     Text(entry.date)
                                         .font(.caption2)
@@ -343,7 +343,7 @@ struct ChangelogView: View {
     private func categoryColor(_ cat: ChangelogType) -> Color {
         switch cat {
         case .feature: return Theme.accent
-        case .fix: return Theme.info
+        case .fix: return Color.blue
         case .update: return Theme.warning
         case .all: return .primary
         }

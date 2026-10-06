@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.44",
+    "date": "2026-10-06",
+    "title": "Dashboard Web : Bento Responsive, Navigation Mobile Fichiers & Hub d'Activité Interactif",
+    "items": [
+      "Accueil Bento : harmonisation responsive des colonnes sur mobile, tablette et desktop pour un affichage équilibré sans vide latéral.",
+      "Carte Flux du jour & Notes : ajout d'un accès direct à l'agenda dans l'en-tête, préservation du minuteur Focus même les jours libres, et affichage de 3 notes récentes.",
+      "Gestionnaire de fichiers : barre de navigation tactile mobile (Accueil, Fichiers, Récents, Favoris, Corbeille) avec compteurs en temps réel et filtres pour les éléments partagés et espaces.",
+      "Centre d'activité : interactivité complète de la timeline (événements isolés et regroupés) avec tiroir d'inspection détaillé et raccourcis rapides vers Tâches, Notes, Calendrier, Fichiers et Brain."
+    ]
+  },
+  {
     "version": "v1.55.43",
     "date": "2026-10-06",
     "title": "Pureté Native : Liquid Glass iOS 26/27 & Material Design 3 Android",
@@ -521,14 +532,6 @@
       "La durée réelle de chaque partie s'affiche (au lieu d'un « 25m 00s » par défaut).",
       "Les parties annulées (remake) sont marquées « Remake » au lieu de Victoire ou Défaite.",
       "Le détail d'une partie indique la bonne équipe gagnante."
-    ]
-  },
-  {
-    "version": "v1.53.4",
-    "date": "2026-10-04",
-    "title": "Tracker LoL : sorts et rune affichés",
-    "items": [
-      "Les sorts d'invocateur et la rune principale de chaque joueur s'affichent, y compris pour les parties déjà en cache."
     ]
   }
 ]

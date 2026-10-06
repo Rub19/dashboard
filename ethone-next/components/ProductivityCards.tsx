@@ -68,7 +68,6 @@ export type DayTimelineCardProps = {
 function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, scrollable = true, loading = false }: DayTimelineCardProps) {
   const i18n = useI18n();
   const router = useRouter();
-  const handleAddEvent = useCallback(() => { router.push("/calendar"); }, [router]);
   const focusCtx = useFocus();
   const { state, format, start } = focus ?? focusCtx;
 
@@ -98,6 +97,21 @@ function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, sc
     [isLive, i18n]
   );
 
+  const action = useMemo(
+    () => (
+      <button
+        type="button"
+        onClick={() => router.push("/calendar")}
+        className="relative z-0 inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2 py-1 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] cursor-pointer"
+        title={i18n("seeAgenda", "Calendrier")}
+      >
+        <Icon name="calendar" className="h-3 w-3" />
+        <span>{i18n("seeAgenda", "Agenda")}</span>
+      </button>
+    ),
+    [router, i18n]
+  );
+
   if (loading) {
     return (
       <BentoCard title={i18n("daystream")} icon="calendar" className={cn("h-full", className)} scrollable={scrollable} state="loading">
@@ -106,19 +120,14 @@ function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, sc
     );
   }
 
-  const isEmpty = events.length === 0 && nextTasks.length === 0;
-
   return (
     <BentoCard
       title={i18n("daystream")}
       icon="calendar"
       className={cn("h-full", className)}
       badge={badge}
+      action={action}
       scrollable={scrollable}
-      state={isEmpty ? "empty" : undefined}
-      stateMessage={isEmpty ? i18n("dayTimelineEmpty", "Aucun événement ou tâche aujourd'hui") : undefined}
-      onAction={isEmpty ? handleAddEvent : undefined}
-      actionLabel={i18n("seeAgenda", "Voir mon agenda")}
     >
       <div className="flex flex-1 flex-col justify-between gap-3">
         <div className="space-y-2">
@@ -289,7 +298,7 @@ function RecentNotesCardImpl({ notes, className = "", scrollable = true, loading
             new Date(String(b.updatedAt || b.createdAt || 0)).getTime() -
             new Date(String(a.updatedAt || a.createdAt || 0)).getTime()
         )
-        .slice(0, 2),
+        .slice(0, 3),
     [notes]
   );
 

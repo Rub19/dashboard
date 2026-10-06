@@ -45366,6 +45366,54 @@ const v1_55_39_de: ChangelogEntry = {
   ],
 };
 
+const v1_55_44_fr: ChangelogEntry = {
+  version: "v1.55.44",
+  date: "2026-10-06",
+  title: "Dashboard Web : Bento Responsive, Navigation Mobile Fichiers & Hub d'Activité Interactif",
+  items: [
+    "Accueil Bento : harmonisation responsive des colonnes sur mobile, tablette et desktop pour un affichage équilibré sans vide latéral.",
+    "Carte Flux du jour & Notes : ajout d'un accès direct à l'agenda dans l'en-tête, préservation du minuteur Focus même les jours libres, et affichage de 3 notes récentes.",
+    "Gestionnaire de fichiers : barre de navigation tactile mobile (Accueil, Fichiers, Récents, Favoris, Corbeille) avec compteurs en temps réel et filtres pour les éléments partagés et espaces.",
+    "Centre d'activité : interactivité complète de la timeline (événements isolés et regroupés) avec tiroir d'inspection détaillé et raccourcis rapides vers Tâches, Notes, Calendrier, Fichiers et Brain.",
+  ],
+};
+
+const v1_55_44_en: ChangelogEntry = {
+  version: "v1.55.44",
+  date: "2026-10-06",
+  title: "Web Dashboard: Responsive Bento, Mobile Files Navigation & Interactive Activity Hub",
+  items: [
+    "Bento Home: balanced column responsiveness across mobile, tablet, and desktop preventing grid gaps.",
+    "Day Timeline & Notes: added direct Agenda action button in the header, preserved inline Focus timer even on free days, and expanded to 3 recent notes.",
+    "File Explorer: mobile navigation pills (Home, Files, Recent, Starred, Trash) with real-time badges and support for shared items and workspace filtering.",
+    "Activity Hub: interactive timeline events (individual and clustered) opening the detailed inspection drawer with deep links to Tasks, Notes, Calendar, Files, and Brain.",
+  ],
+};
+
+const v1_55_44_es: ChangelogEntry = {
+  version: "v1.55.44",
+  date: "2026-10-06",
+  title: "Panel Web: Bento Responsivo, Navegación Móvil de Archivos & Centro de Actividad Interactivo",
+  items: [
+    "Inicio Bento: armonización de columnas en móvil, tableta y escritorio evitando espacios vacíos en la cuadrícula.",
+    "Línea del Día y Notas: botón de acción directa a la agenda en el encabezado, temporizador de Focus conservado en días libres y 3 notas recientes.",
+    "Explorador de archivos: barra táctil móvil de navegación (Inicio, Archivos, Recientes, Favoritos, Papelera) con contadores en tiempo real y soporte para compartidos.",
+    "Centro de actividad: interactividad total en la cronología abriendo la ficha de inspección detallada con enlaces rápidos a Tareas, Notas, Calendario, Archivos y Brain.",
+  ],
+};
+
+const v1_55_44_de: ChangelogEntry = {
+  version: "v1.55.44",
+  date: "2026-10-06",
+  title: "Web-Dashboard: Responsives Bento, Mobile Datei-Navigation & Interaktiver Aktivitäts-Hub",
+  items: [
+    "Bento-Startseite: Harmonische Spalten-Responsivität für Mobilgeräte, Tablets und Desktop zur Vermeidung von Rasterlücken.",
+    "Tagesablauf & Notizen: Direkter Kalender-Aktionsbutton im Header, Erhalt des Focus-Timers auch an freien Tagen und 3 aktuelle Notizen.",
+    "Dateimanager: Mobile Navigationsleiste (Start, Dateien, Zuletzt, Favoriten, Papierkorb) mit Echtzeitzählern und Filter für geteilte Dateien.",
+    "Aktivitäts-Hub: Vollständige Interaktivität der Zeitleiste mit Detail-Inspektion und Schnellzugriffen auf Aufgaben, Notizen, Kalender, Dateien und Brain.",
+  ],
+};
+
 const v1_55_43_fr: ChangelogEntry = {
   version: "v1.55.43",
   date: "2026-10-06",
@@ -45554,10 +45602,10 @@ const v1_55_40_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_43_fr, v1_55_42_fr, v1_55_41_fr, v1_55_40_fr, v1_55_39_fr, v1_55_38_fr, v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_43_en, v1_55_42_en, v1_55_41_en, v1_55_40_en, v1_55_39_en, v1_55_38_en, v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_43_es, v1_55_42_es, v1_55_41_es, v1_55_40_es, v1_55_39_es, v1_55_38_es, v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_43_de, v1_55_42_de, v1_55_41_de, v1_55_40_de, v1_55_39_de, v1_55_38_de, v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+CHANGELOG_BY_LANG.fr.unshift(v1_55_44_fr, v1_55_43_fr, v1_55_42_fr, v1_55_41_fr, v1_55_40_fr, v1_55_39_fr, v1_55_38_fr, v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_44_en, v1_55_43_en, v1_55_42_en, v1_55_41_en, v1_55_40_en, v1_55_39_en, v1_55_38_en, v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_44_es, v1_55_43_es, v1_55_42_es, v1_55_41_es, v1_55_40_es, v1_55_39_es, v1_55_38_es, v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_44_de, v1_55_43_de, v1_55_42_de, v1_55_41_de, v1_55_40_de, v1_55_39_de, v1_55_38_de, v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

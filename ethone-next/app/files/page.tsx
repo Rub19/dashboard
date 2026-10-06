@@ -44,6 +44,9 @@ import {
   CheckSquare,
   Square,
   ArrowUpDown,
+  Home,
+  Folder,
+  Trash2,
 } from "@/components/icons/ph";
 
 function folderPath(files: CloudFile[], folderId: string | null) {
@@ -199,6 +202,10 @@ export default function FilesPage() {
         list = list.filter((f) => !f.isFolder);
       } else if (activeSection === "drive") {
         list = list.filter((f) => !!f.driveFileId);
+      } else if (activeSection === "shared") {
+        list = list.filter((f) => !f.isFolder && (f.tags?.includes("shared") || !!f.webViewLink));
+      } else if (activeSection === "workspaces") {
+        list = list.filter((f) => f.tags?.includes("workspace") || f.tags?.includes("space"));
       } else if (activeSection === "files" && parentId) {
         list = list.filter((f) => f.driveParentId === parentId || f.parentId === parentId);
       } else if (activeSection === "files" && !parentId) {
@@ -441,7 +448,42 @@ export default function FilesPage() {
             </div>
           </div>
 
-          {/* Search bar & Sort Filters */}
+          {isMobile && (
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 text-xs">
+              {[
+                { id: "home" as const, label: "Accueil", icon: Home },
+                { id: "files" as const, label: "Fichiers", icon: Folder },
+                { id: "recent" as const, label: "Récents", icon: Clock },
+                { id: "favorites" as const, label: "Favoris", icon: Star, count: favoriteFiles.length },
+                { id: "trash" as const, label: "Corbeille", icon: Trash2, count: files.filter((f) => f.trashed).length },
+              ].map((tab) => {
+                const active = activeSection === tab.id;
+                const IconComp = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => handleSelectSection(tab.id)}
+                    className={cn(
+                      "flex items-center gap-1.5 rounded-full px-2.5 py-1 font-medium transition-all shrink-0 cursor-pointer text-xs",
+                      active
+                        ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 font-semibold shadow-xs"
+                        : "bg-[var(--surface-raised)]/60 text-[var(--text-muted)] border border-[var(--panel-border)]/60 hover:text-[var(--text-primary)]"
+                    )}
+                  >
+                    <IconComp className="h-3 w-3" />
+                    <span>{tab.label}</span>
+                    {typeof tab.count === "number" && tab.count > 0 && (
+                      <span className="rounded-full bg-[var(--text-primary)]/10 px-1.5 py-0.2 text-[10px] font-mono">
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-muted)]" />

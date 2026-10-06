@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.44 — 2026-10-06
+
+**Dashboard Web : Bento Responsive, Navigation Mobile Fichiers & Hub d'Activité Interactif**
+
+- Accueil Bento : harmonisation responsive des colonnes (`WIDGET_COL_SPAN`) sur mobile, tablette et desktop pour un affichage équilibré évitant les vides latéraux.
+- Carte Flux du jour & Notes : bouton d'accès direct à l'agenda dans l'en-tête, préservation du minuteur Focus même les jours sans événements, et affichage de 3 notes récentes équilibrant la grille.
+- Gestionnaire de fichiers (`/files`) : barre de navigation tactile mobile (Accueil, Fichiers, Récents, Favoris, Corbeille) avec compteurs en temps réel et filtres pour les éléments partagés et espaces.
+- Centre d'activité (`/activity`) : interactivité complète de la timeline (événements isolés et regroupés) ouvrant le tiroir d'inspection détaillé avec liens profonds vers Tâches, Notes, Calendrier, Fichiers, Brain et Connexions.
+
 ## v1.55.43 — 2026-10-06
 
 **Pureté Native : Liquid Glass iOS 26/27 & Material Design 3 Android**

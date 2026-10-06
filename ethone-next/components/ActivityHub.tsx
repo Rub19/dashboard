@@ -223,6 +223,7 @@ function TimelineGroup({
   now,
   expanded,
   onToggle,
+  onSelect,
 }: {
   events: ActivityEntry[];
   mounted: boolean;
@@ -230,6 +231,7 @@ function TimelineGroup({
   now: number | null;
   expanded: boolean;
   onToggle: () => void;
+  onSelect?: (event: ActivityEntry) => void;
 }) {
   const first = events[0];
   const meta = CATEGORY_META[first.category] || CATEGORY_META.system;
@@ -267,10 +269,17 @@ function TimelineGroup({
             >
               <div className="mt-2 space-y-2 border-l border-[var(--text-primary)]/[0.08] pl-3">
                 {events.map((event) => (
-                  <div key={event.id} className="text-[11px] text-[var(--text-muted)]">
-                    <span className="font-medium text-[var(--text-primary)]">{formatLocalTime(event.timestamp, mounted)}</span>
-                    {" · "}{event.description}
-                  </div>
+                  <button
+                    key={event.id}
+                    type="button"
+                    onClick={() => onSelect?.(event)}
+                    className="flex w-full items-center justify-between rounded-lg p-1 text-left text-[11px] text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)] cursor-pointer"
+                  >
+                    <span>
+                      <span className="font-medium text-[var(--text-primary)]">{formatLocalTime(event.timestamp, mounted)}</span>
+                      {" · "}{event.description}
+                    </span>
+                  </button>
                 ))}
               </div>
             </motion.div>
@@ -932,7 +941,7 @@ export default function ActivityHub() {
                   <div className="space-y-0">
                     {clusterDayEvents(group).map(({ key: clusterKey, items }) =>
                       items.length === 1 ? (
-                        <TimelineItem key={clusterKey} event={items[0]} mounted={mounted} i18n={i18n} />
+                        <TimelineItem key={clusterKey} event={items[0]} mounted={mounted} i18n={i18n} onSelect={setSelectedEvent} />
                       ) : (
                         <TimelineGroup
                           key={clusterKey}
@@ -949,6 +958,7 @@ export default function ActivityHub() {
                               return next;
                             })
                           }
+                          onSelect={setSelectedEvent}
                         />
                       )
                     )}

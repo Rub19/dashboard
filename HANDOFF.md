@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-06, version 1.55.43)
+# ETHONE — passation à la prochaine IA (état au 2026-10-06, version 1.55.44)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 
@@ -192,6 +192,7 @@ git log --oneline -10
 - Gestionnaire de Fichiers iOS & Android Réel (v1.55.39 à v1.55.41) : parité native avec arborescence dossiers, fil d'Ariane interactif, grille/liste 2 colonnes, favoris Cloud réels (`ethone_file_favorites`), raccourcis d'action contextuels et inspecteur de détails.
 - Design System Liquid Glass Avancé iOS & Android (v1.55.42) : reflets spéculaires à réfraction de lumière (`LiquidGlassBorder`), fond lumineux ambiant réactif (`AmbientLuminousBackground`), pilules et dock tactile flottant (`LiquidGlassPill`, `NativeFloatingDock`), bulles de chat Brain, mini-barre Focus, orbe IA (`ETHBrainOrb`) et écrans de connexion et verrouillage.
 - Pureté Native iOS 26/27 et Android Material Design 3 (v1.55.43) : élimination de tous les faux dégradés spéculaires manuels sur iOS au profit du framework Apple officiel (`.glassEffect`, `Glass.regular`, `GlassEffectContainer`) ; suppression complète des simulations de verre sur Android (`LiquidGlassSurface`, `AmbientLuminousBackground`) pour adopter 100% l'écosystème Material Design 3 (`Surface`, `FilterChip`, `AssistChip`, élévation tonale, formes standard).
+- Dashboard Web & Parité Mobile (v1.55.44) : harmonisation responsive des colonnes Bento (`WIDGET_COL_SPAN`) sur mobile, tablette et desktop ; bouton direct agenda dans l'en-tête du flux du jour et conservation du minuteur Focus même les jours libres ; affichage de 3 notes récentes ; barre de navigation mobile tactile dans l'explorateur de fichiers (`/files`) avec gestion des partages et espaces ; interactivité complète de la chronologie du Centre d'activité (`/activity`) avec inspecteur d'événements et raccourcis rapides.
 
 ## Reste à faire (par priorité)
 1. **Bot animé, vérification réelle** : regarder dans un vrai salon qu'une réponse du bot affiche bien les émojis animés (29 émojis d'application synchronisés au démarrage) et qu'une arrivée de membre envoie la carte GIF (interrupteur et aperçu GIF intégrés sur le site).

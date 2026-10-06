@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils";
 const WIDGET_COL_SPAN: Record<string, string> = {
   hero: "col-span-12 lg:col-span-8",
   system: "col-span-12 lg:col-span-4",
-  daystream: "col-span-12 md:col-span-6 lg:col-span-4",
-  productivity: "col-span-12 md:col-span-6 lg:col-span-4",
-  recent: "col-span-12 lg:col-span-4",
+  daystream: "col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-4",
+  productivity: "col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-4",
+  recent: "col-span-12 sm:col-span-12 md:col-span-4 lg:col-span-4",
   brain: "col-span-12 md:col-span-6 lg:col-span-6",
   bills: "col-span-12 md:col-span-6 lg:col-span-6",
   live: "col-span-12",

@@ -29,8 +29,6 @@ struct CloudTaskRow: Codable {
     }
 }
 
-/// Notes, tâches ou événements avec cache disque et retour arrière en cas d'échec. Notes et événements sont les lignes
-/// `ethone_items` du site ; les tâches sont les lignes de la table `tasks` (celle de la page Tâches du site).
 @MainActor
 @Observable
 final class ItemsStore {
@@ -85,7 +83,6 @@ final class ItemsStore {
         if let end { fields["end_at"] = .string(ISODate.string(end)) }
         if let data { fields["data"] = data }
         if isTask {
-            // Table `tasks` : priorité limitée à low/medium/high (« urgent » du site devient « high »), échéance dans due_date.
             let requested = data?["priority"]?.stringValue ?? "medium"
             fields = [
                 "title": .string(title),

@@ -9,7 +9,6 @@ struct SessionUser: Codable, Hashable {
     var email: String?
     var metadata: JSONValue?
 
-    /// Nom à afficher : pseudo Discord/Google, sinon partie locale de l'e-mail.
     var displayName: String {
         for key in ["full_name", "name", "user_name", "preferred_username"] {
             if let value = metadata?[key]?.stringValue, !value.isEmpty { return value }
@@ -54,7 +53,6 @@ private struct TokenResponse: Decodable {
     }
 }
 
-/// Session utilisateur : connexion Supabase (mot de passe, OAuth PKCE), 2FA du Worker, jetons dans le trousseau.
 @MainActor
 @Observable
 final class AuthStore {
@@ -69,8 +67,6 @@ final class AuthStore {
 
     var user: SessionUser? { session?.user }
 
-    // MARK: Démarrage
-
     func restore() async {
         guard let data = Keychain.get("session"), let saved = try? JSONDecoder.api.decode(Session.self, from: data) else {
             phase = .signedOut
@@ -84,15 +80,12 @@ final class AuthStore {
             if let status = error.statusCode, status == 400 || status == 401 || status == 403 {
                 clear()
             } else {
-                // Hors ligne : on garde la session et on ouvre l'app avec les données en cache.
                 phase = .signedIn
             }
         } catch {
             phase = .signedIn
         }
     }
-
-    // MARK: Connexion
 
     func signIn(email: String, password: String) async {
         await run {
@@ -103,7 +96,6 @@ final class AuthStore {
         }
     }
 
-    /// Connexion via Discord, Google… avec PKCE dans une session Web système (mot de passe jamais vu par l'app).
     func signInWithOAuth(provider: String) async {
         await run {
             let verifier = Self.randomVerifier()
@@ -153,7 +145,6 @@ final class AuthStore {
         clear()
     }
 
-    /// Une réponse du Worker signale que la session n'est plus valable : on réagit au bon endroit.
     func handle(_ error: Error) {
         guard let api = error as? APIError else { return }
         switch api {
@@ -163,9 +154,6 @@ final class AuthStore {
         }
     }
 
-    // MARK: Jetons
-
-    /// Jeton d'accès valable (rafraîchi si nécessaire ; un seul rafraîchissement à la fois).
     func validAccessToken() async throws -> String {
         guard let current = session else { throw APIError.notSignedIn }
         if current.expiresAt.timeIntervalSinceNow > 60 { return current.accessToken }
@@ -188,9 +176,6 @@ final class AuthStore {
         return refreshed
     }
 
-    // MARK: Compte (création et récupération)
-
-    /// Envoie l'e-mail de réinitialisation du mot de passe (le lien ouvre la page de réinitialisation du site). Renvoie un message à afficher.
     func requestPasswordReset(email: String) async -> String {
         do {
             var request = URLRequest(url: Config.supabaseURL.appendingPathComponent("auth/v1/recover"))
@@ -200,14 +185,12 @@ final class AuthStore {
             request.setValue(Config.supabaseAnonKey, forHTTPHeaderField: "apikey")
             let (data, http) = try await HTTP.send(request)
             guard (200..<300).contains(http.statusCode) else { throw HTTP.failure(status: http.statusCode, data: data) }
-            // Même message que l'adresse existe ou non : on ne révèle pas quels comptes existent.
             return "Si un compte existe avec cette adresse, un e-mail de réinitialisation vient d'être envoyé."
         } catch {
             return (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }
     }
 
-    /// Crée un compte e-mail / mot de passe. Si la confirmation par e-mail est activée, la connexion se fait après validation du lien.
     func signUp(email: String, password: String) async {
         await run {
             var request = URLRequest(url: Config.supabaseURL.appendingPathComponent("auth/v1/signup"))
@@ -226,8 +209,6 @@ final class AuthStore {
         }
     }
 
-    // MARK: Interne
-
     private func run(_ work: @escaping () async throws -> Void) async {
         isBusy = true
         errorMessage = nil
@@ -235,9 +216,7 @@ final class AuthStore {
         do {
             try await work()
         } catch is CancellationError {
-            // Fenêtre de connexion fermée par l'utilisateur.
         } catch let error as ASWebAuthenticationSessionError where error.code == .canceledLogin {
-            // Annulation volontaire : pas de message d'erreur.
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }
@@ -277,7 +256,6 @@ final class AuthStore {
         phase = .signedOut
     }
 
-    /// Enregistre l'appareil auprès du Worker : il crée la ligne de session révocable et indique si un 2FA est en attente.
     private func registerDevice() async {
         do {
             let token = try await validAccessToken()
@@ -294,12 +272,9 @@ final class AuthStore {
                 else { phase = .signedIn }
             }
         } catch {
-            // Le Worker peut être injoignable : ne bloque jamais l'ouverture de l'app.
             phase = .signedIn
         }
     }
-
-    // MARK: OAuth (PKCE)
 
     private static func randomVerifier() -> String {
         var bytes = [UInt8](repeating: 0, count: 48)

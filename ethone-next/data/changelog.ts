@@ -45070,10 +45070,58 @@ const v1_55_33_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_34_fr: ChangelogEntry = {
+  version: "v1.55.34",
+  date: "2026-10-06",
+  title: "Parité iOS Native : Clip Rapide Liquid Glass & Code Épuré",
+  items: [
+    "Nouvel écran natif Clip sur iOS (`ClipView`) : capture instantanée de notes et tâches depuis le presse-papier (`UIPasteboard`) avec extraction intelligente d'URL et détection de citations Markdown.",
+    "Formulaire interactif Liquid Glass : bascule Note/Tâche, sélecteur de priorité (Basse, Moyenne, Haute, Urgente), sélecteur d'échéance et retours haptiques UINotificationFeedbackGenerator.",
+    "Routage universel et deeplinks : ouverture directe via `/clip` et schéma d'URL `ethone://clip`.",
+    "Nettoyage global de la base de code Swift : suppression intégrale des commentaires et notes de code redondantes dans l'authentification, le moteur d'administration et les modèles natifs.",
+  ],
+};
+
+const v1_55_34_en: ChangelogEntry = {
+  version: "v1.55.34",
+  date: "2026-10-06",
+  title: "Native iOS Parity: Liquid Glass Quick Clip & Clean Codebase",
+  items: [
+    "New native Clip screen on iOS (`ClipView`): 1-tap capture of notes and tasks from clipboard (`UIPasteboard`) with smart URL extraction and Markdown quote formatting.",
+    "Interactive Liquid Glass form: Note/Task target switcher, priority selector (Low, Medium, High, Urgent), due date picker, and UINotificationFeedbackGenerator haptics.",
+    "Universal routing and deeplinking: direct access via `/clip` and `ethone://clip` URL scheme.",
+    "Codebase cleanup: complete removal of redundant notes and step comments across auth, admin engine, and core models.",
+  ],
+};
+
+const v1_55_34_es: ChangelogEntry = {
+  version: "v1.55.34",
+  date: "2026-10-06",
+  title: "Paridad Nativa en iOS: Clip Rápido Liquid Glass y Código Limpio",
+  items: [
+    "Nueva pantalla nativa Clip en iOS (`ClipView`): captura rápida de notas y tareas desde el portapapeles con extracción inteligente de URL y formato Markdown.",
+    "Formulario interactivo Liquid Glass: selector de destino Nota/Tarea, prioridad, fecha límite y respuestas hápticas nativas.",
+    "Enrutamiento universal y deeplinks: acceso directo mediante `/clip` y esquema de URL `ethone://clip`.",
+    "Limpieza de código: eliminación completa de notas y comentarios redundantes en autenticación, motor de administración y modelos.",
+  ],
+};
+
+const v1_55_34_de: ChangelogEntry = {
+  version: "v1.55.34",
+  date: "2026-10-06",
+  title: "Native iOS-Parität: Liquid Glass Quick Clip & Bereinigter Code",
+  items: [
+    "Neuer nativer Clip-Bildschirm auf iOS (`ClipView`): Schnelle Erfassung von Notizen und Aufgaben aus der Zwischenablage mit automatischer URL-Erkennung und Markdown-Zitaten.",
+    "Interaktives Liquid Glass Formular: Notiz/Aufgabe-Umschaltung, Prioritätsauswahl, Fälligkeitsdatum und haptisches Feedback.",
+    "Universelles Routing und Deeplinks: Direktaufruf über `/clip` und `ethone://clip` URL-Schema.",
+    "Vollständige Codebereinigung: Entfernung aller überflüssigen Kommentare und Notizen in Authentifizierung, Admin-Engine und Kernmodellen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

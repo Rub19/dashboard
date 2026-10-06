@@ -1,7 +1,5 @@
 import SwiftUI
 
-// MARK: - Utilitaires JSON
-
 extension JSONValue {
     var objectValue: [String: JSONValue]? {
         if case .object(let value) = self { return value }
@@ -15,7 +13,6 @@ extension JSONValue {
         }
     }
 
-    /// Texte lisible d'une valeur simple (les nombres entiers sans décimale, les dates ISO mises en forme).
     var displayText: String {
         switch self {
         case .null: return "—"
@@ -29,8 +26,6 @@ extension JSONValue {
         }
     }
 
-    /// Descend un chemin `"data.guilds"` (séparé par des points) dans des objets imbriqués ; `nil` si un
-    /// segment intermédiaire n'est pas un objet ou si la clé finale est absente.
     private func value(atPath path: String) -> JSONValue? {
         var current = self
         for segment in path.split(separator: ".") {
@@ -40,9 +35,6 @@ extension JSONValue {
         return current
     }
 
-    /// Premier tableau d'une réponse : la réponse elle-même, la clé demandée (chemin à points possible,
-    /// ex. `"data.guilds"`, pour les réponses imbriquées sur deux niveaux), une clé usuelle, ou n'importe
-    /// quelle clé tableau.
     static func firstArray(in response: JSONValue, key: String? = nil) -> [JSONValue]? {
         if let array = response.arrayValue { return array }
         guard case .object(let dictionary) = response else { return nil }
@@ -57,7 +49,6 @@ extension JSONValue {
         return nil
     }
 
-    /// Réglages d'une réponse : sous `config`, `settings` ou `data` s'ils existent, sinon toute la réponse sans `success`.
     static func config(in response: JSONValue) -> (value: JSONValue, isWrapped: Bool) {
         guard case .object(var dictionary) = response else { return (response, false) }
         for key in ["config", "settings", "data"] {
@@ -70,7 +61,6 @@ extension JSONValue {
 }
 
 enum AdminText {
-    /// `logChannelId` → « Log channel id » (les clés viennent de l'API, en anglais).
     static func label(_ key: String) -> String {
         var result = ""
         for character in key {
@@ -117,8 +107,6 @@ enum AdminText {
     }
 }
 
-// MARK: - Salons et rôles du serveur (menus de sélection des réglages)
-
 @MainActor
 @Observable
 final class GuildDirectory {
@@ -146,9 +134,6 @@ final class GuildDirectory {
     }
 }
 
-// MARK: - Concentrateur de modules
-
-/// Toutes les pages du panneau Discord, par catégorie (moteur générique alimenté par `AdminCatalog`).
 struct DiscordModuleHubView: View {
     @Environment(AppModel.self) private var model
     let guild: DiscordGuild
@@ -175,8 +160,6 @@ struct DiscordModuleHubView: View {
         .ethoneScreen()
     }
 }
-
-// MARK: - Page d'un module
 
 struct ModuleScreen: View {
     @Environment(AppModel.self) private var model
@@ -313,8 +296,6 @@ struct ModuleScreen: View {
         }
     }
 }
-
-// MARK: - Liste générique
 
 struct GenericListView: View {
     @Environment(AppModel.self) private var model
@@ -453,7 +434,6 @@ struct GenericListView: View {
 }
 
 extension JSONValue {
-    /// Identifiant utilisable dans une URL : chaîne ou nombre entier.
     var displayTextID: String? {
         switch self {
         case .string(let value): value.isEmpty ? nil : value
@@ -462,8 +442,6 @@ extension JSONValue {
         }
     }
 }
-
-// MARK: - Détail (lecture seule)
 
 struct JSONFieldsView: View {
     let value: JSONValue
@@ -511,8 +489,6 @@ struct JSONDetailView: View {
         .ethoneScreen()
     }
 }
-
-// MARK: - Éditeur de réglages
 
 struct ConfigEditorView: View {
     @Environment(AppModel.self) private var model
@@ -577,7 +553,6 @@ struct ConfigEditorView: View {
         }
     }
 
-    /// N'envoie que les clés de premier niveau modifiées, avec leur valeur complète (le bot fusionne à ce niveau).
     private func save() async {
         saving = true
         defer { saving = false }
@@ -595,7 +570,6 @@ struct ConfigEditorView: View {
     }
 }
 
-/// Formulaire récursif généré à partir de la forme des réglages : interrupteurs, nombres, textes, menus de salons/rôles.
 struct ConfigObjectView: View {
     @Binding var values: [String: JSONValue]
     let directory: GuildDirectory
@@ -686,7 +660,6 @@ struct ConfigObjectView: View {
     }
 }
 
-/// Liste d'identifiants de salons ou de rôles, choisis dans une feuille à cases à cocher.
 private struct IdListRow: View {
     let title: String
     let ids: [String]

@@ -49,6 +49,7 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.weather) { Label("Météo", systemImage: "cloud.sun.fill") }
                     NavigationLink(value: MoreDestination.soundscape) { Label("Soundscape", systemImage: "waveform.circle.fill") }
                     NavigationLink(value: MoreDestination.plugins) { Label("Plugins & Extensions", systemImage: "puzzlepiece.extension.fill") }
+                    NavigationLink(value: MoreDestination.clip) { Label("Clip", systemImage: "paperclip") }
                 } header: { Text("Applications").sectionTitle() }
                 .listRowBackground(GlassRowBackground())
 
@@ -159,6 +160,7 @@ struct MoreView: View {
                 case .security: SecurityView()
                 case .soundscape: SoundscapeView()
                 case .plugins: PluginsView()
+                case .clip: ClipView()
                 }
             }
             .task { await refreshStatus() }

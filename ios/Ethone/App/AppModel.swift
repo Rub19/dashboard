@@ -203,6 +203,7 @@ final class AppModel {
         ("/macros", "Macros"), ("/personas", "Personas"), ("/rss", "RSS"), ("/discord", "Bot Discord"),
         ("/profile", "Profil"), ("/profile-selection", "Profils de travail"), ("/boost", "Performance"), ("/browser", "Navigateur"), ("/leaderboard", "Classement public"), ("/system", "Système"), ("/share", "Liens partagés"), ("/drop", "Dépôts"), ("/admin", "Administration"),
         ("/soundscape", "Soundscape"), ("/plugins", "Plugins & Extensions"), ("/marketplace", "Marketplace"),
+        ("/clip", "Clip"),
     ]
 
     @discardableResult
@@ -216,7 +217,7 @@ final class AppModel {
             "team": .team, "security": .security, "settings": .settings, "notifications": .notifications, "scratchpad": .scratchpad, "macros": .macros,
             "personas": .personas, "rss": .rss, "discord": .discord,
             "profile": .profile, "profile-selection": .workspaces, "boost": .boost, "browser": .browser, "leaderboard": .leaderboard, "system": .system, "share": .sharedLinks, "drop": .sharedLinks, "admin": .admin,
-            "soundscape": .soundscape, "plugins": .plugins, "marketplace": .plugins,
+            "soundscape": .soundscape, "plugins": .plugins, "marketplace": .plugins, "clip": .clip,
         ]
         if let tab = tabs[key] {
             requestedTab = tab
@@ -247,6 +248,6 @@ enum AppTab: String, CaseIterable, Identifiable {
 }
 
 enum MoreDestination: String, Hashable, CaseIterable, Identifiable {
-    case settings, notifications, team, bills, scratchpad, macros, personas, rss, valorant, valorantStore, lolTracker, lolRotation, tftTracker, otherGames, sharedLinks, profile, workspaces, leaderboard, boost, browser, system, admin, games, interactions, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security, soundscape, plugins
+    case settings, notifications, team, bills, scratchpad, macros, personas, rss, valorant, valorantStore, lolTracker, lolRotation, tftTracker, otherGames, sharedLinks, profile, workspaces, leaderboard, boost, browser, system, admin, games, interactions, brain, mail, discord, spaces, flows, files, connections, analytics, activity, habits, calendar, weather, security, soundscape, plugins, clip
     var id: String { rawValue }
 }

@@ -1,7 +1,5 @@
 import Foundation
 
-/// Description déclarative d'une page du panneau Discord : où lire sa vue d'ensemble, ses réglages, ses listes et ses actions
-/// dans l'API du bot (les mêmes routes que le site). Le moteur générique (`ModuleScreen`) les affiche et les modifie.
 struct AdminModuleSpec: Identifiable {
     enum Scope { case guild, bot }
 
@@ -10,13 +8,11 @@ struct AdminModuleSpec: Identifiable {
         let get: String
         let put: String
         var method: String = "PUT"
-        /// Si vrai, le réglage n'est modifiable que si la réponse contient une clé `config`/`settings` (sinon on ne sait pas isoler les réglages).
         var strict = false
     }
 
     struct RowAction {
         let title: String
-        /// `{id}` est remplacé par l'identifiant de la ligne.
         let path: String
         var method: String = "POST"
         var destructive = false
@@ -31,7 +27,6 @@ struct AdminModuleSpec: Identifiable {
         let path: String
         var key: String? = nil
         var idKey = "id"
-        /// Écran dédié à ouvrir au toucher d'une ligne (`formResponses`, `eventParticipants`) ; sinon le détail générique.
         var drill: String? = nil
         var rowActions: [RowAction] = []
     }
@@ -50,7 +45,6 @@ struct AdminModuleSpec: Identifiable {
     let symbol: String
     let group: String
     var scope: Scope = .guild
-    /// Chemin relatif à `api/`, avec `{g}` pour l'identifiant du serveur. Par défaut `guilds/{g}/<id>`.
     var base: String? = nil
     var overview: String? = "/overview"
     var configs: [ConfigSpec] = []

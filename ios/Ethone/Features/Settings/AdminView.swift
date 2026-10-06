@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Statistiques d'administration ETHONE (`/api/admin/stats`). Réservé au compte administrateur : le Worker répond 403 aux autres.
 struct AdminView: View {
     @Environment(AppModel.self) private var model
     @State private var stats: JSONValue?

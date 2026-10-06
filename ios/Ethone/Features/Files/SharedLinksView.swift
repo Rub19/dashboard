@@ -1,8 +1,6 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// Liens de partage et de dépôt ETHONE : colle un lien (ou un identifiant), consulte le fichier partagé ou dépose des fichiers,
-/// comme les pages publiques `/share` et `/drop` du site. Ces liens sont publics : aucun compte n'est nécessaire côté Worker.
 struct SharedLinksView: View {
     @Environment(\.openURL) private var openURL
     @State private var kind = "share"

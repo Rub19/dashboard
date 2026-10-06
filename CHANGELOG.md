@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.34 — 2026-10-06
+
+**Parité iOS Native : Clip Rapide Liquid Glass & Code Épuré**
+
+- Écran natif de capture rapide Clip (`ClipView`) : création instantanée de notes et tâches depuis le presse-papier (`UIPasteboard`) avec détection automatique d'adresses URL, de titres et de citations Markdown.
+- Interface Liquid Glass adaptée : sélection du type d'élément (Note / Tâche), personnalisation de la priorité (Basse, Moyenne, Haute, Urgente), sélection facultative de date limite d'échéance et retours tactiles `UINotificationFeedbackGenerator`.
+- Intégration complète dans la navigation iOS : raccourci dans l'onglet Plus (`MoreDestination.clip`), prise en charge du chemin web `/clip` et du schéma d'URL `ethone://clip`.
+- Nettoyage rigoureux de la base de code native Swift : suppression intégrale des commentaires résiduels, notes explicatives de code et annotations doc dans les modules d'authentification (`AuthStore`), du moteur d'administration (`AdminEngine`, `AdminSpecs`), de l'administration (`AdminView`), des partages (`SharedLinksView`) et des modèles fondamentaux (`Models`, `ItemsStore`).
+
 ## v1.55.33 — 2026-10-06
 
 **Parité iOS Native : Marketplace de Plugins & Extensions Liquid Glass**

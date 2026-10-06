@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.46",
+    "date": "2026-10-06",
+    "title": "Dashboard Web : Filtres Dynamiques de Tâches & Expérience Mobile Notes Apple-Grade",
+    "items": [
+      "Tâches & Projets (/tasks) : barre de filtres par catégories avec calcul en temps réel des compteurs par projet et détection automatique des catégories personnalisées.",
+      "Réinitialisation des filtres : bouton d'action contextuel en état vide permettant d'effacer les filtres actifs en un clic.",
+      "Notes & Rédacteur (/notes) : refonte adaptative mobile avec bascule fluide entre liste et éditeur plein écran et bouton de retour direct.",
+      "Bouton Nouvelle Note : accès direct depuis l'en-tête de liste sur mobile et préservation de la saisie sans superposition d'éléments."
+    ]
+  },
+  {
     "version": "v1.55.45",
     "date": "2026-10-06",
     "title": "Calendrier & Agenda Unifié : Synchronisation Supabase & Double Volet Factures/Agenda",
@@ -524,15 +535,6 @@
     "title": "Tracker LoL : icônes des runes",
     "items": [
       "Les icônes des runes principales s'affichent (leur adresse était incorrecte)."
-    ]
-  },
-  {
-    "version": "v1.53.6",
-    "date": "2026-10-04",
-    "title": "Tracker LoL : sorts, rune et objets récents",
-    "items": [
-      "Les sorts d'invocateur et la rune principale s'affichent : leurs icônes sont retrouvées depuis le navigateur quand le serveur ne peut pas les fournir.",
-      "Les objets s'affichent avec la dernière version de Data Dragon, y compris les plus récents."
     ]
   }
 ]

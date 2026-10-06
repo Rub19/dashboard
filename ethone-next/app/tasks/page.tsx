@@ -133,16 +133,35 @@ export default function TasksPage() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
-  const [selectedCategory] = useState("Tous");
+  const [selectedCategory, setSelectedCategory] = useState("Tous");
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(false);
 
-  // Quick Add State
   const [newTitle, setNewTitle] = useState("");
   const [newPriority, setNewPriority] = useState<TaskPriority>("medium");
   const [newCategory, setNewCategory] = useState("Général");
 
-  // Stats
+  const availableCategories = useMemo(() => {
+    const set = new Set(CATEGORIES);
+    for (const t of items) {
+      const cat = (t.data as Record<string, any>)?.category;
+      if (typeof cat === "string" && cat.trim()) {
+        set.add(cat.trim());
+      }
+    }
+    return Array.from(set);
+  }, [items]);
+
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { Tous: items.length };
+    for (const cat of availableCategories) {
+      if (cat !== "Tous") {
+        counts[cat] = items.filter((t) => ((t.data as Record<string, any>)?.category || "Général") === cat).length;
+      }
+    }
+    return counts;
+  }, [items, availableCategories]);
+
   const stats = useMemo(() => {
     const total = items.length;
     const done = items.filter((t) => t.done).length;
@@ -405,6 +424,39 @@ export default function TasksPage() {
         </div>
       </div>
 
+      <div className="flex items-center gap-1.5 overflow-x-auto os-scroll pb-1 shrink-0">
+        <span className="text-[11px] font-medium text-[var(--text-muted)] mr-1 shrink-0">Catégorie :</span>
+        {availableCategories.map((cat) => {
+          const count = categoryCounts[cat] ?? 0;
+          const isSelected = selectedCategory === cat;
+          return (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setSelectedCategory(cat)}
+              className={cn(
+                "relative inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all shrink-0 cursor-pointer",
+                isSelected
+                  ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 font-semibold"
+                  : "bg-[var(--surface-2)]/60 text-[var(--text-muted)] border border-transparent hover:text-[var(--text-primary)] hover:bg-[var(--surface-2)]"
+              )}
+            >
+              <span>{cat}</span>
+              <span
+                className={cn(
+                  "rounded-full px-1.5 py-0.2 text-[9px] font-mono",
+                  isSelected
+                    ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
+                    : "bg-[var(--text-primary)]/10 text-[var(--text-muted)]"
+                )}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
       {/* View area */}
       <div key={viewMode} className="rise-in flex-1 min-h-0 overflow-hidden">
         {loading && items.length === 0 ? (
@@ -457,14 +509,29 @@ export default function TasksPage() {
                       ? "Aucune tâche ne correspond à votre recherche."
                       : "Votre liste est vide. L'assistant peut générer un plan pour vous."}
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => setIsAiDrawerOpen(true)}
-                    className="mt-4 flex items-center gap-2 rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-medium text-[var(--accent-contrast)] transition-[filter] hover:brightness-110 active:scale-95"
-                  >
-                    <Sparkles className="h-3.5 w-3.5" />
-                    <span>Générer un plan</span>
-                  </button>
+                  <div className="flex items-center gap-2 mt-4">
+                    {(selectedCategory !== "Tous" || searchQuery.trim() || activeTab !== "all") && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedCategory("Tous");
+                          setSearchQuery("");
+                          setActiveTab("all");
+                        }}
+                        className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-2)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-colors active:scale-95 cursor-pointer"
+                      >
+                        Réinitialiser les filtres
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setIsAiDrawerOpen(true)}
+                      className="flex items-center gap-2 rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] transition-[filter] hover:brightness-110 active:scale-95 cursor-pointer"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      <span>Générer un plan</span>
+                    </button>
+                  </div>
                 </motion.div>
               ) : (
                 filteredTasks.map((task) => (

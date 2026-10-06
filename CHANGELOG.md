@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.46 — 2026-10-06
+
+**Dashboard Web : Filtres Dynamiques de Tâches & Expérience Mobile Notes Apple-Grade**
+
+- Tâches & Projets (/tasks) : barre de filtres par catégories avec calcul en temps réel des compteurs par projet et détection automatique des catégories personnalisées.
+- Réinitialisation des filtres : bouton d'action contextuel en état vide permettant d'effacer les filtres actifs en un clic.
+- Notes & Rédacteur (/notes) : refonte adaptative mobile avec bascule fluide entre liste et éditeur plein écran et bouton de retour direct.
+- Bouton Nouvelle Note : accès direct depuis l'en-tête de liste sur mobile et préservation de la saisie sans superposition d'éléments.
+
 ## v1.55.45 — 2026-10-06
 
 **Calendrier & Agenda Unifié : Synchronisation Supabase & Double Volet Factures/Agenda**

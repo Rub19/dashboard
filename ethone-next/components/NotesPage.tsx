@@ -44,6 +44,7 @@ export default function NotesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<"title" | "words" | "created">("created");
+  const [mobileView, setMobileView] = useState<"list" | "editor">("list");
 
   const { selected, selectedItems, hasSelection, isAllSelected, toggle, selectAll, clear, isSelected } = useSelection<Note>(items);
 
@@ -94,6 +95,7 @@ export default function NotesPage() {
     setEditingId(note.id);
     setTitle(note.title);
     setBody(note.body);
+    setMobileView("editor");
   }
 
   function resetEditor() {
@@ -113,6 +115,7 @@ export default function NotesPage() {
         notify.noteCreated(title);
       }
       resetEditor();
+      setMobileView("list");
     } catch {
       showError(i18n("error"));
     }
@@ -122,7 +125,10 @@ export default function NotesPage() {
     hapticRigidImpact();
     try {
       await remove(id);
-      if (id === editingId) resetEditor();
+      if (id === editingId) {
+        resetEditor();
+        setMobileView("list");
+      }
       hapticSuccess();
       notify.noteDeleted(1);
     } catch {
@@ -179,12 +185,30 @@ export default function NotesPage() {
   return (
     <div className="h-full min-h-0 w-full grid grid-cols-12 items-stretch gap-5 overflow-hidden p-4">
       {/* Left: List & Search */}
-      <div className="col-span-12 flex h-full min-h-0 flex-col gap-3 overflow-hidden lg:col-span-4">
-        <div className="shrink-0 rounded-2xl v8-panel p-4">
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{i18n("notesTitle")}</h1>
-          <p className="mt-0.5 text-xs text-[var(--text-muted)]">
-            {stats.total} {i18n("notes")} · {stats.totalWords} {i18n("words")}
-          </p>
+      <div
+        className={cn(
+          "col-span-12 h-full min-h-0 flex-col gap-3 overflow-hidden lg:col-span-4",
+          mobileView === "editor" ? "hidden lg:flex" : "flex"
+        )}
+      >
+        <div className="shrink-0 rounded-2xl v8-panel p-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">{i18n("notesTitle")}</h1>
+            <p className="mt-0.5 text-xs text-[var(--text-muted)]">
+              {stats.total} {i18n("notes")} · {stats.totalWords} {i18n("words")}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              resetEditor();
+              setMobileView("editor");
+            }}
+            className="lg:hidden inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-3 py-1.5 text-xs font-bold text-[var(--accent-primary)] transition-all active:scale-95 cursor-pointer"
+          >
+            <Icon name="plus" className="h-3.5 w-3.5" />
+            <span>{i18n("newNote", "Nouvelle")}</span>
+          </button>
         </div>
 
         <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-2xl v8-panel p-3">
@@ -330,6 +354,8 @@ export default function NotesPage() {
               <button
                 type="button"
                 onClick={() => {
+                  resetEditor();
+                  setMobileView("editor");
                   const input = document.querySelector('[data-testid="note-title-input"]') as HTMLInputElement | null;
                   input?.focus();
                 }}
@@ -343,9 +369,22 @@ export default function NotesPage() {
         </div>
       </div>
 
-      {/* Right: Editor */}
-      <div key={editingId ?? "new"} className="rise-in col-span-12 flex h-full min-h-0 flex-col justify-between overflow-hidden rounded-2xl v8-panel p-6 lg:col-span-8">
-        <div className="shrink-0 mb-3">
+      <div
+        key={editingId ?? "new"}
+        className={cn(
+          "rise-in col-span-12 h-full min-h-0 flex-col justify-between overflow-hidden rounded-2xl v8-panel p-4 sm:p-6 lg:col-span-8",
+          mobileView === "list" ? "hidden lg:flex" : "flex"
+        )}
+      >
+        <div className="shrink-0 mb-3 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setMobileView("list")}
+            className="lg:hidden inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer shrink-0"
+          >
+            <Icon name="arrow-left" className="h-3.5 w-3.5" />
+            <span>Retour</span>
+          </button>
           <Input
             type="text"
             value={title}
@@ -353,8 +392,8 @@ export default function NotesPage() {
             placeholder={i18n("notesPlaceholder")}
             aria-label={i18n("notesPlaceholder")}
             data-testid="note-title-input"
-            inputClassName="text-lg font-bold"
-            className="w-full"
+            inputClassName="text-base sm:text-lg font-bold"
+            className="w-full min-w-0 flex-1"
           />
         </div>
 

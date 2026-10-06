@@ -45660,6 +45660,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_45_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_45_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_45_de);
 
+const v1_55_46_fr: ChangelogEntry = {
+  version: "v1.55.46",
+  date: "2026-10-06",
+  title: "Dashboard Web : Filtres Dynamiques de Tâches & Expérience Mobile Notes Apple-Grade",
+  items: [
+    "Tâches & Projets (/tasks) : barre de filtres par catégories avec calcul en temps réel des compteurs par projet et détection automatique des catégories personnalisées.",
+    "Réinitialisation des filtres : bouton d'action contextuel en état vide permettant d'effacer les filtres actifs en un clic.",
+    "Notes & Rédacteur (/notes) : refonte adaptative mobile avec bascule fluide entre liste et éditeur plein écran et bouton de retour direct.",
+    "Bouton Nouvelle Note : accès direct depuis l'en-tête de liste sur mobile et préservation de la saisie sans superposition d'éléments.",
+  ],
+};
+
+const v1_55_46_en: ChangelogEntry = {
+  version: "v1.55.46",
+  date: "2026-10-06",
+  title: "Web Dashboard: Dynamic Task Categories & Apple-Grade Mobile Notes Experience",
+  items: [
+    "Tasks & Projects (/tasks): category filter bar with real-time project task counts and dynamic custom category detection.",
+    "Filter reset: contextual action button in empty state allowing one-click clearance of active filters.",
+    "Notes & Editor (/notes): responsive mobile experience with smooth transition between list and full-screen editor plus dedicated back button.",
+    "New Note action: direct header button on mobile and optimized input layout preventing element overlapping.",
+  ],
+};
+
+const v1_55_46_es: ChangelogEntry = {
+  version: "v1.55.46",
+  date: "2026-10-06",
+  title: "Panel Web: Categorías Dinámicas de Tareas & Experiencia Móvil de Notas Apple-Grade",
+  items: [
+    "Tareas y Proyectos (/tasks): barra de filtros de categorías con recuento de tareas por proyecto en tiempo real y detección de categorías personalizadas.",
+    "Restablecimiento de filtros: botón contextual en estado vacío para limpiar los filtros activos en 1 clic.",
+    "Notas y Editor (/notes): experiencia móvil adaptativa con cambio fluido entre lista y editor de pantalla completa con botón de regreso.",
+    "Acceso a Nueva Nota: botón directo en el encabezado móvil y diseño de edición optimizado sin superposiciones.",
+  ],
+};
+
+const v1_55_46_de: ChangelogEntry = {
+  version: "v1.55.46",
+  date: "2026-10-06",
+  title: "Web-Dashboard: Dynamische Aufgaben-Kategorien & Apple-Grade Mobile Notizen-Erfahrung",
+  items: [
+    "Aufgaben & Projekte (/tasks): Kategorien-Filterleiste mit Echtzeitzählern pro Projekt und Erkennung benutzerdefinierter Kategorien.",
+    "Filter-Reset: Kontextueller Button im Leerezustand zum Zurücksetzen aller aktiven Filter mit einem Klick.",
+    "Notizen & Editor (/notes): Adaptive mobile Benutzeroberfläche mit nahtlosem Wechsel zwischen Liste und Vollbild-Editor samt Zurück-Button.",
+    "Neue Notiz Aktion: Direkter Button im mobilen Header und optimiertes Editor-Layout ohne Überlappungen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_46_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_46_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_46_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_46_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

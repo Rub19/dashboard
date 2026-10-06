@@ -45266,10 +45266,58 @@ const v1_55_37_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_38_fr: ChangelogEntry = {
+  version: "v1.55.38",
+  date: "2026-10-06",
+  title: "Parité iOS Native : Centre d'Activité Enrichi & Filtrage Multi-Catégories",
+  items: [
+    "Refonte du journal d'activité natif (`ActivityView`) : affichage harmonisé des actions récentes sur les notes, tâches, sessions Focus, événements et habitudes.",
+    "Grille KPI métrique Liquid Glass : synthèse en temps réel des actions globales, tâches terminées, minutes de concentration et habitudes du jour.",
+    "Bandeau de filtrage par catégories : puces tactiles ergonomiques avec animations de ressort pour filtrer instantanément par type (Tous, Tâches, Notes, Focus, Habitudes, Événements).",
+    "Recherche plein texte instantanée : filtrage interactif direct par titre ou détail d'activité avec gestion des états vides.",
+  ],
+};
+
+const v1_55_38_en: ChangelogEntry = {
+  version: "v1.55.38",
+  date: "2026-10-06",
+  title: "Native iOS Parity: Enriched Activity Center & Multi-Category Filtering",
+  items: [
+    "Redesigned native Activity log (`ActivityView`): harmonized activity feed for notes, tasks, Focus sessions, calendar events, and habit completions.",
+    "Liquid Glass KPI grid: real-time summary of total actions, completed tasks, focus minutes, and daily habits.",
+    "Category filter bar: ergonomic touch pills with spring animations to instantly filter by category (All, Tasks, Notes, Focus, Habits, Events).",
+    "Instant full-text search: real-time filtering by title or detail with smooth empty states.",
+  ],
+};
+
+const v1_55_38_es: ChangelogEntry = {
+  version: "v1.55.38",
+  date: "2026-10-06",
+  title: "Paridad Nativa en iOS: Centro de Actividad Enriquecido & Filtrado Multicategoría",
+  items: [
+    "Registro de actividad nativo renovado (`ActivityView`): feed unificado de notas, tareas, sesiones Focus, eventos y hábitos completados.",
+    "Cuadrícula métrica Liquid Glass: resumen en tiempo real de acciones totales, tareas finalizadas, minutos de concentración y hábitos del día.",
+    "Barra de filtros por categoría: pastillas táctiles con animación fluida para filtrar por tipo (Todos, Tareas, Notas, Focus, Hábitos, Eventos).",
+    "Búsqueda instantánea de texto: filtrado interactivo con estados vacíos optimizados.",
+  ],
+};
+
+const v1_55_38_de: ChangelogEntry = {
+  version: "v1.55.38",
+  date: "2026-10-06",
+  title: "Native iOS-Parität: Erweitertes Aktivitätszentrum & Multi-Kategorie-Filter",
+  items: [
+    "Überarbeitetes natives Aktivitätsprotokoll (`ActivityView`): einheitlicher Feed für Notizen, Aufgaben, Focus-Sessions, Kalender-Events und Gewohnheiten.",
+    "Liquid Glass KPI-Raster: Echtzeit-Zusammenfassung aller Aktionen, erledigter Aufgaben, Fokusminuten und täglicher Gewohnheiten.",
+    "Kategorie-Filterleiste: ergonomische Touch-Pills mit flüssigen Animationen zum Filtern nach Kategorie (Alle, Aufgaben, Notizen, Focus, Gewohnheiten, Termine).",
+    "Echtzeit-Volltextsuche: interaktives Filtern mit ansprechenden Leerzuständen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_38_fr, v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_38_en, v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_38_es, v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_38_de, v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

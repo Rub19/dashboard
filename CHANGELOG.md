@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.38 — 2026-10-06
+
+**Parité iOS Native : Centre d'Activité Enrichi & Filtrage Multi-Catégories**
+
+- Refonte du journal d'activité natif (`ActivityView`) : affichage harmonisé des actions récentes sur les notes, tâches, sessions Focus, événements et habitudes.
+- Grille KPI métrique Liquid Glass : synthèse en temps réel des actions globales, tâches terminées, minutes de concentration et habitudes du jour.
+- Bandeau de filtrage par catégories : puces tactiles ergonomiques avec animations de ressort pour filtrer instantanément par type (Tous, Tâches, Notes, Focus, Habitudes, Événements).
+- Recherche plein texte instantanée : filtrage interactif direct par titre ou détail d'activité avec gestion des états vides.
+
 ## v1.55.37 — 2026-10-06
 
 **Parité iOS Native : Hub d'Accueil Enrichi & Lecteur Soundscape Partagé**

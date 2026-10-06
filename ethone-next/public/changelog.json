@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.38",
+    "date": "2026-10-06",
+    "title": "Parité iOS Native : Centre d'Activité Enrichi & Filtrage Multi-Catégories",
+    "items": [
+      "Refonte du journal d'activité natif (`ActivityView`) : affichage harmonisé des actions récentes sur les notes, tâches, sessions Focus, événements et habitudes.",
+      "Grille KPI métrique Liquid Glass : synthèse en temps réel des actions globales, tâches terminées, minutes de concentration et habitudes du jour.",
+      "Bandeau de filtrage par catégories : puces tactiles ergonomiques avec animations de ressort pour filtrer instantanément par type (Tous, Tâches, Notes, Focus, Habitudes, Événements).",
+      "Recherche plein texte instantanée : filtrage interactif direct par titre ou détail d'activité avec gestion des états vides."
+    ]
+  },
+  {
     "version": "v1.55.37",
     "date": "2026-10-06",
     "title": "Parité iOS Native : Hub d'Accueil Enrichi & Lecteur Soundscape Partagé",
@@ -516,17 +527,6 @@
       "Signalements et Profil de modération n'affichent plus « file vide » ou « aucune sanction » avant d'avoir reçu les données.",
       "Gestion du serveur : la fiche d'un membre s'ouvre tout de suite avec un aperçu pendant son chargement.",
       "Invitations : les 5 requêtes partent en même temps, et la recherche n'interroge le bot qu'une fois la frappe terminée."
-    ]
-  },
-  {
-    "version": "v1.52.15",
-    "date": "2026-10-04",
-    "title": "Nettoyage du code et corrections",
-    "items": [
-      "Réglages › À propos : la dernière version disponible s'actualise correctement.",
-      "Intégrations : le filtre « Erreurs » suit l'état réel des services.",
-      "Musique : la recherche tient compte des serveurs où le bot est réellement installé.",
-      "94 fichiers de code mort retirés (dashboard, bot et worker), sans changement visible."
     ]
   }
 ]

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.39 — 2026-10-06
+
+**Parité iOS Native : Gestionnaire de Fichiers Enrichi, Grille & Inspecteur**
+
+- Refonte du gestionnaire de fichiers natif (`FilesView`) : navigation arborescente avec fil d'Ariane interactif permettant de remonter instantanément à tout niveau du dossier.
+- Bascule d'affichage dynamique Liste / Grille : cartes tactiles Liquid Glass avec icônes colorées par format et métadonnées en temps réel.
+- Filtrage multi-catégories : pastilles rapides pour Tous, Favoris, Dossiers, Documents et Médias avec mise en cache réactive.
+- Feuille d'inspection native (`FileInspectorSheet`) : détails complets du fichier (type MIME, taille exacte, date, lien direct Google Drive et partage natif).
+- Actions contextuelles rapides : gestion des favoris dans le Cloud, intégration `SharedLinksView` et ouverture instantanée.
+
 ## v1.55.38 — 2026-10-06
 
 **Parité iOS Native : Centre d'Activité Enrichi & Filtrage Multi-Catégories**

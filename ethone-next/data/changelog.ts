@@ -45314,10 +45314,62 @@ const v1_55_38_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v1_55_38_fr, v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
-CHANGELOG_BY_LANG.en.unshift(v1_55_38_en, v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
-CHANGELOG_BY_LANG.es.unshift(v1_55_38_es, v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
-CHANGELOG_BY_LANG.de.unshift(v1_55_38_de, v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
+const v1_55_39_fr: ChangelogEntry = {
+  version: "v1.55.39",
+  date: "2026-10-06",
+  title: "Parité iOS Native : Gestionnaire de Fichiers Enrichi, Grille & Inspecteur",
+  items: [
+    "Refonte du gestionnaire de fichiers natif (`FilesView`) : navigation arborescente avec fil d'Ariane interactif permettant de remonter instantanément à tout niveau du dossier.",
+    "Bascule d'affichage dynamique Liste / Grille : cartes tactiles Liquid Glass avec icônes colorées par format et métadonnées en temps réel.",
+    "Filtrage multi-catégories : pastilles rapides pour Tous, Favoris, Dossiers, Documents et Médias avec mise en cache réactive.",
+    "Feuille d'inspection native (`FileInspectorSheet`) : détails complets du fichier (type MIME, taille exacte, date, lien direct Google Drive et partage natif).",
+    "Actions contextuelles rapides : gestion des favoris dans le Cloud, intégration `SharedLinksView` et ouverture instantanée.",
+  ],
+};
+
+const v1_55_39_en: ChangelogEntry = {
+  version: "v1.55.39",
+  date: "2026-10-06",
+  title: "Native iOS Parity: Enriched File Manager, Grid & Inspector",
+  items: [
+    "Overhauled native file manager (`FilesView`): interactive breadcrumb trail to navigate back to any folder ancestor with 1 tap.",
+    "Dynamic List / Grid view switcher: Liquid Glass cards with color-coded format badges and real-time metadata.",
+    "Multi-category filtering: quick pills for All, Favorites, Folders, Documents, and Media with reactive caching.",
+    "Native inspection sheet (`FileInspectorSheet`): full file details (MIME type, exact size, timestamp, direct Google Drive link, and native sharing).",
+    "Quick contextual actions: Cloud favorite toggling, `SharedLinksView` integration, and instant file opening.",
+  ],
+};
+
+const v1_55_39_es: ChangelogEntry = {
+  version: "v1.55.39",
+  date: "2026-10-06",
+  title: "Paridad Nativa en iOS: Gestor de Archivos Enriquecido, Cuadrícula e Inspector",
+  items: [
+    "Renovación del gestor de archivos nativo (`FilesView`): migas de pan interactivas para navegar a cualquier nivel de carpeta con un solo toque.",
+    "Selector dinámico Lista / Cuadrícula: tarjetas Liquid Glass con insignias coloreadas por formato y metadatos en tiempo real.",
+    "Filtrado multicategoría: pastillas rápidas para Todos, Favoritos, Carpetas, Documentos y Medios.",
+    "Hoja de inspección nativa (`FileInspectorSheet`): detalles completos (tipo MIME, tamaño exacto, fecha, enlace directo a Drive y compartir nativo).",
+    "Acciones contextuales rápidas: alternancia de favoritos en la nube e integración directa con `SharedLinksView`.",
+  ],
+};
+
+const v1_55_39_de: ChangelogEntry = {
+  version: "v1.55.39",
+  date: "2026-10-06",
+  title: "Native iOS-Parität: Erweiterter Dateimanager, Raster & Datei-Inspektor",
+  items: [
+    "Umfassend modernisierter nativer Dateimanager (`FilesView`): interaktive Breadcrumbs für direkten Sprung zu übergeordneten Ordnern.",
+    "Dynamischer Listen- und Raster-Umschalter: Liquid Glass-Karten mit Farbkodierung nach Dateityp und Echtzeit-Metadaten.",
+    "Multi-Kategorie-Filterung: Schnellfilter für Alle, Favoriten, Ordner, Dokumente und Medien.",
+    "Natives Inspektionsblatt (`FileInspectorSheet`): detaillierte Datei-Infos (MIME-Typ, exakte Größe, Zeitstempel, Drive-Link und Teilen).",
+    "Schnelle Kontextaktionen: Cloud-Favoriten umschalten und nahtlose Verknüpfung mit `SharedLinksView`.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_39_fr, v1_55_38_fr, v1_55_37_fr, v1_55_36_fr, v1_55_35_fr, v1_55_34_fr, v1_55_33_fr, v1_55_32_fr, v1_55_31_fr, v1_55_30_fr, v1_55_29_fr, v1_55_28_fr, v1_55_27_fr, v1_55_26_fr, v1_55_25_fr, v1_55_24_fr, v1_55_23_fr, v1_55_22_fr, v1_55_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_39_en, v1_55_38_en, v1_55_37_en, v1_55_36_en, v1_55_35_en, v1_55_34_en, v1_55_33_en, v1_55_32_en, v1_55_31_en, v1_55_30_en, v1_55_29_en, v1_55_28_en, v1_55_27_en, v1_55_26_en, v1_55_25_en, v1_55_24_en, v1_55_23_en, v1_55_22_en, v1_55_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_39_es, v1_55_38_es, v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_39_de, v1_55_38_de, v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

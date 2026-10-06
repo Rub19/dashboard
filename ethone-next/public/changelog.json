@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.55.39",
+    "date": "2026-10-06",
+    "title": "Parité iOS Native : Gestionnaire de Fichiers Enrichi, Grille & Inspecteur",
+    "items": [
+      "Refonte du gestionnaire de fichiers natif (`FilesView`) : navigation arborescente avec fil d'Ariane interactif permettant de remonter instantanément à tout niveau du dossier.",
+      "Bascule d'affichage dynamique Liste / Grille : cartes tactiles Liquid Glass avec icônes colorées par format et métadonnées en temps réel.",
+      "Filtrage multi-catégories : pastilles rapides pour Tous, Favoris, Dossiers, Documents et Médias avec mise en cache réactive.",
+      "Feuille d'inspection native (`FileInspectorSheet`) : détails complets du fichier (type MIME, taille exacte, date, lien direct Google Drive et partage natif).",
+      "Actions contextuelles rapides : gestion des favoris dans le Cloud, intégration `SharedLinksView` et ouverture instantanée."
+    ]
+  },
+  {
     "version": "v1.55.38",
     "date": "2026-10-06",
     "title": "Parité iOS Native : Centre d'Activité Enrichi & Filtrage Multi-Catégories",
@@ -516,17 +528,6 @@
       "Aussi synchronisés : espace actif, widgets épinglés et favoris, réglages des widgets, verrouillage de l'accueil, favoris du Marketplace, préréglages et historique Focus.",
       "Corrigé : choisir un avatar de la bibliothèque n'était jamais enregistré sur le compte.",
       "Retiré : réglages de personnalisation et « préférences inférées » qui n'avaient aucun effet."
-    ]
-  },
-  {
-    "version": "v1.52.16",
-    "date": "2026-10-04",
-    "title": "Vrais écrans de chargement sur 8 pages Discord",
-    "items": [
-      "Console du bot, Présence, Gestion du serveur, Vocal, Invitations, Réglages des invitations, Signalements et Profil de modération affichent un aperçu animé pendant le premier chargement, au lieu d'une page vide ou de valeurs par défaut qui changent ensuite.",
-      "Signalements et Profil de modération n'affichent plus « file vide » ou « aucune sanction » avant d'avoir reçu les données.",
-      "Gestion du serveur : la fiche d'un membre s'ouvre tout de suite avec un aperçu pendant son chargement.",
-      "Invitations : les 5 requêtes partent en même temps, et la recherche n'interroge le bot qu'une fois la frappe terminée."
     ]
   }
 ]

@@ -296,6 +296,8 @@ export function Calendar({
                             ? "bg-[var(--danger)]"
                             : marker.tone === "success"
                             ? "bg-[var(--success)]"
+                            : marker.tone === "info"
+                            ? "bg-[var(--info)]"
                             : "bg-[var(--accent-primary)]"
                         )}
                       />

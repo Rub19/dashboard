@@ -45607,6 +45607,59 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_44_en, v1_55_43_en, v1_55_42_en, v1_55_41_en,
 CHANGELOG_BY_LANG.es.unshift(v1_55_44_es, v1_55_43_es, v1_55_42_es, v1_55_41_es, v1_55_40_es, v1_55_39_es, v1_55_38_es, v1_55_37_es, v1_55_36_es, v1_55_35_es, v1_55_34_es, v1_55_33_es, v1_55_32_es, v1_55_31_es, v1_55_30_es, v1_55_29_es, v1_55_28_es, v1_55_27_es, v1_55_26_es, v1_55_25_es, v1_55_24_es, v1_55_23_es, v1_55_22_es, v1_55_21_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_44_de, v1_55_43_de, v1_55_42_de, v1_55_41_de, v1_55_40_de, v1_55_39_de, v1_55_38_de, v1_55_37_de, v1_55_36_de, v1_55_35_de, v1_55_34_de, v1_55_33_de, v1_55_32_de, v1_55_31_de, v1_55_30_de, v1_55_29_de, v1_55_28_de, v1_55_27_de, v1_55_26_de, v1_55_25_de, v1_55_24_de, v1_55_23_de, v1_55_22_de, v1_55_21_de);
 
+const v1_55_45_fr: ChangelogEntry = {
+  version: "v1.55.45",
+  date: "2026-10-06",
+  title: "Calendrier & Agenda Unifié : Synchronisation Supabase & Double Volet Factures/Agenda",
+  items: [
+    "Agenda Supabase intégré : prise en charge complète des rendez-vous et événements (ethone_items, type event) synchronisés en temps réel avec sélecteur d'heures ou journée entière, titre, lieu et notes.",
+    "Navigation à double volet : bascule instantanée entre l'Agenda d'événements et le Suivi des factures/abonnements pour chaque journée sélectionnée avec badges de comptage dédiés.",
+    "Marqueurs calendaires unifiés : fusion visuelle dynamique sur la grille mensuelle combinant les pastilles info pour les événements et les logos/statuts financiers pour les factures.",
+    "Indicateurs de chargement et gestion d'erreurs : retour tactile haptique immédiat et notifications toast lors de la création ou suppression de rendez-vous.",
+  ],
+};
+
+const v1_55_45_en: ChangelogEntry = {
+  version: "v1.55.45",
+  date: "2026-10-06",
+  title: "Unified Calendar & Agenda: Real-time Supabase Events & Dual Bills/Agenda Panel",
+  items: [
+    "Integrated Supabase Agenda: full support for appointments and events (ethone_items, kind event) in real time with time picker or all-day flag, title, location, and notes.",
+    "Dual-panel navigation: instant switching between Events Agenda and Bills/Subscriptions tracking for any selected day with dedicated counter badges.",
+    "Unified calendar markers: dynamic month grid fusion combining cyan info markers for events and brand logos/financial statuses for bills.",
+    "Loading indicators and error handling: immediate haptic tactile feedback and toast notifications on event creation and deletion.",
+  ],
+};
+
+const v1_55_45_es: ChangelogEntry = {
+  version: "v1.55.45",
+  date: "2026-10-06",
+  title: "Calendario y Agenda Unificados: Eventos Supabase en Tiempo Real & Panel Dual Facturas/Agenda",
+  items: [
+    "Agenda Supabase integrada: compatibilidad total con citas y eventos (ethone_items, tipo event) en tiempo real con selector horario o día completo, título, ubicación y notas.",
+    "Navegación de doble panel: alternancia instantánea entre la Agenda de eventos y el Seguimiento de facturas/suscripciones para cada día seleccionado con insignias numéricas.",
+    "Marcadores de calendario unificados: combinación dinámica en la cuadrícula mensual con puntos info para eventos y logotipos/estados financieros para facturas.",
+    "Indicadores de carga y gestión de errores: retroalimentación háptica inmediata y notificaciones toast al crear o eliminar eventos.",
+  ],
+};
+
+const v1_55_45_de: ChangelogEntry = {
+  version: "v1.55.45",
+  date: "2026-10-06",
+  title: "Vereinter Kalender & Agenda: Supabase-Echtzeit-Events & Dual-Bereich Rechnungen/Agenda",
+  items: [
+    "Integrierte Supabase-Agenda: Vollständige Unterstützung für Termine und Events (ethone_items, Typ event) in Echtzeit mit Zeitauswahl oder Ganztages-Flag, Titel, Ort und Notizen.",
+    "Dual-Panel-Navigation: Sofortiger Wechsel zwischen Termin-Agenda und Rechnungs-/Abo-Übersicht für jeden ausgewählten Tag mit Zähler-Badges.",
+    "Vereinte Kalender-Markierungen: Dynamische Monatsraster-Kombination aus Cyan-Info-Punkten für Events und Markenlogos/Finanzstatus für Rechnungen.",
+    "Ladeanzeigen und Fehlerbehandlung: Sofortiges haptisches Feedback und Toast-Benachrichtigungen beim Erstellen und Löschen von Terminen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_55_45_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_55_45_en);
+CHANGELOG_BY_LANG.es.unshift(v1_55_45_es);
+CHANGELOG_BY_LANG.de.unshift(v1_55_45_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

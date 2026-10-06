@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.45 — 2026-10-06
+
+**Calendrier & Agenda Unifié : Synchronisation Supabase & Double Volet Factures/Agenda**
+
+- Agenda Supabase intégré : prise en charge complète des rendez-vous et événements (ethone_items, type event) synchronisés en temps réel avec sélecteur d'heures ou journée entière, titre, lieu et notes.
+- Navigation à double volet : bascule instantanée entre l'Agenda d'événements et le Suivi des factures/abonnements pour chaque journée sélectionnée avec badges de comptage dédiés.
+- Marqueurs calendaires unifiés : fusion visuelle dynamique sur la grille mensuelle combinant les pastilles info pour les événements et les logos/statuts financiers pour les factures.
+- Indicateurs de chargement et gestion d'erreurs : retour tactile haptique immédiat et notifications toast lors de la création ou suppression de rendez-vous.
+
 ## v1.55.44 — 2026-10-06
 
 **Dashboard Web : Bento Responsive, Navigation Mobile Fichiers & Hub d'Activité Interactif**

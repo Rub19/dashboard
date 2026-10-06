@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.55.45",
+    "date": "2026-10-06",
+    "title": "Calendrier & Agenda Unifié : Synchronisation Supabase & Double Volet Factures/Agenda",
+    "items": [
+      "Agenda Supabase intégré : prise en charge complète des rendez-vous et événements (ethone_items, type event) synchronisés en temps réel avec sélecteur d'heures ou journée entière, titre, lieu et notes.",
+      "Navigation à double volet : bascule instantanée entre l'Agenda d'événements et le Suivi des factures/abonnements pour chaque journée sélectionnée avec badges de comptage dédiés.",
+      "Marqueurs calendaires unifiés : fusion visuelle dynamique sur la grille mensuelle combinant les pastilles info pour les événements et les logos/statuts financiers pour les factures.",
+      "Indicateurs de chargement et gestion d'erreurs : retour tactile haptique immédiat et notifications toast lors de la création ou suppression de rendez-vous."
+    ]
+  },
+  {
     "version": "v1.55.44",
     "date": "2026-10-06",
     "title": "Dashboard Web : Bento Responsive, Navigation Mobile Fichiers & Hub d'Activité Interactif",
@@ -522,16 +533,6 @@
     "items": [
       "Les sorts d'invocateur et la rune principale s'affichent : leurs icônes sont retrouvées depuis le navigateur quand le serveur ne peut pas les fournir.",
       "Les objets s'affichent avec la dernière version de Data Dragon, y compris les plus récents."
-    ]
-  },
-  {
-    "version": "v1.53.5",
-    "date": "2026-10-04",
-    "title": "Tracker LoL : vraie durée et parties annulées",
-    "items": [
-      "La durée réelle de chaque partie s'affiche (au lieu d'un « 25m 00s » par défaut).",
-      "Les parties annulées (remake) sont marquées « Remake » au lieu de Victoire ou Défaite.",
-      "Le détail d'une partie indique la bonne équipe gagnante."
     ]
   }
 ]

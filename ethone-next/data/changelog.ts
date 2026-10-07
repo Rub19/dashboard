@@ -46321,6 +46321,54 @@ const v12867_de: ChangelogEntry = {
   ],
 };
 
+const v12868_fr: ChangelogEntry = {
+  version: "v1.55.61",
+  date: "2026-10-07",
+  title: "Épuration de la Console Discord — Retrait des Placeholders et du Bouton Premium",
+  items: [
+    "Retrait du bouton Premium dans la barre latérale de la console Discord",
+    "Nettoyage complet des placeholders fictifs : suppression de la bannière promo et des alertes statiques",
+    "Dynamisation de la couverture avec compteurs réels calculés en direct sur les modules activés",
+    "Synchronisation des réglages du mode raid et du préfixe réel du serveur dans le tableau de bord",
+  ],
+};
+
+const v12868_en: ChangelogEntry = {
+  version: "v1.55.61",
+  date: "2026-10-07",
+  title: "Discord Console Cleanup — Removed Placeholders and Premium Button",
+  items: [
+    "Removed Premium button from the Discord console hub sidebar",
+    "Complete removal of mock placeholders: promo banner and static alert cards removed",
+    "Dynamic module coverage computed from real guild active module states",
+    "Synchronized live raid mode and guild prefix settings into the server overview dashboard",
+  ],
+};
+
+const v12868_es: ChangelogEntry = {
+  version: "v1.55.61",
+  date: "2026-10-07",
+  title: "Limpieza de la Consola Discord — Eliminación de Marcadores de Posición y Premium",
+  items: [
+    "Eliminación del botón Premium de la barra lateral de la consola Discord",
+    "Limpieza completa de marcadores ficticios: banner promocional y alertas estáticas eliminadas",
+    "Cobertura de módulos dinámica basada en el estado real de los módulos activos",
+    "Sincronización del modo raid y prefijo real del servidor en el panel general",
+  ],
+};
+
+const v12868_de: ChangelogEntry = {
+  version: "v1.55.61",
+  date: "2026-10-07",
+  title: "Bereinigung der Discord-Konsole — Entfernung von Platzhaltern und Premium-Button",
+  items: [
+    "Premium-Button aus der Discord-Seitenleiste entfernt",
+    "Vollständige Entfernung statischer Platzhalter: Werbebanner und statische Warnkarten entfernt",
+    "Dynamische Modulabdeckung basierend auf den realen aktiven Modulen des Servers",
+    "Echtzeit-Synchronisierung von Raid-Modus und Server-Präfix im Dashboard",
+  ],
+};
+
 CHANGELOG_BY_LANG.fr.unshift(v12860_fr);
 CHANGELOG_BY_LANG.en.unshift(v12860_en);
 CHANGELOG_BY_LANG.es.unshift(v12860_es);
@@ -46360,5 +46408,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12867_fr);
 CHANGELOG_BY_LANG.en.unshift(v12867_en);
 CHANGELOG_BY_LANG.es.unshift(v12867_es);
 CHANGELOG_BY_LANG.de.unshift(v12867_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12868_fr);
+CHANGELOG_BY_LANG.en.unshift(v12868_en);
+CHANGELOG_BY_LANG.es.unshift(v12868_es);
+CHANGELOG_BY_LANG.de.unshift(v12868_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

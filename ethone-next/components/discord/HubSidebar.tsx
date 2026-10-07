@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ShieldCheck,
   ShieldAlert,
-  AlertTriangle,
   Search,
   Home,
   BookOpen,
@@ -14,7 +13,6 @@ import {
   Sun,
   Moon,
   LogOut,
-  Star,
   Users,
   Settings2,
   FileText,
@@ -378,7 +376,7 @@ export default function HubSidebar({
           >
             <div className="flex items-center gap-2">
               <Search className="h-3.5 w-3.5" />
-              <span>Rechercher un régla...</span>
+              <span>Rechercher un réglage...</span>
             </div>
             <kbd className="rounded-sm border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
               Ctrl K
@@ -399,15 +397,6 @@ export default function HubSidebar({
               <ShieldCheck className="h-4 w-4 shrink-0" />
               <span>Vue d&apos;ensemble</span>
             </button>
-
-            <button
-              type="button"
-              onClick={() => router.push("/boost")}
-              className="w-full flex items-center gap-2.5 rounded px-2.5 py-2 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer font-medium text-left"
-            >
-              <Star className="h-4 w-4 shrink-0 text-amber-400" />
-              <span>Premium</span>
-            </button>
           </div>
 
           <div className="space-y-1 pt-2">
@@ -418,13 +407,10 @@ export default function HubSidebar({
               <button
                 type="button"
                 onClick={() => router.push(`/discord/security?guildId=${selectedGuildId}`)}
-                className="w-full flex items-center justify-between rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                className="w-full flex items-center gap-2.5 rounded px-2.5 py-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover,var(--surface-raised))] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
               >
-                <div className="flex items-center gap-2.5">
-                  <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
-                  <span>Protections</span>
-                </div>
-                <span className="font-mono text-[10px] text-[var(--text-muted)]">1/30</span>
+                <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
+                <span>Protections</span>
               </button>
 
               <button
@@ -523,20 +509,6 @@ export default function HubSidebar({
               </button>
             </div>
           </div>
-
-          <motion.div
-            variants={consoleSidebarItem}
-            className="rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/90 p-2.5 space-y-1.5 mt-2"
-          >
-            <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="text-[var(--text-primary)]">Protections actives</span>
-              <span className="font-mono text-emerald-400 font-bold">1/30</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-amber-400 font-medium">
-              <AlertTriangle className="h-3 w-3 shrink-0" />
-              <span>1 sans salon de log</span>
-            </div>
-          </motion.div>
         </div>
 
         <div className="space-y-4 pt-3 border-t border-[var(--panel-border)] shrink-0">

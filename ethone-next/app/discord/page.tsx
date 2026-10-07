@@ -1341,7 +1341,21 @@ export default function DiscordDashboardPage() {
                 <GuildOverviewScreen
                   guild={selectedGuild}
                   userName={userName}
+                  guildSettings={guildSettings}
+                  onToggleRaidMode={() => {
+                    const next = !guildSettings.antiRaidEnabled;
+                    setGuildSettings((p) => ({ ...p, antiRaidEnabled: next }));
+                    if (next) {
+                      success("Mode Raid activé", "Protection d'urgence enclenchée sur l'ensemble du serveur.");
+                    } else {
+                      info("Mode Raid désactivé", "Le serveur fonctionne en mode standard.");
+                    }
+                  }}
+                  moduleStatus={moduleStatus}
+                  activeModuleCount={activeModuleCount}
+                  totalModuleCount={totalModuleCount}
                   onOpenSetup={() => openOnboarding(0)}
+                  onAllModules={goAllModules}
                 />
               )}
 

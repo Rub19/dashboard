@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.61 — 2026-10-07
+
+**Épuration de la Console Discord — Retrait des Placeholders et du Bouton Premium**
+
+- Retrait du bouton Premium dans la barre latérale de la console Discord.
+- Nettoyage complet des placeholders fictifs : suppression de la bannière promo et des alertes statiques.
+- Dynamisation de la couverture avec compteurs réels calculés en direct sur les modules activés.
+- Synchronisation des réglages du mode raid et du préfixe réel du serveur dans le tableau de bord.
+
 ## v1.55.60 — 2026-10-07
 
 **Refonte de la Vue d'Ensemble Serveur — Style Keeper Protect**

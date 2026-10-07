@@ -24,7 +24,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useAccountProfile } from "@/lib/profile/account-profile";
 import { fetchBotPresence, clearBotPresenceCache } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
-import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { getStoredDiscordUser, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 
 interface BotInstallViewProps {
   guild: DiscordGuild;
@@ -177,8 +177,22 @@ export default function BotInstallView({
   }, [checkPresence]);
 
   const initials = useMemo(() => getGuildInitials(guild.name), [guild.name]);
-  const currentDisplayName = ethoneProfile?.displayName || ethoneProfile?.username || userName || "rub19";
-  const currentAvatarUrl = ethoneProfile?.avatarUrl || userAvatar || null;
+  const storedUser = useMemo(() => getStoredDiscordUser(), []);
+  const currentDisplayName =
+    (userName && userName !== "rub19" ? userName : undefined) ||
+    storedUser?.globalName ||
+    storedUser?.displayName ||
+    storedUser?.username ||
+    ethoneProfile?.displayName ||
+    ethoneProfile?.username ||
+    userName ||
+    "rub19";
+  const currentAvatarUrl =
+    userAvatar ||
+    storedUser?.avatarUrl ||
+    storedUser?.avatarUrlSmall ||
+    ethoneProfile?.avatarUrl ||
+    null;
 
   return (
     <div className="min-h-[calc(100dvh-4rem)] w-full bg-[var(--background)] text-[var(--text-primary)] flex flex-col md:flex-row antialiased">

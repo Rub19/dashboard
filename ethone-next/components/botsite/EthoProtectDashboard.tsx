@@ -19,7 +19,7 @@ import {
   Moon,
   LogOut,
 } from "@/components/icons/ph";
-import { useDiscordOAuth, canManageGuild, getStoredDiscordGuilds, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, canManageGuild, getStoredDiscordGuilds, getStoredDiscordUser, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds } from "@/lib/hooks/useBotGuildIds";
 import { useAccountProfile } from "@/lib/profile/account-profile";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
@@ -128,6 +128,7 @@ export default function EthoProtectDashboard() {
   }, [signOut, router]);
 
   const storedGuilds = useMemo(() => getStoredDiscordGuilds(), []);
+  const storedUser = useMemo(() => getStoredDiscordUser(), []);
 
   const userGuilds: DiscordGuild[] = useMemo(() => {
     const raw = discordProfile?.guilds && discordProfile.guilds.length > 0 ? discordProfile.guilds : storedGuilds;
@@ -180,17 +181,27 @@ export default function EthoProtectDashboard() {
   }, [uninstalledGuilds, searchQuery]);
 
   const displayName = useMemo(() => {
-    if (ethoneProfile?.displayName) return ethoneProfile.displayName;
-    if (ethoneProfile?.username) return ethoneProfile.username;
     if (discordProfile?.user?.globalName) return discordProfile.user.globalName;
     if (discordProfile?.user?.displayName) return discordProfile.user.displayName;
     if (discordProfile?.user?.username) return discordProfile.user.username;
+    if (storedUser?.globalName) return storedUser.globalName;
+    if (storedUser?.displayName) return storedUser.displayName;
+    if (storedUser?.username) return storedUser.username;
+    if (ethoneProfile?.displayName) return ethoneProfile.displayName;
+    if (ethoneProfile?.username) return ethoneProfile.username;
     return "rub19";
-  }, [discordProfile?.user, ethoneProfile]);
+  }, [discordProfile?.user, storedUser, ethoneProfile]);
 
   const userAvatar = useMemo(() => {
-    return ethoneProfile?.avatarUrl || discordProfile?.user?.avatarUrlSmall || discordProfile?.user?.avatarUrl || null;
-  }, [ethoneProfile?.avatarUrl, discordProfile?.user]);
+    return (
+      discordProfile?.user?.avatarUrl ||
+      discordProfile?.user?.avatarUrlSmall ||
+      storedUser?.avatarUrl ||
+      storedUser?.avatarUrlSmall ||
+      ethoneProfile?.avatarUrl ||
+      null
+    );
+  }, [discordProfile?.user, storedUser, ethoneProfile?.avatarUrl]);
 
   if (viewMode === "legacy") {
     return (

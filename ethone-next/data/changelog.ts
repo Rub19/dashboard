@@ -46033,6 +46033,59 @@ const v12861_de: ChangelogEntry = {
   ],
 };
 
+const v12862_fr: ChangelogEntry = {
+  version: "v1.55.55",
+  date: "2026-10-07",
+  title: "Photo de Profil Discord : Affichage Prioritaire dans la Barre Inférieure",
+  items: [
+    "Priorité donnée à la photo de profil Discord réelle de l'utilisateur dans la barre latérale inférieure",
+    "Récupération automatique du profil Discord OAuth et du cache local synchronisé",
+    "Affichage cohérent sur le tableau de bord Etho, la page d'installation et le sélecteur de serveurs",
+    "Repli gracieux vers la photo de profil Ethone uniquement si le compte Discord n'est pas lié",
+  ],
+};
+
+const v12862_en: ChangelogEntry = {
+  version: "v1.55.55",
+  date: "2026-10-07",
+  title: "Discord Profile Picture: Priority Display in Bottom Sidebar",
+  items: [
+    "Priority given to the user's authentic Discord profile avatar in the bottom sidebar",
+    "Automatic retrieval from live Discord OAuth profile and synced local storage",
+    "Consistent rendering across the Etho dashboard, bot install page, and server picker",
+    "Graceful fallback to internal Ethone avatar only when Discord profile is not linked",
+  ],
+};
+
+const v12862_es: ChangelogEntry = {
+  version: "v1.55.55",
+  date: "2026-10-07",
+  title: "Foto de Perfil de Discord: Visualización Prioritaria en la Barra Inferior",
+  items: [
+    "Prioridad a la foto de perfil real de Discord del usuario en la barra lateral inferior",
+    "Recuperación automática del perfil OAuth de Discord y del almacenamiento local sincronizado",
+    "Visualización coherente en el panel de Etho, la página de instalación y el selector de servidores",
+    "Alternativa elegante al avatar interno de Ethone solo si no hay perfil de Discord vinculado",
+  ],
+};
+
+const v12862_de: ChangelogEntry = {
+  version: "v1.55.55",
+  date: "2026-10-07",
+  title: "Discord-Profilbild: Prioritätsanzeige in der Unteren Seitenleiste",
+  items: [
+    "Priorität für das echte Discord-Profilbild des Benutzers in der unteren Seitenleiste",
+    "Automatische Erkennung aus dem Discord OAuth-Profil und lokalem synchronisiertem Speicher",
+    "Einheitliche Darstellung im Etho Dashboard, auf der Bot-Installationsseite und bei der Serverauswahl",
+    "Nahtloser Fallback auf das Ethone-Profilbild nur falls kein Discord-Konto verknüpft ist",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12862_fr);
+CHANGELOG_BY_LANG.en.unshift(v12862_en);
+CHANGELOG_BY_LANG.es.unshift(v12862_es);
+CHANGELOG_BY_LANG.de.unshift(v12862_de);
+
 CHANGELOG_BY_LANG.fr.unshift(v12861_fr);
 CHANGELOG_BY_LANG.en.unshift(v12861_en);
 CHANGELOG_BY_LANG.es.unshift(v12861_es);

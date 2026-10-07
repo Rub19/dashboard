@@ -32,7 +32,7 @@ import { cn } from "@/lib/utils";
 import { choreography, revealUp } from "@/lib/motion-variants";
 import { EASE_SNAP, SPRING_PILL } from "@/lib/ease";
 import { useMotionPref } from "@/lib/hooks/useMotionPref";
-import type { DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { getStoredDiscordUser, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 
 interface ServerPickerProps {
   guilds: DiscordGuild[];
@@ -203,8 +203,21 @@ export default function ServerPicker({
   const visible = useMemo(() => (q ? guilds.filter((g) => g.name.toLowerCase().includes(q)) : guilds), [guilds, q]);
   const showSearch = guilds.length > 6;
 
-  const currentDisplayName = ethoneProfile?.displayName || ethoneProfile?.username || userName || "rub19";
-  const currentAvatarUrl = ethoneProfile?.avatarUrl || userAvatar || null;
+  const storedUser = useMemo(() => getStoredDiscordUser(), []);
+  const currentDisplayName =
+    userName ||
+    storedUser?.globalName ||
+    storedUser?.displayName ||
+    storedUser?.username ||
+    ethoneProfile?.displayName ||
+    ethoneProfile?.username ||
+    "rub19";
+  const currentAvatarUrl =
+    userAvatar ||
+    storedUser?.avatarUrl ||
+    storedUser?.avatarUrlSmall ||
+    ethoneProfile?.avatarUrl ||
+    null;
 
   const rowClass =
     "group relative flex w-full items-center gap-4 rounded-sm px-3 py-2.5 text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50";

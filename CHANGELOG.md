@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.55 — 2026-10-07
+
+**Photo de Profil Discord : Affichage Prioritaire dans la Barre Inférieure**
+
+- Priorité accordée à la photo de profil Discord réelle de l'utilisateur dans la barre latérale inférieure (avatar OAuth et cache local synchronisé).
+- Application uniforme sur le tableau de bord des serveurs Etho, l'onboarding d'installation et le sélecteur de serveurs.
+- Préservation du repli vers l'avatar du profil de compte Ethone uniquement si le compte Discord n'est pas encore connecté.
+
 ## v1.55.54 — 2026-10-07
 
 **Barre Latérale Inférieure Fidèle : Contrôles Thème, Langue & Déconnexion**

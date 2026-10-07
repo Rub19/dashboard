@@ -1145,6 +1145,7 @@ export default function DiscordDashboardPage() {
           botPresenceKnown={botPresenceKnown || botGuildIds.size > 0}
           inviteUrl={BOT_INVITE_URL}
           userName={isDiscordConnected ? profile?.user?.displayName || profile?.user?.username : undefined}
+          userAvatar={isDiscordConnected ? profile?.user?.avatarUrlSmall || profile?.user?.avatarUrl || null : null}
           isConnected={isDiscordConnected}
           connecting={discordLoading}
           onConnect={connect}

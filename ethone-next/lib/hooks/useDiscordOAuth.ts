@@ -300,3 +300,15 @@ export function getStoredDiscordGuilds(): DiscordGuild[] {
   } catch {}
   return [];
 }
+
+export function getStoredDiscordUser(): DiscordUser | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = localStorage.getItem("ethone:discord:profile");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed?.user) return parsed.user;
+    }
+  } catch {}
+  return null;
+}

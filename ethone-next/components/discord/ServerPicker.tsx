@@ -418,8 +418,8 @@ export default function ServerPicker({
   }
 
   return (
-    <div className="h-full min-h-dvh md:min-h-0 w-full bg-[var(--background)] text-[var(--text-primary)] flex flex-col md:flex-row antialiased overflow-hidden">
-      <aside className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 md:h-full md:max-h-full">
+    <div className="h-dvh min-h-dvh w-full bg-[var(--background)] text-[var(--text-primary)] flex flex-col md:flex-row antialiased overflow-hidden">
+      <aside className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 md:h-dvh md:max-h-dvh">
         <div className="space-y-4">
           <div className="flex items-center justify-between px-2 pt-1">
             <div className="flex items-center gap-2.5">
@@ -552,7 +552,7 @@ export default function ServerPicker({
         </div>
       </aside>
 
-      <main className="flex-1 min-w-0 p-4 md:p-8 lg:p-10 overflow-y-auto">
+      <main className="flex-1 min-w-0 p-4 md:p-8 lg:p-10 overflow-y-auto h-full md:h-dvh">
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--panel-border)] pb-4">
             <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">

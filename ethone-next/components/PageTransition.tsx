@@ -13,11 +13,11 @@ export default function PageTransition({ children }: { children: ReactNode }) {
   const rootSegment = pathname ? pathname.split("/")[1] || "root" : "root";
 
   if (shouldReduceMotion) {
-    return <div className="min-h-0 w-full flex-1 flex flex-col overflow-hidden">{children}</div>;
+    return <div className="h-full min-h-0 w-full flex-1 flex flex-col overflow-hidden">{children}</div>;
   }
 
   return (
-    <div className="relative min-h-0 w-full flex-1 flex flex-col overflow-hidden">
+    <div className="relative h-full min-h-0 w-full flex-1 flex flex-col overflow-hidden">
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={rootSegment}
@@ -25,7 +25,7 @@ export default function PageTransition({ children }: { children: ReactNode }) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.12, ease: EASE_OUT }}
-          className="min-h-0 w-full flex-1 flex flex-col overflow-hidden"
+          className="h-full min-h-0 w-full flex-1 flex flex-col overflow-hidden"
         >
           {children}
         </motion.div>

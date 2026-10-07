@@ -46177,6 +46177,54 @@ const v12864_de: ChangelogEntry = {
   ],
 };
 
+const v12865_fr: ChangelogEntry = {
+  version: "v1.55.58",
+  date: "2026-10-07",
+  title: "Pleine Hauteur et Épuration de la Vue d'Installation Bot",
+  items: [
+    "Suppression du bouton de recherche de réglage sur la page d'installation du bot",
+    "Extension de la barre latérale jusqu'au bas de l'écran avec verrouillage plein écran 100dvh",
+    "Suppression du décrochage en bas à gauche de la console d'installation",
+    "Stabilisation de la transition et de la hauteur des conteneurs parents",
+  ],
+};
+
+const v12865_en: ChangelogEntry = {
+  version: "v1.55.58",
+  date: "2026-10-07",
+  title: "Full Height and Interface Refinement for Bot Installation View",
+  items: [
+    "Removed settings search button from bot installation screen",
+    "Extended sidebar to the absolute bottom of the screen with 100dvh viewport locking",
+    "Eliminated bottom-left gap on the installation console",
+    "Stabilized container transition and parent element heights",
+  ],
+};
+
+const v12865_es: ChangelogEntry = {
+  version: "v1.55.58",
+  date: "2026-10-07",
+  title: "Pantalla Completa y Depuración de la Vista de Instalación del Bot",
+  items: [
+    "Eliminación del botón de búsqueda de ajustes en la pantalla de instalación",
+    "Extensión de la barra lateral hasta la parte inferior de la pantalla con 100dvh",
+    "Corrección de la separación inferior izquierda en la consola de instalación",
+    "Estabilización de altura en transiciones y contenedores principales",
+  ],
+};
+
+const v12865_de: ChangelogEntry = {
+  version: "v1.55.58",
+  date: "2026-10-07",
+  title: "Volle Bildschirmhöhe und Bereinigung der Bot-Installationsansicht",
+  items: [
+    "Suchleiste für Einstellungen im Bot-Installationsbildschirm entfernt",
+    "Verlängerung der Seitenleiste bis zum unteren Bildschirmrand mit 100dvh-Sperre",
+    "Lücke unten links in der Installationskonsole behoben",
+    "Höhenstabilisierung über alle übergeordneten Container und Übergänge",
+  ],
+};
+
 CHANGELOG_BY_LANG.fr.unshift(v12860_fr);
 CHANGELOG_BY_LANG.en.unshift(v12860_en);
 CHANGELOG_BY_LANG.es.unshift(v12860_es);
@@ -46201,5 +46249,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12864_fr);
 CHANGELOG_BY_LANG.en.unshift(v12864_en);
 CHANGELOG_BY_LANG.es.unshift(v12864_es);
 CHANGELOG_BY_LANG.de.unshift(v12864_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12865_fr);
+CHANGELOG_BY_LANG.en.unshift(v12865_en);
+CHANGELOG_BY_LANG.es.unshift(v12865_es);
+CHANGELOG_BY_LANG.de.unshift(v12865_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

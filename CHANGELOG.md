@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.58 — 2026-10-07
+
+**Pleine Hauteur et Épuration de la Vue d'Installation Bot**
+
+- Suppression du bouton de recherche de réglage sur la page d'installation du bot (réservé à la configuration active).
+- Extension de la barre latérale jusqu'au bas de l'écran avec verrouillage plein écran 100dvh pour éliminer tout décrochage visuel.
+- Suppression du décrochage en bas à gauche de la console d'installation sur toutes les résolutions.
+- Stabilisation de la transition et de la hauteur des conteneurs parents (h-full et h-dvh).
+
 ## v1.55.57 — 2026-10-07
 
 **Résolution Optimale de l'Avatar Discord avec Multi-Candidats**

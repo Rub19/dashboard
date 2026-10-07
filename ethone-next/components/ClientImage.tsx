@@ -196,8 +196,12 @@ export default function ClientImage({
 
   return (
     <span
-      className={cn("relative inline-flex", fill && "h-full w-full")}
-      style={style}
+      className={cn("relative inline-flex shrink-0", fill && "h-full w-full")}
+      style={{
+        width: !fill && width ? width : undefined,
+        height: !fill && height ? height : undefined,
+        ...style,
+      }}
       aria-label={alt || undefined}
     >
       {status !== "ok" && (

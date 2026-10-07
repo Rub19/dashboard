@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   ShieldCheck,
-  Search,
   ExternalLink,
   ChevronRight,
   RefreshCw,
@@ -17,7 +16,6 @@ import {
 } from "@/components/icons/ph";
 import ClientImage from "@/components/ClientImage";
 import FlagIcon from "@/components/FlagIcon";
-import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -101,7 +99,6 @@ export default function BotInstallView({
 }: BotInstallViewProps) {
   const router = useRouter();
   const { signOut } = useAuth();
-  const { setOpen: openCommandPalette } = useCommandPalette();
   const { settings, update: updateSettings } = useSettings();
   const { success, info, error: showError } = useToast();
   const { profile: ethoneProfile } = useAccountProfile();
@@ -195,8 +192,8 @@ export default function BotInstallView({
     null;
 
   return (
-    <div className="h-full min-h-dvh md:min-h-0 w-full bg-[var(--background)] text-[var(--text-primary)] flex flex-col md:flex-row antialiased overflow-hidden">
-      <aside className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 md:h-full md:max-h-full">
+    <div className="h-dvh min-h-dvh w-full bg-[var(--background)] text-[var(--text-primary)] flex flex-col md:flex-row antialiased overflow-hidden">
+      <aside className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[var(--panel-border)] bg-[var(--surface-raised)]/95 flex flex-col justify-between p-4 md:h-dvh md:max-h-dvh">
         <div className="space-y-4">
           <div className="flex items-center px-2 pt-1">
             <div className="flex items-center gap-2.5">
@@ -233,20 +230,6 @@ export default function BotInstallView({
               </span>
             </div>
           </div>
-
-          <button
-            type="button"
-            onClick={() => openCommandPalette(true)}
-            className="w-full flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] transition-all cursor-pointer"
-          >
-            <div className="flex items-center gap-2">
-              <Search className="h-3.5 w-3.5" />
-              <span>Rechercher un réglage...</span>
-            </div>
-            <kbd className="rounded-sm border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
-              Ctrl K
-            </kbd>
-          </button>
         </div>
 
         <div className="space-y-4 pt-4 border-t border-[var(--panel-border)]">
@@ -353,7 +336,7 @@ export default function BotInstallView({
         </div>
       </aside>
 
-      <main className="flex-1 min-w-0 flex flex-col overflow-y-auto">
+      <main className="flex-1 min-w-0 flex flex-col overflow-y-auto h-full md:h-dvh">
         <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-[var(--panel-border)] px-4 sm:px-8 bg-[var(--surface-raised)]/40">
           <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
             <button

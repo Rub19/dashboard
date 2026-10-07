@@ -81,7 +81,7 @@ describe("BotInstallView", () => {
     expect(screen.getByText("Place son rôle tout en haut")).toBeTruthy();
     expect(screen.getByText("Reviens ici")).toBeTruthy();
     expect(screen.getByText("Etho absent")).toBeTruthy();
-    expect(screen.queryByText("Tout est enregistré")).toBeNull();
+    expect(screen.getByText("Tout est enregistré")).toBeTruthy();
     expect(
       screen.getByText("La détection peut prendre quelques secondes après l'ajout du bot.")
     ).toBeTruthy();

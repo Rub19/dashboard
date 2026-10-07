@@ -48,6 +48,24 @@ function getGuildInitials(name: string) {
   return name.slice(0, 2).toUpperCase() || "SV";
 }
 
+function CloudCheckIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+      <path d="m9 13 2 2 4-4" />
+    </svg>
+  );
+}
+
 export default function BotInstallView({
   guild,
   onBack,
@@ -273,6 +291,11 @@ export default function BotInstallView({
             </button>
             <ChevronRight className="h-3 w-3 text-[var(--text-muted)]" />
             <span className="text-[var(--text-primary)] font-medium">Installation</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] select-none">
+            <CloudCheckIcon className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
+            <span className="font-normal text-[var(--text-muted)]">Tout est enregistré</span>
           </div>
         </header>
 

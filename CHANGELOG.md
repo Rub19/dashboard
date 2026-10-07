@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.53 — 2026-10-07
+
+**Indicateur d'Enregistrement Cloud Épuré Style Screen 2**
+
+- Intégration de l'icône cloud avec coche de validation (CloudCheck) et du texte épuré « Tout est enregistré » dans l'en-tête de configuration et d'installation.
+- Suppression du badge vert arrondi type pilule au profit d'un design textuel discret et aligné sur les tokens du thème.
+- Parité visuelle complète avec le deuxième écran de référence fourni.
+
 ## v1.55.52 — 2026-10-07
 
 **Résilience Navigation Bot, Route Error Boundary & Correction Crash Retour**

@@ -39,7 +39,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_BUILD_VERSION: version,
     NEXT_PUBLIC_BUILD_COMMIT: commit ?? "",
   },
-  output: "export",
+  output: process.env.NODE_ENV === "development" ? undefined : "export",
   distDir: "dist",
   images: {
     unoptimized: true,

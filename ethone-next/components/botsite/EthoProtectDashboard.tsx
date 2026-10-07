@@ -35,6 +35,24 @@ function getGuildInitials(name: string) {
   return name.slice(0, 2).toUpperCase() || "SV";
 }
 
+function CloudCheckIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+      <path d="m9 13 2 2 4-4" />
+    </svg>
+  );
+}
+
 export default function EthoProtectDashboard() {
   const router = useRouter();
   const { setOpen: openCommandPalette } = useCommandPalette();
@@ -290,14 +308,20 @@ export default function EthoProtectDashboard() {
               <ChevronRight className="h-3 w-3" />
               <span className="text-[var(--accent-primary)] font-medium">Mes serveurs</span>
             </div>
-            <button
-              type="button"
-              onClick={() => setViewModeWithStorage("legacy")}
-              className="flex items-center gap-1.5 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1 text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer"
-            >
-              <Eye className="h-3 w-3" />
-              <span>Voir l'ancienne vitrine</span>
-            </button>
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--text-muted)] select-none">
+                <CloudCheckIcon className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
+                <span className="font-normal text-[var(--text-muted)]">Tout est enregistré</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewModeWithStorage("legacy")}
+                className="flex items-center gap-1.5 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1 text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer"
+              >
+                <Eye className="h-3 w-3" />
+                <span>Voir l'ancienne vitrine</span>
+              </button>
+            </div>
           </div>
 
           <div className="space-y-6">

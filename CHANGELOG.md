@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.62 — 2026-10-07
+
+**Sélecteur de Serveurs — Style Épuré pour les Serveurs Protégés**
+
+- Refonte de la liste des serveurs protégés façon Keeper Protect avec carte cliquable intégrale.
+- Affichage du badge couronne propriétaire et du statut actif avec indicateur dynamique.
+- Remplacement du bouton d'action par un chevron de navigation fluide sur les serveurs installés.
+- Ajout du badge de synchronisation automatique dans l'en-tête de sélection.
+
 ## v1.55.61 — 2026-10-07
 
 **Épuration de la Console Discord — Retrait des Placeholders et du Bouton Premium**

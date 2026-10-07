@@ -46369,6 +46369,54 @@ const v12868_de: ChangelogEntry = {
   ],
 };
 
+const v12869_fr: ChangelogEntry = {
+  version: "v1.55.62",
+  date: "2026-10-07",
+  title: "Sélecteur de Serveurs — Style Épuré pour les Serveurs Protégés",
+  items: [
+    "Refonte de la liste des serveurs protégés façon Keeper Protect avec carte cliquable intégrale",
+    "Affichage du badge couronne propriétaire et du statut actif avec indicateur dynamique",
+    "Remplacement du bouton d'action par un chevron de navigation fluide sur les serveurs installés",
+    "Ajout du badge de synchronisation automatique dans l'en-tête de sélection",
+  ],
+};
+
+const v12869_en: ChangelogEntry = {
+  version: "v1.55.62",
+  date: "2026-10-07",
+  title: "Server Picker — Clean Style for Protected Guilds",
+  items: [
+    "Redesigned protected servers list with Keeper Protect style full-card interactive rows",
+    "Owner crown badge and dynamic active protection status indicator",
+    "Replaced manage button with a sleek right chevron for installed servers",
+    "Added cloud auto-save sync indicator in the server picker header",
+  ],
+};
+
+const v12869_es: ChangelogEntry = {
+  version: "v1.55.62",
+  date: "2026-10-07",
+  title: "Selector de Servidores — Estilo Limpio para Servidores Protegidos",
+  items: [
+    "Rediseño de la lista de servidores protegidos con tarjetas interactivas completas estilo Keeper Protect",
+    "Insignia de corona para propietarios e indicador dinámico de estado activo",
+    "Sustitución del botón gestionar por un chevron de navegación fluido en servidores instalados",
+    "Indicador de sincronización automática en la nube en el encabezado del selector",
+  ],
+};
+
+const v12869_de: ChangelogEntry = {
+  version: "v1.55.62",
+  date: "2026-10-07",
+  title: "Server-Auswahl — Aufgeräumter Stil für geschützte Server",
+  items: [
+    "Neugestaltung der geschützten Serverliste im Keeper-Protect-Stil mit vollständig anklickbaren Karten",
+    "Kronen-Abzeichen für Besitzer und dynamische Statusanzeige für aktive Absicherungen",
+    "Aktionsschaltfläche durch einen schlanken Pfeil für installierte Server ersetzt",
+    "Anzeige für automatische Cloud-Synchronisierung in der Kopfzeile hinzugefügt",
+  ],
+};
+
 CHANGELOG_BY_LANG.fr.unshift(v12860_fr);
 CHANGELOG_BY_LANG.en.unshift(v12860_en);
 CHANGELOG_BY_LANG.es.unshift(v12860_es);
@@ -46413,5 +46461,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12868_fr);
 CHANGELOG_BY_LANG.en.unshift(v12868_en);
 CHANGELOG_BY_LANG.es.unshift(v12868_es);
 CHANGELOG_BY_LANG.de.unshift(v12868_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12869_fr);
+CHANGELOG_BY_LANG.en.unshift(v12869_en);
+CHANGELOG_BY_LANG.es.unshift(v12869_es);
+CHANGELOG_BY_LANG.de.unshift(v12869_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

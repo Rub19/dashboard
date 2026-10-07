@@ -9,7 +9,7 @@ import {
   Plus,
   Search,
   ShieldCheck,
-  Check,
+  Crown,
   Eye,
   Sliders,
   X,
@@ -73,6 +73,26 @@ function getGuildInitials(name: string) {
     return (words[0][0] + words[1][0]).toUpperCase();
   }
   return name.slice(0, 2).toUpperCase() || "SV";
+}
+
+function getGuildProtectionText(guildId: string): string {
+  if (typeof window !== "undefined") {
+    try {
+      const saved = localStorage.getItem(`ethone:discord:settings:${guildId}`);
+      if (saved) {
+        const data = JSON.parse(saved);
+        let count = 0;
+        if (data.antiRaidEnabled) count++;
+        if (data.antiSpamEnabled) count++;
+        if (data.mentionLimit > 0) count++;
+        if (data.emergencyLockdown) count++;
+        if (count > 0) {
+          return `${count} ${count > 1 ? "protections actives" : "protection active"}`;
+        }
+      }
+    } catch {}
+  }
+  return "1 protection active";
 }
 
 function LifeBuoyIcon({ className = "h-4 w-4" }: { className?: string }) {
@@ -380,7 +400,16 @@ export default function ServerPicker({
                             <button type="button" onClick={() => onPick(guild)} className={cn(rowClass, "cursor-pointer")}>
                               {highlight}
                               <ClassicAvatar guild={guild} live={live} />
-                              <span className="relative min-w-0 flex-1 truncate text-[15px] font-medium text-[var(--text-primary)]">{guild.name}</span>
+                              <div className="relative min-w-0 flex-1 space-y-0.5">
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                  <span className="truncate text-[15px] font-bold text-[var(--text-primary)]">{guild.name}</span>
+                                  {guild.owner && <Crown className="h-3.5 w-3.5 text-emerald-400 shrink-0" />}
+                                </div>
+                                <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)] font-medium">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
+                                  <span>{getGuildProtectionText(guild.id)}</span>
+                                </div>
+                              </div>
                               <ChevronRight className="relative h-5 w-5 shrink-0 text-[var(--text-muted)] transition-[transform,color] duration-300 [transition-timing-function:var(--ease-snap)] group-hover:translate-x-1 group-hover:text-[var(--text-primary)]" />
                             </button>
                           )}
@@ -592,11 +621,15 @@ export default function ServerPicker({
               <ChevronRight className="h-3 w-3" />
               <span className="text-[var(--accent-primary)] font-medium">Mes serveurs</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                <span>Tout est enregistré</span>
+              </div>
               <button
                 type="button"
                 onClick={() => setViewModeWithStorage("classic")}
-                className="flex items-center gap-1.5 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1 text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer"
+                className="flex items-center gap-1.5 rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer"
               >
                 <Sliders className="h-3 w-3" />
                 <span>Vue classique</span>
@@ -691,52 +724,55 @@ export default function ServerPicker({
             {filteredInstalled.length > 0 && (
               <motion.div variants={consoleFadeUp} className="space-y-2.5">
                 <div className="flex items-center justify-between text-xs text-[var(--text-muted)] font-medium px-1">
-                  <span>Avec Etho · {filteredInstalled.length}</span>
+                  <span>Protégés par Etho · {filteredInstalled.length}</span>
                 </div>
                 <motion.div variants={consoleList} className="space-y-1.5">
-                  {filteredInstalled.map((guild) => (
-                    <motion.div
-                      key={guild.id}
-                      variants={consoleRow}
-                      whileHover={reduced ? undefined : { y: -1, scale: 1.004 }}
-                      whileTap={reduced ? undefined : { scale: 0.995 }}
-                      transition={SPRING_PRESS}
-                      className="group flex items-center justify-between rounded-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-4 py-3 hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-raised)] transition-colors"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        {guild.iconUrl ? (
-                          <ClientImage
-                            src={guild.iconUrl}
-                            alt={guild.name}
-                            width={36}
-                            height={36}
-                            className="h-9 w-9 rounded-sm object-cover border border-[var(--panel-border)]"
-                          />
-                        ) : (
-                          <div className="flex h-9 w-9 items-center justify-center rounded-sm bg-[var(--surface-raised)] text-[var(--accent-primary)] font-bold text-xs border border-[var(--panel-border)]">
-                            {getGuildInitials(guild.name)}
-                          </div>
-                        )}
-                        <div className="min-w-0">
-                          <h4 className="truncate text-sm font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
-                            {guild.name}
-                          </h4>
-                        </div>
-                      </div>
-
-                      <motion.button
-                        type="button"
-                        onClick={() => onPick(guild)}
-                        whileHover={reduced ? undefined : { scale: 1.04 }}
-                        whileTap={reduced ? undefined : { scale: 0.96 }}
+                  {filteredInstalled.map((guild) => {
+                    const protectionText = getGuildProtectionText(guild.id);
+                    return (
+                      <motion.div
+                        key={guild.id}
+                        variants={consoleRow}
+                        whileHover={reduced ? undefined : { y: -1, scale: 1.004 }}
+                        whileTap={reduced ? undefined : { scale: 0.995 }}
                         transition={SPRING_PRESS}
-                        className="flex items-center gap-1.5 rounded-sm border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 px-3 py-1.5 text-xs font-bold text-[var(--accent-primary)] hover:bg-[var(--accent-primary)] hover:text-[var(--accent-contrast)] transition-colors cursor-pointer"
+                        onClick={() => onPick(guild)}
+                        className="group flex items-center justify-between rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-4 py-3 hover:border-emerald-500/40 hover:bg-[var(--surface-raised)] transition-all cursor-pointer shadow-sm"
                       >
-                        <Check className="h-3.5 w-3.5" />
-                        <span>Gérer</span>
-                      </motion.button>
-                    </motion.div>
-                  ))}
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          {guild.iconUrl ? (
+                            <ClientImage
+                              src={guild.iconUrl}
+                              alt={guild.name}
+                              width={40}
+                              height={40}
+                              className="h-10 w-10 rounded-md object-cover border border-[var(--panel-border)] shrink-0"
+                            />
+                          ) : (
+                            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--surface-raised)] text-emerald-400 font-bold text-xs border border-[var(--panel-border)] shrink-0">
+                              {getGuildInitials(guild.name)}
+                            </div>
+                          )}
+                          <div className="min-w-0 space-y-0.5">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <h4 className="truncate text-sm font-bold text-[var(--text-primary)] group-hover:text-emerald-400 transition-colors">
+                                {guild.name}
+                              </h4>
+                              {guild.owner && (
+                                <Crown className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)] font-medium">
+                              <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
+                              <span>{protectionText}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <ChevronRight className="h-4 w-4 text-[var(--text-muted)] group-hover:text-[var(--text-primary)] group-hover:translate-x-0.5 transition-all shrink-0" />
+                      </motion.div>
+                    );
+                  })}
                 </motion.div>
               </motion.div>
             )}

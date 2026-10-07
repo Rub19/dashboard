@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.48 — 2026-10-07
+
+**Refonte du Hub Bot Etho Protect & Interface de Gestion des Serveurs**
+
+- Nouvelle interface Hub Serveurs inspirée de Keeper Protect adaptée à l'identité visuelle Etho (vert émeraude, obsidian).
+- Détection automatique des serveurs Discord avec statut d'installation du bot (Avec Etho / Sans Etho) et bouton d'installation 1-clic.
+- Recherche en temps réel des serveurs et lien direct vers le panneau de gestion (/discord?guildId=...).
+- Carte Bots Privés avec modal dédié présentant les fonctionnalités exclusives (anti-raid rollback, instance dédiée).
+- Basculement réversible entre le nouveau Hub et l'ancienne vitrine publique conservée.
+
 ## v1.55.47 — 2026-10-06
 
 **Dashboard Web : Alignement Espaces & Gestionnaire de Flows Intégré**

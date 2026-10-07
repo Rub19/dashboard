@@ -1,4 +1,4 @@
-# ETHONE — passation à la prochaine IA (état au 2026-10-06, version 1.55.47)
+# ETHONE — passation à la prochaine IA (état au 2026-10-07, version 1.55.48)
 
 ## Prompt à coller à la prochaine IA (version avec le lien du repo : `PROMPT-IA.md`)
 
@@ -196,6 +196,7 @@ git log --oneline -10
 - Calendrier & Agenda Unifié (v1.55.45) : synchronisation en temps réel des rendez-vous et événements Supabase (`ethone_items`, kind = 'event') avec sélecteur d'heures ou journée entière, titre, lieu et notes dans `CalendarAgendaPanel` ; bascule ergonomique à double volet (Agenda / Factures) avec compteurs dédiés par journée ; fusion unifiée des marqueurs calendaires combinant les pastilles info pour les événements et les logos/statuts financiers pour les factures.
 - Filtres de Tâches & Expérience Mobile Notes (v1.55.46) : barre de filtres par catégories (`/tasks`) avec compteurs dynamiques en temps réel par projet et bouton contextuel de réinitialisation des filtres ; refonte adaptative mobile (`/notes`) avec bascule fluide plein écran entre liste et éditeur, bouton de retour dédié et création directe depuis l'en-tête sur mobile.
 - Espaces & Gestionnaire de Flows (v1.55.47) : alignement responsive des onglets d'espaces (`/spaces`) éliminant les décalages de marges sur smartphone et tablette ; indicateur de chargement dédié et écran d'erreur clair avec bouton de retour sur l'inspecteur d'espace (`/spaces/[spaceId]`) ; barre de création unifiée du gestionnaire de flows (`/flows`) intégrant le sélecteur de modèle et le champ de nom personnalisé.
+- Refonte de la page Bot Etho Protect (v1.55.48) : refonte intégrale de la page bot (`/bot`) inspirée de la disposition et de l'UX de Keeper Protect, adaptée à l'identité visuelle d'Etho (obsidian sombre, accents vert émeraude). Hub de serveurs 3 colonnes avec barre latérale (déclencheur palette Ctrl+K, navigation, liens support/documentation, profil utilisateur), fil d'Ariane et statut de synchronisation, partitionnement automatique des serveurs Discord (« Avec Etho » avec bouton Gérer / « Sans Etho » avec bouton Installer 1-clic direct), recherche instantanée, carte latérale « Bots privés » avec modal interactif complet, et bascule réversible persistée en localStorage vers l'ancienne vitrine publique pour réversibilité totale.
 
 ## Reste à faire (par priorité)
 1. **Bot animé, vérification réelle** : regarder dans un vrai salon qu'une réponse du bot affiche bien les émojis animés (29 émojis d'application synchronisés au démarrage) et qu'une arrivée de membre envoie la carte GIF (interrupteur et aperçu GIF intégrés sur le site).

@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.55.48",
+    "date": "2026-10-07",
+    "title": "Refonte du Hub Bot Etho Protect & Interface de Gestion des Serveurs",
+    "items": [
+      "Nouvelle interface Hub Serveurs inspirée de Keeper Protect adaptée à l'identité visuelle Etho (vert émeraude, obsidian).",
+      "Détection automatique des serveurs Discord avec statut d'installation du bot (Avec Etho / Sans Etho) et bouton d'installation 1-clic.",
+      "Recherche en temps réel des serveurs et lien direct vers le panneau de gestion (/discord?guildId=...).",
+      "Carte Bots Privés avec modal dédié présentant les fonctionnalités exclusives (anti-raid rollback, instance dédiée).",
+      "Basculement réversible entre le nouveau Hub et l'ancienne vitrine publique conservée."
+    ]
+  },
+  {
     "version": "v1.55.47",
     "date": "2026-10-06",
     "title": "Dashboard Web : Alignement Espaces & Gestionnaire de Flows Intégré",
@@ -528,16 +540,6 @@
     "items": [
       "Brain répond avec la météo de ta ville réglée dans ETHONE et tes dernières parties Valorant ou League of Legends (résultat, score, carte, agent ou champion, K/D/A).",
       "Connexions : GitHub et les autres services officiels utilisent toujours l'application ETHONE, un ancien identifiant personnalisé resté dans le navigateur ne fait plus échouer la connexion."
-    ]
-  },
-  {
-    "version": "v1.54.0",
-    "date": "2026-10-04",
-    "title": "Bannière de profil et historique Valorant complet",
-    "items": [
-      "Profil › Apparence : importez votre propre bannière en fond de carte (les GIF restent animés).",
-      "Tracker Valorant : « Charger plus » remonte vraiment l'historique, 25 parties par clic, jusqu'à la plus ancienne disponible.",
-      "Les parties anciennes affichent un résumé (score, agent, carte, stats) sans le tableau des 10 joueurs."
     ]
   }
 ]

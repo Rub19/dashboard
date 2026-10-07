@@ -45766,8 +45766,61 @@ CHANGELOG_BY_LANG.en.unshift(v1_55_47_en);
 CHANGELOG_BY_LANG.es.unshift(v1_55_47_es);
 CHANGELOG_BY_LANG.de.unshift(v1_55_47_de);
 
+const v12857_fr: ChangelogEntry = {
+  version: "v1.55.48",
+  date: "2026-10-07",
+  title: "Refonte du Hub Bot Etho Protect & Interface de Gestion des Serveurs",
+  items: [
+    "Nouvelle interface Hub Serveurs inspirée de Keeper Protect adaptée à l'identité visuelle Etho (vert émeraude, obsidian).",
+    "Détection automatique des serveurs Discord avec statut d'installation du bot (Avec Etho / Sans Etho) et bouton d'installation 1-clic.",
+    "Recherche en temps réel des serveurs et lien direct vers le panneau de gestion (/discord?guildId=...).",
+    "Carte Bots Privés avec modal dédié présentant les fonctionnalités exclusives (anti-raid rollback, instance dédiée).",
+    "Basculement réversible entre le nouveau Hub et l'ancienne vitrine publique conservée.",
+  ],
+};
+
+const v12857_en: ChangelogEntry = {
+  version: "v1.55.48",
+  date: "2026-10-07",
+  title: "Etho Protect Bot Hub Redesign & Server Management Interface",
+  items: [
+    "New Server Hub interface inspired by Keeper Protect adapted to Etho visual identity (emerald green, obsidian).",
+    "Automatic Discord server detection with installation status (With Etho / Without Etho) and 1-click install button.",
+    "Real-time server search and direct link to management panel (/discord?guildId=...).",
+    "Private Bots showcase card with dedicated modal highlighting custom instance features.",
+    "Reversible toggle between the new Hub and the preserved legacy showcase.",
+  ],
+};
+
+const v12857_es: ChangelogEntry = {
+  version: "v1.55.48",
+  date: "2026-10-07",
+  title: "Rediseño del Hub Bot Etho Protect e Interfaz de Gestión de Servidores",
+  items: [
+    "Nueva interfaz de Hub inspirada en Keeper Protect adaptada a la identidad visual de Etho.",
+    "Detección automática de servidores Discord con estado de instalación y botón de instalación en 1 clic.",
+    "Búsqueda en tiempo real y enlace directo al panel de control (/discord?guildId=...).",
+    "Tarjeta de Bots Privados con modal interactivo sobre instancias dedicadas.",
+    "Alternancia reversible entre el nuevo Hub y la versión anterior preservada.",
+  ],
+};
+
+const v12857_de: ChangelogEntry = {
+  version: "v1.55.48",
+  date: "2026-10-07",
+  title: "Neugestaltung des Etho Protect Bot Hubs & Server-Verwaltungsoberfläche",
+  items: [
+    "Neue Server-Hub-Oberfläche im Keeper Protect-Stil, angepasst an das Etho-Design.",
+    "Automatische Erkennung von Discord-Servern mit Installationsstatus und 1-Klick-Button.",
+    "Echtzeit-Serversuche und Direktlink zum Verwaltungs-Dashboard (/discord?guildId=...).",
+    "Private-Bots-Karte mit interaktivem Modal für dedizierte Bot-Instanzen.",
+    "Reversibles Umschalten zwischen dem neuen Hub und der erhaltenen Vorgängerversion.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12857_fr);
+CHANGELOG_BY_LANG.en.unshift(v12857_en);
+CHANGELOG_BY_LANG.es.unshift(v12857_es);
+CHANGELOG_BY_LANG.de.unshift(v12857_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
-
-
-
-

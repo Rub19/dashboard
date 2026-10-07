@@ -1,0 +1,36 @@
+"use client";
+
+import { useEffect } from "react";
+import ErrorState from "@/components/ErrorState";
+import { useI18n } from "@/lib/hooks/useI18n";
+
+export default function ErrorBoundary({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  const i18n = useI18n();
+
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
+
+  return (
+    <div className="flex min-h-[50vh] w-full items-center justify-center p-6">
+      <ErrorState
+        title={i18n("globalErrorTitle")}
+        reason={i18n("unexpectedError")}
+        actionText={i18n("globalErrorRetry")}
+        onAction={() => {
+          reset();
+          if (typeof window !== "undefined") {
+            window.location.reload();
+          }
+        }}
+        className="max-w-md rounded-sm border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 backdrop-blur-[var(--panel-blur)]"
+      />
+    </div>
+  );
+}

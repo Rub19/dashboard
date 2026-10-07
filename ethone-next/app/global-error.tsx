@@ -23,7 +23,12 @@ export default function GlobalError({
           title={i18n("globalErrorTitle")}
           reason={i18n("unexpectedError")}
           actionText={i18n("globalErrorRetry")}
-          onAction={reset}
+          onAction={() => {
+            reset();
+            if (typeof window !== "undefined") {
+              window.location.reload();
+            }
+          }}
           className="max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 backdrop-blur-[var(--panel-blur)]"
         />
       </body>

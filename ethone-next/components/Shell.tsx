@@ -2,7 +2,6 @@
 
 import { type ReactNode } from "react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowLeft } from "@/components/icons/ph";
 import { WindowManagerProvider } from "@/components/WindowManagerProvider";
@@ -43,8 +42,7 @@ const KeyboardShortcuts = dynamic(() => import("@/components/KeyboardShortcuts")
 
 export default function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  // Le Bot Discord s'ouvre en plein écran par-dessus le dashboard : ni sidebar, ni barre du haut, ni barre du bas.
-  const discordFullscreen = pathname === "/discord" || (pathname?.startsWith("/discord/") ?? false);
+  const discordFullscreen = pathname === "/discord" || pathname === "/bot" || (pathname?.startsWith("/discord/") ?? false) || (pathname?.startsWith("/bot/") ?? false);
 
   if (discordFullscreen) {
     return (
@@ -61,7 +59,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                   <CosmicBackground />
                   <RefreshSpinner />
                   <VisualHaptics />
-                  <Link
+                  <a
                     href="/"
                     onClick={(e) => {
                       try {
@@ -77,7 +75,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                   >
                     <ArrowLeft className="h-4 w-4" />
                     <span>Retour à ETHONE</span>
-                  </Link>
+                  </a>
                   <PrivacyShield>
                     <main
                       data-v8-main

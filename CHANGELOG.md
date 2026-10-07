@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.55.52 — 2026-10-07
+
+**Résilience Navigation Bot, Route Error Boundary & Correction Crash Retour**
+
+- Correction du crash de transition React (Minified error #418 / global-error) lors du retour vers le tableau de bord ETHONE depuis le mode plein écran bot Discord.
+- Utilisation de la navigation native pour le bouton Retour à ETHONE afin de réinitialiser proprement la hiérarchie du Shell.
+- Intégration de la page /bot dans le mode plein écran pour éliminer les conflits de layout et les doubles barres.
+- Ajout de la frontière d'erreur d'application standard app/error.tsx avec rechargement propre et sécurisation du global-error.
+- Persistance optimisée des serveurs configurés et ignorés lors de l'onboarding pour une navigation directe.
+
 ## v1.55.51 — 2026-10-07
 
 **Design System Épuré Etho, Blocs Rectangulaires & Parité Thème**

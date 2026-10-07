@@ -148,10 +148,24 @@ export default function EthoProtectDashboard() {
         onBack={() => setInstallingGuild(null)}
         onBotDetected={(g) => {
           setInstallingGuild(null);
+          try {
+            const stored = localStorage.getItem("ethone:discord:bot_guild_ids");
+            const parsed = stored ? JSON.parse(stored) : [];
+            if (Array.isArray(parsed) && !parsed.includes(g.id)) {
+              localStorage.setItem("ethone:discord:bot_guild_ids", JSON.stringify([...parsed, g.id]));
+            }
+          } catch {}
           router.push(`/discord?guildId=${g.id}`);
         }}
         onSkip={(g) => {
           setInstallingGuild(null);
+          try {
+            const stored = sessionStorage.getItem("ethone:discord:skipped_install_guilds");
+            const parsed = stored ? JSON.parse(stored) : [];
+            if (Array.isArray(parsed) && !parsed.includes(g.id)) {
+              sessionStorage.setItem("ethone:discord:skipped_install_guilds", JSON.stringify([...parsed, g.id]));
+            }
+          } catch {}
           router.push(`/discord?guildId=${g.id}`);
         }}
         userName={displayName}
